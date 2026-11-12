@@ -1,0 +1,1161 @@
+﻿2026-11-12T01:01:02.4883685Z Current runner version: '2.338.2'
+2026-11-12T01:01:02.4905907Z ##[group]Runner Image Provisioner
+2026-11-12T01:01:02.4906712Z Hosted Compute Agent
+2026-11-12T01:01:02.4907227Z Version: 20261028.624
+2026-11-12T01:01:02.4907786Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T01:01:02.4908499Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T01:01:02.4909087Z Worker ID: {93f4dc22-9b7c-489d-918d-ba219d79e610}
+2026-11-12T01:01:02.4909727Z Region: eastus2
+2026-11-12T01:01:02.4910215Z Cloud: Azure
+2026-11-12T01:01:02.4910692Z ##[endgroup]
+2026-11-12T01:01:02.4911854Z ##[group]Operating System
+2026-11-12T01:01:02.4912568Z Ubuntu
+2026-11-12T01:01:02.4913068Z 24.04.5
+2026-11-12T01:01:02.4913535Z LTS
+2026-11-12T01:01:02.4914023Z ##[endgroup]
+2026-11-12T01:01:02.4914577Z ##[group]Runner Image
+2026-11-12T01:01:02.4915160Z Image: ubuntu-24.04
+2026-11-12T01:01:02.4915670Z Version: 20261101.360.1
+2026-11-12T01:01:02.4916791Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T01:01:02.4918088Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T01:01:02.4918899Z ##[endgroup]
+2026-11-12T01:01:02.4919854Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T01:01:02.4921715Z Contents: read
+2026-11-12T01:01:02.4922470Z Metadata: read
+2026-11-12T01:01:02.4922985Z ##[endgroup]
+2026-11-12T01:01:02.4924766Z Secret source: Actions
+2026-11-12T01:01:02.4925669Z Cache mode: write
+2026-11-12T01:01:02.4926576Z Prepare workflow directory
+2026-11-12T01:01:02.5388774Z Prepare all required actions
+2026-11-12T01:01:02.5428536Z Getting action download info
+2026-11-12T01:01:02.7577697Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T01:01:02.8846931Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+2026-11-12T01:01:03.0977229Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-12T01:01:03.3020444Z Complete job name: HCSN CPU science gate
+2026-11-12T01:01:03.3693348Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T01:01:03.3694188Z with:
+2026-11-12T01:01:03.3694570Z   ref: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:03.3695028Z   fetch-depth: 2
+2026-11-12T01:01:03.3695397Z   persist-credentials: false
+2026-11-12T01:01:03.3695875Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:01:03.3699060Z   token: ***
+2026-11-12T01:01:03.3699411Z   ssh-strict: true
+2026-11-12T01:01:03.3699770Z   ssh-user: git
+2026-11-12T01:01:03.3700118Z   clean: true
+2026-11-12T01:01:03.3700480Z   sparse-checkout-cone-mode: true
+2026-11-12T01:01:03.3700904Z   fetch-tags: false
+2026-11-12T01:01:03.3701263Z   show-progress: true
+2026-11-12T01:01:03.3701616Z   lfs: false
+2026-11-12T01:01:03.3701948Z   submodules: false
+2026-11-12T01:01:03.3702455Z   set-safe-directory: true
+2026-11-12T01:01:03.3703007Z env:
+2026-11-12T01:01:03.3703345Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:01:03.3703753Z   OMP_NUM_THREADS: 1
+2026-11-12T01:01:03.3704130Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:01:03.3704506Z   MKL_NUM_THREADS: 1
+2026-11-12T01:01:03.3704881Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:01:03.3705277Z   PYTHONHASHSEED: 0
+2026-11-12T01:01:03.3705691Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:03.3706171Z ##[endgroup]
+2026-11-12T01:01:03.5852592Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:01:03.5854437Z ##[group]Getting Git version info
+2026-11-12T01:01:03.5855181Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T01:01:03.5856161Z [command]/usr/bin/git version
+2026-11-12T01:01:03.5963728Z git version 2.56.0
+2026-11-12T01:01:03.5966381Z ##[endgroup]
+2026-11-12T01:01:03.6060574Z Temporarily overriding HOME='/home/runner/work/_temp/a93970d9-9f49-4ec1-8e7a-a618af678ac1' before making global git config changes
+2026-11-12T01:01:03.6062914Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T01:01:03.6064624Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T01:01:03.6124472Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T01:01:03.6131173Z ##[group]Initializing the repository
+2026-11-12T01:01:03.6133615Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T01:01:03.6224741Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T01:01:03.6226006Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T01:01:03.6227089Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T01:01:03.6227685Z hint: call:
+2026-11-12T01:01:03.6228031Z hint:
+2026-11-12T01:01:03.6228498Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T01:01:03.6229001Z hint:
+2026-11-12T01:01:03.6229476Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T01:01:03.6230205Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T01:01:03.6230820Z hint:
+2026-11-12T01:01:03.6231156Z hint: 	git branch -m <name>
+2026-11-12T01:01:03.6231546Z hint:
+2026-11-12T01:01:03.6232042Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T01:01:03.6242184Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T01:01:03.6251980Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:01:03.6294013Z ##[endgroup]
+2026-11-12T01:01:03.6294640Z ##[group]Disabling automatic garbage collection
+2026-11-12T01:01:03.6297558Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T01:01:03.6331871Z ##[endgroup]
+2026-11-12T01:01:03.6334120Z ##[group]Setting up auth
+2026-11-12T01:01:03.6334687Z Removing SSH command configuration
+2026-11-12T01:01:03.6340205Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T01:01:03.6374028Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T01:01:03.6680201Z Removing HTTP extra header
+2026-11-12T01:01:03.6688224Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T01:01:03.6727793Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T01:01:03.6942249Z Removing includeIf entries pointing to credentials config files
+2026-11-12T01:01:03.6948745Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T01:01:03.6988335Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T01:01:03.7200226Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T01:01:03.7243501Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:03.7287675Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:03.7355456Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:03.7391278Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:03.7505950Z ##[endgroup]
+2026-11-12T01:01:03.7506848Z ##[group]Fetching the repository
+2026-11-12T01:01:03.7513860Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:08.5559229Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:01:08.5560444Z  * branch            296164757b970b19c70fe558bd8d5c26b6676a14 -> FETCH_HEAD
+2026-11-12T01:01:08.5569088Z [command]/usr/bin/git rev-parse --verify --quiet 296164757b970b19c70fe558bd8d5c26b6676a14^{object}
+2026-11-12T01:01:08.5599567Z 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:08.5607956Z ##[endgroup]
+2026-11-12T01:01:08.5609142Z ##[group]Determining the checkout info
+2026-11-12T01:01:08.5610118Z ##[endgroup]
+2026-11-12T01:01:08.5617775Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T01:01:08.5660296Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T01:01:08.5694432Z ##[group]Checking out the ref
+2026-11-12T01:01:08.5696644Z [command]/usr/bin/git checkout --progress --force 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:09.3224756Z Note: switching to '296164757b970b19c70fe558bd8d5c26b6676a14'.
+2026-11-12T01:01:09.3225281Z 
+2026-11-12T01:01:09.3225520Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T01:01:09.3226011Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T01:01:09.3226494Z state without impacting any branches by switching back to a branch.
+2026-11-12T01:01:09.3226747Z 
+2026-11-12T01:01:09.3226930Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T01:01:09.3227462Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T01:01:09.3227717Z 
+2026-11-12T01:01:09.3227840Z   git switch -c <new-branch-name>
+2026-11-12T01:01:09.3228299Z 
+2026-11-12T01:01:09.3228456Z Or undo this operation with:
+2026-11-12T01:01:09.3228618Z 
+2026-11-12T01:01:09.3228725Z   git switch -
+2026-11-12T01:01:09.3228880Z 
+2026-11-12T01:01:09.3229104Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T01:01:09.3229382Z 
+2026-11-12T01:01:09.3229607Z HEAD is now at 2961647 fix(hcsn): resolve the boundary root before differencing costs
+2026-11-12T01:01:09.3256023Z ##[endgroup]
+2026-11-12T01:01:09.3304818Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T01:01:09.3335561Z 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:09.3344229Z ##[group]Removing auth
+2026-11-12T01:01:09.3344777Z Removing SSH command configuration
+2026-11-12T01:01:09.3348182Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T01:01:09.3385749Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T01:01:09.3609321Z Removing HTTP extra header
+2026-11-12T01:01:09.3612865Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T01:01:09.3650804Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T01:01:09.3869224Z Removing includeIf entries pointing to credentials config files
+2026-11-12T01:01:09.3872665Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T01:01:09.3903699Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T01:01:09.3904516Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T01:01:09.3905597Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T01:01:09.3906161Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T01:01:09.3913334Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T01:01:09.3944642Z /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.3956930Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4005198Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T01:01:09.4034837Z /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4044713Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4090362Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T01:01:09.4118436Z /github/runner_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4125182Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4164705Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T01:01:09.4192464Z /github/runner_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4203692Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config
+2026-11-12T01:01:09.4238944Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T01:01:09.4469097Z Removing credentials config '/home/runner/work/_temp/git-credentials-f94650aa-5e63-45f0-846d-cf8d798b4c4c.config'
+2026-11-12T01:01:09.4470630Z ##[endgroup]
+2026-11-12T01:01:09.4715052Z ##[group]Run python3 - <<'PY'
+2026-11-12T01:01:09.4715474Z [36;1mpython3 - <<'PY'[0m
+2026-11-12T01:01:09.4715808Z [36;1mfrom datetime import datetime, timezone[0m
+2026-11-12T01:01:09.4716146Z [36;1mimport json[0m
+2026-11-12T01:01:09.4716392Z [36;1mimport os[0m
+2026-11-12T01:01:09.4716648Z [36;1mfrom pathlib import Path[0m
+2026-11-12T01:01:09.4716941Z [36;1mimport subprocess[0m
+2026-11-12T01:01:09.4717203Z [36;1mdef git(ref):[0m
+2026-11-12T01:01:09.4717618Z [36;1m    return subprocess.check_output(["git", "rev-parse", "--verify", ref], text=True).strip()[0m
+2026-11-12T01:01:09.4718180Z [36;1mout = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"[0m
+2026-11-12T01:01:09.4718536Z [36;1mout.mkdir()[0m
+2026-11-12T01:01:09.4718852Z [36;1msource, tested = os.environ["SOURCE_HEAD"], git("HEAD")[0m
+2026-11-12T01:01:09.4719312Z [36;1msource_tree, tested_tree = git(source + "^{tree}"), git("HEAD^{tree}")[0m
+2026-11-12T01:01:09.4719909Z [36;1mrecord = {"schema": "hcsn-ci-identity-v1", "recorded_utc": datetime.now(timezone.utc).isoformat(),[0m
+2026-11-12T01:01:09.4720512Z [36;1m          "source_head": source, "source_tree": source_tree, "tested_commit": tested,[0m
+2026-11-12T01:01:09.4721049Z [36;1m          "tested_tree": tested_tree, "trees_equal": source_tree == tested_tree,[0m
+2026-11-12T01:01:09.4721483Z [36;1m          "head_equals_source": tested == source,[0m
+2026-11-12T01:01:09.4721924Z [36;1m          "event_sha": os.environ["GITHUB_SHA"], "event": os.environ["GITHUB_EVENT_NAME"],[0m
+2026-11-12T01:01:09.4722742Z [36;1m          "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],[0m
+2026-11-12T01:01:09.4723527Z [36;1m          "evidence_scope": "exact_source_head_tree_only; merge integration and benefit not asserted"}[0m
+2026-11-12T01:01:09.4724046Z [36;1mwith (out / "identity.json").open("x") as stream:[0m
+2026-11-12T01:01:09.4724401Z [36;1m    json.dump(record, stream, indent=2)[0m
+2026-11-12T01:01:09.4724877Z [36;1massert tested == source, "checkout differs from exact source head (event SHA may be a merge)"[0m
+2026-11-12T01:01:09.4725460Z [36;1massert source_tree == tested_tree, "tested tree differs from exact source head tree"[0m
+2026-11-12T01:01:09.4725873Z [36;1mPY[0m
+2026-11-12T01:01:09.4747335Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:01:09.4747711Z env:
+2026-11-12T01:01:09.4747946Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:01:09.4748215Z   OMP_NUM_THREADS: 1
+2026-11-12T01:01:09.4748474Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:01:09.4748749Z   MKL_NUM_THREADS: 1
+2026-11-12T01:01:09.4749019Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:01:09.4749295Z   PYTHONHASHSEED: 0
+2026-11-12T01:01:09.4749574Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:09.4749892Z ##[endgroup]
+2026-11-12T01:01:09.5201672Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+2026-11-12T01:01:09.5202111Z with:
+2026-11-12T01:01:09.5202571Z   python-version: 3.12.3
+2026-11-12T01:01:09.5202873Z   check-latest: false
+2026-11-12T01:01:09.5205003Z   token: ***
+2026-11-12T01:01:09.5205270Z   update-environment: true
+2026-11-12T01:01:09.5205566Z   allow-prereleases: false
+2026-11-12T01:01:09.5205849Z   freethreaded: false
+2026-11-12T01:01:09.5206117Z env:
+2026-11-12T01:01:09.5206364Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:01:09.5206647Z   OMP_NUM_THREADS: 1
+2026-11-12T01:01:09.5206923Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:01:09.5207207Z   MKL_NUM_THREADS: 1
+2026-11-12T01:01:09.5207481Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:01:09.5207798Z   PYTHONHASHSEED: 0
+2026-11-12T01:01:09.5208105Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:09.5208452Z ##[endgroup]
+2026-11-12T01:01:09.6339929Z ##[group]Installed versions
+2026-11-12T01:01:09.6358963Z Version 3.12.3 was not found in the local cache
+2026-11-12T01:01:10.2796053Z Version 3.12.3 is available for downloading
+2026-11-12T01:01:10.2796944Z Download from "https://github.com/actions/python-versions/releases/download/3.12.3-11057844995/python-3.12.3-linux-24.04-x64.tar.gz"
+2026-11-12T01:01:11.2515565Z Extract downloaded archive
+2026-11-12T01:01:11.2640397Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/ac96faca-5499-446f-8413-c54763359afd -f /home/runner/work/_temp/f07bbca2-b3ac-4588-a613-9689b9e8993d
+2026-11-12T01:01:12.9805123Z Execute installation script
+2026-11-12T01:01:12.9926143Z Check if Python hostedtoolcache folder exist...
+2026-11-12T01:01:12.9927080Z Create Python 3.12.3 folder
+2026-11-12T01:01:12.9939779Z Copy Python binaries to hostedtoolcache folder
+2026-11-12T01:01:13.3663892Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-11-12T01:01:13.3702043Z Upgrading pip...
+2026-11-12T01:01:15.6332915Z Looking in links: /tmp/tmpd8dte0n3
+2026-11-12T01:01:15.6340600Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.12.3/x64/lib/python3.12/site-packages (24.0)
+2026-11-12T01:01:17.4040870Z Collecting pip
+2026-11-12T01:01:17.5384240Z Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
+2026-11-12T01:01:17.5807047Z Downloading pip-26.3-py3-none-any.whl (2.0 MB)
+2026-11-12T01:01:17.7915735Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 9.5 MB/s eta 0:00:00
+2026-11-12T01:01:17.7916252Z 
+2026-11-12T01:01:17.8058164Z Installing collected packages: pip
+2026-11-12T01:01:17.8058922Z Attempting uninstall: pip
+2026-11-12T01:01:17.8077510Z Found existing installation: pip 24.0
+2026-11-12T01:01:17.8376321Z Uninstalling pip-24.0:
+2026-11-12T01:01:17.8426852Z Successfully uninstalled pip-24.0
+2026-11-12T01:01:18.6548200Z Successfully installed pip-26.3
+2026-11-12T01:01:18.7148172Z Create complete file
+2026-11-12T01:01:18.7193373Z Successfully set up CPython (3.12.3)
+2026-11-12T01:01:18.7194271Z ##[endgroup]
+2026-11-12T01:01:18.7378907Z ##[group]Run python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+2026-11-12T01:01:18.7379647Z [36;1mpython -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu[0m
+2026-11-12T01:01:18.7380240Z [36;1mpython -m pip install --disable-pip-version-check "numpy==2.5.4" "mpmath==1.3.0"[0m
+2026-11-12T01:01:18.7380704Z [36;1mpython -m pip freeze --all > "$RUNNER_TEMP/hcsn-differentiable/pip-freeze.txt"[0m
+2026-11-12T01:01:18.7381044Z [36;1mpython - <<'PY'[0m
+2026-11-12T01:01:18.7381286Z [36;1mimport json[0m
+2026-11-12T01:01:18.7381460Z [36;1mimport os[0m
+2026-11-12T01:01:18.7381660Z [36;1mfrom pathlib import Path[0m
+2026-11-12T01:01:18.7381867Z [36;1mimport sys[0m
+2026-11-12T01:01:18.7382037Z [36;1mimport torch[0m
+2026-11-12T01:01:18.7382212Z [36;1mimport numpy[0m
+2026-11-12T01:01:18.7382644Z [36;1mimport mpmath[0m
+2026-11-12T01:01:18.7383113Z [36;1mruntime = {"python": sys.version, "torch": torch.__version__, "cuda_build": torch.version.cuda,[0m
+2026-11-12T01:01:18.7383540Z [36;1m           "numpy": numpy.__version__, "mpmath": mpmath.__version__}[0m
+2026-11-12T01:01:18.7384020Z [36;1m(Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable/runtime.json").write_text(json.dumps(runtime, indent=2))[0m
+2026-11-12T01:01:18.7384453Z [36;1massert sys.version_info[:3] == (3, 12, 3)[0m
+2026-11-12T01:01:18.7384781Z [36;1massert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None[0m
+2026-11-12T01:01:18.7385161Z [36;1massert numpy.__version__ == "2.5.4" and mpmath.__version__ == "1.3.0"[0m
+2026-11-12T01:01:18.7385445Z [36;1mPY[0m
+2026-11-12T01:01:18.7406257Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:01:18.7406541Z env:
+2026-11-12T01:01:18.7406709Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:01:18.7406904Z   OMP_NUM_THREADS: 1
+2026-11-12T01:01:18.7407085Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:01:18.7407286Z   MKL_NUM_THREADS: 1
+2026-11-12T01:01:18.7407465Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:01:18.7407665Z   PYTHONHASHSEED: 0
+2026-11-12T01:01:18.7407881Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:18.7408170Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:18.7408511Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:01:18.7408842Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:18.7409145Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:18.7409450Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:18.7409740Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:01:18.7410003Z ##[endgroup]
+2026-11-12T01:01:19.3999550Z Looking in indexes: https://download.pytorch.org/whl/cpu
+2026-11-12T01:01:19.6463443Z Collecting torch==2.8.0+cpu
+2026-11-12T01:01:19.7276205Z   Downloading torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (29 kB)
+2026-11-12T01:01:19.7579145Z Collecting filelock (from torch==2.8.0+cpu)
+2026-11-12T01:01:19.9024141Z   Downloading filelock-4.2.4-py3-none-any.whl.metadata (2.0 kB)
+2026-11-12T01:01:19.9310805Z Collecting typing-extensions>=4.10.0 (from torch==2.8.0+cpu)
+2026-11-12T01:01:20.0017165Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-12T01:01:20.0154469Z Collecting setuptools (from torch==2.8.0+cpu)
+2026-11-12T01:01:20.0234069Z   Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-12T01:01:20.0434149Z Collecting sympy>=1.13.3 (from torch==2.8.0+cpu)
+2026-11-12T01:01:20.0810615Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-11-12T01:01:20.1118168Z Collecting networkx (from torch==2.8.0+cpu)
+2026-11-12T01:01:20.1498874Z   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+2026-11-12T01:01:20.1670281Z Collecting jinja2 (from torch==2.8.0+cpu)
+2026-11-12T01:01:20.1750113Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-11-12T01:01:20.1976211Z Collecting fsspec (from torch==2.8.0+cpu)
+2026-11-12T01:01:20.2363272Z   Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+2026-11-12T01:01:20.2649624Z Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.8.0+cpu)
+2026-11-12T01:01:20.3031090Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-11-12T01:01:20.3272251Z Collecting MarkupSafe>=2.0 (from jinja2->torch==2.8.0+cpu)
+2026-11-12T01:01:20.3353568Z   Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-12T01:01:20.3541643Z Downloading torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (183.9 MB)
+2026-11-12T01:01:22.1413144Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 183.9/183.9 MB 103.6 MB/s  0:00:01
+2026-11-12T01:01:22.1867542Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-11-12T01:01:22.4772524Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 30.7 MB/s  0:00:00
+2026-11-12T01:01:22.5170978Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-11-12T01:01:22.5302969Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 25.0 MB/s  0:00:00
+2026-11-12T01:01:22.5693540Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-12T01:01:22.6125498Z Downloading filelock-4.2.4-py3-none-any.whl (162 kB)
+2026-11-12T01:01:22.6549512Z Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+2026-11-12T01:01:22.6654151Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-11-12T01:01:22.6752760Z Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-12T01:01:22.7151327Z Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+2026-11-12T01:01:22.7346140Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 117.6 MB/s  0:00:00
+2026-11-12T01:01:22.7433981Z Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+2026-11-12T01:01:22.7648943Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 54.4 MB/s  0:00:00
+2026-11-12T01:01:23.0995011Z Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+2026-11-12T01:01:38.8886914Z 
+2026-11-12T01:01:38.8901271Z Successfully installed MarkupSafe-3.0.3 filelock-4.2.4 fsspec-2026.9.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.7 setuptools-78.1.0 sympy-1.14.0 torch-2.8.0+cpu typing-extensions-4.16.0
+2026-11-12T01:01:40.2608578Z Collecting numpy==2.5.4
+2026-11-12T01:01:40.5066527Z   Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-11-12T01:01:40.5106424Z Requirement already satisfied: mpmath==1.3.0 in /opt/hostedtoolcache/Python/3.12.3/x64/lib/python3.12/site-packages (1.3.0)
+2026-11-12T01:01:40.5705339Z Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-11-12T01:01:41.1051100Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 42.2 MB/s  0:00:00
+2026-11-12T01:01:41.1780710Z Installing collected packages: numpy
+2026-11-12T01:01:42.8328648Z Successfully installed numpy-2.5.4
+2026-11-12T01:01:45.0131038Z ##[group]Run trap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/qualification.exit-code"; exit "$hcsn_rc"' EXIT
+2026-11-12T01:01:45.0131809Z [36;1mtrap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/qualification.exit-code"; exit "$hcsn_rc"' EXIT[0m
+2026-11-12T01:01:45.0132526Z [36;1mpython -m qualification.hcsn_differentiable.run_qualification --threads 1 \[0m
+2026-11-12T01:01:45.0132985Z [36;1m  --output "$RUNNER_TEMP/hcsn-differentiable/qualification.json" 2>&1 \[0m
+2026-11-12T01:01:45.0133373Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/qualification.log"[0m
+2026-11-12T01:01:45.0151582Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:01:45.0151871Z env:
+2026-11-12T01:01:45.0152038Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:01:45.0152238Z   OMP_NUM_THREADS: 1
+2026-11-12T01:01:45.0152638Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:01:45.0152826Z   MKL_NUM_THREADS: 1
+2026-11-12T01:01:45.0153041Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:01:45.0153248Z   PYTHONHASHSEED: 0
+2026-11-12T01:01:45.0153463Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:45.0153758Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:45.0154086Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:01:45.0154415Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:45.0154703Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:45.0155003Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:45.0155300Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:01:45.0155553Z ##[endgroup]
+2026-11-12T01:01:46.5849517Z test_budget_is_aggregate_over_seeds_and_failed_attempts (test_benchmark_admission.BenchmarkAdmissionTests.test_budget_is_aggregate_over_seeds_and_failed_attempts) ... ok
+2026-11-12T01:01:46.5869782Z test_complete_fixture_is_consistent_without_training (test_benchmark_admission.BenchmarkAdmissionTests.test_complete_fixture_is_consistent_without_training) ... ok
+2026-11-12T01:01:46.5877677Z test_content_only_cannot_retain_active_physical_bypass (test_benchmark_admission.BenchmarkAdmissionTests.test_content_only_cannot_retain_active_physical_bypass) ... ok
+2026-11-12T01:01:46.5890323Z test_each_group_leakage_axis_is_rejected (test_benchmark_admission.BenchmarkAdmissionTests.test_each_group_leakage_axis_is_rejected) ... ok
+2026-11-12T01:01:46.5908922Z test_episodes_cannot_replace_training_runs (test_benchmark_admission.BenchmarkAdmissionTests.test_episodes_cannot_replace_training_runs) ... ok
+2026-11-12T01:01:46.5915634Z test_gap_and_unclosed_error_block_real_task_entry (test_benchmark_admission.BenchmarkAdmissionTests.test_gap_and_unclosed_error_block_real_task_entry) ... ok
+2026-11-12T01:01:46.5933857Z test_missing_baseline_or_unmatched_measurement_conditions_reject (test_benchmark_admission.BenchmarkAdmissionTests.test_missing_baseline_or_unmatched_measurement_conditions_reject) ... ok
+2026-11-12T01:01:46.5941040Z test_plain_gate_capacity_is_checked (test_benchmark_admission.BenchmarkAdmissionTests.test_plain_gate_capacity_is_checked) ... ok
+2026-11-12T01:01:46.5959860Z test_reused_checkpoint_is_not_an_independent_training_seed (test_benchmark_admission.BenchmarkAdmissionTests.test_reused_checkpoint_is_not_an_independent_training_seed) ... ok
+2026-11-12T01:01:46.5966605Z test_test_selection_and_training_fitted_frontend_are_required (test_benchmark_admission.BenchmarkAdmissionTests.test_test_selection_and_training_fitted_frontend_are_required) ... ok
+2026-11-12T01:01:46.5985536Z test_unknown_energy_is_explicit_and_never_an_efficiency_win (test_benchmark_admission.BenchmarkAdmissionTests.test_unknown_energy_is_explicit_and_never_an_efficiency_win) ... ok
+2026-11-12T01:01:46.6004378Z test_zero_filled_energy_and_unknown_compute_are_rejected (test_benchmark_admission.BenchmarkAdmissionTests.test_zero_filled_energy_and_unknown_compute_are_rejected) ... ok
+2026-11-12T01:01:46.6040596Z test_chunk_continuation_uses_exact_previous_clock (test_encoder.EncoderTests.test_chunk_continuation_uses_exact_previous_clock) ... ok
+2026-11-12T01:01:46.6053632Z test_continuation_never_rounds_a_retained_fp64_clock_down_to_fp32 (test_encoder.EncoderTests.test_continuation_never_rounds_a_retained_fp64_clock_down_to_fp32) ... ok
+2026-11-12T01:01:46.6064941Z test_fp64_absolute_times_differenced_before_model_cast (test_encoder.EncoderTests.test_fp64_absolute_times_differenced_before_model_cast) ... ok
+2026-11-12T01:01:46.6072725Z test_invalid_observed_values_and_backward_time_reject (test_encoder.EncoderTests.test_invalid_observed_values_and_backward_time_reject) ... ok
+2026-11-12T01:01:46.6085582Z test_missing_channels_have_zero_input_gradient (test_encoder.EncoderTests.test_missing_channels_have_zero_input_gradient) ... ok
+2026-11-12T01:01:46.6096846Z test_per_example_time_missingness_and_padding_are_distinct (test_encoder.EncoderTests.test_per_example_time_missingness_and_padding_are_distinct) ... ok
+2026-11-12T01:01:46.6256578Z test_broken_relative_link_and_ambiguous_manifest_are_rejected (test_evidence_chain.EvidenceChainTests.test_broken_relative_link_and_ambiguous_manifest_are_rejected) ... ok
+2026-11-12T01:01:46.6319702Z test_tamper_and_missing_evidence_do_not_inherit_a_prior_pass (test_evidence_chain.EvidenceChainTests.test_tamper_and_missing_evidence_do_not_inherit_a_prior_pass) ... ok
+2026-11-12T01:01:46.6452592Z test_zip_crc_duplicate_and_traversal_are_checked_after_outer_hash (test_evidence_chain.EvidenceChainTests.test_zip_crc_duplicate_and_traversal_are_checked_after_outer_hash) ... ok
+2026-11-12T01:01:46.6566903Z test_all_physical_gradients_against_finite_difference (test_finite_renewal.FiniteRenewalTests.test_all_physical_gradients_against_finite_difference) ... ok
+2026-11-12T01:01:46.9079211Z test_counts_and_occupations_match_independent_integrals (test_finite_renewal.FiniteRenewalTests.test_counts_and_occupations_match_independent_integrals) ... ok
+2026-11-12T01:01:46.9114106Z test_delay_boundary_is_continuous (test_finite_renewal.FiniteRenewalTests.test_delay_boundary_is_continuous) ... ok
+2026-11-12T01:01:46.9139606Z test_instantaneous_rate_is_derivative_of_cumulative_count (test_finite_renewal.FiniteRenewalTests.test_instantaneous_rate_is_derivative_of_cumulative_count) ... ok
+2026-11-12T01:01:46.9148574Z test_invalid_and_unresolved_inputs_are_rejected (test_finite_renewal.FiniteRenewalTests.test_invalid_and_unresolved_inputs_are_rejected) ... ok
+2026-11-12T01:01:46.9176755Z test_long_horizon_agrees_with_independent_perpetual_solution (test_finite_renewal.FiniteRenewalTests.test_long_horizon_agrees_with_independent_perpetual_solution) ... ok
+2026-11-12T01:01:46.9191290Z test_repeated_counts_are_distinct_from_first_hit_probability (test_finite_renewal.FiniteRenewalTests.test_repeated_counts_are_distinct_from_first_hit_probability) ... ok
+2026-11-12T01:01:46.9309965Z test_second_event_matches_independent_convolution (test_finite_renewal.FiniteRenewalTests.test_second_event_matches_independent_convolution) ... ok
+2026-11-12T01:01:46.9329276Z test_terminal_payment_once_and_zero_horizon (test_finite_renewal.FiniteRenewalTests.test_terminal_payment_once_and_zero_horizon) ... ok
+2026-11-12T01:01:47.0090804Z test_log_probability_and_gradients_at_rare_and_boundary_states (test_logrisk.LogRiskTests.test_log_probability_and_gradients_at_rare_and_boundary_states) ... ok
+2026-11-12T01:01:47.0100344Z test_nonpositive_deadlines_have_zero_probability_and_gradient (test_logrisk.LogRiskTests.test_nonpositive_deadlines_have_zero_probability_and_gradient) ... ok
+2026-11-12T01:01:47.0105832Z test_underflow_does_not_erase_log_gradient (test_logrisk.LogRiskTests.test_underflow_does_not_erase_log_gradient) ... ok
+2026-11-12T01:01:47.1325980Z test_actual_dt_batched_mass_and_exactly_one_advance_per_layer_step (test_network.NetworkTests.test_actual_dt_batched_mass_and_exactly_one_advance_per_layer_step) ... /home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_differentiable/tests/test_network.py:132: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+2026-11-12T01:01:47.1327419Z Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+2026-11-12T01:01:47.1327966Z   self.assertGreaterEqual(float(layer["probability"].min()), -1e-12)
+2026-11-12T01:01:47.3309735Z ok
+2026-11-12T01:01:48.6630931Z test_checkpoint_consumed_next_step_and_adam_match_detached_reference (test_network.NetworkTests.test_checkpoint_consumed_next_step_and_adam_match_detached_reference) ... ok
+2026-11-12T01:01:48.8976449Z test_chunk_continuation_preserves_full_layer_content_and_clocks (test_network.NetworkTests.test_chunk_continuation_preserves_full_layer_content_and_clocks) ... ok
+2026-11-12T01:01:49.1669604Z test_explicit_tbptt_cuts_early_inputs_without_changing_forward_values (test_network.NetworkTests.test_explicit_tbptt_cuts_early_inputs_without_changing_forward_values) ... ok
+2026-11-12T01:01:49.9624596Z test_failed_restoration_preserves_all_model_optimizer_and_rng_values (test_network.NetworkTests.test_failed_restoration_preserves_all_model_optimizer_and_rng_values) ... ok
+2026-11-12T01:01:50.4113518Z test_first_layer_content_parameter_reaches_final_task_loss (test_network.NetworkTests.test_first_layer_content_parameter_reaches_final_task_loss) ... ok
+2026-11-12T01:01:50.4922497Z test_missing_observation_advances_but_padding_preserves_state (test_network.NetworkTests.test_missing_observation_advances_but_padding_preserves_state) ... ok
+2026-11-12T01:01:51.1157385Z test_no_reset_control_and_32_step_unobserved_transport (test_network.NetworkTests.test_no_reset_control_and_32_step_unobserved_transport) ... ok
+2026-11-12T01:01:51.1176802Z test_operator_grid_ownership_cannot_differ_at_equal_state_count (test_network.NetworkTests.test_operator_grid_ownership_cannot_differ_at_equal_state_count) ... ok
+2026-11-12T01:01:51.1758957Z test_parameter_update_requires_explicit_new_episode (test_network.NetworkTests.test_parameter_update_requires_explicit_new_episode) ... ok
+2026-11-12T01:01:51.1829248Z test_semantic_hyperparameter_and_buffer_changes_reject_continuation (test_network.NetworkTests.test_semantic_hyperparameter_and_buffer_changes_reject_continuation) ... ok
+2026-11-12T01:01:51.5919716Z test_sensor_encoder_streaming_and_checkpoint_use_actual_clock (test_network.NetworkTests.test_sensor_encoder_streaming_and_checkpoint_use_actual_clock) ... ok
+2026-11-12T01:01:51.9419667Z test_tbptt_phase_survives_one_position_chunks (test_network.NetworkTests.test_tbptt_phase_survives_one_position_chunks) ... ok
+2026-11-12T01:01:53.4976905Z test_two_layers_all_four_physical_parameters_have_task_fd_gradients (test_network.NetworkTests.test_two_layers_all_four_physical_parameters_have_task_fd_gradients) ... ok
+2026-11-12T01:01:53.7684921Z test_81_state_physical_gradient_fixture_is_new_evidence (test_operator.OperatorNumericalTests.test_81_state_physical_gradient_fixture_is_new_evidence) ... ok
+2026-11-12T01:01:53.7736982Z test_aligned_remaining_time_transport_does_not_use_erlang_release (test_operator.OperatorNumericalTests.test_aligned_remaining_time_transport_does_not_use_erlang_release) ... ok
+2026-11-12T01:01:53.8817327Z test_all_four_physical_parameter_gradients_against_fd (test_operator.OperatorNumericalTests.test_all_four_physical_parameter_gradients_against_fd) ... ok
+2026-11-12T01:01:53.8901567Z test_call_is_one_interval_reward_with_terminal_paid_once (test_operator.OperatorNumericalTests.test_call_is_one_interval_reward_with_terminal_paid_once) ... ok
+2026-11-12T01:01:53.9059488Z test_conservation_content_transport_and_zero_duration (test_operator.OperatorNumericalTests.test_conservation_content_transport_and_zero_duration) ... ok
+2026-11-12T01:01:53.9067254Z test_contract_and_episode_snapshot_reject_changes (test_operator.OperatorNumericalTests.test_contract_and_episode_snapshot_reject_changes) ... ok
+2026-11-12T01:01:53.9083586Z test_initial_absolute_mapping_has_real_boundary_derivative (test_operator.OperatorNumericalTests.test_initial_absolute_mapping_has_real_boundary_derivative) ... ok
+2026-11-12T01:01:53.9621381Z test_long_fixed_operator_conserves_mass_and_signed_content (test_operator.OperatorNumericalTests.test_long_fixed_operator_conserves_mass_and_signed_content) ... ok
+2026-11-12T01:01:53.9739645Z test_no_reset_control_is_explicit_permanent_absorption (test_operator.OperatorNumericalTests.test_no_reset_control_is_explicit_permanent_absorption) ... ok
+2026-11-12T01:01:54.0447924Z test_phase_projection_early_release_and_refinement_are_disclosed (test_operator.OperatorNumericalTests.test_phase_projection_early_release_and_refinement_are_disclosed) ... HCSN_NUMERICAL_EVIDENCE {"all_ad_values": [2.972480883605995, -0.1704339983827852, 1.2440630441374518, -1.6229507217615249], "dt": 0.08, "gradients": [{"absolute_error": 2.9391600264716544e-11, "ad": 2.972480883605995, "central_fd": 2.9724808836353867, "fd_step": 2e-06, "parameter": "log_boundary", "relative_error": 9.887902198640954e-12}, {"absolute_error": 3.780281643273042e-12, "ad": -0.1704339983827852, "central_fd": -0.17043399838656548, "fd_step": 2e-06, "parameter": "mu", "relative_error": 2.2180325985774822e-11}, {"absolute_error": 1.450684017356707e-11, "ad": 1.2440630441374518, "central_fd": 1.244063044122945, "fd_step": 2e-06, "parameter": "sigma", "relative_error": 1.1660856129381386e-11}, {"absolute_error": 5.6491256117396915e-11, "ad": -1.6229507217615249, "central_fd": -1.6229507218180161, "fd_step": 2.39443472624362e-06, "parameter": "absolute_reset", "relative_error": 3.480774576699154e-11}], "grid": {"K": 81, "active": 64, "phase": 16, "quadrature": 16}, "old_S81_pass_credit": 0, "physical_values": {"absolute_reset": 1.1972173631218102, "log_boundary": 0.02, "mu": -0.25, "sigma": 0.45}, "synthetic_loss": 0.14487103006381769, "test": "test_operator.OperatorNumericalTests.test_81_state_physical_gradient_fixture_is_new_evidence"}
+2026-11-12T01:01:54.0455550Z HCSN_NUMERICAL_EVIDENCE {"active_after_0.075": 0.0, "active_after_0.1": 0.999751903221484, "aligned_phase_row_l1_error": 0.0, "initial_phase_row_reward_sum": 0.0, "test": "test_operator.OperatorNumericalTests.test_aligned_remaining_time_transport_does_not_use_erlang_release"}
+2026-11-12T01:01:54.0461513Z HCSN_NUMERICAL_EVIDENCE {"all_ad_values": [3.0069023356793023, -0.17007711014025523, 1.1907998943933933, -1.5685582463491752], "dt": 0.08, "gradients": [{"absolute_error": 8.000267115448878e-12, "ad": 3.0069023356793023, "central_fd": 3.006902335671302, "fd_step": 2e-06, "parameter": "log_boundary", "relative_error": 2.6606341750842078e-12}, {"absolute_error": 1.8106072197099365e-12, "ad": -0.17007711014025523, "central_fd": -0.17007711013844462, "fd_step": 2e-06, "parameter": "mu", "relative_error": 1.064580188490272e-11}, {"absolute_error": 2.5765389821685858e-11, "ad": 1.1907998943933933, "central_fd": 1.190799894367628, "fd_step": 2e-06, "parameter": "sigma", "relative_error": 2.163704409363509e-11}, {"absolute_error": 6.154010634418228e-11, "ad": -1.5685582463491752, "central_fd": -1.5685582464107153, "fd_step": 2.39443472624362e-06, "parameter": "absolute_reset", "relative_error": 3.9233548696710916e-11}], "grid": {"K": 25, "active": 16, "phase": 8, "quadrature": 16}, "old_S81_pass_credit": 0, "physical_values": {"absolute_reset": 1.1972173631218102, "log_boundary": 0.02, "mu": -0.25, "sigma": 0.45}, "synthetic_loss": 0.11720666446147866, "test": "test_operator.OperatorNumericalTests.test_all_four_physical_parameter_gradients_against_fd"}
+2026-11-12T01:01:54.0467632Z HCSN_NUMERICAL_EVIDENCE {"maximum_interval_value_difference": 0.0, "maximum_risk_count_difference": 0.0, "test": "test_operator.OperatorNumericalTests.test_call_is_one_interval_reward_with_terminal_paid_once", "zero_duration_active_terminal_value": 0.2, "zero_duration_refractory_terminal_value": 0.0, "zero_duration_total_rewards": 0.0}
+2026-11-12T01:01:54.0470454Z HCSN_NUMERICAL_EVIDENCE {"events_by_duration": [0.0, 0.01177846197447344, 0.02644012005219027], "maximum_content_total_error": 4.440892098500626e-16, "maximum_mass_residual": 0.0, "minimum_probability": 0.0, "test": "test_operator.OperatorNumericalTests.test_conservation_content_transport_and_zero_duration"}
+2026-11-12T01:01:54.0473177Z HCSN_NUMERICAL_EVIDENCE {"absolute_error": 9.119371924271036e-13, "d_initial_mean_d_log_boundary": -1.9477165585359597, "finite_difference": -1.9477165585368716, "fixed_initial_log_std": 0.08, "test": "test_operator.OperatorNumericalTests.test_initial_absolute_mapping_has_real_boundary_derivative"}
+2026-11-12T01:01:54.0481572Z HCSN_NUMERICAL_EVIDENCE {"M_expected_cumulative_events": 142.2381294752177, "average_event_rate_per_time_unit": 1.3890442331564228, "checkpoints": [{"M_expected_cumulative_events": 0.0010839827385822007, "mass_drift": 1.1102230246251565e-16, "maximum_signed_content_total_error": 0.0, "minimum_probability": 0.0, "step": 1}, {"M_expected_cumulative_events": 0.4731542974509948, "mass_drift": 0.0, "maximum_signed_content_total_error": 2.220446049250313e-16, "minimum_probability": 7.431906175955439e-11, "step": 16}, {"M_expected_cumulative_events": 8.858874957427979, "mass_drift": 2.9976021664879227e-15, "maximum_signed_content_total_error": 6.217248937900877e-15, "minimum_probability": 4.577637970948907e-05, "step": 256}, {"M_expected_cumulative_events": 35.53524689313029, "mass_drift": 1.0325074129013956e-14, "maximum_signed_content_total_error": 2.55351295663786e-14, "minimum_probability": 5.16383949397747e-05, "step": 1024}, {"M_expected_cumulative_events": 142.2381294752177, "mass_drift": 3.086420008457935e-14, "maximum_signed_content_total_error": 7.005507285384738e-14, "minimum_probability": 5.164035484520765e-05, "step": 4096}], "dt": 0.025, "elapsed": 102.4, "final_minimum_probability": 5.164035484520765e-05, "final_signed_content_totals": [0.8301020807628726, -0.6518841019507894, -0.05416971771744637], "grid_K": 25, "initial_signed_content_totals": [0.8301020807629427, -0.6518841019508312, -0.054169717717448634], "maximum_recorded_mass_drift": 3.086420008457935e-14, "maximum_recorded_signed_content_total_error": 7.005507285384738e-14, "scope": "fixed numerical propagation only; no neural long-horizon superiority claim", "steps": 4096, "test": "test_operator.OperatorNumericalTests.test_long_fixed_operator_conserves_mass_and_signed_content"}
+2026-11-12T01:01:54.0490558Z HCSN_NUMERICAL_EVIDENCE {"absorbed_reward_sum": 0.0, "absorbed_self_probability": 1.0, "maximum_absorption_hit_error": 0.0, "regenerative_release_active_mass": 0.7034808034117815, "test": "test_operator.OperatorNumericalTests.test_no_reset_control_is_explicit_permanent_absorption", "unreachable_phase_mass": 0.0}
+2026-11-12T01:01:54.0492048Z ok
+2026-11-12T01:01:54.0525833Z test_point_law_against_independent_first_passage_integrals (test_operator.OperatorNumericalTests.test_point_law_against_independent_first_passage_integrals) ... ok
+2026-11-12T01:01:54.0701508Z test_projected_operator_does_not_claim_exact_semigroup (test_operator.OperatorNumericalTests.test_projected_operator_does_not_claim_exact_semigroup) ... ok
+2026-11-12T01:01:54.1013721Z test_quadrature_refinement_records_actual_table_discrepancy (test_operator.OperatorNumericalTests.test_quadrature_refinement_records_actual_table_discrepancy) ... ok
+2026-11-12T01:01:54.1343543Z test_spatial_refinement_against_continuum_first_hit (test_operator.OperatorNumericalTests.test_spatial_refinement_against_continuum_first_hit) ... ok
+2026-11-12T01:01:54.1655954Z test_stationary_rate_against_negative_drift_renewal_mean (test_operator.OperatorNumericalTests.test_stationary_rate_against_negative_drift_renewal_mean) ... ok
+2026-11-12T01:01:54.1757199Z test_tail_mass_can_return_and_hit (test_operator.OperatorNumericalTests.test_tail_mass_can_return_and_hit) ... ok
+2026-11-12T01:01:54.5650867Z test_full_triggering_space_refinement_preserves_probability (test_probability_intervals.ProbabilityIntervalTests.test_full_triggering_space_refinement_preserves_probability) ... ok
+2026-11-12T01:01:54.5755717Z test_killed_intervals_and_first_order_gradients (test_probability_intervals.ProbabilityIntervalTests.test_killed_intervals_and_first_order_gradients) ... ok
+2026-11-12T01:01:54.5769625Z test_normal_intervals_cover_cdf_sf_and_extreme_tails (test_probability_intervals.ProbabilityIntervalTests.test_normal_intervals_cover_cdf_sf_and_extreme_tails) ... ok
+2026-11-12T01:01:54.5794463Z test_rare_left_bin_matches_eighty_digit_reference (test_probability_intervals.ProbabilityIntervalTests.test_rare_left_bin_matches_eighty_digit_reference) ... ok
+2026-11-12T01:01:54.5878263Z test_reading_twice_does_not_mutate_but_replaying_observation_updates (test_readout_semantics.ReadoutSemanticsTests.test_reading_twice_does_not_mutate_but_replaying_observation_updates) ... ok
+2026-11-12T01:01:54.5889833Z test_declared_extreme_values_remain_resolved (test_regenerative.RegenerativeTests.test_declared_extreme_values_remain_resolved) ... ok
+2026-11-12T01:01:55.8299625Z test_exact_basis_averages_and_coordinate_invariance (test_regenerative.RegenerativeTests.test_exact_basis_averages_and_coordinate_invariance) ... ok
+2026-11-12T01:01:55.8313218Z test_explicit_cycle_sum_and_killed_control (test_regenerative.RegenerativeTests.test_explicit_cycle_sum_and_killed_control) ... ok
+2026-11-12T01:01:55.8321446Z test_invalid_domains_fail_without_silent_repairs (test_regenerative.RegenerativeTests.test_invalid_domains_fail_without_silent_repairs) ... ok
+2026-11-12T01:01:55.8549405Z test_laplace_matches_independent_first_passage_density_integral (test_regenerative.RegenerativeTests.test_laplace_matches_independent_first_passage_density_integral) ... ok
+2026-11-12T01:01:55.8634054Z test_occupation_matches_independent_survival_integral (test_regenerative.RegenerativeTests.test_occupation_matches_independent_survival_integral) ... ok
+2026-11-12T01:01:55.8662725Z test_parameter_gradients_against_central_difference (test_regenerative.RegenerativeTests.test_parameter_gradients_against_central_difference) ... ok
+2026-11-12T01:01:55.8675048Z test_renewal_boundary_and_generator_equation (test_regenerative.RegenerativeTests.test_renewal_boundary_and_generator_equation) ... ok
+2026-11-12T01:01:55.8679048Z test_small_root_and_denominator_against_decimal (test_regenerative.RegenerativeTests.test_small_root_and_denominator_against_decimal) ... ok
+2026-11-12T01:01:55.8680307Z test_near_zero_drift_is_not_silently_classified_as_zero (test_semantics.DriftRegimeTests.test_near_zero_drift_is_not_silently_classified_as_zero) ... ok
+2026-11-12T01:01:55.8905470Z test_nonzero_drift_hit_probability_and_mean_against_density (test_semantics.DriftRegimeTests.test_nonzero_drift_hit_probability_and_mean_against_density) ... ok
+2026-11-12T01:01:55.9158329Z test_three_regimes_agree_with_long_finite_horizon_event_counts (test_semantics.DriftRegimeTests.test_three_regimes_agree_with_long_finite_horizon_event_counts) ... ok
+2026-11-12T01:01:55.9356474Z test_capture_rejects_missing_trace_or_changed_weights (test_training_domain.TrainingDomainTests.test_capture_rejects_missing_trace_or_changed_weights) ... ok
+2026-11-12T01:01:55.9796189Z test_padding_and_byte_budget_are_explicit (test_training_domain.TrainingDomainTests.test_padding_and_byte_budget_are_explicit) ... ok
+2026-11-12T01:01:56.2115117Z test_post_optimizer_states_replay_and_keep_qualification_separate (test_training_domain.TrainingDomainTests.test_post_optimizer_states_replay_and_keep_qualification_separate) ... ok
+2026-11-12T01:01:56.2475091Z test_truncated_or_partial_audits_cannot_pass (test_training_domain.TrainingDomainTests.test_truncated_or_partial_audits_cannot_pass) ... ok
+2026-11-12T01:01:56.3276765Z test_eighty_digit_point_reference_matches_differentiable_renewal (test_training_domain_finite.FiniteDomainTests.test_eighty_digit_point_reference_matches_differentiable_renewal) ... ok
+2026-11-12T01:01:56.3315389Z test_fixed_gap_admission_rejects_tensor_string_bool_and_infinite_stream (test_training_domain_finite.FiniteDomainTests.test_fixed_gap_admission_rejects_tensor_string_bool_and_infinite_stream) ... ok
+2026-11-12T01:01:56.3318843Z test_nonfinite_or_misaligned_diagnostics_fail_closed (test_training_domain_finite.FiniteDomainTests.test_nonfinite_or_misaligned_diagnostics_fail_closed) ... ok
+2026-11-12T01:01:56.5447989Z test_reference_uses_total_time_and_retained_age_not_step_count (test_training_domain_finite.FiniteDomainTests.test_reference_uses_total_time_and_retained_age_not_step_count) ... ok
+2026-11-12T01:01:56.5450532Z test_relative_diagnostic_exposes_rare_count_and_undefined_zero (test_training_domain_finite.FiniteDomainTests.test_relative_diagnostic_exposes_rare_count_and_undefined_zero) ... ok
+2026-11-12T01:01:56.5538929Z test_zero_horizon_pays_active_terminal_once (test_training_domain_finite.FiniteDomainTests.test_zero_horizon_pays_active_terminal_once) ... ok
+2026-11-12T01:01:56.6256754Z test_perpetual_continuation_and_terminal_independence (test_value.ValueTests.test_perpetual_continuation_and_terminal_independence) ... ok
+2026-11-12T01:01:56.6813238Z test_projected_value_physical_gradient (test_value.ValueTests.test_projected_value_physical_gradient) ... ok
+2026-11-12T01:01:56.6987658Z test_terminal_is_paid_once_even_with_zero_duration_padding (test_value.ValueTests.test_terminal_is_paid_once_even_with_zero_duration_padding) ... ok
+2026-11-12T01:01:56.7218069Z test_variable_schedule_matches_independent_forward_accounting (test_value.ValueTests.test_variable_schedule_matches_independent_forward_accounting) ... ok
+2026-11-12T01:01:56.7225973Z test_zero_duration_cannot_define_perpetual_chain (test_value.ValueTests.test_zero_duration_cannot_define_perpetual_chain) ... ok
+2026-11-12T01:01:56.7226632Z 
+2026-11-12T01:01:56.7227026Z ----------------------------------------------------------------------
+2026-11-12T01:01:56.7227444Z Ran 95 tests in 10.140s
+2026-11-12T01:01:56.7227642Z 
+2026-11-12T01:01:56.7227742Z OK
+2026-11-12T01:01:56.8415674Z HCSN_NUMERICAL_EVIDENCE {"phase_projection": [{"curve": [{"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.013}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.026}, {"active_probability": 1.8735013540549512e-17, "deterministic_release_reference": 0.0, "elapsed": 0.039}, {"active_probability": 0.04590000000000019, "deterministic_release_reference": 0.0, "elapsed": 0.052}, {"active_probability": 0.3174300000000003, "deterministic_release_reference": 0.25000000000000017, "elapsed": 0.065}, {"active_probability": 0.731088, "deterministic_release_reference": 0.8999999999999999, "elapsed": 0.078}], "early_release_at_0.052": 0.04590000000000019, "maximum_release_error": 0.16891199999999995, "phase_cells": 10}, {"curve": [{"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.013}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.026}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.039}, {"active_probability": 8.992806499463764e-17, "deterministic_release_reference": 0.0, "elapsed": 0.052}, {"active_probability": 0.2743200000000003, "deterministic_release_reference": 0.25000000000000017, "elapsed": 0.065}, {"active_probability": 0.830016, "deterministic_release_reference": 0.8999999999999999, "elapsed": 0.078}], "early_release_at_0.052": 8.992806499463764e-17, "maximum_release_error": 0.06998399999999994, "phase_cells": 20}, {"curve": [{"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.013}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.026}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.039}, {"active_probability": 1.1102230246251564e-18, "deterministic_release_reference": 0.0, "elapsed": 0.052}, {"active_probability": 0.2500000000000002, "deterministic_release_reference": 0.25000000000000017, "elapsed": 0.065}, {"active_probability": 0.8853120000000001, "deterministic_release_reference": 0.8999999999999999, "elapsed": 0.078}], "early_release_at_0.052": 1.1102230246251564e-18, "maximum_release_error": 0.014687999999999812, "phase_cells": 40}, {"curve": [{"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.013}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.026}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.039}, {"active_probability": 0.0, "deterministic_release_reference": 0.0, "elapsed": 0.052}, {"active_probability": 0.25000000000000017, "deterministic_release_reference": 0.25000000000000017, "elapsed": 0.065}, {"active_probability": 0.8971840000000002, "deterministic_release_reference": 0.8999999999999999, "elapsed": 0.078}], "early_release_at_0.052": 0.0, "maximum_release_error": 0.0028159999999997076, "phase_cells": 80}], "test": "test_operator.OperatorNumericalTests.test_phase_projection_early_release_and_refinement_are_disclosed", "warning": "QPR can release earlier through repeated phase projection; it is not exact per-path delay"}
+2026-11-12T01:01:56.8425197Z HCSN_NUMERICAL_EVIDENCE {"absolute_errors": [5.551115123125783e-17, 5.551115123125783e-17, 0.0], "discount": 0.3, "dt": 0.08, "independent_reference": [0.17022608736121497, 0.16763803158693885, 0.07421851724635825], "mu": -0.1, "point_row_mass_residual": 0.0, "sigma": 0.5, "test": "test_operator.OperatorNumericalTests.test_point_law_against_independent_first_passage_integrals", "torch": [0.17022608736121492, 0.1676380315869388, 0.07421851724635825], "x": 0.2}
+2026-11-12T01:01:56.8426933Z HCSN_NUMERICAL_EVIDENCE {"interpretation": "finite-basis projection error, not an exact continuum semigroup", "one_0.08_vs_two_0.04_max_row_l1": 0.18669725934986642, "test": "test_operator.OperatorNumericalTests.test_projected_operator_does_not_claim_exact_semigroup"}
+2026-11-12T01:01:56.8428622Z HCSN_NUMERICAL_EVIDENCE {"claim": "observed quadrature agreement, not a certified error bound", "refinement": [{"max_row_l1": 1.1990522345343752e-07, "maximum_reward_difference": 3.0190565325494134e-11, "orders": [16, 32]}, {"max_row_l1": 2.2130973354286234e-12, "maximum_reward_difference": 9.66996621665217e-12, "orders": [32, 64]}], "test": "test_operator.OperatorNumericalTests.test_quadrature_refinement_records_actual_table_discrepancy"}
+2026-11-12T01:01:56.8430962Z HCSN_NUMERICAL_EVIDENCE {"continuum_reference": 0.36160619646966047, "elapsed": 0.3, "initial_log_mean": 0.25, "initial_log_std": 0.08, "mu": -0.2, "refinement": [{"absolute_error": 0.036475346990489765, "active_cells": 16, "expected_first_hits": 0.39808154346015023}, {"absolute_error": 0.009725660995789698, "active_cells": 32, "expected_first_hits": 0.37133185746545017}, {"absolute_error": 0.0024733615868623438, "active_cells": 64, "expected_first_hits": 0.3640795580565228}], "sigma": 0.4, "steps": 4, "test": "test_operator.OperatorNumericalTests.test_spatial_refinement_against_continuum_first_hit"}
+2026-11-12T01:01:56.8434418Z HCSN_NUMERICAL_EVIDENCE {"deterministic_renewal_reference": 1.4285714285714286, "dt": 0.025, "fixed_delay": 0.1, "mu": -0.5, "refinement": [{"K": 25, "absolute_error": 0.0392109808618053, "active_cells": 16, "minimum_stationary_mass": 5.1640354845197984e-05, "phase_cells": 8, "rate": 1.3893604477096233, "refractory_probability": 0.1389360447709624, "relative_error": 0.02744768660326371, "stationarity_residual": 8.326672684688674e-17}, {"K": 81, "absolute_error": 8.778344570803398e-06, "active_cells": 64, "minimum_stationary_mass": 2.2780488318560353e-09, "phase_cells": 16, "rate": 1.4285626502268578, "refractory_probability": 0.14285626502268545, "relative_error": 6.144841199562378e-06, "stationarity_residual": 4.0939474033052647e-16}], "reset_margin": 0.3, "sigma": 0.3, "test": "test_operator.OperatorNumericalTests.test_stationary_rate_against_negative_drift_renewal_mean"}
+2026-11-12T01:01:56.8437009Z HCSN_NUMERICAL_EVIDENCE {"tail_first_hit_probability": 0.06515935456380705, "tail_retained_probability": 0.7428895974052401, "tail_to_finite_active_probability": 0.19195104803095284, "test": "test_operator.OperatorNumericalTests.test_tail_mass_can_return_and_hit"}
+2026-11-12T01:01:56.8438001Z {"status": "passed", "output": "/home/runner/work/_temp/hcsn-differentiable/qualification.json", "tests_run": 95, "source_unchanged": true}
+2026-11-12T01:01:57.2618264Z ##[group]Run python -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 \
+2026-11-12T01:01:57.2618919Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 \[0m
+2026-11-12T01:01:57.2619414Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/c2-recovery-tests.log"[0m
+2026-11-12T01:01:57.2619928Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_successor_wiring.py' -v 2>&1 \[0m
+2026-11-12T01:01:57.2620482Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/c2-successor-wiring-tests.log"[0m
+2026-11-12T01:01:57.2621169Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_program_source_closure.py' -v 2>&1 \[0m
+2026-11-12T01:01:57.2621737Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/c2-program-source-closure-tests.log"[0m
+2026-11-12T01:01:57.2622517Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_program_manifest_freeze.py' -v 2>&1 \[0m
+2026-11-12T01:01:57.2623081Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/c2-program-manifest-freeze-tests.log"[0m
+2026-11-12T01:01:57.2623627Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_execution_decision_freeze.py' -v 2>&1 \[0m
+2026-11-12T01:01:57.2624159Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/c2-execution-decision-tests.log"[0m
+2026-11-12T01:01:57.2624703Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_terminal_result_json_admission.py' -v 2>&1 \[0m
+2026-11-12T01:01:57.2625253Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/c2-terminal-result-json-tests.log"[0m
+2026-11-12T01:01:57.2643634Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:01:57.2643897Z env:
+2026-11-12T01:01:57.2644060Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:01:57.2644247Z   OMP_NUM_THREADS: 1
+2026-11-12T01:01:57.2644432Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:01:57.2644613Z   MKL_NUM_THREADS: 1
+2026-11-12T01:01:57.2644788Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:01:57.2644983Z   PYTHONHASHSEED: 0
+2026-11-12T01:01:57.2645191Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:01:57.2645483Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:57.2645808Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:01:57.2646122Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:57.2646409Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:57.2646695Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:01:57.2646986Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:01:57.2647237Z ##[endgroup]
+2026-11-12T01:01:58.6734728Z test_atomic_checkpoint_nonempty_and_no_overwrite (test_c2_durable.DurableTests.test_atomic_checkpoint_nonempty_and_no_overwrite) ... ok
+2026-11-12T01:01:58.6925206Z test_concurrent_append_has_unbroken_hash_chain (test_c2_durable.DurableTests.test_concurrent_append_has_unbroken_hash_chain) ... ok
+2026-11-12T01:01:58.6940782Z test_duplicate_terminal_rejected (test_c2_durable.DurableTests.test_duplicate_terminal_rejected) ... ok
+2026-11-12T01:01:58.6945623Z test_failing_serializer_never_publishes (test_c2_durable.DurableTests.test_failing_serializer_never_publishes) ... ok
+2026-11-12T01:01:58.6963104Z test_forged_canonical_receipt_without_native_proofs_is_rejected (test_c2_durable.DurableTests.test_forged_canonical_receipt_without_native_proofs_is_rejected) ... ok
+2026-11-12T01:01:58.8467894Z test_hard_exit_after_atomic_link_never_implies_terminal (test_c2_durable.DurableTests.test_hard_exit_after_atomic_link_never_implies_terminal) ... ok
+2026-11-12T01:01:58.9936510Z test_hard_exit_while_serializing_no_false_checkpoint (test_c2_durable.DurableTests.test_hard_exit_while_serializing_no_false_checkpoint) ... ok
+2026-11-12T01:01:58.9938220Z test_identity_spoof_and_roster_duplicates (test_c2_durable.DurableTests.test_identity_spoof_and_roster_duplicates) ... ok
+2026-11-12T01:01:58.9958755Z test_mutated_checksum_and_gap_rejected (test_c2_durable.DurableTests.test_mutated_checksum_and_gap_rejected) ... ok
+2026-11-12T01:01:58.9962770Z test_nonfinite_spoof_and_missing_native_proof_rejected (test_c2_durable.DurableTests.test_nonfinite_spoof_and_missing_native_proof_rejected) ... ok
+2026-11-12T01:01:58.9978104Z test_post_terminal_progress_is_contradictory (test_c2_durable.DurableTests.test_post_terminal_progress_is_contradictory) ... ok
+2026-11-12T01:01:58.9991530Z test_semantically_invalid_checkpoint_never_publishes (test_c2_durable.DurableTests.test_semantically_invalid_checkpoint_never_publishes) ... ok
+2026-11-12T01:01:59.0039119Z test_six_missing_not_promoted (test_c2_durable.DurableTests.test_six_missing_not_promoted) ... ok
+2026-11-12T01:01:59.0112882Z test_six_terminal_is_still_not_independent_admission (test_c2_durable.DurableTests.test_six_terminal_is_still_not_independent_admission) ... ok
+2026-11-12T01:01:59.0114876Z test_terminal_status_str_subclass_rejected (test_c2_durable.DurableTests.test_terminal_status_str_subclass_rejected) ... ok
+2026-11-12T01:01:59.0129777Z test_torn_jsonl_is_not_a_receipt (test_c2_durable.DurableTests.test_torn_jsonl_is_not_a_receipt) ... ok
+2026-11-12T01:01:59.0142830Z test_zero_byte_existing_checkpoint_rejected_not_overwritten (test_c2_durable.DurableTests.test_zero_byte_existing_checkpoint_rejected_not_overwritten) ... ok
+2026-11-12T01:01:59.0157852Z test_duplicate_json_keys_and_nonfinite_rejected (test_c2_independent_inventory.IndependentInventoryTests.test_duplicate_json_keys_and_nonfinite_rejected) ... ok
+2026-11-12T01:01:59.0177361Z test_invalid_manifest_duplicates_rejected (test_c2_independent_inventory.IndependentInventoryTests.test_invalid_manifest_duplicates_rejected) ... ok
+2026-11-12T01:01:59.0194185Z test_manifest_original_root_binding (test_c2_independent_inventory.IndependentInventoryTests.test_manifest_original_root_binding) ... ok
+2026-11-12T01:01:59.0217314Z test_mutation_detected_against_original_hash (test_c2_independent_inventory.IndependentInventoryTests.test_mutation_detected_against_original_hash) ... ok
+2026-11-12T01:01:59.0238056Z test_partial_and_torn_journal_denominator (test_c2_independent_inventory.IndependentInventoryTests.test_partial_and_torn_journal_denominator) ... ok
+2026-11-12T01:01:59.0253196Z test_result_symlink_rejected (test_c2_independent_inventory.IndependentInventoryTests.test_result_symlink_rejected) ... ok
+2026-11-12T01:01:59.0274281Z test_six_pinned_producer_claims_never_pass_replay (test_c2_independent_inventory.IndependentInventoryTests.test_six_pinned_producer_claims_never_pass_replay) ... ok
+2026-11-12T01:01:59.0310648Z test_duplicate_native_job_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_native_job_rejected) ... ok
+2026-11-12T01:01:59.0342458Z test_duplicate_result_key_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_result_key_with_matching_receipt_rejected) ... ok
+2026-11-12T01:01:59.0358940Z test_exit_zero_mismatch_rejected (test_c2_native_replay.NativeObservationTests.test_exit_zero_mismatch_rejected) ... ok
+2026-11-12T01:01:59.0377504Z test_failed_terminal_not_scientific_success (test_c2_native_replay.NativeObservationTests.test_failed_terminal_not_scientific_success) ... ok
+2026-11-12T01:01:59.0413999Z test_fractional_native_rss_rejected_even_with_bound_checksum (test_c2_native_replay.NativeObservationTests.test_fractional_native_rss_rejected_even_with_bound_checksum) ... ok
+2026-11-12T01:01:59.0717459Z test_impossible_zero_wall_with_positive_cpu_rejected (test_c2_native_replay.NativeObservationTests.test_impossible_zero_wall_with_positive_cpu_rejected) ... ok
+2026-11-12T01:01:59.0734054Z test_missing_native_status_rejected (test_c2_native_replay.NativeObservationTests.test_missing_native_status_rejected) ... ok
+2026-11-12T01:01:59.0752254Z test_missing_roster_keeps_full_denominator (test_c2_native_replay.NativeObservationTests.test_missing_roster_keeps_full_denominator) ... ok
+2026-11-12T01:01:59.0768812Z test_native_log_truncation_nested_numeric_flags_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_nested_numeric_flags_rejected) ... ok
+2026-11-12T01:01:59.0785831Z test_native_log_truncation_numeric_zero_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_numeric_zero_rejected) ... ok
+2026-11-12T01:01:59.0803767Z test_native_unknown_and_false_terminal_rejected (test_c2_native_replay.NativeObservationTests.test_native_unknown_and_false_terminal_rejected) ... ok
+2026-11-12T01:01:59.0824060Z test_non_wait4_child_cost_rejected_even_if_rehashed (test_c2_native_replay.NativeObservationTests.test_non_wait4_child_cost_rejected_even_if_rehashed) ... ok
+2026-11-12T01:01:59.0852817Z test_nonfinite_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_nonfinite_result_with_matching_receipt_rejected) ... ok
+2026-11-12T01:01:59.0882550Z test_rebound_duplicate_resource_json_key_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_duplicate_resource_json_key_rejected) ... ok
+2026-11-12T01:01:59.0913706Z test_rebound_nonfinite_extra_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_nonfinite_extra_resource_field_rejected) ... ok
+2026-11-12T01:01:59.0946560Z test_rebound_overflow_exponent_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_overflow_exponent_resource_field_rejected) ... ok
+2026-11-12T01:01:59.1029575Z test_rebound_oversized_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_oversized_resource_field_rejected) ... ok
+2026-11-12T01:01:59.1049632Z test_resource_hash_change_rejected (test_c2_native_replay.NativeObservationTests.test_resource_hash_change_rejected) ... ok
+2026-11-12T01:01:59.1078362Z test_scalar_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_scalar_result_with_matching_receipt_rejected) ... ok
+2026-11-12T01:01:59.1176411Z test_six_matching_copies_not_live_attestation_or_science (test_c2_native_replay.NativeObservationTests.test_six_matching_copies_not_live_attestation_or_science) ... ok
+2026-11-12T01:01:59.1192818Z test_undurable_output_rejected (test_c2_native_replay.NativeObservationTests.test_undurable_output_rejected) ... ok
+2026-11-12T01:01:59.1235757Z test_duplicate_manifest_key_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_duplicate_manifest_key_held) ... ok
+2026-11-12T01:01:59.1273608Z test_malformed_counter_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_malformed_counter_held) ... ok
+2026-11-12T01:01:59.1301900Z test_manifest_mismatch_fails_closed (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_manifest_mismatch_fails_closed) ... ok
+2026-11-12T01:01:59.1342871Z test_native_ordereddict_state_dict_is_admitted_without_go (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_native_ordereddict_state_dict_is_admitted_without_go) ... ok
+2026-11-12T01:01:59.1376493Z test_nonfinite_model_tensor_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_nonfinite_model_tensor_held) ... ok
+2026-11-12T01:01:59.1415118Z test_nonfinite_optimizer_tensor_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_nonfinite_optimizer_tensor_held) ... ok
+2026-11-12T01:01:59.1469360Z test_symlink_to_original_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_symlink_to_original_held) ... ok
+2026-11-12T01:01:59.1550775Z test_synthetic_two_safe_decodes_never_adopt (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_synthetic_two_safe_decodes_never_adopt) ... ok
+2026-11-12T01:01:59.1583854Z test_wrong_data_manifest_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_wrong_data_manifest_held) ... ok
+2026-11-12T01:01:59.1616114Z test_wrong_seed_cannot_deserialize_as_another_fit (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_wrong_seed_cannot_deserialize_as_another_fit) ... ok
+2026-11-12T01:01:59.1701358Z test_zero_and_corrupt_originals_held (test_c2_pinned_best_decode.PinnedBestDecodeTests.test_zero_and_corrupt_originals_held) ... ok
+2026-11-12T01:01:59.8770487Z test_actual_optimizer_model_rng_frozen_round_trip (test_c2_torch_interop.TorchInteropTests.test_actual_optimizer_model_rng_frozen_round_trip) ... ok
+2026-11-12T01:01:59.8943488Z test_canonical_nested_json_remains_supported (test_strict_json.StrictJSONTests.test_canonical_nested_json_remains_supported) ... ok
+2026-11-12T01:01:59.8944305Z test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) ... ok
+2026-11-12T01:01:59.8944741Z 
+2026-11-12T01:01:59.8945126Z ----------------------------------------------------------------------
+2026-11-12T01:01:59.8945407Z Ran 59 tests in 1.230s
+2026-11-12T01:01:59.8945539Z 
+2026-11-12T01:01:59.8945607Z OK
+2026-11-12T01:02:02.3320313Z test_actual_torch_optimizer_rng_and_frozen_data_roundtrip (test_successor_wiring.SuccessorWiringTests.test_actual_torch_optimizer_rng_and_frozen_data_roundtrip) ... ok
+2026-11-12T01:02:02.3323611Z test_both_real_c2_entrypoints_wired (test_successor_wiring.SuccessorWiringTests.test_both_real_c2_entrypoints_wired) ... ok
+2026-11-12T01:02:02.3338259Z test_checkpoint_incomplete_semantic_roundtrip_never_publishes (test_successor_wiring.SuccessorWiringTests.test_checkpoint_incomplete_semantic_roundtrip_never_publishes) ... ok
+2026-11-12T01:02:02.3366832Z test_completed_producer_roster_remains_hold (test_successor_wiring.SuccessorWiringTests.test_completed_producer_roster_remains_hold) ... ok
+2026-11-12T01:02:02.3452822Z test_result_file_create_only_even_after_failure (test_successor_wiring.SuccessorWiringTests.test_result_file_create_only_even_after_failure) ... ok
+2026-11-12T01:02:02.3464729Z test_serialize_exception_never_creates_zero_final_checkpoint (test_successor_wiring.SuccessorWiringTests.test_serialize_exception_never_creates_zero_final_checkpoint) ... ok
+2026-11-12T01:02:02.3465572Z 
+2026-11-12T01:02:02.3465775Z ----------------------------------------------------------------------
+2026-11-12T01:02:02.3466205Z Ran 6 tests in 0.641s
+2026-11-12T01:02:02.3466354Z 
+2026-11-12T01:02:02.3466449Z OK
+2026-11-12T01:02:04.1590211Z test_matching_durable_bytes_and_module_origin_enter_input_closure (test_program_source_closure.ProgramDependencyClosureTests.test_matching_durable_bytes_and_module_origin_enter_input_closure) ... ok
+2026-11-12T01:02:04.1622609Z test_mutated_recovery_durable_code_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_mutated_recovery_durable_code_must_fail_closed) ... ok
+2026-11-12T01:02:04.1634522Z test_no_recovery_durable_digest_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_no_recovery_durable_digest_must_fail_closed) ... ok
+2026-11-12T01:02:04.1654646Z test_shadowed_durable_import_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_shadowed_durable_import_must_fail_closed) ... ok
+2026-11-12T01:02:04.1655369Z 
+2026-11-12T01:02:04.1655550Z ----------------------------------------------------------------------
+2026-11-12T01:02:04.1655928Z Ran 4 tests in 0.009s
+2026-11-12T01:02:04.1656067Z 
+2026-11-12T01:02:04.1656157Z OK
+2026-11-12T01:02:05.7984675Z test_actual_bind_program_accepts_only_exact_preview_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_actual_bind_program_accepts_only_exact_preview_bytes) ... ok
+2026-11-12T01:02:07.4766045Z test_cli_missing_contract_reports_hold_without_writing (test_program_manifest_freeze.ProgramManifestFreezeTests.test_cli_missing_contract_reports_hold_without_writing) ... ok
+2026-11-12T01:02:07.7780709Z test_manifest_create_once_not_overwritten (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_create_once_not_overwritten) ... ok
+2026-11-12T01:02:07.9214678Z test_manifest_rejects_duplicate_root_key (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_duplicate_root_key) ... ok
+2026-11-12T01:02:07.9459157Z test_manifest_rejects_manifest_symlink (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_manifest_symlink) ... ok
+2026-11-12T01:02:07.9758970Z test_manifest_rejects_missing_schema_and_extra_file (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_missing_schema_and_extra_file) ... ok
+2026-11-12T01:02:07.9943173Z test_manifest_rejects_nonfinite_metadata (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_nonfinite_metadata) ... ok
+2026-11-12T01:02:08.0281754Z test_manifest_rejects_source_symlink_to_matching_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_source_symlink_to_matching_bytes) ... ok
+2026-11-12T01:02:08.0643162Z test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) ... ok
+2026-11-12T01:02:08.0656122Z test_missing_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_missing_publisher_is_fail_closed) ... ok
+2026-11-12T01:02:08.2469966Z test_mutation_after_freeze_is_rejected_by_actual_runner (test_program_manifest_freeze.ProgramManifestFreezeTests.test_mutation_after_freeze_is_rejected_by_actual_runner) ... ok
+2026-11-12T01:02:08.2485047Z test_no_implicit_manifest_or_authorization (test_program_manifest_freeze.ProgramManifestFreezeTests.test_no_implicit_manifest_or_authorization) ... ok
+2026-11-12T01:02:08.2497602Z test_partial_candidate_has_no_publication (test_program_manifest_freeze.ProgramManifestFreezeTests.test_partial_candidate_has_no_publication) ... ok
+2026-11-12T01:02:08.2511186Z test_symlinked_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_symlinked_publisher_is_fail_closed) ... ok
+2026-11-12T01:02:08.2511936Z 
+2026-11-12T01:02:08.2512066Z ----------------------------------------------------------------------
+2026-11-12T01:02:08.2512501Z Ran 14 tests in 2.462s
+2026-11-12T01:02:08.2512620Z 
+2026-11-12T01:02:08.2512704Z OK
+2026-11-12T01:02:10.0820258Z test_digest_or_manifest_mismatch_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_digest_or_manifest_mismatch_rejected) ... ok
+2026-11-12T01:02:10.0827012Z test_duplicate_authorization_key_rejected_even_if_digest_matches (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_duplicate_authorization_key_rejected_even_if_digest_matches) ... ok
+2026-11-12T01:02:10.0831987Z test_exact_well_formed_decision (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_exact_well_formed_decision) ... ok
+2026-11-12T01:02:10.0836925Z test_matching_symlink_decision_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_matching_symlink_decision_is_rejected) ... ok
+2026-11-12T01:02:10.0841527Z test_nonfinite_extra_metadata_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_nonfinite_extra_metadata_rejected) ... ok
+2026-11-12T01:02:10.0847720Z test_oversized_decision_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_oversized_decision_is_rejected) ... ok
+2026-11-12T01:02:10.0852524Z test_unreviewed_extra_metadata_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_unreviewed_extra_metadata_rejected) ... ok
+2026-11-12T01:02:10.5355749Z test_wrong_or_missing_schema_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_wrong_or_missing_schema_is_rejected) ... ok
+2026-11-12T01:02:10.5356252Z 
+2026-11-12T01:02:10.5356393Z ----------------------------------------------------------------------
+2026-11-12T01:02:10.5356769Z Ran 8 tests in 0.642s
+2026-11-12T01:02:10.5356960Z 
+2026-11-12T01:02:10.5357049Z OK
+2026-11-12T01:02:11.0133502Z test_invalid_utf8_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_invalid_utf8_is_rejected) ... ok
+2026-11-12T01:02:11.0195433Z test_matching_hash_duplicate_status_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_duplicate_status_is_rejected) ... ok
+2026-11-12T01:02:11.0252875Z test_matching_hash_nan_field_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_nan_field_is_rejected) ... ok
+2026-11-12T01:02:11.0311332Z test_matching_hash_overflowed_float_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_overflowed_float_is_rejected) ... ok
+2026-11-12T01:02:11.1002564Z test_matching_hash_oversized_result_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_oversized_result_is_rejected) ... ok
+2026-11-12T01:02:11.1067941Z test_valid_nonzero_terminal_evidence_stays_structurally_complete (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_valid_nonzero_terminal_evidence_stays_structurally_complete) ... ok
+2026-11-12T01:02:11.1069226Z 
+2026-11-12T01:02:11.1069425Z ----------------------------------------------------------------------
+2026-11-12T01:02:11.1069831Z Ran 6 tests in 0.100s
+2026-11-12T01:02:11.1070008Z 
+2026-11-12T01:02:11.1070111Z OK
+2026-11-12T01:02:11.1206090Z ##[group]Run python -m unittest -v qualification.hcsn_differentiable.test_training_domain_strict_trace 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/p1-trace-parser-tests.log"
+2026-11-12T01:02:11.1207002Z [36;1mpython -m unittest -v qualification.hcsn_differentiable.test_training_domain_strict_trace 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/p1-trace-parser-tests.log"[0m
+2026-11-12T01:02:11.1225347Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:11.1225691Z env:
+2026-11-12T01:02:11.1226166Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:11.1226462Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:11.1226809Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:11.1227110Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:11.1227380Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:11.1227737Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:11.1228086Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:11.1228500Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:11.1229048Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:11.1240165Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:11.1240599Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:11.1240988Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:11.1241392Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:11.1241751Z ##[endgroup]
+2026-11-12T01:02:12.5093375Z test_duplicate_footer_count_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_footer_count_rejected) ... ok
+2026-11-12T01:02:12.5096010Z test_duplicate_top_level_schema_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_top_level_schema_rejected) ... ok
+2026-11-12T01:02:12.5099040Z test_infinity_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_infinity_constant_rejected) ... ok
+2026-11-12T01:02:12.5102473Z test_legitimate_small_finite_float (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_legitimate_small_finite_float) ... ok
+2026-11-12T01:02:12.5105680Z test_nan_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nan_constant_rejected) ... ok
+2026-11-12T01:02:12.5108824Z test_negative_infinity_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_negative_infinity_constant_rejected) ... ok
+2026-11-12T01:02:12.5112063Z test_nested_duplicate_visit_key_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nested_duplicate_visit_key_rejected) ... ok
+2026-11-12T01:02:12.5115534Z test_nonobject_record_rejected_as_value_error (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nonobject_record_rejected_as_value_error) ... ok
+2026-11-12T01:02:12.5118361Z test_overflow_float_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_overflow_float_rejected) ... ok
+2026-11-12T01:02:12.5121556Z test_valid_canonical_trace (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_valid_canonical_trace) ... ok
+2026-11-12T01:02:12.5122468Z 
+2026-11-12T01:02:12.5122782Z ----------------------------------------------------------------------
+2026-11-12T01:02:12.5123251Z Ran 10 tests in 0.004s
+2026-11-12T01:02:12.5123696Z 
+2026-11-12T01:02:12.5123903Z OK
+2026-11-12T01:02:12.7300073Z ##[group]Run trap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/error-budget.exit-code"; exit "$hcsn_rc"' EXIT
+2026-11-12T01:02:12.7300801Z [36;1mtrap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/error-budget.exit-code"; exit "$hcsn_rc"' EXIT[0m
+2026-11-12T01:02:12.7301323Z [36;1mpython -m qualification.hcsn_differentiable.error_budget \[0m
+2026-11-12T01:02:12.7301697Z [36;1m  --output "$RUNNER_TEMP/hcsn-differentiable/error-budget.json" 2>&1 \[0m
+2026-11-12T01:02:12.7302062Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/error-budget.log"[0m
+2026-11-12T01:02:12.7319861Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:12.7320124Z env:
+2026-11-12T01:02:12.7320286Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:12.7320476Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:12.7320654Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:12.7320860Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:12.7321071Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:12.7321266Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:12.7321471Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:12.7321766Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:12.7322083Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:12.7322599Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:12.7322897Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:12.7323192Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:12.7323478Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:12.7323729Z ##[endgroup]
+2026-11-12T01:02:22.6890725Z {"status": "passed", "output": "/home/runner/work/_temp/hcsn-differentiable/error-budget.json"}
+2026-11-12T01:02:22.9115771Z ##[group]Run python -B -m qualification.hcsn_differentiable.evidence_chain \
+2026-11-12T01:02:22.9116283Z [36;1mpython -B -m qualification.hcsn_differentiable.evidence_chain \[0m
+2026-11-12T01:02:22.9116715Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9117227Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9117759Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9118312Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9118837Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9119404Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9119946Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9120480Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/MANIFEST.json \[0m
+2026-11-12T01:02:22.9121017Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/MANIFEST.json \[0m
+2026-11-12T01:02:22.9121560Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/LINK-CLOSURE-MANIFEST.json \[0m
+2026-11-12T01:02:22.9122144Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/MANIFEST.json \[0m
+2026-11-12T01:02:22.9122997Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \[0m
+2026-11-12T01:02:22.9123512Z [36;1m  --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \[0m
+2026-11-12T01:02:22.9123940Z [36;1m  --markdown qualification/hcsn_differentiable/CURRENT.md \[0m
+2026-11-12T01:02:22.9124562Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/README.md \[0m
+2026-11-12T01:02:22.9125204Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/terminal-bootstrap/program/README.md \[0m
+2026-11-12T01:02:22.9125892Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/README.md \[0m
+2026-11-12T01:02:22.9126556Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/STAGES.md \[0m
+2026-11-12T01:02:22.9127238Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/review/native-H2/README.md \[0m
+2026-11-12T01:02:22.9127898Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/README.md \[0m
+2026-11-12T01:02:22.9128529Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/program/README.md \[0m
+2026-11-12T01:02:22.9129075Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md \[0m
+2026-11-12T01:02:22.9129537Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/README.md \[0m
+2026-11-12T01:02:22.9130045Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/README.md \[0m
+2026-11-12T01:02:22.9130583Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/README.md \[0m
+2026-11-12T01:02:22.9131094Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/README.md \[0m
+2026-11-12T01:02:22.9131616Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/README.md \[0m
+2026-11-12T01:02:22.9132438Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md \[0m
+2026-11-12T01:02:22.9133034Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/README.md \[0m
+2026-11-12T01:02:22.9133546Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/README.md \[0m
+2026-11-12T01:02:22.9134046Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/recovery/SCOPE.md \[0m
+2026-11-12T01:02:22.9134562Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/numerics/SCOPE.md \[0m
+2026-11-12T01:02:22.9135211Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/math-recovery/c2-resource-renderer-preparation-v2/README.md \[0m
+2026-11-12T01:02:22.9135956Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/math-recovery/rare-tail-review/NOTE-REVIEWED.md \[0m
+2026-11-12T01:02:22.9136635Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/fixed-grid-NOTE.md \[0m
+2026-11-12T01:02:22.9137299Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/NOTE.md \[0m
+2026-11-12T01:02:22.9137991Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/local-diagnosis/fixed48/REPORT.md \[0m
+2026-11-12T01:02:22.9138684Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/numerics-independent-review/REPORT.md \[0m
+2026-11-12T01:02:22.9139373Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \[0m
+2026-11-12T01:02:22.9139969Z [36;1m  --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md \[0m
+2026-11-12T01:02:22.9140369Z [36;1m  --markdown proposals/localization-v3/README.md \[0m
+2026-11-12T01:02:22.9140711Z [36;1m  --output "$RUNNER_TEMP/hcsn-differentiable/evidence-integrity.json"[0m
+2026-11-12T01:02:22.9158652Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:22.9158922Z env:
+2026-11-12T01:02:22.9159110Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:22.9159294Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:22.9159476Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:22.9159662Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:22.9159844Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:22.9160039Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:22.9160242Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:22.9160527Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:22.9160853Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:22.9161168Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:22.9161448Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:22.9161742Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:22.9162039Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:22.9162464Z ##[endgroup]
+2026-11-12T01:02:24.2513548Z {"passed": true, "files": 1983, "errors": 0}
+2026-11-12T01:02:24.2635877Z ##[group]Run python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \
+2026-11-12T01:02:24.2636626Z [36;1mpython -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \[0m
+2026-11-12T01:02:24.2637212Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/qvi-tests.log"[0m
+2026-11-12T01:02:24.2637699Z [36;1mpython -m qualification.hcsn_qvi.run_oracle \[0m
+2026-11-12T01:02:24.2638194Z [36;1m  --output "$RUNNER_TEMP/hcsn-differentiable/qvi-oracle.json"[0m
+2026-11-12T01:02:24.2638724Z [36;1mpython -m qualification.hcsn_qvi.run_continuum \[0m
+2026-11-12T01:02:24.2639253Z [36;1m  --output "$RUNNER_TEMP/hcsn-differentiable/qvi-continuum.json"[0m
+2026-11-12T01:02:24.2639807Z [36;1mcat "$RUNNER_TEMP/hcsn-differentiable/qvi-continuum.json"[0m
+2026-11-12T01:02:24.2664346Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:24.2664789Z env:
+2026-11-12T01:02:24.2665028Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:24.2665366Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:24.2665640Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:24.2665925Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:24.2666203Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:24.2666508Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:24.2666827Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:24.2667298Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:24.2667828Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:24.2668369Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:24.2668824Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:24.2669288Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:24.2669749Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:24.2670176Z ##[endgroup]
+2026-11-12T01:02:24.6081503Z test_fixed_thresholds_and_unsupported_endpoint_regime (test_continuum.ContinuumTests.test_fixed_thresholds_and_unsupported_endpoint_regime) ... ok
+2026-11-12T01:02:24.7142222Z test_implicit_boundary_and_value_gradient_against_refitted_costs (test_continuum.ContinuumTests.test_implicit_boundary_and_value_gradient_against_refitted_costs) ... ok
+2026-11-12T01:02:24.7229926Z test_independent_80_digit_system_and_qvi_conditions (test_continuum.ContinuumTests.test_independent_80_digit_system_and_qvi_conditions) ... ok
+2026-11-12T01:02:24.7267316Z test_independent_finite_dp_error_decreases_with_grid_refinement (test_continuum.ContinuumTests.test_independent_finite_dp_error_decreases_with_grid_refinement) ... ok
+2026-11-12T01:02:24.7284522Z test_implicit_cost_derivative_checks_active_set_before_claiming_gradient (test_oracle.OracleTests.test_implicit_cost_derivative_checks_active_set_before_claiming_gradient) ... ok
+2026-11-12T01:02:24.7421783Z test_independent_dp_residual_and_ordinary_threshold_domination (test_oracle.OracleTests.test_independent_dp_residual_and_ordinary_threshold_domination) ... ok
+2026-11-12T01:02:24.7450675Z test_policy_iteration_matches_exhaustive_seven_state_policies (test_oracle.OracleTests.test_policy_iteration_matches_exhaustive_seven_state_policies) ... ok
+2026-11-12T01:02:24.7451194Z 
+2026-11-12T01:02:24.7451483Z ----------------------------------------------------------------------
+2026-11-12T01:02:24.7451819Z Ran 7 tests in 0.140s
+2026-11-12T01:02:24.7451941Z 
+2026-11-12T01:02:24.7452017Z OK
+2026-11-12T01:02:25.1008814Z {"finite_fixture_passed": true, "bellman_residual": 8.881784197001252e-16, "total_wall_seconds": 0.05880276000000606}
+2026-11-12T01:02:25.4420967Z {"fixture_passed": true, "status": "passed", "wall_seconds": 0.03761911099999793}
+2026-11-12T01:02:25.4583527Z {
+2026-11-12T01:02:25.4583898Z   "schema": "hcsn-continuum-boundary-comparison-v1",
+2026-11-12T01:02:25.4584269Z   "started_utc": "2026-11-12T01:02:25.403560+00:00",
+2026-11-12T01:02:25.4584637Z   "python": "3.12.3",
+2026-11-12T01:02:25.4584876Z   "numpy": "2.5.4",
+2026-11-12T01:02:25.4585043Z   "mpmath": "1.3.0",
+2026-11-12T01:02:25.4585581Z   "source_sha256": {
+2026-11-12T01:02:25.4585875Z     "oracle.py": "2d381486768cbbce4ced5de086ddf66770a1e31785839dc17424583f68341b22",
+2026-11-12T01:02:25.4586316Z     "continuum.py": "24c14a69159abc39b13aefafe8ba8a8e7360db09198a4af06a839129c6211f30",
+2026-11-12T01:02:25.4586850Z     "run_continuum.py": "209f4d6f4b7d8004a2cb487868d51396580366b40e072628a11929f2e721090f"
+2026-11-12T01:02:25.4587317Z   },
+2026-11-12T01:02:25.4587654Z   "scope": "Independent bounded diffusion fixture; no neural fit or adoption.",
+2026-11-12T01:02:25.4588107Z   "fixture_passed": true,
+2026-11-12T01:02:25.4588399Z   "problem": {
+2026-11-12T01:02:25.4588608Z     "nodes": 41,
+2026-11-12T01:02:25.4588816Z     "upper": 2.0,
+2026-11-12T01:02:25.4589047Z     "mu": -0.2,
+2026-11-12T01:02:25.4589294Z     "sigma": 0.35,
+2026-11-12T01:02:25.4589517Z     "discount": 0.15,
+2026-11-12T01:02:25.4589754Z     "reset": 1.37,
+2026-11-12T01:02:25.4589969Z     "delay": 0.2,
+2026-11-12T01:02:25.4590203Z     "cost": 0.6,
+2026-11-12T01:02:25.4590473Z     "initial": 0.8
+2026-11-12T01:02:25.4590695Z   },
+2026-11-12T01:02:25.4590897Z   "limits": {
+2026-11-12T01:02:25.4591135Z     "boundary_and_value_oracle_error": 2e-10,
+2026-11-12T01:02:25.4591472Z     "cost_gradient_error": 2e-09,
+2026-11-12T01:02:25.4591775Z     "equation_residual": 1e-10,
+2026-11-12T01:02:25.4592072Z     "finest_grid_value_error": 0.05,
+2026-11-12T01:02:25.4592547Z     "independent_dp_difference": 2e-09
+2026-11-12T01:02:25.4592848Z   },
+2026-11-12T01:02:25.4593065Z   "boundary": 0.6782168028357076,
+2026-11-12T01:02:25.4593355Z   "fp64_root_bracket": [
+2026-11-12T01:02:25.4593620Z     0.6782168028357071,
+2026-11-12T01:02:25.4593863Z     0.6782168028357083
+2026-11-12T01:02:25.4594093Z   ],
+2026-11-12T01:02:25.4594336Z   "root_bracket_is_certified_interval": false,
+2026-11-12T01:02:25.4594667Z   "initial_value": 6.222342068936395,
+2026-11-12T01:02:25.4594873Z   "fixed_threshold": {
+2026-11-12T01:02:25.4595038Z     "boundary": 0.4,
+2026-11-12T01:02:25.4595214Z     "initial_value": 5.940938719864052
+2026-11-12T01:02:25.4595405Z   },
+2026-11-12T01:02:25.4595552Z   "residuals": {
+2026-11-12T01:02:25.4595722Z     "value_matching": 0.0,
+2026-11-12T01:02:25.4595915Z     "smooth_pasting": 0.0,
+2026-11-12T01:02:25.4596094Z     "upper_reflection": 0.0,
+2026-11-12T01:02:25.4596332Z     "maximum_continuation_ode_residual": 4.440892098500626e-16,
+2026-11-12T01:02:25.4596650Z     "maximum_intervention_generator_residual": -0.2507147929325628,
+2026-11-12T01:02:25.4596944Z     "minimum_sampled_continuation_slope": 0.0,
+2026-11-12T01:02:25.4597183Z     "minimum_sampled_continuation_gap": 0.0,
+2026-11-12T01:02:25.4597411Z     "sampled_continuation_points": 257
+2026-11-12T01:02:25.4597606Z   },
+2026-11-12T01:02:25.4597759Z   "implicit_cost_gradient": {
+2026-11-12T01:02:25.4597956Z     "boundary": -0.41821216109827825,
+2026-11-12T01:02:25.4598169Z     "initial_value": -2.5295897293088756,
+2026-11-12T01:02:25.4598568Z     "coefficient_direction": [
+2026-11-12T01:02:25.4598756Z       -0.19193327182476347,
+2026-11-12T01:02:25.4598937Z       0.04990609362979723
+2026-11-12T01:02:25.4599108Z     ],
+2026-11-12T01:02:25.4599263Z     "equation_jacobian": [
+2026-11-12T01:02:25.4599438Z       [
+2026-11-12T01:02:25.4599585Z         3.8941869677053176,
+2026-11-12T01:02:25.4599759Z         -0.2738820856095113,
+2026-11-12T01:02:25.4599998Z         -1.8198715905780052
+2026-11-12T01:02:25.4600193Z       ],
+2026-11-12T01:02:25.4600336Z       [
+2026-11-12T01:02:25.4600481Z         0.02264568437728876,
+2026-11-12T01:02:25.4600651Z         -0.6288808452563377,
+2026-11-12T01:02:25.4600823Z         -0.08543856435632445
+2026-11-12T01:02:25.4601000Z       ],
+2026-11-12T01:02:25.4601142Z       [
+2026-11-12T01:02:25.4601290Z         -0.07764892079073438,
+2026-11-12T01:02:25.4601470Z         0.37189579940704465,
+2026-11-12T01:02:25.4601649Z         2.471145925773077
+2026-11-12T01:02:25.4601817Z       ]
+2026-11-12T01:02:25.4601955Z     ],
+2026-11-12T01:02:25.4602145Z     "unscaled_jacobian_condition_inf": 10.069726159788946,
+2026-11-12T01:02:25.4602947Z     "scope": "Interior threshold, fixed reset and delay; mixed-unit unscaled condition estimate."
+2026-11-12T01:02:25.4603320Z   },
+2026-11-12T01:02:25.4603486Z   "independent_high_precision": {
+2026-11-12T01:02:25.4603712Z     "digits": 80,
+2026-11-12T01:02:25.4604005Z     "boundary": "0.67821680283570778003252210763169179986462275557725633334146881573580111124824252",
+2026-11-12T01:02:25.4604465Z     "initial_value": "6.2223420689363941557687763777021593254362187429332393291406114729469339872013215",
+2026-11-12T01:02:25.4604842Z     "boundary_absolute_error": 1.583219961801486e-16,
+2026-11-12T01:02:25.4605108Z     "initial_value_absolute_error": 4.765481566066928e-16,
+2026-11-12T01:02:25.4605377Z     "cost_difference_step": "0.0000000000000000000000001",
+2026-11-12T01:02:25.4605611Z     "cost_gradients": [
+2026-11-12T01:02:25.4605890Z       "-0.41821216109827831622738719838416635411644948434915667609971199185149042095808248",
+2026-11-12T01:02:25.4606294Z       "-2.5295897293088762043661576142552222906975796169140338030108106176642866874948912"
+2026-11-12T01:02:25.4606590Z     ],
+2026-11-12T01:02:25.4606752Z     "cost_gradient_absolute_errors": [
+2026-11-12T01:02:25.4606970Z       7.064174062529382e-17,
+2026-11-12T01:02:25.4607154Z       6.035444643173617e-16
+2026-11-12T01:02:25.4607325Z     ]
+2026-11-12T01:02:25.4607464Z   },
+2026-11-12T01:02:25.4607622Z   "finite_dp_refinement": [
+2026-11-12T01:02:25.4607793Z     {
+2026-11-12T01:02:25.4607940Z       "nodes": 21,
+2026-11-12T01:02:25.4608100Z       "spacing": 0.1,
+2026-11-12T01:02:25.4608276Z       "initial_value": 6.347546226325312,
+2026-11-12T01:02:25.4608514Z       "initial_value_absolute_error": 0.1252041573889171,
+2026-11-12T01:02:25.4608769Z       "maximum_grid_value_error": 0.17479135794668643,
+2026-11-12T01:02:25.4609001Z       "boundary_bracket": [
+2026-11-12T01:02:25.4609173Z         0.7000000000000001,
+2026-11-12T01:02:25.4609341Z         0.8
+2026-11-12T01:02:25.4609484Z       ],
+2026-11-12T01:02:25.4609655Z       "bellman_residual": 1.7763568394002505e-15,
+2026-11-12T01:02:25.4609887Z       "condition_inf": 185.62814118349593,
+2026-11-12T01:02:25.4610099Z       "policy_evaluations": 3,
+2026-11-12T01:02:25.4610301Z       "wall_seconds": 0.00028219899999726294
+2026-11-12T01:02:25.4610502Z     },
+2026-11-12T01:02:25.4610657Z     {
+2026-11-12T01:02:25.4610801Z       "nodes": 41,
+2026-11-12T01:02:25.4610970Z       "spacing": 0.05,
+2026-11-12T01:02:25.4611145Z       "initial_value": 6.283820930366451,
+2026-11-12T01:02:25.4611378Z       "initial_value_absolute_error": 0.06147886143005632,
+2026-11-12T01:02:25.4611626Z       "maximum_grid_value_error": 0.08690145001225957,
+2026-11-12T01:02:25.4611848Z       "boundary_bracket": [
+2026-11-12T01:02:25.4612017Z         0.65,
+2026-11-12T01:02:25.4612166Z         0.7000000000000001
+2026-11-12T01:02:25.4612513Z       ],
+2026-11-12T01:02:25.4612682Z       "bellman_residual": 8.881784197001252e-16,
+2026-11-12T01:02:25.4613028Z       "condition_inf": 682.4553790938688,
+2026-11-12T01:02:25.4613254Z       "policy_evaluations": 6,
+2026-11-12T01:02:25.4613453Z       "wall_seconds": 0.0003860639999970772
+2026-11-12T01:02:25.4613653Z     },
+2026-11-12T01:02:25.4613790Z     {
+2026-11-12T01:02:25.4613933Z       "nodes": 81,
+2026-11-12T01:02:25.4614099Z       "spacing": 0.025,
+2026-11-12T01:02:25.4614277Z       "initial_value": 6.253428643552418,
+2026-11-12T01:02:25.4614524Z       "initial_value_absolute_error": 0.031086574616023377,
+2026-11-12T01:02:25.4614785Z       "maximum_grid_value_error": 0.043666153229766635,
+2026-11-12T01:02:25.4615019Z       "boundary_bracket": [
+2026-11-12T01:02:25.4615189Z         0.675,
+2026-11-12T01:02:25.4615340Z         0.7000000000000001
+2026-11-12T01:02:25.4615504Z       ],
+2026-11-12T01:02:25.4615669Z       "bellman_residual": 1.7763568394002505e-15,
+2026-11-12T01:02:25.4615887Z       "condition_inf": 2612.68593232709,
+2026-11-12T01:02:25.4616093Z       "policy_evaluations": 7,
+2026-11-12T01:02:25.4616285Z       "wall_seconds": 0.0008412389999961079
+2026-11-12T01:02:25.4616474Z     },
+2026-11-12T01:02:25.4616721Z     {
+2026-11-12T01:02:25.4616867Z       "nodes": 121,
+2026-11-12T01:02:25.4617044Z       "spacing": 0.016666666666666666,
+2026-11-12T01:02:25.4617245Z       "initial_value": 6.242630301667427,
+2026-11-12T01:02:25.4617472Z       "initial_value_absolute_error": 0.02028823273103253,
+2026-11-12T01:02:25.4617729Z       "maximum_grid_value_error": 0.02887797421990257,
+2026-11-12T01:02:25.4617954Z       "boundary_bracket": [
+2026-11-12T01:02:25.4618127Z         0.6833333333333333,
+2026-11-12T01:02:25.4618291Z         0.7
+2026-11-12T01:02:25.4618431Z       ],
+2026-11-12T01:02:25.4618593Z       "bellman_residual": 2.6645352591003757e-15,
+2026-11-12T01:02:25.4618814Z       "condition_inf": 5794.156609331654,
+2026-11-12T01:02:25.4619025Z       "policy_evaluations": 8,
+2026-11-12T01:02:25.4619222Z       "wall_seconds": 0.0016855329999998503
+2026-11-12T01:02:25.4619430Z     }
+2026-11-12T01:02:25.4619576Z   ],
+2026-11-12T01:02:25.4619739Z   "grid_value_error_decreases": true,
+2026-11-12T01:02:25.4619958Z   "independent_21_node_dp": {
+2026-11-12T01:02:25.4620179Z     "difference": 9.556107016805981e-10,
+2026-11-12T01:02:25.4620387Z     "iterations": 2085,
+2026-11-12T01:02:25.4620585Z     "error_bound": 9.94635485085375e-10
+2026-11-12T01:02:25.4620779Z   },
+2026-11-12T01:02:25.4620941Z   "neural_task_benefit_established": false,
+2026-11-12T01:02:25.4621167Z   "continuum_certificate": false,
+2026-11-12T01:02:25.4621374Z   "physical_energy_joules": null,
+2026-11-12T01:02:25.4621567Z   "status": "passed",
+2026-11-12T01:02:25.4621744Z   "wall_seconds": 0.03761911099999793,
+2026-11-12T01:02:25.4621948Z   "source_unchanged": true
+2026-11-12T01:02:25.4622128Z }
+2026-11-12T01:02:25.4662016Z ##[group]Run python -m unittest qualification.hcsn_memory_controls.test_controls -v 2>&1 \
+2026-11-12T01:02:25.4662715Z [36;1mpython -m unittest qualification.hcsn_memory_controls.test_controls -v 2>&1 \[0m
+2026-11-12T01:02:25.4663166Z [36;1m  | tee "$RUNNER_TEMP/hcsn-differentiable/memory-controls-tests.log"[0m
+2026-11-12T01:02:25.4680637Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:25.4680902Z env:
+2026-11-12T01:02:25.4681069Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:25.4681255Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:25.4681434Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:25.4681617Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:25.4681796Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:25.4681990Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:25.4682196Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:25.4682658Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.4683035Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:25.4683359Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.4683652Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.4684082Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.4684368Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:25.4684618Z ##[endgroup]
+2026-11-12T01:02:25.7261901Z test_overwrite_copy_and_composition_against_manual_cases (qualification.hcsn_memory_controls.test_controls.SymbolicControlTests.test_overwrite_copy_and_composition_against_manual_cases) ... ok
+2026-11-12T01:02:25.7276192Z test_query_inputs_do_not_reveal_counterfactual_write_values (qualification.hcsn_memory_controls.test_controls.SymbolicControlTests.test_query_inputs_do_not_reveal_counterfactual_write_values) ... ok
+2026-11-12T01:02:25.7286390Z test_time_changes_do_not_change_symbolic_answer (qualification.hcsn_memory_controls.test_controls.SymbolicControlTests.test_time_changes_do_not_change_symbolic_answer) ... ok
+2026-11-12T01:02:25.7286931Z 
+2026-11-12T01:02:25.7287180Z ----------------------------------------------------------------------
+2026-11-12T01:02:25.7287518Z Ran 3 tests in 0.003s
+2026-11-12T01:02:25.7287646Z 
+2026-11-12T01:02:25.7287729Z OK
+2026-11-12T01:02:25.7396326Z ##[group]Run git diff --exit-code
+2026-11-12T01:02:25.7396594Z [36;1mgit diff --exit-code[0m
+2026-11-12T01:02:25.7396802Z [36;1mgit diff --cached --exit-code[0m
+2026-11-12T01:02:25.7397084Z [36;1mtest -z "$(git status --porcelain --untracked-files=normal)"[0m
+2026-11-12T01:02:25.7414663Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:25.7414930Z env:
+2026-11-12T01:02:25.7415099Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:25.7415286Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:25.7415459Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:25.7415634Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:25.7415810Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:25.7416001Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:25.7416201Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:25.7416499Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.7416835Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:25.7417191Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.7417480Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.7417765Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:25.7418048Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:25.7418298Z ##[endgroup]
+2026-11-12T01:02:26.2250706Z ##[group]Run python3 - <<'PY'
+2026-11-12T01:02:26.2251002Z [36;1mpython3 - <<'PY'[0m
+2026-11-12T01:02:26.2251325Z [36;1mfrom datetime import datetime, timezone[0m
+2026-11-12T01:02:26.2251574Z [36;1mimport json[0m
+2026-11-12T01:02:26.2251749Z [36;1mimport os[0m
+2026-11-12T01:02:26.2251936Z [36;1mfrom pathlib import Path[0m
+2026-11-12T01:02:26.2252615Z [36;1mout = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"[0m
+2026-11-12T01:02:26.2252944Z [36;1mout.mkdir(exist_ok=True)[0m
+2026-11-12T01:02:26.2253201Z [36;1msteps = json.loads(os.environ["HCSN_STEPS"])[0m
+2026-11-12T01:02:26.2253703Z [36;1mrequired = ("checkout", "identity", "python", "runtime", "qualification", "c2-recovery", "budget", "evidence", "qvi", "controls", "clean")[0m
+2026-11-12T01:02:26.2254256Z [36;1moutcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}[0m
+2026-11-12T01:02:26.2254648Z [36;1mpassed = all(value == "success" for value in outcomes.values())[0m
+2026-11-12T01:02:26.2255027Z [36;1mcodes = {name: int((out / (name + ".exit-code")).read_text())[0m
+2026-11-12T01:02:26.2255344Z [36;1m         if (out / (name + ".exit-code")).exists() else None[0m
+2026-11-12T01:02:26.2255644Z [36;1m         for name in ("qualification", "error-budget")}[0m
+2026-11-12T01:02:26.2256043Z [36;1mrecord = {"schema": "hcsn-ci-outcome-v1", "finished_utc": datetime.now(timezone.utc).isoformat(),[0m
+2026-11-12T01:02:26.2256505Z [36;1m          "science_status": "PASSED_DECLARED_FIXTURES" if passed else "HOLD",[0m
+2026-11-12T01:02:26.2257112Z [36;1m          "steps": outcomes, "step_exit_codes": codes, "rerun_of_old_evidence": False,[0m
+2026-11-12T01:02:26.2257556Z [36;1m          "claim": "CPU fixture qualification only; no real-task or repository-wide pass."}[0m
+2026-11-12T01:02:26.2257934Z [36;1mwith (out / "outcome.json").open("x") as stream:[0m
+2026-11-12T01:02:26.2258200Z [36;1m    json.dump(record, stream, indent=2)[0m
+2026-11-12T01:02:26.2258443Z [36;1mprint(json.dumps(record))[0m
+2026-11-12T01:02:26.2258674Z [36;1mraise SystemExit(0 if passed else 1)[0m
+2026-11-12T01:02:26.2258894Z [36;1mPY[0m
+2026-11-12T01:02:26.2276912Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:02:26.2277182Z env:
+2026-11-12T01:02:26.2277343Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:26.2277532Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:26.2277712Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:26.2277917Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:26.2278098Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:26.2278305Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:26.2278510Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:26.2278810Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.2279135Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:26.2279451Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.2279742Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.2280027Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.2280313Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:26.2283358Z   HCSN_STEPS: {
+  "checkout": {
+    "outputs": {
+      "commit": "296164757b970b19c70fe558bd8d5c26b6676a14",
+      "ref": ""
+    },
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "identity": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "python": {
+    "outputs": {
+      "python-version": "3.12.3",
+      "python-path": "/opt/hostedtoolcache/Python/3.12.3/x64/bin/python"
+    },
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "runtime": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "qualification": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "c2-recovery": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "p1-trace-parser": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "budget": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "evidence": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "qvi": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "controls": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "clean": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  }
+}
+2026-11-12T01:02:26.2286207Z ##[endgroup]
+2026-11-12T01:02:26.3254850Z {"schema": "hcsn-ci-outcome-v1", "finished_utc": "2026-11-12T01:02:26.324957+00:00", "science_status": "PASSED_DECLARED_FIXTURES", "steps": {"checkout": "success", "identity": "success", "python": "success", "runtime": "success", "qualification": "success", "c2-recovery": "success", "budget": "success", "evidence": "success", "qvi": "success", "controls": "success", "clean": "success"}, "step_exit_codes": {"qualification": 0, "error-budget": 0}, "rerun_of_old_evidence": false, "claim": "CPU fixture qualification only; no real-task or repository-wide pass."}
+2026-11-12T01:02:26.3364586Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T01:02:26.3364935Z with:
+2026-11-12T01:02:26.3365121Z   name: hcsn-differentiable-43128157697-1
+2026-11-12T01:02:26.3365391Z   path: /home/runner/work/_temp/hcsn-differentiable/
+2026-11-12T01:02:26.3365650Z   if-no-files-found: error
+2026-11-12T01:02:26.3365839Z   retention-days: 14
+2026-11-12T01:02:26.3366186Z   compression-level: 6
+2026-11-12T01:02:26.3366359Z   overwrite: false
+2026-11-12T01:02:26.3366533Z   include-hidden-files: false
+2026-11-12T01:02:26.3366724Z env:
+2026-11-12T01:02:26.3366875Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T01:02:26.3367049Z   OMP_NUM_THREADS: 1
+2026-11-12T01:02:26.3367214Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T01:02:26.3367388Z   MKL_NUM_THREADS: 1
+2026-11-12T01:02:26.3367561Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T01:02:26.3367748Z   PYTHONHASHSEED: 0
+2026-11-12T01:02:26.3367946Z   SOURCE_HEAD: 296164757b970b19c70fe558bd8d5c26b6676a14
+2026-11-12T01:02:26.3368284Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.3368613Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T01:02:26.3368940Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.3369222Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.3369507Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T01:02:26.3369799Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T01:02:26.3370054Z ##[endgroup]
+2026-11-12T01:02:26.4760824Z (node:2486) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T01:02:26.4761519Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T01:02:26.4858815Z With the provided path, there will be 22 files uploaded
+2026-11-12T01:02:26.4859626Z Artifact name is valid!
+2026-11-12T01:02:26.4860293Z Root directory input is valid!
+2026-11-12T01:02:26.7093143Z Beginning upload of artifact content to blob storage
+2026-11-12T01:02:26.7525987Z (node:2486) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T01:02:26.7830884Z Uploaded bytes 155297
+2026-11-12T01:02:26.7958293Z Finished uploading artifact content to blob storage!
+2026-11-12T01:02:26.7959123Z SHA256 digest of uploaded artifact zip is ede006aeb2d956c791833282b510f9a753cfaf7493fef990839b9a5f61b91429
+2026-11-12T01:02:26.7960693Z Finalizing artifact upload
+2026-11-12T01:02:27.1543281Z Artifact hcsn-differentiable-43128157697-1.zip successfully finalized. Artifact ID 13905696199
+2026-11-12T01:02:27.1544209Z Artifact hcsn-differentiable-43128157697-1 has been successfully uploaded! Final size is 155297 bytes. Artifact ID is 13905696199
+2026-11-12T01:02:27.1545323Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157697/artifacts/13905696199
+2026-11-12T01:02:27.1723049Z Post job cleanup.
+2026-11-12T01:02:27.2859742Z Post job cleanup.
+2026-11-12T01:02:27.3587449Z [command]/usr/bin/git version
+2026-11-12T01:02:27.3658882Z git version 2.56.0
+2026-11-12T01:02:27.3696918Z Temporarily overriding HOME='/home/runner/work/_temp/3fd7f9ec-6a2a-4461-8e97-db090567e03f' before making global git config changes
+2026-11-12T01:02:27.3698118Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T01:02:27.3702037Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T01:02:27.3770428Z Removing SSH command configuration
+2026-11-12T01:02:27.3774138Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T01:02:27.3833785Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T01:02:27.4213218Z Removing HTTP extra header
+2026-11-12T01:02:27.4233397Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T01:02:27.4235955Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T01:02:27.4524661Z Removing includeIf entries pointing to credentials config files
+2026-11-12T01:02:27.4532222Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T01:02:27.4573333Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T01:02:27.4945043Z Cleaning up orphan processes
+2026-11-12T01:02:27.5244507Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

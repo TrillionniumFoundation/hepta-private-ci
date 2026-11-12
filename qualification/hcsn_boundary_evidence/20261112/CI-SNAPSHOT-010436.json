@@ -1,0 +1,1225 @@
+{
+  "schema": "hcsn-read-only-actions-snapshot-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "query_started_utc": "2026-11-12 01:02:39 UTC",
+  "query_finished_utc": "2026-11-12 01:04:36 UTC",
+  "refresh_policy": "One read-only investigation; no rerun, cancel, dispatch, training or waiting for queues.",
+  "runs": [
+    {
+      "id": 43128157697,
+      "name": "HCSN differentiable qualification",
+      "head_sha": "296164757b970b19c70fe558bd8d5c26b6676a14",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "created_at": "2026-11-12T00:33:34Z",
+      "updated_at": "2026-11-12T01:02:30Z",
+      "run_started_at": "2026-11-12T00:33:34Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157697",
+      "jobs": [
+        {
+          "id": 130885397141,
+          "name": "HCSN CPU science gate",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 43128157697,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Record source head and tested tree identities",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Install and verify pinned CPU Torch",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Discover and run every qualification test",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Verify crash-safe successor C2 receipts (no admission)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Reject ambiguous recorded P1 posterior traces (evidence-only)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Enforce the predeclared numerical error budget",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Verify historical and current evidence integrity and links",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Check the independent finite DP and QVI oracle",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Check non-diffusion memory control semantics",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Require an unchanged source and index",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Record terminal outcomes without granting failure exemptions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Retain receipts on every outcome",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Post Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29
+            },
+            {
+              "name": "Post Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 43128150501,
+      "name": "HCSN differentiable qualification",
+      "head_sha": "296164757b970b19c70fe558bd8d5c26b6676a14",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "created_at": "2026-11-12T00:33:31Z",
+      "updated_at": "2026-11-12T00:59:59Z",
+      "run_started_at": "2026-11-12T00:33:31Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128150501",
+      "jobs": [
+        {
+          "id": 130885374106,
+          "name": "HCSN CPU science gate",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 43128150501,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Record source head and tested tree identities",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Install and verify pinned CPU Torch",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Discover and run every qualification test",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Verify crash-safe successor C2 receipts (no admission)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Reject ambiguous recorded P1 posterior traces (evidence-only)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Enforce the predeclared numerical error budget",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Verify historical and current evidence integrity and links",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Check the independent finite DP and QVI oracle",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Check non-diffusion memory control semantics",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Require an unchanged source and index",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Record terminal outcomes without granting failure exemptions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Retain receipts on every outcome",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Post Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29
+            },
+            {
+              "name": "Post Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 43128180608,
+      "name": "HCSN boundary mechanism study",
+      "head_sha": "d7abb3b96d0ac2317468665b6f6222d5e6f7bf0b",
+      "status": "queued",
+      "conclusion": null,
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-boundary-mechanism.yml",
+      "created_at": "2026-11-12T00:33:46Z",
+      "updated_at": "2026-11-12T00:39:08Z",
+      "run_started_at": "2026-11-12T00:33:46Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180608",
+      "jobs": [
+        {
+          "id": 130887635334,
+          "name": "Boundary study (factorial)",
+          "status": "queued",
+          "conclusion": null,
+          "run_id": 43128180608,
+          "logs_url": null,
+          "steps": null
+        },
+        {
+          "id": 130887635676,
+          "name": "Boundary study (continuum)",
+          "status": "queued",
+          "conclusion": null,
+          "run_id": 43128180608,
+          "logs_url": null,
+          "steps": null
+        }
+      ]
+    },
+    {
+      "id": 43128173256,
+      "name": "HCSN differentiable qualification",
+      "head_sha": "d7abb3b96d0ac2317468665b6f6222d5e6f7bf0b",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "created_at": "2026-11-12T00:33:42Z",
+      "updated_at": "2026-11-12T01:00:33Z",
+      "run_started_at": "2026-11-12T00:33:42Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128173256",
+      "jobs": [
+        {
+          "id": 130885451083,
+          "name": "HCSN CPU science gate",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 43128173256,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Record source head and tested tree identities",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Install and verify pinned CPU Torch",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Discover and run every qualification test",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Verify crash-safe successor C2 receipts (no admission)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Reject ambiguous recorded P1 posterior traces (evidence-only)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Enforce the predeclared numerical error budget",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Verify historical and current evidence integrity and links",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Check the independent finite DP and QVI oracle",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Check non-diffusion memory control semantics",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Require an unchanged source and index",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Record terminal outcomes without granting failure exemptions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Retain receipts on every outcome",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Post Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29
+            },
+            {
+              "name": "Post Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 43130898568,
+      "name": "HCSN boundary audit checks",
+      "head_sha": "8e72eed9deb5d996a1f259bd368945c7c86ca7fd",
+      "status": "queued",
+      "conclusion": null,
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-boundary-audit.yml",
+      "created_at": "2026-11-12T00:55:56Z",
+      "updated_at": "2026-11-12T00:55:56Z",
+      "run_started_at": "2026-11-12T00:55:56Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898568",
+      "jobs": [
+        {
+          "id": 130894473231,
+          "name": "checks",
+          "status": "queued",
+          "conclusion": null,
+          "run_id": 43130898568,
+          "logs_url": null,
+          "steps": null
+        }
+      ]
+    },
+    {
+      "id": 43130979903,
+      "name": "HCSN boundary audit checks",
+      "head_sha": "c25fcadb1f1a572c0f2dcbb1a2a62c56dadc5685",
+      "status": "queued",
+      "conclusion": null,
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-boundary-audit.yml",
+      "created_at": "2026-11-12T00:56:38Z",
+      "updated_at": "2026-11-12T00:56:38Z",
+      "run_started_at": "2026-11-12T00:56:38Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979903",
+      "jobs": [
+        {
+          "id": 130894744097,
+          "name": "checks",
+          "status": "queued",
+          "conclusion": null,
+          "run_id": 43130979903,
+          "logs_url": null,
+          "steps": null
+        }
+      ]
+    },
+    {
+      "id": 43131554392,
+      "name": "HCSN boundary audit checks",
+      "head_sha": "dcd7b3cf3ada4311c85515908a6b3d2645738440",
+      "status": "queued",
+      "conclusion": null,
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-boundary-audit.yml",
+      "created_at": "2026-11-12T01:01:29Z",
+      "updated_at": "2026-11-12T01:01:29Z",
+      "run_started_at": "2026-11-12T01:01:29Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554392",
+      "jobs": [
+        {
+          "id": 130896648924,
+          "name": "checks",
+          "status": "queued",
+          "conclusion": null,
+          "run_id": 43131554392,
+          "logs_url": null,
+          "steps": null
+        }
+      ]
+    },
+    {
+      "id": 43127560720,
+      "name": "HCSN boundary mechanism study",
+      "head_sha": "5578bd1931afcb6facbf72176cf479b902301feb",
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-boundary-mechanism.yml",
+      "created_at": "2026-11-12T00:28:43Z",
+      "updated_at": "2026-11-12T00:39:08Z",
+      "run_started_at": "2026-11-12T00:28:43Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127560720",
+      "jobs": [
+        {
+          "id": 130883401271,
+          "name": "Boundary study (continuum)",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 43127560720,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out exact study source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Record source and execution identity",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Use pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Install study dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Test independent continuum oracle",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 6
+            },
+            {
+              "name": "Compare continuous free boundary with finite DP",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 7
+            },
+            {
+              "name": "Test factorial interventions and boundary gradients",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8
+            },
+            {
+              "name": "Run complete bounded four-arm development probe",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9
+            },
+            {
+              "name": "Install repository formatter entrypoint",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Apply repository formatting and require unchanged source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Retain terminal status for every outcome",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 12
+            },
+            {
+              "name": "Preserve raw results checkpoints and failures",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Post Use pinned Python",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 25
+            },
+            {
+              "name": "Post Check out exact study source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 26
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27
+            }
+          ]
+        },
+        {
+          "id": 130883401533,
+          "name": "Boundary study (factorial)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 43127560720,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out exact study source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Record source and execution identity",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Use pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Install study dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Test independent continuum oracle",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 6
+            },
+            {
+              "name": "Compare continuous free boundary with finite DP",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 7
+            },
+            {
+              "name": "Test factorial interventions and boundary gradients",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run complete bounded four-arm development probe",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Install repository formatter entrypoint",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Apply repository formatting and require unchanged source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Retain terminal status for every outcome",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Preserve raw results checkpoints and failures",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Post Use pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25
+            },
+            {
+              "name": "Post Check out exact study source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 26
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 43127251213,
+      "name": "HCSN differentiable qualification",
+      "head_sha": "b716471e4eef59b69a4e7fe5547378a79f59562d",
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "pull_request",
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "created_at": "2026-11-12T00:26:08Z",
+      "updated_at": "2026-11-12T00:28:06Z",
+      "run_started_at": "2026-11-12T00:26:08Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127251213",
+      "jobs": [
+        {
+          "id": 130882355135,
+          "name": "HCSN CPU science gate",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 43127251213,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Record source head and tested tree identities",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Set up pinned Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Install and verify pinned CPU Torch",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Discover and run every qualification test",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Verify crash-safe successor C2 receipts (no admission)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Reject ambiguous recorded P1 posterior traces (evidence-only)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Enforce the predeclared numerical error budget",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Verify historical and current evidence integrity and links",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Check the independent finite DP and QVI oracle",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 11
+            },
+            {
+              "name": "Check non-diffusion memory control semantics",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Require an unchanged source and index",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Record terminal outcomes without granting failure exemptions",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 14
+            },
+            {
+              "name": "Retain receipts on every outcome",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Post Set up pinned Python",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 29
+            },
+            {
+              "name": "Post Check out the exact source commit (not the PR merge commit)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pull_requests": [
+    {
+      "number": 6037,
+      "head_sha": "296164757b970b19c70fe558bd8d5c26b6676a14",
+      "base_sha": "a83b2ecda37b0e18b05e7fedcaee0a63037c464f",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6037"
+    },
+    {
+      "number": 6064,
+      "head_sha": "8e72eed9deb5d996a1f259bd368945c7c86ca7fd",
+      "base_sha": "d7abb3b96d0ac2317468665b6f6222d5e6f7bf0b",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6064"
+    },
+    {
+      "number": 6066,
+      "head_sha": "c25fcadb1f1a572c0f2dcbb1a2a62c56dadc5685",
+      "base_sha": "8e72eed9deb5d996a1f259bd368945c7c86ca7fd",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6066"
+    },
+    {
+      "number": 6068,
+      "head_sha": "dcd7b3cf3ada4311c85515908a6b3d2645738440",
+      "base_sha": "c25fcadb1f1a572c0f2dcbb1a2a62c56dadc5685",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6068"
+    }
+  ],
+  "other_pr_triggered_runs": [
+    {
+      "workflow_runs": [
+        {
+          "id": 43128157708,
+          "name": "Hepta architecture convergence",
+          "status": "pending",
+          "conclusion": null,
+          "run_number": 22175,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157708/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157708/logs",
+          "workflow_id": 344551465
+        },
+        {
+          "id": 43128158009,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35361,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128158009/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128158009/logs",
+          "workflow_id": 336746106
+        },
+        {
+          "id": 43128157924,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 35180,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157924/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157924/logs",
+          "workflow_id": 336746138
+        },
+        {
+          "id": 43128157697,
+          "name": "HCSN differentiable qualification",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 188,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157697/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128157697/logs",
+          "workflow_id": 411141452
+        }
+      ]
+    },
+    {
+      "workflow_runs": [
+        {
+          "id": 43128180608,
+          "name": "HCSN boundary mechanism study",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 2,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180608/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180608/logs",
+          "workflow_id": 415312105
+        },
+        {
+          "id": 43128180724,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35362,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180724/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180724/logs",
+          "workflow_id": 336746106
+        },
+        {
+          "id": 43128180697,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 22176,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180697/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180697/logs",
+          "workflow_id": 344551465
+        },
+        {
+          "id": 43128180596,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 35181,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180596/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43128180596/logs",
+          "workflow_id": 336746138
+        }
+      ]
+    },
+    {
+      "workflow_runs": [
+        {
+          "id": 43130898705,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35387,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898705/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898705/logs",
+          "workflow_id": 336746106
+        },
+        {
+          "id": 43130898471,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35206,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898471/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898471/logs",
+          "workflow_id": 336746138
+        },
+        {
+          "id": 43130898511,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 22201,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898511/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898511/logs",
+          "workflow_id": 344551465
+        },
+        {
+          "id": 43130898568,
+          "name": "HCSN boundary audit checks",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898568/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130898568/logs",
+          "workflow_id": 415332704
+        }
+      ]
+    },
+    {
+      "workflow_runs": [
+        {
+          "id": 43130979903,
+          "name": "HCSN boundary audit checks",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 2,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979903/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979903/logs",
+          "workflow_id": 415332704
+        },
+        {
+          "id": 43130979900,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35208,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979900/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979900/logs",
+          "workflow_id": 336746138
+        },
+        {
+          "id": 43130980003,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35389,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130980003/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130980003/logs",
+          "workflow_id": 336746106
+        },
+        {
+          "id": 43130979765,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 22203,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979765/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43130979765/logs",
+          "workflow_id": 344551465
+        }
+      ]
+    },
+    {
+      "workflow_runs": [
+        {
+          "id": 43131554392,
+          "name": "HCSN boundary audit checks",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 3,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554392/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554392/logs",
+          "workflow_id": 415332704
+        },
+        {
+          "id": 43131554371,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35395,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554371/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554371/logs",
+          "workflow_id": 336746106
+        },
+        {
+          "id": 43131554322,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 35214,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554322/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554322/logs",
+          "workflow_id": 336746138
+        },
+        {
+          "id": 43131554336,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 22209,
+          "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554336/jobs",
+          "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43131554336/logs",
+          "workflow_id": 344551465
+        }
+      ]
+    }
+  ],
+  "audit_workflow": {
+    "content": "name: HCSN boundary audit checks\n\non:\n  pull_request:\n    paths:\n      - qualification/hcsn_boundary_audit/**\n      - qualification/hcsn_budget_baselines/**\n      - .github/workflows/hcsn-boundary-audit.yml\n  workflow_dispatch:\n\npermissions:\n  contents: read\n\nconcurrency:\n  group: hcsn-boundary-audit-${{ github.ref }}\n  cancel-in-progress: false\n\njobs:\n  checks:\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    defaults:\n      run:\n        shell: bash\n    env:\n      CUDA_VISIBLE_DEVICES: \"\"\n      OMP_NUM_THREADS: \"1\"\n      OPENBLAS_NUM_THREADS: \"1\"\n      MKL_NUM_THREADS: \"1\"\n      PYTHONDONTWRITEBYTECODE: \"1\"\n    steps:\n      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2\n        with:\n          ref: ${{ github.event.pull_request.head.sha || github.sha }}\n          fetch-depth: 32\n          persist-credentials: false\n      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0\n        with:\n          python-version: \"3.12.3\"\n      - name: Install pinned CPU dependencies\n        run: |\n          python -m pip install --disable-pip-version-check numpy==2.5.4 mpmath==1.3.0\n          python -m pip install --disable-pip-version-check \"torch==2.8.0+cpu\" --index-url https://download.pytorch.org/whl/cpu\n      - name: Test audit admission and state budget controls\n        run: |\n          python - <<'PY'\n          from pathlib import Path\n          import subprocess\n          import sys\n          roots = (\"qualification/hcsn_boundary_audit\", \"qualification/hcsn_budget_baselines\")\n          modules = sorted(str(p.with_suffix(\"\")).replace(\"/\", \".\")\n                           for root in roots for p in Path(root).glob(\"test_*.py\"))\n          if not modules:\n              raise SystemExit(\"No audit tests were discovered\")\n          subprocess.run([sys.executable, \"-m\", \"unittest\", *modules, \"-v\"], check=True)\n          PY\n      - name: Install formatter entrypoint\n        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49\n        with:\n          tool: just@1.51.0\n      - name: Apply repository formatting after tests\n        working-directory: codex-rs\n        run: |\n          just fmt --base a83b2ecda37b0e18b05e7fedcaee0a63037c464f\n          git diff --exit-code\n          git diff --cached --exit-code\n          test -z \"$(git status --porcelain --untracked-files=normal)\"\n",
+    "encoding": "utf-8",
+    "sha": "7a905e07432fec0942ad628c8dc995b6c192e13b",
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/dcd7b3cf3ada4311c85515908a6b3d2645738440/.github/workflows/hcsn-boundary-audit.yml",
+    "display_title": "hcsn-boundary-audit.yml"
+  },
+  "log_excerpts": [
+    {
+      "job_id": 130885397141,
+      "excerpt": [
+        "2026-11-12T01:01:56.7227444Z Ran 95 tests in 10.140s",
+        "2026-11-12T01:01:59.8945407Z Ran 59 tests in 1.230s",
+        "2026-11-12T01:02:02.3466205Z Ran 6 tests in 0.641s",
+        "2026-11-12T01:02:04.1655928Z Ran 4 tests in 0.009s",
+        "2026-11-12T01:02:08.2512501Z Ran 14 tests in 2.462s",
+        "2026-11-12T01:02:10.5356769Z Ran 8 tests in 0.642s",
+        "2026-11-12T01:02:11.1069831Z Ran 6 tests in 0.100s",
+        "2026-11-12T01:02:12.5123251Z Ran 10 tests in 0.004s",
+        "2026-11-12T01:02:24.2635877Z ##[group]Run python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \\",
+        "2026-11-12T01:02:24.2636626Z python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \\",
+        "2026-11-12T01:02:24.2637699Z python -m qualification.hcsn_qvi.run_oracle \\",
+        "2026-11-12T01:02:24.2638724Z python -m qualification.hcsn_qvi.run_continuum \\",
+        "2026-11-12T01:02:24.6081503Z test_fixed_thresholds_and_unsupported_endpoint_regime (test_continuum.ContinuumTests.test_fixed_thresholds_and_unsupported_endpoint_regime) ... ok",
+        "2026-11-12T01:02:24.7142222Z test_implicit_boundary_and_value_gradient_against_refitted_costs (test_continuum.ContinuumTests.test_implicit_boundary_and_value_gradient_against_refitted_costs) ... ok",
+        "2026-11-12T01:02:24.7229926Z test_independent_80_digit_system_and_qvi_conditions (test_continuum.ContinuumTests.test_independent_80_digit_system_and_qvi_conditions) ... ok",
+        "2026-11-12T01:02:24.7267316Z test_independent_finite_dp_error_decreases_with_grid_refinement (test_continuum.ContinuumTests.test_independent_finite_dp_error_decreases_with_grid_refinement) ... ok",
+        "2026-11-12T01:02:24.7451819Z Ran 7 tests in 0.140s",
+        "2026-11-12T01:02:25.7287518Z Ran 3 tests in 0.003s"
+      ]
+    },
+    {
+      "job_id": 130885374106,
+      "excerpt": [
+        "2026-11-12T00:59:27.9868713Z Ran 95 tests in 9.759s",
+        "2026-11-12T00:59:30.8818622Z Ran 59 tests in 1.065s",
+        "2026-11-12T00:59:33.1622366Z Ran 6 tests in 0.607s",
+        "2026-11-12T00:59:34.8534940Z Ran 4 tests in 0.008s",
+        "2026-11-12T00:59:37.9881807Z Ran 14 tests in 1.600s",
+        "2026-11-12T00:59:39.7030280Z Ran 8 tests in 0.155s",
+        "2026-11-12T00:59:40.2521564Z Ran 6 tests in 0.099s",
+        "2026-11-12T00:59:41.6509234Z Ran 10 tests in 0.003s",
+        "2026-11-12T00:59:53.6307534Z ##[group]Run python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \\",
+        "2026-11-12T00:59:53.6308476Z python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \\",
+        "2026-11-12T00:59:53.6309603Z python -m qualification.hcsn_qvi.run_oracle \\",
+        "2026-11-12T00:59:53.6310675Z python -m qualification.hcsn_qvi.run_continuum \\",
+        "2026-11-12T00:59:53.9709735Z test_fixed_thresholds_and_unsupported_endpoint_regime (test_continuum.ContinuumTests.test_fixed_thresholds_and_unsupported_endpoint_regime) ... ok",
+        "2026-11-12T00:59:54.0755461Z test_implicit_boundary_and_value_gradient_against_refitted_costs (test_continuum.ContinuumTests.test_implicit_boundary_and_value_gradient_against_refitted_costs) ... ok",
+        "2026-11-12T00:59:54.0843284Z test_independent_80_digit_system_and_qvi_conditions (test_continuum.ContinuumTests.test_independent_80_digit_system_and_qvi_conditions) ... ok",
+        "2026-11-12T00:59:54.0880473Z test_independent_finite_dp_error_decreases_with_grid_refinement (test_continuum.ContinuumTests.test_independent_finite_dp_error_decreases_with_grid_refinement) ... ok",
+        "2026-11-12T00:59:54.1064635Z Ran 7 tests in 0.138s",
+        "2026-11-12T00:59:55.0739604Z Ran 3 tests in 0.003s"
+      ]
+    },
+    {
+      "job_id": 130885451083,
+      "excerpt": [
+        "2026-11-12T00:59:59.6214584Z Ran 95 tests in 10.177s",
+        "2026-11-12T01:00:02.8740711Z Ran 59 tests in 1.218s",
+        "2026-11-12T01:00:05.5797226Z Ran 6 tests in 0.843s",
+        "2026-11-12T01:00:07.5709835Z Ran 4 tests in 0.110s",
+        "2026-11-12T01:00:11.1004978Z Ran 14 tests in 1.792s",
+        "2026-11-12T01:00:12.8235238Z Ran 8 tests in 0.005s",
+        "2026-11-12T01:00:13.4168707Z Ran 6 tests in 0.112s",
+        "2026-11-12T01:00:14.9628189Z Ran 10 tests in 0.003s",
+        "2026-11-12T01:00:27.2595849Z ##[group]Run python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \\",
+        "2026-11-12T01:00:27.2596525Z python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \\",
+        "2026-11-12T01:00:27.2597546Z python -m qualification.hcsn_qvi.run_oracle \\",
+        "2026-11-12T01:00:27.2598523Z python -m qualification.hcsn_qvi.run_continuum \\",
+        "2026-11-12T01:00:27.6278974Z test_fixed_thresholds_and_unsupported_endpoint_regime (test_continuum.ContinuumTests.test_fixed_thresholds_and_unsupported_endpoint_regime) ... ok",
+        "2026-11-12T01:00:27.7444400Z test_implicit_boundary_and_value_gradient_against_refitted_costs (test_continuum.ContinuumTests.test_implicit_boundary_and_value_gradient_against_refitted_costs) ... ok",
+        "2026-11-12T01:00:27.7548489Z test_independent_80_digit_system_and_qvi_conditions (test_continuum.ContinuumTests.test_independent_80_digit_system_and_qvi_conditions) ... ok",
+        "2026-11-12T01:00:27.7588727Z test_independent_finite_dp_error_decreases_with_grid_refinement (test_continuum.ContinuumTests.test_independent_finite_dp_error_decreases_with_grid_refinement) ... ok",
+        "2026-11-12T01:00:27.7781185Z Ran 7 tests in 0.153s",
+        "2026-11-12T01:00:28.8324978Z Ran 3 tests in 0.003s"
+      ]
+    }
+  ],
+  "interpretation": {
+    "qvi_precision_fixed_heads": "296164757b970b19c70fe558bd8d5c26b6676a14 and d7abb3b96d0ac2317468665b6f6222d5e6f7bf0b have actual successful exact-source science-gate execution; seven QVI tests including the original failing gradient test and both oracle runners ran.",
+    "science_gate_formatter": "The completed HCSN science-gate job has no formatter step or just fmt command; success does not establish formatting.",
+    "current_factorial_mechanism": "43128180608 is queued with null steps for both lanes; do not describe it as a completed new training run.",
+    "new_audit_prs": "6064, 6066, 6068 targeted audit jobs are queued with null steps; tests and formatter have not executed. The workflow orders unit tests before just fmt.",
+    "historical_result": "43127560720 overall failure at source5578, but factorial lane success including formatter; continuum lane failed its oracle tests and skipped comparison. The separate initial QVI run43127251213 failed at sourceb716. Neither historical RED is erased.",
+    "scientific_scope": "CI success for existing fixtures does not override the new recorded-domain audit HOLD."
+  }
+}
+
