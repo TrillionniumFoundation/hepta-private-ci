@@ -1,0 +1,92 @@
+{
+  "executions": [
+    {
+      "name": "migration",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/hcsn_differentiable/replay_v1",
+        "-p",
+        "test_cpu_migration.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.49536091499976465,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 0.090s",
+        "",
+        "OK"
+      ],
+      "model_calls": 0
+    },
+    {
+      "name": "pointer",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/hcsn_differentiable/replay_v1",
+        "-p",
+        "test_artifact_pointer.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.822205558999485,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 5 tests in 3.451s",
+        "",
+        "OK"
+      ],
+      "model_calls": 0
+    },
+    {
+      "name": "pointer-O",
+      "command": [
+        "python",
+        "-O",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/hcsn_differentiable/replay_v1",
+        "-p",
+        "test_artifact_pointer.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.5981738929986022,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 5 tests in 2.565s",
+        "",
+        "OK"
+      ],
+      "model_calls": 0
+    }
+  ],
+  "source_before_format": {
+    ".github/workflows/hcsn-real-checkpoint-cpu.yml": {
+      "bytes": 4002,
+      "sha256": "5b31b343ade2127ebead3b991b02608f0164f91704e61d2f8bf86231a937be84"
+    },
+    "qualification/hcsn_differentiable/replay_v1/artifact_pointer.py": {
+      "bytes": 2347,
+      "sha256": "37186cd038af7b5c1879caa5893c2fa196a9f8e894c9f600f7a0dc1e8d6f1b81"
+    },
+    "qualification/hcsn_differentiable/replay_v1/test_artifact_pointer.py": {
+      "bytes": 4191,
+      "sha256": "5ea76ca39bfb511d299fd83c6d4da2c846dff9e222bff28ac33b34408da27704"
+    }
+  },
+  "actual_model_calls": 0
+}
