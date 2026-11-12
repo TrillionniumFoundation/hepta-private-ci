@@ -207,6 +207,25 @@ impl RootHistoricalTaskReadClientV1 {
 }
 
 impl OriginalHistoricalTaskReadReceiptV1 {
+    pub(crate) fn require_original_publication_connection(
+        &self,
+        publication: &crate::RootGenerationPublicationConnectionV1,
+    ) -> Result<(), AgentdError> {
+        let result = (|| {
+            if self.client.fenced.load(Ordering::Acquire) {
+                return Err(AgentdError::Io(refused()));
+            }
+            RootHistoricalTaskReadConnectionV1::require_same_original_publication(
+                &self.client.connection,
+                publication,
+            )
+        })();
+        if result.is_err() {
+            self.client.fence();
+        }
+        result
+    }
+
     pub(crate) fn require_original_client(
         &self,
         client: &Arc<RootHistoricalTaskReadClientV1>,

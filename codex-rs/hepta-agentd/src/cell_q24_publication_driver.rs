@@ -102,6 +102,20 @@ pub struct OriginalCellQ24FeatureRecoveryV1 {
     pub intent_digest: Digest32,
 }
 
+/// Existing target data and one opaque live historical A receipt. The original
+/// publication validates the intent, target and full predecessor binding; no
+/// serialized completion or caller-selected old process identity is accepted.
+pub(crate) struct OriginalCellQ24HistoricalFeatureRecoveryV1 {
+    pub(crate) target: AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>,
+    pub(crate) definition: CellDefinitionV1,
+    pub(crate) source: CircuitTaskSourceInputV1,
+    pub(crate) model: Arc<LoadedCellQ24ModelV1>,
+    pub(crate) previous_manifest: CellBackendManifestV2,
+    pub(crate) original_a:
+        Arc<crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1>,
+    pub(crate) intent_digest: Digest32,
+}
+
 struct OriginalDecision {
     owners: Arc<OriginalCellQ24LearningStageOwnersV1>,
     decision: Decision,

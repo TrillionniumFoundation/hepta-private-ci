@@ -118,6 +118,19 @@ impl CurrentStore {
     }
 
     #[cfg(target_os = "linux")]
+    pub(super) fn require_original_root_historical_receipt(
+        &self,
+        original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+    ) -> Result<(), AgentdError> {
+        match &self.store {
+            Store::Root(client) => {
+                crate::root_generation_current_client::RootGenerationCurrentClient::require_original_historical_receipt(client, original)
+            }
+            _ => Err(invalid("historical recovery requires the actual Root publication client")),
+        }
+    }
+
+    #[cfg(target_os = "linux")]
     pub(super) fn require_original_root_successor(
         &self,
         session: &crate::root_production_inputs::OriginalQ24SuccessorSession,

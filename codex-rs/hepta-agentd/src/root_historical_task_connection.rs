@@ -69,6 +69,21 @@ impl RootHistoricalTaskReadSlot {
 }
 
 impl RootHistoricalTaskReadConnectionV1 {
+    pub(crate) fn require_same_original_publication(
+        &self,
+        publication: &crate::RootGenerationPublicationConnectionV1,
+    ) -> Result<(), AgentdError> {
+        self.require_original_session()?;
+        crate::RootGenerationPublicationConnectionV1::require_original_reader_identity(
+            publication,
+            &self.original,
+            &self.identity,
+            &self.authority,
+            &self.verifier,
+        )?;
+        self.require_original_session()
+    }
+
     pub(crate) fn original_binding(&self) -> (&HostAuthorityPublicBootstrapV1, &AgentdIdentity) {
         (&self.original, &self.identity)
     }

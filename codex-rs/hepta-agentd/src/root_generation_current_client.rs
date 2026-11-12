@@ -19,6 +19,9 @@ use crate::neuron_generation_current::types::Published;
 mod stream;
 pub(crate) use stream::OriginalPublicationStream;
 
+#[path = "root_generation_current_history.rs"]
+mod history;
+
 struct Lane {
     stream: OriginalPublicationStream,
     sequence: u64,
