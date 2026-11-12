@@ -118,7 +118,7 @@ impl AgentdProductionStartup {
                     handoff,
                     mut learning_handoff,
                     mut q24_model_handoff,
-                    publication_handoff,
+                    mut publication_handoff,
                     initial_handoff,
                     historical_handoff,
                     uid,
@@ -135,6 +135,7 @@ impl AgentdProductionStartup {
                     &primary,
                     &mut learning_handoff,
                     &mut q24_model_handoff,
+                    &mut publication_handoff,
                 )?;
                 let config = config.prepare_root_handoff(uid, gid)?.drop_to_owner()?;
                 // Root grants the original home/data access before capturing

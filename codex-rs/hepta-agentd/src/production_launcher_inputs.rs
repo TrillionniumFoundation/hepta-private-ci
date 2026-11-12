@@ -296,11 +296,15 @@ pub(super) fn parse(
         profile,
         &ordinary,
         post_a_deployment,
-        &[historical_handoff, learning_handoff, q24_model_handoff],
+        &[
+            historical_handoff,
+            learning_handoff,
+            q24_model_handoff,
+            publication_handoff,
+        ],
         &[
             initial_deployment,
             initial_handoff,
-            publication_handoff,
             notes,
             notes_deployment,
             notes_listener,

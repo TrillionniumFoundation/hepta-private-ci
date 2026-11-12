@@ -26,7 +26,7 @@ impl AgentdProductionLaunch {
             handoff,
             mut learning_handoff,
             mut q24_model_handoff,
-            publication_handoff,
+            mut publication_handoff,
             initial_handoff,
             historical_handoff,
             uid,
@@ -47,6 +47,7 @@ impl AgentdProductionLaunch {
             &primary,
             &mut learning_handoff,
             &mut q24_model_handoff,
+            &mut publication_handoff,
         )?;
         require_late_owner(uid, gid)?;
         let session_end = Instant::now() + lifetime;

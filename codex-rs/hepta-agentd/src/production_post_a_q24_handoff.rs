@@ -1,4 +1,4 @@
-//! Hold the two original anonymous datagrams through historical preparation.
+//! Hold the three original anonymous datagrams through historical preparation.
 //! Only the actual Root late-install acknowledgement permits their consumption.
 
 use super::*;
@@ -6,6 +6,7 @@ use super::*;
 pub(in crate::production_launcher) struct PendingHandoffs {
     pub(super) learning: UnixDatagram,
     pub(super) model: UnixDatagram,
+    pub(super) publication: UnixDatagram,
 }
 
 impl PendingHandoffs {
@@ -13,6 +14,7 @@ impl PendingHandoffs {
         primary: &PrimaryInputs,
         learning: &mut Option<UnixDatagram>,
         model: &mut Option<UnixDatagram>,
+        publication: &mut Option<UnixDatagram>,
     ) -> Result<Option<Self>, AgentdError> {
         if !matches!(primary, PrimaryInputs::PostAQ24 { .. }) {
             return Ok(None);
@@ -23,7 +25,14 @@ impl PendingHandoffs {
         let model = model
             .take()
             .ok_or_else(|| refused("post-A model handoff absent"))?;
-        Ok(Some(Self { learning, model }))
+        let publication = publication
+            .take()
+            .ok_or_else(|| refused("post-A publication handoff absent"))?;
+        Ok(Some(Self {
+            learning,
+            model,
+            publication,
+        }))
     }
 
     pub(super) async fn receive_original_after_ack(
@@ -37,6 +46,7 @@ impl PendingHandoffs {
         (
             crate::AgentdRootLearningInputsV1,
             crate::AgentdRootQ24ModelFactoryV1,
+            crate::RootGenerationPublicationHandoffV1,
         ),
         AgentdError,
     > {
@@ -73,6 +83,14 @@ impl PendingHandoffs {
         .await?;
         OriginalPostAFrozenLearningAckV1::require_prepared_scope(ack, prepared.scope())?;
         post_a_remaining(end)?;
-        Ok((learning, model))
+        // CURRENT is not connected here. The actual Root server cannot admit
+        // it until the later independent decision and target are available.
+        let publication = crate::receive_root_generation_publication_handoff(
+            self.publication,
+            post_a_remaining(end)?.min(Duration::from_millis(500)),
+        )?;
+        OriginalPostAFrozenLearningAckV1::require_prepared_scope(ack, prepared.scope())?;
+        post_a_remaining(end)?;
+        Ok((learning, model, publication))
     }
 }
