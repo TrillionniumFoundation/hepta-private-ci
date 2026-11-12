@@ -32,6 +32,10 @@ pub use source::CircuitTaskSourceReadbackV1;
 pub use source::DurableCircuitTaskSourceV1;
 pub use source::HistoricalCircuitTaskSourceObservationV1;
 pub use source::HistoricalCircuitTaskSourceV1;
+#[cfg(target_os = "linux")]
+pub(crate) use source::source_close::OriginalCircuitSourceCloseV1;
+#[cfg(target_os = "linux")]
+pub(crate) use source::source_close::OriginalCircuitSourceClosedV1;
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum CircuitTaskErrorV1 {

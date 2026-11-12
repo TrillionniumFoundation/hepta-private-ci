@@ -25,6 +25,10 @@ use crate::error::io_context;
 #[path = "control_frames.rs"]
 mod frames;
 
+#[cfg(target_os = "linux")]
+#[path = "control_source_capture.rs"]
+pub(crate) mod source_capture;
+
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
@@ -71,6 +75,8 @@ pub(crate) struct AgentdControlServer {
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
+    #[cfg(target_os = "linux")]
+    source_capture_completion: Option<source_capture::OriginalControlCompletionV1>,
 }
 
 impl AgentdControlServer {
@@ -90,6 +96,8 @@ impl AgentdControlServer {
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+            #[cfg(target_os = "linux")]
+            source_capture_completion: None,
         })
     }
 
@@ -108,7 +116,23 @@ impl AgentdControlServer {
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+            #[cfg(target_os = "linux")]
+            source_capture_completion: None,
         })
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn original_source_capture_join(
+        &mut self,
+    ) -> Result<source_capture::OriginalControlJoinV1, AgentdError> {
+        if self.source_capture_completion.is_some() {
+            return Err(AgentdError::Invalid(
+                "original control join was already selected".into(),
+            ));
+        }
+        let (completion, join) = source_capture::original_control_join_v1();
+        self.source_capture_completion = Some(completion);
+        Ok(join)
     }
 
     pub(crate) async fn run(self) -> Result<(), AgentdError> {
@@ -167,10 +191,14 @@ impl AgentdControlServer {
         while let Some(completion) = connections.join_next().await {
             retain_connection_failure(&mut failure, completion);
         }
-        match failure {
-            Some(error) => Err(error),
-            None => Ok(()),
+        if let Some(error) = failure {
+            return Err(error);
         }
+        #[cfg(target_os = "linux")]
+        if let Some(completion) = self.source_capture_completion.take() {
+            completion.complete()?;
+        }
+        Ok(())
     }
 }
 

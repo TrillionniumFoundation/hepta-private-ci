@@ -47,6 +47,9 @@ use crate::circuit_cell_scope_digest_v1;
 mod codec;
 #[path = "circuit_task_source_history.rs"]
 mod history;
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_close.rs"]
+pub(crate) mod source_close;
 pub use history::HistoricalCircuitTaskSourceObservationV1;
 pub use history::HistoricalCircuitTaskSourceV1;
 #[path = "circuit_task_source_journal.rs"]
