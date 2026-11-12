@@ -8,6 +8,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
+use crate::CellLearningEvaluationErrorV1;
 use crate::CellQ24ModelProposalErrorV1 as ProposalError;
 use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
@@ -241,7 +242,7 @@ fn q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback() -
 }
 
 #[test]
-fn q24_model_proposal_evaluation_no_update_never_creates_a_proposal() -> anyhow::Result<()> {
+fn q24_model_proposal_keeps_ineligible_and_insufficient_decisions_distinct() -> anyhow::Result<()> {
     for disposition in [
         IndependentEvaluationDispositionV1::Ineligible,
         IndependentEvaluationDispositionV1::InsufficientEvidence,
@@ -258,8 +259,16 @@ fn q24_model_proposal_evaluation_no_update_never_creates_a_proposal() -> anyhow:
         let saved = fs::read(directory.path().join("proposal"))?;
         let now = fixture.now;
         assert!(matches!(
-            fixture.commit(&mut owner, now),
-            Err(ProposalError::Binding("NoUpdate has no model proposal"))
+            (disposition, fixture.commit(&mut owner, now)),
+            (
+                IndependentEvaluationDispositionV1::Ineligible,
+                Err(ProposalError::Binding("NoUpdate has no model proposal"))
+            ) | (
+                IndependentEvaluationDispositionV1::InsufficientEvidence,
+                Err(ProposalError::Evaluation(
+                    CellLearningEvaluationErrorV1::InsufficientEvidence
+                ))
+            )
         ));
         assert_eq!(fs::read(directory.path().join("proposal"))?, saved);
     }

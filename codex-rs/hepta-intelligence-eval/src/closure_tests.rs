@@ -481,6 +481,46 @@ fn preregistered_roles_allow_unchanged_safety_and_cost_within_budget()
 }
 
 #[test]
+fn incomplete_evidence_keeps_failed_metrics_without_a_completed_negative_decision()
+-> Result<(), EvaluationClosureError> {
+    let (value, roles) = mixed_role_bundle()?;
+    let mut missing_snapshot = value.clone();
+    missing_snapshot.snapshot_ids.truncate(2);
+    let mut missing_window = value.clone();
+    missing_window.future_window_ids.truncate(1);
+    let mut missing_retention = value.clone();
+    missing_retention.retention_receipt_digests.clear();
+    let mut missing_unlearning = value.clone();
+    missing_unlearning.unlearning_receipt_digest = Digest32::ZERO;
+    let mut missing_support = value;
+    missing_support.metrics[1].support_digest = Digest32::ZERO;
+    for mut incomplete in [
+        missing_snapshot,
+        missing_window,
+        missing_retention,
+        missing_unlearning,
+        missing_support,
+    ] {
+        incomplete.metrics[0].candidate.lower = FixedQ32::from_raw(75);
+        incomplete.metrics[0].baseline.upper = FixedQ32::from_raw(75);
+        let decision = decide_independently_v2(incomplete, roles.clone(), /*now*/ 50)?;
+        assert_eq!(
+            (
+                decision.disposition,
+                decision.failed_metrics,
+                decision.authority
+            ),
+            (
+                IndependentEvaluationDispositionV1::InsufficientEvidence,
+                vec![id("task-utility")],
+                AuthorityPosture::DENY_ALL,
+            )
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn noninferiority_uses_direction_and_includes_the_registered_margin()
 -> Result<(), EvaluationClosureError> {
     for direction in [
