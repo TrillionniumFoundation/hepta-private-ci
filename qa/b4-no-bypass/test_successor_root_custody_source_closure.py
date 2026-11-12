@@ -24,8 +24,10 @@ MATERIAL = A + "authority_host_post_a_publication_material.rs"
 CALLERS = {
     "fixed_custody": (PLAN,), "fixed_data": (PLAN,),
     "baseline": (STORE,), "physical": (STORE,), "inputs": (),
-    "register": (ENROLL,), "exact": (ENROLL,), "baseline_post": (ENROLL,),
-    "capture_read": (TRANSPORT,), "finish": (TRANSPORT,), "reply_data": (TRANSPORT,),
+    "register": (ENROLL,), "exact": (ENROLL, A + "authority_host_publication_completed_successor.rs"), "baseline_post": (ENROLL,),
+    "capture_read": (TRANSPORT, A + "authority_host_publication_completed.rs"),
+    "finish": (TRANSPORT, A + "authority_host_publication_completed.rs"),
+    "reply_data": (TRANSPORT, A + "authority_host_publication_completed.rs"),
     "physical_retirement": (), "cell_physical": (READ,), "readonly_description": (READ,),
 }
 CALLERS = {"root_successor_" + key: value for key, value in CALLERS.items()}
@@ -89,7 +91,7 @@ def require_structure(path, source):
                 raise PROOF.VerificationFailure("exact post-context checks must precede Ready")
     if path == TRANSPORT:
         body, _ = route.function(source, "fn serve_generation_publication_with_end(")
-        arm = route.original.span(body, "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {")
+        arm = route.original.span(body, "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {")
         context = route.original.span(body, "|initial, proof| {")
         if not arm[0] < context[0] < context[1] < arm[1]:
             raise PROOF.VerificationFailure("whole Root current context must remain armed")
@@ -100,7 +102,7 @@ def require_structure(path, source):
         if not re.match(r"\s*,\s*\)\?;", tail):
             raise PROOF.VerificationFailure("full writer postchecks must return Ok")
         for marker in ("RegisteredSuccessorData::finish_observed(",
-                       "RegisteredSuccessorData::read_data(", "refusal::require_end(end)?", "Ok(raw)"):
+                       "RegisteredSuccessorData::read_data(", "refusal::require_end(end)?", "Ok((raw, accepted))"):
             if marker not in tail:
                 raise PROOF.VerificationFailure("C physical re-read and deadline must precede Ready")
     if path == READ:
@@ -216,7 +218,7 @@ class SuccessorRootCustodySourceTests(unittest.TestCase):
         self.mutate(ENROLL, lambda s: s.replace("RegisteredSuccessorData::require_baseline(&retained)?;", "if false { RegisteredSuccessorData::require_baseline(&retained)?; }", 1))
 
     def test_cold_commands_require_actual_current_and_complete_context_postchecks(self):
-        self.check(TRANSPORT, "serve_generation_publication_with_end", ("PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {", "version != PublicationVersion::DurableV2 || before.current != intent.target", "RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?", "raw.len() > 16 * 1024", "RegisteredSuccessorData::finish_observed(successor, &observed.cut)?", "RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed", "refusal::require_end(end)?"))
+        self.check(TRANSPORT, "serve_generation_publication_with_end", ("PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "version != PublicationVersion::DurableV2 || before.current != intent.target", "RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?", "raw.len() > 16 * 1024", "RegisteredSuccessorData::finish_observed(successor, &observed.cut)?", "RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed", "refusal::require_end(end)?"))
         self.check(STORE, "finish_observed", ("self.observe_retired(", "false", "!= *expected", "self.require_exact()"))
 
 

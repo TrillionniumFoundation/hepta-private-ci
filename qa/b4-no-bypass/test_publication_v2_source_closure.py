@@ -29,7 +29,9 @@ CALLERS = {
                                        A + "root_publication_preparation.rs",
                                        A + "authority_host_publication_grant.rs"),
     "root_publication_reserved_origin": (ENROLL,),
-    "root_publication_reserved_version": (ENROLL, REFUSAL, A + "authority_host_publication_grant_store.rs"),
+    "root_publication_reserved_version": (ENROLL, REFUSAL, A + "authority_host_publication_grant_store.rs",
+        A + "authority_host_publication_acceptance.rs", A + "authority_host_publication_completed_refusal.rs",
+        A + "authority_host_publication_successor.rs"),
     "root_publication_current_live_profile": (ENROLL, OWNER),
 }
 

@@ -130,7 +130,7 @@ def require_structure(path, source):
             raise PROOF.VerificationFailure("cold recovery cannot initialize a missing issue slot")
     if path == TRANSPORT:
         body, _ = route.function(source, "fn serve_generation_publication_with_end(")
-        lo, hi = span(body, "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {")
+        lo, hi = span(body, "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {")
         if not lo < position(body, "HostAuthorityService::issue_generation_publication_grant(") < hi:
             raise PROOF.VerificationFailure("same actual publication refusal encloses C signing")
 
@@ -271,7 +271,7 @@ class OriginalCGrantRootSourceTests(unittest.TestCase):
         self.mutate(GRANT, lambda source: source.replace(
             "    binding: FinalUseBinding,", "    pub(crate) binding: FinalUseBinding,", 1))
         self.reject(TRANSPORT, "serve_generation_publication_with_end",
-                    "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {")
+                    "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {")
         self.reject(TRANSPORT, "serve_generation_publication_with_end", "let _ = RegisteredGenerationPublication::refuse(slot);")
         self.reject(REGISTRATION, "enroll_generation_publication",
                     "if version == PublicationVersion::DurableV2")
