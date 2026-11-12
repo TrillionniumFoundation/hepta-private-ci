@@ -850,6 +850,10 @@ pub use circuit_feature_current::OriginalCircuitFeatureIngressV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitFeatureLearningSourcesV1;
 #[cfg(target_os = "linux")]
+pub(crate) use circuit_feature_current::OriginalHistoricalCircuitFeatureSourcesV1;
+#[cfg(target_os = "linux")]
+pub(crate) use circuit_feature_current::OriginalSuccessorRecoveryModeV1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitFeatureCompletionV1;

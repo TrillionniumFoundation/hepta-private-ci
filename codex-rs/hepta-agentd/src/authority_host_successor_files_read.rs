@@ -25,6 +25,7 @@ pub(crate) struct RootSuccessorTaskCutV1 {
     pub(crate) cell_sequence: u64,
     pub(crate) cell_checkpoint: String,
     pub(crate) definition: String,
+    pub(crate) writer_epoch: u64,
     pub(crate) publication: RootHistoricalTaskPublicationDataV1,
 }
 
@@ -123,6 +124,7 @@ impl RootOriginalSuccessorFilesV1 {
                     .semantic_digest()
                     .map_err(io::Error::other)?
                     .to_string(),
+                writer_epoch: target.writer_epoch(),
                 publication,
             })
         })

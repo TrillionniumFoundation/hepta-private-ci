@@ -35,10 +35,14 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
 #[path = "circuit_feature_current_control.rs"]
 mod control;
+#[path = "circuit_feature_historical_source.rs"]
+mod historical_source;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
 #[path = "circuit_feature_learning_source.rs"]
 mod learning_source;
+pub(crate) use historical_source::OriginalHistoricalCircuitFeatureSourcesV1;
+pub(crate) use historical_source::OriginalSuccessorRecoveryModeV1;
 #[path = "circuit_feature_current_owner.rs"]
 mod owner;
 #[path = "circuit_feature_current_publication.rs"]
