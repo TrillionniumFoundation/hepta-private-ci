@@ -5,6 +5,8 @@
 mod b_evaluate;
 #[path = "ordinary_q24_b_publication_observer_tests.rs"]
 mod b_publication_observer;
+#[path = "ordinary_q24_cold_acceptance_data_tests.rs"]
+mod cold_acceptance_data;
 #[path = "ordinary_q24_cold_administration_tests.rs"]
 mod cold_administration;
 #[path = "ordinary_q24_cold_deployment_tests.rs"]
