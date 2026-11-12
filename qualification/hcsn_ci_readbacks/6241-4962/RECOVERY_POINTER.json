@@ -10,14 +10,16 @@
   "artifact_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13936125116/zip",
   "expected_zip_bytes": 11597,
   "expected_zip_sha256_from_github_metadata": "1dd17c8ac54cab00242af1d7ce88a1cefcde24c7ecaf3ba8634fd1bdcf978e7c",
-  "zip_bytes_sha256_verification": "UNKNOWN_PENDING_EXECUTOR",
-  "raw_artifact_member_and_npz_readback": "UNKNOWN_PENDING_EXECUTOR",
-  "local_executor_state": "unavailable",
+  "zip_bytes_sha256_verification": "VERIFIED",
+  "raw_artifact_member_and_npz_readback": "VERIFIED",
+  "local_executor_state": "root executor restored; child executor unavailable",
   "persisted_now": [
-    "complete decoded job log",
+    "complete original artifact ZIP",
+    "all four raw artifact members",
+    "complete decoded job log and log-derived result",
     "original GitHub API run/jobs/artifact metadata",
-    "JSON substring of logged result, explicitly not raw artifact RESULT.json",
-    "13 immutable original source blobs and content-addressed source witness"
+    "13 immutable original source blobs and fresh SHA256 verification",
+    "independently authored stdlib inspector, actual source-byte input bundle and original passed receipt"
   ],
   "reported_existing_execution": {
     "api_forward_calls": 39,
@@ -44,14 +46,36 @@
     "torch": 0,
     "optimizer": 0
   },
-  "recovery_steps": [
+  "recovery_steps": [],
+  "admission": "HOLD_NO_GO",
+  "added_independent_complete_training_replays": 0,
+  "normalized_raw_gradient_vectors_claimed": false,
+  "completed_from_pointer_commit": "cb6f562de770849027dd6279f1c086de404890e3",
+  "completed_recovery_steps": [
     "Download only existing artifact 13936125116; do not rerun or dispatch workflow/native/model work.",
     "Verify complete 11597-byte ZIP SHA256 against the expected digest before retaining original.zip.",
     "Retain actual raw RESULT.json/CALLS.json/ARRAYS.npz/initial-source.json members and verify CRC/member/source/array commitments.",
     "Preserve LOG-RESULT.json as a log-derived record; do not rename it to a raw artifact result.",
     "Append a new evidence-only successor under this path, keeping source head4962 and all earlier receipts unchanged."
   ],
-  "admission": "HOLD_NO_GO",
-  "added_independent_complete_training_replays": 0,
-  "normalized_raw_gradient_vectors_claimed": false
+  "completion": {
+    "receipt": "STDLIB-READBACK.json",
+    "receipt_git_blob_sha1": "ce4280ad285a7d39d5c0ce7b636343af7bb4909d",
+    "receipt_sha256": "bb5c5cb7dcbda8f3d3a9599ea021a61100a57fbc6f8d4f53256fd451ffe148a0",
+    "verifier": "STDLIB-INSPECTOR.py",
+    "verifier_git_blob_sha1": "ebc7a0e8f6587aa4fafac8c5a82b740691b0274f",
+    "verifier_sha256": "999be4cafdce4d846742e9088e3b5b2e05fab85b7bf6e8b4015494c443f2c4ea",
+    "source_bundle": "SOURCE-BUNDLE.json",
+    "source_bundle_git_blob_sha1": "2e758ff726698f438b02509f509ee433adccbc7c",
+    "executed_by": "restored root executor",
+    "exit_code": 0,
+    "raw_vjp_coordinates": 69,
+    "retained_operator_contractions": 69,
+    "uniform_oracle_coordinates": 27,
+    "source_bytes_rehashed": true,
+    "new_candidate_calls": 0,
+    "new_dde_calls": 0,
+    "new_torch_calls": 0,
+    "new_optimizer_calls": 0
+  }
 }

@@ -1,0 +1,189 @@
+{
+  "array_members": {
+    "graded_gradient0": {
+      "bytes": 224,
+      "sha256": "a8ac2c2f6c5cbd83ade9c3bf95c6b6fbbae17994382d2f96ef1d82f8022d8514",
+      "shape": [
+        12
+      ]
+    },
+    "graded_gradient1": {
+      "bytes": 320,
+      "sha256": "ea23c6f1473e629f217d69dc0f0b3f64c57a18035d6703fb6d983490942f25b4",
+      "shape": [
+        12,
+        2
+      ]
+    },
+    "graded_gradient2": {
+      "bytes": 144,
+      "sha256": "30b8054da33527002d39cac597863025c54c1e18513a97c53b978b33846248f5",
+      "shape": [
+        2
+      ]
+    },
+    "graded_gradient3": {
+      "bytes": 160,
+      "sha256": "e08aebe0a4aab78403650d513002579727d420679e6e133974758671a214d438",
+      "shape": [
+        2,
+        2
+      ]
+    },
+    "graded_output": {
+      "bytes": 1760,
+      "sha256": "20980bdb838fcb31ab26d7d2984677ae4fa127c8566e9ccbe495ede4188b6283",
+      "shape": [
+        4,
+        17,
+        3
+      ]
+    },
+    "uniform_gradient0": {
+      "bytes": 184,
+      "sha256": "8c6ea6818a02191b920109049176ce2606936b9fa0fd178c8ea3f98c8c61b717",
+      "shape": [
+        7
+      ]
+    },
+    "uniform_gradient1": {
+      "bytes": 240,
+      "sha256": "9e9edc3edad467fbb4ab3ef37a0d9319d00f8cf04cbc9c74f0dcff58c7ccd3a9",
+      "shape": [
+        7,
+        2
+      ]
+    },
+    "uniform_gradient2": {
+      "bytes": 144,
+      "sha256": "f1ddda8f84fc64221172f03017eb830b4c36ec6565f24752190c0f3e20bfd5ce",
+      "shape": [
+        2
+      ]
+    },
+    "uniform_gradient3": {
+      "bytes": 160,
+      "sha256": "d5672aa492e3a2546d685662a832e755aa0026d88ae27c63732039732ecbe26c",
+      "shape": [
+        2,
+        2
+      ]
+    },
+    "uniform_oracle_gradient0": {
+      "bytes": 184,
+      "sha256": "4619a7528f625b452e892bfd49304062fa565068f3f5bbdc33be54e59f7dcbe0",
+      "shape": [
+        7
+      ]
+    },
+    "uniform_oracle_gradient1": {
+      "bytes": 240,
+      "sha256": "9a1f3bf3aea65a7add07ab4b8d3dd6b5d7e2362805fbad458e692f3939c625c7",
+      "shape": [
+        7,
+        2
+      ]
+    },
+    "uniform_oracle_gradient2": {
+      "bytes": 144,
+      "sha256": "ab292ecf547208b3e4c28326d269d074de3dbc8caa468463c28eae200f96e872",
+      "shape": [
+        2
+      ]
+    },
+    "uniform_oracle_gradient3": {
+      "bytes": 160,
+      "sha256": "70abf67a7e002e42b9a23e2cae818ed2741fe30407b994fa74aa4e307b880436",
+      "shape": [
+        2,
+        2
+      ]
+    },
+    "uniform_oracle_output": {
+      "bytes": 1280,
+      "sha256": "951b6fce50aba2d7b117b5d027d6e61b4adcde5ab7c01da78f377af1d3b5531c",
+      "shape": [
+        4,
+        12,
+        3
+      ]
+    },
+    "uniform_output": {
+      "bytes": 1280,
+      "sha256": "a610eb25e978bde2a20ff619665a51055a83c3c5d9493a0ea3b3c38a4f361ec3",
+      "shape": [
+        4,
+        12,
+        3
+      ]
+    }
+  },
+  "basis_forwards_recounted": 39,
+  "comparisons": [
+    {
+      "geometry": "uniform",
+      "maximum_primal_error": 7.268040336239068e-12,
+      "maximum_vjp_error": 2.220446049250313e-16,
+      "raw_gradient_coordinates": 27,
+      "retained_contraction_error": 8.881784197001252e-16
+    },
+    {
+      "geometry": "graded",
+      "maximum_primal_error": 6.538127287833428e-11,
+      "maximum_vjp_error": 2.220446049250313e-16,
+      "raw_gradient_coordinates": 42,
+      "retained_contraction_error": 8.881784197001252e-16
+    }
+  ],
+  "inspector_source_sha256": "999be4cafdce4d846742e9088e3b5b2e05fab85b7bf6e8b4015494c443f2c4ea",
+  "journal_records": 39,
+  "member_hashes": {
+    "initial-amplitudes/ARRAYS.npz": {
+      "bytes": 7682,
+      "sha256": "fd28bcc2244c648ffc9fff10c0fee40cec8b8edbc4158d3ee480a3af53bf1115"
+    },
+    "initial-amplitudes/CALLS.json": {
+      "bytes": 25166,
+      "sha256": "38235950ff7181637ba2e71f16f0ca2c7925c2fb4550b2a8a192df87ea8e38e7"
+    },
+    "initial-amplitudes/RESULT.json": {
+      "bytes": 31909,
+      "sha256": "c88bfc3bcaef608fff919d439e2984cea9be26b583f1c3c8626109131f0689ed"
+    },
+    "initial-source.json": {
+      "bytes": 1945,
+      "sha256": "b3770cb551bda515e3e6f0197084c0df2e608f8db3edfb713202becd278acc4c"
+    }
+  },
+  "new_candidate_calls": 0,
+  "new_dde_calls": 0,
+  "new_optimizer_calls": 0,
+  "new_torch_calls": 0,
+  "normalized_raw_vectors_retained": false,
+  "optimizer_updates": 0,
+  "passed": true,
+  "probe_cpu_seconds": 8.614676007,
+  "probe_maximum_rss_kib": 423980,
+  "probe_wall_seconds": 9.160633599,
+  "raw_vjp_coordinates_checked": 69,
+  "retained_operator_contractions_checked": 69,
+  "runtime": {
+    "device": "cpu",
+    "numpy": "2.3.5",
+    "python": "3.12.16",
+    "scipy": "1.17.0",
+    "threads": 1,
+    "torch": "2.8.0+cpu",
+    "torch_build": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
+  "schema": "hcsn-initial-amplitude-stdlib-readback-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "source_bytes_rehashed": true,
+  "source_commit": "4962e28c1ffa073e5e994194f3b5785659af236c",
+  "source_maps_equal": 13,
+  "uniform_oracle_coordinates_checked": 27,
+  "uniform_oracle_forwards_reported": 2,
+  "uniform_oracle_maximum_error": 1.3119971775665817e-10,
+  "zip_bytes": 11597,
+  "zip_sha256": "1dd17c8ac54cab00242af1d7ce88a1cefcde24c7ecaf3ba8634fd1bdcf978e7c"
+}
