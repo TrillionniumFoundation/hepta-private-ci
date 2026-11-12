@@ -1,0 +1,21 @@
+function composeFutureSource(keys,base,skips){
+ const state={},proofs=[],conflicts=[],transitions=[],declared=[];
+ for(const path of load("futureUnion:paths"))state[path]=base[path]?load("phaseRoot:blob:"+base[path]+":raw"):null;
+ function operations(p){if(Array.isArray(p.operations)&&p.operations[0]?.path){const indices={};return p.operations.map(o=>({path:o.path,op:o,index:indices[o.path]=(indices[o.path]??-1)+1}));}return (p.files||[p]).flatMap(f=>(f.operations||f.ops).map((op,index)=>({path:f.path,op,index})));}
+ for(const key of keys){const p=load(key),byPath={};for(const{path,op,index}of operations(p)){
+   if(!(path in state))state[path]=base[path]?load("phaseRoot:blob:"+base[path]+":raw"):null;
+   const pre=state[path],skip=skips.find(s=>s.key===key&&s.path===path&&s.operationIndex===index);
+   if(skip){if(git(pre)!==skip.already_exact_postimage)throw Error("Redundant operation proof changed");proofs.push({...skip,redundant:true});continue;}
+   const kind=op.op||op.operation||op.action||op.kind,before=op.before??op.old_text??op.old,after=op.after??op.new_text??op.new;let post;
+   if(before!==undefined){if(typeof pre!=="string"||pre.split(before).length!==2){conflicts.push({key,path,index,kind,before:before.slice(0,500),matches:typeof pre==="string"?pre.split(before).length-1:null});break;}
+     post=pre.replace(before,after);if(post.split(after).length!==2||post.replace(after,before)!==pre){conflicts.push({key,path,index,error:"reverse match nonunique",after:after.slice(0,250)});break;}}
+   else if(op.content!==undefined){if(pre!==null){conflicts.push({key,path,index,kind,error:"add to existing file",pin:git(pre)});break;}post=op.content;}
+   else if(kind==="append"){if(typeof pre!=="string")throw Error("Append not file");post=pre+op.text;if(!post.endsWith(op.text)||post.slice(0,-op.text.length)!==pre)throw Error("Append reverse");}
+   else throw Error("Unknown operation");
+   state[path]=post;byPath[path]=(byPath[path]||0)+1;const postPin=git(post);proofs.push({key,path,index,operation:kind??"replace",before:pre===null?null:git(pre),after:postPin,unique_forward_reverse:true});store("futureUnion:derivedRaw:"+postPin,post);
+ }transitions.push({key,paths:Object.keys(byPath).length,operations:Object.values(byPath).reduce((a,b)=>a+b,0)});
+ if(conflicts.length)break;
+ for(const f of(p.files||[p])){const expected=f.postimage??f.post;const pin=typeof expected==="string"?expected:expected?.blob;if(pin)declared.push({key,path:f.path,expected:pin,actual:git(state[f.path]),equal:pin===git(state[f.path])});}
+ }
+ return{state,proofs,conflicts,transitions,declared};
+}

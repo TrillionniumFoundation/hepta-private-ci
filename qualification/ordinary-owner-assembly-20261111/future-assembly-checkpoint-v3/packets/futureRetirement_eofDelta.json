@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.original-root-retirement-eof-ordering-delta.v1",
+  "status": "static-candidate-not-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "actual_base": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "source_chain": [
+    "27877fffb867deb92360d1e22ae7fc227eb1fc94",
+    "527fc3d10d856c4ed7e1816907c08e086ba153e6",
+    "fea83cbd505a56ee76ec7953501eb24ad756568e",
+    "1d287a5958a1411e67a0bfc0a0517d46ed3228e5"
+  ],
+  "finding": {
+    "confirmed_static": true,
+    "peer": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+    "channel": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+    "cause": "Original request checks the pinned Root pidfd after receiving a complete response. Original exchange returns after writing it without a client-consumption acknowledgement. Immediate Root resource drop and process return can race that postcheck."
+  },
+  "change": "Root keeps the actual final peer and all actual returned joined owners until an EOF-only read of that same live peer. The new method consumes the stream slot once, reads exactly one byte using only owner.end, rejects any byte, and postchecks the original peer/end on EOF. It never starts a new frame or per-request deadline; it does not prove response consumption or C completion.",
+  "client_contract": "Only after complete ACK2 decoding and all existing exact binding/purpose/sequence/digest, original deadline and pidfd postchecks, the client closes/shuts down its same actual final stream including retained aliases while the original daemon remains alive. It must not wait for Root exit first. Any error still closes the common Gate.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "preimage": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+      "postimage": "2cbe42c91de941a1dd162bc72a9b472615dcd96c",
+      "bytes": 9851,
+      "sha256": "987cbd8d1f00f2247091ff628a18a82a493fb1e25541f21650ce076647b8e984",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    /// Serve one frame. The handler must return a complete bounded response.\n",
+          "after": "    /// Consume this channel only after a terminal response was sent. Wait for\n    /// the same live peer to close its write side within the original end.\n    /// Any byte is a protocol error: this never starts another framed request\n    /// or creates another per-request deadline. EOF is only an exit-ordering\n    /// fact, not evidence that the peer consumed a response or completed work.\n    pub fn wait_for_original_peer_eof(&mut self) -> Result<(), HostIssuerTransportError> {\n        let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;\n        let result = (|| {\n            let end = self.owner.end();\n            self.owner.check(end)?;\n            let mut byte = [0; 1];\n            if self.owner.read(&mut stream, &mut byte, end)? != 0 {\n                return Err(HostIssuerTransportError::InvalidRequest);\n            }\n            self.owner.check(end)?;\n            Ok(())\n        })();\n        if result.is_err() {\n            let _ = stream.shutdown(Shutdown::Both);\n        }\n        // Success also consumes the slot. There is no reconnect, rearm or\n        // following request even when the peer supplied a clean EOF.\n        result\n    }\n\n    /// Serve one frame. The handler must return a complete bounded response.\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "preimage": "9e08890e4af6adc36481f4e1a26085ea8262e7a1",
+      "postimage": "6c7416f4471dd7cdff6fb80e8f312bf626a31b59",
+      "bytes": 19088,
+      "sha256": "8532f7e2bc88f757f97d3c98be9e911c41d2bb670fd27ec5247d62501708debb",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "        self.retirement.mark_original_workers_acknowledged(joined)?;\n        Ok(())\n",
+          "after": "        self.retirement.mark_original_workers_acknowledged(joined)?;\n        // Keep this Root process and every actual returned owner alive while\n        // the client performs its original response and pidfd postchecks. The\n        // client must then close this same stream while its process stays\n        // alive. This EOF orders release; it proves neither ACK consumption\n        // nor any daemon/C completion.\n        HostAuthorityPeerChannel::wait_for_original_peer_eof(&mut self.channel).map_err(|error| {\n            deployment_uncertain(\"original final peer release after joined ACK\", io::Error::other(error))\n        })?;\n        self.retirement.require_original(self.retirement.gate())?;\n        joined.require_original(&self.retirement)?;\n        Ok(())\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer_tests.rs",
+      "preimage": "8d9b69b7f324322c8f1cabd925327ffe3ef3b29c",
+      "postimage": "5caf2ac3fdd3941694efac25c14d7142b535b69c",
+      "bytes": 10328,
+      "sha256": "9241a02c40616fcd6c790c4175acaf6ace2963ae58bb79f92ba43d4892223cde",
+      "operations": [
+        {
+          "op": "append",
+          "text": "\n#[test]\nfn original_peer_eof_retains_the_channel_until_the_live_client_releases_it() {\n    let (mut server, client) = channel(32);\n    let retained_client_stream = client.try_clone().unwrap();\n    let pid = rustix::process::getpid();\n    let owner = rustix::process::pidfd_open(pid, rustix::process::PidfdFlags::empty()).unwrap();\n    let mut client = HostAuthorityPeerChannel::from_stream(\n        client,\n        HostAuthorityPeerPolicy {\n            peer: HostIssuerPeer {\n                uid: rustix::process::getuid().as_raw(),\n                pid: pid.as_raw_nonzero().get() as u32,\n            },\n            timeout: Duration::from_millis(100),\n            lifetime: Duration::from_secs(3),\n            request_bound: 32,\n            response_bound: 32,\n        },\n        owner,\n    )\n    .unwrap();\n    std::thread::scope(|scope| {\n        let returned = scope.spawn(move || {\n            assert_eq!(\n                server.exchange(|request| {\n                    assert_eq!(request, b\"last\");\n                    Ok(b\"joined\".to_vec())\n                }),\n                Ok(true)\n            );\n            assert_eq!(server.wait_for_original_peer_eof(), Ok(()));\n            assert_eq!(\n                server.wait_for_original_peer_eof(),\n                Err(HostIssuerTransportError::Closed)\n            );\n        });\n        // request() includes the original final pidfd/deadline check. The\n        // release is ordered after that real check, not after a bare read.\n        assert_eq!(client.request(b\"last\"), Ok(b\"joined\".to_vec()));\n        drop(client);\n        retained_client_stream.shutdown(Shutdown::Write).unwrap();\n        returned.join().unwrap();\n    });\n}\n\n#[test]\nfn original_peer_eof_rejects_an_extra_byte_or_frame_without_rearming() {\n    for bytes in [vec![0], vec![0, 0, 0, 1, b'x']] {\n        let (mut server, mut client) = channel(32);\n        client.write_all(&bytes).unwrap();\n        assert_eq!(\n            server.wait_for_original_peer_eof(),\n            Err(HostIssuerTransportError::InvalidRequest)\n        );\n        assert_eq!(\n            server.wait_for_original_peer_eof(),\n            Err(HostIssuerTransportError::Closed)\n        );\n        let mut response = Vec::new();\n        client.read_to_end(&mut response).unwrap();\n        assert!(response.is_empty());\n    }\n}\n\n#[test]\nfn original_peer_eof_rejects_the_exit_of_the_actual_connected_process() {\n    const CHILD: &str = \"HEPTA_ORIGINAL_PEER_EOF_COMPONENT_CHILD\";\n    if let Some(path) = std::env::var_os(CHILD) {\n        let _stream = UnixStream::connect(path).unwrap();\n        let mut release = [0; 1];\n        std::io::stdin().read_exact(&mut release).unwrap();\n        assert_eq!(release, [1]);\n        return;\n    }\n    let directory = tempfile::tempdir().unwrap();\n    let path = directory.path().join(\"peer.sock\");\n    let listener = std::os::unix::net::UnixListener::bind(&path).unwrap();\n    listener.set_nonblocking(true).unwrap();\n    let module = module_path!().split_once(\"::\").unwrap().1;\n    let test_name = format!(\n        \"{module}::original_peer_eof_rejects_the_exit_of_the_actual_connected_process\"\n    );\n    let mut child = std::process::Command::new(std::env::current_exe().unwrap())\n        .args([\"--exact\", &test_name, \"--nocapture\"])\n        .env(CHILD, &path)\n        .stdin(std::process::Stdio::piped())\n        .spawn()\n        .unwrap();\n    let child_pid = rustix::process::Pid::from_raw(child.id() as i32).unwrap();\n    let owner =\n        rustix::process::pidfd_open(child_pid, rustix::process::PidfdFlags::empty()).unwrap();\n    let mut descriptors = [rustix::event::PollFd::new(&listener, rustix::event::PollFlags::IN)];\n    assert_ne!(\n        rustix::event::poll(\n            &mut descriptors,\n            Some(&rustix::event::Timespec::try_from(Duration::from_secs(3)).unwrap())\n        )\n        .unwrap(),\n        0\n    );\n    let (stream, _) = listener.accept().unwrap();\n    let mut server = HostAuthorityPeerChannel::from_stream(\n        stream,\n        HostAuthorityPeerPolicy {\n            peer: HostIssuerPeer {\n                uid: rustix::process::getuid().as_raw(),\n                pid: child.id(),\n            },\n            timeout: Duration::from_millis(100),\n            lifetime: Duration::from_secs(3),\n            request_bound: 32,\n            response_bound: 32,\n        },\n        owner,\n    )\n    .unwrap();\n    child.stdin.take().unwrap().write_all(&[1]).unwrap();\n    assert!(child.wait().unwrap().success());\n    // The actual connected child's pidfd is readable. Its simultaneous EOF\n    // must not erase the original lifetime refusal.\n    assert_eq!(\n        server.wait_for_original_peer_eof(),\n        Err(HostIssuerTransportError::PeerDenied)\n    );\n    assert_eq!(\n        server.wait_for_original_peer_eof(),\n        Err(HostIssuerTransportError::Closed)\n    );\n}\n"
+        }
+      ]
+    }
+  ],
+  "preservation": {
+    "old_request_exchange_and_other_peer_source": "remove only the inserted method to reconstruct the complete original peer bytes",
+    "original_agentd_ack_and_postchecks": "unchanged before additional wait; joined is still borrowed and owned by the enclosing scope",
+    "source_predicates_not_changed": true,
+    "old_peer_tests_prefix": true,
+    "root17_names_count_unchanged": true,
+    "wire_sequence_unchanged": true
+  },
+  "components": {
+    "new": 3,
+    "executed": false,
+    "scope": [
+      "same-process live-peer framed request with original request postcheck, then actual retained stream write shutdown and EOF-only slot consumption",
+      "extra single byte and extra complete frame are refused and never rearm",
+      "actual child process connects to a Unix listener; original peercred and real pidfd are checked, actual child exit remains PeerDenied even with simultaneous EOF"
+    ],
+    "not_qualification": [
+      "No real Root daemon shutdown/restart claim",
+      "No C effect proof",
+      "No full phase success",
+      "No native/checker/formatter results"
+    ]
+  },
+  "forbidden_actions_performed": [],
+  "refs_changed": false
+}

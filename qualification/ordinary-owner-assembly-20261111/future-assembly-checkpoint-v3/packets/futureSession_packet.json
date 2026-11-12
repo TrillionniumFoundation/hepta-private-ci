@@ -1,0 +1,427 @@
+{
+  "schema": 1,
+  "status": "FROZEN_AUTHOR_STATIC_FUTURE_PACKET; independent review and actual external receiver/Startup wiring remain pending; no native/typecheck/qualification",
+  "source": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "source_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": {
+        "blob": "0f10fdb6433c09968fc4146254adfc204baad411",
+        "bytes": 30409,
+        "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393"
+      },
+      "post": {
+        "blob": "14386bd2b6565d192121d06ffa56d8d351c0502f",
+        "bytes": 33447,
+        "sha256": "f65bc28c00bfc8772b94c5b799fe6923831d5bab59e21cdecbb2473e618af77b"
+      },
+      "ops": [
+        {
+          "old_text": "use tokio::io::unix::AsyncFd;\n",
+          "new_text": "use tokio::io::unix::AsyncFd;\n\n#[path = \"root_authority_session_lifecycle.rs\"]\nmod lifecycle;\nuse lifecycle::OriginalSessionWorker;\npub(crate) use lifecycle::OriginalConsumerFailure;\npub(crate) use lifecycle::OriginalConsumerJoinSummary;\npub(crate) use lifecycle::OriginalRootSessionCustodySlot;\npub(crate) use lifecycle::OriginalRootSessionJoinObservation;\npub(crate) use lifecycle::OriginalRootWorkerTermination;\n",
+          "expected_matches": 1,
+          "purpose": "Private lifecycle module and typed component observation exports."
+        },
+        {
+          "old_text": "    worker: tokio::task::JoinHandle<()>,\n    writer_file: WriterCustody,\n}",
+          "new_text": "    worker: OriginalSessionWorker,\n    writer_file: WriterCustody,\n    // Last: only after the original operational fields have really dropped.\n    _retirement: Option<lifecycle::OriginalSessionRetirement>,\n}",
+          "expected_matches": 1,
+          "purpose": "Legacy handle or exact retained phase handle; final retirement notice."
+        },
+        {
+          "old_text": "        refresh(&live, &stream, &writer_file).await?;\n        let background = Arc::clone(&live);\n        let background_file = Arc::clone(&writer_file);\n        let worker =",
+          "new_text": "        refresh(&live, &stream, &writer_file, /*phase_jobs*/ None).await?;\n        let background = Arc::clone(&live);\n        let background_file = Arc::clone(&writer_file);\n        let worker =",
+          "expected_matches": 1,
+          "purpose": "Default initial feed has no phase registry."
+        },
+        {
+          "old_text": "        let worker = tokio::spawn(RootWorker {\n            future: Box::pin(async move {\n                let _fence = FenceOnDrop(Arc::clone(&background));\n                loop {\n                    tokio::time::sleep(Duration::from_millis(100)).await;\n                    if refresh(&background, &stream, &background_file)\n                        .await",
+          "new_text": "        let worker = tokio::spawn(RootWorker {\n            future: Box::pin(async move {\n                let _fence = FenceOnDrop(Arc::clone(&background));\n                loop {\n                    tokio::time::sleep(Duration::from_millis(100)).await;\n                    if refresh(&background, &stream, &background_file, /*phase_jobs*/ None)\n                        .await",
+          "expected_matches": 1,
+          "purpose": "Default background feed is unchanged apart from explicit None."
+        },
+        {
+          "old_text": "        Ok(Self {\n            live,\n            worker,\n            writer_file,\n        })\n    }\n    /// Only the explicit phase receiver",
+          "new_text": "        Ok(Self {\n            live,\n            worker: OriginalSessionWorker::Legacy(worker),\n            writer_file,\n            _retirement: None,\n        })\n    }\n    /// Only the explicit phase receiver",
+          "expected_matches": 1,
+          "purpose": "Default stores the SAME original JoinHandle and no notice."
+        },
+        {
+          "old_text": "        let writer_file = Arc::new(OnceLock::new());\n        refresh(&live, &stream, &writer_file).await?;\n        let background = Arc::clone(&live);\n        let background_file = Arc::clone(&writer_file);",
+          "new_text": "        let writer_file = Arc::new(OnceLock::new());\n        let consumer_jobs = lifecycle::OriginalConsumerJobs::new(&phase);\n        refresh(&live, &stream, &writer_file, Some(&consumer_jobs)).await?;\n        let background = Arc::clone(&live);\n        let background_file = Arc::clone(&writer_file);\n        let background_jobs = Arc::clone(&consumer_jobs);",
+          "expected_matches": 1,
+          "purpose": "Create one phase-only actual consumer registry outside LiveRoot."
+        },
+        {
+          "old_text": "                    if refresh(&background, &stream, &background_file)\n                        .await\n                        .inspect_err(|_error| {\n                            #[cfg(test)]",
+          "new_text": "                    if refresh(&background, &stream, &background_file, Some(&background_jobs))\n                        .await\n                        .inspect_err(|_error| {\n                            background_jobs.record_worker_failure(*_error);\n                            #[cfg(test)]",
+          "expected_matches": 1,
+          "purpose": "Keep actual phase worker control flow; retain its actual Copy error before original return."
+        },
+        {
+          "old_text": "        Ok(Self {\n            live,\n            worker,\n            writer_file,\n        })\n    }\n\n    /// The wrapper captures",
+          "new_text": "        let custody = lifecycle::OriginalRootSessionCustody::from_original_worker(\n            &live, &phase, consumer_jobs, worker, &writer_file,\n        );\n        let retirement = custody.retirement_notice();\n        Ok(Self {\n            live,\n            worker: OriginalSessionWorker::Phase(custody),\n            writer_file,\n            _retirement: Some(retirement),\n        })\n    }\n\n    /// The wrapper captures",
+          "expected_matches": 1,
+          "purpose": "Retain the SAME spawned RootWorker handle and real last-field retirement."
+        },
+        {
+          "old_text": "            started,\n            &self.writer_file,\n        )\n        .await?;",
+          "new_text": "            started,\n            &self.writer_file,\n            self.worker.phase_custody().map(|original| original.consumers()),\n        )\n        .await?;",
+          "expected_matches": 1,
+          "purpose": "Actual activation's original blocking sync uses the same optional phase registry."
+        },
+        {
+          "old_text": "async fn refresh(\n    live: &Arc<LiveRoot>,\n    stream: &RootObservationStream,\n    writer_file: &WriterCustody,\n)",
+          "new_text": "async fn refresh(\n    live: &Arc<LiveRoot>,\n    stream: &RootObservationStream,\n    writer_file: &WriterCustody,\n    phase_jobs: Option<&Arc<lifecycle::OriginalConsumerJobs>>,\n)",
+          "expected_matches": 1,
+          "purpose": "Pass custody only, not a new clock or authority, to original refresh."
+        },
+        {
+          "old_text": "        synchronize_consumers(consumers, head, started, writer_file)\n",
+          "new_text": "        synchronize_consumers(consumers, head, started, writer_file, phase_jobs)\n",
+          "expected_matches": 1,
+          "purpose": "Same actual whole consumer barrier."
+        },
+        {
+          "old_text": "async fn synchronize_consumers(\n    consumers: Vec<FinalUseAuthority>,\n    head: FinalUseRevocations,\n    started: u64,\n    writer_file: &WriterCustody,\n)",
+          "new_text": "async fn synchronize_consumers(\n    consumers: Vec<FinalUseAuthority>,\n    head: FinalUseRevocations,\n    started: u64,\n    writer_file: &WriterCustody,\n    phase_jobs: Option<&Arc<lifecycle::OriginalConsumerJobs>>,\n)",
+          "expected_matches": 1,
+          "purpose": "Retain actual task only for explicit phase."
+        },
+        {
+          "old_text": "    let result = tokio::time::timeout(\n        Duration::from_nanos(remaining),\n        // Aborting/timing out this await cannot cancel an already running CAS.\n        tokio::task::spawn_blocking(move || job.run()),\n    )\n    .await\n    .map_err(|_| AgentdRootAuthorityError::Unavailable)?\n    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;",
+          "new_text": "    let result = if let Some(phase_jobs) = phase_jobs {\n        let admission = phase_jobs.reserve_original_consumer()?;\n        let handle = tokio::task::spawn_blocking(move || job.run());\n        let retained = admission.retain_original_handle(handle);\n        tokio::time::timeout(\n            Duration::from_nanos(remaining),\n            phase_jobs.receive_original_consumer(&retained),\n        )\n        .await\n        .map_err(|_| AgentdRootAuthorityError::Unavailable)?\n    } else {\n        tokio::time::timeout(\n            Duration::from_nanos(remaining),\n            // Aborting/timing out this await cannot cancel an already running CAS.\n            tokio::task::spawn_blocking(move || job.run()),\n        )\n        .await\n        .map_err(|_| AgentdRootAuthorityError::Unavailable)?\n        .map_err(|_| AgentdRootAuthorityError::Unavailable)?\n    };",
+          "expected_matches": 1,
+          "purpose": "Original default timeout/spawn/error behavior preserved; phase registers actual handle synchronously before the same bounded wait."
+        },
+        {
+          "old_text": "        trust: AgentdRootWriterTrust,\n        phase: Arc<SameActorPhaseGate>,\n    ) -> impl Future<Output = Result<Self, AgentdRootAuthorityError>> {",
+          "new_text": "        trust: AgentdRootWriterTrust,\n        phase: Arc<SameActorPhaseGate>,\n        custody: &lifecycle::OriginalRootSessionCustodySlot,\n    ) -> impl Future<Output = Result<Self, AgentdRootAuthorityError>> + '_ {",
+          "expected_matches": 1,
+          "purpose": "Borrow the actual external pre-created slot before polling phase receive; legacy signature is unchanged."
+        },
+        {
+          "old_text": "                Arc::clone(&phase),\n                stop,\n            )\n            .await?;",
+          "new_text": "                Arc::clone(&phase),\n                stop,\n                custody,\n            )\n            .await?;",
+          "expected_matches": 1,
+          "purpose": "Pass the SAME external slot to the actual inner phase spawn, before any post-spawn gate refusal."
+        },
+        {
+          "old_text": "        phase: Arc<SameActorPhaseGate>,\n        stop: SameActorPhaseStream,\n    ) -> Result<Self, AgentdRootAuthorityError> {",
+          "new_text": "        phase: Arc<SameActorPhaseGate>,\n        stop: SameActorPhaseStream,\n        custody: &lifecycle::OriginalRootSessionCustodySlot,\n    ) -> Result<Self, AgentdRootAuthorityError> {",
+          "expected_matches": 1,
+          "purpose": "Only the private explicit-phase constructor receives the external slot."
+        },
+        {
+          "old_text": "        let worker_close = CloseSameActorPhaseOnDrop::new(&phase);\n        let worker = tokio::spawn(RootWorker {",
+          "new_text": "        let worker_close = CloseSameActorPhaseOnDrop::new(&phase);\n        let admission = custody.reserve_original_session(&phase)?;\n        let worker = tokio::spawn(RootWorker {",
+          "expected_matches": 1,
+          "purpose": "Hold only the once-admission slot lock across actual spawn and synchronous retain; no await under the guard."
+        },
+        {
+          "old_text": "        let retirement = custody.retirement_notice();\n        Ok(Self {",
+          "new_text": "        let retirement = custody.retirement_notice();\n        admission.retain_original(&custody);\n        Ok(Self {",
+          "expected_matches": 1,
+          "purpose": "External slot owns the exact actual worker before Session return or any later gate postcheck."
+        },
+        {
+          "old_text": "                custody,\n            )\n            .await?;\n            phase\n                .require_open()\n                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            closing.disarm();",
+          "new_text": "                custody,\n            )\n            .await?;\n            closing.disarm();",
+          "expected_matches": 1,
+          "purpose": "Move the SAME one post-spawn gate check into the actual constructed-stream helper after Session ownership construction; do not duplicate or remove it."
+        },
+        {
+          "old_text": "        admission.retain_original(&custody);\n        Ok(Self {\n            live,\n            worker: OriginalSessionWorker::Phase(custody),\n            writer_file,\n            _retirement: Some(retirement),\n        })",
+          "new_text": "        admission.retain_original(&custody);\n        let session = Self {\n            live,\n            worker: OriginalSessionWorker::Phase(custody),\n            writer_file,\n            _retirement: Some(retirement),\n        };\n        // The same original post-spawn check now runs after the Session and\n        // external custody exist. Refusal drops this Session but not the only\n        // actual JoinHandle; its RootWorker still retains future before File.\n        phase\n            .require_open()\n            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        Ok(session)",
+          "expected_matches": 1,
+          "purpose": "Construct and retain actual Session fields before the unchanged single post-spawn refusal; real Drop marks retirement, external slot retains actual handle/File custody."
+        },
+        {
+          "old_text": "    let result = if let Some(phase_jobs) = phase_jobs {\n        let admission = phase_jobs.reserve_original_consumer()?;\n        let handle = tokio::task::spawn_blocking(move || job.run());",
+          "new_text": "    let result = if let Some(phase_jobs) = phase_jobs {\n        let admission = phase_jobs.reserve_original_consumer()?;\n        // The new custody mutex cannot put waiting outside the original\n        // request-age budget. Sample only the original clock, after admission,\n        // and subtract from the SAME started value without renewing a window.\n        let admitted_elapsed = boottime_ns()?\n            .checked_sub(started)\n            .filter(|admitted| *admitted >= elapsed)\n            .ok_or(AgentdRootAuthorityError::Unavailable)?;\n        let remaining = MAX_AGE_NS\n            .checked_sub(admitted_elapsed)\n            .filter(|remaining| *remaining > 0)\n            .ok_or(AgentdRootAuthorityError::Unavailable)?;\n        let handle = tokio::task::spawn_blocking(move || job.run());",
+          "expected_matches": 1,
+          "purpose": "New phase custody admission wait is charged to the SAME original started/500ms bound; actual post-lock BOOTTIME cannot regress or renew it. Legacy path unchanged."
+        },
+        {
+          "old_text": "        let retirement = custody.retirement_notice();\n        admission.retain_original(&custody);\n        let session = Self {\n            live,\n            worker: OriginalSessionWorker::Phase(custody),\n            writer_file,\n            _retirement: Some(retirement),\n        };",
+          "new_text": "        let session = Self {\n            live,\n            worker: OriginalSessionWorker::Phase(Arc::clone(&custody)),\n            writer_file,\n            _retirement: Some(custody.retirement_notice()),\n        };\n        admission.retain_original(&custody);\n        drop(custody);",
+          "expected_matches": 1,
+          "purpose": "Construct the actual Session, including its last retirement field, before releasing external slot admission. The same cap Arc is retained; no new worker/File."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "pre": {
+        "blob": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+        "bytes": 26989,
+        "sha256": "dd4ee791d7d73768553da4da9d02a9614c7956969f782cf05e9f7dfa996422b2"
+      },
+      "post": {
+        "blob": "81813409fd03a46a7be97b3b5b0d338b4e37d9a7",
+        "bytes": 27067,
+        "sha256": "01f97b181ee3c0a453292c8d1290c7e2941174092ab6be8c667e8f1f99f0a3c6"
+      },
+      "ops": [
+        {
+          "old_text": "ache itself had already expired\"\n    );\n    // The retained proof cannot authorize a new call after this original\n    // session end. This is a negative read, never a retry of an effect.\n    assert!(matches!(\n        live.cache.current(),\n        Err(AgentdRootAuthorityError::Unavailable)\n    ));\n}\n",
+          "new_text": "ache itself had already expired\"\n    );\n    // The retained proof cannot authorize a new call after this original\n    // session end. This is a negative read, never a retry of an effect.\n    assert!(matches!(\n        live.cache.current(),\n        Err(AgentdRootAuthorityError::Unavailable)\n    ));\n}\n\n#[path = \"root_authority_session_lifecycle_tests.rs\"]\nmod lifecycle_custody;\n",
+          "expected_matches": 1,
+          "purpose": "Append the isolated actual-worker lifecycle components; every original test byte and assertion remains."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": null,
+      "post": {
+        "blob": "7de463b4efb32cb2e49adfc5b4227720c1207448",
+        "bytes": 11946,
+        "sha256": "ee400b0ca19bac17bcb3192cf1f43f8fdf4af70926b8edccfb98fc076ad034b1"
+      },
+      "ops": [
+        {
+          "kind": "add_file",
+          "content": "//! Private cleanup of the exact phase Session worker and consumer tasks.\n//! No normal completion, Root retirement ACK, or independent owner release is\n//! inferred from this observation. Legacy sessions retain their old handle.\n\nuse std::sync::Arc;\nuse std::sync::Mutex;\nuse std::sync::MutexGuard;\nuse std::sync::Weak;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::Ordering;\n\nuse tokio::task::AbortHandle;\nuse tokio::task::JoinHandle;\n\nuse super::AgentdRootAuthorityError;\nuse super::LiveRoot;\nuse super::WriterCustody;\nuse crate::AgentdError;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\n\n#[path = \"root_authority_session_consumer_jobs.rs\"]\nmod consumer_jobs;\npub(super) use consumer_jobs::OriginalConsumerJobs;\npub(crate) use consumer_jobs::OriginalConsumerFailure;\npub(crate) use consumer_jobs::OriginalConsumerJoinSummary;\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) enum OriginalRootWorkerTermination {\n    Returned,\n    Cancelled,\n    Panicked,\n}\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) enum OriginalRootSessionJoinObservation {\n    NotRegistered {\n        slot_poisoned: bool,\n    },\n    Joined {\n        slot_poisoned: bool,\n        worker: OriginalRootWorkerTermination,\n        recorded_worker_failure: Option<AgentdRootAuthorityError>,\n        consumers: OriginalConsumerJoinSummary,\n    },\n}\n\nstruct PhaseWorkerState {\n    handle: Option<JoinHandle<()>>,\n    observed: Option<OriginalRootWorkerTermination>,\n}\n\nstruct CustodySlotState {\n    stopped: bool,\n    original: Option<Arc<OriginalRootSessionCustody>>,\n    #[cfg(test)]\n    stop_after_original_spawn: bool,\n}\n\n/// An empty single-use destination owned outside the receive/Launch future.\n/// It creates no Session, authority, worker or file and is not a phase proof.\npub(crate) struct OriginalRootSessionCustodySlot {\n    state: Mutex<CustodySlotState>,\n}\n\npub(super) struct OriginalSessionAdmission<'a> {\n    state: MutexGuard<'a, CustodySlotState>,\n    phase: Arc<SameActorPhaseGate>,\n    armed: bool,\n}\n\n/// Not stored in LiveRoot: consumers hold that clock and must not form a\n/// registry -> job -> consumer -> clock -> registry strong-reference cycle.\npub(crate) struct OriginalRootSessionCustody {\n    worker: tokio::sync::Mutex<PhaseWorkerState>,\n    consumers: Arc<OriginalConsumerJobs>,\n    live: Weak<LiveRoot>,\n    gate: Arc<SameActorPhaseGate>,\n    abort: AbortHandle,\n    session_retired: AtomicBool,\n    // Drop the retained task/consumer custody before this exact File share.\n    _writer_file: WriterCustody,\n}\n\npub(super) enum OriginalSessionWorker {\n    Legacy(JoinHandle<()>),\n    Phase(Arc<OriginalRootSessionCustody>),\n}\n\n/// This MUST be the Session's last field, after its original writer_file.\n/// Only actual destruction of those fields marks the original Session retired.\npub(super) struct OriginalSessionRetirement {\n    custody: Arc<OriginalRootSessionCustody>,\n}\n\nimpl OriginalRootSessionCustodySlot {\n    pub(crate) fn new() -> Self {\n        Self {\n            state: Mutex::new(CustodySlotState {\n                stopped: false,\n                original: None,\n                #[cfg(test)]\n                stop_after_original_spawn: false,\n            }),\n        }\n    }\n\n    #[cfg(test)]\n    pub(super) fn component_stop_after_original_spawn(&self) {\n        self.state.lock().unwrap().stop_after_original_spawn = true;\n    }\n\n    pub(super) fn reserve_original_session(\n        &self,\n        phase: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalSessionAdmission<'_>, AgentdRootAuthorityError> {\n        let state = self.state.lock().map_err(|_| {\n            phase.close();\n            AgentdRootAuthorityError::Unavailable\n        })?;\n        if state.stopped || state.original.is_some() {\n            phase.close();\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        Ok(OriginalSessionAdmission {\n            state,\n            phase: Arc::clone(phase),\n            armed: true,\n        })\n    }\n\n    fn require_original(\n        &self,\n        original: &Arc<OriginalRootSessionCustody>,\n    ) -> Result<(), AgentdRootAuthorityError> {\n        let state = self.state.lock().map_err(|_| {\n            original.request_stop();\n            AgentdRootAuthorityError::Unavailable\n        })?;\n        if state.stopped || !state.original.as_ref().is_some_and(|cap| Arc::ptr_eq(cap, original)) {\n            original.request_stop();\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        Ok(())\n    }\n\n    pub(crate) async fn stop_and_join_retired_session_tasks(\n        &self,\n    ) -> Result<OriginalRootSessionJoinObservation, AgentdError> {\n        let (original, slot_poisoned) = {\n            // Poison permits only terminal cleanup of the already retained\n            // handle. Admission and origin checks remain fail-closed.\n            let (mut state, poisoned) = match self.state.lock() {\n                Ok(state) => (state, false),\n                Err(poisoned) => (poisoned.into_inner(), true),\n            };\n            state.stopped = true;\n            (state.original.clone(), poisoned)\n        };\n        let Some(original) = original else {\n            // The outer owner must already have dropped/stopped its receive\n            // future. This means no Session was registered in this slot, not\n            // successful bootstrap or normal phase termination.\n            return Ok(OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned });\n        };\n        original.stop_and_join_retired_session_tasks(slot_poisoned).await\n    }\n}\n\nimpl Drop for OriginalRootSessionCustodySlot {\n    fn drop(&mut self) {\n        let state = self.state.get_mut().unwrap_or_else(std::sync::PoisonError::into_inner);\n        state.stopped = true;\n        if let Some(original) = &state.original {\n            original.request_stop();\n        }\n        // Dropping custody is not an observed join. The actual outer owner\n        // must drive stop_and_join_retired_session_tasks before releasing it.\n    }\n}\n\nimpl OriginalSessionAdmission<'_> {\n    pub(super) fn retain_original(mut self, original: &Arc<OriginalRootSessionCustody>) {\n        // The actual spawn is between reserve and this synchronous ownership\n        // transfer. No await or fallible callback can lose its only handle.\n        self.state.original = Some(Arc::clone(original));\n        self.armed = false;\n        // Deterministic cancellation at the real post-spawn ownership cut.\n        // Normal builds contain neither this switch nor this extra stop.\n        #[cfg(test)]\n        if self.state.stop_after_original_spawn {\n            original.request_stop();\n        }\n    }\n}\n\nimpl Drop for OriginalSessionAdmission<'_> {\n    fn drop(&mut self) {\n        if self.armed {\n            self.state.stopped = true;\n            self.phase.close();\n        }\n    }\n}\n\nimpl OriginalRootSessionCustody {\n    pub(super) fn from_original_worker(\n        live: &Arc<LiveRoot>,\n        gate: &Arc<SameActorPhaseGate>,\n        consumers: Arc<OriginalConsumerJobs>,\n        worker: JoinHandle<()>,\n        writer_file: &WriterCustody,\n    ) -> Arc<Self> {\n        let abort = worker.abort_handle();\n        Arc::new(Self {\n            worker: tokio::sync::Mutex::new(PhaseWorkerState {\n                handle: Some(worker),\n                observed: None,\n            }),\n            consumers,\n            live: Arc::downgrade(live),\n            gate: Arc::clone(gate),\n            abort,\n            session_retired: AtomicBool::new(false),\n            _writer_file: Arc::clone(writer_file),\n        })\n    }\n\n    pub(super) fn consumers(&self) -> &Arc<OriginalConsumerJobs> {\n        &self.consumers\n    }\n\n    pub(super) fn retirement_notice(self: &Arc<Self>) -> OriginalSessionRetirement {\n        OriginalSessionRetirement { custody: Arc::clone(self) }\n    }\n\n    fn request_stop(&self) {\n        if let Some(live) = self.live.upgrade() {\n            live.cache.fence();\n        }\n        self.gate.close();\n        self.consumers.close();\n        self.abort.abort();\n    }\n\n    async fn stop_and_join_retired_session_tasks(\n        &self,\n        slot_poisoned: bool,\n    ) -> Result<OriginalRootSessionJoinObservation, AgentdError> {\n        self.request_stop();\n        if !self.session_retired.load(Ordering::Acquire) {\n            return Err(join_error(\"actual Session must be dropped before joining its retired tasks\"));\n        }\n        let worker = {\n            let mut state = self.worker.lock().await;\n            if let Some(observed) = state.observed {\n                observed\n            } else {\n                let handle = state.handle.as_mut()\n                    .ok_or_else(|| join_error(\"actual Root observation handle is unavailable\"))?;\n                let observed = match handle.await {\n                    Ok(()) => OriginalRootWorkerTermination::Returned,\n                    Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,\n                    Err(_) => OriginalRootWorkerTermination::Panicked,\n                };\n                state.handle = None;\n                state.observed = Some(observed);\n                observed\n            }\n        };\n        // The observation future and its WriterCustody have really dropped.\n        // Its earlier ConsumerSyncJob closures may still be running, so join\n        // every retained actual handle too. No serial/owner mutex is held.\n        let consumers = self.consumers.join_stopped_consumers().await.map_err(join_error)?;\n        Ok(OriginalRootSessionJoinObservation::Joined {\n            slot_poisoned,\n            worker,\n            recorded_worker_failure: self.consumers.worker_failure(),\n            consumers,\n        })\n    }\n}\n\nimpl Drop for OriginalRootSessionCustody {\n    fn drop(&mut self) {\n        // This is fail-closed cancellation only. External custody must await\n        // the private join; destructor execution does not certify completion.\n        self.request_stop();\n    }\n}\n\nimpl OriginalSessionWorker {\n    pub(super) fn abort(&self) {\n        match self {\n            Self::Legacy(worker) => worker.abort(),\n            Self::Phase(original) => original.request_stop(),\n        }\n    }\n\n    #[cfg(test)]\n    pub(super) fn abort_handle(&self) -> AbortHandle {\n        match self {\n            Self::Legacy(worker) => worker.abort_handle(),\n            Self::Phase(original) => original.abort.clone(),\n        }\n    }\n\n    #[cfg(test)]\n    pub(super) fn is_finished(&self) -> bool {\n        match self {\n            Self::Legacy(worker) => worker.is_finished(),\n            Self::Phase(original) => original.abort.is_finished(),\n        }\n    }\n\n    pub(super) fn phase_custody(&self) -> Option<&Arc<OriginalRootSessionCustody>> {\n        match self {\n            Self::Legacy(_) => None,\n            Self::Phase(original) => Some(original),\n        }\n    }\n}\n\nimpl Drop for OriginalSessionRetirement {\n    fn drop(&mut self) {\n        self.custody.session_retired.store(true, Ordering::Release);\n    }\n}\n\nimpl super::AgentdRootAuthoritySession {\n    /// The phase constructor already placed its actual worker in this slot\n    /// before any post-spawn refusal. This only checks the same retained cap;\n    /// it never creates or rebinds task custody.\n    pub(crate) fn require_original_phase_task_custody(\n        &self,\n        slot: &OriginalRootSessionCustodySlot,\n    ) -> Result<(), AgentdRootAuthorityError> {\n        let original = self.worker.phase_custody().ok_or(AgentdRootAuthorityError::Refused)?;\n        if !self.live.phase.as_ref().is_some_and(|phase| Arc::ptr_eq(phase, &original.gate)) {\n            original.request_stop();\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        slot.require_original(original)\n    }\n\n}\n\nfn join_error(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(format!(\"original Root Session task custody: {error}\"))\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": null,
+      "post": {
+        "blob": "b5c7a59fdd8d4a450e070dbeffee0e2aa707b880",
+        "bytes": 7941,
+        "sha256": "fb2639f9ffde9ade8ec42ac8863d046fe3b2f5a67123e621d402a1e657b68d68"
+      },
+      "ops": [
+        {
+          "kind": "add_file",
+          "content": "//! Actual ConsumerSyncJob handle custody for one explicit Root phase.\n//! A timeout drops only the waiter. The retained task is still joined before\n//! terminal custody reports its observed outcome.\n\nuse std::sync::Arc;\nuse std::sync::Mutex;\nuse std::sync::MutexGuard;\n\nuse tokio::task::JoinHandle;\n\nuse crate::AgentdRootAuthorityError;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) enum OriginalConsumerFailure {\n    Owner(AgentdRootAuthorityError),\n    Cancelled,\n    Panicked,\n    MissingHandle,\n}\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(crate) struct OriginalConsumerJoinSummary {\n    pub(crate) registered: usize,\n    pub(crate) joined: usize,\n    pub(crate) first_observed_failure: Option<OriginalConsumerFailure>,\n    pub(crate) admission_poisoned: bool,\n}\n\nstruct ConsumerState {\n    stopped: bool,\n    retained: Vec<Arc<OriginalConsumerJob>>,\n    registered: usize,\n    joined: usize,\n    first_observed_failure: Option<OriginalConsumerFailure>,\n    worker_failure: Option<AgentdRootAuthorityError>,\n}\n\npub(in super::super) struct OriginalConsumerJobs {\n    gate: Arc<SameActorPhaseGate>,\n    state: Mutex<ConsumerState>,\n}\n\nstruct ConsumerJobState {\n    handle: Option<JoinHandle<Result<(), AgentdRootAuthorityError>>>,\n    observed: Option<Result<(), OriginalConsumerFailure>>,\n}\n\npub(in super::super) struct OriginalConsumerJob {\n    state: tokio::sync::Mutex<ConsumerJobState>,\n}\n\npub(in super::super) struct OriginalConsumerAdmission<'a> {\n    state: MutexGuard<'a, ConsumerState>,\n    gate: Arc<SameActorPhaseGate>,\n    next_registered: usize,\n    armed: bool,\n}\n\nimpl OriginalConsumerJobs {\n    pub(in super::super) fn new(gate: &Arc<SameActorPhaseGate>) -> Arc<Self> {\n        Arc::new(Self {\n            gate: Arc::clone(gate),\n            state: Mutex::new(ConsumerState {\n                stopped: false,\n                retained: Vec::new(),\n                registered: 0,\n                joined: 0,\n                first_observed_failure: None,\n                worker_failure: None,\n            }),\n        })\n    }\n\n    pub(in super::super) fn reserve_original_consumer(\n        &self,\n    ) -> Result<OriginalConsumerAdmission<'_>, AgentdRootAuthorityError> {\n        let state = self.state.lock().map_err(|_| {\n            self.gate.close();\n            AgentdRootAuthorityError::Unavailable\n        })?;\n        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        if state.stopped {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        let next_registered = state.registered.checked_add(1).ok_or_else(|| {\n            self.gate.close();\n            AgentdRootAuthorityError::Unavailable\n        })?;\n        Ok(OriginalConsumerAdmission {\n            state,\n            gate: Arc::clone(&self.gate),\n            next_registered,\n            armed: true,\n        })\n    }\n\n    pub(in super::super) fn close(&self) {\n        self.gate.close();\n        self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner).stopped = true;\n    }\n\n    pub(in super::super) fn record_worker_failure(&self, error: AgentdRootAuthorityError) {\n        self.state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner)\n            .worker_failure\n            .get_or_insert(error);\n    }\n\n    pub(in super::super) fn worker_failure(&self) -> Option<AgentdRootAuthorityError> {\n        self.state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner)\n            .worker_failure\n    }\n\n    pub(in super::super) async fn receive_original_consumer(\n        &self,\n        job: &Arc<OriginalConsumerJob>,\n    ) -> Result<(), AgentdRootAuthorityError> {\n        let outcome = job.join_original_handle().await;\n        if outcome != Err(OriginalConsumerFailure::MissingHandle) {\n            self.record_joined(job, outcome);\n        }\n        match outcome {\n            Ok(()) => Ok(()),\n            Err(OriginalConsumerFailure::Owner(error)) => Err(error),\n            Err(OriginalConsumerFailure::Cancelled | OriginalConsumerFailure::Panicked\n                | OriginalConsumerFailure::MissingHandle) => {\n                Err(AgentdRootAuthorityError::Unavailable)\n            }\n        }\n    }\n\n    fn record_joined(\n        &self,\n        job: &Arc<OriginalConsumerJob>,\n        outcome: Result<(), OriginalConsumerFailure>,\n    ) {\n        // Recovery is bookkeeping of an already observed actual join. It\n        // cannot admit, repeat or restore a consumer operation.\n        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        if let Some(index) = state.retained.iter().position(|entry| Arc::ptr_eq(entry, job)) {\n            state.retained.remove(index);\n            state.joined += 1;\n            if let Err(error) = outcome {\n                state.first_observed_failure.get_or_insert(error);\n            }\n        }\n    }\n\n    pub(in super::super) async fn join_stopped_consumers(\n        &self,\n    ) -> Result<OriginalConsumerJoinSummary, AgentdRootAuthorityError> {\n        self.close();\n        loop {\n            let job = self.state.lock()\n                .unwrap_or_else(std::sync::PoisonError::into_inner)\n                .retained.first().cloned();\n            let Some(job) = job else {\n                let poisoned = self.state.is_poisoned();\n                let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n                if state.joined != state.registered {\n                    return Err(AgentdRootAuthorityError::Unavailable);\n                }\n                return Ok(OriginalConsumerJoinSummary {\n                    registered: state.registered,\n                    joined: state.joined,\n                    first_observed_failure: state.first_observed_failure,\n                    admission_poisoned: poisoned,\n                });\n            };\n            let outcome = job.join_original_handle().await;\n            if outcome == Err(OriginalConsumerFailure::MissingHandle) {\n                return Err(AgentdRootAuthorityError::Unavailable);\n            }\n            self.record_joined(&job, outcome);\n        }\n    }\n}\n\nimpl OriginalConsumerAdmission<'_> {\n    pub(in super::super) fn retain_original_handle(\n        mut self,\n        handle: JoinHandle<Result<(), AgentdRootAuthorityError>>,\n    ) -> Arc<OriginalConsumerJob> {\n        let job = Arc::new(OriginalConsumerJob {\n            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(handle),\n                observed: None,\n            }),\n        });\n        self.state.registered = self.next_registered;\n        self.state.retained.push(Arc::clone(&job));\n        self.armed = false;\n        job\n    }\n}\n\nimpl Drop for OriginalConsumerAdmission<'_> {\n    fn drop(&mut self) {\n        if self.armed {\n            self.state.stopped = true;\n            self.gate.close();\n        }\n    }\n}\n\nimpl OriginalConsumerJob {\n    async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {\n        let mut state = self.state.lock().await;\n        if let Some(outcome) = state.observed {\n            return outcome;\n        }\n        let Some(handle) = state.handle.as_mut() else {\n            return Err(OriginalConsumerFailure::MissingHandle);\n        };\n        // A cancelled timeout/worker/cleanup only releases this borrow. The\n        // actual handle remains in this job and is never polled after Ready.\n        let outcome = match handle.await {\n            Ok(Ok(())) => Ok(()),\n            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),\n            Err(error) if error.is_cancelled() => Err(OriginalConsumerFailure::Cancelled),\n            Err(_) => Err(OriginalConsumerFailure::Panicked),\n        };\n        state.handle = None;\n        state.observed = Some(outcome);\n        outcome\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "a86b92103f7463b75a2da854a4f78b30a59c661f",
+        "bytes": 11324,
+        "sha256": "3f18522015ff576587a0b8a6bdc9105c817ff16eeb7e765fcd84fe130fd6e38b"
+      },
+      "ops": [
+        {
+          "kind": "add_file",
+          "content": "//! Actual phase worker and original ConsumerSyncJob custody under cancellation.\n//! Same-UID/synthetic proof components; no ordinary effect or Root completion.\n\nuse super::*;\nuse crate::root_authority_session::OriginalConsumerFailure;\nuse crate::root_authority_session::OriginalRootSessionCustodySlot;\nuse crate::root_authority_session::OriginalRootSessionJoinObservation;\nuse crate::root_authority_session::OriginalRootWorkerTermination;\nuse pretty_assertions::assert_eq;\nuse std::fs::OpenOptions;\nuse std::task::Poll;\nuse std::os::unix::fs::MetadataExt;\n\n#[path = \"root_authority_session_lifecycle_support_tests.rs\"]\nmod support;\nuse support::BlockedOutcome;\nuse support::BlockingConsumer;\nuse support::PhaseConnection;\nuse support::blocking_consumer;\nuse support::join_peer;\nuse support::phase_connection;\nuse support::takes_lock;\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, head, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    session.require_original_phase_task_custody(&slot)?;\n    let (device, _, _device_directory) = owner(&session, key);\n    let BlockingConsumer {\n        owner: notes,\n        directory: _notes_directory,\n        entered,\n        release,\n        mut probe,\n    } = blocking_consumer(&session, key, BlockedOutcome::Refused);\n    session.activate_original_phase_final_use_owners(vec![device, notes]).await?;\n\n    let directory = tempfile::Builder::new()\n        .permissions(std::fs::Permissions::from_mode(0o700))\n        .tempdir()?;\n    let (trust, _) = fixture();\n    let config = original_config(&directory.path().canonicalize()?, &trust)?;\n    config.retain_root_session(&session)?;\n    let contender = OpenOptions::new().read(true).write(true)\n        .open(config.identity().layout.writer_lock())?;\n    let identity = contender.metadata()?;\n    let writer = Arc::downgrade(&session.writer_file);\n    let clock = session.clock();\n    let worker = session.worker.abort_handle();\n    drop(config);\n    head.store(2, Ordering::Release);\n    tokio::time::timeout(Duration::from_secs(5), entered).await??;\n    assert!(matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));\n    drop(session);\n    tokio::time::timeout(Duration::from_secs(5), async {\n        while !worker.is_finished() {\n            tokio::task::yield_now().await;\n        }\n    }).await?;\n    assert!(clock.now_unix_ms().is_err());\n    assert!(gate.require_open().is_err());\n    assert!(!takes_lock(&contender)?);\n\n    let mut cleanup = Box::pin(slot.stop_and_join_retired_session_tasks());\n    std::future::poll_fn(|context| {\n        assert!(std::future::Future::poll(cleanup.as_mut(), context).is_pending());\n        Poll::Ready(())\n    }).await;\n    // Cancel this actual join waiter while the original CAS remains blocked.\n    // The second call must resume borrowing the SAME actual JoinHandle.\n    drop(cleanup);\n    assert!(matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));\n    release.send(())?;\n    let observed = tokio::time::timeout(\n        Duration::from_secs(5),\n        slot.stop_and_join_retired_session_tasks(),\n    ).await??;\n    let OriginalRootSessionJoinObservation::Joined { slot_poisoned, worker, recorded_worker_failure, consumers } = observed else {\n        panic!(\"the actual phase Session was not registered\");\n    };\n    assert!(!slot_poisoned);\n    assert_ne!(worker, OriginalRootWorkerTermination::Panicked);\n    if worker == OriginalRootWorkerTermination::Returned {\n        assert_eq!(recorded_worker_failure, Some(AgentdRootAuthorityError::Unavailable));\n    }\n    assert_eq!((consumers.registered, consumers.joined), (2, 2));\n    assert_eq!(consumers.first_observed_failure, Some(OriginalConsumerFailure::Owner(AgentdRootAuthorityError::Unavailable)));\n    assert!(!consumers.admission_poisoned);\n    assert_eq!(probe.read(&mut [0])?, 0);\n    assert_eq!(slot.stop_and_join_retired_session_tasks().await?, observed);\n    // Retained custody itself still owns the exact File share. It must be\n    // dropped after real joins before any owner-lock release claim is made.\n    assert!(writer.upgrade().is_some());\n    assert!(!takes_lock(&contender)?);\n    drop(slot);\n    assert!(writer.upgrade().is_none());\n    assert!(takes_lock(&contender)?);\n    assert_eq!(\n        (contender.metadata()?.dev(), contender.metadata()?.ino()),\n        (identity.dev(), identity.ino()),\n    );\n    assert!(clock.now_unix_ms().is_err());\n    join_peer(peer).await;\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn cancelled_activation_keeps_its_real_consumer_job_until_join()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, head, peer, key, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let BlockingConsumer { owner, directory: _directory, entered, release, mut probe } =\n        blocking_consumer(&session, key, BlockedOutcome::Refused);\n    // The owner is physically opened at head 1. The original read feed alone\n    // advances the Session to 2; activation must then perform a real CAS.\n    head.store(2, Ordering::Release);\n    tokio::time::timeout(Duration::from_secs(5), async {\n        loop {\n            let permit = session.live.serial.acquire().await\n                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n            let current = session.revocations()?;\n            drop(permit);\n            if current.revision == 2 {\n                return Ok::<(), AgentdRootAuthorityError>(());\n            }\n            tokio::task::yield_now().await;\n        }\n    }).await??;\n    let mut activation = Box::pin(session.activate_original_phase_final_use_owners(vec![owner]));\n    tokio::select! {\n        biased;\n        result = &mut activation => panic!(\"activation finished before blocked CAS: {result:?}\"),\n        result = tokio::time::timeout(Duration::from_secs(5), entered) => { result??; }\n    }\n    drop(activation);\n    assert!(session.clock().now_unix_ms().is_err());\n    drop(session);\n    let mut cleanup = Box::pin(slot.stop_and_join_retired_session_tasks());\n    std::future::poll_fn(|context| {\n        assert!(std::future::Future::poll(cleanup.as_mut(), context).is_pending());\n        Poll::Ready(())\n    }).await;\n    assert!(matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));\n    release.send(())?;\n    let observed = tokio::time::timeout(Duration::from_secs(5), cleanup).await??;\n    let OriginalRootSessionJoinObservation::Joined { consumers, .. } = observed else {\n        panic!(\"activation lost actual Session custody\");\n    };\n    assert_eq!((consumers.registered, consumers.joined), (1, 1));\n    assert_eq!(consumers.first_observed_failure, Some(OriginalConsumerFailure::Owner(AgentdRootAuthorityError::Unavailable)));\n    assert_eq!(probe.read(&mut [0])?, 0);\n    drop(slot);\n    join_peer(peer).await;\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn original_consumer_panic_is_joined_and_retained_as_failure()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, head, peer, key, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let BlockingConsumer { owner, directory: _directory, entered, release, mut probe } =\n        blocking_consumer(&session, key, BlockedOutcome::Panicked);\n    session.activate_original_phase_final_use_owners(vec![owner]).await?;\n    let worker = session.worker.abort_handle();\n    head.store(2, Ordering::Release);\n    tokio::time::timeout(Duration::from_secs(5), entered).await??;\n    release.send(())?;\n    tokio::time::timeout(Duration::from_secs(5), async {\n        while !worker.is_finished() {\n            tokio::task::yield_now().await;\n        }\n    }).await?;\n    assert!(session.clock().now_unix_ms().is_err());\n    drop(session);\n    let observed = tokio::time::timeout(\n        Duration::from_secs(5),\n        slot.stop_and_join_retired_session_tasks(),\n    ).await??;\n    let OriginalRootSessionJoinObservation::Joined { worker, recorded_worker_failure, consumers, .. } = observed else {\n        panic!(\"panic lost actual Session custody\");\n    };\n    assert_eq!(worker, OriginalRootWorkerTermination::Returned);\n    assert_eq!(recorded_worker_failure, Some(AgentdRootAuthorityError::Unavailable));\n    assert_eq!((consumers.registered, consumers.joined), (2, 2));\n    assert_eq!(consumers.first_observed_failure, Some(OriginalConsumerFailure::Panicked));\n    assert_eq!(probe.read(&mut [0])?, 0);\n    drop(slot);\n    join_peer(peer).await;\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn stopped_empty_slot_rejects_phase_spawn_after_real_initial_read()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    assert_eq!(\n        slot.stop_and_join_retired_session_tasks().await?,\n        OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned: false },\n    );\n    let PhaseConnection { session, observation_replies, peer, gate, .. } =\n        phase_connection(&slot).await;\n    assert!(matches!(session, Err(AgentdRootAuthorityError::Refused)));\n    // The actual proof/observation read completed. Refusal occurred at the\n    // pre-spawn slot admission, not at an invented synthetic input failure.\n    assert_eq!(observation_replies.load(Ordering::Acquire), 1);\n    assert!(gate.require_open().is_err());\n    assert_eq!(\n        slot.stop_and_join_retired_session_tasks().await?,\n        OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned: false },\n    );\n    drop(slot);\n    join_peer(peer).await;\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn post_spawn_gate_refusal_keeps_actual_worker_in_external_slot()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    slot.component_stop_after_original_spawn();\n    let PhaseConnection { session, observation_replies, peer, gate, .. } =\n        phase_connection(&slot).await;\n    assert!(matches!(session, Err(AgentdRootAuthorityError::Unavailable)));\n    assert!(observation_replies.load(Ordering::Acquire) >= 1);\n    assert!(gate.require_open().is_err());\n    let observed = tokio::time::timeout(\n        Duration::from_secs(5),\n        slot.stop_and_join_retired_session_tasks(),\n    ).await??;\n    let OriginalRootSessionJoinObservation::Joined { worker, recorded_worker_failure, consumers, .. } = observed else {\n        panic!(\"the refused post-spawn Session lost its actual worker\");\n    };\n    assert_ne!(worker, OriginalRootWorkerTermination::Panicked);\n    if worker == OriginalRootWorkerTermination::Returned {\n        assert_eq!(recorded_worker_failure, Some(AgentdRootAuthorityError::Unavailable));\n    }\n    assert_eq!((consumers.registered, consumers.joined), (0, 0));\n    assert_eq!(consumers.first_observed_failure, None);\n    assert_eq!(slot.stop_and_join_retired_session_tasks().await?, observed);\n    drop(slot);\n    join_peer(peer).await;\n    Ok(())\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+      "pre": null,
+      "post": {
+        "blob": "1e65bb5fa6e3eaead87683d6fa1c671f8b9c7c10",
+        "bytes": 8855,
+        "sha256": "5cb7c119f706e90522e33c61665503056d6e22b96d6d275e3fedd5ca27750feb"
+      },
+      "ops": [
+        {
+          "kind": "add_file",
+          "content": "//! Same-UID synthetic proof fixtures for actual phase worker/consumer custody.\n//! These components use real pidfds, sockets, original FinalUse owners and\n//! blocked store calls. They grant no Root deployment or business qualification.\n\nuse super::super::*;\nuse crate::root_authority_session::OriginalRootSessionCustodySlot;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse pretty_assertions::assert_eq;\nuse std::fs::File;\nuse std::sync::mpsc;\n\npub(super) struct PhaseConnection {\n    pub(super) session: Result<AgentdRootAuthoritySession, AgentdRootAuthorityError>,\n    pub(super) head: Arc<AtomicU64>,\n    pub(super) observation_replies: Arc<AtomicU64>,\n    pub(super) peer: std::thread::JoinHandle<()>,\n    pub(super) key: [u8; 32],\n    pub(super) gate: Arc<SameActorPhaseGate>,\n}\n\npub(super) async fn phase_connection(\n    custody: &OriginalRootSessionCustodySlot,\n) -> PhaseConnection {\n    let (trust, proof) = fixture();\n    let key = trust.verifying_key;\n    let gate = SameActorPhaseGate::from_original_deadline(\n        SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(10)).unwrap(),\n    )\n    .unwrap();\n    let (client, mut server) = UnixStream::pair().unwrap();\n    let stop = gate.retain_original_stream(&client).unwrap();\n    let pid = std::process::id();\n    let boot_id = std::fs::read_to_string(\"/proc/sys/kernel/random/boot_id\")\n        .unwrap()\n        .trim()\n        .to_string();\n    let stat = std::fs::read_to_string(format!(\"/proc/{pid}/stat\")).unwrap();\n    let peer = AgentdRootAuthorityPeer {\n        pid,\n        boot_id: boot_id.clone(),\n        process_start_ticks: stat\n            .rsplit_once(\") \")\n            .unwrap()\n            .1\n            .split_whitespace()\n            .nth(19)\n            .unwrap()\n            .parse()\n            .unwrap(),\n    };\n    // SAFETY: the live test PID yields an exclusively owned pidfd.\n    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };\n    assert!(fd >= 0);\n    // SAFETY: this successful syscall returned this new owned descriptor.\n    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };\n    let stream = RootObservationStream::from_stream_for_uid(\n        client,\n        peer,\n        pidfd,\n        Duration::from_millis(300),\n        Duration::from_secs(10),\n        // Same UID is explicit component scope, not a Root authentication test.\n        unsafe { libc::geteuid() },\n    )\n    .unwrap();\n    let head = Arc::new(AtomicU64::new(1));\n    let next_head = Arc::clone(&head);\n    let observation_replies = Arc::new(AtomicU64::new(0));\n    let replies = Arc::clone(&observation_replies);\n    let base = boottime_ns().unwrap();\n    let peer_boot = boot_id.clone();\n    let peer = std::thread::spawn(move || {\n        server.set_read_timeout(Some(Duration::from_secs(5))).unwrap();\n        loop {\n            let mut prefix = [0; 4];\n            if server.read_exact(&mut prefix).is_err() {\n                return;\n            }\n            let length = u32::from_be_bytes(prefix) as usize;\n            assert!(length > 0 && length <= 16 * 1024);\n            let mut request = vec![0; length];\n            server.read_exact(&mut request).unwrap();\n            let value: serde_json::Value = serde_json::from_slice(&request).unwrap();\n            let response = if value[\"operation\"] == HOST_WRITER_AUTHORIZATION_V1 {\n                serde_json::to_vec(&HostWriterAuthorizationReadResponseV1 {\n                    schema_version: 1,\n                    operation: HOST_WRITER_AUTHORIZATION_V1.into(),\n                    proof: proof.clone(),\n                })\n                .unwrap()\n            } else {\n                assert_eq!(value[\"operation\"], HOST_AUTHORITY_OBSERVATION_V2);\n                let mut sample = observation(&proof);\n                let elapsed = (boottime_ns().unwrap() - base) / 1_000_000;\n                sample.clock.boot_id = peer_boot.clone();\n                sample.clock.anchor_boottime_ns = base;\n                sample.clock.anchor_unix_ms = 2_000;\n                sample.clock.ceiling_unix_ms = 3_001 + elapsed;\n                sample.observed_unix_ms = 2_000 + elapsed;\n                sample.revocations.revision = next_head.load(Ordering::Acquire);\n                if sample.revocations.revision > 1 {\n                    sample.revocations.revoked_grant_ids.insert(\"revoked-effect\".into());\n                }\n                sample.writer.store_revision = 7 + sample.revocations.revision;\n                replies.fetch_add(1, Ordering::AcqRel);\n                serde_json::to_vec(&sample).unwrap()\n            };\n            if server.write_all(&(response.len() as u32).to_be_bytes()).is_err()\n                || server.write_all(&response).is_err()\n            {\n                return;\n            }\n        }\n    });\n    let session = AgentdRootAuthoritySession::connect_original_phase_stream(\n        stream,\n        boot_id,\n        gate.deadline().boottime_ns(),\n        trust,\n        Arc::clone(&gate),\n        stop,\n        custody,\n    )\n    .await;\n    PhaseConnection { session, head, observation_replies, peer, key, gate }\n}\n\n#[derive(Clone, Copy)]\npub(super) enum BlockedOutcome {\n    Refused,\n    Panicked,\n}\n\nstruct BlockingFrontier {\n    value: Mutex<FinalUseFrontier>,\n    entered: Mutex<Option<tokio::sync::oneshot::Sender<()>>>,\n    release: Mutex<mpsc::Receiver<()>>,\n    held: Mutex<Option<UnixStream>>,\n    outcome: BlockedOutcome,\n}\n\nimpl AuthorityFrontierStore<FinalUseFrontier> for BlockingFrontier {\n    fn load(&self, _: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {\n        self.value.lock().map(|value| *value).map_err(|_| AuthorityTrustError::Unavailable)\n    }\n\n    fn compare_and_set(\n        &self,\n        _: &str,\n        expected: &FinalUseFrontier,\n        _: &FinalUseFrontier,\n    ) -> Result<(), AuthorityTrustError> {\n        if self.load(\"component-original-frontier\")? != *expected {\n            return Err(AuthorityTrustError::Conflict);\n        }\n        let _held = self.held.lock().map_err(|_| AuthorityTrustError::Unavailable)?\n            .take().ok_or(AuthorityTrustError::Unavailable)?;\n        self.entered.lock().map_err(|_| AuthorityTrustError::Unavailable)?\n            .take().ok_or(AuthorityTrustError::Unavailable)?\n            .send(()).map_err(|_| AuthorityTrustError::Unavailable)?;\n        self.release.lock().map_err(|_| AuthorityTrustError::Unavailable)?\n            .recv_timeout(Duration::from_secs(5))\n            .map_err(|_| AuthorityTrustError::Unavailable)?;\n        match self.outcome {\n            BlockedOutcome::Refused => Err(AuthorityTrustError::Unavailable),\n            BlockedOutcome::Panicked => panic!(\"controlled original consumer CAS panic\"),\n        }\n    }\n}\n\npub(super) struct BlockingConsumer {\n    pub(super) owner: FinalUseAuthority,\n    pub(super) directory: tempfile::TempDir,\n    pub(super) entered: tokio::sync::oneshot::Receiver<()>,\n    pub(super) release: mpsc::SyncSender<()>,\n    pub(super) probe: UnixStream,\n}\n\npub(super) fn blocking_consumer(\n    session: &AgentdRootAuthoritySession,\n    key: [u8; 32],\n    outcome: BlockedOutcome,\n) -> BlockingConsumer {\n    let head = session.revocations().unwrap();\n    let (entered, notified) = tokio::sync::oneshot::channel();\n    let (release, released) = mpsc::sync_channel(1);\n    let (held, probe) = UnixStream::pair().unwrap();\n    probe.set_nonblocking(true).unwrap();\n    let frontier = Arc::new(BlockingFrontier {\n        value: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),\n        entered: Mutex::new(Some(entered)),\n        release: Mutex::new(released),\n        held: Mutex::new(Some(held)),\n        outcome,\n    });\n    let directory = tempfile::Builder::new()\n        .permissions(std::fs::Permissions::from_mode(0o700))\n        .tempdir()\n        .unwrap();\n    let owner = FinalUseAuthority::open_state_dir_with_issuer_keys(\n        directory.path(),\n        \"root-issuer\".into(),\n        vec![FinalUseIssuerTrustKey {\n            key_id: \"synthetic-fixture\".into(),\n            verifying_key: key,\n            not_before_authority_epoch: 2,\n            not_after_authority_epoch: 2,\n        }],\n        head,\n        session.clock(),\n        frontier,\n    )\n    .unwrap();\n    BlockingConsumer { owner, directory, entered: notified, release, probe }\n}\n\npub(super) fn takes_lock(file: &File) -> Result<bool, Box<dyn Error>> {\n    match file.try_lock() {\n        Ok(()) => {\n            file.unlock()?;\n            Ok(true)\n        }\n        Err(std::fs::TryLockError::WouldBlock) => Ok(false),\n        Err(std::fs::TryLockError::Error(error)) => Err(error.into()),\n    }\n}\n\npub(super) async fn join_peer(peer: std::thread::JoinHandle<()>) {\n    tokio::task::spawn_blocking(move || peer.join()).await.unwrap().unwrap();\n}\n"
+        }
+      ]
+    }
+  ],
+  "operation_count": 27,
+  "new_test_methods": 5,
+  "supersedes_draft_product_posts": [
+    "9a4ade73ec7ff92a36ae586245bae25f42dd00ca",
+    "de19f7d8b1aff7afda619d97e847edb9abbee839"
+  ],
+  "unchanged_draft_consumer_jobs": "b5c7a59fdd8d4a450e070dbeffee0e2aa707b880",
+  "actual_interfaces": {
+    "slot": "OriginalRootSessionCustodySlot::new() -> Self; externally owned before polling the real phase receiver.",
+    "connect": "AgentdRootAuthoritySession::connect_same_actor_phase_until(stream, peer, root_pidfd, timeout, original_session_end_boottime_ns, trust, phase, custody: &OriginalRootSessionCustodySlot) -> impl Future<Output=Result<Self, AgentdRootAuthorityError>> + '_",
+    "origin": "AgentdRootAuthoritySession::require_original_phase_task_custody(&self, slot: &OriginalRootSessionCustodySlot) -> Result<(), AgentdRootAuthorityError>; read-only identity of the already retained exact cap, before activation.",
+    "terminal": "OriginalRootSessionCustodySlot::stop_and_join_retired_session_tasks(&self).await -> Result<OriginalRootSessionJoinObservation, AgentdError>; actual Session must already be destroyed.",
+    "observation": "NotRegistered { slot_poisoned } or Joined { slot_poisoned, actual worker termination, copied original worker failure, actual consumer join summary }. No branch is a normal-phase or business proof."
+  },
+  "ownership": [
+    "After the unchanged initial proof/feed, actual phase constructor reserves the external slot under one short mutex BEFORE its only actual tokio::spawn. Duplicate/stopped/poisoned slot cannot spawn. It retains the SAME actual RootWorker JoinHandle synchronously without await, forwarding task, new worker or replacement File.",
+    "The actual Session is fully constructed, with its retirement notice in the LAST field, before slot admission is released. The external slot keeps the same custody Arc. A post-spawn refusal drops Session fields in declaration order and only then marks it retired; the actual worker's own future-before-File ownership and the external custody remain.",
+    "The single original post-spawn Gate check moves from the immediate caller to this actual constructed-stream helper after Session construction. Same Gate, same error mapping, same total eight parent require_open calls. No successful result can bypass the postcheck; outer CloseOnDrop still fences a failed or unpolled connection attempt.",
+    "Each actual ConsumerSyncJob spawn synchronously transfers its JoinHandle into the same phase registry before the original bounded wait. A timeout/aborted refresh/cancelled activation drops only the waiter, never that handle.",
+    "The original refresh/activation serial permit still covers the same barrier. Terminal cleanup requires Session retirement (so borrowed activation futures have ended), joins the actual observation worker first, then every retained actual consumer handle, with no serial/owner mutex held across those joins.",
+    "Every async join borrows the actual retained handle under a tokio mutex. Cancellation preserves it; observed completion is recorded without an intervening await, so later cleanup never polls a completed handle again.",
+    "Consumer result is Copy OriginalRootAuthorityError; exact original Owner errors remain in observations and return unchanged to the original caller. Original JoinError still maps to Unavailable for that caller while the cleanup summary distinguishes cancelled/panicked tasks. Worker error is separately retained even if its final join reports Cancelled.",
+    "Registry resides OUTSIDE LiveRoot; consumers hold that clock, but there is no registry -> consumer -> LiveRoot -> registry cycle. Custody holds Weak<LiveRoot>; it cannot turn fenced read-only clocks into a new operational owner.",
+    "RootWorker struct/Future, ConsumerSyncJob struct/run and original Session/Fence/Activation Drop bodies remain byte-identical. Real task futures and consumers continue to drop before their exact WriterCustody shares.",
+    "External cap itself retains the original daemon writer File last. A successful task-join observation therefore does NOT mean the writer lock is released while that cap is still held. External consumer clones and other owners remain outside this observation.",
+    "Slot/cap Drop only requests stop and never claims asynchronous join. Terminal poison recovery only joins already-held tasks and reports poison; it never admits/restarts/rebinds any operation."
+  ],
+  "budget": {
+    "legacy": "The complete original None timeout/spawn/error fragment is preserved; original connect_owned_stream is exact after removing only explicit None/Legacy/retirement syntax.",
+    "phase_new_sample": "One new real BOOTTIME sample occurs AFTER the new registry admission mutex and BEFORE actual blocking spawn. It subtracts from the SAME original started value, rejects regression relative to the original elapsed sample and refuses an exhausted original MAX_AGE_NS.",
+    "started_unchanged": true,
+    "max_age_ns_unchanged": 500000000,
+    "retries_added": 0,
+    "producer_clock_or_refresh_added": false,
+    "sampling_count_claim": "Parent boottime_ns call sites increase from 9 to 10. No claim that all sampling is unchanged. Existing Gate admission also performs its ordinary trusted-clock check.",
+    "consumer_job_note": "ConsumerSyncJob has only its original consumers/head/writer_file fields; it never accepted a started argument. The unchanged synchronize_consumers original started remains the basis for the final post-result age check."
+  },
+  "components": [
+    {
+      "name": "cancelled_cleanup_retains_actual_blocking_cas_and_original_file",
+      "scope": "Actual phase connection with same-UID signed fixture and held self pidfd; real FinalUse durable owners, background ConsumerSyncJob blocked in original store CAS; Session/worker retire; first actual join waiter cancelled; exact FD remains live; release then real second join preserves error; same-inode daemon writer lock stays held until cap drop."
+    },
+    {
+      "name": "cancelled_activation_keeps_its_real_consumer_job_until_join",
+      "scope": "Owner opened at original head 1; original feed advances actual Session to head 2 under its original serial barrier. Actual activation creates a blocked CAS job; its future is dropped; actual job and FD survive until real cleanup join."
+    },
+    {
+      "name": "original_consumer_panic_is_joined_and_retained_as_failure",
+      "scope": "A real original store callback panics after a barrier. Actual JoinHandle observes it; worker's actual original Unavailable and consumer Panicked remain recorded; no failure becomes success."
+    },
+    {
+      "name": "stopped_empty_slot_rejects_phase_spawn_after_real_initial_read",
+      "scope": "Real proof and initial observation read complete, but stopped pre-existing slot refuses before spawn. NotRegistered is explicit absence, never completion."
+    },
+    {
+      "name": "post_spawn_gate_refusal_keeps_actual_worker_in_external_slot",
+      "scope": "Only cfg(test) switch requests actual stop synchronously after real handle registration. The SAME production post-spawn Gate check returns original Unavailable; actual Session drops and external slot can still join the real worker."
+    }
+  ],
+  "test_isolation": {
+    "new_files_end_tests_rs": true,
+    "existing_tests_complete_prefix_preserved": true,
+    "executed": 0,
+    "same_uid_synthetic_proof": true,
+    "business_receipts_or_root_deployment_synthesized": false,
+    "post_spawn_injection": "Only cfg(test) slot field/method/branch, absent from normal-build static mask. It calls real stop after real retention; it does not mark a task joined or generate a successful outcome.",
+    "timing": "Five-second component wait bounds prevent indefinite test hangs; no assertion requires host scheduling to finish inside an artificial sub-millisecond window.",
+    "normal_build_test_hook_absent": true
+  },
+  "static_projection": {
+    "base": {
+      "blob": "0f10fdb6433c09968fc4146254adfc204baad411",
+      "bytes": 30409,
+      "sha256": "261a6a481001985318a55286bbb9d13b091bf7b40a8b6c4b356500dad23bf393"
+    },
+    "post": {
+      "blob": "14386bd2b6565d192121d06ffa56d8d351c0502f",
+      "bytes": 33447,
+      "sha256": "f65bc28c00bfc8772b94c5b799fe6923831d5bab59e21cdecbb2473e618af77b"
+    },
+    "ops": 22,
+    "criticalByteIdentical": [
+      {
+        "marker": "struct RootWorker",
+        "bytes": 82,
+        "sha256": "1fdcfd2c13f958575b68223f359bb4a23885dd2edf9e5a1dd30dcb3df4e2091b"
+      },
+      {
+        "marker": "impl<F: Future<Output = ()>> Future for RootWorker",
+        "bytes": 214,
+        "sha256": "9eacc1532253e33620b252516bcf9923d7bc32f2939b2dd3a7e160b2f2ba8ceb"
+      },
+      {
+        "marker": "struct ConsumerSyncJob",
+        "bytes": 128,
+        "sha256": "504fa24d4c3e02fb1576319aef64cac2bda11c0d714313c280bafef37ae31a08"
+      },
+      {
+        "marker": "impl ConsumerSyncJob",
+        "bytes": 833,
+        "sha256": "1d30b051ce6860172b7605f78702e205ef095c844580c40ade1748dc71a172fd"
+      },
+      {
+        "marker": "impl AuthorityClock for LiveRoot",
+        "bytes": 221,
+        "sha256": "6dd6166ee564f27fcf18f5206183ae1bd11c18fd0edfedb66c1a6283cb217b32"
+      },
+      {
+        "marker": "impl ProductionAuthorityVerifier for LiveRoot",
+        "bytes": 1468,
+        "sha256": "d82af672d4d825f6ee7e2c42641c979f154d194ac8abca8db47f4c6f50e2af20"
+      },
+      {
+        "marker": "fn current_original(",
+        "bytes": 3141,
+        "sha256": "5de83882656ead997b1cee5c87deb4596e51c2547454cdd82634652b60839cdc"
+      },
+      {
+        "marker": "fn retain_registered_writer(",
+        "bytes": 565,
+        "sha256": "c74669633f191cb27bc45ab15da04481f44e941efaef1235025397d78b0091aa"
+      },
+      {
+        "marker": "impl Drop for AgentdRootAuthoritySession",
+        "bytes": 733,
+        "sha256": "75658533bf615e9b7355dd6fce8a7f6ea87993a3b82eeba63e9a33731cc0c724"
+      },
+      {
+        "marker": "impl Drop for FenceOnDrop",
+        "bytes": 257,
+        "sha256": "940196618ecec1958a6fac498b67b1090d09233726b4b11be7b668cc14ba8cc6"
+      },
+      {
+        "marker": "impl Drop for ActivationAttempt",
+        "bytes": 242,
+        "sha256": "fb01c4e4b68735954763d90d97c23e05b25a00d413874eb6a7ec0649c1e743a0"
+      }
+    ],
+    "defaultConnectProjectionExact": true,
+    "commonRefreshAfterParameterProjectionExact": true,
+    "legacyTimeoutSpawnErrorFragmentExact": true,
+    "parentGateChecks": {
+      "pre": 8,
+      "post": 8
+    },
+    "parentBoottimeSamples": {
+      "pre": 9,
+      "post": 10
+    },
+    "cfgTestInjectionAbsentFromNormalProjection": true,
+    "claim": "bounded static source projection only; no Rust typecheck or original checker execution"
+  },
+  "private_descendant_inventory": {
+    "actual_base_session_tests": "2556d81e1265766ccee7bf9c89bb633bf9b51b55",
+    "children": [
+      "c9c883fe7e299dbaa693443463b3b82d8f79760c",
+      "776359e85d9cee0e87a961d060d632e81671a4d1"
+    ],
+    "facts": "All three source files read. No direct call to changed private refresh/synchronize/phase-stream signature; actual old tests use worker.abort_handle/is_finished, preserved by enum's cfg(test) delegation. No old test assertions removed."
+  },
+  "integration_pending": [
+    "runtime_access must retain the empty Slot in an actual outer owner BEFORE polling receive, pass it into the sole actual phase connect, and check the same cap before activation. The new parameter intentionally requires that concrete wiring; this packet alone is not a compilable complete candidate.",
+    "External owner must first release/drop the actual receive/Launch future, Context/Session and borrowed activation owners, then drive the private join. Keeping a slot only inside the cancellable receiver is insufficient.",
+    "The two earlier open_original_phase_consumer bootstrap spawn_blocking tasks are NOT ConsumerSyncJobs and are NOT counted here. They need actual outer future/handle custody in runtime's separate slice.",
+    "Strict CALLERS old-marker adaptation/new closed sets depend on the actual receiver/Startup posts and are not authored speculatively in this source packet.",
+    "No actual C source/Cell/journal termination, successor slot/route release, independent Outcome, Root worker join or final completion ACK is certified here.",
+    "Current stop-and-join is failure cleanup and closes the SAME Gate, including the final progress peer. Normal retirement needs separate actual C terminal/Root-purpose prerequisites and audited failure-guard handling; it cannot reuse this cleanup receipt as success.",
+    "Startup final Err remains. Default entry, ordinary business and daemon/Root cold restart qualification remain unchanged at 0/0/0."
+  ],
+  "verification": {
+    "all_6_source_create_get": true,
+    "existing_preimages_direct_fixed_commit_get": 2,
+    "new_paths_actual_404_at_fixed_commit": 4,
+    "all_27_ops_unique_forward_reverse": true,
+    "original_checker_executed": false,
+    "rustfmt_executed": false,
+    "rust_compiler_executed": false,
+    "native_tests_executed": false,
+    "h_used": false,
+    "ref_changed": false
+  },
+  "instructions": {
+    "root_agents_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "ancestor_paths_checked": [
+      "codex-rs/AGENTS.md",
+      "codex-rs/hepta-agentd/AGENTS.md",
+      "codex-rs/hepta-agentd/src/AGENTS.md"
+    ],
+    "result": "Same fixed-source ancestors previously GET checked NOT_FOUND; root instructions read; Root alone runs formatter/compiler/native."
+  }
+}

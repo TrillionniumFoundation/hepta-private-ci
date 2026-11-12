@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "kind": "original-daemon-root-retirement-intent-source-cut",
+  "status": "isolated-source-draft-not-installed-not-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_reference": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "dependencies": {
+    "material_packet": "1ff328c73288924ea8e98a5e213fbe2e6be84c00",
+    "outer_packet": "aeb5f9efa8f2d94ffc8d63a2aae09bd2dfef928e",
+    "audit_circuit_packet": "ad5d950d11627ae7b44373d227348ef41e00439e",
+    "learning_joined_packet": "5959a6d836df1f0fb32fa45ef282ec899847c6c2",
+    "actual_session_pause_source": "abb7c3cc76c37ddef91e9ae946cbfeb43709f491",
+    "root_retirement_wire": "77cba7adc7a61b0177306a56ad608229e9d56d65"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "blob": "1c68ee3f07a27717279636bec7f882c278f7da09",
+        "bytes": 8082,
+        "sha256": "1f344fdaa5d4e9a1486858c04aa3b964ffac2aef876fb6a3c85f89aa3eada3e7",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "blob": "f4c29d2d36297b70951372d63c8b18f4f089f01a",
+        "bytes": 8829,
+        "sha256": "927806e23d89a51de71862f5278ae254ea2eca08f8c60d8f508de57bc3d4085b",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "const ORIGINAL_FRAME_TIMEOUT: Duration = Duration::from_millis(500);",
+          "new": "#[path = \"same_actor_q24_deployment_retirement.rs\"]\nmod retirement;\npub(crate) use retirement::OriginalRootRetirementIntent;\n\nconst ORIGINAL_FRAME_TIMEOUT: Duration = Duration::from_millis(500);"
+        },
+        {
+          "op": "replace",
+          "old": "    next: Option<OriginalDeploymentStage>,\n    required: RequiredSameActorPhaseChannel,",
+          "new": "    next: Option<OriginalDeploymentStage>,\n    current_registration: Option<OriginalDeploymentCurrentRegistration>,\n    required: RequiredSameActorPhaseChannel,"
+        },
+        {
+          "op": "replace",
+          "old": "impl OriginalDeploymentClient {\n",
+          "new": "struct OriginalDeploymentCurrentRegistration {\n    registration: String,\n    request: String,\n}\n\nimpl OriginalDeploymentClient {\n"
+        },
+        {
+          "op": "replace",
+          "old": "            next: Some(OriginalDeploymentStage::Initial),\n            required,",
+          "new": "            next: Some(OriginalDeploymentStage::Initial),\n            current_registration: None,\n            required,"
+        },
+        {
+          "op": "replace",
+          "old": "        self.next = match expected {\n",
+          "new": "        if expected == OriginalDeploymentStage::Current {\n            self.current_registration = Some(OriginalDeploymentCurrentRegistration {\n                registration: acknowledged.registration_binding.clone()\n                    .ok_or_else(|| uncertain(refused(\"actual Current acknowledgement has no binding\")))?,\n                request: acknowledged.original_request.clone(),\n            });\n        }\n        self.next = match expected {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "85cc5480a13b8d04c96f55f78a9698a78bdb51df",
+        "bytes": 6512,
+        "sha256": "27aa784654f7c4f729be8dce35f04809a6f5ad6eeb3cb6f64d0e3fe418a63f9a",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! The actual Root retirement request, after local owners have really joined.\n//! This private capability authorizes purpose-stream retirement only. It does\n//! not prove Root process exit or permit any authority/business operation.\n\nuse std::sync::Arc;\n\nuse codex_hepta_contracts::HostAuthorityPeerChannel;\n\nuse super::OriginalDeploymentClient;\nuse super::owner_error;\nuse super::refused;\nuse super::uncertain;\nuse crate::AgentdError;\nuse crate::AgentdIdentity;\nuse crate::circuit_task::OriginalCircuitNaturalJoin;\nuse crate::production_launcher::OriginalSameActorRuntimeStopped;\nuse crate::root_authority_session::OriginalRootSessionPaused;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined;\nuse crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementAcknowledgement;\nuse crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementRequest;\nuse crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementStage;\nuse crate::same_actor_q24_root_retirement_protocol::RETIREMENT_PURPOSE;\n\n/// Only the actual exchange below can construct this non-Clone, non-serde\n/// owner. The same progress channel, original Root pidfd, required-stream\n/// guard, exact context and original absolute deadline remain inside it.\n/// The four joined/paused owners are borrowed synchronously and stay held by\n/// the actual outer owner; this method never replaces them with data.\npub(crate) struct OriginalRootRetirementIntent {\n    client: OriginalDeploymentClient,\n    request: OriginalRootRetirementRequest,\n    acknowledgement: OriginalRootRetirementAcknowledgement,\n    intent_digest: String,\n}\n\nimpl OriginalDeploymentClient {\n    /// This synchronous operation runs on the retained actual outer owner.\n    /// There is no await holding references to the non-Sync owner bundles.\n    /// A lost ACK consumes this client and closes the same phase; it is never\n    /// treated as absence of the Root effect, nor made available for retry.\n    pub(in super::super) fn authorize_original_root_retirement(\n        mut self,\n        stopped: &OriginalSameActorRuntimeStopped,\n        learning: &OriginalSameActorLearningJoined,\n        natural: &OriginalCircuitNaturalJoin,\n        session: &OriginalRootSessionPaused,\n    ) -> Result<OriginalRootRetirementIntent, AgentdError> {\n        let mut closing = self.required.failure_scope();\n        let identity = self.context.identity().clone();\n        let gate = Arc::clone(self.context.gate());\n        stopped.require_original_origin(&identity, &gate)?;\n        learning.require_original_phase(&identity, &gate)?;\n        natural.require_original_phase(&identity, &gate)?;\n        session.require_original_origin(&identity, &gate)?;\n        self.required.require_open()?;\n        HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;\n        if self.next.is_some() {\n            return Err(refused(\"actual deployment registrations are incomplete\"));\n        }\n        let current = self.current_registration.take()\n            .ok_or_else(|| refused(\"actual Current registration acknowledgement is unavailable\"))?;\n        let request = OriginalRootRetirementRequest {\n            schema_version: 1,\n            purpose: RETIREMENT_PURPOSE.into(),\n            binding: self.binding.clone(),\n            sequence: 1,\n            stage: OriginalRootRetirementStage::AuthorizeRootRetirement,\n            current_registration: current.registration,\n            current_request: current.request,\n            original_intent: None,\n        };\n        let bytes = request.encode_original()?;\n        let intent_digest = request.digest()?;\n        self.required.require_open()?;\n        HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;\n        // The original channel captures its single 500 ms request deadline\n        // here, after all local pause/join checks. No new session end is made.\n        let response = HostAuthorityPeerChannel::request(&mut self.channel, &bytes)\n            .map_err(uncertain)?;\n        let acknowledgement = (|| {\n            let acknowledgement = OriginalRootRetirementAcknowledgement::decode_original(\n                &response, &request, &intent_digest,\n            )?;\n            HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;\n            self.required.require_open()?;\n            // Ordinary Current is intentionally fenced by the real Session\n            // pause. These sealed origins validate their retained owners and\n            // same Gate, without seeking fresh authority after retirement.\n            stopped.require_original_origin(&identity, &gate)?;\n            learning.require_original_phase(&identity, &gate)?;\n            natural.require_original_phase(&identity, &gate)?;\n            session.require_original_origin(&identity, &gate)?;\n            self.required.require_open()?;\n            Ok::<_, AgentdError>(acknowledgement)\n        })().map_err(uncertain)?;\n        let intent = OriginalRootRetirementIntent {\n            client: self,\n            request,\n            acknowledgement,\n            intent_digest,\n        };\n        intent.require_original_origin(&identity, &gate)?;\n        closing.disarm();\n        Ok(intent)\n    }\n}\n\nimpl OriginalRootRetirementIntent {\n    /// A same-origin permission for already-quiesced owners to release their\n    /// actual Root-purpose streams. This is not an admission to Current,\n    /// another business operation, a renewed deadline, or a completion proof.\n    pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        let checked = (|| {\n            if self.client.context.identity() != identity\n                || !Arc::ptr_eq(self.client.context.gate(), gate)\n            {\n                return Err(refused(\"actual Root retirement origin differs\"));\n            }\n            self.acknowledgement.require_original_request(&self.request, &self.intent_digest)?;\n            self.client.required.require_open()?;\n            HostAuthorityPeerChannel::check_peer_lifetime(&self.client.channel)\n                .map_err(owner_error)?;\n            self.client.required.require_open()?;\n            Ok::<(), AgentdError>(())\n        })();\n        if checked.is_err() {\n            self.client.context.gate().close();\n        }\n        checked\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "blob": "f4f535f7d7bb53489a6cf0e2466eeff380327c4d",
+        "bytes": 3593,
+        "sha256": "7fcfc53c9790b0aed6ab021d9acc5b09df208fe782539af83185abd302ff9741",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "blob": "111b253ba85c1540cf59d01f1215da1fc320b6bc",
+        "bytes": 3646,
+        "sha256": "623e519306378aa817532e0f9e380758df06a79ef72f7867cf03ef8f54bd0cc7",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use owner::OriginalDeploymentCoordinatorOwner;",
+          "new": "pub(crate) use client::OriginalRootRetirementIntent;\npub(crate) use owner::OriginalDeploymentCoordinatorOwner;"
+        }
+      ]
+    }
+  ],
+  "path_count": 3,
+  "operation_count": 7,
+  "actual_guards": [
+    "Only the original client created from the sealed Context is consumed; no data deserialization creates this capability.",
+    "The actual third Current acknowledgement is retained only after semantic, peer and original Current/Gate postchecks.",
+    "The four real RuntimeStopped/LearningJoined/CircuitNaturalJoin/SessionPaused owners are borrowed synchronously; the caller retains all of them.",
+    "One original HostAuthorityPeerChannel::request begins the unchanged 500ms frame budget; original absolute end is never rebuilt.",
+    "After pause, all validation uses sealed origins, original Gate and actual peer lifetime; ordinary Current is not reopened.",
+    "The exact Root retirement seq1 acknowledgement is fully decoded and checked before the private Intent is constructed.",
+    "Unknown effect consumes the actual client and leaves common failure custody armed; no retry or reconnect.",
+    "Intent retains the original channel, required-stream failure guard, context, original deadline and Root pidfd."
+  ],
+  "scope_limits": [
+    "This packet provides the concrete private Intent source and actual third-ACK retention, not yet its final coordinator caller.",
+    "No normal purpose-stream release, ACK2, Root OS-exit observation, daemon OS-exit proof or successful Startup return is introduced here.",
+    "Existing coordinator/Startup keep their fault-only final Err until the complete retained-owner path is wired.",
+    "No runtime ABI/checker/CALLERS updates or native/compile/format/checker execution are claimed."
+  ],
+  "verification": {
+    "full_source_create_get_hash_equal": true,
+    "unique_exact_forward_reverse_for_two_existing_files": true,
+    "old_payload_and_original_frame_call_preserved": true,
+    "tests_executed": 0,
+    "native_attempts": 0,
+    "refs_changed": 0
+  }
+}

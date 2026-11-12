@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "kind": "actual-coordinator-thread-join-retained-owner-cut",
+  "status": "isolated-pending-normal-outer-assembly-no-success-enabled",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "dependencies": {
+    "materials": "1ff328c73288924ea8e98a5e213fbe2e6be84c00",
+    "intent": "86065a3a91e075a8f2a8463951369608794f5b16",
+    "intent_guard": "8ad0e86068256f5dc4f20f23a35de215abd0d828",
+    "audit_circuit": "ad5d950d11627ae7b44373d227348ef41e00439e",
+    "actual_learning": "5959a6d836df1f0fb32fa45ef282ec899847c6c2",
+    "actual_pause": "d155830d536047b850573adc91392ef728d4e089"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "blob": "cb1f0b161ea9ff579781df4a6c8287d804f63780",
+        "bytes": 13547,
+        "sha256": "439e69e5280af125653db569c7ada85ea658d252a612349e86af28b800338c1f",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "blob": "b66660a510dce52b517c45e30a0a374a8c9ca32a",
+        "bytes": 15470,
+        "sha256": "eb37aea65a4a151ba8dfb7876f173e0760546ed14a9b27ed5844a7ee8bf2417b",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "    context: Arc<OriginalSameActorRootContext>,\n    client: OriginalDeploymentClient,\n    ingress:",
+          "new": "    context: Arc<OriginalSameActorRootContext>,\n    client: Option<OriginalDeploymentClient>,\n    ingress:"
+        },
+        {
+          "op": "replace",
+          "old": "impl OriginalDeploymentCoordinator {\n",
+          "new": "/// A data-stage handoff, not C completion or a normal-retirement grant.\n/// Only the real event loop can return it, retaining every actual material\n/// owner and its original common-close guard.\npub(super) struct OriginalCoordinatorAtCOutcome {\n    _closing: CloseSameActorPhaseOnDrop,\n    coordinator: OriginalDeploymentCoordinator,\n}\n\nimpl OriginalCoordinatorAtCOutcome {\n    pub(super) fn require_original_retirement_origin(\n        &self, identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if self.coordinator.context.identity() != identity\n            || !Arc::ptr_eq(self.coordinator.context.gate(), gate)\n            || self.coordinator.expected != Expected::COutcome\n        {\n            self.coordinator.context.gate().close();\n            return Err(deployment_refused(\"retained coordinator origin differs\"));\n        }\n        gate.require_open()?;\n        Ok(())\n    }\n\n    pub(super) fn take_original_retirement_client(\n        &mut self,\n    ) -> Result<OriginalDeploymentClient, AgentdError> {\n        self.coordinator.client.take()\n            .ok_or_else(|| deployment_refused(\"original progress client was already transferred\"))\n    }\n}\n\nimpl OriginalDeploymentCoordinator {\n"
+        },
+        {
+          "op": "replace",
+          "old": "            context, client, ingress, commands, events, data, files, artifacts, learning,",
+          "new": "            context, client: Some(client), ingress, commands, events, data, files, artifacts, learning,"
+        },
+        {
+          "op": "replace",
+          "old": "    pub(super) async fn run_original(mut self) -> Result<(), AgentdError> {\n        let _closing = CloseSameActorPhaseOnDrop::new(self.context.gate());",
+          "new": "    fn original_client_mut(&mut self) -> Result<&mut OriginalDeploymentClient, AgentdError> {\n        self.client.as_mut()\n            .ok_or_else(|| deployment_refused(\"actual progress client is no longer in the event loop\"))\n    }\n\n    pub(super) async fn run_original(mut self) -> Result<OriginalCoordinatorAtCOutcome, AgentdError> {\n        let closing = CloseSameActorPhaseOnDrop::new(self.context.gate());"
+        },
+        {
+          "op": "replace",
+          "old": "                    self.client.exchange_original(OriginalDeploymentProgress::InputsOpened)?;",
+          "new": "                    OriginalDeploymentClient::exchange_original(\n                        self.original_client_mut()?, OriginalDeploymentProgress::InputsOpened,\n                    )?;"
+        },
+        {
+          "op": "replace",
+          "old": "                    self.client.exchange_original(OriginalDeploymentProgress::OriginalSelectionReady {\n                        canonical_material: actual.canonical_material,\n                    })?;",
+          "new": "                    OriginalDeploymentClient::exchange_original(\n                        self.original_client_mut()?,\n                        OriginalDeploymentProgress::OriginalSelectionReady {\n                            canonical_material: actual.canonical_material,\n                        },\n                    )?;"
+        },
+        {
+          "op": "replace",
+          "old": "                    // The actual receipt was accepted, but this version has\n                    // no private normal-retirement/physical-join completion\n                    // contract. Keep the original peer and every owner alive.\n                    // Fault closure remains an error, never a success ACK.\n                    return self.client.retain_until_original_close().await;",
+          "new": "                    // This event hands custody back to the real joining\n                    // owner; it is not C completion. The outer path must still\n                    // obtain C/Learning/Circuit/Session caps before seq1.\n                    // Keep the actual client, every material owner and both\n                    // thread/event-loop failure guards alive across the join.\n                    return Ok(OriginalCoordinatorAtCOutcome {\n                        _closing: closing,\n                        coordinator: self,\n                    });"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "blob": "e6a038c03bb6f77898c01a21d5183c2ca25564c5",
+        "bytes": 10966,
+        "sha256": "e42d0fbc101cf3e18d1169472d37d9da3b1ea6cda97782ac0589c803dd8fc870",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "blob": "2d3b10595febddae8c09ef08aac35c7ce3e9f6bf",
+        "bytes": 11054,
+        "sha256": "3699615f5750199ec978d708aefe49c1fa07b028625cae45ed1e69e090624d35",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "        self.client.exchange_original(OriginalDeploymentProgress::OriginalAPrepared { profile })?;",
+          "new": "        super::super::client::OriginalDeploymentClient::exchange_original(\n            self.original_client_mut()?, OriginalDeploymentProgress::OriginalAPrepared { profile },\n        )?;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+        "blob": "12b97474ae7779140cccbcca95c3f8f12e7413e6",
+        "bytes": 4384,
+        "sha256": "cb497b41f3dd3557151c7b9dd452835c3d06c6b59738796803ebb35823844869",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+        "blob": "76475a83fd3680c9601a6582749e649d626979b8",
+        "bytes": 5290,
+        "sha256": "0d37d9c9922f2eea29ecebd92388011d954979ca92a928f5aea14259a1f578db",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "use super::coordinator::OriginalDeploymentCoordinator;",
+          "new": "use super::coordinator::OriginalCoordinatorAtCOutcome;\nuse super::coordinator::OriginalDeploymentCoordinator;\n\n#[path = \"same_actor_q24_deployment_retained.rs\"]\nmod retained;"
+        },
+        {
+          "op": "replace",
+          "old": "    thread: Option<JoinHandle<Result<(), AgentdError>>>,",
+          "new": "    thread: Option<JoinHandle<Result<OriginalDeploymentRetained, AgentdError>>>,"
+        },
+        {
+          "op": "replace",
+          "old": "impl OriginalDeploymentCoordinatorOwner {",
+          "new": "/// Only the actual thread join below returns this retained owner. Its event\n/// marks a data handoff, not business completion; the original private caps\n/// are still required before any normal Root-retirement request.\npub(crate) struct OriginalDeploymentRetained {\n    _thread_closing: CloseSameActorPhaseOnDrop,\n    context: Arc<OriginalSameActorRootContext>,\n    coordinator: OriginalCoordinatorAtCOutcome,\n}\n\nimpl OriginalDeploymentCoordinatorOwner {"
+        },
+        {
+          "op": "replace",
+          "old": "        let thread_closing = CloseSameActorPhaseOnDrop::new(context.gate());",
+          "new": "        let thread_closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        let thread_context = Arc::clone(&context);"
+        },
+        {
+          "op": "replace",
+          "old": "                let _closing = thread_closing;\n                let result = runtime.block_on(coordinator.run_original());\n                // Cancelling Startup cannot discard this original result:\n                // it stays in the actually retained JoinHandle.\n                result",
+          "new": "                let result = runtime.block_on(coordinator.run_original());\n                // Transfer the pre-spawn guard and every actual owner into\n                // the same real thread result. Err/panic still drops the\n                // original guard; successful handoff does not close Gate.\n                result.map(|coordinator| OriginalDeploymentRetained {\n                    _thread_closing: thread_closing,\n                    context: thread_context,\n                    coordinator,\n                })"
+        },
+        {
+          "op": "replace",
+          "old": "        join_original_thread(thread)\n",
+          "new": "        join_original_thread(thread).map(drop)\n"
+        },
+        {
+          "op": "replace",
+          "old": "        self.context.gate().close();\n        if let Some(thread) = self.thread.take() {",
+          "new": "        if let Some(thread) = self.thread.take() {\n            self.context.gate().close();"
+        },
+        {
+          "op": "replace",
+          "old": "    thread: JoinHandle<Result<(), AgentdError>>,\n) -> Result<(), AgentdError> {",
+          "new": "    thread: JoinHandle<Result<OriginalDeploymentRetained, AgentdError>>,\n) -> Result<OriginalDeploymentRetained, AgentdError> {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "blob": "111b253ba85c1540cf59d01f1215da1fc320b6bc",
+        "bytes": 3646,
+        "sha256": "623e519306378aa817532e0f9e380758df06a79ef72f7867cf03ef8f54bd0cc7",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "blob": "4f99fe32037ba6fbb23b80c714a8edff8b27581d",
+        "bytes": 3696,
+        "sha256": "ff002b467b886a0f31414c379b3f92e15a65c942f6b0c153c3b4c3ba8ae6b85e",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use owner::OriginalDeploymentCoordinatorOwner;",
+          "new": "pub(crate) use owner::OriginalDeploymentCoordinatorOwner;\npub(crate) use owner::OriginalDeploymentRetained;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "blob": "f4c29d2d36297b70951372d63c8b18f4f089f01a",
+        "bytes": 8829,
+        "sha256": "927806e23d89a51de71862f5278ae254ea2eca08f8c60d8f508de57bc3d4085b",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "blob": "1e9c0d59d17ada4aff27433da4504788f179690b",
+        "bytes": 8345,
+        "sha256": "7f618233c8f222be9d8497ec79a7f8db702b92d993bc2f9006954ba6347f3c4b",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "    /// Retain the same peer after its three real registrations. Neither common\n    /// closure nor an EOF is a final completion or physical owner-join receipt.\n    pub(super) async fn retain_until_original_close(self) -> Result<(), AgentdError> {\n        if self.next.is_some() {\n            return Err(refused(\"original deployment registrations are incomplete\"));\n        }\n        OriginalSameActorRootContext::require_current(&self.context)?;\n        self.required.require_open()?;\n        self.context.gate().cancelled().await;\n        Err(refused(\"original deployment closed without final completion acknowledgement\"))\n    }",
+          "new": "    // After Current, the same client transfers through the actual joined\n    // coordinator owner. Only its private retirement path consumes it.\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+        "blob": "d93b92644d601459fea98a31d0f86035a6aaec02",
+        "bytes": 3853,
+        "sha256": "85667e4f81caba8345157081850db2ffefb7426fc8a6acbdf1f5db9b540db249",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Return the actual coordinator's owners only after its real thread joined.\n//! The C event is only an owner handoff. It cannot create a C terminal cap,\n//! a Root permission, or an acknowledgement by itself.\n\nuse super::*;\nuse crate::AgentdIdentity;\nuse crate::circuit_task::OriginalCircuitNaturalJoin;\nuse crate::production_launcher::OriginalSameActorRuntimeStopped;\nuse crate::root_authority_session::OriginalRootSessionPaused;\nuse crate::same_actor_q24_deployment::OriginalRootRetirementIntent;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined;\n\nimpl OriginalDeploymentCoordinatorOwner {\n    /// A real natural Circuit join and the owner-bearing Runtime result are\n    /// required before taking this thread's result. This operation never\n    /// requests failure stop and never substitutes an event for physical join.\n    pub(crate) fn take_original_after_c_join(\n        &mut self,\n        stopped: &OriginalSameActorRuntimeStopped,\n        learning: &OriginalSameActorLearningJoined,\n        natural: &OriginalCircuitNaturalJoin,\n    ) -> Result<OriginalDeploymentRetained, AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(self.context.gate());\n        let identity = self.context.identity();\n        let gate = self.context.gate();\n        stopped.require_original_origin(identity, gate)?;\n        learning.require_original_phase(identity, gate)?;\n        natural.require_original_phase(identity, gate)?;\n        let thread = self.thread.take()\n            .ok_or_else(|| deployment_refused(\"actual coordinator result was already taken\"))?;\n        let retained = join_original_thread(thread)?;\n        if !Arc::ptr_eq(&retained.context, &self.context) {\n            return Err(deployment_refused(\"actual joined coordinator context differs\"));\n        }\n        retained.require_original_origin(identity, gate)?;\n        stopped.require_original_origin(identity, gate)?;\n        learning.require_original_phase(identity, gate)?;\n        natural.require_original_phase(identity, gate)?;\n        // Both original event-loop and pre-spawn failure guards now live in\n        // retained. The joining handle cannot be used again or recreated.\n        closing.disarm();\n        Ok(retained)\n    }\n}\n\nimpl OriginalDeploymentRetained {\n    pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if self.context.identity() != identity || !Arc::ptr_eq(self.context.gate(), gate) {\n            self.context.gate().close();\n            return Err(deployment_refused(\"actual retained coordinator origin differs\"));\n        }\n        self.coordinator.require_original_retirement_origin(identity, gate)\n    }\n\n    /// Retain every actual material/ledger/model/evidence owner while the one\n    /// original progress client moves into the real seq1 Intent. The returned\n    /// tuple owns both; dropping either before final completion still closes.\n    pub(crate) fn authorize_original_root_retirement(\n        mut self,\n        stopped: &OriginalSameActorRuntimeStopped,\n        learning: &OriginalSameActorLearningJoined,\n        natural: &OriginalCircuitNaturalJoin,\n        session: &OriginalRootSessionPaused,\n    ) -> Result<(OriginalRootRetirementIntent, Self), AgentdError> {\n        self.require_original_origin(self.context.identity(), self.context.gate())?;\n        let client = self.coordinator.take_original_retirement_client()?;\n        let intent = super::super::client::OriginalDeploymentClient::authorize_original_root_retirement(\n            client, stopped, learning, natural, session,\n        )?;\n        self.require_original_origin(self.context.identity(), self.context.gate())?;\n        Ok((intent, self))\n    }\n}\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 6,
+  "operation_count": 19,
+  "actual_ownership": [
+    "The existing coordinator event loop returns its exact client, files, models, ledger/evidence and guards only on its actual COutcomeAccepted handoff; this is not a C completion proof.",
+    "The actual pre-spawn thread guard moves into the thread's real Result, alongside the actual event-loop guard. Errors/panics retain fault closure.",
+    "take_original_after_c_join first verifies actual RuntimeStopped, LearningJoined and CircuitNaturalJoin; it then consumes the exact real std JoinHandle, rejects panic/original Err and rechecks origins.",
+    "After that actual transfer, CoordinatorOwner Drop does not fault-close a channel now held by the returned armed owner. Fault stop still closes before join; unsuccessful take closes through its already-created guard.",
+    "The retained owner consumes its actual client for seq1 only through the four-cap Intent method and returns both the Intent and all original retained materials; no owner is dropped to manufacture EOF.",
+    "The old wait-until-failure client method has no remaining caller in the actual owned coordinator and is removed; the actual outer Startup final Err is unchanged in this packet."
+  ],
+  "pending": [
+    "Actual outer Runtime shutdown relay, natural join, Session pause, Root seq1 caller, per-purpose release, ACK2, expected Root OS exit and final outer thread acknowledgement are separate pending source deltas.",
+    "No normal successful Startup return or business/native qualification is claimed.",
+    "Exact future CALLERS/module union remains to be assembled after normal sources settle."
+  ],
+  "verification": {
+    "unique_existing_file_forward_reverse": true,
+    "all_full_postimages_create_get_equal": true,
+    "native": 0,
+    "compiler": 0,
+    "original_checker": 0,
+    "refs": 0
+  }
+}

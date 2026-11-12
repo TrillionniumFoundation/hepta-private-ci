@@ -1,0 +1,270 @@
+//! Concrete ordinary task and original Initial target files.
+//! No RunStart/receipt is manufactured here: the signed Control ingress and
+//! original Root/Cell owners admit and validate every supplied input.
+
+use std::os::fd::AsRawFd;
+use std::sync::Arc;
+use codex_hepta_automation::{BoundedCircuitDefinitionV2, CircuitExitV2, TaskFlowFence};
+use codex_hepta_contracts::AgentId;
+use codex_hepta_neuron::{CellCandidateMaskV1, CellScopeV1, DurableInferenceControl};
+use codex_hepta_types::{Digest32, StableId};
+use serde::{Deserialize, Serialize};
+use crate::{AgentdError, CircuitCellRouteV1, CircuitCellTimeV1, CircuitQ24TaskFilesV1,
+    CircuitTaskSourceInputV1, OriginalRootInitialFeatureTargetV1, RootGenerationJournalInputsV1};
+use crate::authority_host_runtime::OriginalDeploymentObserverData;
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::same_actor_q24_phase::OriginalSameActorATaskInputsV1;
+use super::cell_data::OriginalCellDefinitionData;
+use super::files::{MutableFileData, OriginalDeploymentFiles, OriginalFileMode, OriginalOwnerFileOrigin};
+use super::model::OriginalModelData;
+use super::witness::{OriginalWitnessData, require_fresh_original_file};
+use super::{deployment_error, deployment_refused};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalCandidateMaskData { pub candidate_id: String, pub allowed: bool }
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalTaskSourceData {
+    pub agent_id: String,
+    pub cell_id: String,
+    pub run_id: String,
+    pub principal_digest: [u8; 32],
+    pub source_frontier: [u8; 32],
+    pub objective_digest: [u8; 32],
+    pub ndu_snapshot_digest: [u8; 32],
+    pub monotonic_micros: u64,
+    pub deadline_micros: u64,
+    pub observation: Vec<u8>,
+    pub candidates: Vec<OriginalCandidateMaskData>,
+    pub lease_duration_ms: u64,
+}
+
+impl OriginalTaskSourceData {
+    pub(super) fn original(&self) -> Result<CircuitTaskSourceInputV1, AgentdError> {
+        Ok(CircuitTaskSourceInputV1 {
+            scope: CellScopeV1 {
+                agent_id: StableId::new(&self.agent_id).map_err(deployment_error)?,
+                cell_id: StableId::new(&self.cell_id).map_err(deployment_error)?,
+                run_id: StableId::new(&self.run_id).map_err(deployment_error)?,
+                principal_digest: Digest32::from_array(self.principal_digest),
+            },
+            source_frontier: Digest32::from_array(self.source_frontier),
+            objective_digest: Digest32::from_array(self.objective_digest),
+            ndu_snapshot_digest: Digest32::from_array(self.ndu_snapshot_digest),
+            monotonic_micros: self.monotonic_micros,
+            deadline_micros: self.deadline_micros,
+            observation: self.observation.clone(),
+            candidates: self.candidates.iter().map(|candidate| {
+                Ok(CellCandidateMaskV1 {
+                    candidate_id: StableId::new(&candidate.candidate_id).map_err(deployment_error)?,
+                    allowed: candidate.allowed,
+                })
+            }).collect::<Result<_, AgentdError>>()?,
+            lease_duration_ms: self.lease_duration_ms,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalInitialData {
+    pub journal: MutableFileData,
+    pub witness: MutableFileData,
+    pub observer: OriginalDeploymentObserverData,
+    pub model: OriginalModelData,
+    pub definition: OriginalCellDefinitionData,
+    pub source: OriginalTaskSourceData,
+}
+
+impl OriginalInitialData {
+    pub(super) fn open_original(
+        &self,
+        files: &mut OriginalDeploymentFiles,
+    ) -> Result<(OriginalRootInitialFeatureTargetV1, OriginalInitialPredecessorFiles), AgentdError> {
+        // Root's actual Initial observer requires an unwritten target journal
+        // and an independently initialized witness. No missing-witness fallback.
+        require_fresh_original_file(&self.journal)?;
+        if !matches!(self.witness.mode, OriginalFileMode::Recover) {
+            return Err(deployment_refused("Initial requires its existing original witness"));
+        }
+        let (model, bundle) = self.model.open_original(files)?;
+        let definition = self.definition.original()?;
+        let source = self.source.original()?;
+        let config = self.observer.original_observer_config().map_err(deployment_error)?;
+        crate::circuit_feature_initial_root::require_feature(
+            &config.generation, &bundle, &model, &definition, &source,
+        )?;
+        let journal = files.open_original_owner(&self.journal)?;
+        let witness = files.open_original_owner(&self.witness)?;
+        let origin = OriginalInitialPredecessorFiles {
+            journal: files.retain_original_initial_file_origin(&journal, &self.journal.path)?,
+            witness: files.retain_original_initial_file_origin(&witness, &self.witness.path)?,
+            config: config.clone(),
+        };
+        files.require_original_context()?;
+        Ok((OriginalRootInitialFeatureTargetV1 {
+            files: RootGenerationJournalInputsV1 { journal, witness, config },
+            model, bundle, definition, source,
+        }, origin))
+    }
+}
+
+/// Retained metadata and parent custody from the original Initial open. It
+/// contains no writer-file alias, active task capability or completion token.
+pub(super) struct OriginalInitialPredecessorFiles {
+    journal: OriginalOwnerFileOrigin,
+    witness: OriginalOwnerFileOrigin,
+    config: codex_hepta_neuron::CellGenerationObserverConfigV1,
+}
+impl OriginalInitialPredecessorFiles {
+    pub(super) fn reopen_original(
+        self, files: &mut OriginalDeploymentFiles,
+    ) -> Result<crate::AgentdGenerationUpdatePredecessorFilesV1<codex_hepta_neuron::FileAnchorWitnessStore>, AgentdError> {
+        let journal = self.journal.reopen_original(files)?;
+        let witness_file = self.witness.reopen_original(files)?;
+        files.require_original_context()?;
+        let witness = codex_hepta_neuron::FileAnchorWitnessStore::open(
+            witness_file, self.config.witness_scope, self.config.witness_generation, self.config.witness_records,
+        ).map_err(deployment_error)?;
+        files.require_original_context()?;
+        Ok(crate::AgentdGenerationUpdatePredecessorFilesV1 {
+            file: journal, witness, config: self.config.generation, max_records: self.config.journal_records,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalCircuitRouteData {
+    pub candidate_id: String,
+    pub outcome: CircuitExitV2,
+    pub selected_edges: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalTaskFilesData {
+    pub source_journal: MutableFileData,
+    pub source_witness: OriginalWitnessData,
+    pub cell_journal: MutableFileData,
+    pub cell_witness: OriginalWitnessData,
+    pub inference_control: MutableFileData,
+    pub inference_capacity: usize,
+}
+
+impl OriginalTaskFilesData {
+    pub(super) fn open_original(
+        &self,
+        files: &mut OriginalDeploymentFiles,
+    ) -> Result<CircuitQ24TaskFilesV1<codex_hepta_neuron::FileAnchorWitnessStore,
+        codex_hepta_neuron::FileAnchorWitnessStore>, AgentdError> {
+        for file in [&self.source_journal, &self.source_witness.file, &self.cell_journal,
+            &self.cell_witness.file, &self.inference_control] {
+            require_fresh_original_file(file)?;
+        }
+        let source_journal = files.open_original_owner(&self.source_journal)?;
+        let source_witness = self.source_witness.open_original(files)?;
+        let cell_journal = files.open_original_owner(&self.cell_journal)?;
+        let cell_witness = self.cell_witness.open_original(files)?;
+        let control = files.open_original_owner(&self.inference_control)?;
+        files.require_original_context()?;
+        // The original inference owner requires O_APPEND. This is the one
+        // privately owned descriptor; no alias or writer is retained afterward.
+        // SAFETY: the live owned File supplies a valid borrowed descriptor;
+        // F_GETFL reads its status without taking ownership.
+        let flags = unsafe { libc::fcntl(control.as_raw_fd(), libc::F_GETFL) };
+        if flags < 0 {
+            return Err(AgentdError::Io(std::io::Error::last_os_error()));
+        }
+        // SAFETY: the same live private descriptor is borrowed; the existing
+        // status flags are preserved while enabling the required append mode.
+        if unsafe { libc::fcntl(control.as_raw_fd(), libc::F_SETFL, flags | libc::O_APPEND) } < 0 {
+            return Err(AgentdError::Io(std::io::Error::last_os_error()));
+        }
+        let inference_control = DurableInferenceControl::open_file(
+            control, &self.inference_control.path, self.inference_capacity,
+        ).map_err(deployment_error)?;
+        files.require_original_context()?;
+        Ok(CircuitQ24TaskFilesV1 { source_journal, source_witness, cell_journal,
+            cell_witness, inference_control })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalCircuitData {
+    pub files: OriginalTaskFilesData,
+    pub owner_agent_id: String,
+    pub owner_id: String,
+    pub owner_epoch: u64,
+    pub generation: u64,
+    pub fencing_token: String,
+    pub circuit: BoundedCircuitDefinitionV2,
+    pub routes: Vec<OriginalCircuitRouteData>,
+    pub worker_generation: u64,
+    pub maximum_cell_records: usize,
+    pub queue_capacity: usize,
+}
+
+impl OriginalCircuitData {
+    pub(super) fn open_original(
+        &self,
+        context: &Arc<OriginalSameActorRootContext>,
+        files: &mut OriginalDeploymentFiles,
+    ) -> Result<OriginalSameActorATaskInputsV1, AgentdError> {
+        let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;
+        if agent != context.identity().agent_id
+            || context.identity().spawn_generation.checked_add(1) != Some(self.generation)
+        {
+            return Err(deployment_refused("Circuit fence differs from the actual registered actor"));
+        }
+        let fence = TaskFlowFence::new(agent, &self.owner_id, self.owner_epoch,
+            self.generation, &self.fencing_token).map_err(deployment_error)?;
+        self.circuit.validate().map_err(deployment_error)?;
+        let routes = self.routes.iter().map(|route| Ok(CircuitCellRouteV1 {
+            candidate_id: StableId::new(&route.candidate_id).map_err(deployment_error)?,
+            outcome: route.outcome, selected_edges: route.selected_edges.clone(),
+        })).collect::<Result<_, AgentdError>>()?;
+        let task_files = self.files.open_original(files)?;
+        let clock = original_task_clock(context)?;
+        files.require_original_context()?;
+        Ok(OriginalSameActorATaskInputsV1 {
+            files: task_files, fence, circuit: self.circuit.clone(), routes,
+            worker_generation: self.worker_generation,
+            maximum_cell_records: self.maximum_cell_records,
+            queue_capacity: self.queue_capacity, clock,
+        })
+    }
+}
+
+pub(super) fn original_task_clock(
+    context: &Arc<OriginalSameActorRootContext>,
+) -> Result<Arc<dyn Fn() -> CircuitCellTimeV1 + Send + Sync>, AgentdError> {
+    OriginalSameActorRootContext::require_current(context)?;
+    let clock = context.clock();
+    let gate = Arc::clone(context.gate());
+    clock.now_unix_ms().map_err(deployment_error)?;
+    crate::root_observation_cache::boottime_ns().map_err(deployment_error)?;
+    Ok(Arc::new(move || {
+        let sampled = (|| {
+            gate.require_open()?;
+            let circuit_millis = clock.now_unix_ms().map_err(deployment_error)?;
+            let cell_micros = crate::root_observation_cache::boottime_ns()
+                .map_err(deployment_error)? / 1_000;
+            gate.require_open()?;
+            Ok::<_, AgentdError>(CircuitCellTimeV1 { circuit_millis, cell_micros })
+        })();
+        match sampled {
+            Ok(time) => time,
+            Err(_) => {
+                gate.close();
+                // This original callback cannot return an error. MAX denies
+                // every bounded dispatch deadline; it is never a clock value
+                // on which this now-closed phase can authorize publication.
+                CircuitCellTimeV1 { circuit_millis: u64::MAX, cell_micros: u64::MAX }
+            }
+        }
+    }))
+}

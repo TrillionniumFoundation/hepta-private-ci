@@ -1,0 +1,1168 @@
+nputs(&product_plan.frozen_plan, &inputs)?;\", \"validate_comparable_observations(\", \"normalize_unique_ids(&mut inputs.snapshot_ids)?;\", \"normalize_unique_ids(&mut inputs.future_window_ids)?;\", \"let candidate = evaluate_temporal_holdout(\", \"let baseline = evaluate_temporal_holdout(\", \"candidate.validate_integrity()?;\", \"baseline.validate_integrity()?;\", \"let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;\"]]\nrequired_function_order = [\n  { function = \"fn release_original_consumption(\", sequence = [\"permit: OriginalFinalHoldoutReleasePermitV1<'_>\", \"self.release_after_consumption(permit.receipt)\"] },\n  { function = \"fn qualify_and_persist(\", sequence = [\"let bundle = self.qualification_bundle(temporal, context)?;\", \"decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?\", \"decide_with_signed_longitudinal_evidence_v3(\", \"let publication_digest = sink.persist(temporal.execution_digest, &decision)?;\", \"if publication_digest.is_zero()\", \"return Err(ProductEvaluationError::Integrity(\", \"));\", \"let mut receipt = ProductQualificationReceiptV1 {\", \"receipt.receipt_seal = product_qualification_seal(&receipt);\", \"receipt.validate_integrity()?;\", \"Ok(receipt)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs\"\nrequired = [\"#[path = \\\"product_holdout_file_codec.rs\\\"]\\nmod codec;\", \"const MAX_MATERIAL_BYTES: u64 = 32 * 1024 * 1024;\", \"material_file: HeldMaterialFile,\", \"expected_product: ProductFrozenEvaluationPlanV1,\", \"release_attempted: bool,\"]\nforbidden = [\"pub material_file\", \"pub release_attempted\", \"unsafe\", \"transmute\", \"File::try_clone\", \"OpenOptions\", \"set_permissions\", \"set_len\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn drop(\", sequence = [\"fn drop(\", \"let _ = self.0.unlock();\"] },\n  { function = \"fn open(\", sequence = [\".validate_integrity()\", \".map_err(|_| FileError::Binding)?;\", \"File::metadata(&file).map_err(io_error)?;\", \"if !metadata.is_file()\", \"return Err(FileError::NotRegular);\", \"File::try_lock_shared(&file)\", \"TryLockError::WouldBlock => FileError::Busy\", \"let material_file = HeldMaterialFile(file);\", \"material_length == 0 || material_length > MAX_MATERIAL_BYTES\", \"return Err(FileError::Capacity);\", \"release_attempted: false\", \"provider.require_original_material()?;\", \"Ok(provider)\"] },\n  { function = \"fn require_original_material(\", sequence = [\"let file: &mut File = &mut self.material_file.0;\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"return Err(FileError::Corrupt);\", \"Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;\", \"Digest32::of_reader(&mut *file, MAX_MATERIAL_BYTES).map_err(io_error)?;\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"digest != self.expected_product.frozen_plan.final_holdout_digest\", \"return Err(FileError::Corrupt);\", \"Ok(())\"] },\n  { function = \"fn read_original_material(\", sequence = [\"let file: &mut File = &mut self.material_file.0;\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"return Err(FileError::Corrupt);\", \"Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;\", \"Read::take(&mut *file, MAX_MATERIAL_BYTES + 1)\", \".read_to_end(&mut bytes)\", \".map_err(io_error)?;\", \"bytes.len() as u64 != self.material_length\", \"File::metadata(file).map_err(io_error)?.len() != self.material_length\", \"Digest32::of_bytes(&bytes)\", \"!= self.expected_product.frozen_plan.final_holdout_digest\", \"return Err(FileError::Corrupt);\", \"codec::decode_original_material(&bytes, &self.expected_product.frozen_plan)\"] },\n  { function = \"fn manifest_digest(\", sequence = [\"if self.release_attempted\", \"return Err(ProductProviderErrorV1::Rejected);\", \"self.require_original_material().map_err(provider_error)?;\", \"Ok(self.expected_product.frozen_plan.final_holdout_digest)\"] },\n  { function = \"fn release_after_consumption(\", sequence = [\"_receipt: &FinalHoldoutJournalReceiptV1\", \"Err(ProductProviderErrorV1::Rejected)\"] },\n  { function = \"fn release_original_consumption(\", sequence = [\"if std::mem::replace(&mut self.release_attempted, true)\", \"return Err(ProductProviderErrorV1::Rejected);\", \"let frozen = &self.expected_product.frozen_plan;\", \"permit.plan != &self.expected_product\", \"permit.receipt.disposition != HoldoutUseDispositionV1::Recorded\", \"permit.receipt.use_receipt.disposition != HoldoutUseDispositionV1::Recorded\", \"permit.receipt.sequence == 0\", \"permit.receipt.record_digest.is_zero()\", \"permit.receipt.head_digest.is_zero()\", \"permit.receipt.authority.grants_any()\", \"permit.receipt.use_receipt.authority.grants_any()\", \"permit.receipt.use_receipt.plan_digest != frozen.plan_digest\", \"permit.receipt.use_receipt.holdout_digest != frozen.final_holdout_digest\", \"return Err(ProductProviderErrorV1::Rejected);\", \"self.read_original_material().map_err(provider_error)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs\"\nrequired = [\"const MAGIC: &[u8; 8] = b\\\"HPFHMT01\\\";\", \"const MAX_ROWS: usize = 100_000;\", \"const MAX_ACTIONS: usize = 128;\", \"const MAX_IDS: usize = 1_000_000;\"]\nforbidden = [\"unsafe\", \"transmute\", \"File\", \"OpenOptions\", \"Signer\", \"sign(\"]\nrequired_order = [[\"impl Reader<'_> {\", \"fn count(\", \"let count = u32::from_be_bytes(\", \"if count > limit || count > self.0.len()\", \"return Err(FileError::Capacity);\", \"fn id(\", \"if !(1..=128).contains(&count)\", \"return Err(FileError::Corrupt);\", \"std::str::from_utf8(self.take(count)?)\", \"StableId::new(name).map_err(|_| FileError::Corrupt)\"]]\nrequired_function_order = [\n  { function = \"fn decode_original_material(\", sequence = [\"bytes.len() as u64 > MAX_MATERIAL_BYTES\", \"return Err(FileError::Capacity);\", \"let mut reader = Reader(bytes);\", \"reader.take(8)? != MAGIC\", \"reader.digest()? != frozen.objective_digest\", \"reader.digest()? != frozen.dataset_digest\", \"reader.id()? != frozen.final_holdout_window_id\", \"return Err(FileError::Binding);\", \"reader.count(MAX_ROWS)?;\", \"let candidate_observations = reader.observations()?;\", \"let baseline_observations = reader.observations()?;\", \"reader.count(MAX_ROWS)?;\", \"let snapshot_ids = reader.ids(MAX_IDS)?;\", \"let future_window_ids = reader.ids(MAX_IDS)?;\", \"if !reader.0.is_empty()\", \"return Err(FileError::Corrupt);\", \"Ok(TemporalComparisonInputsV1 {\"] },\n  { function = \"fn bytes(\", sequence = [\".checked_add(bytes.len())\", \".is_none_or(|length| length as u64 > MAX_MATERIAL_BYTES)\", \"return Err(FileError::Capacity);\", \"self.0.extend_from_slice(bytes);\"] },\n  { function = \"fn take(\", sequence = [\"self.0.split_at_checked(count).ok_or(FileError::Corrupt)?;\", \"self.0 = tail;\", \"Ok(head)\"] },\n  { function = \"fn probability(\", sequence = [\"fn probability(\", \"ProbabilityQ32::from_raw(self.u64()?).map_err(|_| FileError::Corrupt)\"] },\n  { function = \"fn observations(\", sequence = [\"self.count(MAX_ROWS)?;\", \"let complete_candidates = match self.take(1)?[0]\", \"0 => false,\", \"1 => true,\", \"_ => return Err(FileError::Corrupt),\", \"self.count(MAX_ACTIONS)?;\", \"behavior_probability: self.probability()?\", \"evaluation_probability: self.probability()?\", \"let finalized_outcome = match self.take(1)?[0]\", \"0 => None,\", \"1 => Some(self.fixed()?),\", \"_ => return Err(FileError::Corrupt),\", \"outcome_observed_at: self.u64()?\", \"outcome_evidence: self.digest()?\", \"outcome_model_evidence: self.digest()?\", \"Ok(rows)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs\"\nrequired = [\"publication_store: LockedFileProductEvaluationExecutionStoreV1,\", \"terminal_uncertainty: bool,\", \"b\\\"hepta.product-qualification.evidence-namespace.v1\\\"\", \"b\\\"hepta.product-qualification.evidence-key.v1\\\"\", \"b\\\"HPQLEV01\\\"\", \"b\\\"hepta.product-qualification.durable-publication.v1\\\"\"]\nforbidden = [\"unsafe\", \"transmute\", \"Signer\", \"sign(\", \"ProductQualificationReceiptV1 {\", \"OpenOptions\", \"set_len\", \"set_permissions\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn create(\", sequence = [\"let binding = evidence_namespace(owner_binding)?;\", \"LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;\", \"publication_store,\", \"owner_binding,\", \"terminal_uncertainty: false\"] },\n  { function = \"fn recover(\", sequence = [\"let binding = evidence_namespace(owner_binding)?;\", \"LockedFileProductEvaluationExecutionStoreV1::recover(file, binding, minimum)?;\", \"publication_store,\", \"owner_binding,\", \"terminal_uncertainty: false\"] },\n  { function = \"fn readback(\", sequence = [\"if self.terminal_uncertainty\", \"return Err(SinkError::Indeterminate);\", \"let payload = encode_decision(self.owner_binding, execution_digest, decision)?;\", \"let key = publication_key(self.owner_binding, execution_digest)?;\", \"ProductEvaluationExecutionStoreV1::readback(\", \"&mut self.publication_store,\", \"&key,\", \".map_err(store_error)?;\", \"match state {\", \"ProductEvaluationExecutionStateV1::Completed(bytes) if bytes == payload\", \"Ok(publication_digest(&payload))\", \"ProductEvaluationExecutionStateV1::Completed(_) => Err(SinkError::Rejected)\", \"ProductEvaluationExecutionStateV1::Pending\", \"self.terminal_uncertainty = true;\", \"Err(SinkError::Indeterminate)\"] },\n  { function = \"fn persist(\", sequence = [\"if self.terminal_uncertainty\", \"return Err(SinkError::Indeterminate);\", \"let payload = encode_decision(self.owner_binding, execution_digest, decision)?;\", \"let key = publication_key(self.owner_binding, execution_digest)?;\", \"ProductEvaluationExecutionStoreV1::claim(\", \"&mut self.publication_store,\", \"&key,\", \".map_err(store_error)?;\", \"match claim {\", \"ProductEvaluationExecutionStateV1::Completed(bytes)\", \"if bytes != payload\", \"return Err(SinkError::Rejected);\", \"ProductEvaluationExecutionStateV1::Pending\", \"self.terminal_uncertainty = true;\", \"return Err(SinkError::Indeterminate);\", \"ProductEvaluationExecutionClaimV1::Claimed\", \"ProductEvaluationExecutionStoreV1::complete(\", \"&mut self.publication_store,\", \"&key,\", \"&payload,\", \".is_err()\", \"self.terminal_uncertainty = true;\", \"return Err(SinkError::Indeterminate);\", \"match ProductEvaluationExecutionStoreV1::readback(\", \"&mut self.publication_store,\", \"&key,\", \"Ok(ProductEvaluationExecutionStateV1::Completed(bytes)) if bytes == payload\", \"Ok(publication_digest(&payload))\", \"Ok(_) | Err(_)\", \"self.terminal_uncertainty = true;\", \"Err(SinkError::Indeterminate)\"] },\n  { function = \"fn evidence_namespace(\", sequence = [\"if owner_binding.is_zero()\", \"return Err(FileError::Binding);\", \"Ok(Digest32::of_parts(&[\", \"owner_binding.as_array(),\"] },\n  { function = \"fn publication_key(\", sequence = [\"let plan_id = StableId::new(execution_digest.to_string()).map_err(|_| SinkError::Rejected)?;\", \"Ok(ProductEvaluationExecutionKeyV1 {\", \"plan_id,\", \"binding_digest: Digest32::of_parts(&[\", \"owner_binding.as_array(),\", \"execution_digest.as_array(),\"] },\n  { function = \"fn encode_decision(\", sequence = [\"owner_binding.is_zero()\", \"execution_digest.is_zero()\", \"decision.evidence_digest.is_zero()\", \"signed.trust_digest.is_zero()\", \"signed.authentication_digest.is_zero()\", \"decision.authority.grants_any()\", \"decision.failed_metrics.len() > 128\", \"return Err(SinkError::Rejected);\", \"bytes.extend_from_slice(owner_binding.as_array());\", \"bytes.extend_from_slice(execution_digest.as_array());\", \"&decision.evaluation_id,\", \"&decision.candidate_id,\", \"&decision.baseline_id,\", \"put_id(&mut bytes, id)?;\", \"bytes.push(match decision.disposition\", \"decision.failed_metrics.len() as u32\", \"for id in &decision.failed_metrics\", \"put_id(&mut bytes, id)?;\", \"decision.evidence_digest,\", \"signed.trust_digest,\", \"signed.authentication_digest,\", \"bytes.len() > MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1\", \"return Err(SinkError::Rejected);\", \"Ok(bytes)\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/lib.rs\"\nrequired = [\"mod product_qualification_file;\", \"pub use product_qualification_file::LockedFileProductQualificationEvidenceSinkV1;\", \"pub use product_runner::FileFinalHoldoutErrorV1;\", \"pub use product_runner::LockedFileFinalHoldoutProviderV1;\", \"pub use product_runner::OriginalFinalHoldoutReleasePermitV1;\", \"pub use product_runner::encode_file_final_holdout_material_v1;\"]\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n\n]\n\n"
+    }
+  ],
+  "preserve": "All prior boundary/protected rows and authority/source_roots/ignored policy remain byte-identical. Only required IDs are appended and new rows added.",
+  "scope": [
+    "Actual permit mint and generic runner call remain within original product_runner; definition self-caller is not registered as an external file.",
+    "The release hook lexical pattern counts all qualified or dot calls to this exact new hook, because the real generic P receiver is not a concrete file provider. Its actual product caller is product_runner.rs; this does not prove every P is file-backed.",
+    "Persist dispatch is explicitly &mut dyn ProductQualificationEvidenceSinkV1 in original qualify_and_persist. The concrete sink constructors/readback have no current repository product caller. Runtime's planned adapter is not registered.",
+    "Tests remain under original ignored_path_fragments and do not satisfy any product caller.",
+    "No original checker or typed helper was executed. Five-file code-view projection only; full source/caller inventory execution remains Root's gate.",
+    "Private permit is non-Clone and has no public constructor by actual Rust source review. Raw declaration/lexical constructor and ordered original runner guards do not substitute for Rust privacy checking or a full nonforgeability proof.",
+    "Generic evaluate_temporal_comparison<P> cannot be a required_function_order entry under the unchanged checker; its exact generic header and complete sensitive sequence use required_order within this one original file.",
+    "Domain-string spellings are raw required markers; code guards and digest inputs are separately checked in masked function order. Raw literals do not claim anti-comment masking of diagnostic strings."
+  ],
+  "static_projection": {
+    "source": "pure V8 finite source-view check derived from original 7a670 masks for these known snippets",
+    "checker_executed": false,
+    "helper_executed": false,
+    "rows": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": null,
+            "marker_count": 26,
+            "matched": 26,
+            "spans": [
+              [
+                14303,
+                63
+              ],
+              [
+                14649,
+                35
+              ],
+              [
+                14696,
+                73
+              ],
+              [
+                14785,
+                71
+              ],
+              [
+                15310,
+                43
+              ],
+              [
+                15387,
+                57
+              ],
+              [
+                15549,
+                63
+              ],
+              [
+                15777,
+                27
+              ],
+              [
+                15817,
+                39
+              ],
+              [
+                15869,
+                46
+              ],
+              [
+                15932,
+                43
+              ],
+              [
+                16046,
+                3
+              ],
+              [
+                16082,
+                55
+              ],
+              [
+                16150,
+                37
+              ],
+              [
+                16204,
+                19
+              ],
+              [
+                16240,
+                18
+              ],
+              [
+                16274,
+                11
+              ],
+              [
+                16294,
+                62
+              ],
+              [
+                16365,
+                33
+              ],
+              [
+                16506,
+                48
+              ],
+              [
+                16563,
+                53
+              ],
+              [
+                16626,
+                42
+              ],
+              [
+                16853,
+                41
+              ],
+              [
+                17077,
+                32
+              ],
+              [
+                17118,
+                31
+              ],
+              [
+                17159,
+                90
+              ]
+            ]
+          },
+          {
+            "function": "fn release_original_consumption(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                8145,
+                47
+              ],
+              [
+                8272,
+                46
+              ]
+            ]
+          },
+          {
+            "function": "fn qualify_and_persist(",
+            "marker_count": 11,
+            "matched": 11,
+            "spans": [
+              [
+                20791,
+                59
+              ],
+              [
+                21578,
+                71
+              ],
+              [
+                22011,
+                44
+              ],
+              [
+                22319,
+                77
+              ],
+              [
+                22405,
+                31
+              ],
+              [
+                22451,
+                45
+              ],
+              [
+                22516,
+                3
+              ],
+              [
+                22538,
+                49
+              ],
+              [
+                23129,
+                60
+              ],
+              [
+                23198,
+                30
+              ],
+              [
+                23237,
+                11
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": "fn drop(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                1764,
+                8
+              ],
+              [
+                1793,
+                24
+              ]
+            ]
+          },
+          {
+            "function": "fn open(",
+            "marker_count": 13,
+            "matched": 13,
+            "spans": [
+              [
+                2349,
+                21
+              ],
+              [
+                2383,
+                34
+              ],
+              [
+                2441,
+                41
+              ],
+              [
+                2491,
+                22
+              ],
+              [
+                2528,
+                34
+              ],
+              [
+                2581,
+                28
+              ],
+              [
+                2652,
+                43
+              ],
+              [
+                2777,
+                43
+              ],
+              [
+                2921,
+                60
+              ],
+              [
+                2996,
+                32
+              ],
+              [
+                3189,
+                24
+              ],
+              [
+                3234,
+                38
+              ],
+              [
+                3281,
+                12
+              ]
+            ]
+          },
+          {
+            "function": "fn require_original_material(",
+            "marker_count": 9,
+            "matched": 9,
+            "spans": [
+              [
+                3380,
+                48
+              ],
+              [
+                3440,
+                69
+              ],
+              [
+                3524,
+                31
+              ],
+              [
+                3574,
+                56
+              ],
+              [
+                3652,
+                71
+              ],
+              [
+                3735,
+                69
+              ],
+              [
+                3820,
+                64
+              ],
+              [
+                3907,
+                31
+              ],
+              [
+                3957,
+                6
+              ]
+            ]
+          },
+          {
+            "function": "fn read_original_material(",
+            "marker_count": 13,
+            "matched": 13,
+            "spans": [
+              [
+                4071,
+                48
+              ],
+              [
+                4131,
+                69
+              ],
+              [
+                4215,
+                31
+              ],
+              [
+                4265,
+                56
+              ],
+              [
+                4366,
+                46
+              ],
+              [
+                4425,
+                24
+              ],
+              [
+                4462,
+                20
+              ],
+              [
+                4494,
+                42
+              ],
+              [
+                4552,
+                69
+              ],
+              [
+                4637,
+                26
+              ],
+              [
+                4680,
+                57
+              ],
+              [
+                4760,
+                31
+              ],
+              [
+                4810,
+                75
+              ]
+            ]
+          },
+          {
+            "function": "fn manifest_digest(",
+            "marker_count": 4,
+            "matched": 4,
+            "spans": [
+              [
+                5050,
+                25
+              ],
+              [
+                5090,
+                45
+              ],
+              [
+                5154,
+                58
+              ],
+              [
+                5221,
+                58
+              ]
+            ]
+          },
+          {
+            "function": "fn release_after_consumption(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                5348,
+                39
+              ],
+              [
+                5545,
+                37
+              ]
+            ]
+          },
+          {
+            "function": "fn release_original_consumption(",
+            "marker_count": 15,
+            "matched": 15,
+            "spans": [
+              [
+                5781,
+                55
+              ],
+              [
+                5851,
+                45
+              ],
+              [
+                5915,
+                48
+              ],
+              [
+                5975,
+                37
+              ],
+              [
+                6028,
+                63
+              ],
+              [
+                6107,
+                75
+              ],
+              [
+                6198,
+                28
+              ],
+              [
+                6242,
+                38
+              ],
+              [
+                6296,
+                36
+              ],
+              [
+                6348,
+                37
+              ],
+              [
+                6401,
+                49
+              ],
+              [
+                6466,
+                60
+              ],
+              [
+                6542,
+                72
+              ],
+              [
+                6637,
+                45
+              ],
+              [
+                6701,
+                53
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": null,
+            "marker_count": 10,
+            "matched": 10,
+            "spans": [
+              [
+                7142,
+                17
+              ],
+              [
+                8066,
+                9
+              ],
+              [
+                8138,
+                31
+              ],
+              [
+                8269,
+                40
+              ],
+              [
+                8324,
+                32
+              ],
+              [
+                8396,
+                6
+              ],
+              [
+                8585,
+                30
+              ],
+              [
+                8630,
+                31
+              ],
+              [
+                8691,
+                38
+              ],
+              [
+                8772,
+                51
+              ]
+            ]
+          },
+          {
+            "function": "fn decode_original_material(",
+            "marker_count": 17,
+            "matched": 17,
+            "spans": [
+              [
+                3936,
+                39
+              ],
+              [
+                3986,
+                32
+              ],
+              [
+                4029,
+                31
+              ],
+              [
+                4068,
+                24
+              ],
+              [
+                4104,
+                43
+              ],
+              [
+                4159,
+                41
+              ],
+              [
+                4212,
+                46
+              ],
+              [
+                4273,
+                31
+              ],
+              [
+                4327,
+                24
+              ],
+              [
+                5240,
+                52
+              ],
+              [
+                5297,
+                51
+              ],
+              [
+                5365,
+                24
+              ],
+              [
+                5611,
+                40
+              ],
+              [
+                5656,
+                45
+              ],
+              [
+                5706,
+                23
+              ],
+              [
+                5740,
+                31
+              ],
+              [
+                5782,
+                31
+              ]
+            ]
+          },
+          {
+            "function": "fn bytes(",
+            "marker_count": 4,
+            "matched": 4,
+            "spans": [
+              [
+                6158,
+                25
+              ],
+              [
+                6196,
+                56
+              ],
+              [
+                6275,
+                32
+              ],
+              [
+                6326,
+                32
+              ]
+            ]
+          },
+          {
+            "function": "fn take(",
+            "marker_count": 3,
+            "matched": 3,
+            "spans": [
+              [
+                7254,
+                58
+              ],
+              [
+                7321,
+                14
+              ],
+              [
+                7344,
+                8
+              ]
+            ]
+          },
+          {
+            "function": "fn probability(",
+            "marker_count": 2,
+            "matched": 2,
+            "spans": [
+              [
+                7731,
+                15
+              ],
+              [
+                7804,
+                69
+              ]
+            ]
+          },
+          {
+            "function": "fn observations(",
+            "marker_count": 16,
+            "matched": 16,
+            "spans": [
+              [
+                9176,
+                22
+              ],
+              [
+                9375,
+                48
+              ],
+              [
+                9442,
+                11
+              ],
+              [
+                9470,
+                10
+              ],
+              [
+                9497,
+                36
+              ],
+              [
+                9580,
+                25
+              ],
+              [
+                9813,
+                41
+              ],
+              [
+                9876,
+                43
+              ],
+              [
+                10021,
+                46
+              ],
+              [
+                10086,
+                10
+              ],
+              [
+                10113,
+                25
+              ],
+              [
+                10155,
+                36
+              ],
+              [
+                10411,
+                32
+              ],
+              [
+                10461,
+                32
+              ],
+              [
+                10511,
+                38
+              ],
+              [
+                10585,
+                8
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "problems": [],
+        "sequences": [
+          {
+            "function": "fn create(",
+            "marker_count": 5,
+            "matched": 5,
+            "spans": [
+              [
+                1923,
+                49
+              ],
+              [
+                2017,
+                68
+              ],
+              [
+                2116,
+                18
+              ],
+              [
+                2147,
+                14
+              ],
+              [
+                2174,
+                27
+              ]
+            ]
+          },
+          {
+            "function": "fn recover(",
+            "marker_count": 5,
+            "matched": 5,
+            "spans": [
+              [
+                2390,
+                49
+              ],
+              [
+                2484,
+                78
+              ],
+              [
+                2593,
+                18
+              ],
+              [
+                2624,
+                14
+              ],
+              [
+                2651,
+                27
+              ]
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "marker_count": 15,
+            "matched": 15,
+            "spans": [
+              [
+                3153,
+                28
+              ],
+              [
+                3196,
+                37
+              ],
+              [
+                3252,
+                79
+              ],
+              [
+                3340,
+                65
+              ],
+              [
+                3426,
+                44
+              ],
+              [
+                3483,
+                28
+              ],
+              [
+                3524,
+                5
+              ],
+              [
+                3548,
+                23
+              ],
+              [
+                3580,
+                13
+              ],
+              [
+                3606,
+                71
+              ],
+              [
+                3699,
+                32
+              ],
+              [
+                3758,
+                75
+              ],
+              [
+                3847,
+                42
+              ],
+              [
+                3911,
+                33
+              ],
+              [
+                3961,
+                29
+              ]
+            ]
+          },
+          {
+            "function": "fn persist(",
+            "marker_count": 31,
+            "matched": 31,
+            "spans": [
+              [
+                4280,
+                28
+              ],
+              [
+                4323,
+                37
+              ],
+              [
+                4379,
+                79
+              ],
+              [
+                4467,
+                65
+              ],
+              [
+                4553,
+                41
+              ],
+              [
+                4607,
+                28
+              ],
+              [
+                4648,
+                5
+              ],
+              [
+                4672,
+                23
+              ],
+              [
+                4704,
+                13
+              ],
+              [
+                4791,
+                51
+              ],
+              [
+                4879,
+                19
+              ],
+              [
+                4921,
+                32
+              ],
+              [
+                5059,
+                42
+              ],
+              [
+                5138,
+                33
+              ],
+              [
+                5188,
+                37
+              ],
+              [
+                5252,
+                42
+              ],
+              [
+                5319,
+                44
+              ],
+              [
+                5384,
+                28
+              ],
+              [
+                5433,
+                5
+              ],
+              [
+                5459,
+                9
+              ],
+              [
+                5503,
+                9
+              ],
+              [
+                5551,
+                33
+              ],
+              [
+                5605,
+                37
+              ],
+              [
+                5851,
+                50
+              ],
+              [
+                5914,
+                28
+              ],
+              [
+                5955,
+                5
+              ],
+              [
+                5985,
+                75
+              ],
+              [
+                6082,
+                32
+              ],
+              [
+                6141,
+                14
+              ],
+              [
+                6177,
+                33
+              ],
+              [
+                6227,
+                29
+              ]
+            ]
+          },
+          {
+            "function": "fn evidence_namespace(",
+            "marker_count": 4,
+            "matched": 4,
+            "spans": [
+              [
+                6374,
+                26
+              ],
+              [
+                6411,
+                31
+              ],
+              [
+                6453,
+                24
+              ],
+              [
+                6548,
+                25
+              ]
+            ]
+          },
+          {
+            "function": "fn publication_key(",
+            "marker_count": 6,
+            "matched": 6,
+            "spans": [
+              [
+                6889,
+                92
+              ],
+              [
+                6986,
+                36
+              ],
+              [
+                7031,
+                8
+              ],
+              [
+                7048,
+                37
+              ],
+              [
+                7158,
+                25
+              ],
+              [
+                7196,
+                28
+              ]
+            ]
+          },
+          {
+            "function": "fn encode_decision(",
+            "marker_count": 24,
+            "matched": 24,
+            "spans": [
+              [
+                7447,
+                23
+              ],
+              [
+                7482,
+                26
+              ],
+              [
+                7520,
+                34
+              ],
+              [
+                7566,
+                29
+              ],
+              [
+                7607,
+                38
+              ],
+              [
+                7657,
+                31
+              ],
+              [
+                7700,
+                35
+              ],
+              [
+                7750,
+                32
+              ],
+              [
+                7835,
+                50
+              ],
+              [
+                7890,
+                53
+              ],
+              [
+                7968,
+                24
+              ],
+              [
+                8001,
+                23
+              ],
+              [
+                8033,
+                22
+              ],
+              [
+                8072,
+                24
+              ],
+              [
+                8107,
+                37
+              ],
+              [
+                8399,
+                36
+              ],
+              [
+                8457,
+                34
+              ],
+              [
+                8502,
+                24
+              ],
+              [
+                8561,
+                25
+              ],
+              [
+                8595,
+                20
+              ],
+              [
+                8624,
+                29
+              ],
+              [
+                8727,
+                55
+              ],
+              [
+                8793,
+                32
+              ],
+              [
+                8836,
+                9
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "problems": [],
+        "sequences": []
+      }
+    ]
+  }
+}

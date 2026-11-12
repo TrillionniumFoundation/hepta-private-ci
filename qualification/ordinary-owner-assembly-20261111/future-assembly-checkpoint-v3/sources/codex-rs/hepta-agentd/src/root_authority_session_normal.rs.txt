@@ -1,0 +1,446 @@
+//! Pause the actual original observation worker only after a real C terminal
+//! and natural Circuit join. A pause retains the same stream and its failure
+//! guards; it grants no Root retirement permission and releases no purpose FD.
+
+use super::*;
+use super::super::FenceOnDrop;
+use super::super::RootObservationStream;
+use super::super::SameActorPhaseStream;
+use super::super::check_lifetime;
+use crate::AgentdIdentity;
+use crate::same_actor_q24_deployment::OriginalRootRetirementIntent;
+use crate::circuit_task::OriginalCircuitNaturalJoin;
+use crate::circuit_task::OriginalSameActorCJoined;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use tokio::sync::Notify;
+
+/// This is private worker state, never stored in LiveRoot or decoded from a
+/// notification. No caller can put replacement stream or guard values here.
+pub(in super::super) struct OriginalSessionPauseControl {
+    gate: Arc<SameActorPhaseGate>,
+    requested: AtomicBool,
+    changed: Notify,
+    state: Mutex<OriginalPauseState>,
+}
+
+enum OriginalPauseState {
+    Open,
+    Requested,
+    Parked(Box<OriginalPausedObservationResources>),
+    Taken,
+}
+
+/// The actual worker moves all of these fields at its between-frame cut.
+/// Fault Drop closes before releasing the stream/alias and retains File last.
+pub(in super::super) struct OriginalPausedObservationResources {
+    _closing: CloseSameActorPhaseOnDrop,
+    _fence: FenceOnDrop,
+    _stream: Option<RootObservationStream>,
+    _stop: Option<SameActorPhaseStream>,
+    live: Arc<LiveRoot>,
+    _writer_file: WriterCustody,
+}
+
+/// A synchronous request captures cancellation before the first future poll.
+/// Dropping its waiter closes the original phase, but never loses its handle.
+pub(crate) struct OriginalRootSessionPauseWaiter {
+    closing: CloseSameActorPhaseOnDrop,
+    original: Arc<OriginalRootSessionCustody>,
+    identity: AgentdIdentity,
+}
+
+/// Constructed only after the real observation handle and every retained
+/// ConsumerSyncJob have joined. This still owns the original stream/guards.
+/// Root's separate actual seq1 permission is required before normal release.
+pub(crate) struct OriginalRootSessionPaused {
+    _closing: CloseSameActorPhaseOnDrop,
+    resources: OriginalPausedObservationResources,
+    original: Arc<OriginalRootSessionCustody>,
+    identity: AgentdIdentity,
+    consumers: OriginalConsumerJoinSummary,
+}
+
+/// The real paused observation purpose has been closed under the actual
+/// Root intent. All remaining guards, consumers/clock and File stay held.
+/// This is not full Session-field retirement or final Root completion.
+pub(crate) struct OriginalRootSessionObservationRetired {
+    original: OriginalRootSessionPaused,
+}
+
+impl OriginalSessionPauseControl {
+    pub(in super::super) fn new(gate: &Arc<SameActorPhaseGate>) -> Arc<Self> {
+        Arc::new(Self {
+            gate: Arc::clone(gate),
+            requested: AtomicBool::new(false),
+            changed: Notify::new(),
+            state: Mutex::new(OriginalPauseState::Open),
+        })
+    }
+
+    fn request_original(&self) -> Result<(), AgentdError> {
+        let mut state = self.state.lock().map_err(join_error)?;
+        self.gate.require_open().map_err(join_error)?;
+        if !matches!(*state, OriginalPauseState::Open) {
+            return Err(join_error("normal Session pause was already requested"));
+        }
+        *state = OriginalPauseState::Requested;
+        self.requested.store(true, Ordering::Release);
+        drop(state);
+        self.changed.notify_waiters();
+        Ok(())
+    }
+
+    pub(in super::super) fn requested(&self) -> bool {
+        self.requested.load(Ordering::Acquire)
+    }
+
+    pub(in super::super) fn changed(&self) -> &Notify {
+        &self.changed
+    }
+
+    /// Called only by the original worker after its complete refresh returned.
+    /// Taking the original serial permit also waits for an already admitted
+    /// activation/consumer barrier. The original request started/budget is not
+    /// rewritten and no refresh frame is cancelled by this normal request.
+    pub(in super::super) async fn park_original_worker(
+        &self,
+        resources: OriginalPausedObservationResources,
+        consumers: &Arc<OriginalConsumerJobs>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let serial = tokio::select! {
+            permit = resources.live.serial.acquire() =>
+                permit.map_err(|_| AgentdRootAuthorityError::Unavailable)?,
+            _ = self.gate.cancelled() => return Err(AgentdRootAuthorityError::Unavailable),
+            _ = tokio::time::sleep_until(tokio::time::Instant::from_std(
+                self.gate.deadline().instant(),
+            )) => return Err(AgentdRootAuthorityError::Unavailable),
+        };
+        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        check_lifetime(resources.live.root.get_ref())?;
+        if !resources.live.active.load(Ordering::Acquire)
+            || consumers.worker_failure().is_some()
+            || !resources.live.phase.as_ref().is_some_and(|gate| Arc::ptr_eq(gate, &self.gate))
+        {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        // This closes only new consumer admission. Fault close() is separate
+        // and still shuts down the common Gate and every purpose stream.
+        consumers.stop_original_normal_admission()?;
+        resources.live.active.store(false, Ordering::Release);
+        resources.live.cache.fence();
+        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        check_lifetime(resources.live.root.get_ref())?;
+        drop(serial);
+        let mut state = self.state.lock().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        if !matches!(*state, OriginalPauseState::Requested) {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        // No await separates the real stream/guard transfer from this state.
+        // The caller immediately returns from the same original worker.
+        *state = OriginalPauseState::Parked(Box::new(resources));
+        Ok(())
+    }
+
+    fn take_original_parked(&self) -> Result<OriginalPausedObservationResources, AgentdError> {
+        let mut state = self.state.lock().map_err(join_error)?;
+        self.gate.require_open().map_err(join_error)?;
+        if !matches!(*state, OriginalPauseState::Parked(_)) {
+            return Err(join_error("actual observation worker did not park its original resources"));
+        }
+        let OriginalPauseState::Parked(resources) =
+            std::mem::replace(&mut *state, OriginalPauseState::Taken)
+        else {
+            return Err(join_error("actual paused Session resources changed under their lock"));
+        };
+        Ok(*resources)
+    }
+
+    pub(super) fn discard_after_actual_worker_join(&self) {
+        let previous = {
+            let mut state = self.state.lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            std::mem::replace(&mut *state, OriginalPauseState::Taken)
+        };
+        // Only terminal fault cleanup calls this, after the real worker join.
+        // Never drop the original FD, guards or File while holding this mutex.
+        drop(previous);
+    }
+}
+
+impl OriginalPausedObservationResources {
+    pub(in super::super) fn from_original_worker(
+        closing: CloseSameActorPhaseOnDrop,
+        fence: FenceOnDrop,
+        stream: RootObservationStream,
+        stop: SameActorPhaseStream,
+        live: Arc<LiveRoot>,
+        writer_file: WriterCustody,
+    ) -> Self {
+        Self {
+            _closing: closing,
+            _fence: fence,
+            _stream: Some(stream),
+            _stop: Some(stop),
+            live,
+            _writer_file: writer_file,
+        }
+    }
+}
+
+impl OriginalRootSessionCustodySlot {
+    pub(crate) fn request_original_normal_pause(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+        original_c: &OriginalSameActorCJoined,
+        natural: &OriginalCircuitNaturalJoin,
+    ) -> Result<OriginalRootSessionPauseWaiter, AgentdError> {
+        let closing = CloseSameActorPhaseOnDrop::new(gate);
+        // These actual private owners are checked synchronously. A borrowed
+        // terminal bundle never crosses the later handle await.
+        OriginalSameActorCJoined::require_original_phase(original_c, identity, gate)?;
+        OriginalSameActorCJoined::require_retained_original_owners(original_c)?;
+        OriginalCircuitNaturalJoin::require_original_phase(natural, identity, gate)?;
+        self.request_original_pause_waiter(identity, gate, closing)
+    }
+
+    fn request_original_pause_waiter(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+        closing: CloseSameActorPhaseOnDrop,
+    ) -> Result<OriginalRootSessionPauseWaiter, AgentdError> {
+        let original = {
+            let state = self.state.lock().map_err(join_error)?;
+            if state.stopped {
+                return Err(join_error("fault-stopped Session cannot request normal pause"));
+            }
+            state.original.clone()
+                .ok_or_else(|| join_error("normal pause has no original Session custody"))?
+        };
+        original.require_original_pause_origin(identity, gate)?;
+        original.pause.request_original()?;
+        // A racing fault closes Gate; it can never turn into a normal waiter.
+        self.require_original(&original).map_err(join_error)?;
+        original.require_original_pause_origin(identity, gate)?;
+        Ok(OriginalRootSessionPauseWaiter {
+            closing,
+            original,
+            identity: identity.clone(),
+        })
+    }
+
+    /// Component access to the exact Session pause path, not a fabricated C
+    /// capability. Normal builds only enter through the two real proofs above.
+    #[cfg(test)]
+    pub(in super::super) fn component_request_original_normal_pause(
+        &self,
+        identity: &AgentdIdentity,
+    ) -> Result<OriginalRootSessionPauseWaiter, AgentdError> {
+        let gate = {
+            let state = self.state.lock().map_err(join_error)?;
+            Arc::clone(&state.original.as_ref()
+                .ok_or_else(|| join_error("component has no real Session"))?.gate)
+        };
+        let closing = CloseSameActorPhaseOnDrop::new(&gate);
+        self.request_original_pause_waiter(identity, &gate, closing)
+    }
+}
+
+impl OriginalRootSessionCustody {
+    fn require_original_pause_origin(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if !Arc::ptr_eq(&self.gate, gate)
+            || self.session_retired.load(Ordering::Acquire)
+            || self._writer_file.get().is_none()
+        {
+            return Err(join_error("normal pause differs from the retained original Session"));
+        }
+        self.gate.require_open().map_err(join_error)?;
+        let live = self.live.upgrade()
+            .ok_or_else(|| join_error("normal pause lost its original LiveRoot"))?;
+        if !live.proof.matches_registered_process(&identity.agent_id, identity.spawn_generation)
+            || !live.phase.as_ref().is_some_and(|phase| Arc::ptr_eq(phase, gate))
+        {
+            return Err(join_error("normal pause differs from the original registered process"));
+        }
+        check_lifetime(live.root.get_ref()).map_err(join_error)?;
+        // No ordinary current() call: intentional pause fences that cache.
+        self.gate.require_open().map(|_| ()).map_err(join_error)
+    }
+}
+
+impl OriginalRootSessionPauseWaiter {
+    pub(crate) fn join_original_paused(
+        self,
+    ) -> impl std::future::Future<Output = Result<OriginalRootSessionPaused, AgentdError>>
+    + Send
+    + 'static {
+        let attempt = self;
+        async move {
+            let mut attempt = attempt;
+            attempt.original.require_original_pause_origin(
+                &attempt.identity, &attempt.original.gate,
+            )?;
+            let worker = {
+                let mut state = attempt.original.worker.lock().await;
+                if let Some(observed) = state.observed {
+                    observed
+                } else {
+                    let handle = state.handle.as_mut().ok_or_else(|| {
+                        join_error("normal Session pause lost its actual worker handle")
+                    })?;
+                    // Borrow the same stored JoinHandle. Cancelling this wait
+                    // leaves it available to the actual outer fault custodian.
+                    let observed = match handle.await {
+                        Ok(()) => OriginalRootWorkerTermination::Returned,
+                        Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,
+                        Err(_) => OriginalRootWorkerTermination::Panicked,
+                    };
+                    state.handle = None;
+                    state.observed = Some(observed);
+                    observed
+                }
+            };
+            if worker != OriginalRootWorkerTermination::Returned
+                || attempt.original.consumers.worker_failure().is_some()
+            {
+                return Err(join_error("original observation worker failed instead of pausing"));
+            }
+            let consumers = attempt.original.consumers.join_original_paused_consumers().await
+                .map_err(join_error)?;
+            attempt.original.require_original_pause_origin(
+                &attempt.identity, &attempt.original.gate,
+            )?;
+            let resources = attempt.original.pause.take_original_parked()?;
+            if !Arc::ptr_eq(&resources._writer_file, &attempt.original._writer_file)
+                || resources.live.active.load(Ordering::Acquire)
+            {
+                return Err(join_error("paused observation resources differ or remain active"));
+            }
+            let paused = OriginalRootSessionPaused {
+                _closing: CloseSameActorPhaseOnDrop::new(&attempt.original.gate),
+                resources,
+                original: Arc::clone(&attempt.original),
+                identity: attempt.identity,
+                consumers,
+            };
+            OriginalRootSessionPaused::require_original_origin(
+                &paused, &paused.identity, &paused.original.gate,
+            )?;
+            attempt.closing.disarm();
+            Ok(paused)
+        }
+    }
+}
+
+impl OriginalRootSessionPaused {
+    pub(crate) fn require_original_origin(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if self.resources._stream.is_none() || self.resources._stop.is_none() {
+            return Err(join_error("original paused observation purpose was already consumed"));
+        }
+        self.require_original_joined_custody(identity, gate)
+    }
+
+    fn require_original_joined_custody(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if &self.identity != identity
+            || !Arc::ptr_eq(&self.resources._writer_file, &self.original._writer_file)
+            || !Arc::ptr_eq(
+                &self.resources.live,
+                &self.original.live.upgrade()
+                    .ok_or_else(|| join_error("paused Session lost its original LiveRoot"))?,
+            )
+            || self.resources.live.active.load(Ordering::Acquire)
+            || self.consumers.registered != self.consumers.joined
+            || self.consumers.first_observed_failure.is_some()
+            || self.consumers.admission_poisoned
+        {
+            return Err(join_error("paused original Session custody differs"));
+        }
+        self.original.require_original_pause_origin(identity, gate)
+    }
+
+    pub(crate) fn consumer_join_observation(&self) -> OriginalConsumerJoinSummary {
+        self.consumers
+    }
+
+    /// Only the same actual Root progress peer's successfully acknowledged
+    /// seq1 can authorize closing this already-joined observation purpose.
+    /// The common failure guards and original File are transferred, not
+    /// disarmed or released. No normal Runtime/Startup result is created.
+    pub(crate) fn retire_original_observation_purpose(
+        self,
+        intent: &OriginalRootRetirementIntent,
+    ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {
+        OriginalRootSessionPaused::require_original_origin(
+            &self, &self.identity, &self.original.gate,
+        )?;
+        OriginalRootRetirementIntent::require_original_origin(
+            intent, &self.identity, &self.original.gate,
+        )?;
+        let retired = self.release_original_observation_resources()?;
+        OriginalRootRetirementIntent::require_original_origin(
+            intent, &retired.original.identity, &retired.original.original.gate,
+        )?;
+        OriginalRootSessionObservationRetired::require_original_origin(
+            &retired, &retired.original.identity, &retired.original.original.gate,
+        )?;
+        Ok(retired)
+    }
+
+    fn release_original_observation_resources(
+        mut self,
+    ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {
+        OriginalRootSessionPaused::require_original_origin(
+            &self, &self.identity, &self.original.gate,
+        )?;
+        let stream = self.resources._stream.take()
+            .ok_or_else(|| join_error("original observation stream is missing"))?;
+        let stop = self.resources._stop.take()
+            .ok_or_else(|| join_error("original observation shutdown alias is missing"))?;
+        // These are the actual original descriptors, after real worker and
+        // consumer joins. No mutex, frame or owner callback remains in flight.
+        // Both original ownership shares must close to deliver clean EOF.
+        drop(stream);
+        drop(stop);
+        let retired = OriginalRootSessionObservationRetired { original: self };
+        OriginalRootSessionObservationRetired::require_original_origin(
+            &retired, &retired.original.identity, &retired.original.original.gate,
+        )?;
+        Ok(retired)
+    }
+
+    /// Tests only the actual FD/guard transfer after a real Session pause.
+    /// It does not construct a Root intent or qualify a business retirement.
+    #[cfg(test)]
+    pub(in super::super) fn component_release_original_observation_purpose(
+        self,
+    ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {
+        self.release_original_observation_resources()
+    }
+}
+
+impl OriginalRootSessionObservationRetired {
+    pub(crate) fn require_original_origin(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if self.original.resources._stream.is_some() || self.original.resources._stop.is_some() {
+            return Err(join_error("actual original observation purpose is still held open"));
+        }
+        self.original.require_original_joined_custody(identity, gate)
+    }
+}

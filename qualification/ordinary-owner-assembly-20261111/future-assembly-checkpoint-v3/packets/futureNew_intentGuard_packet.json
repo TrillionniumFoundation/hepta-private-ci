@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "original-root-intent-first-field-fault-custody",
+  "status": "uninstalled-unexecuted-independent-draft",
+  "dependency": "86065a3a91e075a8f2a8463951369608794f5b16",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "85cc5480a13b8d04c96f55f78a9698a78bdb51df",
+        "bytes": 6512,
+        "sha256": "27aa784654f7c4f729be8dce35f04809a6f5ad6eeb3cb6f64d0e3fe418a63f9a",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+        "bytes": 6744,
+        "sha256": "0e12bd92760d49f3bb4b7102c6c155436104df12b200bab4992ce9f64d5f7645",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) struct OriginalRootRetirementIntent {\n    client: OriginalDeploymentClient,",
+          "new": "pub(crate) struct OriginalRootRetirementIntent {\n    // The original sender's guard transfers here before the channel. Every\n    // failure/cancelled owner drop closes the common Gate before releasing it.\n    _closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,\n    client: OriginalDeploymentClient,"
+        },
+        {
+          "op": "replace",
+          "old": "        let mut closing = self.required.failure_scope();",
+          "new": "        let closing = self.required.failure_scope();"
+        },
+        {
+          "op": "replace",
+          "old": "        let intent = OriginalRootRetirementIntent {\n            client: self,",
+          "new": "        let intent = OriginalRootRetirementIntent {\n            _closing: closing,\n            client: self,"
+        },
+        {
+          "op": "replace",
+          "old": "        intent.require_original_origin(&identity, &gate)?;\n        closing.disarm();\n        Ok(intent)",
+          "new": "        intent.require_original_origin(&identity, &gate)?;\n        Ok(intent)"
+        }
+      ]
+    }
+  ],
+  "operation_count": 4,
+  "path_count": 1,
+  "confirmed_defect_in_previous_draft": "Intent initially held only client; channel field preceded required guard. Bare Intent drop was not proved to common-close before releasing peer.",
+  "correction": "The actual sender-created failure guard moves into Intent first field. Success retains it armed. Error/cancel Drop closes before client channel. No fresh authority, deadline or new success branch.",
+  "verification": {
+    "unique_forward_reverse": true,
+    "create_get_equal": true,
+    "native": 0,
+    "checker": 0,
+    "refs": 0
+  }
+}

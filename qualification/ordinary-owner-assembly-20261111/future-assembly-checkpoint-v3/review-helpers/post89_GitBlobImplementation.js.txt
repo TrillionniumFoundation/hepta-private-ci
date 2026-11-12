@@ -1,0 +1,1 @@
+function gitBlob(value){const b=typeof value==="string"?utf(value):Array.from(value);return sha1(utf("blob "+b.length+"\0").concat(b));}

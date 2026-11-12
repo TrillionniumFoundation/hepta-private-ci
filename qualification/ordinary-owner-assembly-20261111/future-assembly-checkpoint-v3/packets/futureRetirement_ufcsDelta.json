@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "root-retirement-explicit-owned-handoff-type-v3",
+  "depends_on": [
+    "27877fffb867deb92360d1e22ae7fc227eb1fc94",
+    "527fc3d10d856c4ed7e1816907c08e086ba153e6"
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "preimage": "f7785e4c8dd6fdd81a331446fbb543971a151358",
+      "postimage": "6701f711e626f2d84a15fe37e080d97cd2468c16",
+      "postimage_bytes": 21242,
+      "postimage_sha256": "2fdb0c3b5068971469bbdb5c76b2bb3cd58b111f5b891778c835445ef1e0afa4",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "            let (peer, materials) = supplied.into_original_parts(&retirement)?;\n",
+          "after": "            let (peer, materials) =\n                progress::OriginalRootRetirementHandoff::into_original_parts(supplied, &retirement)?;\n"
+        }
+      ]
+    }
+  ],
+  "reason": "Bind the existing exact owned handoff type explicitly; two unrelated old typed boundaries also use into_original_parts. The original value, same retirement reference, consumption and error propagation are unchanged. No helper execution or native diagnostic is claimed.",
+  "verification": {
+    "unique_forward_reverse": true,
+    "postimage_create_get_exact": true,
+    "native_or_checker_executed": false,
+    "refs_changed": false
+  },
+  "scope": "No new branch, authority, budget, lifetime, result or test change. Supersedes only the final Deployment post in source manifest19f3; its default-path and custody analysis remain unchanged."
+}

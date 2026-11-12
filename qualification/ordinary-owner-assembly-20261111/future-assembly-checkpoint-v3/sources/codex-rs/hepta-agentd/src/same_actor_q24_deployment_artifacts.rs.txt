@@ -1,0 +1,226 @@
+//! Actual Artifact owner, existing CURRENT floor and independent selection.
+//! The descriptor supplies original signed material. None of these loaders
+//! signs a head or treats an untrusted local snapshot as an independent floor.
+
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
+use codex_hepta_learning_artifacts::{
+    ArtifactSelectionVerifierV1, DatasetWithdrawalSnapshotReceiptV1,
+    LearningArtifactOwnerService, LearningArtifactOwnerServiceConfigV1,
+    LearningArtifactPublishRequestV1, SignedArtifactSelectionV1,
+    admit_manifest_at_withdrawal_head_v3, read_dataset_withdrawal_snapshot,
+};
+use codex_hepta_types::{Digest32, StableId};
+use serde::{Deserialize, Serialize};
+use crate::{AgentdError, AgentdGenerationSelectionFilesV1, AgentdSelectedGenerationV1,
+    OriginalCellQ24SelectionInputsV1};
+use crate::authority_host_runtime::{
+    OriginalDeploymentCurrentData, OriginalDeploymentOwnerTrustData,
+    OriginalDeploymentSelectionData, OriginalDeploymentSelectorTrustData,
+    OriginalDeploymentWithdrawalData,
+};
+use crate::same_actor_q24_phase::OriginalSameActorArtifactInputsV1;
+use super::artifact_data::{OriginalArtifactManifestData, OriginalArtifactWriterData};
+use super::files::{OriginalDeploymentFiles, OriginalDirectoryPin, OriginalPinnedRead, PinnedFileData};
+use super::{deployment_error, deployment_refused};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalSelectionData {
+    pub signed: OriginalDeploymentSelectionData,
+    pub registry_snapshot: PinnedFileData,
+    pub payload: PinnedFileData,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalArtifactOwnerData {
+    pub root: PathBuf,
+    pub trust: OriginalDeploymentOwnerTrustData,
+    pub writer_lease: OriginalArtifactWriterData,
+    // This is mandatory original Root-approved history. It is never inferred
+    // from the files which are being opened and cannot silently become None.
+    pub required_current_head: OriginalDeploymentCurrentData,
+    pub withdrawal_file: PinnedFileData,
+    pub withdrawal: OriginalDeploymentWithdrawalData,
+    pub storage_binding: [u8; 32],
+    pub selector: OriginalDeploymentSelectorTrustData,
+    pub initial_selection: OriginalSelectionData,
+}
+
+/// The exact path/inode pins are retained for as long as this concrete
+/// coordinator can operate its original path-based Artifact owner.
+pub(super) struct OriginalDeploymentArtifacts {
+    owner: Arc<Mutex<LearningArtifactOwnerService>>,
+    verifier: ArtifactSelectionVerifierV1,
+    directories: Vec<OriginalDirectoryPin>,
+    lock: OriginalPinnedRead,
+}
+
+impl OriginalDeploymentArtifacts {
+    pub(super) fn open_original(
+        data: &OriginalArtifactOwnerData,
+        files: &mut OriginalDeploymentFiles,
+        now: u64,
+    ) -> Result<(Self, AgentdSelectedGenerationV1), AgentdError> {
+        // All named directories and the actual writer lock must already
+        // exist. The original owner's creation fallback is not enrollment.
+        let mut directories = vec![files.pin_original_owner_directory(&data.root)?];
+        for name in ["writer", "transactions", "payloads", "registries", "witnesses", "heads"] {
+            directories.push(files.pin_original_owner_directory(&data.root.join(name))?);
+        }
+        let lock = files.pin_original_artifact_lock(&data.root.join("writer/owner.lock"))?;
+        let withdrawal_file = files.read_original(&data.withdrawal_file, 16 * 1024 * 1024)?;
+        let withdrawal_registry = read_dataset_withdrawal_snapshot(
+            withdrawal_file.clone_original_file()?,
+            DatasetWithdrawalSnapshotReceiptV1 {
+                binding: Digest32::from_array(data.withdrawal.binding),
+                scope_digest: Digest32::from_array(data.withdrawal.scope),
+                head_digest: Digest32::from_array(data.withdrawal.head),
+                file_digest: Digest32::from_array(data.withdrawal.file_digest),
+                records: data.withdrawal.records, encoded_bytes: data.withdrawal.encoded_bytes,
+            },
+        ).map_err(deployment_error)?;
+        withdrawal_file.require_original_pin()?;
+        let trust = data.trust.original_owner_trust().map_err(deployment_error)?;
+        let verifier = data.selector.original_selector(&trust).map_err(deployment_error)?;
+        let writer_lease = data.writer_lease.original()?;
+        let current = data.required_current_head.original_current().map_err(deployment_error)?;
+        files.require_original_context()?;
+        let owner = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+            root: data.root.clone(), trust, writer_lease,
+            required_current_head: Some(current), withdrawal_registry,
+            storage_binding: Digest32::from_array(data.storage_binding), now,
+        }).map_err(deployment_error)?;
+        if owner.recovery_required().is_some() {
+            return Err(deployment_refused("original Artifact operation is not terminal"));
+        }
+        for directory in &directories { directory.require_original_pin()?; }
+        lock.require_original_pin()?;
+        files.require_original_context()?;
+        let material = data.initial_selection.open_original(files, &verifier)?;
+        let selected = AgentdSelectedGenerationV1::load(
+            &owner, material.verifier, material.signed, material.files, now,
+        )?;
+        files.require_original_context()?;
+        Ok((Self { owner: Arc::new(Mutex::new(owner)), verifier, directories, lock }, selected))
+    }
+
+    pub(super) fn owner(&self) -> &Arc<Mutex<LearningArtifactOwnerService>> { &self.owner }
+
+    pub(super) fn require_original_paths(&self) -> Result<(), AgentdError> {
+        for directory in &self.directories { directory.require_original_pin()?; }
+        self.lock.require_original_pin()
+    }
+
+    pub(super) fn open_original_selection(
+        &self,
+        data: &OriginalSelectionData,
+        files: &mut OriginalDeploymentFiles,
+        now: u64,
+    ) -> Result<(OriginalCellQ24SelectionInputsV1, Digest32), AgentdError> {
+        self.require_original_paths()?;
+        let validation = data.open_original(files, &self.verifier)?;
+        let owner = self.owner.lock()
+            .map_err(|_| deployment_refused("original Artifact owner mutex is poisoned"))?;
+        files.require_original_context()?;
+        let selected = AgentdSelectedGenerationV1::load(
+            &owner, validation.verifier, validation.signed, validation.files, now,
+        )?;
+        let expected = selected.observation().digest();
+        drop(owner);
+        // These immutable reads reuse only an unchanged actual inode/hash.
+        // The controller consumes its own opened files and authenticates again.
+        let selection = data.open_original(files, &self.verifier)?;
+        self.require_original_paths()?;
+        files.require_original_context()?;
+        Ok((selection, expected))
+    }
+
+    pub(super) fn original_artifact_command(
+        &self,
+        data: &OriginalArtifactDecisionData,
+        files: &mut OriginalDeploymentFiles,
+        now: u64,
+    ) -> Result<OriginalSameActorArtifactInputsV1, AgentdError> {
+        self.require_original_paths()?;
+        files.require_original_context()?;
+        match data {
+            OriginalArtifactDecisionData::RetainOriginal => {
+                // The actual owner must still authenticate its exact
+                // NoUpdate/Retain/Defer decision. This data cannot select one.
+                Ok(OriginalSameActorArtifactInputsV1::RetainOriginal)
+            }
+            OriginalArtifactDecisionData::PublishQualified(data) => {
+                let payload = files.read_original(&data.payload, 16 * 1024 * 1024)?;
+                let manifest = data.manifest.original()?;
+                let owner = self.owner.lock().map_err(|_| deployment_refused("original Artifact owner mutex is poisoned"))?;
+                files.require_original_context()?;
+                self.require_original_paths()?;
+                let admission = admit_manifest_at_withdrawal_head_v3(
+                    owner.withdrawal_registry(),
+                    Digest32::from_array(data.expected_withdrawal_head),
+                    manifest, now,
+                ).map_err(deployment_error)?;
+                let request = LearningArtifactPublishRequestV1 {
+                    operation_id: StableId::new(&data.operation_id).map_err(deployment_error)?,
+                    admission, payload: payload.bytes().to_vec(),
+                    signed_current_head: data.signed_current_head.original_current()
+                        .map_err(deployment_error)?,
+                    expected_registry_predecessor_head: Digest32::from_array(data.expected_registry_predecessor_head),
+                    now,
+                };
+                payload.require_original_pin()?;
+                files.require_original_context()?;
+                drop(owner);
+                // Actual publication subsequently reacquires its original
+                // writer and checks this exact withdrawal/current frontier.
+                Ok(OriginalSameActorArtifactInputsV1::PublishQualified(Box::new(request)))
+            }
+        }
+    }
+}
+
+impl OriginalSelectionData {
+    pub(super) fn original_signed(&self) -> Result<SignedArtifactSelectionV1, AgentdError> {
+        self.signed.original_selection().map_err(deployment_error)
+    }
+
+    fn open_original(
+        &self,
+        files: &mut OriginalDeploymentFiles,
+        verifier: &ArtifactSelectionVerifierV1,
+    ) -> Result<OriginalCellQ24SelectionInputsV1, AgentdError> {
+        let registry = files.read_original(&self.registry_snapshot, 16 * 1024 * 1024)?;
+        let payload = files.read_original(&self.payload, 16 * 1024 * 1024)?;
+        let result = OriginalCellQ24SelectionInputsV1 {
+            verifier: verifier.clone(), signed: self.original_signed()?,
+            files: AgentdGenerationSelectionFilesV1 {
+                registry_snapshot: registry.clone_original_file()?,
+                payload: payload.clone_original_file()?,
+            },
+        };
+        registry.require_original_pin()?;
+        payload.require_original_pin()?;
+        files.require_original_context()?;
+        Ok(result)
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub(super) enum OriginalArtifactDecisionData {
+    RetainOriginal,
+    PublishQualified(Box<OriginalArtifactPublicationData>),
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalArtifactPublicationData {
+    pub operation_id: String,
+    pub manifest: OriginalArtifactManifestData,
+    pub payload: PinnedFileData,
+    pub signed_current_head: OriginalDeploymentCurrentData,
+    pub expected_withdrawal_head: [u8; 32],
+    pub expected_registry_predecessor_head: [u8; 32],
+}

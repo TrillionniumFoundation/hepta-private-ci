@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "kind": "actual_root_intent_bound_observation_purpose_retirement",
+  "status": "FROZEN_FUTURE_SOURCE_ONLY_NOT_NORMAL_PHASE_COMPLETION",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prerequisites": {
+    "session_pause": "d155830d536047b850573adc91392ef728d4e089",
+    "root_intent_base": "86065a3a91e075a8f2a8463951369608794f5b16",
+    "root_intent_first_field_correction": "8ad0e86068256f5dc4f20f23a35de215abd0d828",
+    "actual_intent_source": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+    "actual_intent_export": "111b253ba85c1540cf59d01f1215da1fc320b6bc"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": "7bcd97dd9250419fbaa15e7d52e74d7b8cd57977",
+      "postimage": "b117392faa7fb5af08b3f03ef84d3d06e7375ce2",
+      "bytes": 34918,
+      "sha256": "9df47e48bb71519cdc205de890a9a4b2cf22a4f9430ea1e9fb5e3f98aedf8177",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "pub(crate) use lifecycle::OriginalRootSessionPaused;\n",
+          "after": "pub(crate) use lifecycle::OriginalRootSessionPaused;\npub(crate) use lifecycle::OriginalRootSessionObservationRetired;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "preimage": "d39610fabaa200ac049670ad8ee0c125e656a446",
+      "postimage": "fdcba1999c48f95c61be1a91d0d6e012f7285050",
+      "bytes": 12603,
+      "sha256": "704985886652f5d44aad0e4847a1bc07144587ef562ef4ab5be108ac46afda38",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "pub(crate) use normal::OriginalRootSessionPaused;\n",
+          "after": "pub(crate) use normal::OriginalRootSessionPaused;\npub(crate) use normal::OriginalRootSessionObservationRetired;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "preimage": "abb7c3cc76c37ddef91e9ae946cbfeb43709f491",
+      "postimage": "140a174b10b636e17b3e222fb6a5ae5b7edf3406",
+      "bytes": 19193,
+      "sha256": "8632a95dd4f0782f9b276527c4af2053b3ca74c5aff4277773fc4a5690fdcd11",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "use crate::AgentdIdentity;\n",
+          "after": "use crate::AgentdIdentity;\nuse crate::same_actor_q24_deployment::OriginalRootRetirementIntent;\n"
+        },
+        {
+          "op": "replace",
+          "before": "    _stream: RootObservationStream,\n    _stop: SameActorPhaseStream,\n",
+          "after": "    _stream: Option<RootObservationStream>,\n    _stop: Option<SameActorPhaseStream>,\n"
+        },
+        {
+          "op": "replace",
+          "before": "            _stream: stream,\n            _stop: stop,\n",
+          "after": "            _stream: Some(stream),\n            _stop: Some(stop),\n"
+        },
+        {
+          "op": "replace",
+          "before": "impl OriginalSessionPauseControl {",
+          "after": "/// The real paused observation purpose has been closed under the actual\n/// Root intent. All remaining guards, consumers/clock and File stay held.\n/// This is not full Session-field retirement or final Root completion.\npub(crate) struct OriginalRootSessionObservationRetired {\n    original: OriginalRootSessionPaused,\n}\n\nimpl OriginalSessionPauseControl {"
+        },
+        {
+          "op": "replace",
+          "before": "impl OriginalRootSessionPaused {\n    pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity\n            || !Arc::ptr_eq(&self.resources._writer_file, &self.original._writer_file)\n            || !Arc::ptr_eq(\n                &self.resources.live,\n                &self.original.live.upgrade()\n                    .ok_or_else(|| join_error(\"paused Session lost its original LiveRoot\"))?,\n            )\n            || self.resources.live.active.load(Ordering::Acquire)\n            || self.consumers.registered != self.consumers.joined\n            || self.consumers.first_observed_failure.is_some()\n            || self.consumers.admission_poisoned\n        {\n            return Err(join_error(\"paused original Session custody differs\"));\n        }\n        self.original.require_original_pause_origin(identity, gate)\n    }\n\n    pub(crate) fn consumer_join_observation(&self) -> OriginalConsumerJoinSummary {\n        self.consumers\n    }\n}\n",
+          "after": "impl OriginalRootSessionPaused {\n    pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if self.resources._stream.is_none() || self.resources._stop.is_none() {\n            return Err(join_error(\"original paused observation purpose was already consumed\"));\n        }\n        self.require_original_joined_custody(identity, gate)\n    }\n\n    fn require_original_joined_custody(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity\n            || !Arc::ptr_eq(&self.resources._writer_file, &self.original._writer_file)\n            || !Arc::ptr_eq(\n                &self.resources.live,\n                &self.original.live.upgrade()\n                    .ok_or_else(|| join_error(\"paused Session lost its original LiveRoot\"))?,\n            )\n            || self.resources.live.active.load(Ordering::Acquire)\n            || self.consumers.registered != self.consumers.joined\n            || self.consumers.first_observed_failure.is_some()\n            || self.consumers.admission_poisoned\n        {\n            return Err(join_error(\"paused original Session custody differs\"));\n        }\n        self.original.require_original_pause_origin(identity, gate)\n    }\n\n    pub(crate) fn consumer_join_observation(&self) -> OriginalConsumerJoinSummary {\n        self.consumers\n    }\n\n    /// Only the same actual Root progress peer's successfully acknowledged\n    /// seq1 can authorize closing this already-joined observation purpose.\n    /// The common failure guards and original File are transferred, not\n    /// disarmed or released. No normal Runtime/Startup result is created.\n    pub(crate) fn retire_original_observation_purpose(\n        self,\n        intent: &OriginalRootRetirementIntent,\n    ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {\n        OriginalRootSessionPaused::require_original_origin(\n            &self, &self.identity, &self.original.gate,\n        )?;\n        OriginalRootRetirementIntent::require_original_origin(\n            intent, &self.identity, &self.original.gate,\n        )?;\n        let retired = self.release_original_observation_resources()?;\n        OriginalRootRetirementIntent::require_original_origin(\n            intent, &retired.original.identity, &retired.original.original.gate,\n        )?;\n        OriginalRootSessionObservationRetired::require_original_origin(\n            &retired, &retired.original.identity, &retired.original.original.gate,\n        )?;\n        Ok(retired)\n    }\n\n    fn release_original_observation_resources(\n        mut self,\n    ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {\n        OriginalRootSessionPaused::require_original_origin(\n            &self, &self.identity, &self.original.gate,\n        )?;\n        let stream = self.resources._stream.take()\n            .ok_or_else(|| join_error(\"original observation stream is missing\"))?;\n        let stop = self.resources._stop.take()\n            .ok_or_else(|| join_error(\"original observation shutdown alias is missing\"))?;\n        // These are the actual original descriptors, after real worker and\n        // consumer joins. No mutex, frame or owner callback remains in flight.\n        // Both original ownership shares must close to deliver clean EOF.\n        drop(stream);\n        drop(stop);\n        let retired = OriginalRootSessionObservationRetired { original: self };\n        OriginalRootSessionObservationRetired::require_original_origin(\n            &retired, &retired.original.identity, &retired.original.original.gate,\n        )?;\n        Ok(retired)\n    }\n\n    /// Tests only the actual FD/guard transfer after a real Session pause.\n    /// It does not construct a Root intent or qualify a business retirement.\n    #[cfg(test)]\n    pub(in super::super) fn component_release_original_observation_purpose(\n        self,\n    ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {\n        self.release_original_observation_resources()\n    }\n}\n\nimpl OriginalRootSessionObservationRetired {\n    pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if self.original.resources._stream.is_some() || self.original.resources._stop.is_some() {\n            return Err(join_error(\"actual original observation purpose is still held open\"));\n        }\n        self.original.require_original_joined_custody(identity, gate)\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal_tests.rs",
+      "preimage": "76fa002d12bfaab4f2efbc2b83bfc8e386d19096",
+      "postimage": "6ed8909b62cb886a93d04860a5f65d8846bd926a",
+      "bytes": 12051,
+      "sha256": "48dff29a240ca76b1216bfdc60380726e8fcd9c1ef4c39d58d8a05929246e294",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "d().await.is_err());\n    drop(session);\n    let observed = tokio::time::timeout(\n        Duration::from_secs(5), slot.stop_and_join_retired_session_tasks(),\n    ).await??;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined { .. }));\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    join_peer(peer).await;\n    Ok(())\n}\n",
+          "after": "d().await.is_err());\n    drop(session);\n    let observed = tokio::time::timeout(\n        Duration::from_secs(5), slot.stop_and_join_retired_session_tasks(),\n    ).await??;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined { .. }));\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    join_peer(peer).await;\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn releasing_the_joined_observation_fd_preserves_failure_guards_and_original_file()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let (device, _, _device_directory) = owner(&session, key);\n    session.activate_original_phase_final_use_owners(vec![device]).await?;\n    let (_directory, config, contender) = bind_original_writer(&session)?;\n    let identity = config.identity().clone();\n    drop(config);\n    let waiter = slot.component_request_original_normal_pause(&identity)?;\n    let paused = tokio::time::timeout(Duration::from_secs(5), waiter.join_original_paused()).await??;\n    // Component-only entry exercises the very same actual stream/alias take.\n    // No Root intent or C capability is manufactured by this FD custody test.\n    let retired = paused.component_release_original_observation_purpose()?;\n    tokio::time::timeout(Duration::from_secs(5), join_peer(peer)).await?;\n    gate.require_open()?;\n    crate::root_authority_session::OriginalRootSessionObservationRetired::require_original_origin(\n        &retired, &identity, &gate,\n    )?;\n    assert!(!takes_lock(&contender)?);\n    // Armed failure closure was retained after purpose EOF, not discarded.\n    drop(retired);\n    assert!(gate.require_open().is_err());\n    drop(session);\n    let observed = slot.stop_and_join_retired_session_tasks().await?;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined {\n        worker: OriginalRootWorkerTermination::Returned, recorded_worker_failure: None, ..\n    }));\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    Ok(())\n}\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 4,
+  "operation_count": 8,
+  "new_tests": 1,
+  "actual_permission": "The only production entry consumes the real private Paused owner and borrows the real OriginalRootRetirementIntent. The latter is created only by the actual progress client after seq1 and four synchronous original cap checks. This slice cannot construct, deserialize, clone or substitute that permission.",
+  "sequence": [
+    "Revalidate actual Paused's same registered Session, Gate/end/pidfd and sealed actual worker/consumer joins; no ordinary Current is called.",
+    "Require the actual RootIntent's exact original identity/Gate and original live peer/end.",
+    "Take the same already-joined RootObservationStream and SameActorPhaseStream alias from private Options. No await or fallible owner callback occurs between these two original moves.",
+    "Drop the actual stream, then remove/drop its shutdown alias, delivering clean EOF for that specific purpose. No Gate.close, no abort and no replacement descriptor/stream occurs on this normal path.",
+    "Revalidate the same actual RootIntent and returned retired owner. Any failure drops the still-armed first-field guard and closes the common Gate.",
+    "Return OriginalRootSessionObservationRetired holding the SAME Paused owner with both original purpose Options empty. It retains actual FenceOnDrop/close guard/LiveRoot/original File custody. The common progress peer remains protected by the actual RootIntent's guard.",
+    "Neither Session nor Custody Drop is weakened. Dropping the returned owner without a later complete terminal protocol is still a fault close."
+  ],
+  "resource_order": {
+    "paused_outer_first": "OriginalRootSessionPaused._closing remains first and armed.",
+    "observation_resource_fields": [
+      "actual close guard remains armed",
+      "actual FenceOnDrop remains armed",
+      "original RootObservationStream Option becomes None after actual drop",
+      "original SameActorPhaseStream Option becomes None after actual drop",
+      "same Arc<LiveRoot>",
+      "same WriterCustody last"
+    ],
+    "retired_owner": "OriginalRootSessionObservationRetired contains the same Paused as its only field; no readback data or boolean replaces resource custody.",
+    "unchanged": "RootWorker, ConsumerSyncJob, refresh, synchronize_consumers, Session Drop, FenceOnDrop and fault close/join bodies are unchanged by this overlay."
+  },
+  "interfaces": [
+    "root_authority_session::OriginalRootSessionPaused::retire_original_observation_purpose(self, &same_actor_q24_deployment::OriginalRootRetirementIntent) -> Result<OriginalRootSessionObservationRetired, AgentdError>",
+    "root_authority_session::OriginalRootSessionObservationRetired::require_original_origin(&self, &AgentdIdentity, &Arc<SameActorPhaseGate>) -> Result<(), AgentdError>"
+  ],
+  "tests": {
+    "previous_five": "All previous five test functions remain exact bytes before the appended new component.",
+    "added": "releasing_the_joined_observation_fd_preserves_failure_guards_and_original_file",
+    "proof": "The actual Session feed and all consumers join, the exact stream+alias are then released, the original peer thread actually observes EOF and joins while Gate remains open, and the original writer File remains locked. Dropping returned custody then closes Gate; actual fault cleanup and all held objects release before the contender acquires the same File lock.",
+    "scope": "A cfg(test)-only entry calls the identical private FD transfer without constructing a Root intent. It tests descriptor and guard custody only, not permission or business completion.",
+    "executed": false
+  },
+  "root_intent_review_note": {
+    "actual_original_source": "85cc5480a13b8d04c96f55f78a9698a78bdb51df",
+    "confirmed_old_ordering_gap": "Intent originally contained only client; its channel field preceded required closing guard, so bare Intent drop could release the peer before common closure.",
+    "corrected_source": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+    "actual_correction": "The exact sender-created closing guard now moves into Intent first field and remains armed; no extra authority or renewed deadline is created.",
+    "independent_read": "Both full sources and the exact four-op correction were Git GET/hash verified. This packet depends on the corrected source, not the prior weaker Drop layout."
+  },
+  "verification": {
+    "all_four_postimages_create_get_exact": true,
+    "all_eight_operations_unique_forward_reverse": true,
+    "no_shared_gate_mutation": true,
+    "no_authority_freshness_or_budget_change": true,
+    "no_old_default_behavior_change": true
+  },
+  "still_required": [
+    "Actual runtime caller must retain the other three caps and actual RuntimeStopped/Session owners while using this returned purpose-retired object.",
+    "Other original Root business-purpose streams and C/Learning owners require their own actual intent-bound release; this one observation EOF cannot stand for them.",
+    "Root's actual all-worker join/final ACK, progress postcheck/EOF ordering and any physical process-exit requirement remain separate.",
+    "Final Session fields, original registered File and daemon watcher must actually retire/join before any whole-phase success claim.",
+    "No existing Startup terminal Err is removed by this packet. Final caller/guard metadata and native qualification remain pending."
+  ],
+  "qualification": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "tests_run": false,
+    "compiler_run": false,
+    "checker_run": false,
+    "refs_changed": false
+  }
+}

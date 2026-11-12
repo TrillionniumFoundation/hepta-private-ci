@@ -1,0 +1,288 @@
+//! Actual ConsumerSyncJob handle custody for one explicit Root phase.
+//! A timeout drops only the waiter. The retained task is still joined before
+//! terminal custody reports its observed outcome.
+
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+
+use tokio::task::JoinHandle;
+
+use crate::AgentdRootAuthorityError;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalConsumerFailure {
+    Owner(AgentdRootAuthorityError),
+    Cancelled,
+    Panicked,
+    MissingHandle,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct OriginalConsumerJoinSummary {
+    pub(crate) registered: usize,
+    pub(crate) joined: usize,
+    pub(crate) first_observed_failure: Option<OriginalConsumerFailure>,
+    pub(crate) admission_poisoned: bool,
+}
+
+struct ConsumerState {
+    stopped: bool,
+    retained: Vec<Arc<OriginalConsumerJob>>,
+    registered: usize,
+    joined: usize,
+    first_observed_failure: Option<OriginalConsumerFailure>,
+    worker_failure: Option<AgentdRootAuthorityError>,
+}
+
+pub(in super::super) struct OriginalConsumerJobs {
+    gate: Arc<SameActorPhaseGate>,
+    state: Mutex<ConsumerState>,
+}
+
+struct ConsumerJobState {
+    handle: Option<JoinHandle<Result<(), AgentdRootAuthorityError>>>,
+    observed: Option<Result<(), OriginalConsumerFailure>>,
+}
+
+pub(in super::super) struct OriginalConsumerJob {
+    state: tokio::sync::Mutex<ConsumerJobState>,
+}
+
+pub(in super::super) struct OriginalConsumerAdmission<'a> {
+    state: MutexGuard<'a, ConsumerState>,
+    gate: Arc<SameActorPhaseGate>,
+    next_registered: usize,
+    armed: bool,
+}
+
+impl OriginalConsumerJobs {
+    pub(in super::super) fn new(gate: &Arc<SameActorPhaseGate>) -> Arc<Self> {
+        Arc::new(Self {
+            gate: Arc::clone(gate),
+            state: Mutex::new(ConsumerState {
+                stopped: false,
+                retained: Vec::new(),
+                registered: 0,
+                joined: 0,
+                first_observed_failure: None,
+                worker_failure: None,
+            }),
+        })
+    }
+
+    pub(in super::super) fn reserve_original_consumer(
+        &self,
+    ) -> Result<OriginalConsumerAdmission<'_>, AgentdRootAuthorityError> {
+        let state = self.state.lock().map_err(|_| {
+            self.gate.close();
+            AgentdRootAuthorityError::Unavailable
+        })?;
+        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        if state.stopped {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        let next_registered = state.registered.checked_add(1).ok_or_else(|| {
+            self.gate.close();
+            AgentdRootAuthorityError::Unavailable
+        })?;
+        Ok(OriginalConsumerAdmission {
+            state,
+            gate: Arc::clone(&self.gate),
+            next_registered,
+            armed: true,
+        })
+    }
+
+    /// Stop new admissions at the actual between-frame serial cut. This is
+    /// separate from fault close: all original purpose streams remain held.
+    pub(in super::super) fn stop_original_normal_admission(
+        &self,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        let mut state = self.state.lock().map_err(|_| {
+            self.gate.close();
+            AgentdRootAuthorityError::Unavailable
+        })?;
+        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        if state.first_observed_failure.is_some() || state.worker_failure.is_some() {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        state.stopped = true;
+        Ok(())
+    }
+
+    pub(in super::super) async fn join_original_paused_consumers(
+        &self,
+    ) -> Result<OriginalConsumerJoinSummary, AgentdRootAuthorityError> {
+        loop {
+            self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            let (job, summary) = {
+                let state = self.state.lock().map_err(|_| {
+                    self.gate.close();
+                    AgentdRootAuthorityError::Unavailable
+                })?;
+                if !state.stopped || state.worker_failure.is_some()
+                    || state.first_observed_failure.is_some()
+                {
+                    return Err(AgentdRootAuthorityError::Unavailable);
+                }
+                (state.retained.first().cloned(), OriginalConsumerJoinSummary {
+                    registered: state.registered,
+                    joined: state.joined,
+                    first_observed_failure: state.first_observed_failure,
+                    admission_poisoned: false,
+                })
+            };
+            let Some(job) = job else {
+                if summary.registered != summary.joined {
+                    return Err(AgentdRootAuthorityError::Unavailable);
+                }
+                self.gate.require_open()
+                    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+                return Ok(summary);
+            };
+            // Borrow exactly the registered handle; cancellation preserves it.
+            let outcome = job.join_original_handle().await;
+            if outcome == Err(OriginalConsumerFailure::MissingHandle) {
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+            self.record_joined(&job, outcome);
+            outcome.map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        }
+    }
+
+    pub(in super::super) fn close(&self) {
+        self.gate.close();
+        self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner).stopped = true;
+    }
+
+    pub(in super::super) fn record_worker_failure(&self, error: AgentdRootAuthorityError) {
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .worker_failure
+            .get_or_insert(error);
+    }
+
+    pub(in super::super) fn worker_failure(&self) -> Option<AgentdRootAuthorityError> {
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .worker_failure
+    }
+
+    pub(in super::super) async fn receive_original_consumer(
+        &self,
+        job: &Arc<OriginalConsumerJob>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        let outcome = job.join_original_handle().await;
+        if outcome != Err(OriginalConsumerFailure::MissingHandle) {
+            self.record_joined(job, outcome);
+        }
+        match outcome {
+            Ok(()) => Ok(()),
+            Err(OriginalConsumerFailure::Owner(error)) => Err(error),
+            Err(OriginalConsumerFailure::Cancelled | OriginalConsumerFailure::Panicked
+                | OriginalConsumerFailure::MissingHandle) => {
+                Err(AgentdRootAuthorityError::Unavailable)
+            }
+        }
+    }
+
+    fn record_joined(
+        &self,
+        job: &Arc<OriginalConsumerJob>,
+        outcome: Result<(), OriginalConsumerFailure>,
+    ) {
+        // Recovery is bookkeeping of an already observed actual join. It
+        // cannot admit, repeat or restore a consumer operation.
+        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        if let Some(index) = state.retained.iter().position(|entry| Arc::ptr_eq(entry, job)) {
+            state.retained.remove(index);
+            state.joined += 1;
+            if let Err(error) = outcome {
+                state.first_observed_failure.get_or_insert(error);
+            }
+        }
+    }
+
+    pub(in super::super) async fn join_stopped_consumers(
+        &self,
+    ) -> Result<OriginalConsumerJoinSummary, AgentdRootAuthorityError> {
+        self.close();
+        loop {
+            let job = self.state.lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .retained.first().cloned();
+            let Some(job) = job else {
+                let poisoned = self.state.is_poisoned();
+                let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+                if state.joined != state.registered {
+                    return Err(AgentdRootAuthorityError::Unavailable);
+                }
+                return Ok(OriginalConsumerJoinSummary {
+                    registered: state.registered,
+                    joined: state.joined,
+                    first_observed_failure: state.first_observed_failure,
+                    admission_poisoned: poisoned,
+                });
+            };
+            let outcome = job.join_original_handle().await;
+            if outcome == Err(OriginalConsumerFailure::MissingHandle) {
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+            self.record_joined(&job, outcome);
+        }
+    }
+}
+
+impl OriginalConsumerAdmission<'_> {
+    pub(in super::super) fn retain_original_handle(
+        mut self,
+        handle: JoinHandle<Result<(), AgentdRootAuthorityError>>,
+    ) -> Arc<OriginalConsumerJob> {
+        let job = Arc::new(OriginalConsumerJob {
+            state: tokio::sync::Mutex::new(ConsumerJobState {
+                handle: Some(handle),
+                observed: None,
+            }),
+        });
+        self.state.registered = self.next_registered;
+        self.state.retained.push(Arc::clone(&job));
+        self.armed = false;
+        job
+    }
+}
+
+impl Drop for OriginalConsumerAdmission<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.state.stopped = true;
+            self.gate.close();
+        }
+    }
+}
+
+impl OriginalConsumerJob {
+    async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {
+        let mut state = self.state.lock().await;
+        if let Some(outcome) = state.observed {
+            return outcome;
+        }
+        let Some(handle) = state.handle.as_mut() else {
+            return Err(OriginalConsumerFailure::MissingHandle);
+        };
+        // A cancelled timeout/worker/cleanup only releases this borrow. The
+        // actual handle remains in this job and is never polled after Ready.
+        let outcome = match handle.await {
+            Ok(Ok(())) => Ok(()),
+            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),
+            Err(error) if error.is_cancelled() => Err(OriginalConsumerFailure::Cancelled),
+            Err(_) => Err(OriginalConsumerFailure::Panicked),
+        };
+        state.handle = None;
+        state.observed = Some(outcome);
+        outcome
+    }
+}

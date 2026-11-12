@@ -1,0 +1,187 @@
+//! Assemble only the actual post-A scoped owners in the same live phase.
+//! Neither this builder nor its cleanup capability constructs learning receipts.
+
+use std::sync::Arc;
+
+use crate::AgentdError;
+use crate::AgentdRootLearningInputsV1;
+use crate::AgentdRootQ24ModelFactoryV1;
+use crate::LearningIterationHandleV1;
+use crate::LearningIterationRuntimeBootstrapV1;
+use crate::OriginalCellQ24LearningInputsV1;
+use crate::OriginalCellQ24LearningStageOwnersV1;
+use crate::OriginalCellQ24RetainedLearningSourceV1;
+use crate::OriginalQ24SuccessorHandoffV1;
+use crate::circuit_q24_successor::OriginalSameActorSuccessorTaskParts;
+use crate::circuit_q24_successor::prepare_original_same_actor_successor;
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::root_production_learning_inputs::same_actor_phase::OriginalSameActorScopedOwners;
+use crate::root_production_learning_inputs::same_actor_phase::OriginalScopedPublicationTicket;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+
+#[path = "same_actor_q24_phase_learning_work.rs"]
+mod work;
+#[path = "same_actor_q24_phase_learning_worker.rs"]
+mod worker;
+pub(crate) use work::OriginalJobReceiveError;
+pub(crate) use work::OriginalLearningStop;
+pub(crate) use work::OriginalLearningWorkJoined;
+pub(crate) use worker::OriginalRetiredLearningOwners;
+pub(crate) use worker::OriginalSameActorLearningJoined;
+pub(crate) use work::OriginalSameActorLearningCleanup;
+pub(crate) use work::OriginalSameActorLearningWork;
+pub(crate) use worker::OriginalSameActorLearningWorker;
+
+/// The caller retains cleanup() and attaches its real Work to the same task
+/// route before polling assemble. The constructor performs no stage creation.
+pub(crate) struct PreparedLearningBuilder {
+    context: Arc<OriginalSameActorRootContext>,
+    learning: AgentdRootLearningInputsV1,
+    factory: AgentdRootQ24ModelFactoryV1,
+    publication: OriginalScopedPublicationTicket,
+    retained: OriginalCellQ24RetainedLearningSourceV1,
+    original: OriginalCellQ24LearningInputsV1,
+    work: Arc<OriginalSameActorLearningWork>,
+    closing: CloseSameActorPhaseOnDrop,
+}
+
+pub(crate) struct PreparedLearningActivation {
+    context: Arc<OriginalSameActorRootContext>,
+    handle: LearningIterationHandleV1,
+    owners: Arc<OriginalCellQ24LearningStageOwnersV1>,
+    publication: OriginalScopedPublicationTicket,
+    handoff: OriginalQ24SuccessorHandoffV1,
+    successor: OriginalSameActorSuccessorTaskParts,
+    worker: OriginalSameActorLearningWorker,
+}
+
+impl PreparedLearningBuilder {
+    pub(crate) fn new(
+        scoped: OriginalSameActorScopedOwners,
+        original: OriginalCellQ24LearningInputsV1,
+    ) -> Result<Self, AgentdError> {
+        let context = Arc::clone(scoped.context());
+        let closing = CloseSameActorPhaseOnDrop::new(context.gate());
+        OriginalSameActorRootContext::require_current(&context)?;
+        let (same_context, learning, factory, publication, prepared, retained) =
+            scoped.into_original_parts()?;
+        if !Arc::ptr_eq(&context, &same_context) || !Arc::ptr_eq(&original.prepared, &prepared) {
+            return Err(AgentdError::GenerationFenced(
+                "learning inputs differ from the actual scoped Prepared capability".into(),
+            ));
+        }
+        AgentdRootLearningInputsV1::require_prepared_q24(&learning, &original.prepared)?;
+        if original.prepared.initial().owners.evidence_trust_digest
+            != original.verifier.trust_digest()
+            || !(1..=64).contains(&original.queue_capacity)
+        {
+            return Err(AgentdError::Invalid(
+                "original Q24 trust and bounded queue required".into(),
+            ));
+        }
+        let work =
+            OriginalSameActorLearningWork::from_original_scope(Arc::clone(&context), prepared)?;
+        OriginalSameActorRootContext::require_current(&context)?;
+        Ok(Self {
+            context,
+            learning,
+            factory,
+            publication,
+            retained,
+            original,
+            work,
+            closing,
+        })
+    }
+
+    pub(crate) fn cleanup(&self) -> OriginalSameActorLearningCleanup {
+        self.work.cleanup()
+    }
+
+    pub(crate) async fn assemble(
+        mut self,
+        successor_capacity: usize,
+    ) -> Result<PreparedLearningActivation, AgentdError> {
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        if !(1..=64).contains(&successor_capacity) {
+            return Err(AgentdError::Invalid("successor queue must be 1..64".into()));
+        }
+        let verifier = self.original.verifier.clone();
+        let capacity = self.original.queue_capacity;
+        let owners = OriginalCellQ24LearningStageOwnersV1::from_original_same_actor_inputs(
+            self.original,
+            self.factory,
+            Arc::clone(&self.work),
+        )
+        .await
+        .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        let (handle, learning) = AgentdRootLearningInputsV1::into_q24_learning_runtime(
+            self.learning,
+            Arc::clone(&owners),
+            verifier,
+            capacity,
+        )?;
+        // The original successor constructor requires this exact retained
+        // source while the original delivery registry is still in bootstrap.
+        let learning = LearningIterationRuntimeBootstrapV1::with_retained_q24_source(
+            learning,
+            self.retained,
+            self.context.identity(),
+        )?;
+        let (mut learning, pending, handoff, successor) = prepare_original_same_actor_successor(
+            learning,
+            self.context.identity(),
+            self.context.successor_session(),
+            Arc::clone(self.context.gate()),
+            successor_capacity,
+        )
+        .await?;
+        let delivery = learning.take_circuit_delivery().ok_or_else(|| {
+            AgentdError::GenerationFenced("actual retained A delivery is missing".into())
+        })?;
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        let worker = OriginalSameActorLearningWorker::from_original_parts(
+            Arc::clone(&self.context),
+            Arc::clone(&self.work),
+            learning,
+            delivery,
+            pending,
+        )?;
+        self.closing.disarm();
+        Ok(PreparedLearningActivation {
+            context: self.context,
+            handle,
+            owners,
+            publication: self.publication,
+            handoff,
+            successor,
+            worker,
+        })
+    }
+}
+
+impl PreparedLearningActivation {
+    pub(crate) fn into_original_parts(
+        self,
+    ) -> Result<
+        (
+            LearningIterationHandleV1,
+            Arc<OriginalCellQ24LearningStageOwnersV1>,
+            OriginalScopedPublicationTicket,
+            OriginalQ24SuccessorHandoffV1,
+            OriginalSameActorSuccessorTaskParts,
+            OriginalSameActorLearningWorker,
+        ),
+        AgentdError,
+    > {
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        Ok((
+            self.handle,
+            self.owners,
+            self.publication,
+            self.handoff,
+            self.successor,
+            self.worker,
+        ))
+    }
+}

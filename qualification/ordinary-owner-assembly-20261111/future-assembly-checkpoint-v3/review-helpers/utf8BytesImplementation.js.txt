@@ -1,0 +1,1 @@
+function utf8Bytes(value){const out=[];for(const char of value){const cp=char.codePointAt(0);if(cp<128)out.push(cp);else if(cp<2048)out.push(192|(cp>>6),128|(cp&63));else if(cp<65536)out.push(224|(cp>>12),128|((cp>>6)&63),128|(cp&63));else out.push(240|(cp>>18),128|((cp>>12)&63),128|((cp>>6)&63),128|(cp&63));}return out;}
