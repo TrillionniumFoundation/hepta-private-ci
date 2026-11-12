@@ -196,7 +196,8 @@ class PopulationPlan:
         if (
             type(record) is not dict
             or any(type(key) is not str for key in record)
-            or set(record) != {
+            or set(record)
+            != {
                 "schema",
                 "principal_id",
                 "agent_id",

@@ -206,7 +206,6 @@ class PopulationPlanTests(unittest.TestCase):
             with self.subTest(record=record), self.assertRaises(CellError):
                 PopulationPlan.from_record(record)
 
-
     def test_reject_python_string_subclasses_in_stable_cell_identity(self):
         # A subclass can compare equal to a legal lineage while encoding other bytes.
         source = self.cells[0]
