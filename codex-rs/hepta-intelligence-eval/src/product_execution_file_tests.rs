@@ -12,6 +12,9 @@ use std::sync::atomic::Ordering;
 
 use pretty_assertions::assert_eq;
 
+#[path = "product_execution_readback_tests.rs"]
+mod readback;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn digest(value: &str) -> Digest32 {

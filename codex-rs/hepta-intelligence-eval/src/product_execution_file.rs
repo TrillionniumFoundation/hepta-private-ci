@@ -36,6 +36,10 @@ use crate::ProductEvaluationExecutionStateV1;
 use crate::ProductEvaluationExecutionStoreErrorV1;
 use crate::ProductEvaluationExecutionStoreV1;
 
+#[path = "product_execution_readback.rs"]
+mod readback;
+pub use readback::ReadOnlyProductEvaluationExecutionStoreV1;
+
 const MAGIC: &[u8; 8] = b"HEPTEX01";
 const HEADER: usize = 72;
 const MAX_FILE_BYTES: u64 = 32 * 1024 * 1024;
