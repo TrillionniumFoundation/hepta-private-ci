@@ -370,8 +370,18 @@ ARTIFACT_PUBLICATION_READBACK_CASES = (
     "owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp",
 )
 
+ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::model_material::" + name
+    for name in (
+        "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+        "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+        "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+    )
+)
+
 OWNER_GROUPS = (
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
+    ("original_evaluation_model_material", PACKAGE, ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES),
     ("original_evaluation_host", PACKAGE, ORIGINAL_EVALUATION_HOST_CASES),
     (
         "original_evaluation_panel_members",

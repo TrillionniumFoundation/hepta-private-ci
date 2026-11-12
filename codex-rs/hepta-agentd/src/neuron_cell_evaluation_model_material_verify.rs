@@ -6,7 +6,7 @@ use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_neuron::CellBackendManifestV2;
-use codex_hepta_neuron::CellGenerationScopeV2;
+use codex_hepta_neuron::CellRuntimeSnapshotV2;
 use codex_hepta_types::Digest32;
 use serde_json::Value;
 
@@ -53,8 +53,9 @@ pub(super) fn material(context: &Context, expected: &Receipt, bytes: &[u8], curr
         if !namespaces.insert(raw.execution_namespace) || !namespaces.insert(raw.qualification_namespace) {
             return Err(Error::Binding("distinct original panel member namespaces"));
         }
-        // Parse only public evidence data. No Cell journal, plan, runner,
-        // temporal receipt or qualification seal is deserialized here.
+        // Parse only public evidence data and original snapshot preimages.
+        // No Cell journal, plan, runner, temporal receipt or qualification
+        // seal is deserialized or recreated here.
         let record: Value = serde_json::from_slice(&raw.record)?;
         if record.get("cost_scope").and_then(Value::as_str) != Some("task_ledgers_before_final_holdout")
             || digest(&record["learning_evaluation_profile"])? != context.registration.evaluation_profile()
@@ -68,11 +69,27 @@ pub(super) fn material(context: &Context, expected: &Receipt, bytes: &[u8], curr
             serde_json::from_value(record["fixed_expert"]["manifest"].clone())?,
         ];
         let cuts = [digest(&record["candidate"]["journal_cut"])?, digest(&record["fixed_expert"]["journal_cut"]) ?];
-        for ((manifest, bundle), arm) in manifests.iter().zip([candidate, &context.training.request.selected_bundle])
-            .zip(["candidate", "fixed_expert"])
+        let snapshots: [CellRuntimeSnapshotV2; 2] = serde_json::from_slice(&raw.snapshots)?;
+        if serde_json::to_vec(&snapshots)? != raw.snapshots {
+            return Err(Error::Binding("canonical complete original Cell snapshots"));
+        }
+        for (((manifest, bundle), arm), snapshot) in manifests.iter()
+            .zip([candidate, &context.training.request.selected_bundle])
+            .zip(["candidate", "fixed_expert"]).zip(&snapshots)
         {
             crate::cell_composed_q24::validate_manifest(bundle, manifest)
                 .map_err(|_| Error::Binding("complete original Q24 generation manifest"))?;
+            // This is the existing signed arm commitment, with its original
+            // domain and full mutable state. There is no new scope assertion.
+            if snapshot.digest().map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?
+                    != digest(&record[arm]["snapshot_digest"])?.into_array()
+                || snapshot.manifest_digest != manifest.digest()
+                    .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?
+                || snapshot.state.len() > manifest.max_state_bytes as usize
+                || snapshot.prefix.len() > manifest.max_prefix_bytes as usize
+            {
+                return Err(Error::Binding("same signed original Cell snapshot preimage"));
+            }
             if digest(&record[arm]["cost"]["identity"]["task_digest"])? != task.task_digest {
                 return Err(Error::Binding("same registered actual B task for both arms"));
             }
@@ -80,8 +97,8 @@ pub(super) fn material(context: &Context, expected: &Receipt, bytes: &[u8], curr
         if cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1] {
             return Err(Error::Binding("distinct original evaluated Cell journal cuts"));
         }
-        let scopes: [CellGenerationScopeV2; 2] = serde_json::from_slice(&raw.scopes)?;
-        let member_runs: BTreeSet<_> = scopes.iter().map(|scope| scope.run_id.as_str()).collect();
+        let member_runs: BTreeSet<_> = snapshots.iter()
+            .map(|snapshot| snapshot.scope.run_id.as_str()).collect();
         for run in member_runs {
             if run == context.training.request.source_run_id.as_str() || !runs.insert(run.to_owned()) {
                 return Err(Error::Binding("independent actual B and retention runs"));
