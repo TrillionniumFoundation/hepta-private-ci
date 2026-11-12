@@ -1,0 +1,887 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+   Compiling hyper v1.12.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.39.1` which wasn't produced by cargo metadata
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-learning-ledger)
+   Compiling predicates-core v1.0.10
+   Compiling num_cpus v1.17.0
+   Compiling assert_cmd v2.2.2
+   Compiling deadpool-runtime v0.1.4
+   Compiling difflib v0.4.0
+   Compiling termtree v0.5.1
+   Compiling dtor-proc-macro v0.0.6
+   Compiling dtor v0.1.1
+   Compiling predicates v3.1.4
+   Compiling predicates-tree v1.0.13
+   Compiling deadpool v0.12.3
+   Compiling hyper-util v0.1.21
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+   Compiling assert-json-diff v2.0.2
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-prompt-optimizer)
+   Compiling hyper-rustls v0.27.10
+   Compiling hyper-tls v0.6.0
+   Compiling hyper-timeout v0.5.2
+   Compiling reqwest v0.12.28
+   Compiling aws-smithy-http-client v1.5.1
+   Compiling tonic v0.14.6
+   Compiling axum v0.8.9
+   Compiling codex-http-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/http-client)
+   Compiling codex-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/protocol)
+   Compiling codex-websocket-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/websocket-client)
+   Compiling tonic-prost v0.14.6
+   Compiling codex-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-client)
+   Compiling opentelemetry-proto v0.31.0
+   Compiling opentelemetry-http v0.31.0
+   Compiling aws-smithy-runtime v1.16.1
+   Compiling opentelemetry-otlp v0.31.1
+   Compiling codex-workload-identity v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/workload-identity)
+   Compiling oauth2 v5.0.0
+   Compiling aws-runtime v1.10.0
+   Compiling reqwest v0.13.5
+   Compiling rmcp v3.9.0
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling aws-sdk-sts v1.119.0
+   Compiling aws-sdk-signin v1.27.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-config v1.12.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/third_party/aws-config-1.12.0)
+   Compiling sentry v0.46.2
+   Compiling wait-timeout v0.2.1
+   Compiling ctor-proc-macro v0.0.7
+   Compiling ctor v0.6.3
+   Compiling codex-file-system v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/git-utils)
+   Compiling codex-api v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-api)
+   Compiling codex-shell-command v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/shell-command)
+   Compiling codex-exec-server-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/exec-server-protocol)
+   Compiling codex-otel v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/otel)
+   Compiling codex-model-provider-info v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/model-provider-info)
+   Compiling codex-secrets v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/secrets)
+   Compiling codex-history v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/history)
+   Compiling codex-agent-identity v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/agent-identity)
+   Compiling codex-utils-output-truncation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/output-truncation)
+   Compiling codex-state v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/state)
+   Compiling codex-response-debug-context v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/response-debug-context)
+   Compiling codex-features v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/features)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/windows-sandbox-rs)
+   Compiling codex-sandboxing v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/sandboxing)
+   Compiling codex-config v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/config)
+   Compiling codex-aws-auth v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/aws-auth)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/code-mode-protocol)
+   Compiling codex-context-fragments v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/context-fragments)
+   Compiling codex-skills v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/skills)
+   Compiling codex-rollout v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/rollout)
+   Compiling codex-code-mode v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/code-mode)
+   Compiling codex-shell-escalation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/shell-escalation)
+   Compiling codex-agent-graph-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/agent-graph-store)
+   Compiling codex-rollout-trace v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/rollout-trace)
+   Compiling codex-exec-server v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/exec-server)
+   Compiling codex-login v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/login)
+   Compiling codex-app-server-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server-protocol)
+   Compiling codex-models-manager v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/feedback)
+   Compiling codex-utils-plugins v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/plugins)
+   Compiling codex-plugin v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/plugin)
+   Compiling codex-model-provider v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/model-provider)
+   Compiling codex-connectors v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/connectors)
+   Compiling codex-exec-server-test-support v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/exec-server/tests/support)
+   Compiling codex-rmcp-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/rmcp-client)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+   Compiling codex-tools v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-mcp)
+   Compiling codex-hooks v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hooks)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+   Compiling codex-apply-patch v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/apply-patch)
+   Compiling codex-prompts v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/prompts)
+   Compiling codex-extension-api v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/extension-api)
+   Compiling codex-memories-read v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/memories/read)
+   Compiling codex-utils-audio v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/audio)
+   Compiling codex-hepta-operations v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-operations)
+   Compiling codex-backend-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/backend-client)
+   Compiling codex-hepta-memory v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-memory)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/linux-sandbox)
+   Compiling codex-arg0 v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/arg0)
+   Compiling codex-analytics v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/analytics)
+   Compiling codex-thread-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/thread-store)
+   Compiling codex-core-plugins v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/skills)
+   Compiling codex-home v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-authbus)
+   Compiling codex-connectors-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/cli)
+   Compiling codex-core v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/core)
+   Compiling codex-hepta-evidence v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-evidence)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-memory)
+   Compiling codex-git-attribution v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-governance v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-automation)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-intelligence)
+   Compiling wiremock v0.6.5
+   Compiling codex-hepta-bellman-operator v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-bellman-operator)
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-supervisor v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-supervisor)
+   Compiling codex-memories-write v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/memories/write)
+   Compiling codex-memories-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/memories)
+   Compiling codex-chatgpt v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/chatgpt)
+   Compiling codex-guardian-v2 v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/guardian-v2)
+   Compiling codex-external-agent-migration v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/external-agent-migration)
+   Compiling codex-image-generation-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/image-generation)
+   Compiling codex-mcp-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/mcp)
+   Compiling codex-cloud-config v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/cloud-config)
+   Compiling codex-goal-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/goal)
+   Compiling codex-agent-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/agent)
+   Compiling codex-history-notes-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/history-notes)
+   Compiling codex-queue-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/queue)
+   Compiling codex-web-search-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/web-search)
+   Compiling codex-app-server-transport v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server-transport)
+   Compiling core_test_support v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/core/tests/common)
+   Compiling app_test_support v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server/tests/common)
+   Compiling codex-app-server v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server)
+   Compiling codex-app-server-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-agentd)
+warning: unused import: `codex_hepta_learning_ledger::SignedLearningEvidenceV1`
+ --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:4:5
+  |
+4 | use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1`
+    --> hepta-agentd/src/lib.rs:1479:16
+     |
+1479 | pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
+     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/cell_q24_model_current_owner.rs:11:9
+   |
+11 |         mut witness: W,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/cell_q24_model_current_owner.rs:47:9
+   |
+47 |         mut witness: W,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/cell_q24_model_proposal.rs:122:9
+    |
+122 |         mut witness: W,
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/cell_q24_model_proposal.rs:160:9
+    |
+160 |         mut witness: W,
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: associated function `bind_original_stage_channel` is never used
+   --> hepta-agentd/src/circuit_candidate_learning_read_capability.rs:244:19
+    |
+241 | impl OriginalCircuitCandidateLearningReadClientV1 {
+    | ------------------------------------------------- associated function in this implementation
+...
+244 |     pub(crate) fn bind_original_stage_channel(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `read_original_model` is never used
+  --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:82:25
+   |
+64 | impl OriginalCellQ24CandidateStageOwnersV1 {
+   | ------------------------------------------ method in this implementation
+...
+82 |     pub(crate) async fn read_original_model(
+   |                         ^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:24:9
+   |
+20 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+24 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-infer-worker-host)
+warning: `codex-hepta-agentd` (lib) generated 11 warnings (run `cargo fix --lib -p codex-hepta-agentd` to apply 6 suggestions)
+warning: unused import: `codex_hepta_contracts::HostAuthorityPeerChannel`
+  --> hepta-agentd/src/cell_q24_training_readback_tests.rs:12:5
+   |
+12 | use codex_hepta_contracts::HostAuthorityPeerChannel;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `super::super::evidence_wire`
+  --> hepta-agentd/src/circuit_next_use_command_support_tests.rs:29:5
+   |
+29 | use super::super::evidence_wire;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::LearningIterationEvidenceClientV1`
+  --> hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs:16:5
+   |
+16 | use crate::LearningIterationEvidenceClientV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::SignedLearningEvidenceV1`
+ --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:4:5
+  |
+4 | use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::LearningEvidenceRoleV1`
+  --> hepta-agentd/src/circuit_model_selection_owner_support_tests.rs:15:5
+   |
+15 | use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::TrustedLearningSignerV1`
+  --> hepta-agentd/src/circuit_model_selection_owner_support_tests.rs:19:5
+   |
+19 | use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::circuit_original_evaluation_provider::*`
+ --> hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs:5:5
+  |
+5 | use crate::circuit_original_evaluation_provider::*;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_intelligence_eval::*`
+ --> hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs:8:5
+  |
+8 | use codex_hepta_intelligence_eval::*;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/circuit_next_use_command_owner_tests.rs:386:9
+    |
+386 |     let mut f = CompletionFixture::ready(None).await?;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/circuit_completion_readiness_owner_tests.rs:59:9
+   |
+59 |     let mut f = CompletionFixture::ready(None).await?;
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:168:9
+    |
+168 |     let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: method `bytes` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:161:19
+    |
+ 83 | impl LedgerFixture {
+    | ------------------ method in this implementation
+...
+161 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+    |                   ^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `closure` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:202:15
+    |
+202 | pub(super) fn closure(
+    |               ^^^^^^^
+
+warning: associated function `bind_original_stage_channel` is never used
+   --> hepta-agentd/src/circuit_candidate_learning_read_capability.rs:244:19
+    |
+241 | impl OriginalCircuitCandidateLearningReadClientV1 {
+    | ------------------------------------------------- associated function in this implementation
+...
+244 |     pub(crate) fn bind_original_stage_channel(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: field `at` is never read
+  --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+   |
+91 | pub(super) struct Fixture {
+   |                   ------- field in this struct
+92 |     root: PathBuf,
+93 |     pub(super) at: u64,
+   |                ^^
+
+warning: associated function `from_research_store` is never used
+   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+    |
+133 | impl LearningIterationCheckpointOwnerV1 {
+    | --------------------------------------- associated function in this implementation
+...
+141 |     pub(crate) fn from_research_store(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: function `ledger` is never used
+  --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:68:15
+   |
+68 | pub(super) fn ledger(
+   |               ^^^^^^
+
+warning: function `material` is never used
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:264:15
+    |
+264 | pub(super) fn material(
+    |               ^^^^^^^^
+
+warning: type alias `Selector` is never used
+  --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+   |
+43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+   |                 ^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 28 warnings (9 duplicates) (run `cargo fix --lib -p codex-hepta-agentd --tests` to apply 11 suggestions)
+    Finished `test` profile [unoptimized] target(s) in 6m 47s
+────────────
+ Nextest run ID 63d27162-f9ee-4de6-a91d-4ad0dd187c40 with nextest profile: local
+    Starting 3 tests across 1 binary (1153 tests skipped)
+        SLOW [> 30.000s] (───) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+ TERMINATING [> 60.000s] (───) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+     TIMEOUT [  60.008s] (1/3) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+        PASS [   0.019s] (2/3) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic
+        SLOW [> 30.000s] (───) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic
+ TERMINATING [> 60.000s] (───) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic
+     TIMEOUT [  60.014s] (3/3) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic
+────────────
+     Summary [ 120.067s] 3 tests run: 1 passed, 2 timed out, 1153 skipped
+        PASS [   0.019s] (2/3) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1155 filtered out; finished in 0.00s
+
+  stderr ───
+    LEARN_FDE_LAYOUT panel_fixture=212040 positive_fixture=88760 b_fixture=3552 panel_member=38368 panel_owner=39432 preregistered_future=232144 positive_future=208816 panel_future=328176
+
+     TIMEOUT [  60.008s] (1/3) codex-hepta-agentd learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel
+  stdout ───
+
+    running 1 test
+  stderr ───
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongPage) elapsed_ms=0
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongPage) elapsed_ms=8538
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongPage) elapsed_ms=8553
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongPage) elapsed_ms=9376
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongPage) elapsed_ms=9376
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongPage) elapsed_ms=9377
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongPage) elapsed_ms=9378
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongCompletion) elapsed_ms=9378
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongCompletion) elapsed_ms=18030
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongCompletion) elapsed_ms=18039
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongCompletion) elapsed_ms=18914
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongCompletion) elapsed_ms=18914
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongCompletion) elapsed_ms=18914
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongCompletion) elapsed_ms=18916
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongOffset) elapsed_ms=18916
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongOffset) elapsed_ms=27746
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongOffset) elapsed_ms=27763
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongOffset) elapsed_ms=28610
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongOffset) elapsed_ms=28610
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongOffset) elapsed_ms=28610
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongOffset) elapsed_ms=28613
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongTotal) elapsed_ms=28613
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongTotal) elapsed_ms=37482
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongTotal) elapsed_ms=37498
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongTotal) elapsed_ms=38378
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongTotal) elapsed_ms=38378
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongTotal) elapsed_ms=38378
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongTotal) elapsed_ms=38380
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(CorruptHeads) elapsed_ms=38380
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(CorruptHeads) elapsed_ms=47232
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(CorruptHeads) elapsed_ms=47243
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(CorruptHeads) elapsed_ms=48233
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(CorruptHeads) elapsed_ms=48233
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(CorruptHeads) elapsed_ms=48234
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(CorruptHeads) elapsed_ms=48236
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(CloseAfterFirst) elapsed_ms=48236
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(CloseAfterFirst) elapsed_ms=56534
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(CloseAfterFirst) elapsed_ms=56549
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(CloseAfterFirst) elapsed_ms=57370
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(CloseAfterFirst) elapsed_ms=57370
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(CloseAfterFirst) elapsed_ms=57370
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(CloseAfterFirst) elapsed_ms=57372
+    HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongFinishDigest) elapsed_ms=57372
+
+    (test timed out)
+
+     TIMEOUT [  60.014s] (3/3) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic
+  stdout ───
+
+    running 1 test
+  stderr ───
+    LEARN_FDE_C_TIMING command_readback_elapsed_us=1214532 result=Ok(())
+    LEARN_FDE_C_TIMING evidence_readback_elapsed_us=502701 result=Err(OwnerUnavailable("original learning evidence owner"))
+
+    (test timed out)
+
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100
+{"after": {"commit": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4", "dirty": false, "parents": ["96c25e173d319151766897ed1675842c9bab9d93", "993d8e2d34cc306eb8a373b8fb300d485bfa9660"], "tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"}, "base_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b", "before": {"commit": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4", "dirty": false, "parents": ["96c25e173d319151766897ed1675842c9bab9d93", "993d8e2d34cc306eb8a373b8fb300d485bfa9660"], "tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"}, "command": ["just", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "--lib", "-E", "(package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic))", "--test-threads", "1", "--retries", "0", "--no-tests", "fail", "--status-level", "pass", "--success-output", "final", "--failure-output", "final"], "command_exit_code": 100, "elapsed_seconds": 528.6753582579549, "error": "required tests were not observed passing", "exit_code": 100, "finished_at": "2026-11-12T13:50:02.334183+00:00", "job": null, "lane": "source-head", "log_bytes": 61032, "log_file": "focused-native.json.b9d0815e0f6c494289cdeaeaf6246ef1.log", "log_sha256": "3f3344f5fd7918d7be34cfca0a806c9d911cf72eebf572c9ac19ae719fb9a276", "minimum_tests": 3, "observed_failed_tests": 2, "observed_passed_tests": 1, "output_limit_exceeded": false, "returncode": 100, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4", "started_at": "2026-11-12T13:41:13.654173+00:00", "status": "failed", "tested_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4", "timed_out": false, "working_directory": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs"}
