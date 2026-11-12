@@ -44,7 +44,7 @@ def observed_prefix(owner, task_sha256, operation_ids):
         require(receipt["status"] == "executed", "failed observation in actor prefix")
         receipts.append(receipt["receipt_sha256"])
         result = receipt["result"]
-        if result.get("schema") == "perc1.owned-encoding.v1":
+        if result.get("schema") in ("perc1.owned-encoding.v1", "perc1.owned-encoding.v2"):
             decode_native_wire(result)
             tokens = result["producer"]["observation"]["latents"]
             require(
