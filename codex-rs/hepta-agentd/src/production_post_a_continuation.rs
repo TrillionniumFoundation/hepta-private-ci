@@ -63,7 +63,7 @@ impl OriginalPostAContinuationV1 {
     ) -> Result<Self, AgentdError> {
         post_a_remaining(original.end)?;
         original.trust.require_original_receipt(&original.receipt)?;
-        original.publication.require_current()?;
+        OriginalPreparedPublicationRoute::require_current(&original.publication)?;
         Ok(Self { original })
     }
 
@@ -84,7 +84,7 @@ impl OriginalPostAContinuationV1 {
         self.original
             .trust
             .require_original_receipt(&self.original.receipt)?;
-        self.original.publication.require_current()?;
+        OriginalPreparedPublicationRoute::require_current(&self.original.publication)?;
         post_a_remaining(self.original.end)?;
         Ok(())
     }
@@ -177,12 +177,14 @@ impl OriginalPostAContinuationV1 {
         } = original;
         artifact_custody.require_original()?;
         task_custody.require_original()?;
-        publication.require_current()?;
+        OriginalPreparedPublicationRoute::require_current(&publication)?;
         require_continuation(&state, &identity, &cancelled, end)?;
         // Only canonical target data and an already verified independent
         // signature are committed. Root still performs its own enrollment.
-        let material = material.commit_original_material(&target_data, &signed)?;
-        let (handoff, connection, original_end) = publication.into_original_connection()?;
+        let material =
+            OriginalMaterialWriter::commit_original_material(material, &target_data, &signed)?;
+        let (handoff, connection, original_end) =
+            OriginalPreparedPublicationRoute::into_original_connection(publication)?;
         if original_end != end {
             return Err(refused("original publication and continuation ends differ"));
         }

@@ -6,6 +6,7 @@ use super::*;
 use crate::CellQ24DatasetFreezePreparationV1;
 use crate::CellQ24DatasetTaskV1;
 use crate::learning_iteration::historical_source::RegisteredHistoricalLearningSourceV1;
+use crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute;
 use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;
 use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1;
 use crate::root_historical_task_read_client::OriginalPostAFrozenLearningAckV1;
@@ -120,19 +121,18 @@ impl AgentdProductionLaunch {
         self.q24_model = Some(model);
         self.publication = Some(publication);
         let authorities = OriginalHistoricalLearningTrustV1::original_stage_authorities(&trust)?;
-        let generation = data
-            .continuation
-            .generation
-            .open_original(&mut files, &authorities)?;
+        let generation = generation::GenerationFilesData::open_original(
+            data.continuation.generation,
+            &mut files,
+            &authorities,
+        )?;
         let artifacts = artifacts::OriginalArtifactPlan::open_original(
             data.continuation.artifacts,
             &mut files,
             self.session_end,
         )?;
-        let task = data
-            .continuation
-            .task
-            .open_original(&mut files, self.session_end)?;
+        let task =
+            c_task::CTaskData::open_original(data.continuation.task, &mut files, self.session_end)?;
         // Retain one tracker from the baseline through every signing/journal
         // file, including dispatch. Earlier writer/read aliases are refused.
         let delivery = owners::JournalData::open(
@@ -190,12 +190,13 @@ impl AgentdProductionLaunch {
             &mut files,
             self.session_end,
         )?;
-        let final_use = publication.with_original_data(|fixed| {
-            Ok(Arc::new(match fixed.inputs.consumer {
-                crate::RootPublicationFinalUseConsumerV1::Device => self.root.device.clone(),
-                crate::RootPublicationFinalUseConsumerV1::Notes => self.root.notes.clone(),
-            }))
-        })?;
+        let final_use =
+            OriginalPreparedPublicationRoute::with_original_data(&publication, |fixed| {
+                Ok(Arc::new(match fixed.inputs.consumer {
+                    crate::RootPublicationFinalUseConsumerV1::Device => self.root.device.clone(),
+                    crate::RootPublicationFinalUseConsumerV1::Notes => self.root.notes.clone(),
+                }))
+            })?;
         let continuation = OriginalPostAContinuationV1::from_original_inputs(
             continuation::OriginalContinuationInputs {
                 source,

@@ -24,7 +24,9 @@ SESSION = A + "authority_host_generation_publication_session.rs"
 POST_A = A + "authority_host_post_a_learning.rs"
 REFUSAL = A + "authority_host_publication_refusal.rs"
 CALLERS = {
-    "root_publication_fixed_version": (OWNER, SERVER, CLIENT, INPUTS, REFUSAL),
+    "root_publication_fixed_version": (OWNER, SERVER, CLIENT, INPUTS, REFUSAL,
+                                       A + "authority_host_publication_bootstrap.rs",
+                                       A + "root_publication_preparation.rs"),
     "root_publication_reserved_origin": (ENROLL,),
     "root_publication_reserved_version": (ENROLL, REFUSAL),
     "root_publication_current_live_profile": (ENROLL, OWNER),
@@ -166,7 +168,7 @@ class PublicationV2SourceTests(unittest.TestCase):
         self.check(CLIENT, "exchange", ("response.schema != self.version.schema()", "response.purpose != self.version.purpose()", "response.profile != self.profile"))
 
     def test_only_original_sealed_route_selects_v2(self):
-        self.check(INPUTS, "connect_until", ("PublicationVersion::from_purpose(&bundle.purpose)?", ".join(version.socket())", "bundle.root != original.root", "bundle.consumer != original.consumer"))
+        self.check(INPUTS, "read_original_route", ("PublicationVersion::from_purpose(&bundle.purpose)?", ".join(version.socket())", "bundle.root != original.root", "bundle.consumer != original.consumer"))
         self.check(PREPARE, "prepare_original_publication_route", ("purpose: version.purpose()", ".join(version.socket())", "let runtime = PublicationRuntime", "version,"))
         self.reject(SESSION, "enable_generation_publication", "PublicationVersion::LegacyV1")
         self.reject(POST_A, "prepare_original_installation", "PublicationVersion::DurableV2")
