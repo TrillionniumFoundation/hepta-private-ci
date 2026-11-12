@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.utility.e8.provider-fixture-inclusive-expiry-preparation.v1",
+  "status": "prepared_not_executed",
+  "baseline_commits": [
+    "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "b29869e856d08db1bfb066116a9c443376ccc57d"
+  ],
+  "baseline_files_identical": true,
+  "diagnosis": "Static fixture precondition correction only. The original verifier is inclusive at expires_at. The expired-window attack must set its explicitly controlled fixture clock to checked expires_at + 1. The actual 60-second timeout has no internal progress/backtrace; this change is not identified as that timeout's cause or an observed pass.",
+  "invariants": [
+    "Original Training evidence and its signature remain byte-identical.",
+    "Original expected Evidence refusal and subsequent Indeterminate assertion remain unchanged.",
+    "Original envelope deadline, 60-second test budget, all six scenarios and their real Source executions remain unchanged.",
+    "Impossible fixture overflow is reported explicitly; no saturating or wrapped clock substitutes for an expired time."
+  ],
+  "file": {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+    "baseline": {
+      "bytes": 15931,
+      "sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+      "git_blob_sha": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908"
+    },
+    "postimage": {
+      "bytes": 16108,
+      "sha256": "3d1913855e7c0b37ccf1d2f6414e5ea5670025524381b2ea26bf311d4121a89c",
+      "git_blob_sha": "a42826fa67ed1c598916c3bd9046dfd255e64280"
+    }
+  },
+  "related_preparations": [
+    "e067b1caef01b5109b794f75ac486979dd85b1f4",
+    "304f8003b76902d37f88086a81ccd9b12778b0a9"
+  ],
+  "tests_started": false,
+  "source_worktrees_modified": false,
+  "refs_modified": false
+}

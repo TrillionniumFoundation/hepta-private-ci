@@ -1,0 +1,358 @@
+{
+  "schema": "hepta.utility.e8.nonstack-focused-readonly-source-audit.v1",
+  "status": "source_review_and_prepared_fixture_changes_only",
+  "source": {
+    "e8": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "upstream_tree": "906546af39b07474f0b9d046a6e780b6d3342743"
+  },
+  "original_evidence": {
+    "junit_blob": "5bf99b42559ae02bd2da7ef067e87098dd247482",
+    "classification_blob": "96c93e6a1d89947f62416d289a248f5c5083bf11",
+    "raw_gzip_base64_blob": "c059bc4eba76acb39d3a6d8d8ffdb759b629d9e8",
+    "raw_sha256": "062780dad91c3a372599abc631625924457c772edcb389923660d1b7be141e5a",
+    "raw_bytes": 127348,
+    "junit_sha256": "9de2008f972854cc61a89036a586e0c1323af1485a2f124d5daadede5a68c413",
+    "junit_bytes": 45453,
+    "raw_and_junit_sha256_independently_verified": true
+  },
+  "focus": [
+    {
+      "id": "unsorted_source_policy",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "seconds": 15.254,
+      "original_junit_body": "\n            <failure message=\"Error: Circuit task Cell: Cell(IncompleteCandidates)\" type=\"test failure with exit code 101\">Error: Circuit task Cell: Cell(IncompleteCandidates)\n\nCaused by:\n    Cell(IncompleteCandidates)</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 15.23s\n\n</system-out>\n            <system-err>Error: Circuit task Cell: Cell(IncompleteCandidates)\n\nCaused by:\n    Cell(IncompleteCandidates)\n</system-err>\n        ",
+      "classification": "statically_proven_fixture_binding_error",
+      "status": "minimal_fixture_postimage_prepared_not_executed",
+      "facts": [
+        "The test changes only input.candidates to descending ID order.",
+        "The real task helper freezes the original definition order a,b,abstain.",
+        "The production Cell compares input and definition candidate IDs positionally and returns IncompleteCandidates before any provider publication can be completed."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+          "lines": "164-173,203-212"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+          "blob": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+          "lines": "19-26,36-58"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+          "blob": "5428558e44bb9ee3116ac1d0ab372d2d74e4f93b",
+          "lines": "96-112"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/cell.rs",
+          "blob": "7f99ec906d3102582e4a9ba4ea6353b56a69d82b",
+          "lines": "84-94"
+        }
+      ],
+      "preparation_manifest": "304f8003b76902d37f88086a81ccd9b12778b0a9",
+      "remaining": "Actual repaired execution is not performed; this is not a passed case."
+    },
+    {
+      "id": "selector_expiry",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+      "seconds": 17.175,
+      "original_junit_body": "\n            <failure message=\"thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5\" type=\"test failure with exit code 101\">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5:\nassertion failed: client.execute_selection().await.is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 17.16s\n\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5:\nassertion failed: client.execute_selection().await.is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        ",
+      "classification": "statically_proven_fixture_time_precondition_error",
+      "status": "minimal_fixture_postimage_prepared_not_executed",
+      "facts": [
+        "The original verifier rejects now > expires_at and permits equality.",
+        "The old whole remaining seconds plus 100ms does not ensure now > expires_at.",
+        "Both the command client and owner service authenticate at current time; no missing production expiry check was found along this path."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+          "blob": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b",
+          "lines": "391-409"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "blob": "15e500215e19d8ee1603535418a1be5cfbb0f353",
+          "lines": "136-174,388-411"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "blob": "b31049c9f9eea5cdd6242c765aedf4db85b253ac",
+          "lines": "177-198"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+          "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+          "lines": "273-310"
+        }
+      ],
+      "preparation_manifest": "e067b1caef01b5109b794f75ac486979dd85b1f4",
+      "remaining": "The original failed execution did not record its exact wall-clock sample; only the incorrect fixture precondition is statically established."
+    },
+    {
+      "id": "next_use_expiry",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+      "seconds": 18.965,
+      "original_junit_body": "\n            <failure message=\"Error: original C Observer transport: InvalidRequest\" type=\"test failure with exit code 101\">Error: original C Observer transport: InvalidRequest\n\nCaused by:\n    InvalidRequest</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 18.94s\n\n</system-out>\n            <system-err>Error: original C Observer transport: InvalidRequest\n\nCaused by:\n    InvalidRequest\n</system-err>\n        ",
+      "classification": "fixture_time_precondition_proven_original_InvalidRequest_cause_unknown",
+      "status": "same_boundary_prepared_actual_error_cause_unknown",
+      "facts": [
+        "The same inclusive-boundary error exists in this fixture's sleep.",
+        "The failing execute and following readback errors are consumed by assertions; finish_observer later propagates the command server result through join()??.",
+        "The command client removes the channel then authenticates before dispatch. The server authenticates both before and after original owner work, mapping callback errors to InvalidRequest.",
+        "A request admitted during the inclusive expiry second and rejected at a later server authentication is consistent with the original message, but raw output has no clock samples or stack proving that route."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+          "blob": "191a74d44cfda509b24919a89144a93ec90b4f70",
+          "lines": "145-152,495-516"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "blob": "f3e2359b83e9b88d8a4cd2751629bda29d7ca7fa",
+          "lines": "400-458"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "blob": "01b1f7d02600b16eba09c581e1dab831b7c9e248",
+          "lines": "178-217"
+        }
+      ],
+      "preparation_manifest": "e067b1caef01b5109b794f75ac486979dd85b1f4",
+      "remaining": "Keep original InvalidRequest as an actual failure. Do not change expected join count or swallow the server error."
+    },
+    {
+      "id": "next_use_withdrawal",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "seconds": 11.038,
+      "original_junit_body": "\n            <failure message=\"Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)\" type=\"test failure with exit code 101\">Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 11.01s\n\n</system-out>\n            <system-err>Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)\n</system-err>\n        ",
+      "classification": "underlying_readback_failure_unknown",
+      "status": "no_source_fix_justified_yet",
+      "facts": [
+        "A positive original C evidence readback is required at lines398-399 before actual version withdrawal at line402.",
+        "OwnerUnavailable is a shared mapping for consumed/contended channel, failed transport, response correlation, or lifetime checks. It does not identify missing permissions or an actual withdrawal verdict.",
+        "The original evidence client and server both retain 500ms exchange bounds. The server rereads the original C owner, which in turn reads actual Published, Trainer and Selector owners.",
+        "ObserverService::finish drops its owner before joining its Published/Selector/Trainer peers; CompletionFixture::finish subsequently finishes the Selector and stops the task session. No definite teardown cycle was found in those explicit ownership edges."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+          "blob": "191a74d44cfda509b24919a89144a93ec90b4f70",
+          "lines": "98-141,384-425"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+          "blob": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+          "lines": "116-141"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+          "blob": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+          "lines": "34-84"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+          "blob": "7cc094eca0b5f2a9593d9d0b47f5e1dda1709b4e",
+          "lines": "193-276"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+          "blob": "9d3d24bd5104be99372c8a55859360e792120605",
+          "lines": "128-178"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+          "blob": "bcda45ed43fc82f732c8d55c07047f3fb6e703f8",
+          "lines": "373-472"
+        }
+      ],
+      "remaining": "The raw contains no inner server error or failed operation duration. Do not increase the 500ms bound, return cached evidence, or count the withdrawal assertion as reached."
+    },
+    {
+      "id": "deep_readonly",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "seconds": 60.01,
+      "original_junit_body": "\n            <failure type=\"test timeout\"/>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err></system-err>\n        ",
+      "classification": "timeout_location_and_cause_unknown",
+      "status": "no_source_fix_justified_yet",
+      "facts": [
+        "The original raw has only running1test and a 60.010s timeout; it has no internal progress marker or stack.",
+        "The fixture binds original Material/Trainer channels before completion; C uses its already enrolled observer at the first material setup.",
+        "Successful-path release order closes command clients and C owners before peer joins, then the Selector owner before its peers, then the retained Trainer before the four Material peers.",
+        "The fixture explicitly uses multi_thread with four workers. The readback chain remains real and includes expected 20 Trainer reads and 6 Selector reads, with final material-read lower bound>=80 and upper bounds<128. Those are assertions/expected work, not observed counts in this timeout.",
+        "A related post-commit fencing case passed in33.577s in the same original run. That fact does not qualify the timed-out deeper case."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+          "blob": "218cbb06e2e078be28f48d2019cc901aee478499",
+          "lines": "24-61,63-85,112-242"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+          "blob": "212bdf2a13005c2f9281e1772b225e508bc39d9b",
+          "lines": "128-140,165-244,493-539"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+          "blob": "4a46b73bb8200bd61a6eb43a6338f3695d80ee04",
+          "lines": "23-48"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+          "blob": "f8cb73a2b9f87e1c866e74771ba10678ef168f90",
+          "lines": "24-71"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "blob": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+          "lines": "26-51"
+        }
+      ],
+      "remaining": "Need a bounded original-binary stack/progress observation before changing ownership or optimizing calls. No proof yet that the timeout is a join deadlock or simply accumulated work."
+    },
+    {
+      "id": "provider_withdrawal_corruption",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "seconds": 60.015,
+      "original_junit_body": "\n            <failure type=\"test timeout\"/>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err></system-err>\n        ",
+      "classification": "timeout_location_and_cause_unknown",
+      "status": "no_source_fix_justified_yet",
+      "facts": [
+        "Four mutation iterations plus two release/read-only modes each populate a fresh complete B cohort.",
+        "Each population executes3 history tasks plus2 behavior/candidate pairs:7 actual Circuit/Cell/source executions,42 across the six scenarios.",
+        "The positive two-cohort provider case passed in50.401s in the same original run; that is workload context, not a causal timing model.",
+        "Original PositiveFixture::finish stops the task session, drops the source-bound stage, then joins the two source peers. Raw does not identify whether this teardown was reached."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+          "lines": "146-256"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+          "lines": "149-261,279-318"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "blob": "d00c554d5309825656fb4b0771b3915f096f3829",
+          "lines": "661-669"
+        }
+      ],
+      "remaining": "Do not split the test or raise its60s limit without an observed progress/stack location excluding deadlock and unintended regression."
+    },
+    {
+      "id": "provider_missing_outcomes",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "seconds": 60.01,
+      "original_junit_body": "\n            <failure type=\"test timeout\"/>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err></system-err>\n        ",
+      "classification": "timeout_location_unknown_with_additional_static_fixture_boundary_error",
+      "status": "expired_window_precondition_prepared_other_cause_unknown",
+      "facts": [
+        "Two outcome variants, three signature/window variants and one zero-support variant each populate7 actual tasks:42 actual Circuit/Cell/source executions.",
+        "The expired-window variant sets the controlled fixture clock to exactly training_evidence.expires_at but expects Evidence refusal; equality remains valid in the original verifier.",
+        "A checked+1 fixture-clock postimage is prepared. The original signatures, expected Evidence/Indeterminate errors, all scenarios, original envelope deadline and60s budget remain unchanged.",
+        "The raw does not prove that the expired-window branch was reached before the observed60.010s timeout."
+      ],
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+          "lines": "260-363"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_binding.rs",
+          "blob": "0d310d05284e53c7fab6b2099945b2c88a4821fc",
+          "lines": "65-106"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+          "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+          "lines": "273-310"
+        }
+      ],
+      "preparation_manifest": "136d5d7a66b378062fda63bc563a1edbc9ef2cb2",
+      "remaining": "Boundary correction is not an explanation of the actual timeout. No splitting, timeout change or source bypass is prepared."
+    }
+  ],
+  "prepared_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "baseline": {
+        "bytes": 15632,
+        "sha256": "1e88352e7772386890d722077d42fdbcd44b96cec0e6ceb58c4223959464d1d0",
+        "git_blob_sha": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b"
+      },
+      "postimage": {
+        "bytes": 15662,
+        "sha256": "d39c3b7c7410f856a739d5885d0d6809b44bfc4d26ee072bcdd34d6af0f3cd85",
+        "git_blob_sha": "84ed0652816f53dfe62e9e74f4c3943a0b752d6e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "baseline": {
+        "bytes": 19866,
+        "sha256": "c4c61e035f641cd2715af7ee074c46176bfd5c4003f25e7be812c17ec79eb894",
+        "git_blob_sha": "191a74d44cfda509b24919a89144a93ec90b4f70"
+      },
+      "postimage": {
+        "bytes": 19896,
+        "sha256": "81cbd49fbe8eabe5b92f239723f481babfdc637e77f971c3416ec8366711322f",
+        "git_blob_sha": "5c1958b2ab3e8d552a0d82d1a6f0e8ec059f2cae"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "baseline": {
+        "bytes": 3082,
+        "sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4",
+        "git_blob_sha": "bcb42c2d31f06a306d0cb3c4032494621b45e69a"
+      },
+      "postimage": {
+        "bytes": 3947,
+        "sha256": "2cac970b354bbf3577eb1d6e62bd676dcc54c25e7f6f64eb1192cff4b28aa146",
+        "git_blob_sha": "9505db2dcf4d62cc1b80d586f88a8a3c3c5a2749"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "baseline": {
+        "bytes": 15931,
+        "sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+        "git_blob_sha": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908"
+      },
+      "postimage": {
+        "bytes": 16108,
+        "sha256": "3d1913855e7c0b37ccf1d2f6414e5ea5670025524381b2ea26bf311d4121a89c",
+        "git_blob_sha": "a42826fa67ed1c598916c3bd9046dfd255e64280"
+      }
+    }
+  ],
+  "upstream_comparison": {
+    "all_seven_test_bodies_identical": true,
+    "hepta_neuron_tree_unchanged": true,
+    "hepta_learning_ledger_tree_unchanged": true,
+    "command_service_evidence_files_read_unchanged": true,
+    "receipt_owners_changed": "b298 adds evaluated profiles; inspected original constructors continue to use TrainingNoUpdate. Independent evaluation_audit also reviewed preservation of the original NoUpdate remote predecessor/current/signature chain. This is a source-boundary result, not behavioral qualification.",
+    "model_fixture_observer_change": "The new pre-signature observer in PositiveFixture applies to RetainOriginalA; these3provider tests use preregistered AdoptCandidate, deep has its own correctly enrolled material observer, and legacy NextUse uses a separate ObserverFixture. Do not infer these7failures fixed by that upstream change.",
+    "deep_support_change": "The read support import changes to the canonical original_material_bootstrap_test_ports alias; no test behavior is inferred from this alias change."
+  },
+  "constraints": {
+    "cargo_started": false,
+    "h_tests_started": false,
+    "source_worktrees_modified": false,
+    "refs_modified": false,
+    "timeout_increases": false,
+    "assertions_weakened": false,
+    "authority_or_production_visibility_widened": false,
+    "actual_A_B_C_qualification": false
+  },
+  "next_evidence": "Root/native may collect bounded stack/progress on the original immutable binary under original limits. Retain first-failure server and client details separately. For timeouts, locate population/readback/join before any splitting or performance change. These recommendations are not a dispatched test."
+}

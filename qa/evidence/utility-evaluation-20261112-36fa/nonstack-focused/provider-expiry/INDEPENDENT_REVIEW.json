@@ -1,0 +1,20 @@
+{
+  "schema": "hepta-independent-provider-expiry-fixture-review-v1",
+  "source_commits": [
+    "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "b29869e856d08db1bfb066116a9c443376ccc57d"
+  ],
+  "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+  "before_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+  "after_blob": "a42826fa67ed1c598916c3bd9046dfd255e64280",
+  "exact_change": "Only controlled fixture clock assigned checked original expiry plus one; complete remaining bytes unchanged.",
+  "reason": "Original signed-evidence verification rejects now > expiry and accepts equality. The existing expired-window scenario requires an actually expired fixture clock.",
+  "unchanged": [
+    "original signed evidence and signature",
+    "Evidence and Indeterminate assertions",
+    "all six scenarios and 42 source executions",
+    "envelope deadline",
+    "60-second test budget"
+  ],
+  "claim_limit": "Prepared, not executed. Not a proven cause of the historical timeout."
+}

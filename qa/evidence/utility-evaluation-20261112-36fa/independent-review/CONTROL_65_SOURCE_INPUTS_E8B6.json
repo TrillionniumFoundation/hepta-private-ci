@@ -1,0 +1,60 @@
+{
+  "source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "before_blob": "c6f747e07194c972d6ed80a57163fadbdc004cf3",
+  "after_blob": "69bdf171d8e173bdcf7fb6aa9181eb1c577fc2ce",
+  "files": 65,
+  "changed": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "before": {
+        "blob": "97d6c9cbc151cb5373ca900a7915f8f38ff941aa",
+        "bytes": 40741,
+        "mode": "100644",
+        "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+        "sha256": "12d566a0dc2f7f658db30b7ff39699e956722bd3a63c5539ef932c771b29ec95"
+      },
+      "after": {
+        "blob": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+        "bytes": 40523,
+        "mode": "100644",
+        "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+        "sha256": "147e5d80a5efc4587c67de53b65fd1b42c52841907e2ed5b0439c46cf65daa7c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "before": {
+        "blob": "124be43c3440b99cb9b6f6d0e30d25ffbb533352",
+        "bytes": 16039,
+        "mode": "100644",
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "sha256": "ab3ed5f9ca91763563e64e8db5594c97b703f337cc446f68320aedea2330cf7b"
+      },
+      "after": {
+        "blob": "f95462aab649ccd650e47976b44bba6300a77701",
+        "bytes": 15908,
+        "mode": "100644",
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "sha256": "49ddfa6ec5bf3211ddcc4bbf438525897c138b05e8271b5d4fc0acbd840c3421"
+      }
+    }
+  ],
+  "new_tests_unchanged": [
+    {
+      "blob": "af1c2da4aa90588a69f6d9024eeebc7c2b48a7d8",
+      "bytes": 5739,
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs",
+      "sha256": "3228f6cf68825999c167eda4e4f2ac8490962df4cde678f34299bc6872967e75"
+    },
+    {
+      "blob": "9aca5525097bfb25cc1062ca8f8eb72b0a5b3a23",
+      "bytes": 1425,
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs",
+      "sha256": "78c622f3f908f9044154de19ba03d19df1645971e4d9361d0f2731e6e3def9d8"
+    }
+  ],
+  "actual_patch": "777087ab8fd45c1b3c409b7c40fbadcb4f840b76",
+  "scope": "Actual before/after input lists and production-only diff, paired with the actual e8 control RESULT and fresh XML. The prepared control manifest retains its earlier 19aa provenance; it is not used to relabel the executed source."
+}

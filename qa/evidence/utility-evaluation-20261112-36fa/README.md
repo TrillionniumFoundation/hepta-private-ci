@@ -1,6 +1,6 @@
 # Utility evaluation evidence — exact e8 failures preserved
 
-Checkpoint: 2026-11-12 10:46 UTC. Source candidate: `e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd`, tree `b607ff5f50812c5e0f932d7dae18d4c74f1269cb`. This branch carries evidence separately from source PR #6203.
+Checkpoint: 2026-11-12 10:58 UTC. Source candidate: `e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd`, tree `b607ff5f50812c5e0f932d7dae18d4c74f1269cb`. This branch carries evidence separately from source PR #6203.
 
 ## Current conclusion
 
@@ -27,7 +27,7 @@ Checkpoint: 2026-11-12 10:46 UTC. Source candidate: `e8b6fe2aa55b4fdcfe8d9c15ea8
 - [Native terminal result](native-e8b6fe2a-v1/RESULT.json) and [focused failure details](native-e8b6fe2a-v1/focused/FAILURE_OBSERVATION.json).
 - [Original focused JUnit](native-e8b6fe2a-v1/focused/junit.xml) and [full original focused raw output, gzip](native-e8b6fe2a-v1/focused/focused.raw.log.gz).
 - [Original helper archive](native-e8b6fe2a-v1/focused/helpers-evidence.tar.gz), including actual Cargo output, environment/manifest and helper binary. A UTF-8 base64 companion allows exact restoration through text-only transports.
-- [Original old-comparator control result](countercontrol-e8b6fe2a-v1/RESULT.json) and [fresh control JUnit](countercontrol-e8b6fe2a-v1/junit.xml). Additional control raw/source records are still being attached; no unavailable file is represented as already attached.
+- [Original old-comparator control result](countercontrol-e8b6fe2a-v1/RESULT.json) and [fresh control JUnit](countercontrol-e8b6fe2a-v1/junit.xml). The full original control raw, actual two-file patch and all 65 before/after source inputs are attached. The earlier prepared manifest retains its original 19aa provenance; the actual RESULT and source inventories bind this execution to e8.
 - [Independent full focused/control XML review](independent-review/FOCUSED_AND_CONTROL_FRESH_JUNIT_E8B6.json).
 - [Canonical e8 alignment inventory reconstruction](canonical-e8b6fe2a-alignment-v1/ROOT_RECONSTRUCTION_REVIEW.json), including original gzip parts and full byte/hash verification.
 - [Fixed-b298 semantic merge review](integration-b298/SEMANTIC_MERGE_REVIEW.json).
@@ -35,6 +35,14 @@ Checkpoint: 2026-11-12 10:46 UTC. Source candidate: `e8b6fe2aa55b4fdcfe8d9c15ea8
 - [GitHub CI observation and cached-base retraction](github-ci/E8B6_OBSERVATION_20261112T102012Z.json).
 - [Exact e8 ordinary integration audit](ORDINARY_INTEGRATION_ADDENDUM_E8B6.md), whose source-specific claims remain at e8.
 - [Historical 103-file checkpoint README](checkpoints/README_103FILES_E8B6_RUNNING.md), preserving the earlier in-progress observation.
+
+## Additional unexecuted preparation
+
+[The seven-case non-stack source audit](nonstack-focused/e8-source-audit.json) preserves the original failures, source identities and unresolved causes. Independent review confirms four fixture postimages: two command waits cross the verifier's inclusive expiry second, one controlled provider clock uses checked expiry plus one, and one original task fixture bijectively aligns whole candidate definitions with immutable source order before signing/freezing. Production checks, signatures, assertions and deadlines are unchanged. These are prepared fixes, not observed native passes; the provider timeout and NextUse transport causes remain unproved.
+
+[Readback caller preparation v1](readback-caller-preparation-v1/REVIEW.md) audits the real original owner/custody chain. Its six exact member additions and three protected rows preserve all prior boundary rows and all 95 original functions across nine QA modules. The local three-row check is a subset diagnostic only; the complete-source four-boundary diagnostic remains pending. A v2 is being prepared to additionally protect both new retention guards, including one previously unprotected model-material file.
+
+[The fixed-b298 Rust overlay](diagnostic-preparation-fixed-b298/RUST_OVERLAY_MANIFEST.json) contains 25 exact in-memory replacements/additions over the complete e8 Rust source set, including seven new files. It is a diagnostic projection with no published source-tree identity. The physical frozen clone must remain unchanged, and the eventual complete gate will run independently on the final source head.
 
 ## Source closure and retention preparation limits
 

@@ -1,0 +1,655 @@
+{
+  "base_source": {
+    "commit": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "eval_crate_path": "codex-rs/hepta-intelligence-eval",
+    "eval_crate_tree": "3a1254868e95319776765f776eec640df26329e5",
+    "root_tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
+    "source_method": "Fetch immutable GitHub raw files at the full commit SHA; compute Git blob SHA-1 and SHA256 of exact UTF-8 bytes; verify base and retained test identities against the complete recursive eval-crate tree.",
+    "tree_response_truncated": false
+  },
+  "format": "hepta-eval-precedence-counterexample-preparation-v1",
+  "frozen_eval_crate_blobs": [
+    {
+      "bytes": 379,
+      "git_blob_sha1": "00cad2eb43efd60911ccc04c16e65b4f8f66942c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/BUILD.bazel",
+      "type": "blob"
+    },
+    {
+      "bytes": 907,
+      "git_blob_sha1": "0860efdb74b678dd257f4c0bf199a4e002d99daf",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+      "type": "blob"
+    },
+    {
+      "bytes": 9828,
+      "git_blob_sha1": "f01a20790c46ffc298c4923bc66b38648083524c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md",
+      "type": "blob"
+    },
+    {
+      "bytes": 7949,
+      "git_blob_sha1": "caf5d438e7c261a12537fccc09806ec59fc61b42",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+      "type": "blob"
+    },
+    {
+      "bytes": 8100,
+      "git_blob_sha1": "61dc8e12c11f8010144f0dc13f8fe12ba45edf9e",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+      "type": "blob"
+    },
+    {
+      "bytes": 40741,
+      "git_blob_sha1": "97d6c9cbc151cb5373ca900a7915f8f38ff941aa",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 5739,
+      "git_blob_sha1": "af1c2da4aa90588a69f6d9024eeebc7c2b48a7d8",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 29551,
+      "git_blob_sha1": "d276b6ca7197a3c445b358da66d9dddd921610b5",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 12794,
+      "git_blob_sha1": "a8e58eb73cf7154b1d5dd53755b612e58aaf2676",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/durable_holdout.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 14732,
+      "git_blob_sha1": "44d7ac7bdd22bdc0369a6c4418f26ef45b776e60",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/durable_holdout_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 15088,
+      "git_blob_sha1": "84a2b720d165bdc150838ed78fdcc13847bae9e2",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 3607,
+      "git_blob_sha1": "3364215b4e37deec4dd8bb991a9d3c873bf0e8de",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_current.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 9665,
+      "git_blob_sha1": "9d751e82e448f1dadc953f8451948b327e25e50c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_current_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 16941,
+      "git_blob_sha1": "2e8c32590358fb744a74b874b30a821c23434cff",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 12622,
+      "git_blob_sha1": "c0ef87c8f7611ca69278e3eb364c43ab66d4ca2e",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 7756,
+      "git_blob_sha1": "29b2b5c4797a9b133184cfc6dbb39572ee0afb1a",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 3732,
+      "git_blob_sha1": "6711d44c843b546f01ffd71a59922d3585819442",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/holdout_codec.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 14227,
+      "git_blob_sha1": "b3e31e5bdc0dbf88b3bc3f1321fbe54b0e136bc2",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/holdout_journal.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 1425,
+      "git_blob_sha1": "9aca5525097bfb25cc1062ca8f8eb72b0a5b3a23",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 16039,
+      "git_blob_sha1": "124be43c3440b99cb9b6f6d0e30d25ffbb533352",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 4861,
+      "git_blob_sha1": "fa1c1d96b416dbff3bc8cefdfd4568db402bc095",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 8146,
+      "git_blob_sha1": "a75053280ae55e6329eab4276034cbfebb8d23b3",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 10499,
+      "git_blob_sha1": "320fc29a80cf7ea0caa0f1bdf661136b55bcf7b6",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 7419,
+      "git_blob_sha1": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 12235,
+      "git_blob_sha1": "c5023f93dab8e088f7bf2e538a6871beeb364044",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 6468,
+      "git_blob_sha1": "4ae1276e48f210c7efc3ded9eff50e96f3f98a71",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 11281,
+      "git_blob_sha1": "3ef3912f90219066605405e8fa0b1da69166755c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 7089,
+      "git_blob_sha1": "a1666d2c3fea0d7c276483b3775f1f0d95d18da7",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 13021,
+      "git_blob_sha1": "52fb8b882012f2561c65a95639a63da8e2c12ff4",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 12355,
+      "git_blob_sha1": "be7f0e9ccd6ce2fed3fa635bb018cf70d62df75c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 8143,
+      "git_blob_sha1": "9ad6a332b3e129802ce34914eb3dee08e76815b4",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 10526,
+      "git_blob_sha1": "33a2103036a6c92ce9154e99d10d395dd058422b",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/ope_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 13500,
+      "git_blob_sha1": "96c1d265345551a389934657051158d47e8959d5",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 12154,
+      "git_blob_sha1": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 3813,
+      "git_blob_sha1": "d50bd0b02754d203824227b871036503b89e4a19",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 6544,
+      "git_blob_sha1": "c0ce2dba64d383899b3d24bc23506321e12a1472",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_current_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 4320,
+      "git_blob_sha1": "e45ea376e59b6a2da14cfa0e6b65e0fcbd2c2813",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_evidence.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 4920,
+      "git_blob_sha1": "c40f5c1fa989c35f173a06591d2221225a8d097e",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_evidence_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 15155,
+      "git_blob_sha1": "38241d599afe14815efea41cdf56d13668983d25",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 10448,
+      "git_blob_sha1": "5858602fea3adad6ca0f34987e924bc6f9d53407",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 11664,
+      "git_blob_sha1": "6bf6fc11b486e503e6a4b3ea3a4ab7c78a7444d5",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_holdout_current_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 8572,
+      "git_blob_sha1": "4fa852294184e36d44c14664ceef8cd181f1be98",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_process_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 2249,
+      "git_blob_sha1": "207f400f73577860f8fabdc8af7b4f28a042c9d1",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 19185,
+      "git_blob_sha1": "b03f2983a4c026958c850bb029599daba9ead1c7",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 4083,
+      "git_blob_sha1": "3629d278c28a18a103226c112c4d3f2ab3bec06c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 3413,
+      "git_blob_sha1": "f904dc721859f2d44f67b955c532298d03360e87",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 39047,
+      "git_blob_sha1": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 626,
+      "git_blob_sha1": "36e8aad1e894e5d8aa040d691b3e9636b6c8c7c3",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_file_observation.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 28778,
+      "git_blob_sha1": "8d7abd0e20c18382cc14ddc3546fc94fd9993dc1",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 1403,
+      "git_blob_sha1": "2855d95255b537c3e4d93ca88fe0ab2e0d7a675d",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/qualification_file_observation.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 3152,
+      "git_blob_sha1": "1eb380bae62d419d89f3d5dd29b381e4de8c19b8",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/qualification_file_observation_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 18491,
+      "git_blob_sha1": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 8726,
+      "git_blob_sha1": "f34107486cd303ce1875dc790aeed1439fc0f8c1",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 28577,
+      "git_blob_sha1": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 10613,
+      "git_blob_sha1": "72d41fe1fd6c2710ba7873778d5b74140c89faa4",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 4424,
+      "git_blob_sha1": "b048d3d6d993053c24cc4b0c07091085794b204e",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/sequential_model.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 4990,
+      "git_blob_sha1": "d233e88e01d5d290468f86853cc742a9e26bff06",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/sequential_step.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 17497,
+      "git_blob_sha1": "c151b368187814e6fe44012da40cde2f82118d7a",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 6281,
+      "git_blob_sha1": "35237acc5fa429dcd0eb5e8641a2dad33fa77667",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 8456,
+      "git_blob_sha1": "a0a7a048f5b4b6e49221874cb366fcf0c1729b7c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 11217,
+      "git_blob_sha1": "5225462749ff1e082ddb6597567b00040a656a56",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 10164,
+      "git_blob_sha1": "d88538d5c30a32bebe7fa2e1dd89dbf9a7bdb6a7",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 9214,
+      "git_blob_sha1": "3447e550262f7b85223a90031620a6b95b11dc69",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 6186,
+      "git_blob_sha1": "ab1a7fa2a105e0b0d4deb71eb90666462c309e51",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold_tests.rs",
+      "type": "blob"
+    },
+    {
+      "bytes": 5920,
+      "git_blob_sha1": "35a2f0f995cbafcf197d9dc500e53d65ebad7afd",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/tests/operator_claim.rs",
+      "type": "blob"
+    }
+  ],
+  "historical_execution_limit": {
+    "distinction": "This newly prepared control is not a restoration of historical raw logs, not the old 814bf execution, and not proof of a new run at 19aa or any later source. Equality of the two deliberately regressed production file blobs establishes file content identity only.",
+    "future_result_reporting": "A later run must carry its own exact final-source base, control diff, execution identifier and actual outcomes.",
+    "historical_raw_and_junit": "Unavailable after the old executor filesystem was replaced.",
+    "local_counterexample_commit": "814bf1eb96cd3165667585be2880000b76bea42a"
+  },
+  "historical_logic_source": {
+    "commit": "eabfb55ef388c750725884713c2f1fe9044b334f",
+    "method": "Fetch only the two immutable production files. Replace the unique disposition blocks in 19aa with the historical ordering; verify each complete resulting file is byte-for-byte equal to its corresponding historical file. All remaining final-source files, including every new test, remain at the final-source version."
+  },
+  "modification_contract": {
+    "allowed_change": "In closure.rs::decide_with_metric_contract and gated lib.rs::evaluate, restore failed_metrics-before-insufficient disposition precedence. Remove only the five comments describing the repaired precedence. Preserve all evidence gathering, failure lists, digests, authority posture, gate checks and test registrations.",
+    "allowed_paths": [
+      "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "codex-rs/hepta-intelligence-eval/src/lib.rs"
+    ],
+    "excluded_changes": "No tests, assertions, expected values, fixture data, Cargo files, runtime configuration, permission checks, owner authority, source-PR refs or deployment files may be changed."
+  },
+  "patch": {
+    "bytes": 1847,
+    "full_utf8_readback_equal": true,
+    "git_blob_sha1": "7bad2fbdf7a4552fd84640413247576294c8be15",
+    "saved_blob_sha": "7bad2fbdf7a4552fd84640413247576294c8be15",
+    "sha256": "b0f9b1cc0f1a03aa265a35ee48ae2e677a89a18a71d004ffc8e095184622ccc3",
+    "target_evidence_path": "qa/evidence/utility-evaluation-20261112-36fa/eval/COUNTEREXAMPLE_PRECEDENCE_CONTROL.patch"
+  },
+  "planned_execution": {
+    "cases": [
+      {
+        "entrypoint": "decide_independently_v2 -> decide_with_metric_contract",
+        "first_expected_failure": {
+          "claim_scope": "Qualification",
+          "missing": "metric-support (second metric support_digest = ZERO)",
+          "retained_failed_metrics": [
+            "task-utility"
+          ]
+        },
+        "full_name": "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+        "later_loop_cases_are_not_assumed_executed_after_first_failure": true
+      },
+      {
+        "entrypoint": "decide_independently_v2 -> decide_with_metric_contract",
+        "first_expected_failure": {
+          "missing": "retention_receipt_digests cleared",
+          "retained_failed_metrics": [
+            "resource-cost"
+          ]
+        },
+        "full_name": "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+        "later_loop_cases_are_not_assumed_executed_after_first_failure": true
+      },
+      {
+        "entrypoint": "decide_independently -> decide_with_metric_contract",
+        "first_expected_failure": {
+          "missing": "retention_receipt_digests cleared",
+          "retained_failed_metrics": [
+            "task-utility"
+          ]
+        },
+        "full_name": "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence"
+      },
+      {
+        "entrypoint": "cfg(any(test, feature = trusted-inprocess-eval)) evaluate",
+        "first_expected_failure": {
+          "missing": "latency support_digest = ZERO",
+          "retained_failed_metrics": [
+            "safety"
+          ]
+        },
+        "full_name": "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+      }
+    ],
+    "command_argv": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "--locked",
+      "--offline",
+      "--retries",
+      "0",
+      "-E",
+      "test(incomplete_evidence)"
+    ],
+    "command_contract": "Use the repository's just test runner; do not substitute cargo test. Confirm the selected test names are exactly the four full names below. Record runner/tool versions, source HEAD/tree, environment, original command argv and source hashes before and after.",
+    "evidence_capture": "Preserve a new complete unedited raw log, actual exit code, JUnit, exact selected/executed/failed names, actual assertion mismatches, source-before/source-after identities and timestamps under a new execution identifier. Do not reuse historical filenames or label predictions as observed results.",
+    "expected_behavior_preserved": "Initial complete-positive and complete-negative checks in those methods should still agree with their existing assertions. Known failed_metrics remain present. The closure decisions retain AuthorityPosture::DENY_ALL.",
+    "expected_results": "All four named tests should execute and fail at the first incomplete-evidence comparison: the intentionally regressed comparator returns Ineligible, while the unchanged assertion requires InsufficientEvidence. This is a prediction pending actual execution.",
+    "expected_test_count": 4,
+    "nonqualifying_failures": "Compilation failures, unavailable dependencies, process launch errors, missing test selection, skipped tests, or unrelated assertion failures are not the intended causal result.",
+    "status": "Not executed by this preparation",
+    "working_directory": "codex-rs in the isolated counterexample worktree"
+  },
+  "preflight": {
+    "crate_identity": "Require git rev-parse HEAD:codex-rs/hepta-intelligence-eval to equal 3a1254868e95319776765f776eec640df26329e5. Any final eval-crate change requires a fresh reviewed control; do not apply this preparation by fuzzy match.",
+    "expected_after_apply": "git diff --name-only must contain exactly the two allowed production paths. Their worktree bytes must match production_files[].postimage. All remaining tracked files and every test must remain byte-identical to the frozen final source.",
+    "final_source_commit": "Must be supplied and recorded by the later executor; no final-source execution identity is assigned by this preparation.",
+    "isolated_checkout": "Use a new detached counterexample worktree at the frozen final source commit. Do not use the source-PR branch, the final-source verification worktree, or a worktree with a running job.",
+    "patch_integrity": "Require exact patch byte count, Git blob identity and SHA256 before use. git apply --check must succeed; apply without --3way, reject files, manual conflict resolution or whitespace repair.",
+    "positive_control": "Record a successful execution of the four unchanged named tests on the exact clean final source before interpreting a new regressed-control failure as causal evidence. If no exact positive run exists, report that limitation.",
+    "production_byte_checks": "For both allowed files, require tracked mode, git hash-object --no-filters result, byte length and SHA256 to equal production_files[].base. Check worktree bytes, not only the committed tree.",
+    "required": true,
+    "source_cleanliness": "Before applying, record git rev-parse HEAD and HEAD^{tree}, and require an empty git status --porcelain result.",
+    "test_byte_checks": "Require the four retained test/module-registration files to match unchanged_test_inputs in mode, Git blob identity, byte length and SHA256. Preserve all other eval-crate blobs listed in frozen_eval_crate_blobs."
+  },
+  "preparation_status": {
+    "applied_to_any_worktree": false,
+    "compiled": false,
+    "git_blobs_saved_and_fully_read_back": true,
+    "junit_created": false,
+    "patch_generated": true,
+    "pull_request_changed": false,
+    "raw_test_log_created": false,
+    "ref_created_or_updated": false,
+    "tests_executed": false
+  },
+  "production_files": [
+    {
+      "base": {
+        "bytes": 40741,
+        "git_blob_sha1": "97d6c9cbc151cb5373ca900a7915f8f38ff941aa",
+        "sha256": "12d566a0dc2f7f658db30b7ff39699e956722bd3a63c5539ef932c771b29ec95"
+      },
+      "exact_diff": "--- a/codex-rs/hepta-intelligence-eval/src/closure.rs\n+++ b/codex-rs/hepta-intelligence-eval/src/closure.rs\n@@ -248,13 +248,10 @@\n         }\n     }\n \n-    // A known negative metric does not complete the other evidence gates.\n-    // Retain that negative evidence, but only a complete comparison may become\n-    // Ineligible for downstream use as an evaluated NoUpdate.\n-    let disposition = if insufficient {\n+    let disposition = if !failed_metrics.is_empty() {\n+        IndependentEvaluationDispositionV1::Ineligible\n+    } else if insufficient {\n         IndependentEvaluationDispositionV1::InsufficientEvidence\n-    } else if !failed_metrics.is_empty() {\n-        IndependentEvaluationDispositionV1::Ineligible\n     } else {\n         IndependentEvaluationDispositionV1::EligibleForIndependentSelection\n     };\n",
+      "full_postimage_readback_equal": true,
+      "historical_file_bytes_equal": true,
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "postimage": {
+        "bytes": 40523,
+        "git_blob_sha1": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+        "saved_blob_sha": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+        "sha256": "147e5d80a5efc4587c67de53b65fd1b42c52841907e2ed5b0439c46cf65daa7c"
+      }
+    },
+    {
+      "base": {
+        "bytes": 16039,
+        "git_blob_sha1": "124be43c3440b99cb9b6f6d0e30d25ffbb533352",
+        "sha256": "ab3ed5f9ca91763563e64e8db5594c97b703f337cc446f68320aedea2330cf7b"
+      },
+      "exact_diff": "--- a/codex-rs/hepta-intelligence-eval/src/lib.rs\n+++ b/codex-rs/hepta-intelligence-eval/src/lib.rs\n@@ -320,12 +320,10 @@\n         }\n     }\n \n-    // Compatibility evaluations retain known failures without labeling a\n-    // partial comparison as a complete negative result.\n-    let disposition = if insufficient {\n+    let disposition = if !failed_metrics.is_empty() {\n+        Disposition::Ineligible\n+    } else if insufficient {\n         Disposition::InsufficientEvidence\n-    } else if !failed_metrics.is_empty() {\n-        Disposition::Ineligible\n     } else {\n         Disposition::EligibleForFurtherReview\n     };\n",
+      "full_postimage_readback_equal": true,
+      "historical_file_bytes_equal": true,
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "postimage": {
+        "bytes": 15908,
+        "git_blob_sha1": "f95462aab649ccd650e47976b44bba6300a77701",
+        "saved_blob_sha": "f95462aab649ccd650e47976b44bba6300a77701",
+        "sha256": "49ddfa6ec5bf3211ddcc4bbf438525897c138b05e8271b5d4fc0acbd840c3421"
+      }
+    }
+  ],
+  "purpose": "Prepare an isolated, intentionally regressed causal control for later execution. This is not source-PR code, not a repair, and not execution evidence.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "unchanged_test_inputs": [
+    {
+      "bytes": 5739,
+      "git_blob_sha1": "af1c2da4aa90588a69f6d9024eeebc7c2b48a7d8",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs",
+      "sha256": "3228f6cf68825999c167eda4e4f2ac8490962df4cde678f34299bc6872967e75"
+    },
+    {
+      "bytes": 1425,
+      "git_blob_sha1": "9aca5525097bfb25cc1062ca8f8eb72b0a5b3a23",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs",
+      "sha256": "78c622f3f908f9044154de19ba03d19df1645971e4d9361d0f2731e6e3def9d8"
+    },
+    {
+      "bytes": 29551,
+      "git_blob_sha1": "d276b6ca7197a3c445b358da66d9dddd921610b5",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "sha256": "88a9ea8bf9eb353d6d8603c5600063a9ef24ddb6eb0356c23a2c19df1a77418d"
+    },
+    {
+      "bytes": 4861,
+      "git_blob_sha1": "fa1c1d96b416dbff3bc8cefdfd4568db402bc095",
+      "mode": "100644",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib_tests.rs",
+      "sha256": "18c41108400416b9daa74f23bf36a40c88e5dd70724dcdc3ac22435323e7e124"
+    }
+  ]
+}

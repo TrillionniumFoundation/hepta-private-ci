@@ -1,0 +1,41 @@
+diff --git a/codex-rs/hepta-intelligence-eval/src/closure.rs b/codex-rs/hepta-intelligence-eval/src/closure.rs
+index 97d6c9cbc..f11cfafe1 100644
+--- a/codex-rs/hepta-intelligence-eval/src/closure.rs
++++ b/codex-rs/hepta-intelligence-eval/src/closure.rs
+@@ -248,13 +248,10 @@ fn decide_with_metric_contract(
+         }
+     }
+ 
+-    // A known negative metric does not complete the other evidence gates.
+-    // Retain that negative evidence, but only a complete comparison may become
+-    // Ineligible for downstream use as an evaluated NoUpdate.
+-    let disposition = if insufficient {
+-        IndependentEvaluationDispositionV1::InsufficientEvidence
+-    } else if !failed_metrics.is_empty() {
++    let disposition = if !failed_metrics.is_empty() {
+         IndependentEvaluationDispositionV1::Ineligible
++    } else if insufficient {
++        IndependentEvaluationDispositionV1::InsufficientEvidence
+     } else {
+         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+     };
+diff --git a/codex-rs/hepta-intelligence-eval/src/lib.rs b/codex-rs/hepta-intelligence-eval/src/lib.rs
+index 124be43c3..f95462aab 100644
+--- a/codex-rs/hepta-intelligence-eval/src/lib.rs
++++ b/codex-rs/hepta-intelligence-eval/src/lib.rs
+@@ -320,12 +320,10 @@ fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error>
+         }
+     }
+ 
+-    // Compatibility evaluations retain known failures without labeling a
+-    // partial comparison as a complete negative result.
+-    let disposition = if insufficient {
+-        Disposition::InsufficientEvidence
+-    } else if !failed_metrics.is_empty() {
++    let disposition = if !failed_metrics.is_empty() {
+         Disposition::Ineligible
++    } else if insufficient {
++        Disposition::InsufficientEvidence
+     } else {
+         Disposition::EligibleForFurtherReview
+     };

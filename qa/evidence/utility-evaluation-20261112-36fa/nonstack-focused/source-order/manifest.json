@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.utility.e8.fixture-source-order-preparation.v1",
+  "status": "prepared_not_executed",
+  "baseline_commits": [
+    "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "b29869e856d08db1bfb066116a9c443376ccc57d"
+  ],
+  "baseline_files_identical": true,
+  "scope": "Explicit mechanism fixture only. Bind the entire original candidate definition to the immutable input candidate order before freezing the registry and Cell owner journal.",
+  "cause_chain": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+      "lines": "164-173 and 203-212",
+      "fact": "NonCanonicalOrder deliberately sorts input candidates descending."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+      "blob": "5428558e44bb9ee3116ac1d0ab372d2d74e4f93b",
+      "lines": "96-112",
+      "fact": "The original fixture definition remains ordered a,b,abstain."
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell.rs",
+      "blob": "7f99ec906d3102582e4a9ba4ea6353b56a69d82b",
+      "lines": "84-94",
+      "fact": "The production Cell correctly rejects positional input/definition candidate ID mismatch as IncompleteCandidates."
+    }
+  ],
+  "invariants": [
+    "Input and persisted Source bytes remain untouched.",
+    "Selected identity is fixed before the new reorder.",
+    "Each complete original candidate struct, including activation_index and kind, is moved exactly once.",
+    "Count equality plus removal by exact ID rejects missing, extra, duplicate, or unknown candidates.",
+    "Registry digest and Cell journal freeze happen only after this full matching.",
+    "Production zip check, provider verification, outcome data, assertions, and budgets are unchanged."
+  ],
+  "file": {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+    "baseline": {
+      "bytes": 3082,
+      "sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4",
+      "git_blob_sha": "bcb42c2d31f06a306d0cb3c4032494621b45e69a"
+    },
+    "postimage": {
+      "bytes": 3947,
+      "sha256": "2cac970b354bbf3577eb1d6e62bd676dcc54c25e7f6f64eb1192cff4b28aa146",
+      "git_blob_sha": "9505db2dcf4d62cc1b80d586f88a8a3c3c5a2749"
+    }
+  },
+  "tests_started": false,
+  "source_worktrees_modified": false,
+  "refs_modified": false
+}

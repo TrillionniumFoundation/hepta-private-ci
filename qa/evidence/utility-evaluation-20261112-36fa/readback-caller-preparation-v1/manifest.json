@@ -1,0 +1,535 @@
+{
+  "schema": "hepta.original-training-readback-review.v1",
+  "status": "prepared_not_published_not_full_gate",
+  "base_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "base_tree": "906546af39b07474f0b9d046a6e780b6d3342743",
+  "observed_failure_source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "observed_failure_log": {
+    "git_blob_sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+    "bytes": 192,
+    "sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139"
+  },
+  "observed_failure_run_blob": "3cfa7bdefec6aa5af6fe523f027f39829816a7ab",
+  "source_identity": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "e8_blob": "3eeb581ffafbd80957dcf87ad02923f27d8acb29",
+      "b298_blob": "3eeb581ffafbd80957dcf87ad02923f27d8acb29",
+      "equal": true,
+      "size": 8073
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "e8_blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "b298_blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "equal": true,
+      "size": 7779
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "e8_blob": "826f48120730196081bb7e0bcd6427d30763579e",
+      "b298_blob": "826f48120730196081bb7e0bcd6427d30763579e",
+      "equal": true,
+      "size": 9649
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "e8_blob": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "b298_blob": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "equal": true,
+      "size": 4792
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+      "e8_blob": "bc335ec8347176510dea0ae425ff5ac42b099eea",
+      "b298_blob": "bc335ec8347176510dea0ae425ff5ac42b099eea",
+      "equal": true,
+      "size": 9196
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "e8_blob": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00",
+      "b298_blob": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00",
+      "equal": true,
+      "size": 15970
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "e8_blob": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "b298_blob": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "equal": true,
+      "size": 10825
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "e8_blob": "fae852c8a1d5022347e632787172b99f9d119307",
+      "b298_blob": "fae852c8a1d5022347e632787172b99f9d119307",
+      "equal": true,
+      "size": 3137
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+      "e8_blob": "05a0d4c37348c8cdfc686c6e2b6c93af4fb26e63",
+      "b298_blob": "05a0d4c37348c8cdfc686c6e2b6c93af4fb26e63",
+      "equal": true,
+      "size": 13427
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+      "e8_blob": "a24dbbf280dcfff9c3d52deeaa087ffc8a11bdc8",
+      "b298_blob": "a24dbbf280dcfff9c3d52deeaa087ffc8a11bdc8",
+      "equal": true,
+      "size": 8890
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+      "e8_blob": "d1d9deddfd7bd34a6a096cb1dbe67f046fd088c7",
+      "b298_blob": "d1d9deddfd7bd34a6a096cb1dbe67f046fd088c7",
+      "equal": true,
+      "size": 17625
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+      "e8_blob": "17bee667dd9943ea0a806ade01a3e94f2cb0470e",
+      "b298_blob": "17bee667dd9943ea0a806ade01a3e94f2cb0470e",
+      "equal": true,
+      "size": 12683
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "e8_blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+      "b298_blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+      "equal": true,
+      "size": 14395
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "e8_blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "b298_blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "equal": true,
+      "size": 2841
+    }
+  ],
+  "structural_change": {
+    "source": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "boundary_count_before": 534,
+    "boundary_count_after": 534,
+    "protected_rows_before": 386,
+    "protected_rows_after": 389,
+    "existing_protected_rows_unchanged": true,
+    "existing_top_level_fields_unchanged": true,
+    "member_additions": {
+      "learning_source_bound_training_stage_readback": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+      ],
+      "learning_original_owner_command_channel": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs"
+      ],
+      "learning_original_material_initial_context_check": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"
+      ],
+      "learning_original_material_dataset_context_check": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"
+      ]
+    },
+    "changed_existing_qa": [
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "identifiers": [
+          "learning_original_material_initial_context_check"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "identifiers": [
+          "learning_original_owner_command_channel",
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check",
+          "learning_source_bound_training_stage_readback"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "identifiers": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "identifiers": [
+          "learning_original_owner_command_channel",
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "identifiers": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "identifiers": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "identifiers": [
+          "learning_original_owner_command_channel"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "identifiers": [
+          "learning_original_material_initial_context_check",
+          "learning_original_material_dataset_context_check",
+          "learning_original_owner_command_channel"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "identifiers": [
+          "learning_source_bound_training_stage_readback"
+        ]
+      }
+    ],
+    "production_rust_changes": [],
+    "tests_executed": false
+  },
+  "old_protected_rows_exact_text_retained": true,
+  "existing_qa_function_preservation": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "original_function_count": 10,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "original_function_count": 10,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "original_function_count": 9,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "original_function_count": 12,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "original_function_count": 9,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "original_function_count": 16,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "original_function_count": 11,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "original_function_count": 11,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "original_function_count": 7,
+      "all_original_functions_byte_identical": true,
+      "existing_unknown_caller_assertions_preserved": true
+    }
+  ],
+  "new_test_methods": [
+    "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller",
+    "test_original_handoff_and_complete_dataset_training_binding_cannot_be_detached",
+    "test_request_cannot_change_purpose_context_sequence_or_action",
+    "test_host_admission_precedes_queue_and_connections_keep_bounded_requests",
+    "test_host_request_is_checked_before_actual_same_stage_readback",
+    "test_readback_requires_current_complete_original_evidence_before_restoring_peer",
+    "test_completed_training_cannot_become_missing_pending_or_a_reusable_unknown",
+    "test_bootstrap_readback_only_borrows_ready_and_never_recovers_awaiting",
+    "test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap"
+  ],
+  "discovery": {
+    "path": ".github/workflows/hepta-daemon-learning-native.yml",
+    "git_blob_sha": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+    "size": 27811,
+    "command": "python3 scripts/hepta_ci_exec.py --timeout-seconds 600 --minimum-tests 1 --output \"$RUNNER_TEMP/daemon-learning-records/source-closure.json\" -- python3 -m unittest discover -s qa/b4-no-bypass -p '*source_closure.py' -v",
+    "source_lines": [
+      311,
+      315
+    ],
+    "selection_directory": "qa/b4-no-bypass",
+    "selection_glob": "*source_closure.py",
+    "new_qa": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+    "new_method_count": 9,
+    "workflow_modified": false
+  },
+  "preparation_diagnostic": {
+    "kind": "preparation_only_original_protected_rows_diagnostic",
+    "full_gate_status": "not_run",
+    "cargo_tests": "not_run",
+    "source_inputs": "e8b6/b298 identical immutable source blobs",
+    "checked_rows": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs"
+    ],
+    "errors": [],
+    "elapsed_seconds": 0.016137697000885964,
+    "source_input_sha256": {
+      "base/codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb",
+      "base/codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c",
+      "base/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8",
+      "base/scripts/verify_hepta_callers.py": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "base/scripts/hepta_typed_callers.py": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "protected-rows.json": "96fa8461411eda41af1567926b584c3181f42594e044be4999b888263647a0a4"
+    },
+    "source_inputs_unchanged": true,
+    "status": "passed_scoped_preparation"
+  },
+  "validation_limits": {
+    "full_source_closure": "not_run",
+    "full_caller_proof": "not_run",
+    "new_nine_source_mutation_methods": "not_run",
+    "cargo_or_native_behavior_tests": "not_run",
+    "new_frozen_source": "not_created",
+    "authority_or_production_rust_changes": false
+  },
+  "allowlist_integration": {
+    "file": ".github/blob-size-allowlist.txt",
+    "modified_by_this_preparation": false,
+    "preserve_e8_historical_rows": true,
+    "append_final_combined_CALLERS_sha256_by_root": true,
+    "prepared_CALLERS_sha256": "881f2ce269fc956447a0e376a29e9d97f4e694ae35045aff0c91e0994162d4f0"
+  },
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "base": {
+        "bytes": 1102083,
+        "sha256": "a1fe445e3656787397731f83beb005d4454bb60b043a7f3846f15613658b74ce",
+        "git_blob_sha": "16bd8058a19ef09b84a667cbd15a09f444ca67f8"
+      },
+      "post": {
+        "bytes": 1117075,
+        "sha256": "881f2ce269fc956447a0e376a29e9d97f4e694ae35045aff0c91e0994162d4f0",
+        "git_blob_sha": "0be2a0e748a8aec35c10897a6765fbb5cdbe4464"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 13863,
+        "sha256": "968be0e590860028e4487de3e0860adef0d29dc58f2c29c26365c3f66e3c8b21",
+        "git_blob_sha": "db6c9de84b1a9a53163c12770a4a2024c5c6a1c6"
+      },
+      "post": {
+        "bytes": 13930,
+        "sha256": "1ababb098c9fe6dd374f060ba2e08f5b05cf43a8df4788fac223651d9cc44983",
+        "git_blob_sha": "ec34091812ed5d1cf75f1c6de30c2027310be170"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 24715,
+        "sha256": "6c512ab711d8a896382078517c3279109fe2efb88bc01901c21ca9a4ac7aaf3d",
+        "git_blob_sha": "0d0a6b84559e2e825edcf37b7d3a835e9b470dba"
+      },
+      "post": {
+        "bytes": 25135,
+        "sha256": "421defbde868327f323376a5b7d61be396baf93147c969a15c361820ec98dd34",
+        "git_blob_sha": "df31bc81858011b6bbaa976f7399d4297711588e"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 16719,
+        "sha256": "a222f9fb7353ae82a71ebd78bd9d9e86843bb0ca8f12b97b32ed4b6d3f93ecaa",
+        "git_blob_sha": "72f7fb5fd868654655f813d6d817e9207f17077c"
+      },
+      "post": {
+        "bytes": 16930,
+        "sha256": "b6f7c2f73e0f1c49a43bcdbfcd0b9a4d3d6501db2a4840da8b60384828efdacf",
+        "git_blob_sha": "cc5b5ed2094e31c29b0f01fd06264d182f83c7c5"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 20908,
+        "sha256": "73b49af7306ac0d941cbcb30e081eaeb323d9190b31e08b5af3f718805674ca7",
+        "git_blob_sha": "c93314182a274f08a16820936ad5e4bc65182b26"
+      },
+      "post": {
+        "bytes": 21253,
+        "sha256": "1ab277c2eea8739ba9d056b6428c75ba62c7800d0e9a28ba94d2d97686d2ef4d",
+        "git_blob_sha": "a9f982e14f34c63e64267c5c7d6adde1c0705bd0"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 15502,
+        "sha256": "be1bd559531d574fcc0d405402c38cc1bfb3e08d84b6cafc80a2dd69b681cd87",
+        "git_blob_sha": "9f210f8bb9a459ba1f83bba80186f425bee344bc"
+      },
+      "post": {
+        "bytes": 15713,
+        "sha256": "a0b8d7821e02ac896cc9b035698d5be5da0a2f3d74a861408ebc76b02a9d912a",
+        "git_blob_sha": "3ff2d664bca9ed2ad0f1afbe8908dcd67a458f89"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 18166,
+        "sha256": "5155fe8deef040713ff047164856d661c2651d3ac2e8f62de6b30ea6e8ce1b06",
+        "git_blob_sha": "50ed25211bca89bece4f9baaa01815173c3e43b6"
+      },
+      "post": {
+        "bytes": 18377,
+        "sha256": "44bb26895b4965df7847993e69a8f7a208651215fb37a8ead8195bd05f9a8fbb",
+        "git_blob_sha": "78ab86e0e12529e626a9acc3b50cbc069a31de7d"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 14292,
+        "sha256": "936a812fecae69efb8789c2ac88693ff4c00f9a322c8d17c981a6abac4d4f8c7",
+        "git_blob_sha": "49dfe2709d55f0cc6cac1d4714ddd7b8e92aa8d6"
+      },
+      "post": {
+        "bytes": 14503,
+        "sha256": "40b75f1dbd105c45dae8ab0845c34fe46862d42175f4f436420dd2ce0a3677ac",
+        "git_blob_sha": "30b05ba010b1e977ade46ea7a9596d8b300756fc"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 13302,
+        "sha256": "bab771f4c2d97891f67712e623857ec6c72c5f7dfe6caea323955dd4e4543bcc",
+        "git_blob_sha": "83e8f05eef93996e9f8400bb0a7b825402511dce"
+      },
+      "post": {
+        "bytes": 13647,
+        "sha256": "bbe91cc4477b5be18ba288942a8d246492d996589e684419a078029a03eb9db8",
+        "git_blob_sha": "e7a8f868fca51102401772098e51cf1d815c7bfc"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "mode": "100644",
+      "base": null,
+      "post": {
+        "bytes": 19822,
+        "sha256": "aa11ea900f9e588d6666ecb96b75b53cce22e08bd3e16edf35784214ec990306",
+        "git_blob_sha": "a8cbc89158ec6651e9c62bfaf972de2d5ebe0d85"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "mode": "100644",
+      "base": {
+        "bytes": 9833,
+        "sha256": "303d9d1f083cdd069d16f5ae19b6fd1e7c961452b0e8f8d50dda26793caeb5f2",
+        "git_blob_sha": "3d4784411e7c65e54643fe1a11d80bbc339c9650"
+      },
+      "post": {
+        "bytes": 9916,
+        "sha256": "c69ec33cccaf03d05cdb461f2502d454ede7eecf0ec18a68e4ab98037f002169",
+        "git_blob_sha": "81d6fa2ff0eb7061fa33fbd553b7f92511e96b6d"
+      }
+    }
+  ],
+  "artifacts": {
+    "REVIEW.md": {
+      "bytes": 15683,
+      "sha256": "79d49894a2c4f4de34889664f4ee179bbccb66b24e6144f1d0e262f24a752ea2",
+      "git_blob_sha": "60ede168b850f488702831ed473a10af579b764d"
+    },
+    "protected-rows.json": {
+      "bytes": 18742,
+      "sha256": "96fa8461411eda41af1567926b584c3181f42594e044be4999b888263647a0a4",
+      "git_blob_sha": "9f4cc1b366f7edf52c93dfbefceedcb1be6305fa"
+    },
+    "registration.patch": {
+      "bytes": 99426,
+      "sha256": "5a51d9b03c1c9d7a11453765dcf763114fd1baae69f1754553475eb2c9e9ffa8",
+      "git_blob_sha": "6d4a47bd08d10eb7de57ea0bbc3e0a9900e4a688"
+    },
+    "scoped-baseline-diagnostic.json": {
+      "bytes": 1367,
+      "sha256": "ef5851e2e15a06b4f436ddacde7787c5afa64289a5f5cbdae5ce5ff0ea9356ac",
+      "git_blob_sha": "41eda7bb85bf42a75ec74be07478622ba19f9165"
+    },
+    "packet.json.gz.base64": {
+      "bytes": 465557,
+      "sha256": "da684d8644be5f7aa2a0d6b854e76b12dc59d255968aab665e02e4dc05b94a93",
+      "git_blob_sha": "d8e997c8b622e0cbc44721502b3d606eebc148dd"
+    }
+  },
+  "packet": {
+    "encoding": "base64(gzip(UTF-8 JSON)), trailing LF",
+    "encoded": {
+      "bytes": 465557,
+      "sha256": "da684d8644be5f7aa2a0d6b854e76b12dc59d255968aab665e02e4dc05b94a93",
+      "git_blob_sha": "d8e997c8b622e0cbc44721502b3d606eebc148dd"
+    },
+    "gzip": {
+      "bytes": 349167,
+      "sha256": "dd1fb0d24f5ea593d9f5616aa6370106b38ee670b671152dedcfca1b83d8af7c",
+      "git_blob_sha": "4e818f612457e0f3d643db7ad376aa4b40b44261"
+    },
+    "decoded": {
+      "bytes": 1719931,
+      "sha256": "058033eae66b8b617966bb23df810ea30a9cc0c67bfc5b0b465c55aecaa305f5",
+      "git_blob_sha": "d7188c0d15124e5ad12fa6baa17415307ca97d4b"
+    },
+    "files": 11,
+    "entry_fields": [
+      "path",
+      "mode",
+      "base",
+      "post",
+      "postimage_base64"
+    ]
+  },
+  "required_preconditions": [
+    "Validate exact source base blobs before applying each path.",
+    "Keep all original 534 boundaries and 386 protected rows; only the listed six caller memberships and three rows are new.",
+    "Do not use the three-row preparation diagnostic as a complete source gate or a runtime qualification.",
+    "Run original source closure and full caller proof on the subsequently frozen integrated source."
+  ]
+}

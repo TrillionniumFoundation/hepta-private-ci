@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.utility.e8.fixture-inclusive-expiry-preparation.v1",
+  "status": "prepared_not_executed",
+  "baseline_commits": [
+    "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "b29869e856d08db1bfb066116a9c443376ccc57d"
+  ],
+  "baseline_files_identical": true,
+  "scope": "Two fixture wait expressions only; no production verifier, authority, signatures, original expires_at, assertions, test attributes or test budget changed.",
+  "diagnosis": {
+    "selector": "The original verifier accepts now == expires_at and rejects now > expires_at; the old remaining whole seconds + 100ms did not ensure the intended expired condition.",
+    "next_use": "The identical fixture boundary is corrected. The observed InvalidRequest cause remains under investigation; this preparation does not claim it is explained or fixed.",
+    "source_proof": [
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+        "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+        "lines": "273-310",
+        "predicate": "now > evidence.expires_at"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "blob": "15e500215e19d8ee1603535418a1be5cfbb0f353",
+        "lines": "388-411",
+        "predicate": "self.context.authenticate(started_at)? before dispatch"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "baseline": {
+        "bytes": 15632,
+        "sha256": "1e88352e7772386890d722077d42fdbcd44b96cec0e6ceb58c4223959464d1d0",
+        "git_blob_sha": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b"
+      },
+      "postimage": {
+        "bytes": 15662,
+        "sha256": "d39c3b7c7410f856a739d5885d0d6809b44bfc4d26ee072bcdd34d6af0f3cd85",
+        "git_blob_sha": "84ed0652816f53dfe62e9e74f4c3943a0b752d6e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "baseline": {
+        "bytes": 19866,
+        "sha256": "c4c61e035f641cd2715af7ee074c46176bfd5c4003f25e7be812c17ec79eb894",
+        "git_blob_sha": "191a74d44cfda509b24919a89144a93ec90b4f70"
+      },
+      "postimage": {
+        "bytes": 19896,
+        "sha256": "81cbd49fbe8eabe5b92f239723f481babfdc637e77f971c3416ec8366711322f",
+        "git_blob_sha": "5c1958b2ab3e8d552a0d82d1a6f0e8ec059f2cae"
+      }
+    }
+  ],
+  "tests_started": false,
+  "source_worktrees_modified": false,
+  "refs_modified": false
+}
