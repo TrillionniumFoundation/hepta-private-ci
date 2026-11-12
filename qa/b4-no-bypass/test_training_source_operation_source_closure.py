@@ -18,6 +18,8 @@ OPERATION = AGENT + "cell_q24_training_stage_operation.rs"
 OWNER = AGENT + "cell_composed_q24_training_owner.rs"
 STAGE = AGENT + "cell_q24_training_stage.rs"
 CHECKPOINT = AGENT + "learning_iteration_q24_checkpoint.rs"
+AUTHENTICATION = AGENT + "learning_iteration_auth.rs"
+VERIFICATION = AGENT + "learning_iteration_receipt_validation.rs"
 
 
 class TrainingSourceOperationTests(unittest.TestCase):
@@ -44,6 +46,30 @@ class TrainingSourceOperationTests(unittest.TestCase):
         self.check_markers(CHECKPOINT, "fn checkpoint_original(", (
             "self.require_original_owners(&self.owners)?", ".checkpoint(previous, snapshot)",
             "map_err(checkpoint_error)"))
+
+    def test_shared_receipt_verification_keeps_all_roles_and_current_bindings(self):
+        self.check_markers(VERIFICATION, "fn new(", (
+            "LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator",
+            "LearningIterationStageV1::Evaluation => LearningEvidenceRoleV1::Evaluator",
+            "LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector",
+            "LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer",
+            "SignedEvidenceError::RoleMismatch", "learning_iteration_receipt_signing_bytes_v1(receipt)?"))
+        self.check_markers(VERIFICATION, "fn verify(", (
+            ".verify(self.role, signature, &self.payload, now)",
+            "verified.principal().principal_id != self.receipt.actor_id",
+            "self.snapshot.owners.owner(self.receipt.observation.stage())",
+            "verified.trust_digest() != self.snapshot.owners.evidence_trust_digest",
+            "verified.objective_digest() != self.snapshot.request.envelope.objective_digest"))
+
+    def test_generic_authentication_still_reads_original_evidence_before_verification(self):
+        self.check_markers(AUTHENTICATION, "fn verify_receipt(", (
+            "OriginalReceiptVerificationV1::new(verifier, snapshot, receipt)?",
+            "receipt_attestation(snapshot, receipt, clock()?)", "verification.verify(&signature, clock()?)"))
+        self.check_markers(AUTHENTICATION, "fn authenticate_iteration_receipt_at_clock_v1(", (
+            "verify_receipt(ports, verifier, snapshot, decision, clock).await?",
+            "independent_receipt_stages(snapshot, receipt)",
+            "verify_receipt(ports, verifier, snapshot, earlier, clock).await?",
+            "verify_signed_actor_separation(&prior, &current, clock()?)"))
 
     def test_source_read_implementations_cannot_be_replaced_with_success(self):
         source = (ROOT / READ).read_text()
