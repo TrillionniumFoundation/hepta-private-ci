@@ -1,0 +1,52 @@
+test_empty_line_flood_cannot_skip_input_budget (test_jsonl_admission.JsonlAdmissionTests.test_empty_line_flood_cannot_skip_input_budget) ... FAIL
+test_non_object_row_returns_contract_error (test_jsonl_admission.JsonlAdmissionTests.test_non_object_row_returns_contract_error) ... ERROR
+test_one_oversized_line_rejected_before_parse (test_jsonl_admission.JsonlAdmissionTests.test_one_oversized_line_rejected_before_parse) ... ERROR
+test_small_valid_four_arm_file_keeps_existing_report (test_jsonl_admission.JsonlAdmissionTests.test_small_valid_four_arm_file_keeps_existing_report) ... ok
+
+======================================================================
+ERROR: test_non_object_row_returns_contract_error (test_jsonl_admission.JsonlAdmissionTests.test_non_object_row_returns_contract_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/test_jsonl_admission.py", line 37, in test_non_object_row_returns_contract_error
+    self.invoke("[]\n")
+    ~~~~~~~~~~~^^^^^^^^
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/test_jsonl_admission.py", line 24, in invoke
+    main()
+    ~~~~^^
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/study.py", line 639, in main
+    rows = [TrialRow(**json.loads(line)) for line in stream if line.strip()]
+            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: study.TrialRow() argument after ** must be a mapping, not list
+
+======================================================================
+ERROR: test_one_oversized_line_rejected_before_parse (test_jsonl_admission.JsonlAdmissionTests.test_one_oversized_line_rejected_before_parse)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/test_jsonl_admission.py", line 33, in test_one_oversized_line_rejected_before_parse
+    self.invoke("{" + (" " * 65_537) + "}\n")
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/test_jsonl_admission.py", line 24, in invoke
+    main()
+    ~~~~^^
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/study.py", line 639, in main
+    rows = [TrialRow(**json.loads(line)) for line in stream if line.strip()]
+            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: TrialRow.__init__() missing 16 required positional arguments: 'episode_id', 'seed', 'family', 'arm', 'workload_digest', 'ability_digest', 'evaluator_digest', 'feedback_budget_bits', 'query_budget', 'training_budget', 'compute_budget_us', 'gross_value', 'full_cost', 'retention_value', 'evaluator_independent', and 'outcome_receipt_digest'
+
+======================================================================
+FAIL: test_empty_line_flood_cannot_skip_input_budget (test_jsonl_admission.JsonlAdmissionTests.test_empty_line_flood_cannot_skip_input_budget)
+----------------------------------------------------------------------
+study.ContractError: empty evaluation
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/qq/hpca-neuro4-t6-cli-boundary-20261112/source/qualification/neuroscience-20261110/test_jsonl_admission.py", line 28, in test_empty_line_flood_cannot_skip_input_budget
+    with self.assertRaisesRegex(ContractError, "raw trial JSONL input exceeds size limit"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "raw trial JSONL input exceeds size limit" does not match "empty evaluation"
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.009s
+
+FAILED (failures=1, errors=2)
