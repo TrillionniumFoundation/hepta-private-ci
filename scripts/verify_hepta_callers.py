@@ -332,6 +332,23 @@ def _strip_cfg_test_items(code: str) -> str:
     alternatives such as `cfg(any(test, unix))` and `cfg(not(test))` are retained.
     """
 
+    # A separately included helper may carry its own Rust inner cfg. Only
+    # leading file attributes can gate this complete file: an inner cfg inside
+    # a nested module must never hide surrounding production calls.
+    preamble = 0
+    while True:
+        preamble = _skip_space(code, preamble)
+        if not code.startswith("#![", preamble):
+            break
+        end = _matching_delimiter(code, preamble + 2, "[", "]")
+        if end is None:
+            raise VerificationFailure("unbalanced Rust file attribute in caller scan")
+        attribute = code[preamble : end + 1]
+        cfg = re.fullmatch(r"#!\[\s*cfg\s*\((.*)\)\s*\]", attribute, re.DOTALL)
+        if cfg is not None and _cfg_without_test(cfg.group(1)) is False:
+            return "".join("\n" if char == "\n" else " " for char in code)
+        preamble = end + 1
+
     output = list(code)
     index = 0
     while index < len(code):
