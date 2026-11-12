@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict, dataclass
 from hashlib import sha256
-from itertools import product
+from itertools import islice, product
 import json
 import math
 from pathlib import Path
@@ -23,6 +23,18 @@ SCHEMA = "hepta.neuroscience.shadow.v1"
 
 class ContractError(ValueError):
     """Invalid input or unqualified experiment, never a model error."""
+
+
+def _bounded_materialize(values: Iterable, limit: int, label: str) -> list:
+    """Bound raw iterator consumption before duplicate/identity validation.
+
+    A post-hoc len(list(values)) check does not constrain one-shot streams or
+    infinite iterators; read only the permitted prefix and one overflow item.
+    """
+    items = list(islice(values, limit + 1))
+    if len(items) > limit:
+        raise ContractError(f"{label} input exceeds size limit")
+    return items
 
 
 def _digest(value: object) -> str:
@@ -131,7 +143,8 @@ def time_aligned_credit(
     coarser projection and thus is NOT an information-matched routing control.
     Routed and shuffled are information-matched routing controls.
     """
-    action_list, feedback_list = list(actions), list(feedback)
+    action_list = _bounded_materialize(actions, 65_536, "actions")
+    feedback_list = _bounded_materialize(feedback, 65_536, "feedback")
     if arm not in ARMS or not action_list:
         raise ContractError("unknown arm or empty action trace")
     # An empty feedback trace is a legitimate sparse/delayed observation:
@@ -374,7 +387,7 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
     if type(now_sequence) is not int or now_sequence < 0 or not (
             type(max_items) is int and 1 <= max_items <= 256):
         raise ContractError("invalid memory window or budget")
-    entries = list(records)
+    entries = _bounded_materialize(records, 65_536, "memory")
     if len(entries) > 65_536 or len({e.event_id for e in entries}) != len(entries):
         raise ContractError("duplicate memory identities or oversized records")
     for e in entries:
@@ -490,7 +503,7 @@ class TrialRow:
 
 def paired_evidence(rows: Iterable[TrialRow]) -> dict:
     """Audit complete paired rows; statistics do not grant independent authority."""
-    data = list(rows)
+    data = _bounded_materialize(rows, 400_000, "paired evaluation")
     if not data:
         raise ContractError("empty evaluation")
     keys: dict[tuple[str, int, str], dict[str, TrialRow]] = {}
