@@ -29,10 +29,13 @@ use crate::cell_joint_process;
 use crate::cell_joint_process::ProcessRequest;
 use crate::cell_joint_process::ProcessStatus;
 use crate::cell_joint_protocol;
-use crate::cell_joint_protocol::JointGenerationInputV1;
 
 #[path = "cell_joint_assets.rs"]
 mod assets;
+#[path = "cell_joint_payload.rs"]
+mod payload;
+#[path = "cell_joint_resident.rs"]
+mod resident;
 pub use assets::JointGenerationProcessFilesV1;
 use assets::read_bounded;
 
@@ -60,11 +63,14 @@ pub struct JointGenerationProcessWorkerV1 {
     public_digest: [u8; 32],
     device_digest: [u8; 32],
     clock: Arc<dyn Fn() -> u64 + Send + Sync>,
+    resident: Option<resident::ResidentTransport>,
 }
 
 impl JointGenerationProcessWorkerV1 {
     pub const PROFILE: &'static str = "joint-generator-proposal-linux-v1";
     pub const OBSERVED_PROFILE: &'static str = "joint-generator-proposal-linux-v2";
+    pub const RESIDENT_PROFILE: &'static str = "joint-generator-resident-linux-v1";
+    pub const RESIDENT_OBSERVED_PROFILE: &'static str = "joint-generator-resident-linux-v2";
 
     pub fn observed_input_schema_digest() -> [u8; 32] {
         Digest32::of_bytes(b"hepta.joint.owner-bound-public-command.v2").into_array()
@@ -171,7 +177,10 @@ impl JointGenerationProcessWorkerV1 {
         manifest: &CellBackendManifestV2,
     ) -> Result<(), CellGenerationErrorV2> {
         manifest.digest()?;
-        let observed = manifest.profile == Self::OBSERVED_PROFILE;
+        let observed = matches!(
+            manifest.profile.as_str(),
+            Self::OBSERVED_PROFILE | Self::RESIDENT_OBSERVED_PROFILE
+        );
         let schemas = if observed {
             (
                 Self::observed_input_schema_digest(),
@@ -185,7 +194,12 @@ impl JointGenerationProcessWorkerV1 {
                 Self::output_schema_digest(),
             )
         };
-        if ![Self::PROFILE, Self::OBSERVED_PROFILE].contains(&manifest.profile.as_str())
+        let profiles = if self.resident.is_some() {
+            [Self::RESIDENT_PROFILE, Self::RESIDENT_OBSERVED_PROFILE]
+        } else {
+            [Self::PROFILE, Self::OBSERVED_PROFILE]
+        };
+        if !profiles.contains(&manifest.profile.as_str())
             || manifest.source_digest != self.source_digest
             || manifest.runtime_digest != self.executable_digest
             || manifest.device_digest != self.device_digest
@@ -233,47 +247,7 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        let payload = if manifest.profile == Self::OBSERVED_PROFILE {
-            let input =
-                match serde_json::from_slice::<crate::JointGenerationInputV2>(&request.input) {
-                    Ok(value) if value.public_digest == self.public_digest => value,
-                    _ => {
-                        return unstarted_proposal(
-                            manifest,
-                            request,
-                            started,
-                            CellGenerationDispositionV2::Rejected,
-                        );
-                    }
-                };
-            crate::cell_joint_observed::request_bytes(
-                request,
-                &input,
-                &self.weights,
-                &self.public,
-                (self.clock)(),
-            )
-        } else {
-            let input = match serde_json::from_slice::<JointGenerationInputV1>(&request.input) {
-                Ok(value) if value.public_digest == self.public_digest => value,
-                _ => {
-                    return unstarted_proposal(
-                        manifest,
-                        request,
-                        started,
-                        CellGenerationDispositionV2::Rejected,
-                    );
-                }
-            };
-            cell_joint_protocol::request_bytes(
-                request_digest,
-                &self.weights,
-                &self.public,
-                &request.predecessor.state,
-                &request.predecessor.prefix,
-                &input.command,
-            )
-        };
+        let payload = self.request_payload(manifest, request, self.resident.is_none(), None);
         let payload = match payload {
             Ok(value) => value,
             Err(CellGenerationErrorV2::Deadline) => {
@@ -293,14 +267,27 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
                 );
             }
         };
-        let observation = cell_joint_process::run(ProcessRequest {
+        let process_request = ProcessRequest {
             executable: &self.executable,
             executable_digest: self.executable_digest,
             payload,
             cancellation,
             deadline_micros: request.deadline_micros,
             clock: self.clock.as_ref(),
-        })?;
+        };
+        let observation = if let Some(resident) = &self.resident {
+            resident.run(
+                process_request,
+                |include_assets, now| {
+                    self.request_payload(manifest, request, include_assets, Some(now))
+                },
+                request_digest,
+                manifest.max_prefix_bytes as usize - request.predecessor.prefix.len(),
+                manifest.digest()?,
+            )?
+        } else {
+            cell_joint_process::run(process_request)?
+        };
         let mut phase_micros = [0; 4];
         let (successor_state, output_delta, disposition) = match observation.status {
             ProcessStatus::Succeeded => {
@@ -336,9 +323,9 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
                         },
                     )
                 } else {
-                    // The process and all pipes terminated, but its response was
-                    // invalid. Retain measured work as Failed, with no adopted
-                    // state/output and no invented child-phase observations.
+                    // Invalid one-shot output follows process termination. The
+                    // resident transport validates and terminates invalid frames
+                    // before reuse. Neither path adopts state or invents phases.
                     (
                         request.predecessor.state.clone(),
                         Vec::new(),
