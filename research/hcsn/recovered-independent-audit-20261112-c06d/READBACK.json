@@ -1,0 +1,107 @@
+{
+  "schema": "hcsn-recovered-audit-source-readback-v1",
+  "originals": [
+    {
+      "eof": true,
+      "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/AUDIT.json",
+      "sha256": "342ce2498e6e95c9233564aa7210058fc0abb98115059f5a6b86d156bb96af70",
+      "size": 5562,
+      "version": "2050:10029672:5562:1794466560775705030:1794466560775705030"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/ARCHIVE.json",
+      "sha256": "e1a0213e3f8a86c902912f7f9fb67605681f8d3dc033bc1feb839f1d5b993e45",
+      "size": 550,
+      "version": "2050:10030059:550:1794469433392292290:1794469433392292290"
+    }
+  ],
+  "original_read_is_atomic_snapshot": false,
+  "exact_audit_git_blob": "85ee427e10ec99836d3a4b51e56cec77228cd92c",
+  "exact_archive_receipt_git_blob": "fa8617138650051ba71871a93ea6534e6380e670",
+  "inherited_git_inputs": [
+    {
+      "path": "qualification/hcsn_differentiable/replay_v1/evidence/real-recovery-20261112-4092/SUMMARY.json",
+      "bytes": 53740,
+      "sha256": "c8dcd62b2391a730c5d21ecd6dfa4b4b1ad0e4d71ae9c23fbaafa29f2502eeb5",
+      "git_blob": "8c8dc1d72dda02426e146d587e9a67e9a77aff2f"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/replay_v1/SELECTION.json",
+      "bytes": 2644,
+      "sha256": "6271b8dd1859b8a124f5ecd06ba307c0f9ebcdc5e6f86a9d164c4ac374cdbd55",
+      "git_blob": "2adba4aadb5d693fcf2df5abc027d72c814d7d78"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/replay_v1/audit_replay.py",
+      "bytes": 10297,
+      "sha256": "1174ad3615ebfaa27c21f308f7f2cce16fad6ddada8e0c416c8653bc04e9a48e",
+      "git_blob": "1cb218ac6b9727e59c87eeb1ccf2559a345307c9"
+    }
+  ],
+  "input_zip_publication": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6214",
+    "number": 6214,
+    "state": "open",
+    "merged": false,
+    "mergeable": true,
+    "draft": true,
+    "body": "Zero-model artifact publication only. Preserves the original 11397159-byte export, SHA256 37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75. Parent includes the native failure receipts; model source remains 5cb83d9c76beedf4c1c917e4bf561f5f26261ce7. No original worktree/source refs changed, no training or replay run. Artifact manifest uses ordered relative part paths for CPU profile checkout. HOLD_NO_GO.",
+    "title": "artifact(hcsn): publish original bound six-checkpoint replay ZIP (HOLD)",
+    "base": "research/hcsn-real-checkpoint-replay-20261112-c06d",
+    "base_sha": "a832b028abdf1a1c9ab66534332457c6d76a91ca",
+    "head": "artifact/hcsn-c2-export-20261112-c06d-v1",
+    "head_sha": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": "dea51565cdf99fbf20c5f2f4b674637be3e09cef",
+    "user": {
+      "login": "ProfHepta",
+      "name": "ProfHepta",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "id": 102159240
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-12T08:00:35Z",
+    "updated_at": "2026-11-12T08:00:35Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1,
+    "changed_files": 2,
+    "additions": 16,
+    "deletions": 0,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6214",
+    "display_title": "artifact(hcsn): publish original bound six-checkpoint replay ZIP (HOLD)"
+  },
+  "input_zip_native_stdout_decoded_from_bytes_hex": {
+    "blob": "2afc4e810f1c75a1ff5b9fb85464f6dda6c43245",
+    "branch": "artifact/hcsn-c2-export-20261112-c06d-v1",
+    "commit": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+    "manifest": "qualification/hcsn_differentiable/replay_v1/artifact/EXPORT.json",
+    "pull": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6214",
+    "tree": "4948c63e915f58dd8db076fbd841d5c1906e2986"
+  },
+  "input_zip_native_terminal_status": "Not retrieved here",
+  "independent_archive_file_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/originals.tar.xz",
+    "sha256": "f3f6992f31d7ab85a10eaa727dfc894fdb72ef5dafbba6bc43fc36d23a899dc7",
+    "size": 7070892,
+    "version": "2050:10030058:7070892:1794469433299025822:1794469433299025822"
+  },
+  "no_archive_payload_fetch_or_model_execution": true
+}
