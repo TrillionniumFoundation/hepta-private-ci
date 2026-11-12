@@ -104,7 +104,9 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
                 .get(offset..offset + 4)
                 .ok_or(CellGenerationErrorV2::Corrupt)?;
             let size = u32::from_be_bytes(
-                prefix.try_into().map_err(|_| CellGenerationErrorV2::Corrupt)?,
+                prefix
+                    .try_into()
+                    .map_err(|_| CellGenerationErrorV2::Corrupt)?,
             ) as usize;
             if size == 0 || size > MAX_FRAME {
                 return Err(CellGenerationErrorV2::Corrupt);

@@ -82,7 +82,10 @@ pub struct OriginalCircuitRetainedPublicationSelectionV1 {
     pub files: AgentdGenerationSelectionFilesV1,
 }
 
-pub struct OriginalCircuitRetainedPublicationInputsV1<Old: AnchorWitnessStore, New: AnchorWitnessStore> {
+pub struct OriginalCircuitRetainedPublicationInputsV1<
+    Old: AnchorWitnessStore,
+    New: AnchorWitnessStore,
+> {
     pub current: Arc<NeuronGenerationCurrentOwnerV1>,
     pub authorities: AgentdGenerationUpdateAuthoritiesV1,
     pub selection: OriginalCircuitRetainedPublicationSelectionV1,
@@ -96,7 +99,10 @@ pub struct OriginalCircuitRetainedPublicationInputsV1<Old: AnchorWitnessStore, N
 /// Non-Clone custody of the exact preparation. The host retains intent_digest
 /// before requesting the separate original FinalUse signature. Neither getter
 /// grants publication or starts C; no old grant is replaced or renewed.
-pub struct PreparedOriginalCircuitRetainedPublicationV1<Old: AnchorWitnessStore, New: AnchorWitnessStore> {
+pub struct PreparedOriginalCircuitRetainedPublicationV1<
+    Old: AnchorWitnessStore,
+    New: AnchorWitnessStore,
+> {
     context: OriginalCircuitRetainedPublicationContextV1,
     trainer: OriginalCellQ24TrainingCommandClientV1,
     prepared: PreparedAgentdGenerationUpdateV1<Old, New>,
@@ -112,55 +118,80 @@ pub async fn prepare_original_circuit_retained_publication_v1<Old, New>(
     context: OriginalCircuitRetainedPublicationContextV1,
     trainer: OriginalCellQ24TrainingCommandClientV1,
     inputs: OriginalCircuitRetainedPublicationInputsV1<Old, New>,
-) -> Result<PreparedOriginalCircuitRetainedPublicationV1<Old, New>, OriginalCircuitRetainedPublicationErrorV1>
+) -> Result<
+    PreparedOriginalCircuitRetainedPublicationV1<Old, New>,
+    OriginalCircuitRetainedPublicationErrorV1,
+>
 where
     Old: AnchorWitnessStore + Send + 'static,
     New: AnchorWitnessStore + Send + 'static,
 {
-    context.require_training_current(&trainer, PublicationAccess::NewWork).await?;
+    context
+        .require_training_current(&trainer, PublicationAccess::NewWork)
+        .await?;
     binding::require_inputs(&context, &inputs)?;
     let queued = QueuedPublicationFence::new();
     let cancelled = Arc::clone(&queued.cancelled);
-    let (context, prepared, definition, source, completed) = tokio::task::spawn_blocking(move || {
-        let started = now()?;
-        context.authenticate(started, PublicationAccess::NewWork)?;
-        require_not_cancelled(&cancelled)?;
-        binding::require_inputs(&context, &inputs)?;
-        let coordinator = context.authenticate(now()?, PublicationAccess::NewWork)?;
-        let operation = crate::learning_retained_task_operation_id_v1(&coordinator)?;
-        let selected = load_original_selection(&inputs.authorities, inputs.selection)?;
-        if selected.manifest() != &inputs.target.config.manifest {
-            return Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
-                "selected original artifact differs from retained manifest",
-            ));
-        }
-        let before = now()?;
-        if before < started {
-            return Err(OriginalCircuitRetainedPublicationErrorV1::Clock);
-        }
-        context.authenticate(before, PublicationAccess::NewWork)?;
-        require_not_cancelled(&cancelled)?;
-        let prepared = crate::prepare_agentd_generation_cold_same_model_task_v1(
-            inputs.current,
-            inputs.authorities,
-            inputs.predecessor,
-            selected,
-            inputs.target,
-            AgentdGenerationUpdateRequestV1 { operation_id: operation.to_string() },
-        ).map_err(uncertain)?;
-        let after = now().map_err(uncertain)?;
-        if after < before {
-            return Err(uncertain(OriginalCircuitRetainedPublicationErrorV1::Clock));
-        }
-        context.authenticate(after, PublicationAccess::NewWork).map_err(uncertain)?;
-        Ok::<_, OriginalCircuitRetainedPublicationErrorV1>((
-            context, prepared, inputs.definition, inputs.source, inputs.completed,
-        ))
-    }).await.map_err(uncertain)??;
+    let (context, prepared, definition, source, completed) =
+        tokio::task::spawn_blocking(move || {
+            let started = now()?;
+            context.authenticate(started, PublicationAccess::NewWork)?;
+            require_not_cancelled(&cancelled)?;
+            binding::require_inputs(&context, &inputs)?;
+            let coordinator = context.authenticate(now()?, PublicationAccess::NewWork)?;
+            let operation = crate::learning_retained_task_operation_id_v1(&coordinator)?;
+            let selected = load_original_selection(&inputs.authorities, inputs.selection)?;
+            if selected.manifest() != &inputs.target.config.manifest {
+                return Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
+                    "selected original artifact differs from retained manifest",
+                ));
+            }
+            let before = now()?;
+            if before < started {
+                return Err(OriginalCircuitRetainedPublicationErrorV1::Clock);
+            }
+            context.authenticate(before, PublicationAccess::NewWork)?;
+            require_not_cancelled(&cancelled)?;
+            let prepared = crate::prepare_agentd_generation_cold_same_model_task_v1(
+                inputs.current,
+                inputs.authorities,
+                inputs.predecessor,
+                selected,
+                inputs.target,
+                AgentdGenerationUpdateRequestV1 {
+                    operation_id: operation.to_string(),
+                },
+            )
+            .map_err(uncertain)?;
+            let after = now().map_err(uncertain)?;
+            if after < before {
+                return Err(uncertain(OriginalCircuitRetainedPublicationErrorV1::Clock));
+            }
+            context
+                .authenticate(after, PublicationAccess::NewWork)
+                .map_err(uncertain)?;
+            Ok::<_, OriginalCircuitRetainedPublicationErrorV1>((
+                context,
+                prepared,
+                inputs.definition,
+                inputs.source,
+                inputs.completed,
+            ))
+        })
+        .await
+        .map_err(uncertain)??;
     drop(queued);
-    context.require_training_current(&trainer, PublicationAccess::NewWork).await.map_err(uncertain)?;
+    context
+        .require_training_current(&trainer, PublicationAccess::NewWork)
+        .await
+        .map_err(uncertain)?;
     Ok(PreparedOriginalCircuitRetainedPublicationV1 {
-        context, trainer, prepared, definition, source, completed,
+        context,
+        trainer,
+        prepared,
+        definition,
+        source,
+        completed,
     })
 }
 
@@ -182,7 +213,9 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         self,
         signed: SignedFinalUseGrant,
     ) -> Result<PublishedCircuitFeatureTaskV1, OriginalCircuitRetainedPublicationErrorV1> {
-        self.publish_and_retain_original_trainer(signed).await.map(|(task, _trainer)| task)
+        self.publish_and_retain_original_trainer(signed)
+            .await
+            .map(|(task, _trainer)| task)
     }
 
     // Only the retained Version host descendant keeps this same original
@@ -190,29 +223,56 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
     async fn publish_and_retain_original_trainer(
         self,
         signed: SignedFinalUseGrant,
-    ) -> Result<(PublishedCircuitFeatureTaskV1, OriginalCellQ24TrainingCommandClientV1), OriginalCircuitRetainedPublicationErrorV1> {
-        self.context.require_training_current(&self.trainer, PublicationAccess::NewWork).await?;
+    ) -> Result<
+        (
+            PublishedCircuitFeatureTaskV1,
+            OriginalCellQ24TrainingCommandClientV1,
+        ),
+        OriginalCircuitRetainedPublicationErrorV1,
+    > {
+        self.context
+            .require_training_current(&self.trainer, PublicationAccess::NewWork)
+            .await?;
         let queued = QueuedPublicationFence::new();
         let cancelled = Arc::clone(&queued.cancelled);
-        let Self { context, trainer, prepared, definition, source, completed } = self;
+        let Self {
+            context,
+            trainer,
+            prepared,
+            definition,
+            source,
+            completed,
+        } = self;
         let (context, task) = tokio::task::spawn_blocking(move || {
             let started = now()?;
             context.authenticate(started, PublicationAccess::NewWork)?;
             require_not_cancelled(&cancelled)?;
-            let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed).map_err(uncertain)?;
-            let task = ready.into_circuit_feature_task(definition, source, completed).map_err(uncertain)?;
-            binding::require_published(&context, &task, PublicationAccess::NewWork).map_err(uncertain)?;
+            let ready =
+                PreparedAgentdGenerationUpdateV1::publish(prepared, &signed).map_err(uncertain)?;
+            let task = ready
+                .into_circuit_feature_task(definition, source, completed)
+                .map_err(uncertain)?;
+            binding::require_published(&context, &task, PublicationAccess::NewWork)
+                .map_err(uncertain)?;
             if now().map_err(uncertain)? < started {
                 return Err(uncertain(OriginalCircuitRetainedPublicationErrorV1::Clock));
             }
             Ok::<_, OriginalCircuitRetainedPublicationErrorV1>((context, task))
-        }).await.map_err(uncertain)??;
+        })
+        .await
+        .map_err(uncertain)??;
         drop(queued);
-        context.require_training_current(&trainer, PublicationAccess::NewWork).await.map_err(uncertain)?;
+        context
+            .require_training_current(&trainer, PublicationAccess::NewWork)
+            .await
+            .map_err(uncertain)?;
         let task = tokio::task::spawn_blocking(move || {
-            binding::require_published(&context, &task, PublicationAccess::NewWork).map_err(uncertain)?;
+            binding::require_published(&context, &task, PublicationAccess::NewWork)
+                .map_err(uncertain)?;
             Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)
-        }).await.map_err(uncertain)??;
+        })
+        .await
+        .map_err(uncertain)??;
         Ok((task, trainer))
     }
 }
@@ -221,10 +281,15 @@ fn load_original_selection(
     authorities: &AgentdGenerationUpdateAuthoritiesV1,
     selection: OriginalCircuitRetainedPublicationSelectionV1,
 ) -> Result<AgentdSelectedGenerationV1, OriginalCircuitRetainedPublicationErrorV1> {
-    let artifacts = authorities.artifacts.lock()
-        .map_err(|_| OriginalCircuitRetainedPublicationErrorV1::Binding("original artifact owner lock"))?;
+    let artifacts = authorities.artifacts.lock().map_err(|_| {
+        OriginalCircuitRetainedPublicationErrorV1::Binding("original artifact owner lock")
+    })?;
     Ok(AgentdSelectedGenerationV1::load(
-        &artifacts, selection.verifier, selection.signed, selection.files, authorities.now()?,
+        &artifacts,
+        selection.verifier,
+        selection.signed,
+        selection.files,
+        authorities.now()?,
     )?)
 }
 
@@ -233,7 +298,9 @@ struct QueuedPublicationFence {
 }
 impl QueuedPublicationFence {
     fn new() -> Self {
-        Self { cancelled: Arc::new(AtomicBool::new(false)) }
+        Self {
+            cancelled: Arc::new(AtomicBool::new(false)),
+        }
     }
 }
 impl Drop for QueuedPublicationFence {
@@ -241,7 +308,9 @@ impl Drop for QueuedPublicationFence {
         self.cancelled.store(true, Ordering::Release);
     }
 }
-fn require_not_cancelled(cancelled: &AtomicBool) -> Result<(), OriginalCircuitRetainedPublicationErrorV1> {
+fn require_not_cancelled(
+    cancelled: &AtomicBool,
+) -> Result<(), OriginalCircuitRetainedPublicationErrorV1> {
     if cancelled.load(Ordering::Acquire) {
         return Err(OriginalCircuitRetainedPublicationErrorV1::Cancelled);
     }
@@ -249,7 +318,9 @@ fn require_not_cancelled(cancelled: &AtomicBool) -> Result<(), OriginalCircuitRe
 }
 
 fn now() -> Result<u64, OriginalCircuitRetainedPublicationErrorV1> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|time| time.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|time| time.as_secs())
         .map_err(|_| OriginalCircuitRetainedPublicationErrorV1::Clock)
 }
 fn uncertain(error: impl std::fmt::Display) -> OriginalCircuitRetainedPublicationErrorV1 {

@@ -23,7 +23,9 @@ pub(super) fn require_inputs<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
         &inputs.predecessor.config,
         inputs.predecessor.max_records,
     )
-    .map_err(|_| OriginalCircuitRetainedPublicationErrorV1::Binding("original predecessor config"))?;
+    .map_err(|_| {
+        OriginalCircuitRetainedPublicationErrorV1::Binding("original predecessor config")
+    })?;
     let next = &inputs.target.config;
     let source = &inputs.source;
     let definition = &inputs.definition;
@@ -34,7 +36,8 @@ pub(super) fn require_inputs<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
         || source.observation == inputs.completed.source.input().observation
         || source.scope.agent_id != context.training.request.agent_id
         || source.scope.cell_id != context.training.request.cell_id
-        || source.scope.principal_digest.to_string() != context.training.request.principal_id.as_str()
+        || source.scope.principal_digest.to_string()
+            != context.training.request.principal_id.as_str()
         || next.initial.scope.agent_id != source.scope.agent_id.as_str()
         || next.initial.scope.cell_id != source.scope.cell_id.as_str()
         || next.initial.scope.run_id != source.scope.run_id.as_str()
@@ -55,7 +58,9 @@ pub(super) fn require_inputs<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
         &context.training.request.selected_bundle,
         &next.manifest,
     )
-    .map_err(|_| OriginalCircuitRetainedPublicationErrorV1::Binding("complete retained Q24 manifest"))?;
+    .map_err(|_| {
+        OriginalCircuitRetainedPublicationErrorV1::Binding("complete retained Q24 manifest")
+    })?;
     Ok(())
 }
 
@@ -71,7 +76,10 @@ fn require_previous(
         || input.scope.cell_id != request.cell_id
         || input.scope.principal_digest.to_string() != request.principal_id.as_str()
         || previous.source.bundle_digest()
-            != request.selected_bundle.digest().map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?
+            != request
+                .selected_bundle
+                .digest()
+                .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?
         || previous.receipt.checkpoint_after != previous.source.checkpoint_digest()
     {
         return Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
@@ -79,7 +87,9 @@ fn require_previous(
         ));
     }
     crate::cell_composed_q24::validate_manifest(&request.selected_bundle, &previous.manifest)
-        .map_err(|_| OriginalCircuitRetainedPublicationErrorV1::Binding("complete original A model"))?;
+        .map_err(|_| {
+            OriginalCircuitRetainedPublicationErrorV1::Binding("complete original A model")
+        })?;
     Ok(())
 }
 
@@ -103,7 +113,9 @@ pub(super) fn require_published(
         .0
         .original
         .lock()
-        .map_err(|_| OriginalCircuitRetainedPublicationErrorV1::Binding("original version owner lock"))?
+        .map_err(|_| {
+            OriginalCircuitRetainedPublicationErrorV1::Binding("original version owner lock")
+        })?
         .selection(original, &coordinator, &previous.manifest)?;
     if !matches!(selected, LearningIterationObservationV1::Selection { candidate_bundle, .. }
         if candidate_bundle == context.training.request.selected_bundle.digest()

@@ -1,9 +1,9 @@
 //! Current original role evidence at the resident coordinator and consumer.
 //! This authenticates observations; it neither dispatches nor re-signs them.
 
-use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -16,9 +16,9 @@ use tokio_util::sync::CancellationToken;
 
 use super::gate::ResidentRegisteredStateV3;
 use super::profile::RootResidentLearningProfileV3;
+use super::stages::ResidentOriginalStageOwnersV3;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::LearningIterationStageOwnerPortsV1;
-use super::stages::ResidentOriginalStageOwnersV3;
 
 pub(super) async fn original_attestations(
     owner: &Arc<ResidentRegisteredStateV3>,
@@ -32,12 +32,22 @@ pub(super) async fn original_attestations(
     let mut signatures = Vec::with_capacity(snapshot.receipts.len());
     for receipt in &snapshot.receipts {
         let (_, now) = owner.read(cancellation).await?;
-        signatures.push(stages.receipt_attestation(snapshot, receipt, now / 1_000).await?);
+        signatures.push(
+            stages
+                .receipt_attestation(snapshot, receipt, now / 1_000)
+                .await?,
+        );
     }
     // All role I/O precedes this fresh Root clock and revalidation of every
     // retained complete signature, including the earliest observer window.
     let (_, fresh) = owner.read(cancellation).await?;
-    verify_attestations(&owner.authority.profile, verifier, snapshot, &signatures, fresh / 1_000)?;
+    verify_attestations(
+        &owner.authority.profile,
+        verifier,
+        snapshot,
+        &signatures,
+        fresh / 1_000,
+    )?;
     Ok(signatures)
 }
 
@@ -48,9 +58,12 @@ pub(super) fn verify_attestations(
     signatures: &[SignedLearningEvidenceV1],
     now: u64,
 ) -> Result<(), Error> {
-    profile.require_verifier(verifier).map_err(|_| Error::WrongScope)?;
+    profile
+        .require_verifier(verifier)
+        .map_err(|_| Error::WrongScope)?;
     profile.scope.validate_snapshot(snapshot)?;
-    if snapshot.request != profile.initial.request || snapshot.owners != profile.initial.owners
+    if snapshot.request != profile.initial.request
+        || snapshot.owners != profile.initial.owners
         || signatures.len() != snapshot.receipts.len()
         || signatures.len() > 5
         || verifier.trust_digest() != snapshot.owners.evidence_trust_digest
@@ -61,7 +74,8 @@ pub(super) fn verify_attestations(
     for (receipt, signature) in snapshot.receipts.iter().zip(signatures) {
         let stage = receipt.observation.stage();
         let role = match stage {
-            LearningIterationStageV1::Experience | LearningIterationStageV1::Dataset
+            LearningIterationStageV1::Experience
+            | LearningIterationStageV1::Dataset
             | LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer,
             LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator,
             LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector,
@@ -69,10 +83,10 @@ pub(super) fn verify_attestations(
                 // This exact original Candidate payload is separately obtained
                 // through the concrete Evaluator command. Its signature grants
                 // no Model or version rights and cannot stand in for a panel.
-                let mut training = LearningIterationCoordinatorV1::from_snapshot(
-                    profile.initial.clone(),
-                )?;
-                if snapshot.receipts.len() < 4 || snapshot.training_no_update_v2().is_some()
+                let mut training =
+                    LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?;
+                if snapshot.receipts.len() < 4
+                    || snapshot.training_no_update_v2().is_some()
                     || snapshot.receipts.get(3) != Some(receipt)
                 {
                     return Err(Error::WrongScope);
@@ -80,8 +94,11 @@ pub(super) fn verify_attestations(
                 for original in &snapshot.receipts[..3] {
                     training.record(original.clone(), original.observed_unix_seconds)?;
                 }
-                let candidate = training.candidate().ok_or(Error::WrongScope)?
-                    .digest().map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+                let candidate = training
+                    .candidate()
+                    .ok_or(Error::WrongScope)?
+                    .digest()
+                    .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
                 if training.next_stage() != Some(LearningIterationStageV1::Evaluation)
                     || receipt.predecessor != training.snapshot().head_digest
                     || receipt.operation_id != profile.initial.request.operation_id
@@ -95,11 +112,14 @@ pub(super) fn verify_attestations(
                 }
                 LearningEvidenceRoleV1::Evaluator
             }
-            LearningIterationStageV1::Proposal =>
-                return Err(Error::OwnerUnavailable("resident Model route is absent")),
+            LearningIterationStageV1::Proposal => {
+                return Err(Error::OwnerUnavailable("resident Model route is absent"));
+            }
         };
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let evidence = verifier.verify(role, signature, &payload, now).map_err(Error::Evidence)?;
+        let evidence = verifier
+            .verify(role, signature, &payload, now)
+            .map_err(Error::Evidence)?;
         if evidence.principal().principal_id != receipt.actor_id
             || &receipt.actor_id != snapshot.owners.owner(stage)
             || evidence.trust_digest() != snapshot.owners.evidence_trust_digest
@@ -118,12 +138,16 @@ pub(super) fn verify_attestations(
                 }
                 &[LearningIterationStageV1::Training]
             }
-            LearningIterationStageV1::NextUse =>
-                &[LearningIterationStageV1::Training, LearningIterationStageV1::Selection],
+            LearningIterationStageV1::NextUse => &[
+                LearningIterationStageV1::Training,
+                LearningIterationStageV1::Selection,
+            ],
             _ => &[],
         };
         for predecessor in independent {
-            let previous = verified.iter().find(|(stage, _)| stage == predecessor)
+            let previous = verified
+                .iter()
+                .find(|(stage, _)| stage == predecessor)
                 .ok_or(Error::Evidence(SignedEvidenceError::ContextMismatch))?;
             verify_signed_actor_separation(&previous.1, current, now).map_err(Error::Evidence)?;
         }

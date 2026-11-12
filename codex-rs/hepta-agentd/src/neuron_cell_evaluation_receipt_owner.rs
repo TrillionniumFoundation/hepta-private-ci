@@ -242,10 +242,11 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             .await
     }
 
-    pub(crate) fn original_host_profile(
-        &self,
-    ) -> (&OriginalCellEvaluationReceiptConfigV1, bool) {
-        (&self.config, matches!(self.host_origin, HostOrigin::ReadbackOnly))
+    pub(crate) fn original_host_profile(&self) -> (&OriginalCellEvaluationReceiptConfigV1, bool) {
+        (
+            &self.config,
+            matches!(self.host_origin, HostOrigin::ReadbackOnly),
+        )
     }
 
     /// Final physical read for the closed host, after its complete panel I/O.
@@ -538,7 +539,8 @@ impl OriginalCellEvaluationReceiptOwnerV1<codex_hepta_neuron::FileAnchorWitnessS
             codex_hepta_neuron::FileAnchorWitnessStore,
             codex_hepta_neuron::FileAnchorWitnessStore,
         >,
-    ) -> Result<crate::OriginalCellEvaluationHostV1, crate::OriginalCellEvaluationCommandErrorV1> {
+    ) -> Result<crate::OriginalCellEvaluationHostV1, crate::OriginalCellEvaluationCommandErrorV1>
+    {
         crate::OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
     }
 }
@@ -550,14 +552,21 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
     pub(crate) fn fixture_pending_original_host(&mut self) -> anyhow::Result<()> {
         anyhow::ensure!(matches!(
             self.journal.read(&self.saved),
-            Err(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)),
+            Err(OwnerError::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing
+            )),
         ));
         self.host_origin = HostOrigin::ReadbackOnly;
         let result = self.journal.commit_once(&self.saved, || {
-            Err(OwnerError::Binding("explicit test failure after original claim"))
+            Err(OwnerError::Binding(
+                "explicit test failure after original claim",
+            ))
         });
         anyhow::ensure!(matches!(result, Err(OwnerError::Binding(_))));
-        anyhow::ensure!(matches!(self.journal.read(&self.saved), Err(OwnerError::Pending)));
+        anyhow::ensure!(matches!(
+            self.journal.read(&self.saved),
+            Err(OwnerError::Pending)
+        ));
         Ok(())
     }
 }

@@ -45,13 +45,22 @@ fn fixture_client(
     let authorization = profile::authorization_binding(&profile, &profile.intent, &profile.lease)?;
     let (stream, server) = UnixStream::pair()?;
     let peer = peer_channel(stream)?;
-    Ok((Arc::new(AgentdRootResidentLearningClientV3 {
-        channel: Arc::new(Mutex::new(Some(ResidentChannelV3 {
-            peer, next: 1, execution_requested: false, retained: None,
-        }))),
-        lane: Arc::new(Semaphore::new(1)),
-        profile, verifier, authorization, origin: Arc::new(ClientOriginV3::Fresh),
-    }), server))
+    Ok((
+        Arc::new(AgentdRootResidentLearningClientV3 {
+            channel: Arc::new(Mutex::new(Some(ResidentChannelV3 {
+                peer,
+                next: 1,
+                execution_requested: false,
+                retained: None,
+            }))),
+            lane: Arc::new(Semaphore::new(1)),
+            profile,
+            verifier,
+            authorization,
+            origin: Arc::new(ClientOriginV3::Fresh),
+        }),
+        server,
+    ))
 }
 
 pub(in crate::authority_host_service::resident) fn queued_admit_cancellation(
@@ -60,7 +69,9 @@ pub(in crate::authority_host_service::resident) fn queued_admit_cancellation(
 ) -> anyhow::Result<()> {
     let (client, mut peer) = fixture_client(profile, verifier)?;
     let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all().max_blocking_threads(1).build()?;
+        .enable_all()
+        .max_blocking_threads(1)
+        .build()?;
     let (entered, started) = std::sync::mpsc::sync_channel(1);
     let (release, wait) = std::sync::mpsc::sync_channel(1);
     let blocked = runtime.spawn_blocking(move || -> anyhow::Result<()> {
@@ -83,14 +94,19 @@ pub(in crate::authority_host_service::resident) fn queued_admit_cancellation(
                 }
                 tokio::task::yield_now().await;
             }
-        }).await?;
+        })
+        .await?;
         pending.abort();
         assert!(pending.await.is_err());
         release.send(())?;
         blocked.await??;
         peer.set_read_timeout(Some(Duration::from_secs(2)))?;
         let mut byte = [0_u8; 1];
-        assert_eq!(peer.read(&mut byte)?, 0, "cancelled queued Admit wrote a frame");
+        assert_eq!(
+            peer.read(&mut byte)?,
+            0,
+            "cancelled queued Admit wrote a frame"
+        );
         assert!(client.channel.try_lock().expect("client slot").is_none());
         assert!(matches!(client.readback().await, Err(Error::Unavailable)));
         Ok::<_, anyhow::Error>(())
@@ -118,15 +134,18 @@ pub(in crate::authority_host_service::resident) fn uncertain_then_readback(
                 wire::Reply::Uncertain
             } else {
                 wire::encode_current(super::super::runtime::ResidentRuntimeObservationV3 {
-                    snapshot: Some(completed.clone()), attestations: signatures.clone(),
+                    snapshot: Some(completed.clone()),
+                    attestations: signatures.clone(),
                     dispatch_pending: false,
                 })?
             };
             assert!(peer.exchange(|bytes| {
                 let request: wire::Request = serde_json::from_slice(bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                if request.schema != 3 || request.operation != wire::OPERATION
-                    || request.request_id != id || request.profile != profile.binding.to_string()
+                if request.schema != 3
+                    || request.operation != wire::OPERATION
+                    || request.request_id != id
+                    || request.profile != profile.binding.to_string()
                     || request.authorization != authorization
                 {
                     return Err(HostIssuerTransportError::InvalidRequest);
@@ -137,29 +156,51 @@ pub(in crate::authority_host_service::resident) fn uncertain_then_readback(
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
                 serde_json::to_vec(&wire::Response {
-                    schema: 3, operation: wire::OPERATION.into(), request_id: id,
-                    profile: request.profile, authorization: request.authorization,
-                    action: request.action, result,
-                }).map_err(|_| HostIssuerTransportError::InvalidRequest)
+                    schema: 3,
+                    operation: wire::OPERATION.into(),
+                    request_id: id,
+                    profile: request.profile,
+                    authorization: request.authorization,
+                    action: request.action,
+                    result,
+                })
+                .map_err(|_| HostIssuerTransportError::InvalidRequest)
             })?);
         }
         Ok(())
     });
-    let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
     let readback = runtime.block_on(async {
-        assert!(matches!(client.readback().await, Err(Error::CommitUncertain)));
+        assert!(matches!(
+            client.readback().await,
+            Err(Error::CommitUncertain)
+        ));
         // A refused preflight cannot claim A's outbox or later become fresh.
-        assert!(matches!(client.require_fresh_admission_channel(), Err(Error::CommitUncertain)));
+        assert!(matches!(
+            client.require_fresh_admission_channel(),
+            Err(Error::CommitUncertain)
+        ));
         let readback = client.readback().await?;
         assert_eq!(readback.snapshot(), Some(&expected));
         assert_eq!(readback.attestations(), expected_signatures.as_slice());
         assert!(!readback.dispatch_pending());
-        assert!(LearningIterationCoordinatorV1::from_snapshot(expected.clone())?.next_stage().is_none());
-        assert!(matches!(client.require_fresh_admission_channel(), Err(Error::CommitUncertain)));
+        assert!(
+            LearningIterationCoordinatorV1::from_snapshot(expected.clone())?
+                .next_stage()
+                .is_none()
+        );
+        assert!(matches!(
+            client.require_fresh_admission_channel(),
+            Err(Error::CommitUncertain)
+        ));
         Ok::<_, anyhow::Error>(readback)
     });
     drop(client);
-    server.join().map_err(|_| anyhow::anyhow!("resident fixture peer panicked"))??;
+    server
+        .join()
+        .map_err(|_| anyhow::anyhow!("resident fixture peer panicked"))??;
     readback?;
     assert_eq!(frames.load(Ordering::SeqCst), 2);
     assert_eq!(admissions.load(Ordering::SeqCst), 0);

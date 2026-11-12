@@ -39,7 +39,9 @@ impl OriginalPublicationReadbackFixture {
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
         let scope_digest = withdrawals.scope_digest().fixture("original scope");
         let mut original_trust = trust(&key, scope_digest);
-        for signer in original_trust.writer_signers.iter_mut()
+        for signer in original_trust
+            .writer_signers
+            .iter_mut()
             .chain(original_trust.head_signers.iter_mut())
         {
             signer.valid_from = issued - 1;
@@ -62,19 +64,40 @@ impl OriginalPublicationReadbackFixture {
             storage_binding: digest("binding"),
             now: observed,
         };
-        let mut service = LearningArtifactOwnerService::open(config.clone()).fixture("original owner");
+        let mut service =
+            LearningArtifactOwnerService::open(config.clone()).fixture("original owner");
         let (baseline, baseline_intent) = request_for(
-            &service, &key, "readback-baseline", issued, expires, observed, head_expires,
+            &service,
+            &key,
+            "readback-baseline",
+            issued,
+            expires,
+            observed,
+            head_expires,
         );
-        service.publish(baseline.clone()).fixture("original baseline publication");
-        Self { directory, key, service, config, baseline, baseline_intent }
+        service
+            .publish(baseline.clone())
+            .fixture("original baseline publication");
+        Self {
+            directory,
+            key,
+            service,
+            config,
+            baseline,
+            baseline_intent,
+        }
     }
 
     pub(super) fn pending_request(&self) -> (LearningArtifactPublishRequestV1, Digest32) {
         let clock = now_millis();
         request_for(
-            &self.service, &self.key, "readback-pending", clock - 1_000,
-            clock + 60_000, clock, clock + 60_000,
+            &self.service,
+            &self.key,
+            "readback-pending",
+            clock - 1_000,
+            clock + 60_000,
+            clock,
+            clock + 60_000,
         )
     }
 
@@ -83,17 +106,34 @@ impl OriginalPublicationReadbackFixture {
         let mut failed = request.clone();
         failed.payload = b"wrong-original-payload".to_vec();
         assert!(self.service.publish(failed).is_err());
-        assert_eq!(self.service.recovery_required(), Some(&request.operation_id));
+        assert_eq!(
+            self.service.recovery_required(),
+            Some(&request.operation_id)
+        );
         (request, intent)
     }
 
     pub(super) fn reopen(self) -> Self {
-        let Self { directory, key, service, mut config, baseline, baseline_intent } = self;
+        let Self {
+            directory,
+            key,
+            service,
+            mut config,
+            baseline,
+            baseline_intent,
+        } = self;
         drop(service);
         config.required_current_head = Some(baseline.signed_current_head.clone());
         config.now = now_millis();
         let service = LearningArtifactOwnerService::open(config.clone()).fixture("original reopen");
-        Self { directory, key, service, config, baseline, baseline_intent }
+        Self {
+            directory,
+            key,
+            service,
+            config,
+            baseline,
+            baseline_intent,
+        }
     }
 
     pub(super) fn bytes(&self) -> BTreeMap<std::path::PathBuf, Vec<u8>> {
@@ -103,8 +143,10 @@ impl OriginalPublicationReadbackFixture {
                 if path.is_dir() {
                     visit(root, &path, out);
                 } else {
-                    out.insert(path.strip_prefix(root).fixture("owned path").to_owned(),
-                        fs::read(&path).fixture("original bytes"));
+                    out.insert(
+                        path.strip_prefix(root).fixture("owned path").to_owned(),
+                        fs::read(&path).fixture("original bytes"),
+                    );
                 }
             }
         }
@@ -114,14 +156,16 @@ impl OriginalPublicationReadbackFixture {
     }
 
     pub(super) fn checkpoint_file(&self, operation: &StableId, phase: &str) -> std::path::PathBuf {
-        fs::read_dir(self.directory.0.join("transactions")).fixture("transactions")
+        fs::read_dir(self.directory.0.join("transactions"))
+            .fixture("transactions")
             .map(|entry| entry.fixture("transaction").path())
             .find(|path| {
                 let bytes = fs::read_to_string(path).fixture("checkpoint text");
                 let mut lines = bytes.lines();
                 let _ = lines.next();
                 lines.next() == Some(operation.as_str()) && lines.next() == Some(phase)
-            }).fixture("actual original phase file")
+            })
+            .fixture("actual original phase file")
     }
 }
 
@@ -140,19 +184,32 @@ fn request_for(
     model.expires_at = expires;
     let predecessor = service.registry().snapshot().head_digest;
     let admission = admit_manifest_at_withdrawal_head_v3(
-        service.withdrawal_registry(), service.withdrawal_registry().head_digest(),
-        model, observed,
-    ).fixture("original admission");
+        service.withdrawal_registry(),
+        service.withdrawal_registry().head_digest(),
+        model,
+        observed,
+    )
+    .fixture("original admission");
     let operation = id(&format!("{name}-operation"));
     let mut staged = service.registry().clone();
     let preview = ArtifactPublicationTransactionV1::begin(
-        operation.clone(), admission.clone(), service.withdrawal_registry(),
-        &staged, predecessor, observed,
-    ).fixture("original intent");
-    service.host.stage_compatibility_registration(&preview, &mut staged, observed)
+        operation.clone(),
+        admission.clone(),
+        service.withdrawal_registry(),
+        &staged,
+        predecessor,
+        observed,
+    )
+    .fixture("original intent");
+    service
+        .host
+        .stage_compatibility_registration(&preview, &mut staged, observed)
         .fixture("in-memory original registration preview");
     let mut signed = SignedCurrentArtifactHeadV1 {
-        withdrawal_scope_digest: service.withdrawal_registry().scope_digest().fixture("scope"),
+        withdrawal_scope_digest: service
+            .withdrawal_registry()
+            .scope_digest()
+            .fixture("scope"),
         binding: digest("binding"),
         witness: RegistryHeadWitnessV1 {
             registry_id: id("learning-artifacts"),
@@ -168,17 +225,25 @@ fn request_for(
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-    (LearningArtifactPublishRequestV1 {
-        operation_id: operation,
-        admission,
-        payload: b"payload".to_vec(),
-        signed_current_head: signed,
-        expected_registry_predecessor_head: predecessor,
-        now: observed,
-    }, preview.intent().intent_digest)
+    (
+        LearningArtifactPublishRequestV1 {
+            operation_id: operation,
+            admission,
+            payload: b"payload".to_vec(),
+            signed_current_head: signed,
+            expected_registry_predecessor_head: predecessor,
+            now: observed,
+        },
+        preview.intent().intent_digest,
+    )
 }
 
 pub(super) fn now_millis() -> u64 {
-    u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)
-        .fixture("clock").as_millis()).fixture("bounded clock")
+    u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .fixture("clock")
+            .as_millis(),
+    )
+    .fixture("bounded clock")
 }

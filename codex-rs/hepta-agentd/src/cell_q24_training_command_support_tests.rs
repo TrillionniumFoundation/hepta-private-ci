@@ -234,11 +234,9 @@ pub(crate) fn reject_cancelled_queued_dispatch(
             occupied_rx.await?;
             let cancellation = Arc::new(AtomicBool::new(false));
             let mut execute = Box::pin(client.execute_training(Arc::clone(&cancellation)));
-            std::future::poll_fn(|cx| {
-                match std::future::Future::poll(execute.as_mut(), cx) {
-                    std::task::Poll::Pending => std::task::Poll::Ready(()),
-                    std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
-                }
+            std::future::poll_fn(|cx| match std::future::Future::poll(execute.as_mut(), cx) {
+                std::task::Poll::Pending => std::task::Poll::Ready(()),
+                std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
             })
             .await;
             cancellation.store(true, Ordering::Release);
@@ -254,7 +252,9 @@ pub(crate) fn reject_cancelled_queued_dispatch(
             );
             anyhow::ensure!(
                 matches!(
-                    client.execute_training(Arc::new(AtomicBool::new(false))).await,
+                    client
+                        .execute_training(Arc::new(AtomicBool::new(false)))
+                        .await,
                     Err(super::Error::Unavailable)
                 ),
                 "cancellation must not restore an executable connection"
@@ -286,15 +286,19 @@ pub(crate) fn retained_publication_training_peer(
             let observed = channel.exchange(|bytes| {
                 let request: wire::Request = serde_json::from_slice(bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                request.require_context(&context, binding, next)
+                request
+                    .require_context(&context, binding, next)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 if request.action != wire::Action::Readback || next > 64 {
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
                 let result = wire::encode_completed(
-                    &context, receipt.clone(), signature.clone(),
+                    &context,
+                    receipt.clone(),
+                    signature.clone(),
                     super::super::now().map_err(|_| HostIssuerTransportError::InvalidRequest)?,
-                ).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                )
+                .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 let response = wire::Response::from_request(&request, result);
                 next += 1;
                 serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)

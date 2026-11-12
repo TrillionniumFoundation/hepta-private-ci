@@ -21,14 +21,14 @@ use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::PreparedLearningIterationProposalV1;
 use crate::RootResidentLearningEffectGateV3;
 
+#[path = "cell_q24_no_update_stage_auth.rs"]
+mod auth;
+#[path = "cell_q24_no_update_stage_execute.rs"]
+mod execution;
 #[path = "cell_q24_no_update_stage_inputs.rs"]
 mod inputs;
 #[path = "cell_q24_no_update_stage_state.rs"]
 mod state;
-#[path = "cell_q24_no_update_stage_execute.rs"]
-mod execution;
-#[path = "cell_q24_no_update_stage_auth.rs"]
-mod auth;
 
 #[path = "cell_q24_candidate_stage_owners.rs"]
 mod candidate;
@@ -126,7 +126,9 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
                 let fresh = auth::require_material(&self.material, self.initial_binding)?;
                 auth::require_clock(started_at, fresh)?;
                 auth::verify_prefix(&self.material, snapshot, &state, fresh)
-            }).await.map_err(|_| Error::CommitUncertain)?
+            })
+            .await
+            .map_err(|_| Error::CommitUncertain)?
         })
     }
 
@@ -138,8 +140,11 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
         // Every fence check lives inside this future, at the actual I/O edge.
         Box::pin(async move {
             tokio::time::timeout_at(self.end.into(), async {
-                OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage).await
-            }).await.map_err(|_| Error::CommitUncertain)?
+                OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage)
+                    .await
+            })
+            .await
+            .map_err(|_| Error::CommitUncertain)?
         })
     }
 
@@ -147,7 +152,11 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
         &'a self,
         _snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
-        Box::pin(async { Err(Error::OwnerUnavailable("NoUpdate assembly has no Model or Proposal authority")) })
+        Box::pin(async {
+            Err(Error::OwnerUnavailable(
+                "NoUpdate assembly has no Model or Proposal authority",
+            ))
+        })
     }
 
     fn receipt_attestation<'a>(
@@ -166,7 +175,9 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
                 auth::require_clock(started_at, fresh)?;
                 auth::verify_receipt(&self.material, receipt, &signature, fresh)?;
                 Ok(signature)
-            }).await.map_err(|_| Error::CommitUncertain)?
+            })
+            .await
+            .map_err(|_| Error::CommitUncertain)?
         })
     }
 }
@@ -177,6 +188,6 @@ pub(crate) use state::fixture::fresh_material_only;
 pub(crate) use state::fixture::recovered_material_only;
 
 #[cfg(test)]
-pub(crate) use state::fixture::recovered_candidate_clients;
-#[cfg(test)]
 pub(crate) use candidate::fixture_from_original_clients;
+#[cfg(test)]
+pub(crate) use state::fixture::recovered_candidate_clients;

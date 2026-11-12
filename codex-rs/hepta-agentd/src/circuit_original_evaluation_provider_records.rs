@@ -56,8 +56,16 @@ pub(super) fn assemble(
     current: u64,
 ) -> Result<TemporalComparisonInputsV1, Error> {
     let rule = &config.rule;
-    let expected: BTreeSet<_> = rule.history.iter().map(|row| row.episode_id.clone())
-        .chain(rule.targets.iter().map(|row| row.episode.episode_id.clone())).collect();
+    let expected: BTreeSet<_> = rule
+        .history
+        .iter()
+        .map(|row| row.episode_id.clone())
+        .chain(
+            rule.targets
+                .iter()
+                .map(|row| row.episode.episode_id.clone()),
+        )
+        .collect();
     let mut decisions = BTreeMap::new();
     let mut outcomes = BTreeMap::new();
     let mut credits = BTreeMap::new();
@@ -69,7 +77,10 @@ pub(super) fn assemble(
                 }
             }
             LedgerEvent::AuthenticatedOutcomeV2(value) => {
-                if outcomes.insert(value.episode_id.clone(), (value, record.event_digest)).is_some() {
+                if outcomes
+                    .insert(value.episode_id.clone(), (value, record.event_digest))
+                    .is_some()
+                {
                     return Err(Error::Binding("one active original Outcome per episode"));
                 }
             }
@@ -78,31 +89,54 @@ pub(super) fn assemble(
                     return Err(Error::Binding("one original terminal credit lineage"));
                 }
             }
-            _ => return Err(Error::Binding("authenticated Decision, Outcome and optional credit only")),
+            _ => {
+                return Err(Error::Binding(
+                    "authenticated Decision, Outcome and optional credit only",
+                ));
+            }
         }
     }
     if decisions.keys().cloned().collect::<BTreeSet<_>>() != expected
         || outcomes.keys().cloned().collect::<BTreeSet<_>>() != expected
     {
-        return Err(Error::Binding("all preregistered historical and held-out episodes"));
+        return Err(Error::Binding(
+            "all preregistered historical and held-out episodes",
+        ));
     }
     for (episode, credit) in credits {
-        let (outcome, _) = outcomes.get(&episode).ok_or(Error::Binding("credit episode"))?;
+        let (outcome, _) = outcomes
+            .get(&episode)
+            .ok_or(Error::Binding("credit episode"))?;
         if credit.outcome_id != outcome.outcome_id
             || Some(credit.terminal_outcome) != outcome.value
             || credit.authentication_digest.is_zero()
         {
-            return Err(Error::Binding("credit belongs to the same original Outcome"));
+            return Err(Error::Binding(
+                "credit belongs to the same original Outcome",
+            ));
         }
     }
 
     let mut training = Vec::with_capacity(rule.history.len());
     for requested in &rule.history {
-        let row = Episode::read_episode(config, ledger, requested, &decisions, &outcomes, publications, sources, training_binding, current)?;
+        let row = Episode::read_episode(
+            config,
+            ledger,
+            requested,
+            &decisions,
+            &outcomes,
+            publications,
+            sources,
+            training_binding,
+            current,
+        )?;
         if row.admitted_at < rule.history_start_unix_seconds
             || row.admitted_at > rule.candidate_plan.fold.training_watermark
             || row.observed_at > rule.candidate_plan.fold.training_watermark
-            || row.outcome.finalized_at.is_none_or(|at| at > rule.candidate_plan.fold.training_watermark)
+            || row
+                .outcome
+                .finalized_at
+                .is_none_or(|at| at > rule.candidate_plan.fold.training_watermark)
         {
             return Err(Error::Binding("actual earlier historical outcome window"));
         }
@@ -123,17 +157,34 @@ pub(super) fn assemble(
     let mut baseline_observations = Vec::with_capacity(rule.targets.len());
     let mut assignments = Vec::with_capacity(rule.targets.len());
     for requested in &rule.targets {
-        let row = Episode::read_episode(config, ledger, &requested.episode, &decisions, &outcomes, publications, sources, training_binding, current)?;
+        let row = Episode::read_episode(
+            config,
+            ledger,
+            &requested.episode,
+            &decisions,
+            &outcomes,
+            publications,
+            sources,
+            training_binding,
+            current,
+        )?;
         if row.admitted_at < rule.candidate_plan.fold.evaluation_start
             || row.observed_at > rule.evaluation_end_unix_seconds
-            || row.outcome.finalized_at.is_none_or(|at| at > rule.evaluation_end_unix_seconds)
+            || row
+                .outcome
+                .finalized_at
+                .is_none_or(|at| at > rule.evaluation_end_unix_seconds)
             || row.source.bundle_digest() != training_binding.baseline
         {
-            return Err(Error::Binding("actual held-out baseline and observation window"));
+            return Err(Error::Binding(
+                "actual held-out baseline and observation window",
+            ));
         }
-        let candidate = publications.get(&requested.candidate_run_id)
+        let candidate = publications
+            .get(&requested.candidate_run_id)
             .ok_or(Error::Binding("actual candidate task"))?;
-        let baseline = publications.get(&requested.baseline_run_id)
+        let baseline = publications
+            .get(&requested.baseline_run_id)
             .ok_or(Error::Binding("actual baseline task"))?;
         require_arm(config, &row, candidate, training_binding.candidate)?;
         require_arm(config, &row, baseline, training_binding.baseline)?;
@@ -184,19 +235,38 @@ impl<'a> Episode<'a> {
         training: &super::binding::CandidateBinding,
         current: u64,
     ) -> Result<Episode<'a>, Error> {
-        let decision = *decisions.get(&requested.episode_id).ok_or(Error::Binding("original Decision"))?;
-        let (outcome, evidence) = *outcomes.get(&requested.episode_id).ok_or(Error::Binding("original Outcome"))?;
-        let source = publications.get(&requested.behavior_run_id).ok_or(Error::Binding("original behavior task"))?;
-        let owner = sources.iter().find(|owner| owner.run_id == requested.behavior_run_id)
+        let decision = *decisions
+            .get(&requested.episode_id)
+            .ok_or(Error::Binding("original Decision"))?;
+        let (outcome, evidence) = *outcomes
+            .get(&requested.episode_id)
+            .ok_or(Error::Binding("original Outcome"))?;
+        let source = publications
+            .get(&requested.behavior_run_id)
+            .ok_or(Error::Binding("original behavior task"))?;
+        let owner = sources
+            .iter()
+            .find(|owner| owner.run_id == requested.behavior_run_id)
             .ok_or(Error::Binding("original source identity"))?;
-        let original_run = circuit_learning_run_id_v1(ledger, &owner.identity.agent_id, &requested.episode_id)
-            .map_err(|_| Error::Binding("original ledger-bound execution identity"))?;
+        let original_run =
+            circuit_learning_run_id_v1(ledger, &owner.identity.agent_id, &requested.episode_id)
+                .map_err(|_| Error::Binding("original ledger-bound execution identity"))?;
         let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;
         let input = source.input();
-        let admitted_at = source.original_record().admission.observed_at_unix_micros.div_ceil(1_000_000);
-        let observed_at = outcome.observed_at.ok_or(Error::Binding("missing observed outcome time"))?;
-        let finalized_at = outcome.finalized_at.ok_or(Error::Binding("missing finalized outcome time"))?;
-        let value = outcome.value.ok_or(Error::Binding("missing independently observed value"))?;
+        let admitted_at = source
+            .original_record()
+            .admission
+            .observed_at_unix_micros
+            .div_ceil(1_000_000);
+        let observed_at = outcome
+            .observed_at
+            .ok_or(Error::Binding("missing observed outcome time"))?;
+        let finalized_at = outcome
+            .finalized_at
+            .ok_or(Error::Binding("missing finalized outcome time"))?;
+        let value = outcome
+            .value
+            .ok_or(Error::Binding("missing independently observed value"))?;
         if original_run != requested.behavior_run_id
             || decision.record_id != requested.behavior_run_id
             || input.scope.run_id != requested.behavior_run_id
@@ -207,7 +277,12 @@ impl<'a> Episode<'a> {
             || decision.run_snapshot_digest != input.ndu_snapshot_digest
             || decision.selected_candidate_id != *policy.selected()
             || decision.selected_propensity != ProbabilityQ32::ONE
-            || decision.candidate_ids != policy.entries().iter().map(|entry| entry.candidate_id.clone()).collect::<Vec<_>>()
+            || decision.candidate_ids
+                != policy
+                    .entries()
+                    .iter()
+                    .map(|entry| entry.candidate_id.clone())
+                    .collect::<Vec<_>>()
             || decision.candidate_completeness_digest.is_zero()
             || decision.authentication_digest.is_zero()
             || decision.support_digest.is_zero()
@@ -219,11 +294,14 @@ impl<'a> Episode<'a> {
             || outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest
             || training.generator.principal().principal_id == outcome.observer_id
             || training.generator.controller_id() == &outcome.observer_controller_id
-            || training.generator.principal().credential_chain_digest == outcome.observer_credential_chain_digest
-            || training.generator.principal().signing_key_digest == outcome.observer_signing_key_digest
+            || training.generator.principal().credential_chain_digest
+                == outcome.observer_credential_chain_digest
+            || training.generator.principal().signing_key_digest
+                == outcome.observer_signing_key_digest
             || decision.generator_id == outcome.observer_id
             || decision.generator_controller_id == outcome.observer_controller_id
-            || decision.generator_credential_chain_digest == outcome.observer_credential_chain_digest
+            || decision.generator_credential_chain_digest
+                == outcome.observer_credential_chain_digest
             || decision.generator_signing_key_digest == outcome.observer_signing_key_digest
             || admitted_at == 0
             || admitted_at > observed_at
@@ -232,7 +310,9 @@ impl<'a> Episode<'a> {
             || finalized_at > current
             || !(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value)
         {
-            return Err(Error::Binding("exact original policy and independent terminal Outcome"));
+            return Err(Error::Binding(
+                "exact original policy and independent terminal Outcome",
+            ));
         }
         let principal = StableId::new(format!("principal:{}", input.scope.principal_digest))
             .map_err(|_| Error::Binding("original principal lineage"))?;
@@ -243,8 +323,20 @@ impl<'a> Episode<'a> {
                 ledger.binding_digest().as_array(),
                 requested.episode_id.as_str().as_bytes(),
             ])
-        )).map_err(|_| Error::Binding("original episode lineage"))?;
-        Ok(Episode { decision, outcome, evidence, source, policy, value, observed_at, admitted_at, principal, lineage })
+        ))
+        .map_err(|_| Error::Binding("original episode lineage"))?;
+        Ok(Episode {
+            decision,
+            outcome,
+            evidence,
+            source,
+            policy,
+            value,
+            observed_at,
+            admitted_at,
+            principal,
+            lineage,
+        })
     }
 }
 
@@ -256,7 +348,11 @@ fn require_arm(
 ) -> Result<(), Error> {
     let left = behavior.source.input();
     let right = arm.input();
-    let admitted_at = arm.original_record().admission.observed_at_unix_micros.div_ceil(1_000_000);
+    let admitted_at = arm
+        .original_record()
+        .admission
+        .observed_at_unix_micros
+        .div_ceil(1_000_000);
     if arm.bundle_digest() != bundle
         || left.scope.principal_digest != right.scope.principal_digest
         || left.observation != right.observation
@@ -266,12 +362,17 @@ fn require_arm(
         || left.candidates != right.candidates
         || behavior.source.original_record().objective_semantic_bytes
             != arm.original_record().objective_semantic_bytes
-        || behavior.source.original_record().objective_function_v1_bytes
+        || behavior
+            .source
+            .original_record()
+            .objective_function_v1_bytes
             != arm.original_record().objective_function_v1_bytes
         || admitted_at < config.rule.candidate_plan.fold.evaluation_start
         || admitted_at > config.rule.evaluation_end_unix_seconds
     {
-        return Err(Error::Binding("same held-out input and actual original arm bundle"));
+        return Err(Error::Binding(
+            "same held-out input and actual original arm bundle",
+        ));
     }
     Ok(())
 }
@@ -285,7 +386,8 @@ fn observation(
     }
     let mut actions = Vec::with_capacity(row.policy.entries().len());
     for (behavior, evaluated) in row.policy.entries().iter().zip(evaluation.entries()) {
-        if behavior.candidate_id != evaluated.candidate_id || behavior.allowed != evaluated.allowed {
+        if behavior.candidate_id != evaluated.candidate_id || behavior.allowed != evaluated.allowed
+        {
             return Err(Error::Binding("same complete original action support"));
         }
         actions.push(OpeAction {

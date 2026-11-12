@@ -19,7 +19,8 @@ impl LearningArtifactOwnerService {
         &self,
         operation_id: &StableId,
         expected_intent_digest: Digest32,
-    ) -> Result<OriginalArtifactPublicationReadbackV1, OriginalArtifactPublicationReadbackErrorV1> {
+    ) -> Result<OriginalArtifactPublicationReadbackV1, OriginalArtifactPublicationReadbackErrorV1>
+    {
         let observed = LearningArtifactOwnerHost::read_original_publication_current(
             &self.host,
             operation_id,

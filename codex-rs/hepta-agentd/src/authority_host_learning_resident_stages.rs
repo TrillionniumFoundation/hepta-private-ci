@@ -47,10 +47,12 @@ impl ResidentOriginalStageOwnersV3 {
         gate: Arc<RootResidentLearningEffectGateV3>,
     ) -> Result<(), Error> {
         match self {
-            Self::NoUpdate(stages) =>
-                OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate),
-            Self::Candidate(stages) =>
-                OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate),
+            Self::NoUpdate(stages) => {
+                OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)
+            }
+            Self::Candidate(stages) => {
+                OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)
+            }
         }
     }
 
@@ -68,56 +70,77 @@ impl ResidentOriginalStageOwnersV3 {
                 )),
                 Self::Candidate(_) => Ok(()),
             },
-            Stage::Experience | Stage::Dataset | Stage::Training
-            | Stage::Selection | Stage::NextUse => Ok(()),
+            Stage::Experience
+            | Stage::Dataset
+            | Stage::Training
+            | Stage::Selection
+            | Stage::NextUse => Ok(()),
         }
     }
 }
 
 impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3 {
     fn validate_recovery<'a>(
-        &'a self, snapshot: &'a LearningIterationSnapshotV1,
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, ()> {
         match self {
-            Self::NoUpdate(stages) =>
-                LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot),
-            Self::Candidate(stages) =>
-                LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot),
+            Self::NoUpdate(stages) => {
+                LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)
+            }
+            Self::Candidate(stages) => {
+                LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)
+            }
         }
     }
 
     fn execute_stage<'a>(
-        &'a self, snapshot: &'a LearningIterationSnapshotV1, stage: Stage,
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        stage: Stage,
     ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
         match self {
-            Self::NoUpdate(stages) =>
-                LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage),
-            Self::Candidate(stages) =>
-                LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage),
+            Self::NoUpdate(stages) => {
+                LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)
+            }
+            Self::Candidate(stages) => {
+                LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)
+            }
         }
     }
 
     fn prepare_proposal<'a>(
-        &'a self, snapshot: &'a LearningIterationSnapshotV1,
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
         match self {
-            Self::NoUpdate(stages) =>
-                LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot),
-            Self::Candidate(stages) =>
-                LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot),
+            Self::NoUpdate(stages) => {
+                LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)
+            }
+            Self::Candidate(stages) => {
+                LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)
+            }
         }
     }
 
     fn receipt_attestation<'a>(
-        &'a self, snapshot: &'a LearningIterationSnapshotV1,
-        receipt: &'a LearningIterationReceiptV1, now_unix_seconds: u64,
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        receipt: &'a LearningIterationReceiptV1,
+        now_unix_seconds: u64,
     ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
         match self {
             Self::NoUpdate(stages) => LearningIterationStageOwnerPortsV1::receipt_attestation(
-                stages, snapshot, receipt, now_unix_seconds,
+                stages,
+                snapshot,
+                receipt,
+                now_unix_seconds,
             ),
             Self::Candidate(stages) => LearningIterationStageOwnerPortsV1::receipt_attestation(
-                stages, snapshot, receipt, now_unix_seconds,
+                stages,
+                snapshot,
+                receipt,
+                now_unix_seconds,
             ),
         }
     }

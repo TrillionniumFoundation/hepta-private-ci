@@ -32,14 +32,23 @@ impl OriginalCellEvaluationHostV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<u64, Error> {
-        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+                stream,
+                consumer,
+                consumer_uid,
+                original_consumer_pidfd,
+                timeout,
+                lifetime,
             )?;
             self.serve_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     fn serve_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
@@ -47,13 +56,17 @@ impl OriginalCellEvaluationHostV1 {
             if !channel.exchange(|bytes| {
                 self.command_response(bytes, request_id)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)
-            })? { return Ok(request_id - 1); }
+            })? {
+                return Ok(request_id - 1);
+            }
         }
         Err(Error::Unavailable)
     }
 
     fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
-        if bytes.len() > 16_384 { return Err(Error::Binding("bounded Evaluation request")); }
+        if bytes.len() > 16_384 {
+            return Err(Error::Binding("bounded Evaluation request"));
+        }
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, request_id)?;
         self.context.authenticate(now()?)?;
@@ -73,7 +86,9 @@ impl OriginalCellEvaluationHostV1 {
         // successful result was read from the same original panel and journal.
         self.context.authenticate(now()?)?;
         let encoded = serde_json::to_vec(&wire::Response::new(request, outcome))?;
-        if encoded.len() > 16_384 { return Err(Error::Binding("bounded Evaluation response")); }
+        if encoded.len() > 16_384 {
+            return Err(Error::Binding("bounded Evaluation response"));
+        }
         Ok(encoded)
     }
 
@@ -83,7 +98,8 @@ impl OriginalCellEvaluationHostV1 {
                 Ok(owners) => owners,
                 Err(_) => return Ok(wire::Outcome::Busy),
             };
-            self.runtime.block_on(owners.completion(&self.context, action))
+            self.runtime
+                .block_on(owners.completion(&self.context, action))
         };
         match completed {
             Ok(original) => wire::encode_completed(&self.context, original, now()?),
@@ -102,8 +118,9 @@ fn original_state(error: Error) -> wire::Outcome {
         Error::DeadlineExceeded => wire::Outcome::Expired,
         // Missing upstream B/retention/Qualification is not a statement about
         // this Evaluation journal's own Missing or Pending state.
-        Error::Panel(_) | Error::Qualification(_) | Error::PredecessorUnavailable =>
-            wire::Outcome::PredecessorUnavailable,
+        Error::Panel(_) | Error::Qualification(_) | Error::PredecessorUnavailable => {
+            wire::Outcome::PredecessorUnavailable
+        }
         _ => wire::Outcome::Uncertain,
     }
 }
@@ -111,13 +128,16 @@ fn original_state(error: Error) -> wire::Outcome {
 #[cfg(test)]
 impl OriginalCellEvaluationHostV1 {
     pub(crate) fn fixture_serve_channel(
-        &self, channel: &mut HostAuthorityPeerChannel,
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         self.serve_channel(channel)
     }
 
     pub(crate) fn fixture_command_response(
-        &self, bytes: &[u8], request_id: u64,
+        &self,
+        bytes: &[u8],
+        request_id: u64,
     ) -> Result<Vec<u8>, Error> {
         self.command_response(bytes, request_id)
     }

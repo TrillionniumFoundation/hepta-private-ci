@@ -48,22 +48,6 @@ mod retirement;
 
 #[path = "circuit_learning_retained_publication.rs"]
 mod retained_publication;
-pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
-pub use retained_publication::version::OriginalCircuitRetainedVersionHostV1;
-pub use retained_publication::version::OriginalCircuitRetainedVersionRecoveryV1;
-pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
-pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
-pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;
-pub use retained_publication::version::OriginalCircuitRetainedVersionPublicationV1;
-pub use retained_publication::version::OriginalCircuitRetainedVersionReadbackV1;
-pub use retained_publication::OriginalCircuitRetainedPublicationContextV1;
-pub use retained_publication::OriginalCircuitRetainedPublicationErrorV1;
-pub use retained_publication::OriginalCircuitRetainedPublicationInputsV1;
-pub use retained_publication::OriginalCircuitRetainedPublicationRecoveryV1;
-pub use retained_publication::OriginalCircuitRetainedPublicationSelectionV1;
-pub use retained_publication::PreparedOriginalCircuitRetainedPublicationV1;
-pub use retained_publication::prepare_original_circuit_retained_publication_v1;
-pub use retained_publication::recover_original_circuit_retained_publication_v1;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
@@ -76,6 +60,22 @@ pub(crate) use learning_read::fixture as original_learning_read_fixture;
 pub use owner::PublishedCircuitCellOwnerV1;
 pub use recovery::CircuitFeaturePredecessorFilesV1;
 pub(crate) use recovery::recover_predecessor;
+pub use retained_publication::OriginalCircuitRetainedPublicationContextV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationErrorV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationInputsV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationRecoveryV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationSelectionV1;
+pub use retained_publication::PreparedOriginalCircuitRetainedPublicationV1;
+pub use retained_publication::prepare_original_circuit_retained_publication_v1;
+pub use retained_publication::recover_original_circuit_retained_publication_v1;
+pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionHostV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionPublicationV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionReadbackV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionRecoveryV1;
 
 /// Pin this exact profile in the original target.task_digest BEFORE independent
 /// selection/FinalUse publication. Existing arbitrary task grants do not match.

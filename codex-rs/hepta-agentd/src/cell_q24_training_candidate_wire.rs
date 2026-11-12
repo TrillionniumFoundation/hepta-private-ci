@@ -101,8 +101,14 @@ impl Request {
         {
             return Err(Error::Binding("original Candidate purpose and sequence"));
         }
-        for value in [&self.binding, &self.dataset_head, &self.scope_binding, &self.completion] {
-            let digest: Digest32 = value.parse()
+        for value in [
+            &self.binding,
+            &self.dataset_head,
+            &self.scope_binding,
+            &self.completion,
+        ] {
+            let digest: Digest32 = value
+                .parse()
                 .map_err(|_| Error::Binding("canonical Candidate binding"))?;
             if digest.is_zero() || digest.to_string() != *value {
                 return Err(Error::Binding("canonical Candidate binding"));
@@ -122,7 +128,11 @@ pub(super) struct Response {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum MaterialResult {
-    Page { offset: u32, total: u32, heads: String },
+    Page {
+        offset: u32,
+        total: u32,
+        heads: String,
+    },
     NoCandidate,
     Missing,
     Pending,
@@ -145,12 +155,18 @@ pub(super) struct Session {
 
 impl Session {
     pub(super) fn new() -> Self {
-        Self { next_page: 0, completion: None }
+        Self {
+            next_page: 0,
+            completion: None,
+        }
     }
 
     pub(super) fn require_request(&self, request: &Request) -> Result<(), Error> {
         if request.page != self.next_page
-            || self.completion.as_ref().is_some_and(|pin| pin != &request.completion)
+            || self
+                .completion
+                .as_ref()
+                .is_some_and(|pin| pin != &request.completion)
         {
             return Err(Error::Binding("same Candidate session and next page"));
         }
@@ -163,10 +179,17 @@ impl Session {
         result: MaterialResult,
     ) -> Result<(Vec<u8>, SessionDisposition), Error> {
         self.require_request(&request)?;
-        let disposition = if let MaterialResult::Page { offset, total, heads } = &result {
-            let bytes = STANDARD_NO_PAD.decode(heads)
+        let disposition = if let MaterialResult::Page {
+            offset,
+            total,
+            heads,
+        } = &result
+        {
+            let bytes = STANDARD_NO_PAD
+                .decode(heads)
                 .map_err(|_| Error::Binding("original Candidate page encoding"))?;
-            let end = (*offset as usize).checked_add(bytes.len())
+            let end = (*offset as usize)
+                .checked_add(bytes.len())
                 .ok_or(Error::Binding("original Candidate page end"))?;
             if !(12..=32_780).contains(&(*total as usize))
                 || *offset as usize != usize::from(request.page) * PAGE_BYTES
@@ -177,7 +200,11 @@ impl Session {
             {
                 return Err(Error::Binding("original Candidate page total"));
             }
-            self.next_page = if end == *total as usize { 0 } else { request.page + 1 };
+            self.next_page = if end == *total as usize {
+                0
+            } else {
+                request.page + 1
+            };
             self.completion = Some(request.completion.clone());
             SessionDisposition::ContinueReadback
         } else {
@@ -207,8 +234,12 @@ pub(super) fn original_page(
     request: &Request,
     material: &OriginalCellQ24CandidateMaterialV1,
 ) -> Result<MaterialResult, Error> {
-    if request.completion != completion_digest(material.receipt(), material.attestation())?.to_string() {
-        return Err(Error::Binding("unchanged full original Training receipt and signature"));
+    if request.completion
+        != completion_digest(material.receipt(), material.attestation())?.to_string()
+    {
+        return Err(Error::Binding(
+            "unchanged full original Training receipt and signature",
+        ));
     }
     let bytes = material.heads();
     let offset = usize::from(request.page) * PAGE_BYTES;

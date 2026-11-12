@@ -15,18 +15,18 @@ pub use profile::ROOT_RESIDENT_LEARNING_READBACK_V3;
 pub use profile::RootResidentLearningProfileV3;
 pub use profile::RootResidentLearningReadbackAuthorizationV3;
 
-#[path = "authority_host_learning_resident_store.rs"]
-mod store;
 #[path = "authority_host_learning_resident_authority.rs"]
 mod authority;
 #[path = "authority_host_learning_resident_gate.rs"]
 mod gate;
+#[path = "authority_host_learning_resident_store.rs"]
+mod store;
 pub(crate) use gate::RootResidentLearningEffectGateV3;
 
-#[path = "authority_host_learning_resident_stages.rs"]
-mod stages;
 #[path = "authority_host_learning_resident_runtime.rs"]
 mod runtime;
+#[path = "authority_host_learning_resident_stages.rs"]
+mod stages;
 pub use runtime::RootResidentLearningHandleV3;
 pub use runtime::RootResidentLearningRuntimeV3;
 #[path = "authority_host_learning_resident_auth.rs"]
@@ -77,12 +77,22 @@ impl HostAuthorityService {
         profile: RootResidentLearningProfileV3,
         authorization: ResidentAuthorizationV3,
     ) -> io::Result<RootResidentLearningRegistrationV3> {
-        let root = Arc::clone(self.resident_store_root.as_ref()
-            .ok_or_else(|| profile::invalid("original Root directory custody is absent"))?);
-        let registry = Arc::clone(self.root_registry.as_ref()
-            .ok_or_else(|| profile::invalid("original Root Registry custody is absent"))?);
+        let root = Arc::clone(
+            self.resident_store_root
+                .as_ref()
+                .ok_or_else(|| profile::invalid("original Root directory custody is absent"))?,
+        );
+        let registry = Arc::clone(
+            self.root_registry
+                .as_ref()
+                .ok_or_else(|| profile::invalid("original Root Registry custody is absent"))?,
+        );
         RootResidentLearningRegistrationV3::from_original_root(
-            root, Arc::clone(&self.issuer), registry, profile, authorization,
+            root,
+            Arc::clone(&self.issuer),
+            registry,
+            profile,
+            authorization,
         )
     }
 }
@@ -96,7 +106,13 @@ impl RootResidentLearningRegistrationV3 {
         registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
         profile: RootResidentLearningProfileV3,
     ) -> io::Result<Self> {
-        Self::from_original_root(root, issuer, registry, profile, ResidentAuthorizationV3::Fresh)
+        Self::from_original_root(
+            root,
+            issuer,
+            registry,
+            profile,
+            ResidentAuthorizationV3::Fresh,
+        )
     }
 
     pub(crate) fn recover_original_root(
@@ -107,7 +123,11 @@ impl RootResidentLearningRegistrationV3 {
         authorization: RootResidentLearningReadbackAuthorizationV3,
     ) -> io::Result<Self> {
         Self::from_original_root(
-            root, issuer, registry, profile, ResidentAuthorizationV3::Readback(authorization),
+            root,
+            issuer,
+            registry,
+            profile,
+            ResidentAuthorizationV3::Readback(authorization),
         )
     }
 
@@ -126,7 +146,9 @@ impl RootResidentLearningRegistrationV3 {
         };
         let record = authority.perform(action, &CancellationToken::new())?;
         let ResidentStoreValueV3::Store(checkpoint) = record.value else {
-            return Err(io::Error::other("resident registration produced no original owner"));
+            return Err(io::Error::other(
+                "resident registration produced no original owner",
+            ));
         };
         Ok(RootResidentLearningRegistrationV3 {
             owner: Arc::new(ResidentRegisteredStateV3::new(authority, checkpoint)),
@@ -144,9 +166,13 @@ impl RootResidentLearningRegistrationV3 {
         stages: crate::OriginalCellQ24NoUpdateStageOwnersV1,
         verifier: codex_hepta_learning_ledger::LearningEvidenceVerifierV1,
         capacity: usize,
-    ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), crate::AgentdError> {
+    ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), crate::AgentdError>
+    {
         runtime::compose(
-            self.owner, stages::ResidentOriginalStageOwnersV3::NoUpdate(stages), verifier, capacity,
+            self.owner,
+            stages::ResidentOriginalStageOwnersV3::NoUpdate(stages),
+            verifier,
+            capacity,
         )
     }
 }
@@ -162,9 +188,13 @@ impl RootResidentLearningRegistrationV3 {
         stages: crate::OriginalCellQ24CandidateStageOwnersV1,
         verifier: codex_hepta_learning_ledger::LearningEvidenceVerifierV1,
         capacity: usize,
-    ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), crate::AgentdError> {
+    ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), crate::AgentdError>
+    {
         runtime::compose(
-            self.owner, stages::ResidentOriginalStageOwnersV3::Candidate(stages), verifier, capacity,
+            self.owner,
+            stages::ResidentOriginalStageOwnersV3::Candidate(stages),
+            verifier,
+            capacity,
         )
     }
 }

@@ -19,9 +19,9 @@ use tokio::sync::Mutex;
 
 use super::Error;
 use super::Origin;
+use super::OriginalCellQ24NoUpdatePeerStreamV1;
 use super::OriginalCellQ24NoUpdateStageOwnersV1;
 use super::OriginalCellQ24NoUpdateStageStreamsV1;
-use super::OriginalCellQ24NoUpdatePeerStreamV1;
 use crate::LearningIterationOwnerFutureV1;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::LoadedCellQ24ModelV1;
@@ -85,7 +85,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         verifier: &LearningEvidenceVerifierV1,
     ) -> Result<(), Error> {
         OriginalCellQ24NoUpdateStageOwnersV1::require_initial(
-            &self.common, initial, scope, verifier,
+            &self.common,
+            initial,
+            scope,
+            verifier,
         )?;
         if initial.request.evaluation_profile != self.protocol.evaluation_profile()
             || self.baseline.components() != &initial.request.selected_bundle.components
@@ -107,9 +110,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         &mut self,
         gate: Arc<RootResidentLearningEffectGateV3>,
     ) -> Result<(), Error> {
-        OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(
-            &mut self.common, gate,
-        )
+        OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(&mut self.common, gate)
     }
 }
 
@@ -235,9 +236,12 @@ pub(crate) fn fixture_from_original_clients(
     let end = end.min(common.end);
     common.end = end;
     let owners = OriginalCellQ24CandidateStageOwnersV1 {
-        common, protocol, baseline,
+        common,
+        protocol,
+        baseline,
         candidate: Mutex::new(CandidateLane::new(initial)),
-        evaluation: Mutex::new(EvaluationLane::fixture_unavailable()), end,
+        evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
+        end,
     };
     owners.require_initial(
         &owners.common.material.initial,

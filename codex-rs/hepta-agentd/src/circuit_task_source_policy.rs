@@ -83,12 +83,18 @@ pub(super) fn read(
         let probability_ppm = decision.u32()?;
         // The current original Cell producer is exactly deterministic. Do not
         // turn zero support into a small positive propensity or renormalize it.
-        let expected = if candidate_id == selected { 1_000_000 } else { 0 };
+        let expected = if candidate_id == selected {
+            1_000_000
+        } else {
+            0
+        };
         if candidate_id != mask.candidate_id
             || allowed != mask.allowed
             || probability_ppm != expected
             || (probability_ppm != 0 && !allowed)
-            || entries.iter().any(|entry: &CellPolicyEntryV1| entry.candidate_id == candidate_id)
+            || entries
+                .iter()
+                .any(|entry: &CellPolicyEntryV1| entry.candidate_id == candidate_id)
         {
             return Err(Error::InvalidBinding);
         }
@@ -98,7 +104,9 @@ pub(super) fn read(
             probability_ppm,
         });
     }
-    if !entries.iter().any(|entry| entry.candidate_id == selected && entry.allowed)
+    if !entries
+        .iter()
+        .any(|entry| entry.candidate_id == selected && entry.allowed)
         || decision.take::<1>()? != [0]
     {
         return Err(Error::InvalidBinding);
@@ -142,7 +150,9 @@ impl<'a> Reader<'a> {
         if bytes.is_empty() || bytes.len() > 65_536 {
             return Err(Error::InvalidBinding);
         }
-        Ok(Self(bytes.strip_prefix(prefix).ok_or(Error::InvalidBinding)?))
+        Ok(Self(
+            bytes.strip_prefix(prefix).ok_or(Error::InvalidBinding)?,
+        ))
     }
 
     fn take<const N: usize>(&mut self) -> Result<[u8; N], Error> {
@@ -157,7 +167,10 @@ impl<'a> Reader<'a> {
 
     fn blob(&mut self) -> Result<&'a [u8], Error> {
         let length = self.u32()? as usize;
-        let (value, remaining) = self.0.split_at_checked(length).ok_or(Error::InvalidBinding)?;
+        let (value, remaining) = self
+            .0
+            .split_at_checked(length)
+            .ok_or(Error::InvalidBinding)?;
         self.0 = remaining;
         Ok(value)
     }

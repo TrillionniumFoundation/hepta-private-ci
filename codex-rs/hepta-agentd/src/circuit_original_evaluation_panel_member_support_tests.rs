@@ -27,8 +27,10 @@ use crate::neuron_cell_evaluation::tests::original_model_selection::sign_product
 use crate::neuron_cell_evaluation::tests::original_model_selection::witness;
 
 type Member = OriginalCellEvaluationPanelMemberOwnersV1<
-    FileAnchorWitnessStore, FileAnchorWitnessStore,
-    FileAnchorWitnessStore, FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
 >;
 type PeerThread = std::thread::JoinHandle<anyhow::Result<usize>>;
 
@@ -59,7 +61,11 @@ impl PanelMemberFixture {
         verifier: LearningEvidenceVerifierV1,
         retention_receipt_digests: Vec<Digest32>,
     ) -> anyhow::Result<Self> {
-        let ProviderPlanFixture { mut fixture, plan, execution_namespace } = original_plan;
+        let ProviderPlanFixture {
+            mut fixture,
+            plan,
+            execution_namespace,
+        } = original_plan;
         let root = fixture.directory.path().to_path_buf();
         let context = ProductQualificationContextV1 {
             generator: generator.principal.clone(),
@@ -76,23 +82,42 @@ impl PanelMemberFixture {
         };
         let mut execution_signer = OriginalCellEvaluationExecutionOwnerV1::create(
             file(&root.join("panel-execution-signature")),
-            witness(&root, "panel-execution-signature-witness", scope, verifier.objective_digest())?,
+            witness(
+                &root,
+                "panel-execution-signature-witness",
+                scope,
+                verifier.objective_digest(),
+            )?,
             signing.clone(),
             SigningKey::from_bytes(&[42; 32]),
         )?;
         let mut executions = OriginalCellEvaluationExecutionStoreV1::create(
             file(&root.join("panel-executions")),
-            witness(&root, "panel-execution-witness", scope, verifier.objective_digest())?,
-            digest(&format!("explicit-panel-raw-execution:{}", plan.product_plan().frozen_plan.plan_id)),
+            witness(
+                &root,
+                "panel-execution-witness",
+                scope,
+                verifier.objective_digest(),
+            )?,
+            digest(&format!(
+                "explicit-panel-raw-execution:{}",
+                plan.product_plan().frozen_plan.plan_id
+            )),
         )?;
         let clock = || now().map_err(|_| ProductProviderErrorV1::Unavailable);
         let receipt = fixture.runner.evaluate_or_readback(
             &plan,
-            CellEvaluationJournalsV1 { candidate: &fixture.candidate, fixed_expert: &fixture.fixed },
+            CellEvaluationJournalsV1 {
+                candidate: &fixture.candidate,
+                fixed_expert: &fixture.fixed,
+            },
             &ProductEvaluationExecutionRequestV1 {
-                plan: plan.product_plan(), candidate_plan: &fixture.candidate_temporal,
-                baseline_plan: &fixture.baseline_temporal, evaluator: &context.evaluator,
-                verifier: &verifier, clock: &clock,
+                plan: plan.product_plan(),
+                candidate_plan: &fixture.candidate_temporal,
+                baseline_plan: &fixture.baseline_temporal,
+                evaluator: &context.evaluator,
+                verifier: &verifier,
+                clock: &clock,
             },
             &mut provider,
             &mut executions,
@@ -101,89 +126,145 @@ impl PanelMemberFixture {
         assert_eq!((provider.manifest_calls, provider.releases), (1, 1));
         assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
         assert_eq!(receipt.temporal().candidate.estimate.point.rows, 2);
-        assert_eq!(receipt.temporal().candidate.estimate.point.doubly_robust,
-            receipt.temporal().baseline.estimate.point.doubly_robust);
+        assert_eq!(
+            receipt.temporal().candidate.estimate.point.doubly_robust,
+            receipt.temporal().baseline.estimate.point.doubly_robust
+        );
         let cohort = provider.into_original_readback()?;
         let bundle = fixture.runner.qualification_bundle(&receipt, &context)?;
         let issued_at = now()?;
         anyhow::ensure!(issued_at >= training.receipts[2].observed_unix_seconds);
         let evidence = SignedEvaluationEvidenceV1 {
             generator_plan: sign_product(
-                &verifier, generator, 41, bundle.frozen_plan.plan_digest.as_array(), issued_at,
+                &verifier,
+                generator,
+                41,
+                bundle.frozen_plan.plan_digest.as_array(),
+                issued_at,
             ),
             evaluator_bundle: sign_product(
-                &verifier, evaluator, 42,
+                &verifier,
+                evaluator,
+                42,
                 &evaluation_signing_payload_v2(&bundle, &plan.product_plan().metric_roles)?,
                 issued_at,
             ),
         };
         let (_, execution_evidence) = fixture.runner.readback_completed_evidence(
             &plan,
-            CellEvaluationJournalsV1 { candidate: &fixture.candidate, fixed_expert: &fixture.fixed },
+            CellEvaluationJournalsV1 {
+                candidate: &fixture.candidate,
+                fixed_expert: &fixture.fixed,
+            },
             &ProductEvaluationExecutionRequestV1 {
-                plan: plan.product_plan(), candidate_plan: &fixture.candidate_temporal,
-                baseline_plan: &fixture.baseline_temporal, evaluator: &context.evaluator,
-                verifier: &verifier, clock: &clock,
+                plan: plan.product_plan(),
+                candidate_plan: &fixture.candidate_temporal,
+                baseline_plan: &fixture.baseline_temporal,
+                evaluator: &context.evaluator,
+                verifier: &verifier,
+                clock: &clock,
             },
             &mut executions,
         )?;
-        assert_eq!(execution_evidence.attestation(), &execution_signer.readback()?.1);
+        assert_eq!(
+            execution_evidence.attestation(),
+            &execution_signer.readback()?.1
+        );
         let config = OriginalCellEvaluationQualificationConfigV1 {
-            training: training.clone(), scope: scope.clone(), plan: plan.clone(),
+            training: training.clone(),
+            scope: scope.clone(),
+            plan: plan.clone(),
             execution_namespace,
             qualification_namespace: digest(&format!(
-                "explicit-panel-Qualification:{}", plan.product_plan().frozen_plan.plan_id,
+                "explicit-panel-Qualification:{}",
+                plan.product_plan().frozen_plan.plan_id,
             )),
-            context, training_evidence: training_evidence.clone(),
-            product_evidence: evidence, execution_evidence, verifier: verifier.clone(),
+            context,
+            training_evidence: training_evidence.clone(),
+            product_evidence: evidence,
+            execution_evidence,
+            verifier: verifier.clone(),
         };
         let mut qualification_owner = OriginalCellEvaluationQualificationOwnerV1::create(
             file(&root.join("panel-qualification")),
-            witness(&root, "panel-qualification-witness", scope, verifier.objective_digest())?,
+            witness(
+                &root,
+                "panel-qualification-witness",
+                scope,
+                verifier.objective_digest(),
+            )?,
             config.clone(),
         )?;
         let (trainer, thread) = fixture_original_receipt_client_until_close(
-            initial.clone(), training.receipts[2].clone(), verifier, training_evidence,
+            initial.clone(),
+            training.receipts[2].clone(),
+            verifier,
+            training_evidence,
         )?;
-        let qualification = qualification_owner.qualify_or_readback(
-            OriginalCellEvaluationQualificationSourcesV1 {
+        let qualification = qualification_owner
+            .qualify_or_readback(OriginalCellEvaluationQualificationSourcesV1 {
                 runner: &mut fixture.runner,
                 journals: CellEvaluationJournalsV1 {
-                    candidate: &fixture.candidate, fixed_expert: &fixture.fixed,
+                    candidate: &fixture.candidate,
+                    fixed_expert: &fixture.fixed,
                 },
                 candidate_plan: &fixture.candidate_temporal,
                 baseline_plan: &fixture.baseline_temporal,
-                executions: &mut executions, trainer: &trainer,
-            },
-        ).await?;
+                executions: &mut executions,
+                trainer: &trainer,
+            })
+            .await?;
         // The original evaluator computes this negative result from the equal
         // supported policies. It is never rewritten to fabricate improvement.
-        assert_eq!(qualification.product().decision.decision.disposition,
-            IndependentEvaluationDispositionV1::Ineligible);
+        assert_eq!(
+            qualification.product().decision.decision.disposition,
+            IndependentEvaluationDispositionV1::Ineligible
+        );
         let member = Member {
-            qualification: qualification_owner, runner: fixture.runner,
-            candidate: fixture.candidate, fixed_expert: fixture.fixed,
-            candidate_plan: fixture.candidate_temporal, baseline_plan: fixture.baseline_temporal,
-            executions, trainer: Arc::new(trainer), cohort,
+            qualification: qualification_owner,
+            runner: fixture.runner,
+            candidate: fixture.candidate,
+            fixed_expert: fixture.fixed,
+            candidate_plan: fixture.candidate_temporal,
+            baseline_plan: fixture.baseline_temporal,
+            executions,
+            trainer: Arc::new(trainer),
+            cohort,
         };
         Ok(Self {
-            member: Some(member), qualification, config, initial: initial.clone(),
-            thread: Some(thread), _execution_signer: execution_signer, directory: fixture.directory,
+            member: Some(member),
+            qualification,
+            config,
+            initial: initial.clone(),
+            thread: Some(thread),
+            _execution_signer: execution_signer,
+            directory: fixture.directory,
         })
     }
 
     pub(crate) fn take_original_member(&mut self) -> Member {
-        self.member.take().expect("one original panel member transfer")
+        self.member
+            .take()
+            .expect("one original panel member transfer")
     }
 
     pub(crate) fn bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
         [
-            "original-B-candidate-cost", "original-B-candidate-cost-witness",
-            "original-B-baseline-cost", "original-B-baseline-cost-witness", "holdout",
-            "panel-executions", "panel-execution-witness",
-            "panel-execution-signature", "panel-execution-signature-witness",
-            "panel-qualification", "panel-qualification-witness",
-        ].into_iter().map(|name| Ok(std::fs::read(self.directory.path().join(name))?)).collect()
+            "original-B-candidate-cost",
+            "original-B-candidate-cost-witness",
+            "original-B-baseline-cost",
+            "original-B-baseline-cost-witness",
+            "holdout",
+            "panel-executions",
+            "panel-execution-witness",
+            "panel-execution-signature",
+            "panel-execution-signature-witness",
+            "panel-qualification",
+            "panel-qualification-witness",
+        ]
+        .into_iter()
+        .map(|name| Ok(std::fs::read(self.directory.path().join(name))?))
+        .collect()
     }
 
     pub(crate) fn renewed_training_peer(
@@ -192,8 +273,10 @@ impl PanelMemberFixture {
     ) -> anyhow::Result<()> {
         let member = self.member.as_mut().expect("not transferred");
         let (client, thread) = fixture_original_receipt_client_until_close(
-            self.initial.clone(), self.config.training.receipts[2].clone(),
-            self.config.verifier.clone(), evidence,
+            self.initial.clone(),
+            self.config.training.receipts[2].clone(),
+            self.config.verifier.clone(),
+            evidence,
         )?;
         drop(std::mem::replace(&mut member.trainer, Arc::new(client)));
         let prior = self.thread.replace(thread).expect("original peer");
@@ -203,7 +286,10 @@ impl PanelMemberFixture {
 
     pub(crate) fn finish(mut self) -> anyhow::Result<usize> {
         drop(self.member.take());
-        self.thread.take().expect("retained original peer")
-            .join().expect("original panel Trainer transport")
+        self.thread
+            .take()
+            .expect("retained original peer")
+            .join()
+            .expect("original panel Trainer transport")
     }
 }

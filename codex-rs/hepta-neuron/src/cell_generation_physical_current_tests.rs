@@ -78,7 +78,10 @@ fn physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair(
             owner.read_current_checkpoint(),
             Err(CellGenerationErrorV2::CommitUncertain)
         );
-        assert_eq!(owner.require_current(), Err(CellGenerationErrorV2::CommitUncertain));
+        assert_eq!(
+            owner.require_current(),
+            Err(CellGenerationErrorV2::CommitUncertain)
+        );
         assert_eq!(owner.drain(), Err(CellGenerationErrorV2::CommitUncertain));
         assert_eq!(owner.locked_bytes_for_test(), original);
         assert_eq!(checked(owner.file.stream_position()), 9);
@@ -116,7 +119,10 @@ fn physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm(
     assert_eq!(checked(owner.file.stream_position()), 5);
     replace_original_bytes(&mut owner, &original, /*position*/ 5);
     assert_eq!(owner.recover(), Err(CellGenerationErrorV2::CommitUncertain));
-    assert_eq!(owner.continuity_checkpoint(), Err(CellGenerationErrorV2::CommitUncertain));
+    assert_eq!(
+        owner.continuity_checkpoint(),
+        Err(CellGenerationErrorV2::CommitUncertain)
+    );
     assert_ne!(checkpoint, Digest32::ZERO);
 }
 

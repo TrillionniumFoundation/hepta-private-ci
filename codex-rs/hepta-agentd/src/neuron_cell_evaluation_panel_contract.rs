@@ -11,8 +11,8 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use super::Error;
 use super::super::Prepared;
+use super::Error;
 use crate::CellEvaluationQualificationV1;
 use crate::CellEvaluationReceiptV1;
 use crate::OriginalCircuitEvaluationCohortCurrentV1;

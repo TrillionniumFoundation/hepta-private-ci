@@ -9,12 +9,19 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
         self
     }
 
-    pub(crate) fn fixture_current(&mut self, at: u64) -> Result<OriginalCircuitEvaluationCohortCurrentV1, Error> {
+    pub(crate) fn fixture_current(
+        &mut self,
+        at: u64,
+    ) -> Result<OriginalCircuitEvaluationCohortCurrentV1, Error> {
         self.read_current_with_clock(|| Ok(at))
     }
 
     pub(crate) fn fixture_bytes(&mut self) -> anyhow::Result<[Vec<u8>; 2]> {
-        Ok(self.original.owners.ledger.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)?)
+        Ok(self
+            .original
+            .owners
+            .ledger
+            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)?)
     }
 
     pub(crate) fn fixture_cold(

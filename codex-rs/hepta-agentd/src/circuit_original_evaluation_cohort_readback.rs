@@ -7,9 +7,9 @@
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
 use codex_hepta_types::AuthorityPosture;
@@ -88,7 +88,9 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
         if material.manifest != frozen.final_holdout_digest
             || material.dataset.snapshot.dataset_digest != frozen.dataset_digest
         {
-            return Err(Error::Binding("same original cohort and frozen evaluation plan"));
+            return Err(Error::Binding(
+                "same original cohort and frozen evaluation plan",
+            ));
         }
         let mut bytes = b"hepta.circuit.original-evaluation-cohort-current.v1\0".to_vec();
         for digest in [
@@ -125,7 +127,9 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
             freeze_payload: material.freeze_payload,
         };
         if self.last.as_ref().is_some_and(|last| last != &observed) {
-            return Err(Error::Binding("same original cohort CURRENT and full signatures"));
+            return Err(Error::Binding(
+                "same original cohort CURRENT and full signatures",
+            ));
         }
         self.last = Some(observed.clone());
         self.fenced = false;
@@ -163,7 +167,9 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
             || verifier.scope_digest() != config.verifier.scope_digest()
             || verifier.objective_digest() != config.verifier.objective_digest()
         {
-            return Err(Error::Binding("same original panel, Training, scope, plan and custody"));
+            return Err(Error::Binding(
+                "same original panel, Training, scope, plan and custody",
+            ));
         }
         Ok(())
     }
@@ -180,10 +186,10 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
             return Err(Error::Indeterminate);
         }
         self.fenced = true;
-        if self.last.as_ref() != Some(observed)
-            || current < self.original.last_observed_at
-        {
-            return Err(Error::Binding("last actual cohort read and nondecreasing clock"));
+        if self.last.as_ref() != Some(observed) || current < self.original.last_observed_at {
+            return Err(Error::Binding(
+                "last actual cohort read and nondecreasing clock",
+            ));
         }
         let config = &self.original.config;
         let training = binding::authenticate_training(config, current)?;
@@ -201,8 +207,11 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
             config.freeze_plan.clone(),
             &config.freeze_evidence,
             current,
-        )? != observed.dataset {
-            return Err(Error::Binding("exact original signed B freeze remains active"));
+        )? != observed.dataset
+        {
+            return Err(Error::Binding(
+                "exact original signed B freeze remains active",
+            ));
         }
         let _ = LedgerWriter::read_dataset_records(
             &self.original.owners.ledger,

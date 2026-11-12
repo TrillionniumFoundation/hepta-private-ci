@@ -27,7 +27,11 @@ pub(super) fn validate_configuration(
         .chain(config.registration.retention())
         .find(|member| member.plan_id == rule.plan_id)
         .ok_or(Error::Binding("original registered panel member"))?;
-    let actual: BTreeSet<_> = owners.sources.iter().map(|source| source.run_id.clone()).collect();
+    let actual: BTreeSet<_> = owners
+        .sources
+        .iter()
+        .map(|source| source.run_id.clone())
+        .collect();
     if member.task_digest != rule.task_digest
         || member.cohort_rule_digest != digest
         || config.training.request.evaluation_profile != config.registration.evaluation_profile()
@@ -44,7 +48,9 @@ pub(super) fn validate_configuration(
         || actual != rule.run_ids()
         || actual.contains(&config.training.request.source_run_id)
     {
-        return Err(Error::Binding("same original profile, complete sources and independent B"));
+        return Err(Error::Binding(
+            "same original profile, complete sources and independent B",
+        ));
     }
     Ok(digest)
 }
@@ -67,7 +73,9 @@ pub(super) fn authenticate_training(
         || config.training.request.envelope.objective_digest != config.verifier.objective_digest()
         || current >= config.training.request.envelope.expiry_unix_seconds
     {
-        return Err(Error::Binding("original Candidate Training cut and work window"));
+        return Err(Error::Binding(
+            "original Candidate Training cut and work window",
+        ));
     }
     let receipt = &config.training.receipts[2];
     let LearningIterationObservationV1::Training { candidate, .. } = &receipt.observation else {
@@ -78,7 +86,9 @@ pub(super) fn authenticate_training(
         || config.training_evidence.issued_at != receipt.observed_unix_seconds
         || receipt.observed_unix_seconds >= config.rule.candidate_plan.fold.evaluation_start
     {
-        return Err(Error::Binding("original Generator completed before evaluation window"));
+        return Err(Error::Binding(
+            "original Generator completed before evaluation window",
+        ));
     }
     let generator = config.verifier.verify(
         LearningEvidenceRoleV1::Generator,
@@ -86,13 +96,25 @@ pub(super) fn authenticate_training(
         &learning_iteration_receipt_signing_bytes_v1(receipt)?,
         current,
     )?;
-    let candidate = candidate.digest().map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-    let baseline = config.training.request.selected_bundle.digest()
+    let candidate = candidate
+        .digest()
+        .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+    let baseline = config
+        .training
+        .request
+        .selected_bundle
+        .digest()
         .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
     if candidate == baseline {
-        return Err(Error::Binding("Candidate and retained baseline are distinct"));
+        return Err(Error::Binding(
+            "Candidate and retained baseline are distinct",
+        ));
     }
-    Ok(CandidateBinding { candidate, baseline, generator })
+    Ok(CandidateBinding {
+        candidate,
+        baseline,
+        generator,
+    })
 }
 
 pub(super) fn require_plan(
@@ -115,13 +137,21 @@ pub(super) fn require_plan(
         || product.candidate_temporal_plan_digest != rule.candidate_plan.plan_digest
         || product.baseline_temporal_plan_digest != rule.baseline_plan.plan_digest
         || record.learning_evaluation_profile
-            != Some(original.config.registration.evaluation_profile().into_array())
+            != Some(
+                original
+                    .config
+                    .registration
+                    .evaluation_profile()
+                    .into_array(),
+            )
         || record.candidate.manifest.bundle_digest != training.candidate.into_array()
         || record.fixed_expert.manifest.bundle_digest != training.baseline.into_array()
         || record.candidate.cost.identity().task_digest != rule.task_digest.into_array()
         || record.fixed_expert.cost.identity().task_digest != rule.task_digest.into_array()
     {
-        return Err(Error::Binding("actual frozen Cell plan, cohort and original candidate"));
+        return Err(Error::Binding(
+            "actual frozen Cell plan, cohort and original candidate",
+        ));
     }
     // These two existing Cell task cost cuts are not an aggregate cost claim
     // about every historical/held-out member in the cohort.

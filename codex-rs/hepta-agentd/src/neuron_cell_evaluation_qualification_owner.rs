@@ -264,8 +264,8 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
     }
 }
 
-pub use panel::OriginalCellEvaluationHostV1;
-pub use panel::OriginalCellEvaluationCommandConnectionV1;
 pub use panel::OriginalCellEvaluationCommandClientV1;
-pub use panel::OriginalCellEvaluationCommandReceiptV1;
+pub use panel::OriginalCellEvaluationCommandConnectionV1;
 pub use panel::OriginalCellEvaluationCommandErrorV1;
+pub use panel::OriginalCellEvaluationCommandReceiptV1;
+pub use panel::OriginalCellEvaluationHostV1;

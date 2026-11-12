@@ -152,15 +152,9 @@ pub(super) fn ledger_at(
         None,
         at,
     )?;
-    let ledger = DurableLedger::create(
-        opened(root, "positive-ledger", true)?,
-        binding,
-        64,
-    )?;
-    let witness = LedgerWitnessStore::create(
-        opened(root, "positive-ledger-witness", true)?,
-        binding,
-    )?;
+    let ledger = DurableLedger::create(opened(root, "positive-ledger", true)?, binding, 64)?;
+    let witness =
+        LedgerWitnessStore::create(opened(root, "positive-ledger-witness", true)?, binding)?;
     let directory = File::open(root)?;
     Ok((
         LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory)?,
@@ -268,7 +262,14 @@ pub(super) fn material(
     publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<Material> {
     material_with_profile(
-        root, writer, credentials, source, identity, baseline, bundle, publication,
+        root,
+        writer,
+        credentials,
+        source,
+        identity,
+        baseline,
+        bundle,
+        publication,
         d("explicit-positive-independent-evaluation-profile"),
     )
 }

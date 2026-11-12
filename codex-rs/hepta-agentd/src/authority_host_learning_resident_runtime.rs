@@ -19,10 +19,10 @@ use super::authentication;
 use super::gate::ResidentContinuationV3;
 use super::gate::ResidentRegisteredStateV3;
 use super::profile::RootResidentLearningProfileV3;
+use super::stages::ResidentOriginalStageOwnersV3;
 use crate::AgentdError;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::LearningIterationStageOwnerPortsV1;
-use super::stages::ResidentOriginalStageOwnersV3;
 use crate::RootResidentLearningEffectGateV3;
 
 pub(super) enum ResidentRequestModeV3 {
@@ -82,27 +82,47 @@ pub(super) fn compose(
     capacity: usize,
 ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), AgentdError> {
     let profile = &owner.authority.profile;
-    profile.require_verifier(&verifier).map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    profile
+        .require_verifier(&verifier)
+        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     if !(1..=8).contains(&capacity)
         || verifier.trust_digest() != profile.initial.owners.evidence_trust_digest
     {
-        return Err(AgentdError::Invalid("resident queue or original role trust differs".into()));
+        return Err(AgentdError::Invalid(
+            "resident queue or original role trust differs".into(),
+        ));
     }
-    ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)
-        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-    let authorization_binding = owner.authority.authorization_binding()
+    ResidentOriginalStageOwnersV3::require_initial(
+        &stages,
+        &profile.initial,
+        &profile.scope,
+        &verifier,
+    )
+    .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    let authorization_binding = owner
+        .authority
+        .authorization_binding()
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     let readonly = owner.authority.readonly();
     let (sender, receiver) = mpsc::channel(capacity);
     let handle = RootResidentLearningHandleV3 {
-        sender, profile: profile.clone(), authorization_binding, readonly,
+        sender,
+        profile: profile.clone(),
+        authorization_binding,
+        readonly,
         runtime: tokio::runtime::Handle::try_current()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?,
     };
-    Ok((handle, RootResidentLearningRuntimeV3 {
-        owner, verifier, stages: ResidentStagesV3::Uninstalled(Some(stages)),
-        receiver, admission_requested: readonly,
-    }))
+    Ok((
+        handle,
+        RootResidentLearningRuntimeV3 {
+            owner,
+            verifier,
+            stages: ResidentStagesV3::Uninstalled(Some(stages)),
+            receiver,
+            admission_requested: readonly,
+        },
+    ))
 }
 
 impl RootResidentLearningHandleV3 {
@@ -188,13 +208,19 @@ impl RootResidentLearningRuntimeV3 {
     async fn admit(
         &mut self,
         cancellation: &CancellationToken,
-    ) -> Result<(ResidentRuntimeObservationV3,
-        Option<Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>>), Error>
-    {
+    ) -> Result<
+        (
+            ResidentRuntimeObservationV3,
+            Option<Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>>,
+        ),
+        Error,
+    > {
         let initial = self.owner.authority.profile.initial.clone();
         // Empty recovery is not source evidence. Only fresh actual CAS admits
         // the original Experience handler, which checks its own live source.
-        let Some(continuation) = ResidentRegisteredStateV3::admit(&self.owner, cancellation).await? else {
+        let Some(continuation) =
+            ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?
+        else {
             return Ok((self.readback(cancellation).await?, None));
         };
         let ResidentStagesV3::Uninstalled(slot) = &mut self.stages else {
@@ -202,14 +228,17 @@ impl RootResidentLearningRuntimeV3 {
         };
         let mut stages = slot.take().ok_or(Error::CommitUncertain)?;
         ResidentOriginalStageOwnersV3::install_fresh_resident_gate(
-            &mut stages, Arc::clone(&continuation.gate),
+            &mut stages,
+            Arc::clone(&continuation.gate),
         )?;
         let stages = Arc::new(stages);
         self.stages = ResidentStagesV3::Installed(Arc::clone(&stages));
         let owner = Arc::clone(&self.owner);
         let verifier = self.verifier.clone();
         let observed = ResidentRuntimeObservationV3 {
-            snapshot: Some(initial), attestations: Vec::new(), dispatch_pending: false,
+            snapshot: Some(initial),
+            attestations: Vec::new(),
+            dispatch_pending: false,
         };
         let future = Box::pin(continue_original(owner, stages, verifier, continuation));
         Ok((observed, Some(future)))
@@ -221,9 +250,16 @@ impl RootResidentLearningRuntimeV3 {
     ) -> Result<ResidentRuntimeObservationV3, Error> {
         let (original, _) = self.owner.read(cancellation).await?;
         let attestations = match &original.snapshot {
-            Some(snapshot) => authentication::original_attestations(
-                &self.owner, self.stages.get()?, &self.verifier, snapshot, cancellation,
-            ).await?,
+            Some(snapshot) => {
+                authentication::original_attestations(
+                    &self.owner,
+                    self.stages.get()?,
+                    &self.verifier,
+                    snapshot,
+                    cancellation,
+                )
+                .await?
+            }
             None => Vec::new(),
         };
         let (current, fresh) = self.owner.read(cancellation).await?;
@@ -234,12 +270,16 @@ impl RootResidentLearningRuntimeV3 {
         }
         if let Some(snapshot) = &current.snapshot {
             authentication::verify_attestations(
-                &self.owner.authority.profile, &self.verifier,
-                snapshot, &attestations, fresh / 1_000,
+                &self.owner.authority.profile,
+                &self.verifier,
+                snapshot,
+                &attestations,
+                fresh / 1_000,
             )?;
         }
         Ok(ResidentRuntimeObservationV3 {
-            snapshot: current.snapshot, attestations,
+            snapshot: current.snapshot,
+            attestations,
             dispatch_pending: current.dispatch_pending,
         })
     }
@@ -264,9 +304,11 @@ async fn continue_original(
         let mut call = Box::pin(call);
         let mut watchdog = tokio::time::interval(Duration::from_millis(250));
         watchdog.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
-        let training_end = tokio::time::Instant::now().checked_add(
-            Duration::from_millis(predecessor.request.budget.maximum_training_milliseconds),
-        ).ok_or(Error::DeadlineExceeded)?;
+        let training_end = tokio::time::Instant::now()
+            .checked_add(Duration::from_millis(
+                predecessor.request.budget.maximum_training_milliseconds,
+            ))
+            .ok_or(Error::DeadlineExceeded)?;
         let receipt = loop {
             tokio::select! {
                 biased;
@@ -278,19 +320,31 @@ async fn continue_original(
                 _ = watchdog.tick() => RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?,
             }
         };
-        RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?;
+        RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)
+            .await?;
         profile.scope.validate_observation(&receipt.observation)?;
         let (_, now) = owner.read(gate.cancellation()).await?;
         coordinator.record(receipt, now / 1_000)?;
         let signatures = authentication::original_attestations(
-            &owner, &stages, &verifier, coordinator.snapshot(), gate.cancellation(),
-        ).await?;
-        RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?;
+            &owner,
+            &stages,
+            &verifier,
+            coordinator.snapshot(),
+            gate.cancellation(),
+        )
+        .await?;
+        RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)
+            .await?;
         let (_, fresh) = owner.read(gate.cancellation()).await?;
         authentication::verify_attestations(
-            profile, &verifier, coordinator.snapshot(), &signatures, fresh / 1_000,
+            profile,
+            &verifier,
+            coordinator.snapshot(),
+            &signatures,
+            fresh / 1_000,
         )?;
-        gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?;
+        gate.checkpoint(&predecessor, coordinator.snapshot().clone())
+            .await?;
     }
     // Dropping the continuation permanently disables its installed effect gate.
     // The complete result is returned only through the independent readback path.

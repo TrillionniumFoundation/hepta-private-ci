@@ -52,8 +52,14 @@ impl ResidentMetadata {
             (owners.dataset.clone(), LearningEvidenceRoleV1::Observer),
             (owners.trainer.clone(), LearningEvidenceRoleV1::Generator),
             (owners.selector.clone(), LearningEvidenceRoleV1::Selector),
-            (owners.next_use_observer.clone(), LearningEvidenceRoleV1::Observer),
-        ].into_iter().enumerate() {
+            (
+                owners.next_use_observer.clone(),
+                LearningEvidenceRoleV1::Observer,
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
             let key = SigningKey::from_bytes(&[121 + index as u8; 32]);
             signers.push(TrustedLearningSignerV1 {
                 principal: AuthenticatedPrincipalV1 {
@@ -79,12 +85,23 @@ impl ResidentMetadata {
         };
         let verifier = LearningEvidenceVerifierV1::new(trust.clone())?;
         owners.evidence_trust_digest = verifier.trust_digest();
-        let initial = LearningIterationCoordinatorV1::new(request, owners)?.snapshot().clone();
+        let initial = LearningIterationCoordinatorV1::new(request, owners)?
+            .snapshot()
+            .clone();
         let scope = FrozenLearningScopeV2::freeze(
-            &initial.request, &initial.owners, LearningUpdateScopeV2::Cell,
+            &initial.request,
+            &initial.owners,
+            LearningUpdateScopeV2::Cell,
             digest("resident-fixture-frozen-rule"),
         )?;
-        Ok(Self { _directory: directory, initial, scope, verifier, trust, at })
+        Ok(Self {
+            _directory: directory,
+            initial,
+            scope,
+            verifier,
+            trust,
+            at,
+        })
     }
 
     pub(super) fn other_evidence_scope(&self) -> anyhow::Result<LearningEvidenceVerifierV1> {
@@ -161,7 +178,9 @@ impl ResidentMetadata {
                 authority_epoch: 1,
                 issued_at: self.at,
                 expires_at: self.at + 600,
-                payload_digest: Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(&receipt)?),
+                payload_digest: Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(
+                    &receipt,
+                )?),
                 signature: [0; 64],
             };
             signature.signature = key.sign(&signature.signing_bytes()).to_bytes();

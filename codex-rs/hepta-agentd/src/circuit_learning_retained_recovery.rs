@@ -65,9 +65,20 @@ where
     Source: AnchorWitnessStore + Send + 'static,
 {
     let OriginalCircuitRetainedPublicationRecoveryV1 {
-        training, scope, verifier, training_evidence, intent_digest, current,
-        authorities, selection, target, definition, source, predecessor,
-        original_source, original_identity,
+        training,
+        scope,
+        verifier,
+        training_evidence,
+        intent_digest,
+        current,
+        authorities,
+        selection,
+        target,
+        definition,
+        source,
+        predecessor,
+        original_source,
+        original_identity,
     } = original;
     if intent_digest.is_zero() {
         return Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
@@ -75,9 +86,14 @@ where
         ));
     }
     let context = OriginalCircuitRetainedPublicationContextV1 {
-        training, scope, verifier, training_evidence,
+        training,
+        scope,
+        verifier,
+        training_evidence,
     };
-    context.require_training_current(&trainer, PublicationAccess::Readback).await?;
+    context
+        .require_training_current(&trainer, PublicationAccess::Readback)
+        .await?;
     let (context, task) = tokio::task::spawn_blocking(move || {
         let started = now()?;
         let coordinator = context.authenticate(started, PublicationAccess::Readback)?;
@@ -94,17 +110,27 @@ where
             },
         )?;
         let task = ready.recover_circuit_feature_task(
-            definition, source, predecessor, original_source.as_ref(), &original_identity,
+            definition,
+            source,
+            predecessor,
+            original_source.as_ref(),
+            &original_identity,
         )?;
         binding::require_published(&context, &task, PublicationAccess::Readback)?;
         if now()? < started {
             return Err(OriginalCircuitRetainedPublicationErrorV1::Clock);
         }
         Ok::<_, OriginalCircuitRetainedPublicationErrorV1>((context, task))
-    }).await.map_err(uncertain)??;
-    context.require_training_current(&trainer, PublicationAccess::Readback).await?;
+    })
+    .await
+    .map_err(uncertain)??;
+    context
+        .require_training_current(&trainer, PublicationAccess::Readback)
+        .await?;
     tokio::task::spawn_blocking(move || {
         binding::require_published(&context, &task, PublicationAccess::Readback)?;
         Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)
-    }).await.map_err(uncertain)?
+    })
+    .await
+    .map_err(uncertain)?
 }

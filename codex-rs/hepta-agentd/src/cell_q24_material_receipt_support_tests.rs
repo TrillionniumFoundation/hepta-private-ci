@@ -112,18 +112,28 @@ enum MaterialFixtureProfile {
 
 impl Fixture {
     pub(super) async fn new(expired_work: bool) -> anyhow::Result<Self> {
-        Self::with_profile(expired_work, MaterialFixtureProfile::NoUpdate,
-            d("explicit-independent-evaluation-profile")).await
+        Self::with_profile(
+            expired_work,
+            MaterialFixtureProfile::NoUpdate,
+            d("explicit-independent-evaluation-profile"),
+        )
+        .await
     }
 
     async fn candidate_pages() -> anyhow::Result<Self> {
-        Self::candidate_pages_for_evaluation_profile(d("explicit-independent-evaluation-profile")).await
+        Self::candidate_pages_for_evaluation_profile(d("explicit-independent-evaluation-profile"))
+            .await
     }
 
-    async fn candidate_pages_for_evaluation_profile(evaluation_profile: Digest32) -> anyhow::Result<Self> {
+    async fn candidate_pages_for_evaluation_profile(
+        evaluation_profile: Digest32,
+    ) -> anyhow::Result<Self> {
         Self::with_profile(
-            /*expired_work*/ false, MaterialFixtureProfile::CandidatePages, evaluation_profile,
-        ).await
+            /*expired_work*/ false,
+            MaterialFixtureProfile::CandidatePages,
+            evaluation_profile,
+        )
+        .await
     }
 
     async fn with_profile(

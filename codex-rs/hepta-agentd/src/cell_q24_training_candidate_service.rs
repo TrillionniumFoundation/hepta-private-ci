@@ -10,12 +10,12 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 
-use super::Error;
-use super::OriginalCellQ24TrainingCommandOwnerV1;
-use super::original_state;
 use super::super::candidate_wire;
 use super::super::now;
 use super::super::wire;
+use super::Error;
+use super::OriginalCellQ24TrainingCommandOwnerV1;
+use super::original_state;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCellQ24CandidateMaterialErrorV1;
 use crate::OriginalCellQ24TrainingStageErrorV1;
@@ -37,15 +37,23 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<u64, Error> {
-        let permit = Arc::clone(&self.connections).try_acquire_owned()
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+                stream,
+                consumer,
+                consumer_uid,
+                original_consumer_pidfd,
+                timeout,
+                lifetime,
             )?;
             self.serve_candidate_material_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     pub(in super::super) fn serve_candidate_material_channel(
@@ -56,7 +64,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         for request_id in 1..=128_u64 {
             let mut disposition = candidate_wire::SessionDisposition::CloseReadback;
             let exchanged = channel.exchange(|bytes| {
-                let (response, next) = self.candidate_material_response(bytes, request_id, &mut session)
+                let (response, next) = self
+                    .candidate_material_response(bytes, request_id, &mut session)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 disposition = next;
                 Ok(response)
@@ -85,7 +94,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         // The Stage reads original source, native and Generator CURRENTs on
         // both sides and compares the full unchanged receipt and signature.
         let result = match SourceBoundCellQ24TrainingStageV1::read_candidate_material(
-            self.stage.as_ref(), &self.context.dataset,
+            self.stage.as_ref(),
+            &self.context.dataset,
         ) {
             Ok(material) => {
                 let fresh_now = now()?;

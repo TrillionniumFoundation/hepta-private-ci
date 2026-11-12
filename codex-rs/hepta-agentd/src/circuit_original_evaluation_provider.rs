@@ -35,21 +35,21 @@ use crate::CircuitTaskSourcePublicationV1;
 mod binding;
 #[path = "circuit_original_evaluation_provider_contract.rs"]
 mod contract;
-#[path = "circuit_original_evaluation_provider_records.rs"]
-mod records;
-#[path = "circuit_original_evaluation_provider_read.rs"]
-mod read;
 #[path = "circuit_original_evaluation_cohort_readback.rs"]
 mod current;
+#[path = "circuit_original_evaluation_provider_read.rs"]
+mod read;
+#[path = "circuit_original_evaluation_provider_records.rs"]
+mod records;
 
-pub use current::OriginalCircuitEvaluationCohortCurrentV1;
-pub use current::OriginalCircuitEvaluationCohortReadbackV1;
 pub use contract::OriginalCircuitEvaluationCohortConfigV1;
 pub use contract::OriginalCircuitEvaluationCohortRuleV1;
 pub use contract::OriginalCircuitEvaluationEpisodeV1;
 pub use contract::OriginalCircuitEvaluationSourceOwnersV1;
 pub use contract::OriginalCircuitEvaluationSourceV1;
 pub use contract::OriginalCircuitEvaluationTargetV1;
+pub use current::OriginalCircuitEvaluationCohortCurrentV1;
+pub use current::OriginalCircuitEvaluationCohortReadbackV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCircuitEvaluationProviderErrorV1 {
@@ -173,9 +173,16 @@ impl OriginalCircuitEvaluationCohortV1 {
         if started_at < self.last_observed_at {
             return Err(Error::Binding("system clock moved backwards"));
         }
-        let observed = OriginalCircuitEvaluationCohortV1::read_original_material(self, started_at, &mut clock)?;
-        if self.manifest.is_some_and(|expected| expected != observed.manifest)
-            || self.dataset.as_ref().is_some_and(|expected| expected != &observed.dataset)
+        let observed = OriginalCircuitEvaluationCohortV1::read_original_material(
+            self, started_at, &mut clock,
+        )?;
+        if self
+            .manifest
+            .is_some_and(|expected| expected != observed.manifest)
+            || self
+                .dataset
+                .as_ref()
+                .is_some_and(|expected| expected != &observed.dataset)
         {
             return Err(Error::Binding("same exact original cohort and signatures"));
         }
@@ -215,11 +222,16 @@ impl OriginalCircuitFinalHoldoutProviderV1 {
     /// Consume only this instance's successful original release. Failed and
     /// uncertain releases never acquire a completed brand. The returned owner
     /// can only re-read the same original sources; it cannot release again.
-    pub fn into_original_readback(self) -> Result<OriginalCircuitEvaluationCohortReadbackV1, Error> {
+    pub fn into_original_readback(
+        self,
+    ) -> Result<OriginalCircuitEvaluationCohortReadbackV1, Error> {
         if !self.release_completed || self.original.fenced {
             return Err(Error::Indeterminate);
         }
-        Ok(OriginalCircuitEvaluationCohortReadbackV1::retaining(self.original, self.plan))
+        Ok(OriginalCircuitEvaluationCohortReadbackV1::retaining(
+            self.original,
+            self.plan,
+        ))
     }
 
     fn manifest_with_clock(
@@ -271,7 +283,10 @@ impl OriginalCircuitFinalHoldoutProviderV1 {
         {
             return Err(ProductProviderErrorV1::Rejected);
         }
-        let observed = self.original.read_current_with_clock(clock).map_err(provider_error)?;
+        let observed = self
+            .original
+            .read_current_with_clock(clock)
+            .map_err(provider_error)?;
         if observed.manifest != plan.final_holdout_digest {
             return Err(ProductProviderErrorV1::Indeterminate);
         }
@@ -297,7 +312,6 @@ fn now() -> Result<u64, Error> {
         .map(|elapsed| elapsed.as_secs())
         .map_err(|_| Error::Binding("system clock before Unix epoch"))
 }
-
 
 #[cfg(test)]
 #[path = "circuit_original_evaluation_provider_access_tests.rs"]

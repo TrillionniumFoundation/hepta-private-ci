@@ -5,10 +5,10 @@
 use std::time::Duration;
 use std::time::Instant;
 
-use super::Continuation;
 use super::super::Error;
 use super::super::Origin;
 use super::super::OriginalCellQ24NoUpdateStageOwnersV1;
+use super::Continuation;
 use crate::OriginalCellQ24MaterialCommandClientV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 

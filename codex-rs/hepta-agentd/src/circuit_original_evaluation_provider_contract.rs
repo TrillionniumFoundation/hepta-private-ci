@@ -9,8 +9,8 @@ use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::DatasetFreezePlanV2;
-use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::Digest32;
@@ -139,7 +139,9 @@ impl OriginalCircuitEvaluationCohortRuleV1 {
             .iter()
             .any(|digest| digest.is_zero())
         {
-            return Err(Error::Binding("complete preregistered cohort and time rules"));
+            return Err(Error::Binding(
+                "complete preregistered cohort and time rules",
+            ));
         }
         let mut episodes = BTreeSet::new();
         let mut runs = BTreeSet::new();
@@ -156,7 +158,9 @@ impl OriginalCircuitEvaluationCohortRuleV1 {
                 || (row.baseline_run_id != row.episode.behavior_run_id
                     && !runs.insert(&row.baseline_run_id))
             {
-                return Err(Error::Binding("distinct actual evaluation arms and episodes"));
+                return Err(Error::Binding(
+                    "distinct actual evaluation arms and episodes",
+                ));
             }
         }
         Ok(())

@@ -5,14 +5,14 @@ use std::time::Instant;
 
 use tokio::sync::Mutex;
 
+use super::super::auth;
 use super::CandidateLane;
-use super::EvaluationLane;
 use super::Error;
+use super::EvaluationLane;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
 use super::OriginalCellQ24CandidateStageStreamsV1;
 use super::OriginalCellQ24NoUpdateStageOwnersV1;
-use super::super::auth;
 use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellEvaluationPanelRegistrationV1;
@@ -41,7 +41,9 @@ pub(super) fn bind(
     {
         return Err(Error::WrongScope);
     }
-    let end = admitted_at.checked_add(peer.lifetime).ok_or(Error::WrongScope)?;
+    let end = admitted_at
+        .checked_add(peer.lifetime)
+        .ok_or(Error::WrongScope)?;
     let evaluator = &streams.evaluator;
     if evaluator.peer.actor_id != material.initial.owners.evaluator
         || evaluator.timeout.is_zero()
@@ -51,40 +53,71 @@ pub(super) fn bind(
     {
         return Err(Error::WrongScope);
     }
-    let evaluator_end = admitted_at.checked_add(evaluator.lifetime).ok_or(Error::WrongScope)?;
+    let evaluator_end = admitted_at
+        .checked_add(evaluator.lifetime)
+        .ok_or(Error::WrongScope)?;
     let OriginalCellQ24CandidateStageStreamsV1 {
-        common, candidate_material: candidate, evaluator,
+        common,
+        candidate_material: candidate,
+        evaluator,
     } = streams;
     let mut common = match origin {
-        Origin::Fresh => OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams(
-            material.clone(), common,
-        ),
-        Origin::Recovered => OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams(
-            material.clone(), common,
-        ),
+        Origin::Fresh => {
+            OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams(material.clone(), common)
+        }
+        Origin::Recovered => {
+            OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams(material.clone(), common)
+        }
     }?;
     let candidate = match origin {
         Origin::Fresh => OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(
-            candidate.stream, candidate.peer, candidate.original_owner_pidfd,
-            material.clone(), candidate.timeout, candidate.lifetime,
+            candidate.stream,
+            candidate.peer,
+            candidate.original_owner_pidfd,
+            material.clone(),
+            candidate.timeout,
+            candidate.lifetime,
         ),
-        Origin::Recovered => OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(
-            candidate.stream, candidate.peer, candidate.original_owner_pidfd,
-            material.clone(), /*expected*/ None, candidate.timeout, candidate.lifetime,
-        ),
-    }.map_err(|_| Error::OwnerUnavailable("original Candidate initial connection"))?;
+        Origin::Recovered => {
+            OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(
+                candidate.stream,
+                candidate.peer,
+                candidate.original_owner_pidfd,
+                material.clone(),
+                /*expected*/ None,
+                candidate.timeout,
+                candidate.lifetime,
+            )
+        }
+    }
+    .map_err(|_| Error::OwnerUnavailable("original Candidate initial connection"))?;
     let evaluator = match origin {
         Origin::Fresh => OriginalCellEvaluationCommandConnectionV1::from_original_stream(
-            evaluator.stream, evaluator.peer, evaluator.original_owner_pidfd,
-            material.initial.clone(), material.scope.clone(), protocol.clone(),
-            material.verifier.clone(), evaluator.timeout, evaluator.lifetime,
+            evaluator.stream,
+            evaluator.peer,
+            evaluator.original_owner_pidfd,
+            material.initial.clone(),
+            material.scope.clone(),
+            protocol.clone(),
+            material.verifier.clone(),
+            evaluator.timeout,
+            evaluator.lifetime,
         ),
-        Origin::Recovered => OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream(
-            evaluator.stream, evaluator.peer, evaluator.original_owner_pidfd,
-            material.initial.clone(), material.scope.clone(), protocol.clone(),
-            material.verifier.clone(), evaluator.timeout, evaluator.lifetime,
-        ),
-    }.map_err(|_| Error::OwnerUnavailable("original Evaluator initial connection"))?;
+        Origin::Recovered => {
+            OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream(
+                evaluator.stream,
+                evaluator.peer,
+                evaluator.original_owner_pidfd,
+                material.initial.clone(),
+                material.scope.clone(),
+                protocol.clone(),
+                material.verifier.clone(),
+                evaluator.timeout,
+                evaluator.lifetime,
+            )
+        }
+    }
+    .map_err(|_| Error::OwnerUnavailable("original Evaluator initial connection"))?;
     let end = end.min(evaluator_end);
     let end = end.min(common.end);
     // Narrow the shared effect path too; no channel receives a later end.

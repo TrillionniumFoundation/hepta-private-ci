@@ -188,17 +188,22 @@ impl ArtifactFiles {
         &self,
         now: u64,
     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {
-        let owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
         let receipt = owner.current_registry_view(now)?.receipt();
         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {
             verifier: self.verifier.clone(),
             signed: self.selected.clone(),
             files: AgentdGenerationSelectionFilesV1 {
                 registry_snapshot: File::open(self.root.join("registries").join(format!(
-                    "{}-{}.snapshot", receipt.head_digest, receipt.file_digest,
+                    "{}-{}.snapshot",
+                    receipt.head_digest, receipt.file_digest,
                 )))?,
                 payload: File::open(self.root.join("payloads").join(format!(
-                    "{}-{}.bin", self.selected.artifact_id, self.selected.content_digest,
+                    "{}-{}.bin",
+                    self.selected.artifact_id, self.selected.content_digest,
                 )))?,
             },
         })

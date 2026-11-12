@@ -18,13 +18,13 @@ use tokio::runtime::Handle;
 use tokio::sync::Notify;
 use tokio::sync::Semaphore;
 
-use super::Error;
-use super::RetainedVersionOriginV1;
-use super::OriginalCircuitRetainedTaskInputsV1;
-use super::c_task::RetainedVersionInstalledTaskV1;
-use super::context::OriginalVersionCut;
 use super::super::OriginalCircuitRetainedPublicationInputsV1;
 use super::super::PreparedOriginalCircuitRetainedPublicationV1;
+use super::Error;
+use super::OriginalCircuitRetainedTaskInputsV1;
+use super::RetainedVersionOriginV1;
+use super::c_task::RetainedVersionInstalledTaskV1;
+use super::context::OriginalVersionCut;
 use crate::AgentdConfig;
 use crate::AgentdIdentity;
 use crate::CircuitTaskSourceReadbackV1;
@@ -33,20 +33,22 @@ use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCellQ24TrainingCommandConnectionV1;
-use crate::PublishedCircuitCellOwnerV1;
 use crate::OriginalCircuitLearningReadOwnerV1;
+use crate::PublishedCircuitCellOwnerV1;
 
 #[path = "circuit_retained_version_artifact.rs"]
 mod artifact;
-#[path = "circuit_retained_version_state.rs"]
-mod state;
 #[path = "circuit_retained_version_effect.rs"]
 mod effect;
 #[path = "circuit_retained_version_service.rs"]
 mod service;
+#[path = "circuit_retained_version_state.rs"]
+mod state;
 
-type RetainedVersionPreparedV1 = PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
-type RetainedVersionInputsV1 = OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+type RetainedVersionPreparedV1 =
+    PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+type RetainedVersionInputsV1 =
+    OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
 /// Expected identity of an already started original artifact transaction.
 /// This metadata can only narrow actual owner readback; it grants nothing.
@@ -110,7 +112,9 @@ struct RetainedVersionHostStateV1 {
     // Taking the sole phase before an effect leaves None on failure/cancellation.
     // No code fills a None phase from a checkpoint or a new connection.
     phase: Option<RetainedVersionHostPhaseV1>,
-    selection_reader: Option<Arc<OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>>,
+    selection_reader: Option<
+        Arc<OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
+    >,
 }
 pub struct OriginalCircuitRetainedVersionHostV1 {
     material: OriginalCellQ24MaterialReceiptConfigV1,
@@ -144,15 +148,33 @@ impl OriginalCircuitRetainedVersionHostV1 {
         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;
         task.require_completed_a(&inputs.completed)?;
         let artifacts = RetainedVersionArtifactOwnerV1::new(
-            Arc::clone(&inputs.authorities.artifacts), artifact_checkpoint,
-            inputs.selection.signed.clone(), inputs.selection.verifier.clone(),
+            Arc::clone(&inputs.authorities.artifacts),
+            artifact_checkpoint,
+            inputs.selection.signed.clone(),
+            inputs.selection.verifier.clone(),
         )?;
         let control = Arc::clone(&inputs.current);
-        let phase = RetainedVersionHostPhaseV1::Awaiting { inputs: Box::new(inputs), task };
-        Self::new(material, initial_binding, RetainedVersionOriginV1::Fresh, RetainedVersionHostStateV1 {
-            dataset, initial_trainer: Some(trainer), trainer: None, cut: None,
-            expected: None, control, artifacts, phase: Some(phase), selection_reader: None,
-        }, lifetime)
+        let phase = RetainedVersionHostPhaseV1::Awaiting {
+            inputs: Box::new(inputs),
+            task,
+        };
+        Self::new(
+            material,
+            initial_binding,
+            RetainedVersionOriginV1::Fresh,
+            RetainedVersionHostStateV1 {
+                dataset,
+                initial_trainer: Some(trainer),
+                trainer: None,
+                cut: None,
+                expected: None,
+                control,
+                artifacts,
+                phase: Some(phase),
+                selection_reader: None,
+            },
+            lifetime,
+        )
     }
 
     /// Cold expected bytes are accepted only by this permanent read-only
@@ -167,26 +189,44 @@ impl OriginalCircuitRetainedVersionHostV1 {
         let (initial_binding, _) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;
-        if original.intent_digest.is_zero() || original.training.receipts.len() != 3
+        if original.intent_digest.is_zero()
+            || original.training.receipts.len() != 3
             || original.attestations.len() != 3
         {
             return Err(Error::Binding("original retained recovery cut"));
         }
         let artifacts = RetainedVersionArtifactOwnerV1::new(
-            original.artifacts, original.artifact_checkpoint,
-            original.artifact_selection, original.artifact_verifier,
+            original.artifacts,
+            original.artifact_checkpoint,
+            original.artifact_selection,
+            original.artifact_verifier,
         )?;
         let phase = RetainedVersionHostPhaseV1::Recovered(RetainedVersionInstalledTaskV1 {
-            cell: original.cell, source: original.source,
-            identity: original.identity, intent: original.intent_digest,
+            cell: original.cell,
+            source: original.source,
+            identity: original.identity,
+            intent: original.intent_digest,
         });
-        Self::new(material, initial_binding, RetainedVersionOriginV1::Recovered, RetainedVersionHostStateV1 {
-            dataset, initial_trainer: Some(trainer), trainer: None, cut: None,
-            expected: Some(RetainedVersionColdCutV1 {
-                training: original.training, attestations: original.attestations,
-            }),
-            control: original.current, artifacts, phase: Some(phase), selection_reader: None,
-        }, lifetime)
+        Self::new(
+            material,
+            initial_binding,
+            RetainedVersionOriginV1::Recovered,
+            RetainedVersionHostStateV1 {
+                dataset,
+                initial_trainer: Some(trainer),
+                trainer: None,
+                cut: None,
+                expected: Some(RetainedVersionColdCutV1 {
+                    training: original.training,
+                    attestations: original.attestations,
+                }),
+                control: original.current,
+                artifacts,
+                phase: Some(phase),
+                selection_reader: None,
+            },
+            lifetime,
+        )
     }
 
     fn new(
@@ -201,17 +241,24 @@ impl OriginalCircuitRetainedVersionHostV1 {
         }
         let end = Instant::now().checked_add(lifetime).ok_or(Error::Clock)?;
         Ok(Self {
-            material, initial_binding, origin, state: Mutex::new(state),
+            material,
+            initial_binding,
+            origin,
+            state: Mutex::new(state),
             preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
             publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
             runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
-            end, runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
-            connections: Arc::new(Semaphore::new(4)), installed: Notify::new(),
+            end,
+            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
+            connections: Arc::new(Semaphore::new(4)),
+            installed: Notify::new(),
         })
     }
 
     fn require_lifetime(&self) -> Result<(), Error> {
-        if Instant::now() >= self.end { return Err(Error::Unavailable); }
+        if Instant::now() >= self.end {
+            return Err(Error::Unavailable);
+        }
         Ok(())
     }
 }

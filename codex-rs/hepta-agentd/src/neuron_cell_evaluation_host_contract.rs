@@ -92,10 +92,16 @@ impl Context {
         {
             return Err(Error::Binding("original Dataset before actual Candidate"));
         }
-        coordinator.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
+        coordinator.record(
+            training.receipt().clone(),
+            training.receipt().observed_unix_seconds,
+        )?;
         Self::from_checkpoint(
-            coordinator.snapshot().clone(), scope, registration,
-            training.attestation().clone(), verifier,
+            coordinator.snapshot().clone(),
+            scope,
+            registration,
+            training.attestation().clone(),
+            verifier,
         )
     }
 
@@ -106,7 +112,13 @@ impl Context {
         training_evidence: SignedLearningEvidenceV1,
         verifier: LearningEvidenceVerifierV1,
     ) -> Result<Self, Error> {
-        let original = Self { training, scope, registration, training_evidence, verifier };
+        let original = Self {
+            training,
+            scope,
+            registration,
+            training_evidence,
+            verifier,
+        };
         original.authenticate(super::now()?)?;
         Ok(original)
     }
@@ -114,10 +126,17 @@ impl Context {
     pub(super) fn authenticate(&self, current: u64) -> Result<VerifiedLearningEvidenceV1, Error> {
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(self.training.clone())?;
         self.scope.validate_snapshot(&self.training)?;
-        let receipt = self.training.receipts.last().ok_or(Error::Binding("original Training cut"))?;
+        let receipt = self
+            .training
+            .receipts
+            .last()
+            .ok_or(Error::Binding("original Training cut"))?;
         if self.training.receipts.len() != 3
             || coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)
-            || !matches!(&receipt.observation, LearningIterationObservationV1::Training { .. })
+            || !matches!(
+                &receipt.observation,
+                LearningIterationObservationV1::Training { .. }
+            )
             || self.training.request.evaluation_profile != self.registration.evaluation_profile()
             || self.training.owners.evidence_trust_digest != self.verifier.trust_digest()
             || self.training.request.envelope.objective_digest != self.verifier.objective_digest()
@@ -125,11 +144,15 @@ impl Context {
             || receipt.observed_unix_seconds != self.training_evidence.issued_at
             || receipt.observed_unix_seconds > current
         {
-            return Err(Error::Binding("actual Candidate, nonempty original panel and full Training"));
+            return Err(Error::Binding(
+                "actual Candidate, nonempty original panel and full Training",
+            ));
         }
         let training = self.verifier.verify(
-            LearningEvidenceRoleV1::Generator, &self.training_evidence,
-            &learning_iteration_receipt_signing_bytes_v1(receipt)?, current,
+            LearningEvidenceRoleV1::Generator,
+            &self.training_evidence,
+            &learning_iteration_receipt_signing_bytes_v1(receipt)?,
+            current,
         )?;
         if training.principal().principal_id != self.training.owners.trainer {
             return Err(Error::Binding("original Generator identity"));
@@ -154,8 +177,11 @@ impl Context {
 
     pub(super) fn initial(&self) -> Result<LearningIterationSnapshotV1, Error> {
         Ok(LearningIterationCoordinatorV1::new(
-            self.training.request.clone(), self.training.owners.clone(),
-        )?.snapshot().clone())
+            self.training.request.clone(),
+            self.training.owners.clone(),
+        )?
+        .snapshot()
+        .clone())
     }
 }
 
@@ -169,11 +195,21 @@ pub struct OriginalCellEvaluationCommandReceiptV1 {
     pub(super) training_evidence: SignedLearningEvidenceV1,
 }
 impl OriginalCellEvaluationCommandReceiptV1 {
-    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
-    pub fn receipt(&self) -> &LearningIterationReceiptV1 { &self.receipt }
-    pub fn attestation(&self) -> &SignedLearningEvidenceV1 { &self.attestation }
-    pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 { &self.training_evidence }
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.snapshot
+    }
+    pub fn receipt(&self) -> &LearningIterationReceiptV1 {
+        &self.receipt
+    }
+    pub fn attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.attestation
+    }
+    pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.training_evidence
+    }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 }
 
 pub(super) fn authenticate_receipt(
@@ -184,8 +220,11 @@ pub(super) fn authenticate_receipt(
 ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
     let generator = context.authenticate(current)?;
     let original = LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?;
-    let candidate = original.candidate().ok_or(Error::Binding("actual trained Candidate"))?
-        .digest().map_err(LearningIterationError::from)?;
+    let candidate = original
+        .candidate()
+        .ok_or(Error::Binding("actual trained Candidate"))?
+        .digest()
+        .map_err(LearningIterationError::from)?;
     if !matches!(&receipt.observation,
         LearningIterationObservationV1::Evaluation { candidate_bundle, evaluation_profile, .. }
         if *candidate_bundle == candidate
@@ -196,11 +235,15 @@ pub(super) fn authenticate_receipt(
         || receipt.observed_unix_seconds > signed.issued_at
         || receipt.observed_unix_seconds > current
     {
-        return Err(Error::Binding("original Evaluation over the exact Candidate and panel"));
+        return Err(Error::Binding(
+            "original Evaluation over the exact Candidate and panel",
+        ));
     }
     let evaluator = context.verifier.verify(
-        LearningEvidenceRoleV1::Evaluator, &signed,
-        &learning_iteration_receipt_signing_bytes_v1(&receipt)?, current,
+        LearningEvidenceRoleV1::Evaluator,
+        &signed,
+        &learning_iteration_receipt_signing_bytes_v1(&receipt)?,
+        current,
     )?;
     if evaluator.principal().principal_id != context.training.owners.evaluator {
         return Err(Error::Binding("original independent Evaluator"));
@@ -210,7 +253,9 @@ pub(super) fn authenticate_receipt(
     coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
     context.scope.validate_snapshot(coordinator.snapshot())?;
     Ok(OriginalCellEvaluationCommandReceiptV1 {
-        snapshot: coordinator.snapshot().clone(), receipt, attestation: signed,
+        snapshot: coordinator.snapshot().clone(),
+        receipt,
+        attestation: signed,
         training_evidence: context.training_evidence.clone(),
     })
 }

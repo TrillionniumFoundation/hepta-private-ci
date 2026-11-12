@@ -9,14 +9,19 @@ pub(crate) async fn original_evaluation_source(
     input: CircuitTaskSourceInputV1,
     record: codex_hepta_learning_ledger::RunStartRecordV1,
     selected_index: usize,
-) -> anyhow::Result<(AgentdIdentity, Source, crate::CircuitTaskSourcePublicationV1)> {
+) -> anyhow::Result<(
+    AgentdIdentity,
+    Source,
+    crate::CircuitTaskSourcePublicationV1,
+)> {
     let identity = identity(root)?;
     let fence = fence(&identity)?;
     let store = AutomationStore::open(&identity.layout).await?;
     let mut definition = definition(bundle);
     anyhow::ensure!(selected_index < definition.candidates.len());
     let selected_activation = definition.candidates[selected_index].activation_index;
-    definition.candidates[selected_index].activation_index = definition.candidates[0].activation_index;
+    definition.candidates[selected_index].activation_index =
+        definition.candidates[0].activation_index;
     definition.candidates[0].activation_index = selected_activation;
     let selected = definition.candidates[selected_index].candidate_id.clone();
     let (mut circuit, mut bindings) = configuration();
@@ -29,7 +34,10 @@ pub(crate) async fn original_evaluation_source(
     let owner = Source::create(
         opened(root, "source-journal")?,
         witness(root, "source-witness")?,
-        &identity, &fence, &registry, sources.clone(),
+        &identity,
+        &fence,
+        &registry,
+        sources.clone(),
     )?;
     let request = owner.build(&identity, &record)?;
     let cells = CellOwnerJournalV1::open(
@@ -48,14 +56,20 @@ pub(crate) async fn original_evaluation_source(
         fence,
         inputs: owner.clone(),
         cells: AgentdCircuitCellOwnerV1::new(
-            registry, cells,
-            cell::Model::new(/*latency*/ 20, /*lose_response*/ false), cell::Encoder,
+            registry,
+            cells,
+            cell::Model::new(/*latency*/ 20, /*lose_response*/ false),
+            cell::Encoder,
         ),
     };
-    let receipt = driver.execute(&request, CircuitTaskModeV1::Drive, || Ok(crate::CircuitCellTimeV1 {
-        circuit_millis: record.admission.observed_at_unix_micros / 1_000 + 10,
-        cell_micros: 20,
-    })).await?;
+    let receipt = driver
+        .execute(&request, CircuitTaskModeV1::Drive, || {
+            Ok(crate::CircuitCellTimeV1 {
+                circuit_millis: record.admission.observed_at_unix_micros / 1_000 + 10,
+                cell_micros: 20,
+            })
+        })
+        .await?;
     owner.publish_result(&identity, &record, &receipt)?;
     let publication = owner.read_publication(&identity, &record)?;
     pretty_assertions::assert_eq!(publication.original_policy()?.selected(), &selected);

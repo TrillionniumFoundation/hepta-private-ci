@@ -112,7 +112,11 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             owner.authenticate(observed, current)?;
         }
         let result = self.seal_observed_panel(after)?;
-        if self.retained.as_ref().is_some_and(|original| original != &result) {
+        if self
+            .retained
+            .as_ref()
+            .is_some_and(|original| original != &result)
+        {
             return Err(Error::CommitUncertain);
         }
         self.retained = Some(result.clone());
@@ -134,7 +138,10 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             .await?,
         );
         for (owner, task) in self.retention.iter_mut().zip(self.registration.retention()) {
-            results.push(OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock).await?);
+            results.push(
+                OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock)
+                    .await?,
+            );
         }
         Ok(results)
     }
@@ -150,8 +157,8 @@ mod test_access;
 
 #[path = "neuron_cell_evaluation_host.rs"]
 mod host;
-pub use host::OriginalCellEvaluationHostV1;
-pub use host::OriginalCellEvaluationCommandConnectionV1;
 pub use host::OriginalCellEvaluationCommandClientV1;
-pub use host::OriginalCellEvaluationCommandReceiptV1;
+pub use host::OriginalCellEvaluationCommandConnectionV1;
 pub use host::OriginalCellEvaluationCommandErrorV1;
+pub use host::OriginalCellEvaluationCommandReceiptV1;
+pub use host::OriginalCellEvaluationHostV1;

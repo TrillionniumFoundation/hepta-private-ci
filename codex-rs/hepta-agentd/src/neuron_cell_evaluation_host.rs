@@ -19,14 +19,14 @@ use crate::CellEvaluationJournalsV1;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
 use crate::OriginalCellEvaluationReceiptSourcesV1;
 
-#[path = "neuron_cell_evaluation_host_contract.rs"]
-mod contract;
 #[path = "neuron_cell_evaluation_host_command.rs"]
 mod command;
-#[path = "neuron_cell_evaluation_host_wire.rs"]
-mod wire;
+#[path = "neuron_cell_evaluation_host_contract.rs"]
+mod contract;
 #[path = "neuron_cell_evaluation_host_service.rs"]
 mod service;
+#[path = "neuron_cell_evaluation_host_wire.rs"]
+mod wire;
 
 pub use command::OriginalCellEvaluationCommandClientV1;
 pub use command::OriginalCellEvaluationCommandConnectionV1;
@@ -37,7 +37,10 @@ use contract::Context;
 type Error = OriginalCellEvaluationCommandErrorV1;
 type Receipt = OriginalCellEvaluationCommandReceiptV1;
 type Panel = OriginalCellEvaluationPanelOwnerV1<
-    FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
 >;
 
 /// The original host transfers these concrete owners once. No writable owner,
@@ -80,33 +83,49 @@ impl OriginalCellEvaluationHostV1 {
             || receipt.signing.verifier.scope_digest() != primary.verifier.scope_digest()
             || receipt.signing.verifier.objective_digest() != primary.verifier.objective_digest()
         {
-            return Err(Error::Binding("same original Evaluator, Candidate, plan and execution custody"));
+            return Err(Error::Binding(
+                "same original Evaluator, Candidate, plan and execution custody",
+            ));
         }
         let context = Context::from_checkpoint(
-            primary.training.clone(), primary.scope.clone(), panel.registration.clone(),
-            primary.training_evidence.clone(), primary.verifier.clone(),
+            primary.training.clone(),
+            primary.scope.clone(),
+            panel.registration.clone(),
+            primary.training_evidence.clone(),
+            primary.verifier.clone(),
         )?;
         let binding = context.binding(now()?)?;
         let runtime = Handle::try_current().map_err(|_| Error::Unavailable)?;
         Ok(Self {
             owners: Mutex::new(Owners {
-                panel, evaluator, retained: None, fenced: false,
+                panel,
+                evaluator,
+                retained: None,
+                fenced: false,
                 #[cfg(test)]
                 fixture_clock: None,
             }),
-            context, binding, execution_requested: AtomicBool::new(readback_only),
-            runtime, connections: Arc::new(Semaphore::new(4)),
+            context,
+            binding,
+            execution_requested: AtomicBool::new(readback_only),
+            runtime,
+            connections: Arc::new(Semaphore::new(4)),
         })
     }
 }
 
 impl Owners {
-    async fn completion(&mut self, context: &Context, action: wire::Action) -> Result<Receipt, Error> {
+    async fn completion(
+        &mut self,
+        context: &Context,
+        action: wire::Action,
+    ) -> Result<Receipt, Error> {
         if self.fenced {
             return Err(Error::CommitUncertain);
         }
         let result = self.read_original_completion(context, action).await;
-        if result.is_err() && !matches!(&result,
+        if result.is_err()
+            && !matches!(&result,
             Err(Error::Receipt(crate::OriginalCellEvaluationReceiptErrorV1::Owner(
                 crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Pending
                 | crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Store(
@@ -131,7 +150,9 @@ impl Owners {
             || before.training_evidence() != &context.training_evidence
             || before.registration() != &context.registration
         {
-            return Err(Error::Binding("exact original panel and Training command context"));
+            return Err(Error::Binding(
+                "exact original panel and Training command context",
+            ));
         }
         if action == wire::Action::Execute {
             let current = self.current_time()?;
@@ -162,11 +183,14 @@ impl Owners {
             match action {
                 wire::Action::Execute => {
                     OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(
-                        &mut self.evaluator, sources,
-                    ).await?
+                        &mut self.evaluator,
+                        sources,
+                    )
+                    .await?
                 }
                 wire::Action::Readback => {
-                    OriginalCellEvaluationReceiptOwnerV1::readback(&mut self.evaluator, sources).await?
+                    OriginalCellEvaluationReceiptOwnerV1::readback(&mut self.evaluator, sources)
+                        .await?
                 }
             }
         };
@@ -176,7 +200,9 @@ impl Owners {
         }
         // All panel I/O finishes before this final actual receipt journal read.
         OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(
-            &mut self.evaluator, &completed.0, &completed.1,
+            &mut self.evaluator,
+            &completed.0,
+            &completed.1,
         )?;
         let current = self.current_time()?;
         require_clock(started_at, current)?;
@@ -190,10 +216,16 @@ impl Owners {
         let (config, _) =
             OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator);
         config.signing.verifier.require_signer_binding(
-            LearningEvidenceRoleV1::Evaluator, &config.signing.signer, current,
+            LearningEvidenceRoleV1::Evaluator,
+            &config.signing.signer,
+            current,
         )?;
         let original = contract::authenticate_receipt(context, completed.0, completed.1, current)?;
-        if self.retained.as_ref().is_some_and(|previous| previous != &original) {
+        if self
+            .retained
+            .as_ref()
+            .is_some_and(|previous| previous != &original)
+        {
             return Err(Error::CommitUncertain);
         }
         self.retained = Some(original.clone());
@@ -204,9 +236,15 @@ impl Owners {
     async fn read_panel(&mut self) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
         #[cfg(test)]
         if let Some(current) = self.fixture_clock {
-            return self.panel.read_current_with_clock(|| Ok(current)).await.map_err(Error::from);
+            return self
+                .panel
+                .read_current_with_clock(|| Ok(current))
+                .await
+                .map_err(Error::from);
         }
-        OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel).await.map_err(Error::from)
+        OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel)
+            .await
+            .map_err(Error::from)
     }
 
     fn authenticate_panel(
@@ -219,7 +257,9 @@ impl Owners {
         {
             return Err(Error::CommitUncertain);
         }
-        self.panel.primary.authenticate(observed.primary(), current)?;
+        self.panel
+            .primary
+            .authenticate(observed.primary(), current)?;
         for (owner, member) in self.panel.retention.iter_mut().zip(observed.retention()) {
             owner.authenticate(member, current)?;
         }

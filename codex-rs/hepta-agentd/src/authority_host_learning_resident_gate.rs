@@ -27,61 +27,87 @@ pub(super) struct ResidentRegisteredStateV3 {
 }
 
 impl ResidentRegisteredStateV3 {
-    pub(super) fn new(authority: ResidentRootAuthorityV3, checkpoint: ResidentCheckpointV3) -> Self {
-        Self { authority: Arc::new(authority), checkpoint: Arc::new(checkpoint),
-            lane: Arc::new(Semaphore::new(1)) }
+    pub(super) fn new(
+        authority: ResidentRootAuthorityV3,
+        checkpoint: ResidentCheckpointV3,
+    ) -> Self {
+        Self {
+            authority: Arc::new(authority),
+            checkpoint: Arc::new(checkpoint),
+            lane: Arc::new(Semaphore::new(1)),
+        }
     }
 
     pub(super) async fn read(
         self: &Arc<Self>,
         cancellation: &CancellationToken,
     ) -> Result<(ResidentSnapshotV3, u64), Error> {
-        let permit = tokio::time::timeout(Duration::from_secs(2),
-            Arc::clone(&self.lane).acquire_owned()).await
-            .map_err(|_| Error::Unavailable)?
-            .map_err(|_| Error::Unavailable)?;
+        let permit = tokio::time::timeout(
+            Duration::from_secs(2),
+            Arc::clone(&self.lane).acquire_owned(),
+        )
+        .await
+        .map_err(|_| Error::Unavailable)?
+        .map_err(|_| Error::Unavailable)?;
         let owner = Arc::clone(self);
         let cancellation = cancellation.clone();
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            let result = owner.authority.perform(
-                ResidentStoreActionV3::Read(&owner.checkpoint), &cancellation,
-            ).map_err(|_| Error::Unavailable)?;
+            let result = owner
+                .authority
+                .perform(
+                    ResidentStoreActionV3::Read(&owner.checkpoint),
+                    &cancellation,
+                )
+                .map_err(|_| Error::Unavailable)?;
             match result.value {
                 ResidentStoreValueV3::Snapshot(snapshot) => Ok((snapshot, result.now_ms)),
                 _ => Err(Error::Unavailable),
             }
-        }).await.map_err(|_| Error::Unavailable)?
+        })
+        .await
+        .map_err(|_| Error::Unavailable)?
     }
 
     pub(super) async fn admit(
         self: &Arc<Self>,
         cancellation: &CancellationToken,
     ) -> Result<Option<ResidentContinuationV3>, Error> {
-        let permit = tokio::time::timeout(Duration::from_secs(2),
-            Arc::clone(&self.lane).acquire_owned()).await
-            .map_err(|_| Error::Unavailable)?
-            .map_err(|_| Error::Unavailable)?;
+        let permit = tokio::time::timeout(
+            Duration::from_secs(2),
+            Arc::clone(&self.lane).acquire_owned(),
+        )
+        .await
+        .map_err(|_| Error::Unavailable)?
+        .map_err(|_| Error::Unavailable)?;
         let owner = Arc::clone(self);
         let original_cancellation = cancellation.clone();
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            let result = owner.authority.perform(
-                ResidentStoreActionV3::Admit(&owner.checkpoint), &original_cancellation,
-            ).map_err(|_| Error::CommitUncertain)?;
+            let result = owner
+                .authority
+                .perform(
+                    ResidentStoreActionV3::Admit(&owner.checkpoint),
+                    &original_cancellation,
+                )
+                .map_err(|_| Error::CommitUncertain)?;
             match result.value {
                 ResidentStoreValueV3::Fresh(fresh) => Ok(fresh),
                 _ => Err(Error::CommitUncertain),
             }
-        }).await.map_err(|_| Error::CommitUncertain)??;
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
         if cancellation.is_cancelled() {
             return Err(Error::CommitUncertain);
         }
         Ok(result.map(|fresh| ResidentContinuationV3 {
             gate: Arc::new(RootResidentLearningEffectGateV3 {
                 inner: Arc::new(ResidentExecutionV3 {
-                    owner: Arc::clone(self), fresh: Mutex::new(fresh),
-                    active: AtomicBool::new(true), cancellation: cancellation.child_token(),
+                    owner: Arc::clone(self),
+                    fresh: Mutex::new(fresh),
+                    active: AtomicBool::new(true),
+                    cancellation: cancellation.child_token(),
                     dispatch_cancel: Arc::new(AtomicBool::new(false)),
                 }),
             }),
@@ -133,7 +159,9 @@ impl RootResidentLearningEffectGateV3 {
             self.fence();
             return Err(Error::WrongScope);
         }
-        self.local(GateActionV3::Current, predecessor).await.map(|_| ())
+        self.local(GateActionV3::Current, predecessor)
+            .await
+            .map(|_| ())
     }
 
     pub(super) async fn begin(
@@ -149,7 +177,9 @@ impl RootResidentLearningEffectGateV3 {
         predecessor: &LearningIterationSnapshotV1,
         next: LearningIterationSnapshotV1,
     ) -> Result<(), Error> {
-        self.local(GateActionV3::Checkpoint(next), predecessor).await.map(|_| ())
+        self.local(GateActionV3::Checkpoint(next), predecessor)
+            .await
+            .map(|_| ())
     }
 
     pub(super) fn cancellation(&self) -> &CancellationToken {
@@ -196,10 +226,13 @@ impl RootResidentLearningEffectGateV3 {
         action: GateActionV3,
         predecessor: LearningIterationSnapshotV1,
     ) -> Result<u64, Error> {
-        let permit = tokio::time::timeout(Duration::from_secs(2),
-            Arc::clone(&self.inner.owner.lane).acquire_owned()).await
-            .map_err(|_| Error::CommitUncertain)?
-            .map_err(|_| Error::CommitUncertain)?;
+        let permit = tokio::time::timeout(
+            Duration::from_secs(2),
+            Arc::clone(&self.inner.owner.lane).acquire_owned(),
+        )
+        .await
+        .map_err(|_| Error::CommitUncertain)?
+        .map_err(|_| Error::CommitUncertain)?;
         let inner = Arc::clone(&self.inner);
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
@@ -209,22 +242,27 @@ impl RootResidentLearningEffectGateV3 {
             let mut fresh = inner.fresh.try_lock().map_err(|_| Error::CommitUncertain)?;
             let owner = &inner.owner.checkpoint;
             let operation = match &action {
-                GateActionV3::Current => ResidentStoreActionV3::RequireDispatch(
-                    owner, &fresh, &predecessor,
-                ),
-                GateActionV3::Begin(stage) => ResidentStoreActionV3::Begin(
-                    owner, &mut fresh, &predecessor, *stage,
-                ),
-                GateActionV3::Checkpoint(next) => ResidentStoreActionV3::Checkpoint(
-                    owner, &mut fresh, &predecessor, next,
-                ),
+                GateActionV3::Current => {
+                    ResidentStoreActionV3::RequireDispatch(owner, &fresh, &predecessor)
+                }
+                GateActionV3::Begin(stage) => {
+                    ResidentStoreActionV3::Begin(owner, &mut fresh, &predecessor, *stage)
+                }
+                GateActionV3::Checkpoint(next) => {
+                    ResidentStoreActionV3::Checkpoint(owner, &mut fresh, &predecessor, next)
+                }
             };
-            let boundary = inner.owner.authority.perform(operation, &inner.cancellation)
+            let boundary = inner
+                .owner
+                .authority
+                .perform(operation, &inner.cancellation)
                 .map_err(|_| Error::CommitUncertain)?;
             if !inner.active.load(Ordering::Acquire) || inner.cancellation.is_cancelled() {
                 return Err(Error::CommitUncertain);
             }
             Ok(boundary.now_ms)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 }

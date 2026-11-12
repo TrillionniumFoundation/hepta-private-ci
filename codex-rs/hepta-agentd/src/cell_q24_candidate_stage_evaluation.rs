@@ -12,11 +12,11 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 use codex_hepta_types::AuthorityPosture;
 
+use super::super::auth;
 use super::CandidateRead;
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
-use super::super::auth;
 use crate::OriginalCellEvaluationCommandClientV1;
 use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellEvaluationCommandErrorV1;
@@ -33,21 +33,35 @@ pub(super) struct EvaluationLane {
 
 impl EvaluationLane {
     pub(super) fn new(initial: OriginalCellEvaluationCommandConnectionV1) -> Self {
-        Self { initial: Some(initial), client: None, retained: None, failed: false }
+        Self {
+            initial: Some(initial),
+            client: None,
+            retained: None,
+            failed: false,
+        }
     }
 
     #[cfg(test)]
     pub(super) fn fixture_unavailable() -> Self {
-        Self { initial: None, client: None, retained: None, failed: false }
+        Self {
+            initial: None,
+            client: None,
+            retained: None,
+            failed: false,
+        }
     }
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-enum Action { Execute, Readback }
+enum Action {
+    Execute,
+    Readback,
+}
 
 impl OriginalCellQ24CandidateStageOwnersV1 {
     pub(super) fn training_prefix(
-        &self, snapshot: &LearningIterationSnapshotV1,
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
     ) -> Result<LearningIterationSnapshotV1, Error> {
         let complete = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
         self.common.material.scope.validate_snapshot(snapshot)?;
@@ -59,9 +73,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        let mut prefix = LearningIterationCoordinatorV1::from_snapshot(
-            self.common.material.initial.clone(),
-        )?;
+        let mut prefix =
+            LearningIterationCoordinatorV1::from_snapshot(self.common.material.initial.clone())?;
         for original in &snapshot.receipts[..3] {
             prefix.record(original.clone(), original.observed_unix_seconds)?;
         }
@@ -70,17 +83,21 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        self.common.material.scope.validate_snapshot(prefix.snapshot())?;
+        self.common
+            .material
+            .scope
+            .validate_snapshot(prefix.snapshot())?;
         Ok(prefix.snapshot().clone())
     }
 
     pub(super) async fn execute_original_evaluation(
-        &self, snapshot: &LearningIterationSnapshotV1,
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
     ) -> Result<LearningIterationReceiptV1, Error> {
         if self.common.origin != Origin::Fresh
             || snapshot.receipts.len() != 3
-            || LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?
-                .next_stage() != Some(Stage::Evaluation)
+            || LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()
+                != Some(Stage::Evaluation)
         {
             return Err(Error::WrongScope);
         }
@@ -89,13 +106,16 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
     }
 
     pub(super) async fn read_original_evaluation(
-        &self, snapshot: &LearningIterationSnapshotV1,
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
         self.original_evaluation(snapshot, Action::Readback).await
     }
 
     async fn original_evaluation(
-        &self, snapshot: &LearningIterationSnapshotV1, action: Action,
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        action: Action,
     ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
         let started_at = auth::now()?;
         self.require_live_deadline()?;
@@ -118,18 +138,32 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             CandidateRead::Readback
         };
         let before = OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
-            self, &training_cut, mode,
-        ).await?;
+            self,
+            &training_cut,
+            mode,
+        )
+        .await?;
         let (dataset, training) = {
-            let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+            let mut common = self
+                .common
+                .continuation
+                .try_lock()
+                .map_err(|_| Error::QueueFull)?;
             common.read_prefix(&self.common, &training_cut).await?;
             (
-                common.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone(),
-                common.original_training.as_ref().ok_or(Error::CommitUncertain)?.clone(),
+                common
+                    .original_dataset
+                    .as_ref()
+                    .ok_or(Error::CommitUncertain)?
+                    .clone(),
+                common
+                    .original_training
+                    .as_ref()
+                    .ok_or(Error::CommitUncertain)?
+                    .clone(),
             )
         };
-        if before.receipt() != training.receipt()
-            || before.attestation() != training.attestation()
+        if before.receipt() != training.receipt() || before.attestation() != training.attestation()
         {
             return Err(Error::WrongScope);
         }
@@ -137,38 +171,53 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             let connection = lane.initial.take().ok_or(Error::CommitUncertain)?;
             lane.client = Some(
                 OriginalCellEvaluationCommandConnectionV1::bind_original_training(
-                    connection, dataset.snapshot().clone(), &training,
-                ).map_err(evaluation_failure)?,
+                    connection,
+                    dataset.snapshot().clone(),
+                    &training,
+                )
+                .map_err(evaluation_failure)?,
             );
         }
         if action == Action::Execute {
-            let gate = self.common.root.as_ref()
-                .ok_or(Error::OwnerUnavailable("fresh resident Evaluation continuation"))?;
+            let gate = self.common.root.as_ref().ok_or(Error::OwnerUnavailable(
+                "fresh resident Evaluation continuation",
+            ))?;
             // The actual pending intent is T -> E. Neither an E result nor
             // readback of its signature changes Root's checkpoint prematurely.
             RootResidentLearningEffectGateV3::require_current(
-                gate, &training_cut, &self.common.material.scope,
-            ).await?;
+                gate,
+                &training_cut,
+                &self.common.material.scope,
+            )
+            .await?;
         }
         let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
         let result = match action {
-            Action::Execute =>
-                OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await,
-            Action::Readback =>
-                OriginalCellEvaluationCommandClientV1::readback(client).await,
+            Action::Execute => {
+                OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await
+            }
+            Action::Readback => OriginalCellEvaluationCommandClientV1::readback(client).await,
         };
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
             if RootResidentLearningEffectGateV3::require_current(
-                gate, &training_cut, &self.common.material.scope,
-            ).await.is_err() {
+                gate,
+                &training_cut,
+                &self.common.material.scope,
+            )
+            .await
+            .is_err()
+            {
                 return Err(Error::CommitUncertain);
             }
         }
         let original = result.map_err(evaluation_failure)?;
         let after = OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
-            self, &training_cut, mode,
-        ).await?;
+            self,
+            &training_cut,
+            mode,
+        )
+        .await?;
         if before.bundle() != after.bundle()
             || before.heads() != after.heads()
             || before.receipt() != after.receipt()
@@ -176,13 +225,22 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::CommitUncertain);
         }
-        let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut common = self
+            .common
+            .continuation
+            .try_lock()
+            .map_err(|_| Error::QueueFull)?;
         common.read_prefix(&self.common, &training_cut).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
             if RootResidentLearningEffectGateV3::require_current(
-                gate, &training_cut, &self.common.material.scope,
-            ).await.is_err() {
+                gate,
+                &training_cut,
+                &self.common.material.scope,
+            )
+            .await
+            .is_err()
+            {
                 return Err(Error::CommitUncertain);
             }
         }
@@ -191,13 +249,20 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
         auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
-        let current_training = common.original_training.as_ref().ok_or(Error::CommitUncertain)?;
+        let current_training = common
+            .original_training
+            .as_ref()
+            .ok_or(Error::CommitUncertain)?;
         if current_training != &training {
             return Err(Error::WrongScope);
         }
         self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?;
         self.require_live_deadline()?;
-        if lane.retained.as_ref().is_some_and(|saved| saved != &original) {
+        if lane
+            .retained
+            .as_ref()
+            .is_some_and(|saved| saved != &original)
+        {
             return Err(Error::WrongScope);
         }
         lane.retained = Some(original.clone());
@@ -216,17 +281,29 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         let receipt = original.receipt();
         let signed = original.attestation();
         let candidate = LearningIterationCoordinatorV1::from_snapshot(training_cut.clone())?;
-        let expected = candidate.candidate().ok_or(Error::WrongScope)?
-            .digest().map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-        self.common.material.scope.validate_snapshot(original.snapshot())?;
+        let expected = candidate
+            .candidate()
+            .ok_or(Error::WrongScope)?
+            .digest()
+            .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+        self.common
+            .material
+            .scope
+            .validate_snapshot(original.snapshot())?;
         if original.snapshot().request != training_cut.request
             || original.snapshot().owners != training_cut.owners
             || original.snapshot().receipts.len() != 4
-            || !original.snapshot().receipts.starts_with(&training_cut.receipts)
+            || !original
+                .snapshot()
+                .receipts
+                .starts_with(&training_cut.receipts)
             || original.snapshot().receipts.last() != Some(receipt)
             || original.training_attestation() != training.attestation()
             || original.authority() != AuthorityPosture::DENY_ALL
-            || supplied.receipts.get(3).is_some_and(|saved| saved != receipt)
+            || supplied
+                .receipts
+                .get(3)
+                .is_some_and(|saved| saved != receipt)
             || receipt.operation_id != training_cut.request.operation_id
             || receipt.predecessor != training_cut.head_digest
             || receipt.actor_id != training_cut.owners.evaluator
@@ -240,12 +317,22 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::WrongScope);
         }
         let generator = auth::verify_receipt(
-            &self.common.material, training.receipt(), training.attestation(), current,
+            &self.common.material,
+            training.receipt(),
+            training.attestation(),
+            current,
         )?;
-        let evaluator = self.common.material.verifier.verify(
-            LearningEvidenceRoleV1::Evaluator, signed,
-            &learning_iteration_receipt_signing_bytes_v1(receipt)?, current,
-        ).map_err(Error::Evidence)?;
+        let evaluator = self
+            .common
+            .material
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                signed,
+                &learning_iteration_receipt_signing_bytes_v1(receipt)?,
+                current,
+            )
+            .map_err(Error::Evidence)?;
         if evaluator.principal().principal_id != receipt.actor_id {
             return Err(Error::WrongScope);
         }
@@ -262,15 +349,23 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
 fn evaluation_failure(error: OriginalCellEvaluationCommandErrorV1) -> Error {
     use OriginalCellEvaluationCommandErrorV1 as Source;
     match error {
-        Source::Missing | Source::Pending | Source::ReadbackRequired | Source::CommitUncertain =>
-            Error::CommitUncertain,
+        Source::Missing | Source::Pending | Source::ReadbackRequired | Source::CommitUncertain => {
+            Error::CommitUncertain
+        }
         Source::DeadlineExceeded => Error::DeadlineExceeded,
         Source::Busy => Error::QueueFull,
         Source::Evidence(error) => Error::Evidence(error),
-        Source::Binding(_) | Source::Iteration(_) | Source::Checkpoint(_) | Source::Encoding(_) =>
-            Error::WrongScope,
-        Source::Unavailable | Source::Transport(_) | Source::Receipt(_) | Source::Panel(_)
-        | Source::Qualification(_) | Source::Journal(_) | Source::PredecessorUnavailable =>
-            Error::OwnerUnavailable("original independent B/retention Evaluator"),
+        Source::Binding(_) | Source::Iteration(_) | Source::Checkpoint(_) | Source::Encoding(_) => {
+            Error::WrongScope
+        }
+        Source::Unavailable
+        | Source::Transport(_)
+        | Source::Receipt(_)
+        | Source::Panel(_)
+        | Source::Qualification(_)
+        | Source::Journal(_)
+        | Source::PredecessorUnavailable => {
+            Error::OwnerUnavailable("original independent B/retention Evaluator")
+        }
     }
 }

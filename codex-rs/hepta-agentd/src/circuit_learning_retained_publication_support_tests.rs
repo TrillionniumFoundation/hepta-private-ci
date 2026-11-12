@@ -2,11 +2,11 @@
 //! Only Training observations and credentials are explicit synthetic fixtures;
 //! these tests do not assert native optimization or deployed role separation.
 
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::sync::Arc;
-use anyhow::Context;
 
 use super::*;
 use crate::OriginalCellQ24TrainingCommandClientV1;
@@ -45,12 +45,19 @@ impl RetainedPublicationFixture {
         let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
         let task = support::publish_initial(&version, definition.clone(), source_a.clone())?;
         let mut a = support::start(a, task, Arc::clone(&model), bundle.clone()).await?;
-        a.runtime.state.attach_circuit_learning_source(source_a.scope.run_id.clone())?;
+        a.runtime
+            .state
+            .attach_circuit_learning_source(source_a.scope.run_id.clone())?;
         let publication = execute(&a, 1).await?;
-        let intent = a.runtime.state.circuit_task_store()?
-            .circuit_learning_delivery(source_a.scope.run_id.as_str()).await
+        let intent = a
+            .runtime
+            .state
+            .circuit_task_store()?
+            .circuit_learning_delivery(source_a.scope.run_id.as_str())
+            .await
             .map_err(|error| anyhow::anyhow!("actual A delivery: {error:?}"))?
-            .context("actual completed A delivery")?.intent;
+            .context("actual completed A delivery")?
+            .intent;
         assert_eq!(publication.history_digest(), &intent.completed_task_receipt);
         let request = LearningIterationRequestV1 {
             operation_id: StableId::new(intent.operation_id)?,
@@ -82,11 +89,14 @@ impl RetainedPublicationFixture {
                 maximum_artifact_bytes: 128,
             },
         };
-        a.runtime.state.require_circuit_learning_source(&request).await?;
+        a.runtime
+            .state
+            .require_circuit_learning_source(&request)
+            .await?;
         let metadata = Metadata::new(request)?;
-        let completed = a.retirement.drain_completed_task(
-            &a.cell, a.source.as_ref(), &a.runtime.identity,
-        )?;
+        let completed =
+            a.retirement
+                .drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
         let identity_a = a.runtime.identity.clone();
         let original_source = Arc::clone(&a.source);
         let source_root = std::mem::replace(&mut a.runtime._temp, tempfile::tempdir()?);
@@ -97,9 +107,21 @@ impl RetainedPublicationFixture {
         let source_c = support::source(&c, [Q / 4, Q])?;
         let config_c = support::configuration(&model, &bundle, &definition, &source_c, 2)?;
         Ok(Self {
-            version, metadata, model, bundle, definition, source_a, source_c,
-            config_a, config_c, identity_a, original_source, c: Some(c),
-            completed: Some(completed), _model_root: model_root, _source_root: source_root,
+            version,
+            metadata,
+            model,
+            bundle,
+            definition,
+            source_a,
+            source_c,
+            config_a,
+            config_c,
+            identity_a,
+            original_source,
+            c: Some(c),
+            completed: Some(completed),
+            _model_root: model_root,
+            _source_root: source_root,
         })
     }
 
@@ -110,22 +132,33 @@ impl RetainedPublicationFixture {
         dataset
     }
 
-    pub(super) async fn context(&self) -> anyhow::Result<OriginalCircuitRetainedPublicationContextV1> {
+    pub(super) async fn context(
+        &self,
+    ) -> anyhow::Result<OriginalCircuitRetainedPublicationContextV1> {
         let (dataset, original) = training_fixture_result(
             self.metadata.decision.snapshot().clone(),
             self.metadata.scope.clone(),
             self.metadata.verifier.clone(),
             self.metadata.training_signature.clone(),
-        ).await?;
-        Ok(OriginalCircuitRetainedPublicationContextV1::from_original_training(
-            dataset, self.metadata.scope.clone(), self.metadata.verifier.clone(), &original,
-        )?)
+        )
+        .await?;
+        Ok(
+            OriginalCircuitRetainedPublicationContextV1::from_original_training(
+                dataset,
+                self.metadata.scope.clone(),
+                self.metadata.verifier.clone(),
+                &original,
+            )?,
+        )
     }
 
     pub(super) fn trainer(
         &self,
         signature: SignedLearningEvidenceV1,
-    ) -> anyhow::Result<(OriginalCellQ24TrainingCommandClientV1, std::thread::JoinHandle<anyhow::Result<usize>>)> {
+    ) -> anyhow::Result<(
+        OriginalCellQ24TrainingCommandClientV1,
+        std::thread::JoinHandle<anyhow::Result<usize>>,
+    )> {
         retained_publication_training_peer(
             OriginalCellQ24TrainingCommandContextV1 {
                 dataset: self.dataset(),
@@ -137,7 +170,9 @@ impl RetainedPublicationFixture {
         )
     }
 
-    pub(super) fn inputs(&mut self) -> anyhow::Result<
+    pub(super) fn inputs(
+        &mut self,
+    ) -> anyhow::Result<
         OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
     > {
         Ok(OriginalCircuitRetainedPublicationInputsV1 {
@@ -151,21 +186,33 @@ impl RetainedPublicationFixture {
                 max_records: RECORDS,
             },
             target: self.version.named_target_create(
-                "retained-C-journal", "retained-C-witness", self.config_c.clone(),
+                "retained-C-journal",
+                "retained-C-witness",
+                self.config_c.clone(),
             )?,
             definition: self.definition.clone(),
             source: self.source_c.clone(),
-            completed: self.completed.take().context("one original completed A token")?,
+            completed: self
+                .completed
+                .take()
+                .context("one original completed A token")?,
         })
     }
 
-    pub(super) fn recovery(&self, intent: Digest32) -> anyhow::Result<
+    pub(super) fn recovery(
+        &self,
+        intent: Digest32,
+    ) -> anyhow::Result<
         OriginalCircuitRetainedPublicationRecoveryV1<
-            FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
         >,
     > {
         let file = |name: &str| -> anyhow::Result<File> {
-            Ok(OpenOptions::new().read(true).write(true)
+            Ok(OpenOptions::new()
+                .read(true)
+                .write(true)
                 .open(self.identity_a.home_root.join(name))?)
         };
         let predecessor = crate::CircuitFeaturePredecessorFilesV1 {
@@ -176,7 +223,8 @@ impl RetainedPublicationFixture {
                     scope_digest: cell::d("original-cell-owner"),
                     objective_digest: self.source_a.objective_digest,
                 },
-                Generation::new(1)?, 64,
+                Generation::new(1)?,
+                64,
             )?,
             definition: self.definition.clone(),
             source: self.source_a.clone(),
@@ -207,8 +255,10 @@ impl RetainedPublicationFixture {
     }
 
     pub(super) fn publication_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
-        ["current.json", "retained-C-journal", "retained-C-witness"].into_iter()
-            .map(|name| self.version.bytes(name)).collect()
+        ["current.json", "retained-C-journal", "retained-C-witness"]
+            .into_iter()
+            .map(|name| self.version.bytes(name))
+            .collect()
     }
 
     pub(super) async fn start_c(
@@ -217,13 +267,17 @@ impl RetainedPublicationFixture {
     ) -> anyhow::Result<support::Session> {
         support::start(
             self.c.take().context("one original C admission")?,
-            task, Arc::clone(&self.model), self.bundle.clone(),
-        ).await
+            task,
+            Arc::clone(&self.model),
+            self.bundle.clone(),
+        )
+        .await
     }
 }
 
 pub(super) fn finish_trainer(
     peer: std::thread::JoinHandle<anyhow::Result<usize>>,
 ) -> anyhow::Result<usize> {
-    peer.join().map_err(|_| anyhow::anyhow!("original Trainer fixture thread"))?
+    peer.join()
+        .map_err(|_| anyhow::anyhow!("original Trainer fixture thread"))?
 }

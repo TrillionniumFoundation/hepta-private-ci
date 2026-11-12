@@ -10,22 +10,22 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-#[path = "circuit_retained_version_context.rs"]
-mod context;
-#[path = "circuit_retained_version_wire.rs"]
-mod wire;
-#[path = "circuit_retained_version_client.rs"]
-mod client;
-#[path = "circuit_retained_version_host.rs"]
-mod host;
 #[path = "circuit_retained_version_c_task.rs"]
 mod c_task;
+#[path = "circuit_retained_version_client.rs"]
+mod client;
+#[path = "circuit_retained_version_context.rs"]
+mod context;
+#[path = "circuit_retained_version_host.rs"]
+mod host;
+#[path = "circuit_retained_version_wire.rs"]
+mod wire;
 
+pub use c_task::OriginalCircuitRetainedTaskInputsV1;
 pub use client::OriginalCircuitRetainedVersionClientV1;
+pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
 pub use host::OriginalCircuitRetainedVersionHostV1;
 pub use host::OriginalCircuitRetainedVersionRecoveryV1;
-pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
-pub use c_task::OriginalCircuitRetainedTaskInputsV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCircuitRetainedVersionErrorV1 {
@@ -80,13 +80,27 @@ pub struct OriginalCircuitRetainedVersionPublicationV1 {
     run: StableId,
 }
 impl OriginalCircuitRetainedVersionPublicationV1 {
-    pub fn intent_digest(&self) -> Digest32 { self.intent }
-    pub fn publication_digest(&self) -> Digest32 { self.publication }
-    pub fn task_digest(&self) -> Digest32 { self.task }
-    pub fn selection_digest(&self) -> Digest32 { self.selection }
-    pub fn bundle_digest(&self) -> Digest32 { self.bundle }
-    pub fn run_id(&self) -> &StableId { &self.run }
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn intent_digest(&self) -> Digest32 {
+        self.intent
+    }
+    pub fn publication_digest(&self) -> Digest32 {
+        self.publication
+    }
+    pub fn task_digest(&self) -> Digest32 {
+        self.task
+    }
+    pub fn selection_digest(&self) -> Digest32 {
+        self.selection
+    }
+    pub fn bundle_digest(&self) -> Digest32 {
+        self.bundle
+    }
+    pub fn run_id(&self) -> &StableId {
+        &self.run
+    }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 }
 
 /// Prepared is actual original Control state awaiting a separate FinalUse.
@@ -97,21 +111,32 @@ pub struct OriginalCircuitRetainedVersionReadbackV1 {
     publication: Option<OriginalCircuitRetainedVersionPublicationV1>,
 }
 impl OriginalCircuitRetainedVersionReadbackV1 {
-    pub fn intent_digest(&self) -> Digest32 { self.intent }
+    pub fn intent_digest(&self) -> Digest32 {
+        self.intent
+    }
     pub fn publication(&self) -> Option<&OriginalCircuitRetainedVersionPublicationV1> {
         self.publication.as_ref()
     }
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-enum RetainedVersionOriginV1 { Fresh, Recovered }
+enum RetainedVersionOriginV1 {
+    Fresh,
+    Recovered,
+}
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|at| at.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|at| at.as_secs())
         .map_err(|_| Error::Clock)
 }
 fn require_clock(started: u64, fresh: u64) -> Result<(), Error> {
-    if fresh < started { return Err(Error::Clock); }
+    if fresh < started {
+        return Err(Error::Clock);
+    }
     Ok(())
 }

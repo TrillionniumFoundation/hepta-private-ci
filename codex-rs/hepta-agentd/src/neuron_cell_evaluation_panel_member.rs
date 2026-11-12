@@ -10,13 +10,13 @@ use codex_hepta_neuron::CellGenerationJournalV2;
 use codex_hepta_neuron::CellGenerationScopeV2;
 use codex_hepta_types::Digest32;
 
+use super::super::OriginalCellEvaluationQualificationErrorV1;
+use super::super::OriginalCellEvaluationQualificationOwnerV1;
+use super::super::OriginalCellEvaluationQualificationSourcesV1;
 use super::Error;
 use super::OriginalCellEvaluationPanelMemberReadbackV1;
 use super::OriginalCellEvaluationPanelTaskV1;
 use super::original;
-use super::super::OriginalCellEvaluationQualificationErrorV1;
-use super::super::OriginalCellEvaluationQualificationOwnerV1;
-use super::super::OriginalCellEvaluationQualificationSourcesV1;
 use crate::CellEvaluationJournalsV1;
 use crate::CellEvaluationRunnerV1;
 use crate::LearningIterationEvidenceClientV1;
@@ -54,7 +54,8 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         // The original Qualification owns its internal SystemTime checks.
         // The panel's final common clock reauthenticates every window later.
         let started_at = original::now()?;
-        let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
+        let cohort_before =
+            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
         let before = self.read_cells()?;
         let mut sources = OriginalCellEvaluationQualificationSourcesV1 {
             runner: &mut self.runner,
@@ -68,7 +69,9 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             trainer: self.trainer.as_ref(),
         };
         let bytes = self.qualification.completed_bytes()?;
-        let prepared = sources.prepare(&self.qualification.config, started_at).await?;
+        let prepared = sources
+            .prepare(&self.qualification.config, started_at)
+            .await?;
         let qualification = self
             .qualification
             .finish_readback(
@@ -81,7 +84,8 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             .await?;
         drop(sources);
         let after = self.read_cells()?;
-        let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
+        let cohort_after =
+            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
         if before != after || cohort_before != cohort_after {
             return Err(Error::CommitUncertain);
         }
@@ -121,7 +125,9 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             .source_run_id
             .as_str();
         if candidate_scope.run_id == source_run || baseline_scope.run_id == source_run {
-            return Err(Error::Binding("evaluation task must differ from original A"));
+            return Err(Error::Binding(
+                "evaluation task must differ from original A",
+            ));
         }
         Ok(([candidate, fixed_expert], [candidate_scope, baseline_scope]))
     }

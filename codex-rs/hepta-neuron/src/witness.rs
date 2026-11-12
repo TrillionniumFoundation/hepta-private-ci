@@ -163,7 +163,8 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
                 let cursor = file.stream_position()?;
                 let actual = (|| {
                     let expected_length = (HEADER + self.records * RECORD) as u64;
-                    if self.records > self.max_records || file.metadata()?.len() != expected_length {
+                    if self.records > self.max_records || file.metadata()?.len() != expected_length
+                    {
                         return Err(WitnessStoreError::Corrupt);
                     }
                     file.seek(SeekFrom::Start(0))?;

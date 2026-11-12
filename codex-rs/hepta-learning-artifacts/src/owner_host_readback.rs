@@ -26,10 +26,10 @@ use super::decode_checkpoint;
 use super::phase_code;
 use super::read_small_record;
 use crate::ArtifactPublicationPhaseV1;
-use crate::RegistrySnapshotReceipt;
-use crate::read_registry_snapshot;
 use crate::RegistryHeadRequirementV1;
+use crate::RegistrySnapshotReceipt;
 use crate::VerifiedCurrentRegistryViewV1;
+use crate::read_registry_snapshot;
 
 // Existing heads and individual records keep their original bounds. Also
 // bound the transaction scan used by the existing CURRENT snapshot lookup.
@@ -92,12 +92,14 @@ impl LearningArtifactOwnerHost {
         &self,
         operation_id: &StableId,
         expected_intent_digest: Digest32,
-    ) -> Result<OriginalArtifactPublicationReadbackV1, OriginalArtifactPublicationReadbackErrorV1> {
+    ) -> Result<OriginalArtifactPublicationReadbackV1, OriginalArtifactPublicationReadbackErrorV1>
+    {
         let started = now_unix_millis()?;
         if expected_intent_digest.is_zero() {
             return Err(OriginalArtifactPublicationReadbackErrorV1::InvalidExpectation);
         }
-        let before = self.recover_publication(operation_id)?
+        let before = self
+            .recover_publication(operation_id)?
             .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
         if before.checkpoint.operation_id != *operation_id
             || before.checkpoint.intent_digest != expected_intent_digest
@@ -106,13 +108,16 @@ impl LearningArtifactOwnerHost {
         {
             return Err(OriginalArtifactPublicationReadbackErrorV1::InvalidExpectation);
         }
-        let head_before = self.discover_current_head(started)?
+        let head_before = self
+            .discover_current_head(started)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let current_before = self.current_registry_view_bounded(started)?;
         let current_after = self.current_registry_view_bounded(started)?;
-        let head_after = self.discover_current_head(started)?
+        let head_after = self
+            .discover_current_head(started)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
-        let after = self.recover_publication(operation_id)?
+        let after = self
+            .recover_publication(operation_id)?
             .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
         if before != after
             || head_before != head_after
@@ -158,17 +163,20 @@ impl LearningArtifactOwnerHost {
         &self,
         at: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
-        let current = self.discover_current_head(at)?
+        let current = self
+            .discover_current_head(at)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let receipt = self.current_registry_receipt_bounded(&current)?;
-        let registry = read_registry_snapshot(
-            File::open(self.registry_snapshot_path(receipt))?, receipt,
-        )?;
+        let registry =
+            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         Ok(VerifiedCurrentRegistryViewV1::new(
-            receipt, registry, current.witness_digest, current.trust_digest,
+            receipt,
+            registry,
+            current.witness_digest,
+            current.trust_digest,
         ))
     }
 
@@ -194,9 +202,8 @@ impl LearningArtifactOwnerHost {
             if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
                 continue;
             }
-            let checkpoint = decode_checkpoint(
-                &read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?,
-            )?;
+            let checkpoint =
+                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
             if phase_code(checkpoint.phase)
                 < phase_code(ArtifactPublicationPhaseV1::RegistryDurable)
             {
@@ -226,11 +233,11 @@ impl LearningArtifactOwnerHost {
         }
         matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)
     }
-
 }
 
 fn now_unix_millis() -> Result<u64, OriginalArtifactPublicationReadbackErrorV1> {
-    let elapsed = SystemTime::now().duration_since(UNIX_EPOCH)
+    let elapsed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
         .map_err(|_| OriginalArtifactPublicationReadbackErrorV1::Clock)?;
     u64::try_from(elapsed.as_millis())
         .map_err(|_| OriginalArtifactPublicationReadbackErrorV1::Clock)

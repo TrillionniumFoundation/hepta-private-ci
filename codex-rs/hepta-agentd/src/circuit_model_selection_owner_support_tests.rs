@@ -133,17 +133,27 @@ pub(super) struct PositiveFixture {
 impl PositiveFixture {
     pub(super) async fn ready() -> anyhow::Result<Self> {
         Self::ready_with_profile(
-            d("explicit-positive-independent-evaluation-profile"), now()?,
-        ).await
+            d("explicit-positive-independent-evaluation-profile"),
+            now()?,
+        )
+        .await
     }
 
-    async fn ready_with_profile(evaluation_profile: Digest32, trust_time: u64) -> anyhow::Result<Self> {
+    async fn ready_with_profile(
+        evaluation_profile: Digest32,
+        trust_time: u64,
+    ) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
         let (baseline, bundle, definition_a) = support::model(&root)?;
         let mut a = support::admission("positive-source-envelope-request").await?;
         let preview = support::source(&a, [Q, Q / 4])?;
-        let (mut writer, credentials) = material::ledger_at(&root, preview.objective_digest, trust_time, d("explicit-positive-ledger"))?;
+        let (mut writer, credentials) = material::ledger_at(
+            &root,
+            preview.objective_digest,
+            trust_time,
+            d("explicit-positive-ledger"),
+        )?;
         let run = crate::circuit_credit::circuit_learning_run_id_v1(
             &writer,
             &a.runtime.identity.agent_id,

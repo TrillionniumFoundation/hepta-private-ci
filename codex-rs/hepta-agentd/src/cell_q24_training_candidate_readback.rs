@@ -67,27 +67,38 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
     ) -> Result<Self, Error> {
         let started_at = now()?;
         let OriginalCellQ24TrainingCommandClientV1 {
-            channel, context, binding, retained,
+            channel,
+            context,
+            binding,
+            retained,
         } = original;
-        let mut channel = channel.into_inner().map_err(|_| Error::Unavailable)?
+        let mut channel = channel
+            .into_inner()
+            .map_err(|_| Error::Unavailable)?
             .ok_or(Error::Unavailable)?;
         // Even an originally Fresh connection is irreversibly attenuated.
         channel.execution_requested = true;
-        if retained.into_inner().map_err(|_| Error::Unavailable)?
-            .as_ref().is_some_and(|pin| pin != &expected)
+        if retained
+            .into_inner()
+            .map_err(|_| Error::Unavailable)?
+            .as_ref()
+            .is_some_and(|pin| pin != &expected)
             || context.dataset != *dataset.snapshot()
             || context.validate()? != material.initial
             || context.scope != material.scope
             || context.verifier.trust_digest() != material.verifier.trust_digest()
             || baseline.components() != &material.initial.request.selected_bundle.components
         {
-            return Err(Error::Binding("same original Candidate predecessor and baseline"));
+            return Err(Error::Binding(
+                "same original Candidate predecessor and baseline",
+            ));
         }
         let length = signed_length(&context, &expected)?;
-        let completion = candidate_wire::completion_digest(
-            expected.receipt(), expected.attestation(),
-        )?;
-        channel.peer.check_peer_lifetime()
+        let completion =
+            candidate_wire::completion_digest(expected.receipt(), expected.attestation())?;
+        channel
+            .peer
+            .check_peer_lifetime()
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         verify_original_context(&context, &material, &dataset, &expected, started_at)?;
         Ok(Self {
@@ -108,8 +119,12 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
     /// Missing/Pending/NoUpdate never execute, initialize, recover or sign.
     pub async fn readback(&self) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
         let started_at = now()?;
-        let mut channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
-            .take().ok_or(Error::Unavailable)?;
+        let mut channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| Error::Unavailable)?
+            .take()
+            .ok_or(Error::Unavailable)?;
         if !channel.execution_requested {
             return Err(Error::Binding("permanently read-only Candidate connection"));
         }
@@ -122,9 +137,8 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
         let completion = self.completion;
         let length = self.length;
         let (channel, candidate, last_at) = tokio::task::spawn_blocking(move || {
-            let mut last_at = verify_original_context(
-                &context, &material, &dataset, &expected, started_at,
-            )?;
+            let mut last_at =
+                verify_original_context(&context, &material, &dataset, &expected, started_at)?;
             if signed_length(&context, &expected)? != length {
                 return Err(Error::Binding("unchanged signed Candidate length"));
             }
@@ -135,22 +149,28 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
             let mut heads = Vec::with_capacity(length);
             for page in 0..pages {
                 let request_id = channel.next_request_id;
-                channel.next_request_id = request_id.checked_add(1)
-                    .ok_or(Error::Unavailable)?;
-                let request = candidate_wire::Request::new(
-                    &context, binding, completion, request_id, page,
-                )?;
+                channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
+                let request =
+                    candidate_wire::Request::new(&context, binding, completion, request_id, page)?;
                 let encoded = serde_json::to_vec(&request)
                     .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-                let bytes = channel.peer.request(&encoded)
+                let bytes = channel
+                    .peer
+                    .request(&encoded)
                     .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
                 let response: candidate_wire::Response = serde_json::from_slice(&bytes)
                     .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
                 if response.request != request {
-                    return Err(Error::Binding("exact Candidate purpose, page and full completion pin"));
+                    return Err(Error::Binding(
+                        "exact Candidate purpose, page and full completion pin",
+                    ));
                 }
                 let (offset, total, encoded_heads) = match response.result {
-                    candidate_wire::MaterialResult::Page { offset, total, heads } => (offset, total, heads),
+                    candidate_wire::MaterialResult::Page {
+                        offset,
+                        total,
+                        heads,
+                    } => (offset, total, heads),
                     candidate_wire::MaterialResult::NoCandidate => return Err(Error::NoCandidate),
                     candidate_wire::MaterialResult::Missing => {
                         return Err(OriginalCellQ24TrainingCommandErrorV1::Missing.into());
@@ -176,9 +196,12 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
                     || heads.len() != expected_offset
                     || encoded_heads.len() > candidate_wire::PAGE_BYTES.div_ceil(3) * 4
                 {
-                    return Err(Error::Binding("signed Candidate length and consecutive page"));
+                    return Err(Error::Binding(
+                        "signed Candidate length and consecutive page",
+                    ));
                 }
-                let part = STANDARD_NO_PAD.decode(&encoded_heads)
+                let part = STANDARD_NO_PAD
+                    .decode(&encoded_heads)
                     .map_err(|_| Error::Binding("Candidate page encoding"))?;
                 if part.len() != expected_page_length
                     || STANDARD_NO_PAD.encode(&part) != encoded_heads
@@ -187,11 +210,12 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
                 }
                 // Peer liveness performs I/O. All original signature windows
                 // are checked only after that I/O and before retaining a page.
-                channel.peer.check_peer_lifetime()
+                channel
+                    .peer
+                    .check_peer_lifetime()
                     .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-                last_at = verify_original_context(
-                    &context, &material, &dataset, &expected, last_at,
-                )?;
+                last_at =
+                    verify_original_context(&context, &material, &dataset, &expected, last_at)?;
                 heads.extend_from_slice(&part);
             }
             if heads.len() != length {
@@ -206,15 +230,24 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
                 expected.receipt().clone(),
                 expected.attestation().clone(),
             )?;
-            let last_at = verify_original_context(&context, &material, &dataset, &expected, last_at)?;
+            let last_at =
+                verify_original_context(&context, &material, &dataset, &expected, last_at)?;
             Ok::<_, Error>((channel, candidate, last_at))
-        }).await.map_err(|_| Error::Unavailable)??;
+        })
+        .await
+        .map_err(|_| Error::Unavailable)??;
         // A cancelled future never restores the moved channel. The original
         // framer retains its first admission time throughout all pages/reads.
-        channel.peer.check_peer_lifetime()
+        channel
+            .peer
+            .check_peer_lifetime()
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         verify_original_context(
-            &self.context, &self.material, &self.dataset, &self.expected, last_at,
+            &self.context,
+            &self.material,
+            &self.dataset,
+            &self.expected,
+            last_at,
         )?;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
         Ok(candidate)
@@ -235,7 +268,9 @@ fn signed_length(
     if !(12..=32_780).contains(&length)
         || *artifact_bytes > context.dataset.request.budget.maximum_artifact_bytes
     {
-        return Err(Error::Binding("existing Candidate asset and request bounds"));
+        return Err(Error::Binding(
+            "existing Candidate asset and request bounds",
+        ));
     }
     Ok(length)
 }
@@ -261,7 +296,9 @@ fn verify_original_context(
         fresh_now,
     )?;
     if &verified != expected {
-        return Err(Error::Binding("unchanged full original Generator signature"));
+        return Err(Error::Binding(
+            "unchanged full original Generator signature",
+        ));
     }
     Ok(fresh_now)
 }

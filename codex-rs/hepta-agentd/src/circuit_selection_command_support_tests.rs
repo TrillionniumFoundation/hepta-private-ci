@@ -298,7 +298,9 @@ pub(crate) async fn cancel_queued_execute<W: AnchorWitnessStore + Send + 'static
     owner: Arc<OriginalCircuitSelectionCommandOwnerV1<W>>,
 ) -> anyhow::Result<()> {
     let (client, channel) = client(
-        owner.context.clone(), /*readback_only*/ false, /*retained*/ None,
+        owner.context.clone(),
+        /*readback_only*/ false,
+        /*retained*/ None,
     )?;
     let peer = serve(owner, channel);
     tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
@@ -311,15 +313,15 @@ pub(crate) async fn cancel_queued_execute<W: AnchorWitnessStore + Send + 'static
             let (release, blocked) = std::sync::mpsc::channel();
             let blocker = tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
                 let _ = occupied.send(());
-                blocked.recv().map_err(|_| anyhow::anyhow!("queued cancellation release"))?;
+                blocked
+                    .recv()
+                    .map_err(|_| anyhow::anyhow!("queued cancellation release"))?;
                 Ok(())
             });
             waiting.await?;
             let mut request = Box::pin(client.execute_selection());
             let pending = std::future::poll_fn(|cx| {
-                std::task::Poll::Ready(
-                    std::future::Future::poll(request.as_mut(), cx).is_pending(),
-                )
+                std::task::Poll::Ready(std::future::Future::poll(request.as_mut(), cx).is_pending())
             })
             .await;
             // The only blocking worker is still occupied. Dropping this exact
@@ -329,9 +331,14 @@ pub(crate) async fn cancel_queued_execute<W: AnchorWitnessStore + Send + 'static
             blocker.await??;
             assert!(pending, "the actual Execute was queued before cancellation");
             assert!(matches!(client.readback().await, Err(Error::Unavailable)));
-            assert!(matches!(client.execute_selection().await, Err(Error::Unavailable)));
+            assert!(matches!(
+                client.execute_selection().await,
+                Err(Error::Unavailable)
+            ));
             drop(client);
-            let frames = peer.join().map_err(|_| anyhow::anyhow!("queued original peer"))??;
+            let frames = peer
+                .join()
+                .map_err(|_| anyhow::anyhow!("queued original peer"))??;
             assert_eq!(frames, 0);
             Ok(())
         })

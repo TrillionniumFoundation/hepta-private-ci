@@ -22,15 +22,29 @@ pub(super) async fn completed_candidate() -> anyhow::Result<Completed> {
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let dataset = complete_material(&fixture).await?;
     let (client, server) = connected(
-        Arc::clone(&owner), context(&fixture, &dataset), Origin::Fresh, /*expected*/ None,
+        Arc::clone(&owner),
+        context(&fixture, &dataset),
+        Origin::Fresh,
+        /*expected*/ None,
     )?;
-    let training = client.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await?;
+    let training = client
+        .execute_training(Arc::new(AtomicBool::new(/*v*/ false)))
+        .await?;
     assert!(matches!(
         training.receipt().observation,
-        LearningIterationObservationV1::Training { artifact_bytes: 4_108, .. }
+        LearningIterationObservationV1::Training {
+            artifact_bytes: 4_108,
+            ..
+        }
     ));
     assert_eq!(finish(client, server)?, 1);
-    Ok(Completed { fixture, owner, peers, dataset, training })
+    Ok(Completed {
+        fixture,
+        owner,
+        peers,
+        dataset,
+        training,
+    })
 }
 
 impl Completed {
@@ -65,7 +79,9 @@ pub(super) struct PagePeer {
 
 impl PagePeer {
     pub fn finish(self) -> anyhow::Result<u64> {
-        self.server.join().expect("original Candidate page producer")
+        self.server
+            .join()
+            .expect("original Candidate page producer")
     }
 }
 
@@ -109,23 +125,31 @@ pub(super) fn page_peer(
                 if request_id == 1 {
                     if let Some(gate) = &gate {
                         gate.reached.notify_one();
-                        gate.release.recv().map_err(|_| HostIssuerTransportError::Unavailable)?;
+                        gate.release
+                            .recv()
+                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
                     }
                     match fault {
                         Fault::WrongPage => response.request.page += 1,
                         Fault::WrongCompletion => {
-                            response.request.completion = Digest32::of_bytes(b"another full T").to_string();
+                            response.request.completion =
+                                Digest32::of_bytes(b"another full T").to_string();
                         }
                         Fault::WrongOffset | Fault::WrongTotal | Fault::CorruptHeads => {
-                            let candidate_wire::MaterialResult::Page { offset, total, heads } =
-                                &mut response.result else {
-                                    return Err(HostIssuerTransportError::InvalidRequest);
-                                };
+                            let candidate_wire::MaterialResult::Page {
+                                offset,
+                                total,
+                                heads,
+                            } = &mut response.result
+                            else {
+                                return Err(HostIssuerTransportError::InvalidRequest);
+                            };
                             match fault {
                                 Fault::WrongOffset => *offset += 1,
                                 Fault::WrongTotal => *total -= 1,
                                 Fault::CorruptHeads => {
-                                    let mut raw = STANDARD_NO_PAD.decode(&*heads)
+                                    let mut raw = STANDARD_NO_PAD
+                                        .decode(&*heads)
                                         .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                                     raw[100] ^= 1;
                                     *heads = STANDARD_NO_PAD.encode(raw);
@@ -136,15 +160,16 @@ pub(super) fn page_peer(
                         Fault::Original | Fault::CloseAfterFirst => {}
                     }
                 }
-                serde_json::to_vec(&response)
-                    .map_err(|_| HostIssuerTransportError::InvalidRequest)
+                serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)
             });
             match exchanged {
                 Ok(false) => return Ok(request_id - 1),
                 Ok(true) => {}
-                Err(error) => return Err(original_error
-                    .map(anyhow::Error::from)
-                    .unwrap_or_else(|| anyhow::Error::from(error))),
+                Err(error) => {
+                    return Err(original_error
+                        .map(anyhow::Error::from)
+                        .unwrap_or_else(|| anyhow::Error::from(error)));
+                }
             }
             if disposition == candidate_wire::SessionDisposition::CloseReadback
                 || matches!(fault, Fault::CloseAfterFirst)
@@ -164,7 +189,9 @@ pub(super) fn bind(
     training: crate::OriginalCellQ24TrainingCommandReceiptV1,
 ) -> anyhow::Result<crate::OriginalCellQ24CandidateReadbackClientV1> {
     Ok(connection.bind_original_candidate_material(
-        dataset, training, fixture.training_baseline(),
+        dataset,
+        training,
+        fixture.training_baseline(),
     )?)
 }
 
@@ -172,8 +199,11 @@ pub(super) fn request(
     context: &crate::OriginalCellQ24TrainingCommandContextV1,
 ) -> anyhow::Result<candidate_wire::Request> {
     Ok(candidate_wire::Request::new(
-        context, context.binding()?, Digest32::of_bytes(b"no asserted Training completion"),
-        /*request_id*/ 1, /*page*/ 0,
+        context,
+        context.binding()?,
+        Digest32::of_bytes(b"no asserted Training completion"),
+        /*request_id*/ 1,
+        /*page*/ 0,
     )?)
 }
 
@@ -184,8 +214,11 @@ pub(super) async fn raw_page(
     tokio::task::spawn_blocking(move || -> anyhow::Result<_> {
         let mut session = candidate_wire::Session::new();
         let (bytes, disposition) = owner.candidate_material_response(
-            &serde_json::to_vec(&request)?, request.request_id, &mut session,
+            &serde_json::to_vec(&request)?,
+            request.request_id,
+            &mut session,
         )?;
         Ok((serde_json::from_slice(&bytes)?, disposition))
-    }).await?
+    })
+    .await?
 }

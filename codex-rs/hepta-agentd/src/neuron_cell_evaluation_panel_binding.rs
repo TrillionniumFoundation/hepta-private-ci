@@ -31,7 +31,11 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         let first = &primary.qualification.config;
         if first.training.request.evaluation_profile != registration.evaluation_profile()
             || first.context.retention_receipt_digests.len() != retention.len()
-            || first.context.retention_receipt_digests.iter().any(|digest| digest.is_zero())
+            || first
+                .context
+                .retention_receipt_digests
+                .iter()
+                .any(|digest| digest.is_zero())
         {
             return Err(Error::Binding("originally frozen complete panel profile"));
         }
@@ -70,7 +74,9 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
                 || !config.context.unlearning_receipt_digest.is_zero()
                 || (index > 0 && !config.context.retention_receipt_digests.is_empty())
             {
-                return Err(Error::Binding("same original candidate, baseline and member custody"));
+                return Err(Error::Binding(
+                    "same original candidate, baseline and member custody",
+                ));
             }
             bindings.push(saved.binding_digest);
         }
@@ -93,7 +99,9 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             if member.qualification.product().decision.decision.disposition
                 == IndependentEvaluationDispositionV1::InsufficientEvidence
             {
-                return Err(Error::Binding("original panel member has unknown evaluation"));
+                return Err(Error::Binding(
+                    "original panel member has unknown evaluation",
+                ));
             }
             // Both arms may share one task run, but another panel member may
             // never reuse either actual run. The physical Cells supplied them.
@@ -116,11 +124,18 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         retained_digests.sort_unstable();
         if retained_digests.is_empty()
             || retained_digests.windows(2).any(|pair| pair[0] == pair[1])
-            || self.primary.qualification.config.context.retention_receipt_digests
+            || self
+                .primary
+                .qualification
+                .config
+                .context
+                .retention_receipt_digests
                 != retained_digests
             || observed[0].prepared.bundle.retention_receipt_digests != retained_digests
         {
-            return Err(Error::Binding("original B signed the complete actual retention panel"));
+            return Err(Error::Binding(
+                "original B signed the complete actual retention panel",
+            ));
         }
         Ok(())
     }

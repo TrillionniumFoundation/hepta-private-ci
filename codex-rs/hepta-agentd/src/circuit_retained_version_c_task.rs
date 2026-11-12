@@ -8,11 +8,11 @@ use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
+use super::super::context::PublicationAccess;
 use super::Error;
 use super::OriginalCircuitRetainedVersionPublicationV1;
 use super::OriginalCircuitRetainedVersionReadbackV1;
 use super::context::OriginalVersionCut;
-use super::super::context::PublicationAccess;
 use crate::AgentdConfig;
 use crate::AgentdIdentity;
 use crate::CircuitCellRouteV1;
@@ -57,17 +57,22 @@ impl OriginalCircuitRetainedTaskInputsV1 {
     ) -> Result<(), Error> {
         let expected = completed.source_publication();
         let run = &expected.input().scope.run_id;
-        let before = self.original_a.read_run_publication(&self.original_a_identity, run)?;
+        let before = self
+            .original_a
+            .read_run_publication(&self.original_a_identity, run)?;
         let c = self.config.identity();
         let a = &self.original_a_identity;
-        if &before != expected || c.agent_id != a.agent_id
+        if &before != expected
+            || c.agent_id != a.agent_id
             || c.spawn_generation == 0
             || c.fleet_root == a.fleet_root && c.spawn_generation <= a.spawn_generation
             || c.fleet_root != a.fleet_root
                 && (c.run_root == a.run_root || c.home_root == a.home_root)
             || self.original_a.read_run_publication(a, run)? != before
         {
-            return Err(Error::Binding("actual completed A and a separate original C session"));
+            return Err(Error::Binding(
+                "actual completed A and a separate original C session",
+            ));
         }
         Ok(())
     }
@@ -80,7 +85,9 @@ impl OriginalCircuitRetainedTaskInputsV1 {
     ) -> Result<(RetainedVersionInstalledTaskV1, AgentdConfig), Error> {
         cut.require_fresh(super::now()?, PublicationAccess::NewWork)?;
         task.require_bundle(&cut.training.training.request.selected_bundle)?;
-        let crate::circuit_feature_current::Publication::Update { previous, .. } = &task.0.publication else {
+        let crate::circuit_feature_current::Publication::Update { previous, .. } =
+            &task.0.publication
+        else {
             return Err(Error::Binding("actual retained C predecessor"));
         };
         self.require_completed_a(previous)?;
@@ -109,62 +116,103 @@ impl OriginalCircuitRetainedTaskInputsV1 {
             },
         )?;
         let installed = RetainedVersionInstalledTaskV1 {
-            cell: actual.cell, source: actual.source, identity, intent,
+            cell: actual.cell,
+            source: actual.source,
+            identity,
+            intent,
         };
         installed.observe(cut)?;
         if original_a.read_run_publication(
-            &original_a_identity, &original_a_publication.input().scope.run_id,
-        )? != original_a_publication {
-            return Err(Error::Binding("original completed A changed during C factory"));
+            &original_a_identity,
+            &original_a_publication.input().scope.run_id,
+        )? != original_a_publication
+        {
+            return Err(Error::Binding(
+                "original completed A changed during C factory",
+            ));
         }
         cut.require_fresh(super::now()?, PublicationAccess::NewWork)?;
         Ok((installed, actual.config))
     }
 }
 impl RetainedVersionInstalledTaskV1 {
-    pub(super) fn observe(&self, cut: &OriginalVersionCut) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
-        let coordinator = cut.training.authenticate(super::now()?, PublicationAccess::Readback)?;
+    pub(super) fn observe(
+        &self,
+        cut: &OriginalVersionCut,
+    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
+        let coordinator = cut
+            .training
+            .authenticate(super::now()?, PublicationAccess::Readback)?;
         let task = &self.cell.task;
         task.require_current()?;
         CircuitTaskSourceReadbackV1::require_original_input(
-            self.source.as_ref(), &self.identity, task.source(),
+            self.source.as_ref(),
+            &self.identity,
+            task.source(),
         )?;
-        let selected = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
-        let crate::circuit_feature_current::Publication::Update { original, .. } = &task.0.publication else {
+        let selected =
+            PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
+        let crate::circuit_feature_current::Publication::Update { original, .. } =
+            &task.0.publication
+        else {
             return Err(Error::Binding("actual original successor publication"));
         };
         let operation = crate::learning_retained_task_operation_id_v1(&coordinator)?;
         if original.operation_id() != operation.as_str()
             || original.intent_digest() != self.intent
-            || original.completion() != crate::NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel
+            || original.completion()
+                != crate::NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel
         {
-            return Err(Error::Binding("same strict retained original Control operation"));
+            return Err(Error::Binding(
+                "same strict retained original Control operation",
+            ));
         }
-        let LearningIterationObservationV1::Selection { candidate_bundle, selection_digest } = selected else {
-            return Err(Error::Binding("original version owner Selection observation"));
+        let LearningIterationObservationV1::Selection {
+            candidate_bundle,
+            selection_digest,
+        } = selected
+        else {
+            return Err(Error::Binding(
+                "original version owner Selection observation",
+            ));
         };
-        let baseline = cut.training.training.request.selected_bundle.digest()
+        let baseline = cut
+            .training
+            .training
+            .request
+            .selected_bundle
+            .digest()
             .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-        if candidate_bundle != baseline || task.source().scope.run_id == cut.training.training.request.source_run_id {
+        if candidate_bundle != baseline
+            || task.source().scope.run_id == cut.training.training.request.source_run_id
+        {
             return Err(Error::Binding("actual retained bundle and distinct C run"));
         }
         let publication = original.publication_digest()?;
         let task_digest = crate::circuit_feature_task_digest_v1(task.definition(), task.source())?;
         CircuitTaskSourceReadbackV1::require_original_input(
-            self.source.as_ref(), &self.identity, task.source(),
+            self.source.as_ref(),
+            &self.identity,
+            task.source(),
         )?;
         task.require_bundle(&cut.training.training.request.selected_bundle)?;
         let after = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
-        if after != (LearningIterationObservationV1::Selection {
-            candidate_bundle, selection_digest,
-        }) {
+        if after
+            != (LearningIterationObservationV1::Selection {
+                candidate_bundle,
+                selection_digest,
+            })
+        {
             return Err(Error::Binding("original version selection changed"));
         }
         Ok(OriginalCircuitRetainedVersionReadbackV1 {
             intent: self.intent,
             publication: Some(OriginalCircuitRetainedVersionPublicationV1 {
-                intent: self.intent, publication, task: task_digest,
-                selection: selection_digest, bundle: baseline,
+                intent: self.intent,
+                publication,
+                task: task_digest,
+                selection: selection_digest,
+                bundle: baseline,
                 run: task.source().scope.run_id.clone(),
             }),
         })

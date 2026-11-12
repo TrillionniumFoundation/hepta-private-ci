@@ -37,45 +37,67 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
     let registered = protocol("original-primary-fold-and-unit-rule")?;
     let fixture = MaterialCommandFixture::candidate_pages_for_evaluation_profile(
         registered.evaluation_profile(),
-    ).await?;
+    )
+    .await?;
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let end = Instant::now() + Duration::from_secs(300);
     let (candidate_connection, candidate_peer) = page_peer(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Recovered, /*expected*/ None,
-        Fault::Original, /*gate*/ None, Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Recovered,
+        /*expected*/ None,
+        Fault::Original,
+        /*gate*/ None,
+        Duration::from_secs(300),
     )?;
     let (training_connection, training_server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, /*expected*/ None,
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Fresh,
+        /*expected*/ None,
         Duration::from_secs(300),
     )?;
     let (experience, e_peer) = material_ports::commands(&fixture, MaterialRole::Experience)?;
     let (dataset, d_peer) = material_ports::commands(&fixture, MaterialRole::Dataset)?;
     let cut = complete_material(&fixture).await?;
     let trainer = training_connection.bind_original_dataset(cut.clone())?;
-    let training = trainer.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let training = trainer
+        .execute_training(Arc::new(AtomicBool::new(false)))
+        .await?;
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(cut.snapshot().clone())?;
-    coordinator.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
+    coordinator.record(
+        training.receipt().clone(),
+        training.receipt().observed_unix_seconds,
+    )?;
     let snapshot = coordinator.snapshot().clone();
     assert_eq!(snapshot.receipts.len(), 3);
     assert!(coordinator.candidate().is_some());
-    assert_eq!(coordinator.next_stage(), Some(LearningIterationStageV1::Evaluation));
+    assert_eq!(
+        coordinator.next_stage(),
+        Some(LearningIterationStageV1::Evaluation)
+    );
     let originals = (fixture.bytes()?, fixture.training_bytes()?);
-    let common = stages::recovered_candidate_clients(
-        fixture.config.clone(), experience, dataset, trainer,
-    )?;
+    let common =
+        stages::recovered_candidate_clients(fixture.config.clone(), experience, dataset, trainer)?;
     let adapter = stages::fixture_from_original_clients(
-        common, registered, fixture.training_baseline(), candidate_connection, end,
+        common,
+        registered,
+        fixture.training_baseline(),
+        candidate_connection,
+        end,
     )?;
     adapter.validate_recovery(&snapshot).await?;
-    let signature = adapter.receipt_attestation(
-        &snapshot, training.receipt(), command_now()?,
-    ).await?;
+    let signature = adapter
+        .receipt_attestation(&snapshot, training.receipt(), command_now()?)
+        .await?;
     assert_eq!(signature, *training.attestation());
     assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
     assert_eq!((fixture.bytes()?, fixture.training_bytes()?), originals);
     // Recovery remains readonly even with an actual Candidate and ready bytes.
     assert!(matches!(
-        adapter.execute_stage(&snapshot, LearningIterationStageV1::Evaluation).await,
+        adapter
+            .execute_stage(&snapshot, LearningIterationStageV1::Evaluation)
+            .await,
         Err(StageError::WrongScope)
     ));
     assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
@@ -83,7 +105,12 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
     assert_eq!(candidate_peer.finish()?, 3);
     assert_eq!(material_ports::finish(e_peer)?, 2);
     assert_eq!(material_ports::finish(d_peer)?, 2);
-    assert_eq!(training_server.join().expect("original Trainer command peer")?, 4);
+    assert_eq!(
+        training_server
+            .join()
+            .expect("original Trainer command peer")?,
+        4
+    );
     drop(owner);
     let counts = finish_material(peers)?;
     assert_eq!(counts[0], 1);
@@ -97,30 +124,47 @@ async fn candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_di
     let registered = protocol("original-primary-fold-and-unit-rule")?;
     let fixture = MaterialCommandFixture::candidate_pages_for_evaluation_profile(
         registered.evaluation_profile(),
-    ).await?;
+    )
+    .await?;
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let originals = (fixture.bytes()?, fixture.training_bytes()?);
     for changed in [true, false] {
         let end = Instant::now() + Duration::from_secs(300);
         let (candidate_connection, candidate_peer) = page_peer(
-            Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, /*expected*/ None,
-            Fault::Original, /*gate*/ None, Duration::from_secs(300),
+            Arc::clone(&owner),
+            fixture.config.clone(),
+            Origin::Fresh,
+            /*expected*/ None,
+            Fault::Original,
+            /*gate*/ None,
+            Duration::from_secs(300),
         )?;
         let (experience, e_peer) = material_ports::commands(&fixture, MaterialRole::Experience)?;
         let (dataset, d_peer) = material_ports::commands(&fixture, MaterialRole::Dataset)?;
         let common = stages::fresh_material_only(fixture.config.clone(), experience, dataset)?;
-        let selected = if changed { protocol("different-fold-before-training")? } else { registered.clone() };
+        let selected = if changed {
+            protocol("different-fold-before-training")?
+        } else {
+            registered.clone()
+        };
         let adapter = stages::fixture_from_original_clients(
-            common, selected, fixture.training_baseline(), candidate_connection, end,
+            common,
+            selected,
+            fixture.training_baseline(),
+            candidate_connection,
+            end,
         );
         if changed {
             assert!(matches!(adapter, Err(StageError::WrongScope)));
         } else {
             let adapter = adapter?;
             assert!(matches!(
-                adapter.execute_stage(
-                    &fixture.config.initial, LearningIterationStageV1::Experience,
-                ).await,
+                adapter
+                    .execute_stage(
+                        &fixture.config.initial,
+                        LearningIterationStageV1::Experience,
+                    )
+                    .await,
                 Err(StageError::OwnerUnavailable("fresh resident continuation"))
             ));
             drop(adapter);

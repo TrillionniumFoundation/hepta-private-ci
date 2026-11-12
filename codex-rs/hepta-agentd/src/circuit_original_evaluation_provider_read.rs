@@ -1,7 +1,7 @@
 //! Current original source/ledger reads around complete cohort materialization.
 
-use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
 use codex_hepta_types::Digest32;
@@ -22,16 +22,22 @@ impl OriginalCircuitEvaluationCohortV1 {
     ) -> Result<Materialized, Error> {
         let training = binding::authenticate_training(&self.config, started_at)?;
         if started_at < self.config.rule.evaluation_end_unix_seconds {
-            return Err(Error::Binding("registered observation window is not closed"));
+            return Err(Error::Binding(
+                "registered observation window is not closed",
+            ));
         }
         let before = LedgerWriter::read_current_durable_snapshot(&mut self.owners.ledger)?;
-        if before.records().iter().any(|record| {
-            record.event.record_id() == &self.config.training.request.source_run_id
-        }) {
+        if before
+            .records()
+            .iter()
+            .any(|record| record.event.record_id() == &self.config.training.request.source_run_id)
+        {
             // A's exact freeze is not extended with B. A real SourceBound
             // Training completion required this Decision in its original A
             // ledger, so that same ledger cannot satisfy this independent cut.
-            return Err(Error::Binding("B must use an independent original ledger domain"));
+            return Err(Error::Binding(
+                "B must use an independent original ledger domain",
+            ));
         }
         let freeze_payload = dataset_freeze_signing_payload_v2(&before, &self.config.freeze_plan)?;
         let evaluator = self.config.verifier.verify(
@@ -53,14 +59,19 @@ impl OriginalCircuitEvaluationCohortV1 {
             || receipt.snapshot.source_record_digests.is_empty()
             || receipt.snapshot.source_record_digests.len() > 4096
         {
-            return Err(Error::Binding("complete original B freeze with terminal outcomes"));
+            return Err(Error::Binding(
+                "complete original B freeze with terminal outcomes",
+            ));
         }
-        let records = LedgerWriter::read_dataset_records(
-            &self.owners.ledger,
-            &receipt,
-            started_at,
-        )?.into_iter().cloned().collect::<Vec<_>>();
-        let mut actual = records.iter().map(|record| record.event_digest).collect::<Vec<_>>();
+        let records =
+            LedgerWriter::read_dataset_records(&self.owners.ledger, &receipt, started_at)?
+                .into_iter()
+                .cloned()
+                .collect::<Vec<_>>();
+        let mut actual = records
+            .iter()
+            .map(|record| record.event_digest)
+            .collect::<Vec<_>>();
         actual.sort_unstable();
         if actual != receipt.snapshot.source_record_digests {
             return Err(Error::Binding("exact active original B freeze source set"));
@@ -106,7 +117,9 @@ impl OriginalCircuitEvaluationCohortV1 {
         if self.read_sources()? != sources
             || LedgerWriter::read_current_durable_snapshot(&mut self.owners.ledger)? != before
         {
-            return Err(Error::Binding("original B source or ledger CURRENT changed"));
+            return Err(Error::Binding(
+                "original B source or ledger CURRENT changed",
+            ));
         }
         let fresh_now = clock()?;
         if fresh_now < started_at {
@@ -127,14 +140,13 @@ impl OriginalCircuitEvaluationCohortV1 {
             self.config.freeze_plan.clone(),
             &self.config.freeze_evidence,
             fresh_now,
-        )? != receipt {
-            return Err(Error::Binding("same original signed B freeze after all I/O"));
+        )? != receipt
+        {
+            return Err(Error::Binding(
+                "same original signed B freeze after all I/O",
+            ));
         }
-        let _ = LedgerWriter::read_dataset_records(
-            &self.owners.ledger,
-            &receipt,
-            fresh_now,
-        )?;
+        let _ = LedgerWriter::read_dataset_records(&self.owners.ledger, &receipt, fresh_now)?;
         self.last_observed_at = fresh_now;
         // No further file, witness or peer I/O follows fresh authentication.
         Ok(Materialized {
@@ -156,12 +168,17 @@ impl OriginalCircuitEvaluationCohortV1 {
             if publication.input().scope.run_id != original.run_id
                 || publication.original_record().snapshot.run_id != original.run_id
                 || publication.input().objective_digest != self.config.rule.objective_digest
-                || observed.insert(original.run_id.clone(), publication).is_some()
+                || observed
+                    .insert(original.run_id.clone(), publication)
+                    .is_some()
             {
                 return Err(Error::Binding("exact original source registry"));
             }
         }
-        if observed.keys().cloned().collect::<std::collections::BTreeSet<_>>()
+        if observed
+            .keys()
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>()
             != self.config.rule.run_ids()
         {
             return Err(Error::Binding("complete original source registry"));

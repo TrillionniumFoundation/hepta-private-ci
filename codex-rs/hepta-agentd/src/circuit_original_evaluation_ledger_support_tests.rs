@@ -12,8 +12,15 @@ pub(in super::super) fn decision(
     selected_index: usize,
     at: u64,
 ) -> anyhow::Result<()> {
-    let candidates = input.candidates.iter().map(|mask| mask.candidate_id.clone()).collect::<Vec<_>>();
-    let selected = candidates.get(selected_index).ok_or_else(|| anyhow::anyhow!("selected action"))?.clone();
+    let candidates = input
+        .candidates
+        .iter()
+        .map(|mask| mask.candidate_id.clone())
+        .collect::<Vec<_>>();
+    let selected = candidates
+        .get(selected_index)
+        .ok_or_else(|| anyhow::anyhow!("selected action"))?
+        .clone();
     let value = ProductionDecisionV2 {
         record_id: input.scope.run_id.clone(),
         episode_id: episode.clone(),
@@ -39,10 +46,23 @@ pub(in super::super) fn decision(
         },
         support_digest: d("explicit-original-B-decision-support"),
     };
-    let evidence = sign(writer.verifier(), &credentials.generator, /*seed*/ 41,
-        &decision_signing_payload_v2(&value)?, at);
+    let evidence = sign(
+        writer.verifier(),
+        &credentials.generator,
+        /*seed*/ 41,
+        &decision_signing_payload_v2(&value)?,
+        at,
+    );
     writer.append_decision(writer.snapshot()?.head_digest, value, &evidence, at)?;
-    assert_eq!(writer.records()?.last().expect("actual Decision").event.record_id(), &input.scope.run_id);
+    assert_eq!(
+        writer
+            .records()?
+            .last()
+            .expect("actual Decision")
+            .event
+            .record_id(),
+        &input.scope.run_id
+    );
     Ok(())
 }
 
@@ -73,8 +93,13 @@ pub(in super::super) fn outcome(
             finalized_at: Some(at),
         },
     };
-    let evidence = sign(writer.verifier(), &credentials.observer, /*seed*/ 43,
-        &outcome_signing_payload_v2(&outcome), at);
+    let evidence = sign(
+        writer.verifier(),
+        &credentials.observer,
+        /*seed*/ 43,
+        &outcome_signing_payload_v2(&outcome),
+        at,
+    );
     writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;
     Ok(())
 }
@@ -85,6 +110,11 @@ pub(in super::super) fn freeze(
     plan: &DatasetFreezePlanV2,
     at: u64,
 ) -> anyhow::Result<SignedLearningEvidenceV1> {
-    Ok(sign(writer.verifier(), &credentials.evaluator, /*seed*/ 42,
-        &dataset_freeze_signing_payload_v2(&writer.snapshot()?, plan)?, at))
+    Ok(sign(
+        writer.verifier(),
+        &credentials.evaluator,
+        /*seed*/ 42,
+        &dataset_freeze_signing_payload_v2(&writer.snapshot()?, plan)?,
+        at,
+    ))
 }

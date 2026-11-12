@@ -103,7 +103,9 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         if wire::mode(&self.context)? != wire::Mode::Selection {
-            return Err(Error::Binding("retained Version Selection-only read purpose"));
+            return Err(Error::Binding(
+                "retained Version Selection-only read purpose",
+            ));
         }
         self.serve_channel(channel)
     }

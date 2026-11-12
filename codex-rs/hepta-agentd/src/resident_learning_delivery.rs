@@ -40,10 +40,12 @@ pub(crate) struct AgentdRootResidentDeliveryV3 {
 }
 
 pub(crate) fn root_resident_learning_delivery_v3()
-    -> (AgentdRootResidentEnrollmentV3, AgentdRootResidentDeliveryV3)
-{
+-> (AgentdRootResidentEnrollmentV3, AgentdRootResidentDeliveryV3) {
     let (sender, receiver) = mpsc::channel(1);
-    (AgentdRootResidentEnrollmentV3 { sender }, AgentdRootResidentDeliveryV3 { receiver })
+    (
+        AgentdRootResidentEnrollmentV3 { sender },
+        AgentdRootResidentDeliveryV3 { receiver },
+    )
 }
 
 impl AgentdRootResidentEnrollmentV3 {
@@ -132,9 +134,11 @@ impl AgentdRootResidentDeliveryV3 {
                     return Ok(());
                 }
                 Err(Error::CommitUncertain | Error::Unavailable | Error::QueueFull) => {}
-                Err(error) => return Err(AgentdError::Protocol(
-                    format!("Root resident learning delivery refused: {error}"),
-                )),
+                Err(error) => {
+                    return Err(AgentdError::Protocol(format!(
+                        "Root resident learning delivery refused: {error}"
+                    )));
+                }
             }
         }
     }
@@ -171,29 +175,47 @@ async fn prepare_enrollment(
         if observed.snapshot().is_some() || observed.dispatch_pending() {
             return Err(Error::CommitUncertain);
         }
-        state.require_resident_learning_source_candidate(request).await
+        state
+            .require_resident_learning_source_candidate(request)
+            .await
             .map_err(|_| Error::WrongScope)?;
-        state.attach_circuit_learning_sources(vec![request.source_run_id.clone()])
+        state
+            .attach_circuit_learning_sources(vec![request.source_run_id.clone()])
             .map_err(|_| Error::WrongScope)?;
-        let host = state.objective_runtime.get()
+        let host = state
+            .objective_runtime
+            .get()
             .ok_or(Error::OwnerUnavailable("original Objective source owner"))?;
-        host.reconcile_learning_outbox(store, Some(&request.source_run_id)).await
+        host.reconcile_learning_outbox(store, Some(&request.source_run_id))
+            .await
             .map_err(|_| Error::CommitUncertain)?;
-        state.require_circuit_learning_source(request).await.map_err(|_| Error::WrongScope)?;
-        if !state.automation_admission_ready().map_err(|_| Error::Unavailable)? {
+        state
+            .require_circuit_learning_source(request)
+            .await
+            .map_err(|_| Error::WrongScope)?;
+        if !state
+            .automation_admission_ready()
+            .map_err(|_| Error::Unavailable)?
+        {
             return Err(Error::Unavailable);
         }
         root.require_fresh_admission_channel()?;
         DeliveryAdmissionV3::FirstClaim
     };
-    Ok(EnrolledOriginalV3 { root, initial, admission })
+    Ok(EnrolledOriginalV3 {
+        root,
+        initial,
+        admission,
+    })
 }
 
 async fn delivery_row(
     store: &AutomationStore,
     source_run_id: &str,
 ) -> Result<CircuitLearningDeliveryV1, Error> {
-    store.circuit_learning_delivery(source_run_id).await
+    store
+        .circuit_learning_delivery(source_run_id)
+        .await
         .map_err(|_| Error::CommitUncertain)?
         .ok_or(Error::OwnerUnavailable("original completed A outbox"))
 }
@@ -212,15 +234,23 @@ impl EnrolledOriginalV3 {
         let first = matches!(self.admission, DeliveryAdmissionV3::FirstClaim);
         let new_claim = if first && row.request_digest.is_none() {
             self.root.require_fresh_admission_channel()?;
-            if !state.automation_admission_ready().map_err(|_| Error::Unavailable)? {
+            if !state
+                .automation_admission_ready()
+                .map_err(|_| Error::Unavailable)?
+            {
                 return Err(Error::Unavailable);
             }
-            state.require_circuit_learning_source(request).await.map_err(|_| Error::WrongScope)?;
+            state
+                .require_circuit_learning_source(request)
+                .await
+                .map_err(|_| Error::WrongScope)?;
             self.root.require_fresh_admission_channel()?;
             // Mark the local once state before the original durable effect.
             // Lost claim ACK never re-enters this branch, even in this actor.
             self.admission = DeliveryAdmissionV3::Readback;
-            store.claim_circuit_learning(&row.intent, &digest).await
+            store
+                .claim_circuit_learning(&row.intent, &digest)
+                .await
                 .map_err(|_| Error::CommitUncertain)?
         } else {
             self.admission = DeliveryAdmissionV3::Readback;
@@ -230,8 +260,14 @@ impl EnrolledOriginalV3 {
             false
         };
         let observed = if new_claim {
-            state.require_circuit_learning_source(request).await.map_err(|_| Error::WrongScope)?;
-            if !state.automation_admission_ready().map_err(|_| Error::Unavailable)? {
+            state
+                .require_circuit_learning_source(request)
+                .await
+                .map_err(|_| Error::WrongScope)?;
+            if !state
+                .automation_admission_ready()
+                .map_err(|_| Error::Unavailable)?
+            {
                 return Err(Error::CommitUncertain);
             }
             AgentdRootResidentLearningClientV3::admit_after_original_claim(&self.root).await?
@@ -253,15 +289,22 @@ impl EnrolledOriginalV3 {
         // The client just checked all original role signatures after actual
         // Root CURRENT readback. A's local generation can still have changed
         // during that remote I/O; it must remain the legal outbox writer.
-        if !state.plasticity_admission_ready().map_err(|_| Error::Unavailable)? {
+        if !state
+            .plasticity_admission_ready()
+            .map_err(|_| Error::Unavailable)?
+        {
             return Err(Error::CommitUncertain);
         }
         self.root.revalidate_original_observation(&observed)?;
-        let head = Sha256Digest::parse(snapshot.head_digest.to_string())
-            .map_err(|_| Error::WrongScope)?;
-        store.acknowledge_circuit_learning(&row.intent, &digest, &head).await
+        let head =
+            Sha256Digest::parse(snapshot.head_digest.to_string()).map_err(|_| Error::WrongScope)?;
+        store
+            .acknowledge_circuit_learning(&row.intent, &digest, &head)
+            .await
             .map_err(|_| Error::CommitUncertain)?;
-        store.retire_acknowledged_circuit_learning(&row.intent, &digest, &head).await
+        store
+            .retire_acknowledged_circuit_learning(&row.intent, &digest, &head)
+            .await
             .map_err(|_| Error::CommitUncertain)?;
         Ok(())
     }

@@ -12,10 +12,10 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
+use super::super::auth;
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
-use super::super::auth;
 use crate::OriginalCellQ24CandidateMaterialV1;
 use crate::OriginalCellQ24CandidateReadbackClientV1;
 use crate::OriginalCellQ24CandidateReadbackErrorV1;
@@ -26,7 +26,10 @@ use crate::RootResidentLearningEffectGateV3;
 /// Dispatch is held only inside the fresh admitted Evaluation future.
 /// Readback is an explicit non-effect path, never a fallback after Gate failure.
 #[derive(Clone, Copy, Eq, PartialEq)]
-pub(super) enum CandidateRead { Dispatch, Readback }
+pub(super) enum CandidateRead {
+    Dispatch,
+    Readback,
+}
 
 #[derive(Clone, Eq, PartialEq)]
 struct CandidateIdentity {
@@ -45,13 +48,20 @@ pub(super) struct CandidateLane {
 
 impl CandidateLane {
     pub(super) fn new(initial: OriginalCellQ24TrainingCommandConnectionV1) -> Self {
-        Self { initial: Some(initial), client: None, retained: None, failed: false }
+        Self {
+            initial: Some(initial),
+            client: None,
+            retained: None,
+            failed: false,
+        }
     }
 }
 
 impl OriginalCellQ24CandidateStageOwnersV1 {
     pub(super) async fn read_original_candidate(
-        &self, snapshot: &LearningIterationSnapshotV1, mode: CandidateRead,
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        mode: CandidateRead,
     ) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
         let started_at = auth::now()?;
         self.require_live_deadline()?;
@@ -68,15 +78,23 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::WrongScope);
         }
         if mode == CandidateRead::Dispatch {
-            let gate = self.common.root.as_ref()
-                .ok_or(Error::OwnerUnavailable("fresh resident Candidate continuation"))?;
+            let gate = self.common.root.as_ref().ok_or(Error::OwnerUnavailable(
+                "fresh resident Candidate continuation",
+            ))?;
             RootResidentLearningEffectGateV3::require_current(
-                gate, snapshot, &self.common.material.scope,
-            ).await?;
+                gate,
+                snapshot,
+                &self.common.material.scope,
+            )
+            .await?;
         }
         // Always use one lock order and the original same-job owners. These
         // async ownership locks serialize work; no Ledger lock crosses I/O.
-        let mut state = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut state = self
+            .common
+            .continuation
+            .try_lock()
+            .map_err(|_| Error::QueueFull)?;
         let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;
         if lane.failed {
             return Err(Error::CommitUncertain);
@@ -85,8 +103,16 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // instance. A new readonly recovery must contact the original owners.
         lane.failed = true;
         state.read_prefix(&self.common, snapshot).await?;
-        let dataset = state.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone();
-        let training = state.original_training.as_ref().ok_or(Error::CommitUncertain)?.clone();
+        let dataset = state
+            .original_dataset
+            .as_ref()
+            .ok_or(Error::CommitUncertain)?
+            .clone();
+        let training = state
+            .original_training
+            .as_ref()
+            .ok_or(Error::CommitUncertain)?
+            .clone();
         if snapshot.receipts.get(2) != Some(training.receipt()) {
             return Err(Error::WrongScope);
         }
@@ -94,13 +120,18 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             let initial = lane.initial.take().ok_or(Error::CommitUncertain)?;
             lane.client = Some(
                 OriginalCellQ24TrainingCommandConnectionV1::bind_original_candidate_material(
-                    initial, dataset, training.clone(), Arc::clone(&self.baseline),
-                ).map_err(connection_failure)?,
+                    initial,
+                    dataset,
+                    training.clone(),
+                    Arc::clone(&self.baseline),
+                )
+                .map_err(connection_failure)?,
             );
         }
         let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
         let material = OriginalCellQ24CandidateReadbackClientV1::readback(client)
-            .await.map_err(candidate_failure)?;
+            .await
+            .map_err(candidate_failure)?;
         if material.receipt() != training.receipt()
             || material.attestation() != training.attestation()
             || material.bundle() != expected_bundle
@@ -113,26 +144,34 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // signature, successful earlier page, or retained model is not CURRENT.
         state.read_prefix(&self.common, snapshot).await?;
         if mode == CandidateRead::Dispatch {
-            let gate = self.common.root.as_ref()
-                .ok_or(Error::OwnerUnavailable("fresh resident Candidate continuation"))?;
+            let gate = self.common.root.as_ref().ok_or(Error::OwnerUnavailable(
+                "fresh resident Candidate continuation",
+            ))?;
             RootResidentLearningEffectGateV3::require_current(
-                gate, snapshot, &self.common.material.scope,
-            ).await?;
+                gate,
+                snapshot,
+                &self.common.material.scope,
+            )
+            .await?;
         }
         // The final original owner/Root I/O precedes all fresh window checks.
-        let fresh = auth::require_material(
-            &self.common.material, self.common.initial_binding,
-        )?;
+        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
         auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?;
-        let current = state.original_training.as_ref().ok_or(Error::CommitUncertain)?;
+        let current = state
+            .original_training
+            .as_ref()
+            .ok_or(Error::CommitUncertain)?;
         if material.receipt() != current.receipt()
             || material.attestation() != current.attestation()
         {
             return Err(Error::WrongScope);
         }
         auth::verify_receipt(
-            &self.common.material, material.receipt(), material.attestation(), fresh,
+            &self.common.material,
+            material.receipt(),
+            material.attestation(),
+            fresh,
         )?;
         self.require_live_deadline()?;
         let identity = CandidateIdentity {
@@ -141,7 +180,11 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             receipt: material.receipt().clone(),
             attestation: material.attestation().clone(),
         };
-        if lane.retained.as_ref().is_some_and(|prior| prior != &identity) {
+        if lane
+            .retained
+            .as_ref()
+            .is_some_and(|prior| prior != &identity)
+        {
             return Err(Error::WrongScope);
         }
         lane.retained = Some(identity);
@@ -153,9 +196,15 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
 fn connection_failure(error: OriginalCellQ24TrainingCommandConnectionErrorV1) -> Error {
     match error {
         OriginalCellQ24TrainingCommandConnectionErrorV1::Binding(_) => Error::WrongScope,
-        OriginalCellQ24TrainingCommandConnectionErrorV1::Command(error) => auth::trainer_failure(error),
-        OriginalCellQ24TrainingCommandConnectionErrorV1::Material(error) => auth::material_failure(error),
-        OriginalCellQ24TrainingCommandConnectionErrorV1::Candidate(error) => candidate_failure(error),
+        OriginalCellQ24TrainingCommandConnectionErrorV1::Command(error) => {
+            auth::trainer_failure(error)
+        }
+        OriginalCellQ24TrainingCommandConnectionErrorV1::Material(error) => {
+            auth::material_failure(error)
+        }
+        OriginalCellQ24TrainingCommandConnectionErrorV1::Candidate(error) => {
+            candidate_failure(error)
+        }
     }
 }
 
@@ -166,7 +215,8 @@ fn candidate_failure(error: OriginalCellQ24CandidateReadbackErrorV1) -> Error {
         OriginalCellQ24CandidateReadbackErrorV1::Binding(_)
         | OriginalCellQ24CandidateReadbackErrorV1::NoCandidate
         | OriginalCellQ24CandidateReadbackErrorV1::Material(_) => Error::WrongScope,
-        OriginalCellQ24CandidateReadbackErrorV1::Unavailable =>
-            Error::OwnerUnavailable("original Candidate material"),
+        OriginalCellQ24CandidateReadbackErrorV1::Unavailable => {
+            Error::OwnerUnavailable("original Candidate material")
+        }
     }
 }
