@@ -30,6 +30,12 @@ pub use generation_publication::send_root_generation_publication_handoff;
 
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
+#[path = "root_historical_task_read_handoff.rs"]
+mod historical_task_read;
+pub use historical_task_read::RootHistoricalTaskReadHandoffV1;
+pub use historical_task_read::receive_root_historical_task_read_handoff;
+pub use historical_task_read::send_root_historical_task_read_handoff;
+
 #[path = "root_production_writer_handoff.rs"]
 mod writer;
 pub use writer::RootProductionWriterDescriptor;

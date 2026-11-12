@@ -205,17 +205,25 @@ pub use root_production_inputs::receive_root_production_inputs;
 #[cfg(target_os = "linux")]
 pub use root_production_learning_inputs::AgentdRootLearningInputsV1;
 #[cfg(target_os = "linux")]
+mod root_historical_task_read_protocol;
+#[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 pub use config::drop_root_native_owner_credentials;
 #[cfg(target_os = "linux")]
+pub use root_historical_task_read_protocol::RootHistoricalTaskReadOfferV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::RootHistoricalTaskReadHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootLearningHandoffV1;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootQ24ModelFactoryHandoffV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_historical_task_read_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_learning_handoff;
 #[cfg(target_os = "linux")]
@@ -224,6 +232,8 @@ pub use root_production_handoff::receive_root_production_handoff;
 pub use root_production_handoff::receive_root_production_writer_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_q24_model_factory_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_historical_task_read_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_learning_handoff;
 #[cfg(target_os = "linux")]
