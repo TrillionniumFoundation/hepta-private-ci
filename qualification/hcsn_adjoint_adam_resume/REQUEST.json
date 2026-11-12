@@ -1,0 +1,63 @@
+{
+  "actual_geometries": [
+    "uniform_n7",
+    "graded_n12"
+  ],
+  "base_source": "975a169df5f3a1dd51b81ddd51b0a338592a0e0f",
+  "complete_checkpoint_semantic_equality_required": true,
+  "crash_before_replace_expected_exit": 73,
+  "fresh_process_resume_required": true,
+  "full_network_full_prior_large_grid_claim": false,
+  "identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261112-c06d-stage1",
+  "maximum_total_adam_updates": 9,
+  "maximum_total_adjoints": 13,
+  "maximum_total_forwards": 13,
+  "next_loss_gradient_probe_updates": 0,
+  "omit_adam_expected_exit": 42,
+  "omit_adam_forwards": 0,
+  "omit_adam_updates": 0,
+  "optimizer": {
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "foreach": false,
+    "fused": false,
+    "lr": 0.0001,
+    "name": "Adam",
+    "weight_decay": 0
+  },
+  "original_published_bytes_must_survive_crash": true,
+  "positive_path_adam_updates": 8,
+  "precommit_source_and_independent_static_review_required": true,
+  "previous_run_reuse": false,
+  "rng_streams": [
+    "torch_cpu",
+    "python",
+    "numpy"
+  ],
+  "source_paths": [
+    "qualification/hcsn_adjoint_adam_resume/state.py",
+    "qualification/hcsn_adjoint_adam_resume/actor.py",
+    "qualification/hcsn_adjoint_adam_resume/native_probe.py",
+    "qualification/hcsn_adjoint_adam_resume/SPEC.md",
+    "qualification/hcsn_adjoint_adam_resume/REQUEST.json",
+    "qualification/hcsn_adjoint_torch/torch_flow.py",
+    "qualification/hcsn_initial_adjoint/solver.py",
+    "qualification/hcsn_joint_dde/model.py",
+    "qualification/hcsn_boundary_audit/spatial_generator.py",
+    "qualification/hcsn_boundary_audit/refractory_transport.py",
+    "qualification/hcsn_graded/model.py",
+    "qualification/hcsn_graded/spatial.py",
+    ".github/workflows/hcsn-adjoint-adam-resume.yml"
+  ],
+  "status": "INTENT_NOT_EXECUTED",
+  "trainable_tensors": [
+    "active",
+    "content",
+    "phase_mass",
+    "phase_content"
+  ],
+  "unpublished_crash_adam_updates": 1
+}
