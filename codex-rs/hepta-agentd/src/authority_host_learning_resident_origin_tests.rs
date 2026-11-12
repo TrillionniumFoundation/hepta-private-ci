@@ -147,8 +147,23 @@ async fn resident_root_consuming_origins_match_before_cas_issuance_and_dispatch(
                     /*capacity*/ 1,
                 ),
                 Branch::Candidate => {
-                    let (candidate, mut peer) =
-                        original_bootstrap_test_ports::readonly_channel(material.config.clone())?;
+                    let (candidate, mut peer) = match pairing {
+                        Pairing::FreshRegistrationRecoveredChannels
+                        | Pairing::RecoveredRegistrationRecoveredChannels => {
+                            original_bootstrap_test_ports::recovered_command_channel(
+                                material.config.clone(),
+                                /*expected*/ None,
+                                Duration::from_secs(300),
+                            )?
+                        }
+                        Pairing::RecoveredRegistrationFreshChannels
+                        | Pairing::FreshRegistrationFreshChannels => {
+                            original_bootstrap_test_ports::fresh_command_channel(
+                                material.config.clone(),
+                                Duration::from_secs(300),
+                            )?
+                        }
+                    };
                     let frames = Arc::clone(&trainer_frames);
                     trainer_peer = Some(std::thread::spawn(move || {
                         peer.exchange(|_| {
