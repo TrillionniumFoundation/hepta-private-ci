@@ -14,6 +14,10 @@ use crate::authority_host_service::generation_publication::PURPOSE;
 use crate::authority_host_service::generation_publication::PublicationBootstrap;
 use crate::authority_host_service::generation_publication::SOCKET;
 
+#[path = "authority_host_same_actor_publication_cap.rs"]
+mod same_actor_cap;
+pub use same_actor_cap::RootSameActorPublicationEnrollmentCapabilityV1;
+
 #[path = "authority_host_generation_publication_runtime.rs"]
 mod runtime;
 pub(super) use runtime::BoundPublication;
@@ -126,10 +130,29 @@ impl PreparedHostAuthoritySession {
             .learning
             .as_ref()
             .ok_or_else(|| io::Error::other("original scoped learning owner required"))?;
-        let (bundle, bootstrap) = self.service.with_learning_profile(
-            &self.config,
-            &self.registration,
-            &self.owner_pidfd,
+        let (runtime, capability, offer) = original_publication_route(
+            &self.service, &self.config, &self.registration, &self.owner_pidfd, learning,
+        )?;
+        self.publication = Some(runtime);
+        Ok((capability, offer))
+    }
+}
+
+pub(super) fn original_publication_route(
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner_pidfd: &OwnedFd,
+    learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1,
+) -> io::Result<(
+    PublicationRuntime,
+    RootGenerationPublicationEnrollmentCapabilityV1,
+    crate::RootGenerationPublicationOfferV1,
+)> {
+        let (bundle, bootstrap) = service.with_learning_profile(
+            config,
+            registration,
+            owner_pidfd,
             &learning.profile,
             |initial, proof| {
                 let scope = learning.profile.require_cell_scope(&initial)?;
@@ -156,21 +179,20 @@ impl PreparedHostAuthoritySession {
                     root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
                         uid: 0,
                         pid: std::process::id(),
-                        boot_id: self.registration.boot_id.clone(),
+                        boot_id: registration.boot_id.clone(),
                         process_start_ticks: root_start()?,
                     },
                     consumer: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                        uid: self.config.peer_uid,
-                        pid: self.registration.peer_pid,
-                        boot_id: self.registration.boot_id.clone(),
-                        process_start_ticks: self.registration.process_start_ticks,
+                        uid: config.peer_uid,
+                        pid: registration.peer_pid,
+                        boot_id: registration.boot_id.clone(),
+                        process_start_ticks: registration.process_start_ticks,
                     },
-                    identity: self.registration.registered_identity.clone(),
+                    identity: registration.registered_identity.clone(),
                     initial: initial.head_digest.to_string(),
                     scope: scope.binding().to_string(),
                     writer: proof,
-                    socket: self
-                        .config
+                    socket: config
                         .sockets
                         .observation
                         .parent()
@@ -195,24 +217,24 @@ impl PreparedHostAuthoritySession {
         )?;
         let (sender, receiver) = mpsc::sync_channel(1);
         let phase = Arc::new(AtomicU8::new(PREPARED));
-        self.publication = Some(PublicationRuntime {
+        let runtime = PublicationRuntime {
             receiver: Mutex::new(receiver),
             phase: Arc::clone(&phase),
             socket: bundle.socket,
-        });
+        };
         Ok((
+            runtime,
             RootGenerationPublicationEnrollmentCapabilityV1 {
                 sender,
                 phase,
                 root_pid: bundle.root.pid,
-                consumer_uid: self.config.peer_uid,
+                consumer_uid: config.peer_uid,
                 boot_id: bundle.root.boot_id,
                 process_start_ticks: bundle.root.process_start_ticks,
-                lifetime: Duration::from_millis(self.config.lifetime_ms),
+                lifetime: Duration::from_millis(config.lifetime_ms),
             },
             crate::RootGenerationPublicationOfferV1 { bootstrap },
         ))
-    }
 }
 
 fn root_start() -> io::Result<u64> {

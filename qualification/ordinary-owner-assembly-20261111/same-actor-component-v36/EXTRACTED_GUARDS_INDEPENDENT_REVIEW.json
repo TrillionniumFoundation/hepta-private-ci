@@ -1,0 +1,669 @@
+{
+  "schema_version": 1,
+  "kind": "independent-seven-original-guard-extraction-metadata-review",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "No confirmed blocking defect in the eight metadata operations or the reviewed legacy guard mapping. This is bounded static review, not execution of the original checker or full phase qualification.",
+  "artifacts": {
+    "packet": {
+      "blob": "6d80200e0737a935bfa13c04a1469f275c4d6d70",
+      "bytes": 69429,
+      "sha256": "ce7e04c109e471fa8a330c501f24604cba23fe7434ba62019d0986e8b1298946"
+    },
+    "before": {
+      "blob": "58be7976d5258018fce1336876f8e3678d3af713",
+      "bytes": 763076,
+      "sha256": "67815c819843668dcd7ad3046f329c1100ce791e63e92c0c6265071110358d0c"
+    },
+    "after": {
+      "blob": "80216f6354fc7f2a941965ce5a19e0863dfe7cb8",
+      "bytes": 765670,
+      "sha256": "01b63c38765bfcacf402e9cbb2b5ed8d1d71cf29b8564c2be15450597a8cd747"
+    },
+    "preceding_Fresh_independent_review": "75c09b93d0c4d10eb2e33856605c85b0d7129ed3",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+  },
+  "review_actions": {
+    "immutable_Git_GET": true,
+    "actual_7_source_postimages_GET_hash_verified": true,
+    "unique_forward_reverse_ops": 8,
+    "exact_pre_and_post_bytes_verified": true,
+    "pure_JS_mask_extent_order_projection": true,
+    "original_Python_checker_executed": false,
+    "full_field_or_caller_index": false,
+    "formatter": false,
+    "compiler": false,
+    "native": false,
+    "h_or_PTY": false,
+    "ref_mutation": false
+  },
+  "exact_metadata_scope": {
+    "boundaries_before": 548,
+    "boundaries_after": 548,
+    "protected_before": 389,
+    "protected_after": 389,
+    "table_order_and_keys_unchanged": true,
+    "changed_tables": 8,
+    "other_tables_raw_identical": 929,
+    "seven_protected_changes": "Function-order adaptations in seven actual files. Six preserve raw required fields exactly. Publication session also changes exactly two required expressions to the actual helper parameter names.",
+    "all_forbidden_unchanged": true,
+    "all_file_required_order_unchanged": true,
+    "all_boundary_ids_and_order_unchanged": true,
+    "all_product_callers_unchanged": true,
+    "all_caller_markers_unchanged": true,
+    "all_call_patterns_unchanged": true,
+    "all_receiver_types_unchanged": true,
+    "definition_exception": {
+      "id": "root_generation_publication_enable",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "old": "self.service.with_learning_profile(",
+      "new": "service.with_learning_profile(",
+      "otherwise_same": true,
+      "justification": "The real old public enable method still requires Root, refuses an existing route and obtains its retained Learning owner. It then passes &self.service, &self.config, &self.registration, &self.owner_pidfd and that same learning reference to original_publication_route. The shared helper actually calls service.with_learning_profile using those parameters. The separate protected orders now bind the wrapper-to-helper call and the actual helper body."
+    },
+    "raw_required_exceptions": [
+      {
+        "old": "self.service.with_learning_profile(",
+        "new": "service.with_learning_profile("
+      },
+      {
+        "old": "consumer_uid: self.config.peer_uid",
+        "new": "consumer_uid: config.peer_uid"
+      }
+    ],
+    "required_exceptions_justification": "The actual wrapper passes the original service and config by shared reference in one exact ordered parameter list. In the extracted helper, consumer_uid is still obtained from config.peer_uid; no substitute config or service is created. These are documented source-expression adaptations, not claims that all old raw required strings remain byte-identical.",
+    "no_authority_or_ignored_path_change": true,
+    "intermediate_required_inventory": "The packet preserves its existing required-ID inventory. The preceding Work-only intermediate still has 524 required IDs versus 548 declarations; final union must add the real outstanding IDs/callers. This report does not treat this intermediate table as valid standalone checker input."
+  },
+  "actual_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "blob": "67df73589c32c8565bb893b1053c2477987b5cfe",
+      "bytes": 16093,
+      "sha256": "29e5b79b7581e8e8270f757cc8de8e55c4f42d4cb49b4de657478a7f30bcf868"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "blob": "5edb5484bdba8f0f3c4d063383367d85b9162a1c",
+      "bytes": 17992,
+      "sha256": "38a6834a4687d52f5b457b6399c264f11931a99d8f1ab6dc2a0957cc43e86754"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "blob": "d4227925ae1d26f065bb62908757ed2fbb4184a4",
+      "bytes": 26917,
+      "sha256": "a4dccdac0ab4cd126be17a5d5dd99755c0f02db302b389c1198890ad397305e1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "blob": "0fda77f096bca1f11d7178187f15bba1c5ecdbab",
+      "bytes": 17878,
+      "sha256": "63c1398c62ebada65432e4d1a8844f25ad607c99a35e2e1e05a1a4aee3a0a3cf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "blob": "8ac1bd31ec7c0280120048aaf654ed3c34b063c4",
+      "bytes": 9891,
+      "sha256": "f2da00091edb7a643f7ab2e17a9e9a28272d59ea2b80d3eed75fe9b529d9c239"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "blob": "89249218eca3b9808e096b697450b12ef6cd93c7",
+      "bytes": 10684,
+      "sha256": "774342f55067be95109f6c203a664a7b3d7a4bf89910d02fac65fc03851090fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "blob": "718edae2aa581aa1e16a7ae18b4d03e051bf4f50",
+      "bytes": 17977,
+      "sha256": "b26d4439ad8f524cda1fad035d2a4aa0ff39453d01bbcde80158656dbeeab5aa"
+    }
+  ],
+  "preserved_guard_mapping": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "old_function": "fn register_learning_checkpoint(",
+      "new_function": "fn reserve_original_learning_profile_in_phase(",
+      "old_marker_count": 6,
+      "new_marker_count": 5,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Only initial raw JSON parse remains in the original wrapper; all remaining guard/effect markers are exact in the real same-service helper."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "old_function": "fn open_registered_learning_checkpoint(",
+      "new_function": "fn open_original_learning_profile_in_phase(",
+      "old_marker_count": 9,
+      "new_marker_count": 8,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Only raw JSON parse remains in old wrapper; all remaining reopen/scope/runtime-lane markers exact in actual helper."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "old_function": "fn seal_learning_checkpoint(",
+      "new_function": "fn seal_learning_checkpoint(",
+      "old_marker_count": 16,
+      "new_marker_count": 16,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Unchanged existing function-order item."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "old_function": "fn learning_store(",
+      "new_function": "fn learning_store(",
+      "old_marker_count": 15,
+      "new_marker_count": 15,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Unchanged existing function-order item."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "old_function": "fn register_host_q24_model_factory(",
+      "new_function": "fn register_host_q24_model_factory(",
+      "old_marker_count": 13,
+      "new_marker_count": 13,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Old public original writer/open/seal route sequence unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "old_function": "fn reserve_q24_model_factory(",
+      "new_function": "fn reserve_original_phase_q24_model_factory(",
+      "old_marker_count": 45,
+      "new_marker_count": 45,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [
+        ".join(\"proposal.journal\")"
+      ],
+      "new_literal_calls": [
+        ".join(\"proposal.journal\")"
+      ],
+      "reason": "Full original long sequence and exact literal_calls declaration moved intact to actual helper; original wrapper separately constrains full None delegate."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "old_function": "fn enroll_generation_publication(",
+      "new_function": "fn enroll_original_publication_body(",
+      "old_marker_count": 16,
+      "new_marker_count": 16,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Full original owner/root/decision/artifact/current/observer/profile/history/selection sequence moved intact."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "old_function": "fn serve_generation_publication(",
+      "new_function": "fn serve_original_publication_channel(",
+      "old_marker_count": 21,
+      "new_marker_count": 20,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Original channel constructor remains and is constrained in old wrapper, followed by full None delegate; remaining original sequence exact in channel helper."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "old_function": "fn require_fresh_window(",
+      "new_function": "fn require_fresh_window(",
+      "old_marker_count": 4,
+      "new_marker_count": 4,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Original not-before, expiry, work-expiry and witness-time checks unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "old_function": "fn register(",
+      "new_function": "fn register(",
+      "old_marker_count": 6,
+      "new_marker_count": 6,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Original Root/PID/one-shot atomic/send/ACK wait/state checks unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "old_function": "fn enable_generation_publication(",
+      "new_function": "fn original_publication_route(",
+      "old_marker_count": 9,
+      "new_marker_count": 5,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Original root/preconditions remain in wrapper; original actual service body is parameterized with the same &self.service/&self.config/... arguments; final self.publication assignment remains in wrapper."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "old_function": "fn enroll_generation_initial(",
+      "new_function": "fn enroll_generation_initial_in_phase(",
+      "old_marker_count": 15,
+      "new_marker_count": 15,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Entire original Root/context/recovery/artifact/target/consumer/profile/fence sequence moved intact."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "old_function": "fn serve_generation_initial(",
+      "new_function": "fn serve_initial_original_channel(",
+      "old_marker_count": 18,
+      "new_marker_count": 17,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Original channel constructor remains in same old wrapper; rest of actual Current/target/retained-use/effect/readback sequence intact in channel helper."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "old_function": "fn read_current(",
+      "new_function": "fn read_current(",
+      "old_marker_count": 3,
+      "new_marker_count": 3,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Unchanged existing function-order item."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "old_function": "fn require_observation(",
+      "new_function": "fn require_observation(",
+      "old_marker_count": 4,
+      "new_marker_count": 4,
+      "preserved_array_or_documented_partition": true,
+      "old_literal_calls": [],
+      "new_literal_calls": [],
+      "reason": "Unchanged existing function-order item."
+    }
+  ],
+  "real_wrapper_connections": [
+    {
+      "path": "authority_host_learning_registration.rs",
+      "calls": [
+        "register_learning_checkpoint: read_root_json(profile_file)? then HostAuthorityService::reserve_original_learning_profile(self, config, registration, owner_pidfd, &profile)",
+        "reserve_original_learning_profile: self.reserve_original_learning_profile_in_phase(config, registration, owner_pidfd, profile, None)",
+        "open_registered_learning_checkpoint: read_root_json(profile_file)? then HostAuthorityService::open_original_learning_profile(self, config, registration, owner_pidfd, profile)",
+        "open_original_learning_profile: self.open_original_learning_profile_in_phase(config, registration, owner_pidfd, profile, None)"
+      ],
+      "finding": "The original parsing remains in its old wrappers; all original owner/scope/store/registered-lane sequences now reside in the actual same-service helper. No new owner or writer reopening is inserted by this metadata adaptation."
+    },
+    {
+      "path": "authority_host_q24_model_registration.rs",
+      "calls": [
+        "reserve_q24_model_factory: self.reserve_original_phase_q24_model_factory(config, registration, owner_pidfd, learning, reservation, None)",
+        "open_q24_model_factory: parse the original reservation then pass the same self/config/registration/owner/learning/reservation to open_original_q24_model_reservation",
+        "open_original_q24_model_reservation: delegate the same values and None to open_original_phase_q24_model_reservation"
+      ],
+      "finding": "The entire original 45-marker reservation sequence, including exact proposal.journal creation, actual file pins, witness state, profile initialization and original expiry pre/post checks, is retained in the shared helper. The original public register method's 13 markers remain exactly unchanged."
+    },
+    {
+      "path": "authority_host_generation_publication_enrollment.rs",
+      "calls": [
+        "enroll_generation_publication delegates config, registration, owner, learning, inputs, None to enroll_original_publication_body"
+      ],
+      "finding": "All 16 old markers move unchanged into the actual original_root/with_learning_profile callback body. The new wrapper itself is separately ordered."
+    },
+    {
+      "path": "authority_host_generation_publication_transport.rs",
+      "calls": [
+        "serve_generation_publication keeps sequence = 1, owner.try_clone, original HostAuthorityPeerChannel::from_stream and its error conversion before serve_original_publication_channel(slot, learning, config, registration, pin, channel, sequence, None)"
+      ],
+      "finding": "The original channel constructor is protected in the wrapper; the remaining 20 original effect/readback markers are protected in the actual channel helper. The four original freshness markers remain in require_fresh_window."
+    },
+    {
+      "path": "authority_host_generation_publication_session.rs",
+      "calls": [
+        "enable_generation_publication retains original Root/preconditions and passes the exact same five original references to original_publication_route",
+        "only after that helper returns does self.publication = Some(runtime) execute"
+      ],
+      "finding": "Original frozen-scope binding, before/after checkpoint read and bootstrap sealing remain ordered inside the actual helper. The original one-shot register/ACK sequence is unchanged. The new assignment marker is more exact than the old Some prefix."
+    },
+    {
+      "path": "authority_host_generation_initial_enrollment.rs",
+      "calls": [
+        "enroll_generation_initial delegates config, registration, owner, deployment, inputs, None to enroll_generation_initial_in_phase"
+      ],
+      "finding": "The complete 15-marker original Root/context/recovery/artifact/target/consumer/profile/selection/fence sequence is protected in the actual helper; no raw whole-file marker is substituted for it."
+    },
+    {
+      "path": "authority_host_generation_initial_transport.rs",
+      "calls": [
+        "serve_generation_initial keeps sequence = 1_u64, owner.try_clone, original HostAuthorityPeerChannel::from_stream and error conversion before serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)"
+      ],
+      "finding": "The original constructor stays protected in the wrapper and the other 17 original Current/target/retained-use/prepare/publish/post-readback markers move unchanged into the helper. read_current and require_observation function orders remain exact."
+    }
+  ],
+  "projection": {
+    "scope": "Seven changed protected rows only. Source text was independently GET and checked against the fixed pins. Pure JavaScript transcription of the actual existing comment/literal/cfg(test)/nested-function masks and brace/function extent; no original checker invocation.",
+    "functions": 28,
+    "function_marker_total": 236,
+    "file_sequences": 5,
+    "raw_required_total": 48,
+    "forbidden_total": 39,
+    "errors": [],
+    "exact_literal_call_handling": {
+      "function": "fn reserve_original_phase_q24_model_factory(",
+      "marker": ".join(\"proposal.journal\")",
+      "position_in_function": 1636,
+      "validation": "The marker satisfies the original single-literal-call grammar. Exactly one raw occurrence has a masked body span equal to its masked call syntax. Only this declared marker uses its literal position; ordinary strings remain masked."
+    },
+    "rows": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "raw_required": 6,
+        "forbidden": 4,
+        "file_sequences": 1,
+        "functions": [
+          {
+            "function": "fn register_learning_checkpoint(",
+            "start": 1733,
+            "end": 2190,
+            "markers": 3,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn open_registered_learning_checkpoint(",
+            "start": 4285,
+            "end": 4744,
+            "markers": 3,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn seal_learning_checkpoint(",
+            "start": 6980,
+            "end": 10333,
+            "markers": 16,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn learning_store(",
+            "start": 13990,
+            "end": 16008,
+            "markers": 15,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn reserve_original_learning_profile(",
+            "start": 2411,
+            "end": 2832,
+            "markers": 2,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn reserve_original_learning_profile_in_phase(",
+            "start": 2850,
+            "end": 4267,
+            "markers": 5,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn open_original_learning_profile(",
+            "start": 4762,
+            "end": 5175,
+            "markers": 2,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn open_original_learning_profile_in_phase(",
+            "start": 5193,
+            "end": 6962,
+            "markers": 8,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "raw_required": 5,
+        "forbidden": 4,
+        "file_sequences": 4,
+        "functions": [
+          {
+            "function": "fn register_host_q24_model_factory(",
+            "start": 734,
+            "end": 1604,
+            "markers": 13,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn reserve_q24_model_factory(",
+            "start": 1734,
+            "end": 2227,
+            "markers": 2,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn reserve_original_phase_q24_model_factory(",
+            "start": 2245,
+            "end": 6233,
+            "markers": 45,
+            "ok": true,
+            "literal_positions": {
+              ".join(\"proposal.journal\")": 1636
+            }
+          },
+          {
+            "function": "fn open_q24_model_factory(",
+            "start": 6251,
+            "end": 6825,
+            "markers": 3,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn open_original_q24_model_reservation(",
+            "start": 6843,
+            "end": 7334,
+            "markers": 2,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn open_original_phase_q24_model_reservation(",
+            "start": 7352,
+            "end": 10596,
+            "markers": 6,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "raw_required": 8,
+        "forbidden": 4,
+        "file_sequences": 0,
+        "functions": [
+          {
+            "function": "fn enroll_generation_publication(",
+            "start": 3681,
+            "end": 4141,
+            "markers": 2,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn enroll_original_publication_body(",
+            "start": 4159,
+            "end": 24203,
+            "markers": 16,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "raw_required": 6,
+        "forbidden": 6,
+        "file_sequences": 0,
+        "functions": [
+          {
+            "function": "fn serve_generation_publication(",
+            "start": 1296,
+            "end": 1992,
+            "markers": 6,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn require_fresh_window(",
+            "start": 17407,
+            "end": 17876,
+            "markers": 4,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn serve_original_publication_channel(",
+            "start": 3145,
+            "end": 17402,
+            "markers": 20,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+        "raw_required": 8,
+        "forbidden": 5,
+        "file_sequences": 0,
+        "functions": [
+          {
+            "function": "fn register(",
+            "start": 2583,
+            "end": 4088,
+            "markers": 6,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn enable_generation_publication(",
+            "start": 4373,
+            "end": 5226,
+            "markers": 6,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn original_publication_route(",
+            "start": 5242,
+            "end": 9541,
+            "markers": 5,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "raw_required": 5,
+        "forbidden": 8,
+        "file_sequences": 0,
+        "functions": [
+          {
+            "function": "fn enroll_generation_initial(",
+            "start": 287,
+            "end": 740,
+            "markers": 2,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn enroll_generation_initial_in_phase(",
+            "start": 758,
+            "end": 10680,
+            "markers": 15,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "raw_required": 10,
+        "forbidden": 8,
+        "file_sequences": 0,
+        "functions": [
+          {
+            "function": "fn serve_generation_initial(",
+            "start": 1355,
+            "end": 1955,
+            "markers": 5,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn read_current(",
+            "start": 15608,
+            "end": 16029,
+            "markers": 3,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn require_observation(",
+            "start": 16032,
+            "end": 17148,
+            "markers": 4,
+            "ok": true,
+            "literal_positions": {}
+          },
+          {
+            "function": "fn serve_initial_original_channel(",
+            "start": 3006,
+            "end": 15603,
+            "markers": 17,
+            "ok": true,
+            "literal_positions": {}
+          }
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "conclusions": [
+    "The packet adapts guard locations to real body extraction. It retains the old required actions and their order through explicit old-wrapper-to-real-helper links rather than deleting the guards or merely adding IDs.",
+    "Publication service/config substitutions are narrowly justified by actual same-instance parameter passing and remain protected in the old entry plus helper.",
+    "This packet does not, by itself, protect every newly introduced phase-specific context method or prove all new production callers. The final integrated phase inventory and its independent new protected rows remain required.",
+    "No unchanged wrapper, original checker, ignored path, native roster, timeout or retry policy is modified by these metadata-only operations."
+  ],
+  "acceptance": {
+    "ordinary_business_loops": 0,
+    "independent_C": 0,
+    "real_daemon_and_Root_cold_restart": 0,
+    "components_executed_by_reviewer": 0
+  }
+}

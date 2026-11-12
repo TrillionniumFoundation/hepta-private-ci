@@ -83,6 +83,50 @@ impl AgentdUnixFinalUseGrantProvider {
         Self::protected_stream(stream, root_pid, root_pidfd, timeout, lifetime, 0)
     }
 
+    /// Bind the original UID-0 issuer lane to the daemon's already fixed end.
+    /// Remaining lifetime only bounds admission; it never starts a new session.
+    pub(crate) fn from_root_stream_until(
+        stream: UnixStream,
+        root_pid: u32,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<Self, AgentdFinalUseIssuerError> {
+        Self::protected_stream_until(stream, root_pid, root_pidfd, timeout, end, 0)
+    }
+
+    fn protected_stream_until(
+        stream: UnixStream,
+        root_pid: u32,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+        uid: u32,
+    ) -> Result<Self, AgentdFinalUseIssuerError> {
+        let lifetime = remaining(end)?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream.try_clone().map_err(io_error)?,
+            HostAuthorityPeerPolicy {
+                peer: HostIssuerPeer { uid, pid: root_pid },
+                timeout,
+                lifetime,
+                request_bound: MAX_RESPONSE_BYTES,
+                response_bound: MAX_RESPONSE_BYTES,
+            },
+            root_pidfd,
+            end,
+        )
+        .map_err(|_| AgentdFinalUseIssuerError::PeerDenied)?;
+        let mut provider = Self::from_stream(
+            stream,
+            AgentdFinalUseIssuerPeer { uid, pid: root_pid },
+            timeout,
+        )?;
+        provider.protected_root = Some(ProtectedRootIssuer { channel, end });
+        remaining(end)?;
+        Ok(provider)
+    }
+
     fn protected_stream(
         stream: UnixStream,
         root_pid: u32,

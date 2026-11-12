@@ -269,3 +269,6 @@ fn refused(message: impl Into<String>) -> AgentdError {
 #[cfg(test)]
 #[path = "root_production_learning_inputs_tests.rs"]
 mod tests;
+
+#[path = "root_production_same_actor_scoped_inputs.rs"]
+pub(crate) mod same_actor_phase;

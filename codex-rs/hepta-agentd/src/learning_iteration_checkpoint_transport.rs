@@ -10,6 +10,11 @@ use std::os::unix::net::UnixStream;
 use std::sync::Mutex;
 use std::time::Duration;
 
+use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
+
+#[path = "learning_iteration_checkpoint_same_actor.rs"]
+mod same_actor;
+
 const OPERATION: &str = "runtime.learning.checkpoint.v1";
 const SCOPED_OPERATION: &str = "runtime.learning.checkpoint.v2";
 const FRAME_BOUND: usize = 16 * 1024;
@@ -65,6 +70,7 @@ pub struct AgentdLearningCheckpointClientV1 {
     channel: Mutex<Option<Channel>>,
     pub(super) initial: LearningIterationSnapshotV1,
     pub(super) scope: Option<FrozenLearningScopeV2>,
+    phase: Option<RequiredSameActorPhaseChannel>,
 }
 
 impl AgentdLearningCheckpointClientV1 {
@@ -132,6 +138,7 @@ impl AgentdLearningCheckpointClientV1 {
             })),
             initial,
             scope,
+            phase: None,
         })
     }
 
@@ -150,10 +157,12 @@ impl AgentdLearningCheckpointClientV1 {
         &self,
         request: &LearningIterationRequestV1,
     ) -> Result<Option<LearningIterationSnapshotV1>, Error> {
+        let mut phase_closing = self.original_phase_failure_scope();
+        self.require_original_phase(/*mutation*/ false)?;
         if request != &self.initial.request {
             return Err(Error::WrongScope);
         }
-        self.exchange(Command::Restore, |reply| match reply {
+        let result = self.exchange(Command::Restore, |reply| match reply {
             Reply::Restored { snapshot } => snapshot
                 .map(|encoded| {
                     let snapshot = decode_snapshot(&encoded)?;
@@ -174,7 +183,14 @@ impl AgentdLearningCheckpointClientV1 {
                 .transpose(),
             Reply::Committed { .. } | Reply::Conflict => Err(Error::InvalidRecord),
         })
-        .await
+        .await;
+        if result.is_ok() {
+            self.require_original_phase(/*mutation*/ false)?;
+            if let Some(closing) = &mut phase_closing {
+                closing.disarm();
+            }
+        }
+        result
     }
 
     pub async fn checkpoint(
@@ -182,6 +198,8 @@ impl AgentdLearningCheckpointClientV1 {
         expected_head: Digest32,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<Digest32, Error> {
+        let mut phase_closing = self.original_phase_failure_scope();
+        self.require_original_phase(/*mutation*/ true)?;
         if snapshot.request != self.initial.request || snapshot.owners != self.initial.owners {
             return Err(Error::WrongScope);
         }
@@ -202,14 +220,21 @@ impl AgentdLearningCheckpointClientV1 {
             expected_head: expected_head.to_string(),
             snapshot: STANDARD_NO_PAD.encode(codec::encode(snapshot)?),
         };
-        self.exchange(command, |reply| match reply {
+        let result = self.exchange(command, |reply| match reply {
             Reply::Committed { head } if head == snapshot.head_digest.to_string() => {
                 Ok(snapshot.head_digest)
             }
             Reply::Conflict => Err(Error::Conflict),
             Reply::Committed { .. } | Reply::Restored { .. } => Err(Error::InvalidRecord),
         })
-        .await
+        .await;
+        if result.is_ok() {
+            self.require_original_phase(/*mutation*/ true)?;
+            if let Some(closing) = &mut phase_closing {
+                closing.disarm();
+            }
+        }
+        result
     }
 
     async fn exchange<T>(
@@ -225,6 +250,8 @@ impl AgentdLearningCheckpointClientV1 {
                 Error::Store(AuthorityTrustError::Unavailable)
             }
         };
+        let mut phase_closing = self.original_phase_failure_scope();
+        self.require_original_phase(mutation)?;
         // Framing alone cannot authenticate the response binding. Take the
         // whole transport and restore only after complete semantic validation.
         let mut channel = self
@@ -260,7 +287,21 @@ impl AgentdLearningCheckpointClientV1 {
         }
         let result = validate(response.result);
         if result.is_ok() || matches!(result, Err(Error::Conflict)) {
+            // Never make a phase lane available between a Conflict and the
+            // failure guard closing the other original lanes.
+            if self.phase.is_some() && result.is_err() {
+                return result;
+            }
+            self.require_original_phase(mutation)?;
             *self.channel.try_lock().map_err(|_| unavailable())? = Some(channel);
+            self.require_original_phase(mutation)?;
+            // A Conflict keeps its original error value. Only the old None
+            // profile may reuse that lane; this phase closes on every error.
+            if result.is_ok() {
+                if let Some(closing) = &mut phase_closing {
+                    closing.disarm();
+                }
+            }
             result
         } else {
             Err(unavailable())

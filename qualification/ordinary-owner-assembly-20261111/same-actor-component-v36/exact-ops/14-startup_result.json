@@ -1,0 +1,45 @@
+{
+  "schema": "original-same-actor-phase-startup-result-closure-v1",
+  "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "depends_on": "37b31af93d94a80b73116b33bd3077d1c94b4083",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "preimage": {
+        "blob": "c46ecdb069d8e32d0742ca3876773b97346cdeec",
+        "bytes": 10458,
+        "sha256": "56189385e01c47705351d0a84bac71847e37a87a51e1885311d59d329fc18101"
+      },
+      "postimage": {
+        "blob": "1fa1a5ec897476b111b78ca353d3f70f0a44d2e0",
+        "bytes": 10898,
+        "sha256": "a008bb7a6b957e3308f82901fcb4b658477dfa1ad2b43708c5b72ba869711ef7"
+      },
+      "operations": [
+        {
+          "old_text": "            launch.run(config, arg0_paths).await\n",
+          "new_text": "            // Generic bounded host shutdown can abort its async wrapper while\n            // the original blocking owner is still joining real work. This\n            // phase has no final completion/owner-join acknowledgement, so\n            // generic Ok cannot certify a completed phase or physical join.\n            launch.run(config, arg0_paths).await?;\n            Err(refused(\n                \"original phase completion and physical owner join are not acknowledged\",\n            ))\n"
+        }
+      ]
+    }
+  ],
+  "scope": "One new phase-only return mapping. No changes to generic runtime, native budget, guards, work ownership, worker future or business input.",
+  "finding": {
+    "original_runtime_tasks": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+    "original_runtime": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+    "actual_bootstrap": "c2171f53fb293ff134723cfbc91cbc0d8030475b",
+    "cause": "Generic bounded shutdown may abort a nonretiring async wrapper and return Ok while its original spawn_blocking closure continues real owner cleanup. Current phase protocol has no successful final phase/owner-join acknowledgement."
+  },
+  "semantics": {
+    "launch_error": "Returned unchanged by ?. No result retry or reentry.",
+    "launch_ok": "Refused as GenerationFenced: phase completion and physical owner join not acknowledged.",
+    "custody": "Existing outer same-Gate guard closes on return; actual blocking closure retains and drives original cleanup. This narrow return mapping neither performs nor certifies physical join.",
+    "old_default": "Unchanged; only the explicit new phase startup is changed."
+  },
+  "execution": {
+    "native": 0,
+    "checker": 0,
+    "refs_changed": 0,
+    "business_acceptance": 0
+  }
+}

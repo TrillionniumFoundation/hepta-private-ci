@@ -210,6 +210,107 @@ impl RegisteredWriter {
             .map_err(unavailable)
     }
 
+    pub(super) fn exchange_consumer_in_same_actor_phase(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostConsumerFrontier,
+        bytes: &[u8],
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                let _admission = phase.enter_original_lane()?;
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                phase.require_open()?;
+                let response = backend.exchange(bytes, &before).map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if after != before {
+                    return Err(io::Error::other(
+                        "issuer head changed during consumer exchange",
+                    ));
+                }
+                let now = clock.now_unix_ms().map_err(io::Error::other)?;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                phase.require_open()?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_checkpoint_in_same_actor_phase(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostCognitiveCheckpoint,
+        bytes: &[u8],
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                let _admission = phase.enter_original_lane()?;
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                phase.require_open()?;
+                let response = backend.exchange(bytes).map_err(io::Error::other)?;
+                let head = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+                phase.require_open()?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_same_actor_learning_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::LearningIterationCheckpointOwnerV1,
+        bytes: &[u8],
+        next_request_id: &mut u64,
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                let _admission = phase.enter_original_lane()?;
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &before, now)?;
+                phase.require_open()?;
+                let response = backend
+                    .exchange_learning_checkpoint(bytes, next_request_id)
+                    .map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if before != after {
+                    return Err(io::Error::other(
+                        "issuer head changed during learning checkpoint",
+                    ));
+                }
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                phase.require_open()?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
     pub(super) fn open(
         issuer: &DeploymentFinalUseIssuer,
         identity: &AgentdIdentity,

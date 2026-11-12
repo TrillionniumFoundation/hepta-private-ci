@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "frontier-diagnostic-masked-order-metadata-only-correction",
+  "path": "CALLERS.toml",
+  "preimage": {
+    "blob": "13fa6f49be454a46705e8285158cc8bde8262b07",
+    "bytes": 709563,
+    "sha256": "7b0b6db1ee28a8d1e13e9117054409a6fba48eadbed2ae219d037b016df977de"
+  },
+  "postimage": {
+    "blob": "bca9438d9056d81ba4b7d249ff6bd7f6d70a3071",
+    "bytes": 710141,
+    "sha256": "2b3a9620af48414fec0d3e5fd83b4af535eaa88e671051fbad84ebaf17e3421b"
+  },
+  "source": {
+    "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+    "blob": "0451ca5b309b701b186ca749241e9c5f1191daa5"
+  },
+  "checker": {
+    "blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "modified": false,
+    "executed": false
+  },
+  "operation_order": "Apply the two code-sequence replacements first, then append their complete raw expressions to required. Reverse in the exact opposite order. This preserves unique literal matching.",
+  "operations": [
+    {
+      "path": "CALLERS.toml",
+      "old_text": "\"let mut channel = slot\\n            .take()\\n            .ok_or(AuthorityTrustError::Unavailable)\\n            .inspect_err(|_| {\\n                crate::final_use::diagnostic::record(\\n                    \\\"frontier.channel-closed\\\",\\n                    crate::final_use::FinalUseError::Unavailable,\\n                    None,\\n                );\\n            })?;\"",
+      "new_text": "\"let mut channel = slot\\n            .take()\\n            .ok_or(AuthorityTrustError::Unavailable)\\n            .inspect_err(|_| {\",\"crate::final_use::FinalUseError::Unavailable,\\n                    None,\",\"\\n            })?;\",\"let result = (|| {\",\"let id = channel.next_request_id;\"",
+      "reason": "Actual masked fn exchange order: original slot take and Unavailable propagation through inspect_err, before original result closure and request ID."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old_text": "\"channel.next_request_id = id\\n                .checked_add(1)\\n                .ok_or(AuthorityTrustError::Unavailable)\\n                .inspect_err(|_| {\\n                    crate::final_use::diagnostic::record(\\n                        \\\"frontier.request-id-overflow\\\",\\n                        crate::final_use::FinalUseError::Unavailable,\\n                        None,\\n                    );\\n                })?;\"",
+      "new_text": "\"channel.next_request_id = id\\n                .checked_add(1)\\n                .ok_or(AuthorityTrustError::Unavailable)\\n                .inspect_err(|_| {\",\"crate::final_use::FinalUseError::Unavailable,\\n                        None,\",\"\\n                })?;\",\"let request = match update {\"",
+      "reason": "Actual masked fn exchange order: original checked_add overflow refusal and question-mark propagation before original request construction."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old_text": "required = [\"const FRAME_LIMIT: usize = 16 * 1024;\",\"bounded_text(&format!(\\\"/proc/{}/stat\\\", peer.pid), 8192)?\",\"bounded_text(\\\"/proc/sys/kernel/random/boot_id\\\", 128)?.trim() != peer.boot_id\"]",
+      "new_text": "required = [\"const FRAME_LIMIT: usize = 16 * 1024;\",\"bounded_text(&format!(\\\"/proc/{}/stat\\\", peer.pid), 8192)?\",\"bounded_text(\\\"/proc/sys/kernel/random/boot_id\\\", 128)?.trim() != peer.boot_id\",\"let mut channel = slot\\n            .take()\\n            .ok_or(AuthorityTrustError::Unavailable)\\n            .inspect_err(|_| {\\n                crate::final_use::diagnostic::record(\\n                    \\\"frontier.channel-closed\\\",\\n                    crate::final_use::FinalUseError::Unavailable,\\n                    None,\\n                );\\n            })?;\",\"channel.next_request_id = id\\n                .checked_add(1)\\n                .ok_or(AuthorityTrustError::Unavailable)\\n                .inspect_err(|_| {\\n                    crate::final_use::diagnostic::record(\\n                        \\\"frontier.request-id-overflow\\\",\\n                        crate::final_use::FinalUseError::Unavailable,\\n                        None,\\n                    );\\n                })?;\"]",
+      "reason": "Retain both complete actual diagnostic rejection expressions as raw required source text; every previous raw requirement remains."
+    }
+  ],
+  "projection": {
+    "blob": "96fef3fde4bbee45e9ece080c6f278a59220feae",
+    "bytes": 5634,
+    "sha256": "48d6b8020f836433af87e8173d4c6e70dd9083926c4ee6385bf76ccfc71e4299"
+  },
+  "projection_js": {
+    "blob": "61315f918e0130f9b165f1265941635acc9a7493",
+    "bytes": 5591,
+    "sha256": "de335268b54c5cc1064155106524c8277b9a04c39e29e4516fae3febf58b8c70"
+  },
+  "scope": "Metadata only: two actual error/overflow expressions remain fully required in raw source and are represented by literal-free guards plus original question-mark propagation and following statements within the exact actual fn exchange. All boundary/caller/required-boundary rows and all other protected tables remain byte-identical. No Rust, checker, QA, tests, native, ref or source mutation."
+}

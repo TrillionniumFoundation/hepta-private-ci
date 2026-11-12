@@ -115,6 +115,86 @@ impl RootObservationStream {
             end: Instant::now() + lifetime,
         })
     }
+
+    /// Bind this purpose stream to the daemon's original process-local end.
+    /// Remaining lifetime only validates the original bounds; it never renews.
+    pub(crate) fn from_stream_until(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        Self::from_stream_for_uid_until(stream, peer, root_pidfd, timeout, end, 0)
+    }
+
+    fn from_stream_for_uid_until(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+        uid: u32,
+    ) -> Result<Self, AgentdRootAuthorityError> {
+        let lifetime = end
+            .checked_duration_since(Instant::now())
+            .ok_or(AgentdRootAuthorityError::Refused)?;
+        if peer.pid == 0
+            || peer.pid > i32::MAX as u32
+            || peer.process_start_ticks == 0
+            || timeout.is_zero()
+            || timeout > Duration::from_millis(500)
+            || lifetime.is_zero()
+            || lifetime > Duration::from_secs(300)
+        {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let number = root_pidfd.as_raw_fd();
+        if std::fs::read_link(format!("/proc/self/fd/{number}")).map_err(unavailable)?
+            != Path::new("anon_inode:[pidfd]")
+            || bounded_text(&format!("/proc/self/fdinfo/{number}"), 4096)?
+                .lines()
+                .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
+                != Some(peer.pid)
+            || bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim() != peer.boot_id
+        {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
+        let start = stat
+            .rsplit_once(") ")
+            .and_then(|(_, fields)| fields.split_whitespace().nth(19))
+            .and_then(|value| value.parse::<u64>().ok());
+        if start != Some(peer.process_start_ticks) {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        check_lifetime(&root_pidfd)?;
+        stream.set_nonblocking(true).map_err(unavailable)?;
+        let stream = tokio::net::UnixStream::from_std(stream).map_err(unavailable)?;
+        let actual = stream.peer_cred().map_err(unavailable)?;
+        if actual.uid() != uid
+            || actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)
+        {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        // SAFETY: AsyncFd exclusively owns this OwnedFd. Its number and open
+        // file description remain unchanged until AsyncFd drops it; no raw fd
+        // ownership or mutable access escapes this client.
+        let root =
+            unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        check_lifetime(root.get_ref())?;
+        if Instant::now() >= end {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        Ok(Self {
+            exchange: tokio::sync::Semaphore::new(1),
+            stream: Mutex::new(Some(stream)),
+            root: Arc::new(root),
+            timeout,
+            end,
+        })
+    }
 }
 
 impl RootObservationStream {

@@ -35,84 +35,120 @@ pub fn register_host_q24_model_factory(
         owner_pidfd,
         learning_profile_file,
     )?;
-    service.with_learning_profile(
+    HostAuthorityService::reserve_q24_model_factory(
+        &service,
         &config,
         &registration,
         owner_pidfd,
         &learning.profile,
-        |initial, proof| {
-            let scope = learning.profile.require_cell_scope(&initial)?;
-            let now = service
-                .clock
-                .refresh_projection()
-                .map_err(io::Error::other)?
-                .observed_unix_ms
-                / 1000;
-            if now >= initial.request.envelope.expiry_unix_seconds {
-                return Err(io::Error::other(
-                    "expired work cannot reserve a new Model factory",
-                ));
-            }
-            let domain = witness_domain(&config, &reservation)?;
-            let directory = config.state_dir.join(DIRECTORY);
-            std::fs::DirBuilder::new().mode(0o700).create(&directory)?;
-            File::open(&config.state_dir)?.sync_all()?;
-            let journal = new_file(&directory.join("proposal.journal"))?;
-            let witness = new_file(&witness_path(&reservation))?;
-            let profile = HostAuthorityQ24ModelFactoryProfileV1::new(
-                &service.identity,
-                &proof,
-                &initial,
-                &scope,
-                FilePin::capture(&journal)?,
-                FilePin::capture(&witness)?,
-                domain,
-                policy_digest(&reservation)?,
-            )?;
-            let enrolled = FileAnchorWitnessStore::open(
-                witness,
-                JournalScope {
-                    scope_digest: profile.binding().parse().map_err(io::Error::other)?,
-                    objective_digest: initial.request.envelope.objective_digest,
-                },
-                Generation::new(service.identity.spawn_generation).map_err(io::Error::other)?,
-                WITNESS_RECORDS,
-            )
-            .map_err(io::Error::other)?;
-            if enrolled.current().map_err(io::Error::other)?.is_some() {
-                return Err(io::Error::other("new factory witness already has history"));
-            }
-            drop(enrolled);
-            HostAuthorityFrontierStore::initialize(
-                RootAuthorityDirectory::open(&directory).map_err(io::Error::other)?,
-                OWNER.into(),
-                FactoryRecord {
-                    profile: profile.clone(),
-                    epoch: 1,
-                    material: None,
-                },
-            )
-            .map_err(io::Error::other)?;
-            config.required_bind.verify()?;
-            witness_domain(&config, &reservation)?;
-            if service
-                .clock
-                .refresh_projection()
-                .map_err(io::Error::other)?
-                .observed_unix_ms
-                / 1000
-                >= initial.request.envelope.expiry_unix_seconds
-            {
-                return Err(io::Error::other(
-                    "factory reservation crossed its original work deadline",
-                ));
-            }
-            Ok(profile)
-        },
+        &reservation,
     )
 }
 
 impl HostAuthorityService {
+    /// Reserve on this retained original service; never reopen or repair an owner.
+    pub(crate) fn reserve_q24_model_factory(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        learning: &HostAuthorityLearningProfileV1,
+        reservation: &HostAuthorityQ24ModelFactoryReservationV1,
+    ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {
+        self.reserve_original_phase_q24_model_factory(
+            config, registration, owner_pidfd, learning, reservation, None,
+        )
+    }
+
+    pub(crate) fn reserve_original_phase_q24_model_factory(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        learning: &HostAuthorityLearningProfileV1,
+        reservation: &HostAuthorityQ24ModelFactoryReservationV1,
+        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,
+    ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {
+        self.with_learning_profile(
+            config,
+            registration,
+            owner_pidfd,
+            learning,
+            |initial, proof| {
+                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
+                let scope = learning.require_cell_scope(&initial)?;
+                let now = self
+                    .clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms
+                    / 1000;
+                if now >= initial.request.envelope.expiry_unix_seconds {
+                    return Err(io::Error::other(
+                        "expired work cannot reserve a new Model factory",
+                    ));
+                }
+                let domain = witness_domain(config, reservation)?;
+                let directory = config.state_dir.join(DIRECTORY);
+                if let Some(phase) = phase { phase.require_claimed()?; }
+                std::fs::DirBuilder::new().mode(0o700).create(&directory)?;
+                File::open(&config.state_dir)?.sync_all()?;
+                let journal = new_file(&directory.join("proposal.journal"))?;
+                let witness = new_file(&witness_path(reservation))?;
+                let profile = HostAuthorityQ24ModelFactoryProfileV1::new(
+                    &self.identity,
+                    &proof,
+                    &initial,
+                    &scope,
+                    FilePin::capture(&journal)?,
+                    FilePin::capture(&witness)?,
+                    domain,
+                    policy_digest(reservation)?,
+                )?;
+                let enrolled = FileAnchorWitnessStore::open(
+                    witness,
+                    JournalScope {
+                        scope_digest: profile.binding().parse().map_err(io::Error::other)?,
+                        objective_digest: initial.request.envelope.objective_digest,
+                    },
+                    Generation::new(self.identity.spawn_generation).map_err(io::Error::other)?,
+                    WITNESS_RECORDS,
+                )
+                .map_err(io::Error::other)?;
+                if enrolled.current().map_err(io::Error::other)?.is_some() {
+                    return Err(io::Error::other("new factory witness already has history"));
+                }
+                drop(enrolled);
+                HostAuthorityFrontierStore::initialize(
+                    RootAuthorityDirectory::open(&directory).map_err(io::Error::other)?,
+                    OWNER.into(),
+                    FactoryRecord {
+                        profile: profile.clone(),
+                        epoch: 1,
+                        material: None,
+                    },
+                )
+                .map_err(io::Error::other)?;
+                config.required_bind.verify()?;
+                witness_domain(config, reservation)?;
+                if self
+                    .clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms
+                    / 1000
+                    >= initial.request.envelope.expiry_unix_seconds
+                {
+                    return Err(io::Error::other(
+                        "factory reservation crossed its original work deadline",
+                    ));
+                }
+                if let Some(phase) = phase { phase.require_claimed()?; }
+                Ok(profile)
+            },
+        )
+    }
+
     pub(crate) fn open_q24_model_factory(
         &self,
         config: &HostAuthorityServiceConfig,
@@ -123,12 +159,40 @@ impl HostAuthorityService {
     ) -> io::Result<RegisteredQ24ModelFactory> {
         let reservation: HostAuthorityQ24ModelFactoryReservationV1 =
             read_root_json(reservation_file)?;
+        HostAuthorityService::open_original_q24_model_reservation(
+            self, config, registration, owner_pidfd, learning, reservation,
+        )
+    }
+
+    pub(crate) fn open_original_q24_model_reservation(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        learning: &HostAuthorityLearningProfileV1,
+        reservation: HostAuthorityQ24ModelFactoryReservationV1,
+    ) -> io::Result<RegisteredQ24ModelFactory> {
+        self.open_original_phase_q24_model_reservation(
+            config, registration, owner_pidfd, learning, reservation, None,
+        )
+    }
+
+    pub(crate) fn open_original_phase_q24_model_reservation(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        learning: &HostAuthorityLearningProfileV1,
+        reservation: HostAuthorityQ24ModelFactoryReservationV1,
+        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,
+    ) -> io::Result<RegisteredQ24ModelFactory> {
         self.with_learning_profile(
             config,
             registration,
             owner_pidfd,
             learning,
             |initial, proof| {
+                let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
                 let scope = learning.require_cell_scope(&initial)?;
                 let domain = witness_domain(config, &reservation)?;
                 let directory = config.state_dir.join(DIRECTORY);
@@ -142,6 +206,7 @@ impl HostAuthorityService {
                 retained.validate()?;
                 let journal_path = directory.join("proposal.journal");
                 let witness_path = witness_path(&reservation);
+                if let Some(phase) = phase { phase.require_claimed()?; }
                 let journal = open_file(&journal_path)?;
                 let witness = open_file(&witness_path)?;
                 let profile = HostAuthorityQ24ModelFactoryProfileV1::new(
@@ -177,6 +242,7 @@ impl HostAuthorityService {
                     socket_path,
                 };
                 factory.current(config)?;
+                if let Some(phase) = phase { phase.require_claimed()?; }
                 Ok(factory)
             },
         )

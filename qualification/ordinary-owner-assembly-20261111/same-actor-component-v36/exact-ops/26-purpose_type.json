@@ -1,0 +1,27 @@
+{
+  "schema": "original-same-actor-purpose-connectors-type-annotation-v1",
+  "base_manifest": "311e619cd5c9f1364b5e7448206143fd3f4cebe5",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+      "pre": {
+        "blob": "1e3cbd110b99bd436353d0d22e270364013c2bce",
+        "bytes": 12992,
+        "sha256": "baf33771c7eb30bc367c56a4fbd8863e2e4bb7ed53d6c60e7271eef30c9fa28e"
+      },
+      "post": {
+        "blob": "0de49d62c3ad19daf5b784f644e40a66af7187b2",
+        "bytes": 13010,
+        "sha256": "6eff847acbf02bc6749f717046c55a97e69a6775d45fb63852d203aad2f604c1"
+      },
+      "operations": [
+        {
+          "old_text": "            Ok(OriginalRootGenerationInitialV1 { client })",
+          "new_text": "            Ok::<_, AgentdError>(OriginalRootGenerationInitialV1 { client })"
+        }
+      ]
+    }
+  ],
+  "scope": "Only the original Initial spawn_blocking closure Ok error type is made explicit. No control flow, checks, error mappings, timing, or other source changes.",
+  "execution": "No compiler, checker, native, h, PTY, or ref operation."
+}

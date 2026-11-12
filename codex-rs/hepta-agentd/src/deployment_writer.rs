@@ -233,6 +233,7 @@ impl DeploymentFinalUseIssuer {
             )?),
         };
         let bytes = claims.signing_bytes()?;
+        self.require_new_same_actor_phase_effect()?;
         self.store
             .compare_and_set(STATE_OWNER, state, &reserved)
             .map_err(io::Error::other)?;

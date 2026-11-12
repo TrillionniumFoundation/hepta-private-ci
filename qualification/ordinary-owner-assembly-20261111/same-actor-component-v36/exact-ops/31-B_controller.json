@@ -1,0 +1,105 @@
+{
+  "schema": "same-actor-original-training-independent-evaluation-controller-v1",
+  "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "status": "Actual host event/command and controller composition. Requires the separately frozen phase-only checkpoint/wait/install Work/Stage adapters before integration. This is not a completed business execution or independent-C contract.",
+  "file_count": 2,
+  "operation_count": 5,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "preimage": {
+        "blob": "3b50191a5102765cbb48aa449345d481f0e6731e",
+        "bytes": 9518,
+        "sha256": "37fef28ce0d1e16dc5bc74b09b3a242b53742d0b6d9a12caf90f6a9146c23fd9"
+      },
+      "postimage": {
+        "file": "same_actor_q24_phase.rs",
+        "blob": "0977e3c79b83aff01688436af99b533bda8c5a46",
+        "bytes": 10184,
+        "sha256": "93bb45c0538239c153ddcf6d567b181d7e3e61f174dabce006a8b2996d86b4c7"
+      },
+      "operations": [
+        {
+          "old_text": "    Learning(Box<OriginalSameActorLearningInputsV1>),\n    Artifact(OriginalSameActorArtifactInputsV1),",
+          "new_text": "    Learning(Box<OriginalSameActorLearningInputsV1>),\n    /// Independent B's actual Trainer/holdout/runner/evidence inputs, supplied\n    /// only after OriginalTraining from this same aggregate and scope.\n    Evaluation(Box<crate::OriginalCellQ24EvaluationInputsV1>),\n    Artifact(OriginalSameActorArtifactInputsV1),"
+        },
+        {
+          "old_text": "    OriginalDecision(Box<LearningIterationSnapshotV1>),",
+          "new_text": "    /// Read-only original Training data and the same actual Trainer readback.\n    /// B still must perform its own experiment and supply authenticated inputs;\n    /// none of these observations is an Evaluation receipt or success result.\n    OriginalTraining {\n        snapshot: Box<LearningIterationSnapshotV1>,\n        material: Box<crate::OriginalCellQ24TrainingMaterialV1>,\n        readback: Box<crate::OriginalCellQ24TrainingReadbackV1>,\n    },\n    OriginalDecision(Box<LearningIterationSnapshotV1>),"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "preimage": {
+        "blob": "1da6f999280238c494dd3aedb623c4d733cbae5e",
+        "bytes": 9622,
+        "sha256": "bdb1863299d4cb61f1870472d402a126c4994c06199049a802d05688137c24af"
+      },
+      "postimage": {
+        "file": "same_actor_q24_phase_publish.rs",
+        "blob": "56674d48522128dfb447a3fe79120cbd5cd6fce1",
+        "bytes": 12719,
+        "sha256": "fe385076d409dc1f4e7d1083bd7fb00d80ad4b6ecc8f616c243557b0e36a0f6f"
+      },
+      "operations": [
+        {
+          "old_text": "use std::time::Duration;\n",
+          "new_text": "use std::time::Duration;\n\nuse codex_hepta_learning_artifacts::LearningIterationSnapshotV1;\n"
+        },
+        {
+          "old_text": "enum OriginalArtifact {\n    Published(OriginalCellQ24PublishedArtifactForRootV1),\n    Retained(OriginalCellQ24RetainedArtifactForRootV1),\n}\n",
+          "new_text": "enum OriginalArtifact {\n    Published(OriginalCellQ24PublishedArtifactForRootV1),\n    Retained(OriginalCellQ24RetainedArtifactForRootV1),\n}\n\nenum OriginalLearningProgress {\n    Decision(LearningIterationSnapshotV1),\n    Training(LearningIterationSnapshotV1),\n}\n"
+        },
+        {
+          "old_text": "        let snapshot = OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff)\n            .await.map_err(phase_owner_error)?;\n",
+          "new_text": "        // NoUpdate reaches the original decision without waiting for B. A\n        // candidate reaches this read-only notice only after the real Training\n        // checkpoint. Dropping either losing read does not submit more work.\n        let progress = tokio::select! {\n            decision = OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff) =>\n                OriginalLearningProgress::Decision(decision.map_err(phase_owner_error)?),\n            training = OriginalSameActorLearningWork::original_training_snapshot(work.as_ref()) =>\n                OriginalLearningProgress::Training(training.map_err(phase_owner_error)?),\n        };\n        let snapshot = match progress {\n            OriginalLearningProgress::Decision(snapshot) => snapshot,\n            OriginalLearningProgress::Training(training) => {\n                self.require_original_execution()?;\n                OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(\n                    owners.as_ref(), &work,\n                ).map_err(phase_owner_error)?;\n                let material = OriginalCellQ24LearningStageOwnersV1::read_original_training_material(\n                    owners.as_ref(), &training,\n                ).await.map_err(phase_owner_error)?;\n                self.require_original_execution()?;\n                let readback = OriginalCellQ24LearningStageOwnersV1::original_training_readback(\n                    owners.as_ref(), training.clone(),\n                ).await.map_err(phase_owner_error)?;\n                self.require_original_execution()?;\n                host.notify_original(\n                    &self.context,\n                    OriginalSameActorPhaseEventV1::OriginalTraining {\n                        snapshot: Box::new(training.clone()),\n                        material: Box::new(material),\n                        readback: Box::new(readback),\n                    },\n                )?;\n                let OriginalSameActorPhaseCommandV1::Evaluation(inputs) =\n                    host.receive_original(&self.context).await?\n                else {\n                    return Err(phase_refused(\n                        \"original Training requires B's independent Evaluation inputs\",\n                    ));\n                };\n                self.require_original_execution()?;\n                // This phase-only owner method rechecks the exact notified cut\n                // under the original aggregate lane, calls the real installer,\n                // and signals Learning only after successful installation and\n                // release of that lane. An error never becomes Retain/NoUpdate.\n                OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation(\n                    owners.as_ref(), &training, *inputs,\n                ).await.map_err(phase_owner_error)?;\n                self.require_original_execution()?;\n                OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff)\n                    .await.map_err(phase_owner_error)?\n            }\n        };\n"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "phase_module_after_ufcs": "d7a04c799003fffc6d58693a8c8f3515e4281f2d",
+    "controller_c": "eac26530b458a0b0e8cb2967b5bd550412e7eb05",
+    "work_before_B": "0c50562977ebfc5409e67c2dce3b8c037d66da9e",
+    "B_adapter": "chain_nextuse owns forthcoming exact Work/Stage/checkpoint adapters with the declared signatures below; no execution without them."
+  },
+  "actual_original_sources": {
+    "material": "5f6a4f69252f844167b3ac05765ad5ce1967b164",
+    "readback": "529122147cb20cc97a986e5bf24331b223e5f517",
+    "stage": "7bbeae1f64c573f2cbf27376b77ad80651c4f9db",
+    "evaluation_inputs": "00c64871014d81ef0d01ed9e4407b2f73cc3843d",
+    "trainer": "4320bc7df86d940d9c70bd746c8b3b8f2a8da2cc"
+  },
+  "actual_calls": [
+    "OriginalSameActorLearningWork::original_training_snapshot(&self).await -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1>; cancellable read-only notification, not a command or checkpoint write.",
+    "OriginalCellQ24LearningStageOwnersV1::read_original_training_material(&self,&snapshot).await -> actual material from two real Trainer reads and original receipt/source checks.",
+    "OriginalCellQ24LearningStageOwnersV1::original_training_readback(&self,snapshot.clone()).await -> same actual Prepared/Trainer/initial cut/cancellation read capability.",
+    "OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation(&self,&snapshot,originalInputs).await -> phase-only exact cut gate+original installer, notify only after actual lane release."
+  ],
+  "behavior": [
+    "NoUpdate may reach the original decision directly; the cancelled read-only Training notification does not close or retry authority.",
+    "A real Training checkpoint emits original data and Trainer readback. The external host must perform B's independent original experiment and return actual original Trainer/holdout/runner/execution/evidence inputs.",
+    "No Evaluation/receipt/cost/model/Outcome success is manufactured. The original installer remains responsible for its evidence/owner/matched-budget validation.",
+    "One Evaluation command is consumed after the Training event. Wrong phase, late message, original error, cancellation or common gate closure uses the existing terminal controller supervision. No retry or fallback to Retain/NoUpdate.",
+    "After successful actual installation, the controller awaits the original decision; Artifact/Selection/CURRENT/FinalUse/C source and Outcome body remains byte-identical."
+  ],
+  "custody": "The original scoped controller polls this progress concurrently with concrete Learning/delivery/C workers and drops progress before terminal worker/work joins. No new task or blocking job is spawned here. Read-only material and Trainer handles are the original public output types, not writable alternate owners.",
+  "no_changes": [
+    "No request submit",
+    "No deadline or 500ms changes",
+    "No policy/identity/evidence guard weakening",
+    "No original tests removed",
+    "No normal-root shutdown success or physical-join assertion"
+  ],
+  "validation": {
+    "unique_forward_reverse": true,
+    "post_create_get_exact": true
+  },
+  "execution": {
+    "native": false,
+    "checker": false,
+    "tests": false,
+    "refs": false
+  }
+}

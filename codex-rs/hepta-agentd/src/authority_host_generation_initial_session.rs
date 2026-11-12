@@ -20,6 +20,11 @@ pub use deployment::RootGenerationInitialDeploymentFilesV1;
 pub use deployment::RootGenerationInitialDeploymentSessionV1;
 pub use deployment::RootGenerationInitialDeploymentV1;
 
+
+#[path = "authority_host_same_actor_initial_cap.rs"]
+mod same_actor;
+pub use same_actor::RootSameActorInitialEnrollmentCapabilityV1;
+
 #[path = "authority_host_generation_initial_runtime.rs"]
 mod runtime;
 pub(super) use runtime::BoundInitial;

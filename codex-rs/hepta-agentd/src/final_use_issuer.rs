@@ -78,6 +78,7 @@ pub struct AgentdUnixFinalUseGrantProvider {
     stream: Mutex<Option<UnixStream>>,
     timeout: Duration,
     protected_root: Option<ProtectedRootIssuer>,
+    phase: Option<crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel>,
 }
 
 impl AgentdUnixFinalUseGrantProvider {
@@ -96,13 +97,38 @@ impl AgentdUnixFinalUseGrantProvider {
             stream: Mutex::new(Some(stream)),
             timeout,
             protected_root: None,
+            phase: None,
         })
+    }
+
+    pub(crate) fn into_same_actor_phase(
+        mut self,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Self, AgentdFinalUseIssuerError> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        if self.phase.is_some()
+            || self.protected_root.as_ref().is_none_or(|root| root.end != gate.deadline().instant())
+        {
+            return Err(AgentdFinalUseIssuerError::InvalidConfiguration);
+        }
+        let stream = self.stream.get_mut().map_err(|_| AgentdFinalUseIssuerError::ChannelClosed)?
+            .as_ref().ok_or(AgentdFinalUseIssuerError::ChannelClosed)?;
+        let phase = gate.retain_required_original_stream(stream)
+            .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+        phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+        self.phase = Some(phase);
+        closing.disarm();
+        Ok(self)
     }
 
     pub fn request_grant(
         &self,
         binding: &FinalUseBinding,
     ) -> Result<SignedFinalUseGrant, AgentdFinalUseIssuerError> {
+        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
+        if let Some(phase) = &self.phase {
+            phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+        }
         // Bound allocation before serialization even for a non-owner caller.
         if binding.subject_id.len() > 128 || binding.destination_id.len() > 128 {
             return Err(AgentdFinalUseIssuerError::InvalidGrant);
@@ -118,12 +144,19 @@ impl AgentdUnixFinalUseGrantProvider {
         }
         self.exchange_guarded(|stream, deadline| exchange(stream, &request, binding, deadline))?
             .ok_or(AgentdFinalUseIssuerError::Denied)
+            .inspect(|_| {
+                if let Some(closing) = &mut phase_close { closing.disarm(); }
+            })
     }
 
     fn exchange_guarded<T>(
         &self,
         exchange: impl FnOnce(&mut UnixStream, Instant) -> Result<T, AgentdFinalUseIssuerError>,
     ) -> Result<T, AgentdFinalUseIssuerError> {
+        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
+        if let Some(phase) = &self.phase {
+            phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+        }
         let mut slot = self.stream.try_lock().map_err(|error| match error {
             std::sync::TryLockError::WouldBlock => AgentdFinalUseIssuerError::Busy,
             std::sync::TryLockError::Poisoned(_) => AgentdFinalUseIssuerError::ChannelClosed,
@@ -142,11 +175,18 @@ impl AgentdUnixFinalUseGrantProvider {
             let response = exchange(&mut stream, deadline)?;
             self.check_root()?;
             remaining(deadline)?;
+            if let Some(phase) = &self.phase {
+                phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+            }
             Ok(response)
         })();
         match result {
             Ok(response) => {
                 *slot = Some(stream);
+                if let Some(phase) = &self.phase {
+                    phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+                }
+                if let Some(closing) = &mut phase_close { closing.disarm(); }
                 Ok(response)
             }
             Err(error) => {

@@ -31,6 +31,9 @@ use crate::PlasticityRuntimeCallErrorV1;
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
 #[cfg(target_os = "linux")]
+#[path = "learning_iteration_same_actor.rs"]
+mod same_actor;
+#[cfg(target_os = "linux")]
 #[path = "learning_iteration_retained_source.rs"]
 mod retained_source;
 pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;
@@ -517,6 +520,9 @@ impl LearningIterationRuntimeBootstrapV1 {
             if clock()? >= request.envelope.expiry_unix_seconds {
                 return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
             }
+            #[cfg(target_os = "linux")]
+            self.wait_original_same_actor_evaluation_stage(state, coordinator.snapshot(), stage)
+                .await?;
             #[cfg(target_os = "linux")]
             self.wait_original_successor_stage(state, coordinator.snapshot(), stage)
                 .await?;

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "same-actor-final-three-actual-cap-UFCS",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "base": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea plus fixed reviewed overlays",
+  "status": "unreferenced candidate; static only",
+  "operation_count": 3,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "pre": {
+        "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+        "bytes": 11161,
+        "sha256": "8d019bf0261d4e60464d7b0fb1f267496434ed02a83593cf10d562325918bd9a"
+      },
+      "post": {
+        "blob": "4c6a791d41fbfc229d322c0b3320b51397c325d3",
+        "bytes": 11258,
+        "sha256": "977dceba3f3243f859c59977a173968d0f9a0b823001634f618dfd9800fc0b9f"
+      },
+      "ops": [
+        {
+          "old_text": "initial_capability: initial_capability.into_same_actor_phase(&gate, &current_directory),",
+          "new_text": "initial_capability: generation_initial::RootGenerationInitialEnrollmentCapabilityV1::into_same_actor_phase(\n                initial_capability, &gate, &current_directory,\n            ),"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "pre": {
+        "blob": "46c3554abd4916f9d79059d0ebdcf0c3032c82a0",
+        "bytes": 13509,
+        "sha256": "4f0bc7c023062127e42245fb817a93303c360a91204b283bf76a889566e9d7df"
+      },
+      "post": {
+        "blob": "a92be943237ff7ec597979c93f3284ebbfedef73",
+        "bytes": 13606,
+        "sha256": "4b8c9de8c699a360ca9a2cf233ab11c88ef83ba34185dfceb7f5368129ecfbe7"
+      },
+      "ops": [
+        {
+          "old_text": "publication: capability.into_same_actor_phase(gate),",
+          "new_text": "publication: generation_publication::RootGenerationPublicationEnrollmentCapabilityV1::into_same_actor_phase(\n            capability, gate,\n        ),"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "blob": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+        "bytes": 19888,
+        "sha256": "e177d8e161f024cc6c77726bcf15339b5d9c8053a6c870558cd3520989f772b9"
+      },
+      "post": {
+        "blob": "16dcc1c66969bf5ce11fb624882fb2d92d898ba7",
+        "bytes": 19965,
+        "sha256": "d8f9669b0581fcc205c67fbcf56ebfd26a961bd37487c7f26b0f1d4fc7344ae3"
+      },
+      "ops": [
+        {
+          "old_text": "        AgentdUnixFinalUseGrantProvider::from_root_stream_until(\n            issuer, bundle.root.pid, root_pidfd.try_clone()?, timeout, end,\n        ).map_err(protocol)?.into_same_actor_phase(&gate).map_err(protocol)?,",
+          "new_text": "        AgentdUnixFinalUseGrantProvider::into_same_actor_phase(\n            AgentdUnixFinalUseGrantProvider::from_root_stream_until(\n                issuer, bundle.root.pid, root_pidfd.try_clone()?, timeout, end,\n            ).map_err(protocol)?,\n            &gate,\n        ).map_err(protocol)?,"
+        }
+      ]
+    }
+  ],
+  "reason": "Original typed matcher has no tuple binding inference; original Initial/Publication caps came from real returned tuples, and the Grant cap was a chained Result expression. Spell the same actual consuming self with the exact type; no authority, receiver policy, checker, argument, control flow, or retry change.",
+  "type_evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+      "blob": "b4b39eea3168b6fe66cb3627faec896746898a6d",
+      "signature": "RootGenerationInitialEnrollmentCapabilityV1::into_same_actor_phase(self, &Arc<SameActorPhaseGate>, &Arc<RootAuthorityDirectory>)",
+      "source": "original.enable_generation_initial(initial.clone())? returned tuple; same initial_capability consumed."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+      "blob": "1e5d9d6ca12ea3aff4b8bfc69ca1544c7010ab74",
+      "signature": "RootGenerationPublicationEnrollmentCapabilityV1::into_same_actor_phase(self, &Arc<SameActorPhaseGate>)",
+      "source": "generation_publication::original_publication_route(...) returned tuple; same capability consumed."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "blob": "b446253905da915e6830c59a579674d79b995bba",
+      "signature": "AgentdUnixFinalUseGrantProvider::into_same_actor_phase(mut self, &Arc<SameActorPhaseGate>) -> Result<Self, AgentdFinalUseIssuerError>",
+      "source": "Same from_root_stream_until(...) result and map_err(protocol)? are evaluated before the same gate borrow; original move and error propagation preserved."
+    }
+  ],
+  "validation": {
+    "unique_forward_reverse": true,
+    "source_replay_all_other_bytes_identical": true,
+    "created_and_get_equal": true,
+    "compiler": false,
+    "checker": false,
+    "native": false,
+    "ref_changed": false
+  }
+}

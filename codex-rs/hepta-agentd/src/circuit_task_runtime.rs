@@ -44,11 +44,21 @@ struct Command {
     mode: CircuitTaskModeV1,
     response: oneshot::Sender<Result<CircuitTaskReceiptV1, Error>>,
     _pending: PendingWork,
+    #[cfg(target_os = "linux")]
+    phase: Option<same_actor_phase::SameActorQueuedTask>,
 }
 
 #[cfg(target_os = "linux")]
 #[path = "circuit_task_successor_runtime.rs"]
 mod successor;
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_same_actor_phase.rs"]
+mod same_actor_phase;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor_phase::SameActorTaskAdmission;
+#[cfg(target_os = "linux")]
+pub(crate) use same_actor_phase::SameActorTaskRoute;
 
 struct DirectTaskHandle {
     sender: mpsc::Sender<Command>,
@@ -64,6 +74,10 @@ enum TaskHandleRoute {
     #[cfg(target_os = "linux")]
     OriginalQ24 {
         slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
+    },
+    #[cfg(target_os = "linux")]
+    SameActor {
+        original: Arc<SameActorTaskRoute>,
     },
 }
 
@@ -82,6 +96,8 @@ impl CircuitTaskHandleV1 {
             TaskHandleRoute::Direct { original } => original.pending.load(Ordering::Acquire),
             #[cfg(target_os = "linux")]
             TaskHandleRoute::OriginalQ24 { slot } => slot.pending_count(),
+            #[cfg(target_os = "linux")]
+            TaskHandleRoute::SameActor { original } => original.pending_count(),
         }
     }
 
@@ -96,8 +112,11 @@ impl CircuitTaskHandleV1 {
                 match installed.route {
                     TaskHandleRoute::Direct { original } => Ok(original),
                     TaskHandleRoute::OriginalQ24 { .. } => Err(Error::Unavailable),
+                    TaskHandleRoute::SameActor { .. } => Err(Error::Unavailable),
                 }
             }
+            #[cfg(target_os = "linux")]
+            TaskHandleRoute::SameActor { .. } => Err(Error::Unavailable),
         }
     }
 
@@ -106,6 +125,7 @@ impl CircuitTaskHandleV1 {
         match &self.route {
             TaskHandleRoute::Direct { .. } => Ok(()),
             TaskHandleRoute::OriginalQ24 { .. } => Err(Error::Unavailable),
+            TaskHandleRoute::SameActor { .. } => Err(Error::Unavailable),
         }
     }
 
@@ -144,6 +164,8 @@ impl CircuitTaskHandleV1 {
                 mode,
                 response,
                 _pending: PendingWork(Arc::clone(&original.pending)),
+                #[cfg(target_os = "linux")]
+                phase: None,
             })
             .map_err(|error| match error {
                 mpsc::error::TrySendError::Full(_) => Error::QueueFull,
@@ -242,12 +264,27 @@ where
                         mode,
                         response,
                         _pending,
+                        #[cfg(target_os = "linux")]
+                        phase,
                     } = command;
-                    let result = match request.validate_record(&record, driver.fence.generation) {
+                    let result = match request
+                        .validate_record(&record, driver.fence.generation)
+                        .and_then(|()| {
+                            #[cfg(target_os = "linux")]
+                            if let Some(phase) = &phase {
+                                phase.require_original_queue_admission()?;
+                            }
+                            Ok(())
+                        })
+                    {
                         Err(error) => Err(error),
                         Ok(()) => {
                             driver
                                 .execute(&request, mode, || {
+                                    #[cfg(target_os = "linux")]
+                                    if let Some(phase) = &phase {
+                                        phase.require_original_queue_admission()?;
+                                    }
                                     if cancellation.is_cancelled() {
                                         return Err(Error::Unavailable);
                                     }
@@ -267,6 +304,8 @@ where
                     // Drop only after synchronous inference and durable driver
                     // work finish, even when the receiver was abandoned.
                     drop(_pending);
+                    #[cfg(target_os = "linux")]
+                    drop(phase);
                 }
             })
         }),

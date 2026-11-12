@@ -116,6 +116,7 @@ pub struct DeploymentFinalUseIssuer {
     clock: Arc<dyn AuthorityClock>,
     request_lock: Mutex<()>,
     lease: Option<ProtectedLease>,
+    same_actor_phase: std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
 }
 
 /// Read-only view of the independently retained issuer revocation head.
@@ -303,7 +304,38 @@ impl DeploymentFinalUseIssuer {
             clock,
             request_lock: Mutex::new(()),
             lease,
+            same_actor_phase: std::sync::OnceLock::new(),
         })
+    }
+
+    /// Attach only before the new phase exposes any service. This is the
+    /// same actual issuer instance; the original default path stays unbound.
+    /// A consumed/closed binding is never replaced by another gate.
+    pub(crate) fn bind_original_same_actor_phase(
+        &self,
+        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> io::Result<()> {
+        phase.require_open()?;
+        let _request = self.request_lock.lock()
+            .map_err(|_| io::Error::other("issuer fenced"))?;
+        phase.require_open()?;
+        if self.lease.is_none()
+            || self.same_actor_phase.set(Arc::clone(phase)).is_err()
+        {
+            return Err(io::Error::other("original protected issuer phase was already bound or absent"));
+        }
+        phase.require_open()?;
+        Ok(())
+    }
+
+    /// A new authorization effect checks its phase exactly once at first
+    /// entry. Continuation/receipt CAS, revocation and closure do not call this.
+    /// It does not replace any original lease, policy or request-lock check.
+    fn require_new_same_actor_phase_effect(&self) -> io::Result<()> {
+        if let Some(phase) = self.same_actor_phase.get() {
+            phase.require_open()?;
+        }
+        Ok(())
     }
 
     pub fn trust_key(&self) -> io::Result<FinalUseIssuerTrustKey> {
@@ -389,6 +421,7 @@ impl DeploymentFinalUseIssuer {
                 .min(expiry),
         };
         let bytes = grant.signing_bytes().map_err(io::Error::other)?;
+        self.require_new_same_actor_phase_effect()?;
         self.store
             .compare_and_set(STATE_OWNER, &state, &next)
             .map_err(io::Error::other)?;

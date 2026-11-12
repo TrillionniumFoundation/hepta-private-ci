@@ -1,0 +1,504 @@
+{
+  "schema": "hepta.ordinary-same-actor-entry-inventory.v1",
+  "status": "read-only-source-inventory; no native or caller-checker execution",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "source_model": "Exact frozen overlay blobs on the fixed base, not a claimed integrated tested commit.",
+  "source_hash_verification": {
+    "method": "Pure V8 UTF-8 length, SHA256 and Git blob SHA1 against fetched or retained exact strings",
+    "count": 26,
+    "matched": true
+  },
+  "scope": {
+    "new_source_writes": 0,
+    "ref_changes": 0,
+    "h_calls": 0,
+    "native_runs": 0,
+    "checker_runs": 0,
+    "whole_repository_scan": false,
+    "notes": [
+      "Only named public entries, their actual controllers and B material APIs, default main/Root CLI and parent reexports were inspected.",
+      "Absence claims for ordinary entry execution are directly checked in the two CLI files and parent Startup; repository-wide external-caller empty sets are additionally the frozen slice author's reported inventory, not a newly executed exhaustive checker.",
+      "One attempted blob lookup used an incomplete remembered pin and returned NOT_FOUND; no content or claim was derived from it. The intended neuron_cell_learning_evaluation.rs was then fetched by its exact fixed-base path and verified as S24."
+    ]
+  },
+  "entry_points": [
+    {
+      "entry": "PreparedRootSameActorQ24PhaseV1::{open,prepare_fresh_from_registered} -> serve_original_same_actor_host",
+      "sources": [
+        "S01",
+        "S02",
+        "S12",
+        "S13"
+      ],
+      "classification": "Public embedded Root composition API with actual internal serving/sender/registration implementation; no default CLI caller.",
+      "actual_external_product_callers_in_frozen_author_inventory": [],
+      "required": "Actual original config/registration, actual daemon owner pidfd, Root CURRENT directory, Initial deployment and Model reservation; held Root pidfd, actual registered writer File, three distinct handoff datagrams, consumer state root, bounded host command/ack channels."
+    },
+    {
+      "entry": "AgentdOriginalSameActorPhaseStartupV1::from_process_environment -> run_original_phase",
+      "sources": [
+        "S03",
+        "S04",
+        "S11",
+        "S13"
+      ],
+      "classification": "Public embedded daemon composition API; no ordinary main caller.",
+      "actual_external_product_callers_in_frozen_author_inventory": [],
+      "required": "Real non-Root Starting/environment identity; original production FD/parser inputs; additional phase/scoped datagrams; real Android Primary, original Control/AppServer sockets; actual business owners supplied after descriptor preflight; original multithread runtime and Arg0DispatchPaths."
+    },
+    {
+      "entry": "original_same_actor_phase_host_channel_v1",
+      "sources": [
+        "S04"
+      ],
+      "classification": "Bounded in-process Tokio channel (capacity 1..64) for typed material commands/events; it does not execute or authorize objectives."
+    },
+    {
+      "entry": "AgentdProductionStartup::from_process_environment, --root-production-entry late-writer",
+      "sources": [
+        "S11",
+        "S14",
+        "S16"
+      ],
+      "classification": "Existing real ordinary main path. It reaches the older late-writer receiver, not the new same-actor Startup."
+    },
+    {
+      "entry": "hepta-authority-host serve-session / serve-fresh-session",
+      "sources": [
+        "S15"
+      ],
+      "classification": "Existing Root CLI uses PreparedHostAuthoritySession and original two-right fresh handoff; existing Learning/Model/Initial/publication options are not the new same-phase typed host."
+    }
+  ],
+  "required_stages": [
+    {
+      "stage": "Root/daemon admission",
+      "sources": [
+        "S01",
+        "S02",
+        "S03",
+        "S17"
+      ],
+      "requires": [
+        "Actual Supervisor Starting identity and correct filesystem deployment",
+        "Original registered writer descriptor and Root/daemon pidfds",
+        "Both trusted hosts must bridge InputsOpened -> Root Initial command -> actual InitialRegistered acknowledgement -> daemon InitialRootEnrolled notice",
+        "No arbitrary profile JSON, event or notice replaces original peer/owner validation"
+      ],
+      "gap": "No ordinary launcher/Root CLI constructs and owns this coordinated pair of hosts."
+    },
+    {
+      "stage": "Real A",
+      "sources": [
+        "S04",
+        "S05",
+        "S06",
+        "S07"
+      ],
+      "requires": [
+        "Actual Artifact owner, selected generation and Initial feature target/model",
+        "Task source/cell files, exact fence/circuit/routes, real clock, queue/record/worker limits",
+        "Original TaskLedger inputs, enrolled Observer trust, AuthBus trust/checkpoint, objective profile, Plasticity bootstrap",
+        "Actual signed ObjectiveStart through original Control ingress; install event alone is not Ready or execution",
+        "Independent AuthenticatedOutcome plus signed learning evidence; preparation/history/freeze from real A"
+      ],
+      "gap": "No ordinary host caller supplies these owners or submits A. CompleteOriginalA cannot manufacture the task/Outcome."
+    },
+    {
+      "stage": "Experience/Dataset -> Trainer",
+      "sources": [
+        "S07",
+        "S08",
+        "S10",
+        "S18"
+      ],
+      "requires": [
+        "The actual OriginalAPrepared event's Prepared Arc and profile",
+        "Trusted Root Scoped command carrying that actual profile",
+        "Actual source/receipt/training/local-decision journals and witnesses, existing signer keys/verifier/policy, explicit Create/Recover",
+        "Original inputs.prepared pointer must equal the joined/scoped actual Prepared; bounded capacities"
+      ],
+      "gap": "New controller composes actual retained delivery and original training, but ordinary material provisioning and cross-host event handling are absent. It does not duplicate submit or rebuild Prepared from serialized data."
+    },
+    {
+      "stage": "Independent B after candidate Training",
+      "sources": [
+        "S04",
+        "S09",
+        "S19",
+        "S20",
+        "S21",
+        "S22",
+        "S23",
+        "S24",
+        "S25",
+        "S26"
+      ],
+      "requires": [
+        "Receive actual OriginalTraining {snapshot, material, readback} on the daemon-side returned event receiver",
+        "Run independent candidate/fixed-expert evaluation using actual journals and original runner/holdout/execution owner",
+        "Provide actual qualification, authenticated evidence, enrolled Evaluator key/witness, temporal plans, context, timing and Training readback",
+        "Send one Evaluation(Box<OriginalCellQ24EvaluationInputsV1>) through retained command sender"
+      ],
+      "gap": "No ordinary event consumer, independent holdout provider/data, completed B executions/cost journals or authenticated result supply is implemented by the phase enum/channel. Installation is custody, not qualification."
+    },
+    {
+      "stage": "Artifact / Selection / CURRENT / FinalUse",
+      "sources": [
+        "S02",
+        "S04",
+        "S09"
+      ],
+      "requires": [
+        "Real qualified Artifact publish request, or actual authenticated retain/defer/no-update result",
+        "Independent original Selection inputs",
+        "Trusted Root Current enrollment of exact decision/selection/files/observers",
+        "Original publication ticket, grant provider and exact current target/predecessor files"
+      ],
+      "gap": "The actual controller consumes these capabilities in order; there is no ordinary producer of the host commands/materials. Selection digest event is not a Root enrollment capability."
+    },
+    {
+      "stage": "Real C and feedback",
+      "sources": [
+        "S03",
+        "S04",
+        "S09"
+      ],
+      "requires": [
+        "New ordinary C source/run/input under existing same agent/cell/principal contract, actual model/definition/target/predecessor files",
+        "Fresh Source Create and actual OriginalLedger feedback Create, mandatory in this phase",
+        "Separate signed ObjectiveStart through original ingress",
+        "Independent terminal C Outcome plus signed evidence"
+      ],
+      "gap": "C owner installation and OriginalLedger support exist. No ordinary caller submits the C workload/Outcome; same actor/principal C does not establish an independent consumer/controller."
+    }
+  ],
+  "external_b_sequence": [
+    {
+      "order": 1,
+      "operation": "Call original_same_actor_phase_host_channel_v1; retain the returned command Sender and event Receiver; move only the host endpoint into BusinessInputs.",
+      "sources": [
+        "S04"
+      ]
+    },
+    {
+      "order": 2,
+      "operation": "Await OriginalTraining from the actual controller after durable Training checkpoint and original material/readback validation. Retain the opaque readback; the material includes actual native candidate completion data.",
+      "sources": [
+        "S09",
+        "S19"
+      ]
+    },
+    {
+      "order": 3,
+      "operation": "Supply real candidate and fixed-expert drained Cell journals, matched capacity/cumulative training/selective-update contract, original evaluation_profile, temporal plans and real cost coverage. freeze_cell_learning_evaluation_plan_v1 binds these original observations.",
+      "sources": [
+        "S23",
+        "S25"
+      ]
+    },
+    {
+      "order": 4,
+      "operation": "Use the original CellEvaluationRunnerV1::evaluate_or_readback with real FinalHoldoutProvider, durable execution store and OriginalCellEvaluationExecutionOwnerV1 backed by an already enrolled Evaluator key/witness. The unsigned evaluate-only result is not enough for original signed execution readback.",
+      "sources": [
+        "S24",
+        "S25",
+        "S26"
+      ]
+    },
+    {
+      "order": 5,
+      "operation": "Use qualification_bundle and qualify_and_persist with actual authenticated evidence, current trust/clock, role/controller separation and durable evidence sink; no new default signer or result.",
+      "sources": [
+        "S24",
+        "S25",
+        "S26"
+      ]
+    },
+    {
+      "order": 6,
+      "operation": "Move actual resources into OriginalCellQ24EvaluationInputsV1, binding trainer OriginalQ24(actual event readback) or the already supported original pinned external Trainer; send Evaluation once. Actual install and later Evaluation completion revalidate, and only subsequent original decision controls publish/retain.",
+      "sources": [
+        "S09",
+        "S20",
+        "S21",
+        "S22",
+        "S24"
+      ]
+    }
+  ],
+  "deployment_limits": [
+    {
+      "id": "D1",
+      "statement": "These typed host channels are local Rust mpsc ownership transfers, not a new serialized remote B/Root control protocol. A separate-process B service still needs a real integration that brings back original authenticated results/resources. Public types and getters do not supply that integration.",
+      "sources": [
+        "S02",
+        "S04",
+        "S20"
+      ]
+    },
+    {
+      "id": "D2",
+      "statement": "Both Root and daemon establish absolute limits before later work. Later host events, B wait, registration or ACK do not restart the phase deadline; each side's Instant is local, with Root BOOTTIME binding separately enforced.",
+      "sources": [
+        "S01",
+        "S03"
+      ]
+    },
+    {
+      "id": "D3",
+      "statement": "The explicit phase Startup accepts actual Android Primary and refuses Notes UI/Desktop combinations in this mode. It is not a generic existing primary-profile switch.",
+      "sources": [
+        "S03",
+        "S17"
+      ]
+    },
+    {
+      "id": "D4",
+      "statement": "The phase remains same agent/cell/principal/process/spawn and requires different actual task data for C. It does not supply cross-owner consumer authorization or cold restart of retained A.",
+      "sources": [
+        "S01",
+        "S03",
+        "S09"
+      ]
+    },
+    {
+      "id": "D5",
+      "statement": "After a real C Outcome the required worker continues under the original deadline; Startup explicitly returns an error even if generic Launch.run returns Ok because final phase-completion/physical-owner-join acknowledgement is absent.",
+      "sources": [
+        "S03",
+        "S08"
+      ]
+    },
+    {
+      "id": "D6",
+      "statement": "Original matched capacity, cumulative training budget/selective-update equality and known required cost metrics remain exact. Missing/unknown measurements or failed authentication are not converted into NoUpdate.",
+      "sources": [
+        "S23",
+        "S24"
+      ]
+    }
+  ],
+  "qualification": {
+    "ordinary_a": 0,
+    "independent_b": 0,
+    "independent_c": 0,
+    "new_native_qualification": "none claimed",
+    "os_restart": "not supplied or accepted by this entry inventory",
+    "component_tests": "Existing frozen Work/B component tests do not prove ordinary workloads; B notification tests use synthetic data-only snapshots."
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+      "bytes": 11161,
+      "sha256": "8d019bf0261d4e60464d7b0fb1f267496434ed02a83593cf10d562325918bd9a",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S02",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "blob": "d8fd1e8542983e9658553dde61a5b6adab36d41f",
+      "bytes": 8624,
+      "sha256": "78d2015459f50c893319900a65b8c17061ae00c964ea8ba2f6140e61c40e8ce3",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S03",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+      "bytes": 11071,
+      "sha256": "7d5696eb6a9a20b2423ecb17e0341b8e12254438ee876cb051f7a97591752cc4",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S04",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "blob": "0977e3c79b83aff01688436af99b533bda8c5a46",
+      "bytes": 10184,
+      "sha256": "93bb45c0538239c153ddcf6d567b181d7e3e61f174dabce006a8b2996d86b4c7",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S05",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "blob": "cd368edd9bcdbcfafd84ff13d44ea12c04cefb5a",
+      "bytes": 4079,
+      "sha256": "09275003e739aef211ee02af390874049320e4f55810a17710dc1001250b550d",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S06",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "blob": "0dd1deba7fcc402269c73c1ee7480f6c12320552",
+      "bytes": 3587,
+      "sha256": "2f7a008f9d12d6b050126c2af289cffcbc81bd1b6e7fd364d9328da8c454a5c8",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S07",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "blob": "f4cf8a01bc778eb02d8bf9c2d3d1b96895cfc863",
+      "bytes": 9037,
+      "sha256": "7808bc2acb2b3a4b460d0c9275833c6945af0fd965630bdea1d9ff66e310dc7a",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S08",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "blob": "dc08d2d342a9eac0fad3a999aa64150b513793f0",
+      "bytes": 9373,
+      "sha256": "e1ead28196e856b5db608952cc0f50b886cc78b62ce9aa5fcfa8ebfa747b84f9",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S09",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "blob": "7c69d94b92859ce593076052e39edbcf53ebbedf",
+      "bytes": 13029,
+      "sha256": "4798705fc526dcc18f69511d8c1420625398fd5250f6e1dab4d3d20d4d63f061",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S10",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "blob": "7b534fd212f4d3da901878cc7dd1c2d66b2abe84",
+      "bytes": 7067,
+      "sha256": "644050d444174601eae757f7513b3aa51a61ee982b7bc886067e9e81acda0588",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S11",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "blob": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+      "bytes": 27445,
+      "sha256": "6b09e46a1e8e97616d25e03671852cd87976ce557dc52aecc2dcb80bf70229ad",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S12",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "blob": "e129b3e7fb93eda72c3a71d729de9c0efaa8bc01",
+      "bytes": 21205,
+      "sha256": "9eb0a3417edfb529b7f0bdba7143e52de2f08228fccda032031ddb6270f0faee",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S13",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob": "e758333d25dc270e5470e93fe72a8f988221311b",
+      "bytes": 66693,
+      "sha256": "f596ebec608feaca718fb5ee922de01295f0538f47761565fd7556175cf9b4ad",
+      "lane": "frozen-overlay"
+    },
+    {
+      "id": "S14",
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "bytes": 13038,
+      "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97",
+      "lane": "d973"
+    },
+    {
+      "id": "S15",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "blob": "cd5415cf206eeb646855f35625f31d67698a495b",
+      "bytes": 23993,
+      "sha256": "728d5c50957034993558dcbb4c96579836da9fc1c47e621778698cf92b4ffe12",
+      "lane": "d973"
+    },
+    {
+      "id": "S16",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+      "bytes": 3013,
+      "sha256": "717ced5a05fbd931822528fcd103891060ed86dcb21bf98fbf7519b2c06b1e31",
+      "lane": "d973"
+    },
+    {
+      "id": "S17",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "blob": "0599202fbe0db8bef2816fcd72dc031a2c375171",
+      "bytes": 18005,
+      "sha256": "c7fc853427ee91816aaa8e89fa13ba68e738baa529cf39248f0ed4b72ec9db68",
+      "lane": "d973"
+    },
+    {
+      "id": "S18",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "blob": "1af60879f8ae2001eaa7d06b01a05016663f831d",
+      "bytes": 9723,
+      "sha256": "e19a730b1c0fcfbe63bba8d7216ec3b85c64e0ee4b7af7237bb02d95436c9992",
+      "lane": "original"
+    },
+    {
+      "id": "S19",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_material.rs",
+      "blob": "5f6a4f69252f844167b3ac05765ad5ce1967b164",
+      "bytes": 5648,
+      "sha256": "ae8169f53797b7132f486a33811946adf93a26ed916032940f5c42b943d14ad9",
+      "lane": "original"
+    },
+    {
+      "id": "S20",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs",
+      "blob": "00c64871014d81ef0d01ed9e4407b2f73cc3843d",
+      "bytes": 4129,
+      "sha256": "304dbb89827ba35b10bc3cf8a1203f505ffec73585720704ba44578310a944a8",
+      "lane": "original"
+    },
+    {
+      "id": "S21",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs",
+      "blob": "4320bc7df86d940d9c70bd746c8b3b8f2a8da2cc",
+      "bytes": 3458,
+      "sha256": "de34a29f3272852dad15fbf8518b0c05da39b05b34a6f833edaaae9d4fc1b6dc",
+      "lane": "original"
+    },
+    {
+      "id": "S22",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      "blob": "55f64838bd24a54be6bb71cd029833ecb8eb1412",
+      "bytes": 7837,
+      "sha256": "b17d9f83680c2fc8cd024cabc76a9bb515456ad8c6838878260742495924e8fd",
+      "lane": "d973"
+    },
+    {
+      "id": "S23",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_contract.rs",
+      "blob": "88d0786fe43f21ac82a24cd72f18bb1a530a97f5",
+      "bytes": 9606,
+      "sha256": "211f99888302f59736af4991897821a2299779bc4fc058bd17809b0a26a19660",
+      "lane": "original"
+    },
+    {
+      "id": "S24",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+      "blob": "a3e199643440ea90c216520e5d8ac67d7887f5da",
+      "bytes": 7569,
+      "sha256": "59d630ecaa524a0c21b2f276fc12afb5958fcbe0b00acb932f9fd59b9f43a7c1",
+      "lane": "d973"
+    },
+    {
+      "id": "S25",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "blob": "d189af42af44d64dbc3e298c402d95254920e95f",
+      "bytes": 16450,
+      "sha256": "ee0f9bce8e55160f785924a20b3cbad3b243c454227faf00699968e120e1aa1b",
+      "lane": "d973"
+    },
+    {
+      "id": "S26",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+      "blob": "248d0ccbdba1590ec579bc3a58fb4c3210564c8a",
+      "bytes": 9376,
+      "sha256": "5d9ce6d99baf7895c7bfde7ef1aa6fe12b2daae396e416ffec65521f62eaa6af",
+      "lane": "d973"
+    }
+  ]
+}

@@ -42,6 +42,7 @@ pub struct AgentdUnixCognitiveCheckpointTransport {
     root: AsyncFd<OwnedFd>,
     timeout: Duration,
     end: Instant,
+    phase: Option<crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel>,
 }
 
 impl AgentdUnixCognitiveCheckpointTransport {
@@ -117,6 +118,75 @@ impl AgentdUnixCognitiveCheckpointTransport {
             root,
             timeout,
             end: Instant::now() + lifetime,
+            phase: None,
+        })
+    }
+
+    pub(crate) fn from_original_phase_stream_until(
+        stream: UnixStream,
+        peer: AgentdCognitiveCheckpointPeer,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Self, ObjectiveSenderCheckpointError> {
+        let held = phase.retain_required_original_stream(&stream)
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        let end = phase.deadline().instant();
+        let lifetime = end.checked_duration_since(Instant::now())
+            .ok_or(ObjectiveSenderCheckpointError::Unavailable)?;
+        if peer.pid == 0
+            || peer.pid > i32::MAX as u32
+            || peer.process_start_ticks == 0
+            || timeout.is_zero()
+            || timeout > Duration::from_secs(5)
+            || lifetime.is_zero()
+            || lifetime > Duration::from_secs(300)
+        {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        let number = root_pidfd.as_raw_fd();
+        if std::fs::read_link(format!("/proc/self/fd/{number}")).map_err(unavailable)?
+            != Path::new("anon_inode:[pidfd]")
+            || bounded_text(&format!("/proc/self/fdinfo/{number}"), 4096)?
+                .lines()
+                .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
+                != Some(peer.pid)
+            || bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim() != peer.boot_id
+        {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
+        let start = stat
+            .rsplit_once(") ")
+            .and_then(|(_, fields)| fields.split_whitespace().nth(19))
+            .and_then(|value| value.parse::<u64>().ok());
+        if start != Some(peer.process_start_ticks) {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        check_lifetime(&root_pidfd)?;
+        stream.set_nonblocking(true).map_err(unavailable)?;
+        let stream = tokio::net::UnixStream::from_std(stream).map_err(unavailable)?;
+        let actual = stream.peer_cred().map_err(unavailable)?;
+        if actual.uid() != 0
+            || actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)
+        {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        // SAFETY: AsyncFd exclusively owns this OwnedFd. Its number and open
+        // file description remain unchanged until AsyncFd drops it; no raw fd
+        // ownership or mutable access escapes this client.
+        let root =
+            unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
+                .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        check_lifetime(root.get_ref())?;
+        held.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        Ok(Self {
+            exchange: tokio::sync::Semaphore::new(1),
+            stream: Mutex::new(Some(stream)),
+            root,
+            timeout,
+            end,
+            phase: Some(held),
         })
     }
 }
@@ -126,6 +196,10 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         &self,
         request_json: &[u8],
     ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+        let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
+        if let Some(phase) = &self.phase {
+            phase.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        }
         if request_json.is_empty() || request_json.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
@@ -168,12 +242,19 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         {
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
+        if let Some(phase) = &self.phase {
+            phase.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        }
         // None remains the exclusive token through framing and complete
         // response validation. No slot guard spans I/O or an await.
         *self
             .stream
             .try_lock()
             .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)? = Some(stream);
+        if let Some(phase) = &self.phase {
+            phase.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        }
+        if let Some(closing) = &mut phase_close { closing.disarm(); }
         Ok(response)
     }
 }

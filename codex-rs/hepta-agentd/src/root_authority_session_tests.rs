@@ -697,6 +697,7 @@ async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
         cache,
         root,
         end_boottime_ns: end,
+        phase: None,
         active: AtomicBool::new(false),
         consumers: Mutex::new(Vec::new()),
         serial: tokio::sync::Semaphore::new(1),

@@ -2,12 +2,14 @@
 
 use super::HostIssuerPeer;
 use super::HostIssuerTransportError;
+use super::channel::MAX_SESSION_LIFETIME;
 use super::channel::OwnerChannel;
 use super::io_error;
 use std::net::Shutdown;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
+use std::time::Instant;
 
 #[path = "authority_host_descriptor.rs"]
 mod descriptor;
@@ -59,6 +61,49 @@ impl HostAuthorityPeerChannel {
             return Err(HostIssuerTransportError::PeerDenied);
         }
         let owner = OwnerChannel::new(owner_pidfd, policy.peer.pid, policy.lifetime)?;
+        stream.set_nonblocking(true).map_err(io_error)?;
+        Ok(Self {
+            stream: Some(stream),
+            policy,
+            owner,
+        })
+    }
+
+    /// Bind a new purpose lane to the original process-local session end.
+    /// The supplied end may only shorten the policy's existing lifetime bound.
+    /// The original peer, pidfd and per-request checks remain mandatory.
+    pub fn from_stream_until(
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        end: Instant,
+    ) -> Result<Self, HostIssuerTransportError> {
+        if policy.peer.pid == 0
+            || policy.peer.pid > i32::MAX as u32
+            || policy.timeout.is_zero()
+            || policy.timeout > Duration::from_secs(30)
+            || !(1..=65_536).contains(&policy.request_bound)
+            || !(1..=65_536).contains(&policy.response_bound)
+        {
+            return Err(HostIssuerTransportError::InvalidConfiguration);
+        }
+        let peer = rustix::net::sockopt::socket_peercred(&stream).map_err(io_error)?;
+        if peer.uid.as_raw() != policy.peer.uid
+            || peer.pid.as_raw_nonzero().get() as u32 != policy.peer.pid
+        {
+            return Err(HostIssuerTransportError::PeerDenied);
+        }
+        if policy.lifetime.is_zero() || policy.lifetime > MAX_SESSION_LIFETIME {
+            return Err(HostIssuerTransportError::InvalidConfiguration);
+        }
+        let remaining = end
+            .checked_duration_since(Instant::now())
+            .filter(|remaining| !remaining.is_zero())
+            .ok_or(HostIssuerTransportError::DeadlineElapsed)?;
+        if remaining > policy.lifetime {
+            return Err(HostIssuerTransportError::InvalidConfiguration);
+        }
+        let owner = OwnerChannel::new_until(owner_pidfd, policy.peer.pid, end)?;
         stream.set_nonblocking(true).map_err(io_error)?;
         Ok(Self {
             stream: Some(stream),
@@ -168,3 +213,7 @@ impl HostAuthorityPeerChannel {
 #[cfg(test)]
 #[path = "authority_host_peer_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authority_host_peer_deadline_tests.rs"]
+mod deadline_tests;

@@ -13,7 +13,7 @@ use std::os::unix::net::UnixStream;
 use std::time::Duration;
 use std::time::Instant;
 
-const MAX_SESSION_LIFETIME: Duration = Duration::from_secs(300);
+pub(super) const MAX_SESSION_LIFETIME: Duration = Duration::from_secs(300);
 
 pub(crate) struct OwnerChannel {
     owner: OwnedFd,
@@ -53,6 +53,40 @@ impl OwnerChannel {
             end: Instant::now() + lifetime,
         };
         channel.check(channel.end)?;
+        Ok(channel)
+    }
+
+    /// Retain a previously captured session end without deriving a new lifetime.
+    pub(crate) fn new_until(
+        owner: OwnedFd,
+        pid: u32,
+        end: Instant,
+    ) -> Result<Self, HostIssuerTransportError> {
+        let lifetime = remaining(end)?;
+        if lifetime > MAX_SESSION_LIFETIME {
+            return Err(HostIssuerTransportError::InvalidConfiguration);
+        }
+        let number = owner.as_raw_fd();
+        if std::fs::read_link(format!("/proc/self/fd/{number}")).map_err(io_error)?
+            != std::path::Path::new("anon_inode:[pidfd]")
+        {
+            return Err(HostIssuerTransportError::InvalidConfiguration);
+        }
+        let mut bytes = String::new();
+        std::fs::File::open(format!("/proc/self/fdinfo/{number}"))
+            .map_err(io_error)?
+            .take(4096)
+            .read_to_string(&mut bytes)
+            .map_err(io_error)?;
+        let actual = bytes.lines().find_map(|line| {
+            line.strip_prefix("Pid:")
+                .and_then(|value| value.trim().parse::<u32>().ok())
+        });
+        if actual != Some(pid) {
+            return Err(HostIssuerTransportError::PeerDenied);
+        }
+        let channel = Self { owner, end };
+        channel.check(end)?;
         Ok(channel)
     }
 

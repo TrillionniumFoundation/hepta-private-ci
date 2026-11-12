@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.original-frontier-absolute-end-exact-operations.v1",
+  "base": {
+    "source_commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "source_tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "same_product_preimage_at": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "metadata_and_OwnerChannel_dependency": {
+      "foundation_manifest": {
+        "git_blob": "c47e0d089af95aec0c61c19c1400186d82f45456",
+        "bytes": 19901,
+        "sha256": "2d97e8e420d6b5bcbd9d62241681fce2ee50326e33ca5859364b21c66052a4d9"
+      },
+      "metadata_base": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "OwnerChannel_post": "16f592cd8bcb5a6822193bc46d38887227c3d30f"
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "pre_git": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+      "post_git": "ea360605daafec088a2f3891d11622bd2edfc010",
+      "bytes": 10540,
+      "sha256": "518bc4ad98b2af21ffa90027e257cbaeaffc8a8875b3d279ecfffa38a41f26c0",
+      "lines": 281,
+      "operations": 2,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_tests.rs",
+      "pre_git": "1656af0d3b0ed8faaff8cf3d74085a5bee4f0d5c",
+      "post_git": "9d74ca12c14730e3b8ba9b6b345bf3f9e8254b2d",
+      "bytes": 9875,
+      "sha256": "d2709044d6bbf9d69aef323b35d4576bbee5791842649b56b35aa57f55fbd103",
+      "lines": 312,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "76ed6df0567c669eb9fec4a43f4f7f359e71fbbc",
+      "bytes": 4877,
+      "sha256": "0e844d42236eeed8952569aa746ba22b22452245abf89d2bae67514e913fc147",
+      "lines": 148,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "post_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "bytes": 682061,
+      "sha256": "a8fd2dd65e6633660ae6cb356db0c66228084e5c68c46a240c1e95692b2e7d57",
+      "lines": 7307,
+      "operations": 3,
+      "forward_reverse_equal": true
+    }
+  ],
+  "operations": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "operation": "replace_unique",
+      "before": "use std::time::Duration;\n",
+      "after": "use std::time::Duration;\nuse std::time::Instant;\n",
+      "why": "Accept an opaque absolute end in the new constructor; old constructor unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "operation": "replace_unique",
+      "before": "    fn exchange(\n",
+      "after": "    /// Construct the same Root-pinned lane with its original process-local end.\n    /// UID 0, the exact incarnation and pre-held pidfd remain mandatory.\n    pub fn from_stream_until(\n        stream: UnixStream,\n        owner_id: String,\n        peer: RootPeerIdentity,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        end: Instant,\n    ) -> Result<Self, AuthorityTrustError> {\n        Self::from_stream_for_uid_until(stream, owner_id, peer, root_pidfd, timeout, end, 0)\n    }\n\n    fn from_stream_for_uid_until(\n        stream: UnixStream,\n        owner_id: String,\n        peer: RootPeerIdentity,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        end: Instant,\n        uid: u32,\n    ) -> Result<Self, AuthorityTrustError> {\n        if owner_id.is_empty()\n            || owner_id.len() > 256\n            || peer.pid == 0\n            || peer.pid > i32::MAX as u32\n            || peer.process_start_ticks == 0\n            || timeout.is_zero()\n            || timeout > Duration::from_secs(5)\n        {\n            return Err(AuthorityTrustError::Invalid);\n        }\n        let root = OwnerChannel::new_until(root_pidfd, peer.pid, end).map_err(unavailable)?;\n        let actual = rustix::net::sockopt::socket_peercred(&stream).map_err(unavailable)?;\n        let stat = bounded_text(&format!(\"/proc/{}/stat\", peer.pid), 8192)?;\n        let start = stat\n            .rsplit_once(\") \")\n            .and_then(|(_, fields)| fields.split_whitespace().nth(19))\n            .and_then(|value| value.parse::<u64>().ok());\n        if actual.uid.as_raw() != uid\n            || actual.pid.as_raw_nonzero().get() as u32 != peer.pid\n            || bounded_text(\"/proc/sys/kernel/random/boot_id\", 128)?.trim() != peer.boot_id\n            || start != Some(peer.process_start_ticks)\n        {\n            return Err(AuthorityTrustError::Invalid);\n        }\n        stream.set_nonblocking(true).map_err(unavailable)?;\n        root.check(root.end()).map_err(unavailable)?;\n        Ok(Self {\n            channel: Mutex::new(Some(Channel {\n                stream,\n                next_request_id: 1,\n            })),\n            root,\n            owner_id,\n            timeout,\n        })\n    }\n\n    fn exchange(\n",
+      "why": "Preserve every original identity/bound/postcheck; new method substitutes only OwnerChannel::new_until and the exact end."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_tests.rs",
+      "operation": "append",
+      "before": "              Duration::from_secs(3),\n                rustix::process::getuid().as_raw()\n            )\n            .is_err()\n        );\n        assert_closed(&mut server);\n    }\n}\n",
+      "after": "              Duration::from_secs(3),\n                rustix::process::getuid().as_raw()\n            )\n            .is_err()\n        );\n        assert_closed(&mut server);\n    }\n}\n\n#[path = \"authority_root_frontier_deadline_tests.rs\"]\nmod deadline_tests;\n",
+      "why": "Keep the entire original test module prefix; add a child test module reusing its real socket/pidfd and explicit same-UID framing fixture."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs",
+      "operation": "add_file",
+      "after": "use super::*;\nuse pretty_assertions::assert_eq;\n\n// These remain same-UID framing components, not a Root deployment or grant.\nfn client_until(end: Instant) -> (RootFinalUseFrontierClient, UnixStream) {\n    let (stream, server) = UnixStream::pair().unwrap();\n    let client = RootFinalUseFrontierClient::from_stream_for_uid_until(\n        stream,\n        \"original\".into(),\n        identity(),\n        pidfd(),\n        Duration::from_secs(5),\n        end,\n        rustix::process::getuid().as_raw(),\n    )\n    .unwrap();\n    assert_eq!(client.root.end(), end);\n    (client, server)\n}\n\nfn after_original_end(end: Instant) {\n    std::thread::sleep(end.saturating_duration_since(Instant::now()) + Duration::from_millis(1));\n}\n\n#[test]\nfn absolute_frontier_end_keeps_original_framing_and_exact_end() {\n    let end = Instant::now() + Duration::from_secs(60);\n    let (client, mut server) = client_until(end);\n    let worker = std::thread::spawn(move || {\n        assert_eq!(\n            receive(&mut server),\n            json!({\"schema_version\":1,\"operation\":\"runtime.final_use.frontier.load.v1\",\"request_id\":1})\n        );\n        send(&mut server, response(1, \"ack\", Some(frontier(1))));\n    });\n    assert_eq!(client.load(\"original\"), Ok(frontier(1)));\n    assert_eq!(client.root.end(), end);\n    worker.join().unwrap();\n}\n\n#[test]\nfn absolute_frontier_end_refuses_expired_request_without_rearm() {\n    let end = Instant::now() + Duration::from_secs(2);\n    let (client, mut server) = client_until(end);\n    after_original_end(end);\n    assert_eq!(\n        client.load(\"original\"),\n        Err(AuthorityTrustError::Unavailable)\n    );\n    assert_closed(&mut server);\n    assert_eq!(\n        client.load(\"original\"),\n        Err(AuthorityTrustError::Unavailable)\n    );\n}\n\n#[test]\nfn absolute_frontier_lost_ack_does_not_resend_the_operation() {\n    let end = Instant::now() + Duration::from_secs(60);\n    let (client, mut server) = client_until(end);\n    let worker = std::thread::spawn(move || {\n        let request = receive(&mut server);\n        assert_eq!(request[\"request_id\"], 1);\n        assert_eq!(request[\"expected\"], json!(frontier(1)));\n        assert_eq!(request[\"next\"], json!(frontier(2)));\n        server.shutdown(Shutdown::Write).unwrap();\n        assert_closed(&mut server);\n    });\n    assert_eq!(\n        client.compare_and_set(\"original\", &frontier(1), &frontier(2)),\n        Err(AuthorityTrustError::Unavailable)\n    );\n    assert_eq!(\n        client.compare_and_set(\"original\", &frontier(1), &frontier(2)),\n        Err(AuthorityTrustError::Unavailable)\n    );\n    assert_eq!(\n        client.load(\"original\"),\n        Err(AuthorityTrustError::Unavailable)\n    );\n    worker.join().unwrap();\n}\n\n#[test]\nfn absolute_frontier_constructor_keeps_root_incarnation_and_pidfd_guards() {\n    if rustix::process::getuid().as_raw() != 0 {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        assert_eq!(\n            RootFinalUseFrontierClient::from_stream_until(\n                stream,\n                \"original\".into(),\n                identity(),\n                pidfd(),\n                Duration::from_secs(1),\n                Instant::now() + Duration::from_secs(60),\n            )\n            .err(),\n            Some(AuthorityTrustError::Invalid)\n        );\n        assert_closed(&mut server);\n    }\n    for (field, expected) in [\n        (\"boot\", AuthorityTrustError::Invalid),\n        (\"start\", AuthorityTrustError::Invalid),\n        (\"pid\", AuthorityTrustError::Unavailable),\n    ] {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        let mut peer = identity();\n        match field {\n            \"boot\" => peer.boot_id = \"wrong\".into(),\n            \"start\" => peer.process_start_ticks += 1,\n            \"pid\" => peer.pid += 1,\n            _ => unreachable!(),\n        }\n        assert_eq!(\n            RootFinalUseFrontierClient::from_stream_for_uid_until(\n                stream,\n                \"original\".into(),\n                peer,\n                pidfd(),\n                Duration::from_secs(1),\n                Instant::now() + Duration::from_secs(60),\n                rustix::process::getuid().as_raw(),\n            )\n            .err(),\n            Some(expected)\n        );\n        assert_closed(&mut server);\n    }\n    for end in [Instant::now(), Instant::now() + Duration::from_secs(3600)] {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        assert_eq!(\n            RootFinalUseFrontierClient::from_stream_for_uid_until(\n                stream,\n                \"original\".into(),\n                identity(),\n                pidfd(),\n                Duration::from_secs(1),\n                end,\n                rustix::process::getuid().as_raw(),\n            )\n            .err(),\n            Some(AuthorityTrustError::Unavailable)\n        );\n        assert_closed(&mut server);\n    }\n}\n",
+      "why": "Four actual same-UID framing/pidfd components; no Root authority or business success is manufactured."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "[[boundary]]\nid = \"root_original_owner_channel_until\"\nsymbol = \"OwnerChannel::new_until\"\nreceiver_type = \"OwnerChannel\"\ndefinition_path = \"codex-rs/hepta-contracts/src/authority_host_channel.rs\"\ndefinition_markers = [\"pub(crate) fn new_until(\",\"let lifetime = remaining(end)?\",\"let channel = Self { owner, end }\",\"channel.check(end)?\"]\nproduct_callers = [\"codex-rs/hepta-contracts/src/authority_host_peer.rs\"]\ncaller_markers = []\n\n",
+      "after": "[[boundary]]\nid = \"root_original_owner_channel_until\"\nsymbol = \"OwnerChannel::new_until\"\nreceiver_type = \"OwnerChannel\"\ndefinition_path = \"codex-rs/hepta-contracts/src/authority_host_channel.rs\"\ndefinition_markers = [\"pub(crate) fn new_until(\",\"let lifetime = remaining(end)?\",\"let channel = Self { owner, end }\",\"channel.check(end)?\"]\nproduct_callers = [\"codex-rs/hepta-contracts/src/authority_host_peer.rs\",\"codex-rs/hepta-contracts/src/authority_root_frontier.rs\"]\ncaller_markers = []\n\n",
+      "why": "Register only the new actual OwnerChannel::new_until caller in the same source."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "tes)?\",\"self.owner.check(deadline)?\",\"response.is_empty() || response.len() > self.policy.response_bound\",\".write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?\",\"self.owner.write_until(stream, &response, deadline)?\",\"self.owner.check(deadline)?\",\"Ok(true)\"]}\n]\n",
+      "after": "tes)?\",\"self.owner.check(deadline)?\",\"response.is_empty() || response.len() > self.policy.response_bound\",\".write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?\",\"self.owner.write_until(stream, &response, deadline)?\",\"self.owner.check(deadline)?\",\"Ok(true)\"]}\n]\n\n[[boundary]]\nid = \"root_original_final_use_frontier_until\"\nsymbol = \"RootFinalUseFrontierClient::from_stream_until\"\nreceiver_type = \"RootFinalUseFrontierClient\"\ndefinition_path = \"codex-rs/hepta-contracts/src/authority_root_frontier.rs\"\ndefinition_markers = [\"pub fn from_stream_until(\",\"Self::from_stream_for_uid_until(stream, owner_id, peer, root_pidfd, timeout, end, 0)\",\"OwnerChannel::new_until(root_pidfd, peer.pid, end)\"]\nproduct_callers = []\ncaller_markers = []\n\n[[protected_file]]\npath = \"codex-rs/hepta-contracts/src/authority_root_frontier.rs\"\nrequired = [\"const FRAME_LIMIT: usize = 16 * 1024;\",\"bounded_text(&format!(\\\"/proc/{}/stat\\\", peer.pid), 8192)?\",\"bounded_text(\\\"/proc/sys/kernel/random/boot_id\\\", 128)?.trim() != peer.boot_id\"]\nforbidden = []\nrequired_function_order = [\n  {function = \"fn from_stream(\", sequence = [\"fn from_stream(\",\"Self::from_stream_for_uid(stream, owner_id, peer, root_pidfd, timeout, lifetime, 0)\"]},\n  {function = \"fn from_stream_for_uid(\", literal_calls = [\".rsplit_once(\\\") \\\")\"], sequence = [\"owner_id.is_empty()\",\"owner_id.len() > 256\",\"peer.pid == 0\",\"peer.pid > i32::MAX as u32\",\"peer.process_start_ticks == 0\",\"timeout.is_zero()\",\"timeout > Duration::from_secs(5)\",\"return Err(AuthorityTrustError::Invalid)\",\"OwnerChannel::new(root_pidfd, peer.pid, lifetime).map_err(unavailable)?\",\"socket_peercred(&stream)\",\"let stat = bounded_text(&format!(\",\"peer.pid), 8192)?\",\".rsplit_once(\\\") \\\")\",\".split_whitespace().nth(19)\",\".parse::<u64>()\",\"actual.uid.as_raw() != uid\",\"actual.pid.as_raw_nonzero().get() as u32 != peer.pid\",\"bounded_text(\",\"128)?.trim() != peer.boot_id\",\"start != Some(peer.process_start_ticks)\",\"return Err(AuthorityTrustError::Invalid)\",\"stream.set_nonblocking(true)\",\"root.check(root.end()).map_err(unavailable)?\",\"channel: Mutex::new(Some(Channel {\",\"next_request_id: 1,\",\"root,\",\"owner_id,\",\"timeout,\"]},\n  {function = \"fn from_stream_until(\", sequence = [\"fn from_stream_until(\",\"Self::from_stream_for_uid_until(stream, owner_id, peer, root_pidfd, timeout, end, 0)\"]},\n  {function = \"fn from_stream_for_uid_until(\", literal_calls = [\".rsplit_once(\\\") \\\")\"], sequence = [\"owner_id.is_empty()\",\"owner_id.len() > 256\",\"peer.pid == 0\",\"peer.pid > i32::MAX as u32\",\"peer.process_start_ticks == 0\",\"timeout.is_zero()\",\"timeout > Duration::from_secs(5)\",\"return Err(AuthorityTrustError::Invalid)\",\"OwnerChannel::new_until(root_pidfd, peer.pid, end).map_err(unavailable)?\",\"socket_peercred(&stream)\",\"let stat = bounded_text(&format!(\",\"peer.pid), 8192)?\",\".rsplit_once(\\\") \\\")\",\".split_whitespace().nth(19)\",\".parse::<u64>()\",\"actual.uid.as_raw() != uid\",\"actual.pid.as_raw_nonzero().get() as u32 != peer.pid\",\"bounded_text(\",\"128)?.trim() != peer.boot_id\",\"start != Some(peer.process_start_ticks)\",\"return Err(AuthorityTrustError::Invalid)\",\"stream.set_nonblocking(true)\",\"root.check(root.end()).map_err(unavailable)?\",\"channel: Mutex::new(Some(Channel {\",\"next_request_id: 1,\",\"root,\",\"owner_id,\",\"timeout,\"]},\n  {function = \"fn exchange(\", sequence = [\"owner_id != self.owner_id\",\"return Err(AuthorityTrustError::Invalid)\",\"self.channel.try_lock()\",\"slot.take().ok_or(AuthorityTrustError::Unavailable)?\",\"id.checked_add(1)\",\"self.root.deadline(self.timeout)\",\"self.root.check(deadline)\",\".write_until(\",\"&(bytes.len() as u32).to_be_bytes()\",\".write_until(&mut channel.stream, &bytes, deadline)\",\".read_until(&mut channel.stream, &mut prefix, deadline)\",\"length == 0 || length > FRAME_LIMIT\",\".read_until(&mut channel.stream, &mut bytes, deadline)\",\"serde_json::from_slice(&bytes)\",\"self.root.check(deadline)\",\"response.schema_version != 1 || response.request_id != id\",\"Status::Ack\",\"update.is_some_and(|(_, next)| *next != frontier)\",\"Status::Conflict if update.is_some()\",\"Status::Conflict | Status::Unknown\",\"result.is_ok() || result == Err(AuthorityTrustError::Conflict)\",\"*slot = Some(channel)\",\"channel.stream.shutdown(Shutdown::Both)\",\"result\"]}\n]\n",
+      "why": "Add only the public fixed-UID0 until constructor boundary and exact legacy/new/internal/framing guards."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "\"root_q24_factory_same_service_reserve\"]",
+      "after": "\"root_q24_factory_same_service_reserve\",\"root_original_final_use_frontier_until\"]",
+      "why": "Inventory exactly the new constructor boundary, preserving all previous IDs."
+    }
+  ]
+}

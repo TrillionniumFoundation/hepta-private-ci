@@ -162,16 +162,18 @@ impl Q24StageOwners {
                     .block_on(factory.readback(trainer, &inner.dataset_cut, &inputs))
                     .map(|value| (value.learning_receipt().clone(), None))
                     .map_err(unavailable),
-                Action::CommitDecision => runtime
-                    .block_on(local.attest_original_decision(
-                        factory,
-                        trainer,
-                        &inner.dataset_cut,
-                        &inputs,
-                        snapshot,
-                    ))
-                    .map(|(receipt, signed)| (receipt, Some(signed)))
-                    .map_err(unavailable),
+                Action::CommitDecision => {
+                    let result = if let Some(phase) = &inner.same_actor_work {
+                        runtime.block_on(local.attest_original_same_actor_decision(
+                            factory, trainer, &inner.dataset_cut, &inputs, snapshot, phase,
+                        ))
+                    } else {
+                        runtime.block_on(local.attest_original_decision(
+                            factory, trainer, &inner.dataset_cut, &inputs, snapshot,
+                        ))
+                    };
+                    result.map(|(receipt, signed)| (receipt, Some(signed))).map_err(unavailable)
+                }
                 Action::ReadDecision => runtime
                     .block_on(local.readback(
                         factory,

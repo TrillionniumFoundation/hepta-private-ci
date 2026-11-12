@@ -15,6 +15,18 @@ pub use notes_startup::RootNotesPolicyPredecessor;
 #[path = "authority_host_session_material.rs"]
 mod material;
 
+#[path = "authority_host_same_actor_q24_phase.rs"]
+mod same_actor_phase;
+pub use same_actor_phase::PreparedRootSameActorQ24PhaseV1;
+pub use same_actor_phase::RootSameActorPhaseStartV1;
+pub use same_actor_phase::RootSameActorScopeEnrollmentCapabilityV1;
+pub use same_actor_phase::RootSameActorScopedEnrollmentV1;
+pub use same_actor_phase::RootSameActorHostInputsV1;
+pub use same_actor_phase::RootSameActorHostCommandV1;
+pub use same_actor_phase::RootSameActorHostAcknowledgementV1;
+pub use generation_initial::RootSameActorInitialEnrollmentCapabilityV1;
+pub use generation_publication::RootSameActorPublicationEnrollmentCapabilityV1;
+
 #[path = "authority_host_learning_session.rs"]
 mod learning;
 

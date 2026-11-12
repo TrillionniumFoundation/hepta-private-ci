@@ -56,13 +56,59 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner: OwnedFd,
     ) -> io::Result<()> {
-        let mut sequence = 1;
+        let sequence = 1;
         let pin = owner.try_clone()?;
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
+        let channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
             .map_err(io::Error::other)?;
+        self.serve_original_publication_channel(
+            slot, learning, config, registration, pin, channel, sequence, None,
+        )
+    }
+
+    pub(crate) fn serve_generation_publication_until(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        phase: &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+    ) -> io::Result<()> {
+        let _closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+        phase.require_original(slot)?;
+        let _stream_stop = phase.gate.retain_original_stream(&stream)?;
+        let pin = owner.try_clone()?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream, policy, owner, phase.gate.deadline().instant(),
+        ).map_err(io::Error::other)?;
+        self.serve_original_publication_channel(
+            slot, learning, config, registration, pin, channel, 1, Some(phase),
+        )?;
+        Err(io::Error::other("required original phase publication lane ended"))
+    }
+
+    fn serve_original_publication_channel(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        pin: OwnedFd,
+        mut channel: HostAuthorityPeerChannel,
+        mut sequence: u64,
+        phase: Option<&crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>>,
+    ) -> io::Result<()> {
         while channel
             .exchange(|bytes| {
-                self.with_learning_profile(
+                let _admission = phase.map(|context| context.gate.enter_original_lane()).transpose()
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                if let Some(context) = phase {
+                    context.require_original(slot)
+                        .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                }
+                let response = self.with_learning_profile(
                     config,
                     registration,
                     &pin,
@@ -221,6 +267,9 @@ impl HostAuthorityService {
                         if raw.len() > 16 * 1024 {
                             return Err(io::Error::other("publication reply bound"));
                         }
+                        if let Some(context) = phase {
+                            context.require_original(slot)?;
+                        }
                         match &request.command {
                             Command::Observe => {}
                             Command::Prepare { .. } => {
@@ -290,10 +339,19 @@ impl HostAuthorityService {
                         Ok(raw)
                     },
                 )
-                .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+                .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                if let Some(context) = phase {
+                    context.require_original(slot)
+                        .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                }
+                Ok(response)
             })
             .map_err(io::Error::other)?
-        {}
+        {
+            if let Some(context) = phase {
+                context.require_original(slot)?;
+            }
+        }
         Ok(())
     }
 }

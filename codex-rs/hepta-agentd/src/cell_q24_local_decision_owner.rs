@@ -443,6 +443,10 @@ fn now() -> Result<u64, Error> {
         .map_err(|_| Error::Binding("local decision clock"))
 }
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_local_decision_same_actor.rs"]
+mod same_actor;
+
 #[cfg(test)]
 #[path = "cell_q24_local_decision_owner_tests.rs"]
 mod tests;

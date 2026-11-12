@@ -100,6 +100,20 @@ impl HostAuthorityService {
         learning: &RegisteredHostLearningCheckpointV1,
         inputs: RootGenerationPublicationEnrollmentV1,
     ) -> io::Result<RegisteredGenerationPublication> {
+        self.enroll_original_publication_body(
+            config, registration, owner, learning, inputs, None,
+        )
+    }
+
+    pub(crate) fn enroll_original_publication_body(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        learning: &RegisteredHostLearningCheckpointV1,
+        inputs: RootGenerationPublicationEnrollmentV1,
+        phase: Option<&crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>>,
+    ) -> io::Result<RegisteredGenerationPublication> {
         original_root()?;
         self.with_learning_profile(
             config,
@@ -107,6 +121,11 @@ impl HostAuthorityService {
             owner,
             &learning.profile,
             |initial, proof| {
+                let _admission = phase.map(|context| {
+                    let admission = context.gate.enter_original_lane()?;
+                    context.require_before_enrollment()?;
+                    Ok::<_, io::Error>(admission)
+                }).transpose()?;
                 let scope = learning.profile.require_cell_scope(&initial)?;
                 let actual = learning
                     .backend
@@ -326,6 +345,7 @@ impl HostAuthorityService {
                         NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel
                     },
                 };
+                if let Some(context) = phase { context.require_before_enrollment()?; }
                 let current = NeuronGenerationCurrentOwnerV1::open(
                     inputs.current_directory.clone(),
                     from.scope(),
@@ -441,6 +461,7 @@ impl HostAuthorityService {
                     binding: String::new(),
                 };
                 profile.binding = profile.digest()?;
+                if let Some(context) = phase { context.require_before_enrollment()?; }
                 let profile_store = match recovered {
                     Some((store, record)) => {
                         if record.profile != profile {
@@ -482,8 +503,61 @@ impl HostAuthorityService {
                         .map_err(io::Error::other)?
                         .observed_unix_ms,
                 )?;
+                if let Some(context) = phase { context.require_original(&enrolled)?; }
                 Ok(enrolled)
             },
         )
+    }
+}
+
+impl HostAuthorityService {
+    pub(crate) fn enroll_generation_publication_for_phase(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        learning: &RegisteredHostLearningCheckpointV1,
+        inputs: RootGenerationPublicationEnrollmentV1,
+        phase: &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+    ) -> io::Result<RegisteredGenerationPublication> {
+        phase.gate.require_open()?;
+        phase.record.require_scoped()?;
+        if inputs.mode != RootGenerationPublicationModeV1::Reserve
+            || !Arc::ptr_eq(&inputs.current_directory, &phase.original.root)
+            || inputs.consumer != phase.original.consumer_slot
+        {
+            return Err(io::Error::other("same-actor phase requires its original CURRENT and consumer"));
+        }
+        // These duplicate only the original read descriptors. The original
+        // enrollment below still consumes and checks the supplied files.
+        let previous = RootGenerationJournalInputsV1 {
+            journal: inputs.previous.journal.try_clone()?,
+            witness: inputs.previous.witness.try_clone()?,
+            config: inputs.previous.config.clone(),
+        }.observe(config.peer_uid)?;
+        let observed = previous.observe().map_err(io::Error::other)?;
+        if previous.files_binding().to_string() != phase.original.files
+            || previous.owner_binding() != &phase.original.owner
+            || !observed.is_drained()
+            || observed.observation().owner_checkpoint().into_array() != phase.original.checkpoint
+            || observed.observation().digest().map_err(io::Error::other)? != phase.original.observation
+        {
+            return Err(io::Error::other("same-actor phase predecessor changed before enrollment"));
+        }
+        phase.gate.require_open()?;
+        let slot = self.enroll_original_publication_body(
+            config, registration, owner, learning, inputs, Some(phase),
+        )?;
+        self.with_learning_profile(config, registration, owner, &learning.profile, |_initial, _proof| {
+            phase.require_original(&slot)?;
+            if slot.current.original_broker_head().map_err(io::Error::other)? != phase.original.head {
+                return Err(io::Error::other("same-actor phase CURRENT changed after the original A claim"));
+            }
+            if previous.observe().map_err(io::Error::other)? != observed {
+                return Err(io::Error::other("same-actor phase predecessor changed during enrollment"));
+            }
+            phase.require_original(&slot)
+        })?;
+        Ok(slot)
     }
 }

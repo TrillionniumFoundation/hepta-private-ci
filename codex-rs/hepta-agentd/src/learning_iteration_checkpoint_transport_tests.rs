@@ -74,6 +74,7 @@ fn client(initial: &LearningIterationSnapshotV1) -> (AgentdLearningCheckpointCli
             })),
             initial: initial.clone(),
             scope: None,
+            phase: None,
         },
         server,
     )
@@ -385,3 +386,6 @@ async fn learning_checkpoint_cancel_after_commit_requires_original_owner_reconci
     worker.join().unwrap()?;
     Ok(())
 }
+
+#[path = "learning_iteration_checkpoint_same_actor_tests.rs"]
+mod same_actor_tests;

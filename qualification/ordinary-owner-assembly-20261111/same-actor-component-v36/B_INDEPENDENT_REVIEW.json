@@ -1,0 +1,465 @@
+{
+  "schema_version": 1,
+  "kind": "independent-final-B-installation-guard-tests-and-metadata-delta-review",
+  "status": "No confirmed new blocking defect in the reviewed final source delta. The intermediate CALLERS is intentionally incomplete and must not be used as a qualified standalone registry.",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": {
+    "source_base": {
+      "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+    },
+    "preceding_work_manifest": "f943e4493f5294363366d1154566b644a938bab4",
+    "preceding_work_operations": "0c50562977ebfc5409e67c2dce3b8c037d66da9e",
+    "preceding_work_independent_review": "0f0dec1b79f877ee6a78616e327ab2afc5fa68e2",
+    "earlier_actual_B_source_chain_and_controller_fix_review": "f6617c4f1b3f3cafcb03d3e40201a2815c4f8668",
+    "final_manifest": {
+      "blob": "16250eb7b6294c5c37c44428ace77dbaa50cfab1",
+      "bytes": 11710,
+      "sha256": "44a1b222d16e921eaa989c9a99a06c4ebb0868cc2634bbf8e78b8e5d13fc01b5"
+    },
+    "final_operations": {
+      "blob": "72d643f4a71824efd996927c147d522fd0683d2c",
+      "bytes": 54570,
+      "sha256": "41cb783d84144313e35db565b5e0e08a63ad765fae39044d7d2f997bdcfc1652"
+    },
+    "annex": {
+      "blob": "4fd31674ab4b4d8be53ca14674376d59fa1b1e68",
+      "bytes": 7501,
+      "sha256": "07e4d5c23753d0dd4268add43e543910d9ae2c31708c5885b55b771eb5d9ef45"
+    },
+    "superseded_inner_packet": "fa01734ae9bac90f8298adabb2ad8d3a0ea7ee6f",
+    "application_rule": "Apply final 72d643 over Work once; do not also apply the superseded fa017 additions."
+  },
+  "independent_actions": {
+    "immutable_git_GET": true,
+    "final_manifest_and_all_target_bytes_bound": true,
+    "unique_exact_forward_and_reverse_replay": true,
+    "total_paths": 8,
+    "product_rust_paths": 6,
+    "test_rust_paths": 1,
+    "source_operations": 12,
+    "metadata_operations": 1,
+    "pure_javascript_lexical_projection_only": true,
+    "original_checker_executed": false,
+    "original_typed_helper_executed": false,
+    "full_source_index_built": false,
+    "rust_formatter": false,
+    "rust_compiler": false,
+    "native": false,
+    "h_or_pty": false,
+    "ref_changes": false
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "blob": "42120c9640836c780860060d226c98d6c665455c",
+      "bytes": 14004,
+      "sha256": "ad82d224dc5ef2652a5e5ba489201bfd4f7ac6c379b29a455260db7a11cc9f19",
+      "operations": 3,
+      "forward": [
+        1,
+        1,
+        1
+      ],
+      "reverse": [
+        1,
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "blob": "76bae2a74aaa4f6a0142af0d67356cdaaf1d9a63",
+      "bytes": 30561,
+      "sha256": "b0a606fd50191fe0d8c3276d56ab114954af98de2f1332de5d7bfcdde459df25",
+      "operations": 3,
+      "forward": [
+        1,
+        1,
+        1
+      ],
+      "reverse": [
+        1,
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+      "blob": "1e0890fc237bf9b79e11bfa3a36eab63e2bd4e56",
+      "bytes": 2631,
+      "sha256": "9f0144fd0a95996a62640d9f726d6cf18364c7fcbba000f2833531d7d70fba26",
+      "operations": 1,
+      "forward": [
+        "add"
+      ],
+      "reverse": [
+        "add"
+      ],
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "blob": "a7730db4ce0e2014bae40d44ea1a0c3bf476a657",
+      "bytes": 24283,
+      "sha256": "b71f0157001092baff65b3b829c7533cada3c895d341e73f4777b86ab5a59434",
+      "operations": 1,
+      "forward": [
+        1
+      ],
+      "reverse": [
+        1
+      ],
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "blob": "94b5901cd98f06403a84a8a07687490a4db6dce5",
+      "bytes": 6785,
+      "sha256": "97106b4cdff2452fee0f397ff7786070dbcda03d2949a6413136036cf3e90af5",
+      "operations": 2,
+      "forward": [
+        1,
+        1
+      ],
+      "reverse": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+      "blob": "e5a35ba8bc115d26759356f2495e4c8df0ae0fd4",
+      "bytes": 9841,
+      "sha256": "aa8d14146513fe27b3c150abe2583a3d8b349a094ec59f60c1c050ae645872f9",
+      "operations": 1,
+      "forward": [
+        "add"
+      ],
+      "reverse": [
+        "add"
+      ],
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation_tests.rs",
+      "blob": "2a72a093afcc692122baabe55be82bbf3f0949b4",
+      "bytes": 7872,
+      "sha256": "6cb379b42bf1ff6077a80660221549427d69a4314d7d5248ab1c400a97d5aaae",
+      "operations": 1,
+      "forward": [
+        "add"
+      ],
+      "reverse": [
+        "add"
+      ],
+      "exact": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+      "bytes": 775643,
+      "sha256": "4a1ede0cf1415ab127fbc6b03b9488e3f82eb0d53e893b0b7efe21dfc112fb02",
+      "operations": 1,
+      "forward": [
+        1
+      ],
+      "reverse": [
+        1
+      ],
+      "exact": true
+    }
+  ],
+  "final_delta_findings": [
+    {
+      "topic": "Actual once-only installation custody",
+      "evidence": [
+        "same_actor_q24_phase_learning_evaluation.rs e5a35ba8bc115d26759356f2495e4c8df0ae0fd4",
+        "cell_q24_learning_evaluation_phase.rs 1e0890fc237bf9b79e11bfa3a36eab63e2bd4e56"
+      ],
+      "finding": "begin_installation returns the actual opaque OriginalEvaluationInstallation. It holds a reference to the same exchange, the full Training snapshot and the common CloseSameActorPhaseOnDrop. There is no Clone, public field construction or retained std::sync::MutexGuard across the original installer await. The sole reviewed wrapper retains this actual value across install_independent_evaluation(self, original).await."
+    },
+    {
+      "topic": "Consumption and cancellation",
+      "finding": "complete_installation consumes the actual installation value, checks std::ptr::eq against this exchange and complete snapshot equality, then checks the retained Training cut and Installing state under the original state mutex. Only this transition writes Installed; notification follows mutex release and both close guards are disarmed only after that transition. An error or a dropped installation leaves a close guard armed. The earlier outer failure guard is still present; this addition is an explicit custody/test interface, not evidence of a previously established cancellation bug."
+    },
+    {
+      "topic": "No stale cut substitution",
+      "finding": "The wrapper first proves actual same Work/aggregate association and inner snapshot scope. The actual original owner lane still obtains native Training readback and reconstructed cut. The phase requires that exact cut immediately before original into_stage file effects and again after the original asynchronous Training-evidence validation. Awaiting/Installing/Installed cannot be reset or rearmed; different cuts, repeat begin, request expiry and closed Gate remain errors."
+    },
+    {
+      "topic": "Notification is not qualification",
+      "finding": "The new guard completes only after the original aggregate installation await has returned and released its lane. Installed proves custody of the supplied Evaluation inputs. The existing Evaluation.complete path still performs the actual qualification, role/controller separation, signatures, runner/holdout/evidence and cost checks. No synthetic Trainer capability or B receipt is introduced."
+    },
+    {
+      "topic": "Wait and deadline behavior",
+      "finding": "The Learning loop publishes actual Training only after the original checkpoint and native Training readback. Its wait is outside the aggregate lane. Notify::notified is enabled before the protected state check, and success state is checked again before return. Waiting races the original Gate cancellation and its existing absolute Instant deadline; original request expiry is checked without changing either deadline. Only the read-only Training progress observer may be cancelled without closing the phase. A real installation or Learning wait cancellation closes the shared Gate."
+    },
+    {
+      "topic": "Original None path",
+      "finding": "The phase Stage wrapper returns Ok(false) before additional owner readback if same_actor_work is None; non-Evaluation stages return before the extra wait. The original installer retains its same checks/effects, with new Some-phase guard calls only. The final Stage delta uses explicit UFCS at the two actual guards; final run delta only reorders the added import relative to the previously reviewed draft."
+    },
+    {
+      "topic": "Single original decision future retained",
+      "evidence": [
+        "same_actor_q24_phase_publish.rs 7c69d94b92859ce593076052e39edbcf53ebbedf",
+        "fix c3818829cb4e88d59545ec2ab9ad12694f7ef1f2"
+      ],
+      "finding": "The final manifest depends on the previously reviewed fix: one pinned original decision_snapshot future is created, borrowed by select and retained across the Training/B installation branch, then awaited as the same future. The earlier 56674d controller dropped that pending authority-bearing future and was a confirmed blocker. It remains superseded. Genuine NoUpdate only cancels the read-only Training observer; it does not fabricate Evaluation."
+    }
+  ],
+  "component_review": {
+    "source": {
+      "blob": "2a72a093afcc692122baabe55be82bbf3f0949b4",
+      "bytes": 7872,
+      "sha256": "6cb379b42bf1ff6077a80660221549427d69a4314d7d5248ab1c400a97d5aaae"
+    },
+    "methods": 6,
+    "executed": false,
+    "actual_coverage": [
+      "The real wait future is first polled with biased select and stays pending in Awaiting and Installing; only actual complete releases it.",
+      "Cancelling a registered actual wait closes the Gate and refuses both begin and completion.",
+      "Cancelling only the read-only Training observation keeps the Gate open; an earlier notification is recovered from state, including an already Installed state.",
+      "A changed exact cut and repeated installation refuse and close.",
+      "An expired request refuses while retaining the original Instant and BOOTTIME deadline values.",
+      "Dropping the real begin_installation return value closes the Gate and cannot rearm the cut."
+    ],
+    "meaningful_limits": "These are private production Gate/Notify/state/guard components with synthetic initial metadata. They do not execute Training, construct a genuine Trainer readback, install independent B, produce a qualified Evaluation receipt or exercise a Root/daemon business run.",
+    "test_helper_check": "The actual fixed d973 neuron_generation_update_bootstrap.rs 4256c5b8a17c8e523b6438191c582883025e2b92 has the cfg(test) pub(crate) reexport learning::tests::baseline as learning_test_baseline. The new child explicitly imports pretty_assertions::assert_eq. This is a source reachability check, not Rust typechecking.",
+    "original_tests_deleted": false,
+    "new_Root_parent": false
+  },
+  "metadata_review": {
+    "CALLERS_before": "ee142aea0d277d77de6d3e9cda62259a3b393f11",
+    "CALLERS_after": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+    "entire_old_bytes_prefix_preserved": true,
+    "before": {
+      "boundaries": 548,
+      "protected_rows": 388
+    },
+    "after": {
+      "boundaries": 556,
+      "protected_rows": 394
+    },
+    "projection": {
+      "algorithm_source": "Original 7a6709691c372504ca11b5d2a74e14ba819fca8f masking/extent/order logic, reviewed earlier and transcribed in pure JavaScript; not execution of that checker.",
+      "old_work_rows": 14,
+      "old_file_sequences": 13,
+      "old_function_sequences": 33,
+      "new_B_rows": 6,
+      "new_B_function_sequences": 20,
+      "total_order_sequences": 66,
+      "observed_projection_errors": 0,
+      "all_raw_required_and_masked_forbidden_for_these_rows_satisfied": true,
+      "source_positions_and_sequences_retained_in_local_review_store": true
+    },
+    "new_boundary_known_scope": [
+      {
+        "id": "q24_same_actor_training_checkpoint_notice",
+        "definition": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "definition_markers": 2,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_original_wait",
+        "definition": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "definition_markers": 3,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_install_begin",
+        "definition": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "definition_markers": 2,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_effect_entry",
+        "definition": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "definition_markers": 2,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_install_complete",
+        "definition": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "definition_markers": 3,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_aggregate_wait",
+        "definition": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+        "definition_markers": 3,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_aggregate_install",
+        "definition": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+        "definition_markers": 3,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+        ],
+        "exact": true
+      },
+      {
+        "id": "q24_same_actor_evaluation_process_wait",
+        "definition": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+        "definition_markers": 3,
+        "missing": [],
+        "expected": [
+          "codex-rs/hepta-agentd/src/learning_iteration.rs"
+        ],
+        "actual": [
+          "codex-rs/hepta-agentd/src/learning_iteration.rs"
+        ],
+        "exact": true
+      }
+    ],
+    "known_scope_product_paths": 17,
+    "known_scope_limit": "The known-source scan covers final B, preceding Work and actual controller files. It is not a repository-wide closed-set proof or full authority-field index.",
+    "old_boundary_annex": [
+      {
+        "id": "learning_original_q24_install_independent_evaluation",
+        "old_callers_exact": true,
+        "paths": [
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+            "pattern_matches": null,
+            "method_occurrences": 1
+          }
+        ]
+      },
+      {
+        "id": "q24_training_original_readback_export",
+        "old_callers_exact": true,
+        "paths": [
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+            "pattern_matches": null,
+            "method_occurrences": 1
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+            "pattern_matches": null,
+            "method_occurrences": 1
+          }
+        ]
+      },
+      {
+        "id": "q24_training_original_readback_cut",
+        "old_callers_exact": true,
+        "paths": [
+          {
+            "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+            "pattern_matches": null,
+            "method_occurrences": 1
+          }
+        ]
+      },
+      {
+        "id": "q24_same_actor_learning_training_binding",
+        "old_callers_exact": true,
+        "paths": [
+          {
+            "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+            "pattern_matches": true,
+            "method_occurrences": 4
+          }
+        ]
+      },
+      {
+        "id": "q24_same_actor_learning_effect_entry",
+        "old_callers_exact": true,
+        "paths": [
+          {
+            "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+            "pattern_matches": true,
+            "method_occurrences": 2
+          }
+        ]
+      },
+      {
+        "id": "q24_same_actor_learning_stage_work",
+        "old_callers_exact": true,
+        "paths": [
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+            "pattern_matches": true,
+            "method_occurrences": 2
+          }
+        ]
+      }
+    ],
+    "final_union_mandatory": {
+      "required_ids_current": 524,
+      "declared_current": 556,
+      "add_prior_Work_required_ids": 24,
+      "add_B_required_ids": 8,
+      "add_old_B_caller_paths": 7,
+      "old_B_boundary_rows": 6,
+      "preserve_prior_Work_19_caller_additions_annex": "6f099838c970533a5a6f5b79085b191840d356b9",
+      "use_set_union": true,
+      "no_current_standalone_registry_PASS": true
+    }
+  },
+  "limits": [
+    "Actual independent B execution, authenticated evidence, complete cost accounting and deployment resources remain caller prerequisites.",
+    "Source review finds no new concrete defect in this final delta, but does not establish compilation, original full checker acceptance, runtime scheduling or business success.",
+    "The final merged registry and real module graph still require Root's independent union review and fixed-source native qualification.",
+    "The phase does not add independently controlled C identity or cold-restart recovery; a new run under the same custodian is not an independent consumer."
+  ],
+  "qualification": {
+    "ordinary_business_loops": 0,
+    "independent_C": 0,
+    "real_daemon_and_Root_cold_restart": 0,
+    "new_tests_executed": 0
+  }
+}

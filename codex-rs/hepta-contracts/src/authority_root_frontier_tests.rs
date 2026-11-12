@@ -306,3 +306,6 @@ fn public_constructor_requires_root_and_exact_preheld_process_identity() {
         assert_closed(&mut server);
     }
 }
+
+#[path = "authority_root_frontier_deadline_tests.rs"]
+mod deadline_tests;

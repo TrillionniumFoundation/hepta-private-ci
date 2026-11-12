@@ -20,6 +20,23 @@ pub(crate) struct OriginalPublicationStream {
     root: OwnedFd,
     timeout: Duration,
     end: Instant,
+    phase: Option<OriginalPhasePublicationChannel>,
+}
+
+struct OriginalPhasePublicationChannel {
+    initial_retirement: Option<std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>>,
+    _stop: crate::same_actor_q24_phase_gate::SameActorPhaseStream,
+    gate: std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+}
+
+impl Drop for OriginalPhasePublicationChannel {
+    fn drop(&mut self) {
+        if !self.initial_retirement.as_ref().is_some_and(|retirement| {
+            retirement.permits_original_drop(&self.gate)
+        }) {
+            self.gate.close();
+        }
+    }
 }
 
 impl OriginalPublicationStream {
@@ -89,10 +106,128 @@ impl OriginalPublicationStream {
             root,
             timeout,
             end: Instant::now() + lifetime,
+            phase: None,
+        })
+    }
+
+    pub(crate) fn from_original_initial_phase_stream_until(
+        stream: UnixStream,
+        root: OwnedFd,
+        peer: AgentdRootAuthorityPeer,
+        timeout: Duration,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+        retirement: std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,
+    ) -> io::Result<Self> {
+        Self::from_original_phase_stream_until(
+            stream, root, peer, timeout, gate.deadline().instant(), gate, Some(retirement),
+        )
+    }
+
+    pub(crate) fn from_original_scoped_phase_stream_until(
+        stream: UnixStream,
+        root: OwnedFd,
+        peer: AgentdRootAuthorityPeer,
+        timeout: Duration,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> io::Result<Self> {
+        Self::from_original_phase_stream_until(
+            stream, root, peer, timeout, gate.deadline().instant(), gate, None,
+        )
+    }
+
+    fn from_original_phase_stream_until(
+        stream: UnixStream,
+        root: OwnedFd,
+        peer: AgentdRootAuthorityPeer,
+        timeout: Duration,
+        end: Instant,
+        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+        initial_retirement: Option<std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>>,
+    ) -> io::Result<Self> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        gate.require_open()?;
+        if end != gate.deadline().instant() { return Err(unavailable()); }
+        let lifetime = end.checked_duration_since(Instant::now()).ok_or_else(unavailable)?;
+        let stop = gate.retain_original_stream(&stream)?;
+        if peer.pid == 0
+            || peer.pid > i32::MAX as u32
+            || peer.process_start_ticks == 0
+            || timeout.is_zero()
+            || timeout > Duration::from_millis(500)
+            || lifetime.is_zero()
+            || lifetime > Duration::from_secs(300)
+        {
+            return Err(unavailable());
+        }
+        let number = root.as_raw_fd();
+        if std::fs::read_link(format!("/proc/self/fd/{number}"))? != Path::new("anon_inode:[pidfd]")
+            || bounded_text(&format!("/proc/self/fdinfo/{number}"), 4096)?
+                .lines()
+                .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
+                != Some(peer.pid)
+            || bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim() != peer.boot_id
+        {
+            return Err(unavailable());
+        }
+        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
+        if stat
+            .rsplit_once(") ")
+            .and_then(|(_, values)| values.split_whitespace().nth(19))
+            .and_then(|value| value.parse::<u64>().ok())
+            != Some(peer.process_start_ticks)
+        {
+            return Err(unavailable());
+        }
+        let mut actual = libc::ucred {
+            pid: 0,
+            uid: u32::MAX,
+            gid: u32::MAX,
+        };
+        let mut size = std::mem::size_of_val(&actual) as libc::socklen_t;
+        // SAFETY: the live original stream and exactly sized initialized ucred
+        // remain owned here for this kernel observation.
+        if unsafe {
+            libc::getsockopt(
+                stream.as_raw_fd(),
+                libc::SOL_SOCKET,
+                libc::SO_PEERCRED,
+                (&mut actual as *mut libc::ucred).cast(),
+                &mut size,
+            )
+        } != 0
+            || size as usize != std::mem::size_of::<libc::ucred>()
+            || actual.uid != 0
+            || actual.pid != peer.pid as i32
+        {
+            return Err(unavailable());
+        }
+        crate::root_observation_stream::check_lifetime(&root).map_err(io::Error::other)?;
+        stream.set_nonblocking(true)?;
+        gate.require_open()?;
+        if let Some(retirement) = &initial_retirement {
+            retirement.require_original_gate(gate).map_err(io::Error::other)?;
+        }
+        // Only the exact first retirement ACK enables this one Initial
+        // channel's deliberate owner drop. Any earlier drop closes all lanes.
+        closing.disarm();
+        Ok(Self {
+            stream,
+            root,
+            timeout,
+            end,
+            phase: Some(OriginalPhasePublicationChannel {
+                initial_retirement,
+                _stop: stop,
+                gate: std::sync::Arc::clone(gate),
+            }),
         })
     }
 
     pub(crate) fn exchange(&mut self, request: &[u8]) -> io::Result<Vec<u8>> {
+        let mut phase_close = self.phase.as_ref().map(|phase| {
+            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&phase.gate)
+        });
+        if let Some(phase) = &self.phase { phase.gate.require_open()?; }
         if request.is_empty() || request.len() > 16_384 {
             return Err(unavailable());
         }
@@ -112,6 +247,8 @@ impl OriginalPublicationStream {
         if Instant::now() >= end {
             return Err(unavailable());
         }
+        if let Some(phase) = &self.phase { phase.gate.require_open()?; }
+        if let Some(closing) = &mut phase_close { closing.disarm(); }
         Ok(response)
     }
 

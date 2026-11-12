@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "same-actor-learning-test-explicit-macro-import",
+  "base_manifest": "ecb1825835d6efe6174295d1d87fd160b8553485",
+  "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor_tests.rs",
+  "preimage": {
+    "blob": "95aa8140dcfe584b098c57412bae93a0ebf4d218",
+    "bytes": 10706,
+    "sha256": "5dbed540768311c95fe0e7495aaa210b734e51bbeefda3786df3fb8e064ee83d"
+  },
+  "postimage": {
+    "blob": "318d10429421c1ce43b7e830e93d548ea98bf9e4",
+    "bytes": 10740,
+    "sha256": "8dfb1c1179079a5823b9900c3c4fc0577da0063e7d8fafa7c6f47633d0f38793"
+  },
+  "operations": [
+    {
+      "action": "replace",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor_tests.rs",
+      "before": "use super::*;\n",
+      "after": "use super::*;\nuse pretty_assertions::assert_eq;\n"
+    }
+  ],
+  "scope": "One explicit test macro import; all product Rust, CALLERS, test names, assertions, fixtures and values byte-identical. Static E0659-risk correction, not compilation."
+}

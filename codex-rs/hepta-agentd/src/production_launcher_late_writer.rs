@@ -184,7 +184,7 @@ impl OriginalLateWriterInputs {
     }
 }
 
-fn require_late_owner(uid: u32, gid: u32) -> Result<(), AgentdError> {
+pub(super) fn require_late_owner(uid: u32, gid: u32) -> Result<(), AgentdError> {
     // SAFETY: these calls only read this process's actual kernel credentials.
     let actual = unsafe {
         (

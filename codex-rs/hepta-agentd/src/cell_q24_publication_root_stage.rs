@@ -373,3 +373,6 @@ impl OriginalCellQ24RetainedArtifactForRootV1 {
             .await
     }
 }
+
+#[path = "cell_q24_publication_same_actor.rs"]
+mod same_actor_phase;

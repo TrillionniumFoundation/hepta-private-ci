@@ -37,6 +37,8 @@ pub(crate) mod successor;
 mod learning;
 #[cfg(target_os = "linux")]
 pub use learning::AgentdQ24LearningTaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub(crate) use learning::OriginalSameActorATaskParts;
 
 /// Source lifecycle is explicit. Recovery never replaces an acknowledged
 /// history with a fresh source or recreates an unresolved request.

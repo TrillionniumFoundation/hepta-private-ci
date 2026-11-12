@@ -22,6 +22,9 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+#[path = "authority_host_same_actor_q24_phase_lanes.rs"]
+mod same_actor_phase;
+
 #[path = "authority_host_writer.rs"]
 mod writer;
 pub use writer::FreshHostCognitiveState;

@@ -286,3 +286,6 @@ fn root_issuer_dead_original_process_cannot_authorize_inherited_stream_reply() {
         Err(AgentdFinalUseIssuerError::ChannelClosed)
     );
 }
+
+#[path = "root_issuer_client_deadline_tests.rs"]
+mod deadline;

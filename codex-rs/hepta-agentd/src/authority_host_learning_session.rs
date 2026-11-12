@@ -224,3 +224,66 @@ pub(super) fn serve_optional(
         result.and(learned)
     })
 }
+
+impl BoundLearning {
+    pub(super) fn serve_same_actor_phase_learning(
+        &self,
+        service: &HostAuthorityService,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        phase: &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
+        let factory = self.model.as_ref()
+            .ok_or_else(|| io::Error::other("same-actor phase original Model factory missing"))?;
+        let publication = self.publication.as_ref()
+            .ok_or_else(|| io::Error::other("same-actor phase original publication route missing"))?;
+        publication.activate_same_actor_phase()?;
+        std::thread::scope(|scope| {
+            let closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+            let model = scope.spawn(|| factory.serve_same_actor_phase_factory(
+                service, config, registration, owner, phase.gate,
+            ));
+            let published = scope.spawn(|| publication.serve_same_actor_phase_publication(
+                &self.learning, service, config, registration, owner, phase,
+            ));
+            let learned = (|| {
+                phase.gate.require_open()?;
+                phase.record.require_scoped()?;
+                ready()?;
+                phase.gate.require_open()?;
+                let end = phase.gate.deadline().instant();
+                let stream = loop {
+                    let epoch = phase.gate.original_wait_epoch()?;
+                    owner_alive(owner, end)?;
+                    match self.listener.accept() {
+                        Ok((stream, _)) => break stream,
+                        Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                            phase.gate.wait_original_change(epoch)?;
+                        }
+                        Err(error) => return Err(error),
+                    }
+                };
+                verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
+                phase.record.require_scoped()?;
+                service.serve_learning_checkpoint_until(
+                    &self.learning.backend, stream,
+                    HostAuthorityPeerPolicy {
+                        peer: HostIssuerPeer { uid: config.peer_uid, pid: registration.peer_pid },
+                        timeout: Duration::from_millis(config.timeout_ms),
+                        lifetime: Duration::from_millis(config.lifetime_ms),
+                        request_bound: 16 * 1024,
+                        response_bound: 16 * 1024,
+                    },
+                    owner.try_clone()?, phase.gate,
+                ).map_err(io::Error::other)
+            })();
+            // Close before joining on success, error or an uncertain lane.
+            drop(closing);
+            let model = model.join().map_err(|_| io::Error::other("original phase Model worker panicked"))?;
+            let published = published.join().map_err(|_| io::Error::other("original phase publication worker panicked"))?;
+            learned.and(model).and(published)
+        })
+    }
+}

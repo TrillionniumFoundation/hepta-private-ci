@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "kind": "original_same_actor_phase_five_lane_effects_exact_delta",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_runtime": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "status": "unintegrated product draft; no execution",
+  "incremental_dependency": "Earlier phase source postimages listed explicitly. Apply after inner effect delta 738bf33f55e8634403ddfc77cb4e923aaccf9721 and previously frozen phase lanes/wrapper.",
+  "file_count": 10,
+  "operation_count": 14,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "preimage": {
+        "git_blob": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+        "bytes": 20614,
+        "sha256": "c76e95d3817ba6e640413100f5cfe51be3b7fcddde7b32bb660580ff965c5c17"
+      },
+      "postimage": {
+        "git_blob": "f846ed613863cdf06414fd50624e09911ec82f95",
+        "bytes": 22095,
+        "sha256": "c90b75147923e9a8e981eb9c52f23d843830d4c2f7775bc6e7e8d5616767f4e9"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "    clock: Arc<dyn AuthorityClock>,\n    request_lock: Mutex<()>,\n    lease: Option<ProtectedLease>,\n}\n\n/// Read-only view of the independently retained issuer revocation head.\n",
+          "new_text": "    clock: Arc<dyn AuthorityClock>,\n    request_lock: Mutex<()>,\n    lease: Option<ProtectedLease>,\n    same_actor_phase: std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,\n}\n\n/// Read-only view of the independently retained issuer revocation head.\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            clock,\n            request_lock: Mutex::new(()),\n            lease,\n        })\n    }\n\n    pub fn trust_key(&self) -> io::Result<FinalUseIssuerTrustKey> {\n        let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;\n        Ok(FinalUseIssuerTrustKey {\n",
+          "new_text": "            clock,\n            request_lock: Mutex::new(()),\n            lease,\n            same_actor_phase: std::sync::OnceLock::new(),\n        })\n    }\n\n    /// Attach only before the new phase exposes any service. This is the\n    /// same actual issuer instance; the original default path stays unbound.\n    /// A consumed/closed binding is never replaced by another gate.\n    pub(crate) fn bind_original_same_actor_phase(\n        &self,\n        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> io::Result<()> {\n        phase.require_open()?;\n        let _request = self.request_lock.lock()\n            .map_err(|_| io::Error::other(\"issuer fenced\"))?;\n        phase.require_open()?;\n        if self.lease.is_none()\n            || self.same_actor_phase.set(Arc::clone(phase)).is_err()\n        {\n            return Err(io::Error::other(\"original protected issuer phase was already bound or absent\"));\n        }\n        phase.require_open()?;\n        Ok(())\n    }\n\n    /// A new authorization effect checks its phase exactly once at first\n    /// entry. Continuation/receipt CAS, revocation and closure do not call this.\n    /// It does not replace any original lease, policy or request-lock check.\n    fn require_new_same_actor_phase_effect(&self) -> io::Result<()> {\n        if let Some(phase) = self.same_actor_phase.get() {\n            phase.require_open()?;\n        }\n        Ok(())\n    }\n\n    pub fn trust_key(&self) -> io::Result<FinalUseIssuerTrustKey> {\n        let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;\n        Ok(FinalUseIssuerTrustKey {\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                .min(expiry),\n        };\n        let bytes = grant.signing_bytes().map_err(io::Error::other)?;\n        self.store\n            .compare_and_set(STATE_OWNER, &state, &next)\n            .map_err(io::Error::other)?;\n",
+          "new_text": "                .min(expiry),\n        };\n        let bytes = grant.signing_bytes().map_err(io::Error::other)?;\n        self.require_new_same_actor_phase_effect()?;\n        self.store\n            .compare_and_set(STATE_OWNER, &state, &next)\n            .map_err(io::Error::other)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": {
+        "git_blob": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+        "bytes": 14644,
+        "sha256": "d508894e496200f6334398e7cc94f282adbd2cfb58a501b34658bb5f3f28ab81"
+      },
+      "postimage": {
+        "git_blob": "566ad14163ae8cf6cbaf93b9e55d8a2ded4816dc",
+        "bytes": 14697,
+        "sha256": "ee01180481d3ccb9429eb814ae170c0c25430c98ebb90ecb7ddd48570aa8e808"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            )?),\n        };\n        let bytes = claims.signing_bytes()?;\n        self.store\n            .compare_and_set(STATE_OWNER, state, &reserved)\n            .map_err(io::Error::other)?;\n",
+          "new_text": "            )?),\n        };\n        let bytes = claims.signing_bytes()?;\n        self.require_new_same_actor_phase_effect()?;\n        self.store\n            .compare_and_set(STATE_OWNER, state, &reserved)\n            .map_err(io::Error::other)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_authbus.rs",
+      "preimage": {
+        "git_blob": "1ea1ab3e8bd07fbe2389631e14b6e0157b109617",
+        "bytes": 7061,
+        "sha256": "6e6f63c707ea12e248e96bdfa9f6898e3b13e34dd7b6fa9124cac764e94cc03f"
+      },
+      "postimage": {
+        "git_blob": "9c63a629f90551804b2a7e6ab609dd7b58a208b7",
+        "bytes": 7114,
+        "sha256": "9310b70a36a532d1a97e173b15d511f3f92ee0d951eae4a9db77aae7c2542eec"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            body,\n        };\n        let claims = authbus_objective_claims(identity, &request).map_err(io::Error::other)?;\n        self.store\n            .compare_and_set(STATE_OWNER, &state, &next)\n            .map_err(io::Error::other)?;\n",
+          "new_text": "            body,\n        };\n        let claims = authbus_objective_claims(identity, &request).map_err(io::Error::other)?;\n        self.require_new_same_actor_phase_effect()?;\n        self.store\n            .compare_and_set(STATE_OWNER, &state, &next)\n            .map_err(io::Error::other)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "preimage": {
+        "git_blob": "d3719d1c1ea28c49e7e4fd9050b23aeffc7dfc95",
+        "bytes": 7063,
+        "sha256": "2f8c9e3111de7dfe2f87ecb4ce15acac0cde99c530660f79408bf2eabfcf6f31"
+      },
+      "postimage": {
+        "git_blob": "6e87f8b8dbfe1a368b363f6b1e270b14e8a131d5",
+        "bytes": 7124,
+        "sha256": "65e9b2e51d71f3466294601765bfce9d0fc1fbbd98e78c1fffe42cb4405d26a9"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "                for (slot, policy) in slots.into_iter().zip(next_policies) {\n                    changed.policies[slot] = policy;\n                }\n                self.store\n                    .compare_and_set(STATE_OWNER, &state, &changed)\n                    .map_err(io::Error::other)?;\n",
+          "new_text": "                for (slot, policy) in slots.into_iter().zip(next_policies) {\n                    changed.policies[slot] = policy;\n                }\n                self.require_new_same_actor_phase_effect()?;\n                self.store\n                    .compare_and_set(STATE_OWNER, &state, &changed)\n                    .map_err(io::Error::other)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "preimage": {
+        "git_blob": "bfb919dde3e27bb2588cca720d57a84446fbd68f",
+        "bytes": 16043,
+        "sha256": "88bac0da45827654accbd850df23169518efbd01ddccdbf74a0d121e303c06c3"
+      },
+      "postimage": {
+        "git_blob": "168531a0ebb30072c7fd690a8942e79ecfc613ea",
+        "bytes": 16100,
+        "sha256": "4b19dbe9de22d5d83b9b06bcd2d5ef04d8b6aeebfddfb1d507932daec515d238"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            // Preserve every original Objective and other installed route at\n            // its exact position under the full original issuer-state CAS.\n            changed.policies[slot] = next;\n            self.store\n                .compare_and_set(STATE_OWNER, &state, &changed)\n                .map_err(io::Error::other)?;\n",
+          "new_text": "            // Preserve every original Objective and other installed route at\n            // its exact position under the full original issuer-state CAS.\n            changed.policies[slot] = next;\n            self.require_new_same_actor_phase_effect()?;\n            self.store\n                .compare_and_set(STATE_OWNER, &state, &changed)\n                .map_err(io::Error::other)?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "preimage": {
+        "git_blob": "9568f1a648dc5b49a7060eab1da22b15ae3a6e6b",
+        "bytes": 15897,
+        "sha256": "2c2f7b82f4a2f6c9465bb4ad8259c33d2e3233a2ce4bc8754ba4133754b30448"
+      },
+      "postimage": {
+        "git_blob": "5ca40ccd01f5947fca8f8f4994ebc6fd8fd9089e",
+        "bytes": 15950,
+        "sha256": "2791948cb575fabebf97d4e76c4437b9b4a20826e806c1074c9ba59ebc35fca4"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        let unsigned = envelope(&state.signer_id, &retained, body.clone());\n        let claims =\n            crate::authbus_text_claims(&identity.agent_id, &unsigned).map_err(io::Error::other)?;\n        retained.signature_hex = self\n            .key\n            .sign(&claims.signing_bytes())\n",
+          "new_text": "        let unsigned = envelope(&state.signer_id, &retained, body.clone());\n        let claims =\n            crate::authbus_text_claims(&identity.agent_id, &unsigned).map_err(io::Error::other)?;\n        self.require_new_same_actor_phase_effect()?;\n        retained.signature_hex = self\n            .key\n            .sign(&claims.signing_bytes())\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "preimage": {
+        "git_blob": "04592261934b3c39aef1f655a66b79f807d9e127",
+        "bytes": 14452,
+        "sha256": "5fb63cda411282616165cfd32ccad21ad83579c0446d2acc8a3037d0e8005c1e"
+      },
+      "postimage": {
+        "git_blob": "13bd0e2313911ca9385ac31eb4281801cf97b3ad",
+        "bytes": 17103,
+        "sha256": "06b0ce405f0ae8f393713e9bcf69919983929194c8c6f1d1e12f22c4b1666aa6"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            .map_err(unavailable)\n    }\n\n    pub(super) fn exchange_same_actor_learning_checkpoint(\n        &self,\n        issuer: &DeploymentFinalUseIssuer,\n",
+          "new_text": "            .map_err(unavailable)\n    }\n\n    pub(super) fn exchange_consumer_in_same_actor_phase(\n        &self,\n        issuer: &DeploymentFinalUseIssuer,\n        clock: &HostAuthorityClock,\n        backend: &crate::HostConsumerFrontier,\n        bytes: &[u8],\n        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<Vec<u8>, HostIssuerTransportError> {\n        self.registration\n            .with_live(&self.leases, |_| {\n                let _admission = phase.enter_original_lane()?;\n                if issuer.retained_writer_authorization(&self.registration)? != self.proof {\n                    return Err(io::Error::other(\"retained writer proof changed\"));\n                }\n                let before = issuer.revocations()?;\n                phase.require_open()?;\n                let response = backend.exchange(bytes, &before).map_err(io::Error::other)?;\n                let after = issuer.revocations()?;\n                if after != before {\n                    return Err(io::Error::other(\n                        \"issuer head changed during consumer exchange\",\n                    ));\n                }\n                let now = clock.now_unix_ms().map_err(io::Error::other)?;\n                validate_observation_lease(&self.registration.authority_lease, &after, now)?;\n                phase.require_open()?;\n                Ok(response)\n            })\n            .map_err(unavailable)\n    }\n\n    pub(super) fn exchange_checkpoint_in_same_actor_phase(\n        &self,\n        issuer: &DeploymentFinalUseIssuer,\n        clock: &HostAuthorityClock,\n        backend: &crate::HostCognitiveCheckpoint,\n        bytes: &[u8],\n        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<Vec<u8>, HostIssuerTransportError> {\n        self.registration\n            .with_live(&self.leases, |_| {\n                let _admission = phase.enter_original_lane()?;\n                if issuer.retained_writer_authorization(&self.registration)? != self.proof {\n                    return Err(io::Error::other(\"retained writer proof changed\"));\n                }\n                phase.require_open()?;\n                let response = backend.exchange(bytes).map_err(io::Error::other)?;\n                let head = issuer.revocations()?;\n                let now = clock\n                    .refresh_projection()\n                    .map_err(io::Error::other)?\n                    .observed_unix_ms;\n                validate_observation_lease(&self.registration.authority_lease, &head, now)?;\n                phase.require_open()?;\n                Ok(response)\n            })\n            .map_err(unavailable)\n    }\n\n    pub(super) fn exchange_same_actor_learning_checkpoint(\n        &self,\n        issuer: &DeploymentFinalUseIssuer,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "preimage": {
+        "git_blob": "a5238ae4f69bd7a057c24dcfb9620db8263b0a63",
+        "bytes": 2339,
+        "sha256": "d384d403c3a8dbcf349316ad394a3c1e8d00d8b746a6fef1e6e2f016e4428776"
+      },
+      "postimage": {
+        "git_blob": "a19c39c27aafd028001c6e571de070db92df61a6",
+        "bytes": 4586,
+        "sha256": "08ad39fe3dc4948b5ff431e7f38513e71b2b8839592eb1ef29e94737e5a93063"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "use std::sync::Arc;\n\nimpl HostAuthorityService {\n    pub(crate) fn serve_original_phase_lane_until(\n        &self,\n        lane: HostAuthorityLane,\n",
+          "new_text": "use std::sync::Arc;\n\nimpl HostAuthorityService {\n    pub(crate) fn bind_original_same_actor_phase_issuer(\n        &self,\n        phase: &Arc<SameActorPhaseGate>,\n    ) -> io::Result<()> {\n        self.issuer.bind_original_same_actor_phase(phase)\n    }\n\n    pub(crate) fn serve_original_phase_lane_until(\n        &self,\n        lane: HostAuthorityLane,\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        )?;\n        while channel.exchange(|bytes| {\n            let _admission = gate.enter_original_lane().map_err(unavailable)?;\n            let response = self.handle(lane, bytes)?;\n            gate.require_open().map_err(unavailable)?;\n            Ok(response)\n        })? {\n",
+          "new_text": "        )?;\n        while channel.exchange(|bytes| {\n            let _admission = gate.enter_original_lane().map_err(unavailable)?;\n            let response = self.handle_original_same_actor_phase_lane(lane, bytes, gate)?;\n            gate.require_open().map_err(unavailable)?;\n            Ok(response)\n        })? {\n"
+        },
+        {
+          "operation": "replace_exact_once",
+          "old_text": "        Err(HostIssuerTransportError::Closed)\n    }\n}\n",
+          "new_text": "        Err(HostIssuerTransportError::Closed)\n    }\n}\n\nimpl HostAuthorityService {\n    fn handle_original_same_actor_phase_lane(\n        &self,\n        lane: HostAuthorityLane,\n        bytes: &[u8],\n        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<Vec<u8>, HostIssuerTransportError> {\n        phase.require_open().map_err(unavailable)?;\n        self.check_logind_lifetime().map_err(unavailable)?;\n        let result = match lane {\n            HostAuthorityLane::Observation => self.observe(bytes),\n            HostAuthorityLane::Issuer => self.issue(bytes),\n            HostAuthorityLane::Checkpoint => self\n                .writer\n                .as_ref()\n                .ok_or(HostIssuerTransportError::Unavailable)?\n                .exchange_checkpoint_in_same_actor_phase(\n                    &self.issuer,\n                    &self.clock,\n                    &self\n                        .checkpoint\n                        .as_ref()\n                        .ok_or(HostIssuerTransportError::Unavailable)?\n                        .backend,\n                    bytes,\n                    phase,\n                ),\n            HostAuthorityLane::DeviceConsumerFrontier\n            | HostAuthorityLane::NotesConsumerFrontier => {\n                let consumers = self\n                    .consumers\n                    .as_ref()\n                    .ok_or(HostIssuerTransportError::Unavailable)?;\n                let backend = if matches!(lane, HostAuthorityLane::DeviceConsumerFrontier) {\n                    &consumers.device\n                } else {\n                    &consumers.notes\n                };\n                self.writer\n                    .as_ref()\n                    .ok_or(HostIssuerTransportError::Unavailable)?\n                    .exchange_consumer_in_same_actor_phase(&self.issuer, &self.clock, backend, bytes, phase)\n            }\n        };\n        self.check_logind_lifetime().map_err(unavailable)?;\n        phase.require_open().map_err(unavailable)?;\n        result\n    }\n\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "preimage": {
+        "git_blob": "a049295584324dd78b39696f76acffb3cf3ad4da",
+        "bytes": 10895,
+        "sha256": "943714e12ac9b88cfe0f5b08dadcfd780bfa686f20bcf8c0f4988be3a807c4ee"
+      },
+      "postimage": {
+        "git_blob": "c5c4c53c0558b0f45e67dbe5fd43232168d35bd6",
+        "bytes": 10967,
+        "sha256": "c3da7e7f5c9b30405feef932f8c9c5f2c76471f9a018d218a3c65b561bfb19b3"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "            return Err(io::Error::other(\"same-actor phase requires the unchanged original startup\"));\n        }\n        gate.require_open()?;\n        let (initial_capability, initial_offer) =\n            original.enable_generation_initial(initial.clone())?;\n        let mut retained = None;\n",
+          "new_text": "            return Err(io::Error::other(\"same-actor phase requires the unchanged original startup\"));\n        }\n        gate.require_open()?;\n        original.service.bind_original_same_actor_phase_issuer(&gate)?;\n        let (initial_capability, initial_offer) =\n            original.enable_generation_initial(initial.clone())?;\n        let mut retained = None;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "preimage": {
+        "git_blob": "e9305a886c0f8cec7083c019a7e513c6f03ecc66",
+        "bytes": 13426,
+        "sha256": "7a52cc1d1b8189b3a50a0de1c7a5d1f2d83eb5f2cf153c0fe08b04a905a75d97"
+      },
+      "postimage": {
+        "git_blob": "46c3554abd4916f9d79059d0ebdcf0c3032c82a0",
+        "bytes": 13509,
+        "sha256": "4f0bc7c023062127e42245fb817a93303c360a91204b283bf76a889566e9d7df"
+      },
+      "operations": [
+        {
+          "operation": "replace_exact_once",
+          "old_text": "    let (publication, capability, publication_offer) = generation_publication::original_publication_route(\n        &original.service, &original.config, &original.registration, &original.owner_pidfd, &learning,\n    )?;\n    record.mark_scoped_before_rights(factory_profile.binding().to_string())?;\n    gate.require_open()?;\n    let factory_offer = original.service.seal_q24_model_factory_offer(\n",
+          "new_text": "    let (publication, capability, publication_offer) = generation_publication::original_publication_route(\n        &original.service, &original.config, &original.registration, &original.owner_pidfd, &learning,\n    )?;\n    gate.require_open()?;\n    record.require_claimed()?;\n    gate.require_open()?;\n    record.mark_scoped_before_rights(factory_profile.binding().to_string())?;\n    gate.require_open()?;\n    let factory_offer = original.service.seal_q24_model_factory_offer(\n"
+        }
+      ]
+    }
+  ],
+  "original_issuer_projection": [
+    {
+      "path": "deployment_issuer.rs",
+      "original_owner_body_projection_byte_equal": true
+    },
+    {
+      "path": "deployment_writer.rs",
+      "original_owner_body_projection_byte_equal": true
+    },
+    {
+      "path": "deployment_authbus.rs",
+      "original_owner_body_projection_byte_equal": true
+    },
+    {
+      "path": "deployment_desktop.rs",
+      "original_owner_body_projection_byte_equal": true
+    },
+    {
+      "path": "deployment_notes.rs",
+      "original_owner_body_projection_byte_equal": true
+    },
+    {
+      "path": "deployment_text.rs",
+      "original_owner_body_projection_byte_equal": true
+    }
+  ]
+}

@@ -13,6 +13,7 @@ use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Mutex;
 use std::time::Duration;
+use std::time::Instant;
 
 const FRAME_LIMIT: usize = 16 * 1024;
 
@@ -76,6 +77,65 @@ impl RootFinalUseFrontierClient {
             return Err(AuthorityTrustError::Invalid);
         }
         let root = OwnerChannel::new(root_pidfd, peer.pid, lifetime).map_err(unavailable)?;
+        let actual = rustix::net::sockopt::socket_peercred(&stream).map_err(unavailable)?;
+        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
+        let start = stat
+            .rsplit_once(") ")
+            .and_then(|(_, fields)| fields.split_whitespace().nth(19))
+            .and_then(|value| value.parse::<u64>().ok());
+        if actual.uid.as_raw() != uid
+            || actual.pid.as_raw_nonzero().get() as u32 != peer.pid
+            || bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim() != peer.boot_id
+            || start != Some(peer.process_start_ticks)
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        stream.set_nonblocking(true).map_err(unavailable)?;
+        root.check(root.end()).map_err(unavailable)?;
+        Ok(Self {
+            channel: Mutex::new(Some(Channel {
+                stream,
+                next_request_id: 1,
+            })),
+            root,
+            owner_id,
+            timeout,
+        })
+    }
+
+    /// Construct the same Root-pinned lane with its original process-local end.
+    /// UID 0, the exact incarnation and pre-held pidfd remain mandatory.
+    pub fn from_stream_until(
+        stream: UnixStream,
+        owner_id: String,
+        peer: RootPeerIdentity,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<Self, AuthorityTrustError> {
+        Self::from_stream_for_uid_until(stream, owner_id, peer, root_pidfd, timeout, end, 0)
+    }
+
+    fn from_stream_for_uid_until(
+        stream: UnixStream,
+        owner_id: String,
+        peer: RootPeerIdentity,
+        root_pidfd: OwnedFd,
+        timeout: Duration,
+        end: Instant,
+        uid: u32,
+    ) -> Result<Self, AuthorityTrustError> {
+        if owner_id.is_empty()
+            || owner_id.len() > 256
+            || peer.pid == 0
+            || peer.pid > i32::MAX as u32
+            || peer.process_start_ticks == 0
+            || timeout.is_zero()
+            || timeout > Duration::from_secs(5)
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let root = OwnerChannel::new_until(root_pidfd, peer.pid, end).map_err(unavailable)?;
         let actual = rustix::net::sockopt::socket_peercred(&stream).map_err(unavailable)?;
         let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
         let start = stat

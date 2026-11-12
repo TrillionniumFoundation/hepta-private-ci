@@ -141,6 +141,7 @@ impl DeploymentFinalUseIssuer {
             body,
         };
         let claims = authbus_objective_claims(identity, &request).map_err(io::Error::other)?;
+        self.require_new_same_actor_phase_effect()?;
         self.store
             .compare_and_set(STATE_OWNER, &state, &next)
             .map_err(io::Error::other)?;

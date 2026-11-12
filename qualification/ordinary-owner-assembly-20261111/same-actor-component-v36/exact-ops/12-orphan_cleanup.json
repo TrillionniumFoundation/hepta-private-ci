@@ -1,0 +1,44 @@
+{
+  "schema": "same-actor-final-orphan-helper-removal-v1",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+      "preimage": {
+        "blob": "9d6c7d9243a7779b9941879087520f67cf52a439",
+        "bytes": 10556,
+        "sha256": "bed03a5298710fb89cb6ea5ca7bc9ce6f42fbe56d26c56c68c00d9f5200a0395"
+      },
+      "postimage": {
+        "blob": "752baa69a92a33d28020e3c475322e382b7445ce",
+        "bytes": 9854,
+        "sha256": "95b0176020f34c2382ec77ac36d451dc9f625b6369495e9d7aaae25508d49b16"
+      },
+      "operations": [
+        {
+          "old_text": "pub(crate) fn receive_original_five_lane_handoff_until(\n    socket: UnixDatagram,\n    timeout: Duration,\n    gate: &Arc<SameActorPhaseGate>,\n) -> Result<(File, OwnedFd), AgentdError> {\n    let mut closing = CloseSameActorPhaseOnDrop::new(gate);\n    gate.require_open()?;\n    let _stop = gate.retain_original_datagram(&socket)?;\n    let peer = root_pair(&socket, bounded_timeout(timeout, gate.deadline().instant())?)?;\n    let (bootstrap, root) = receive_packet(\n        &socket, bounded_timeout(timeout, gate.deadline().instant())?,\n    )?;\n    validate_bootstrap(&bootstrap)?;\n    require_root_pin(&root, peer.pid as u32)?;\n    gate.require_open()?;\n    closing.disarm();\n    Ok((bootstrap, root))\n}\n\nfn require_original_sender(\n",
+          "new_text": "fn require_original_sender(\n"
+        }
+      ]
+    }
+  ],
+  "reason": "The new typed Startup consumes the existing trusted-host three-right writer handoff. The actual same-actor receiver directly connects all five lanes under its original end. This earlier two-right phase wrapper has no product caller and is removed, not registered as a fictitious path.",
+  "static_scope": {
+    "product_paths": 105,
+    "exact_name_occurrences": [
+      "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs"
+    ],
+    "actual_writer_receive": "production_launcher_same_actor_phase.rs",
+    "actual_five_connections": "root_production_same_actor_phase_inputs.rs",
+    "no_checker_or_native": true
+  },
+  "invariants": [
+    "Only this new unused helper removed",
+    "Original writer three-right receiver and every actual phase handoff/validation/exchange unchanged",
+    "No deadlines, authority, retry or default API changes"
+  ],
+  "validation": {
+    "forward_unique": true,
+    "reverse_context_unique": true,
+    "all_other_bytes_unchanged": true
+  }
+}

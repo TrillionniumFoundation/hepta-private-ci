@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "final-Startup-original-take-UFCS-and-corresponding-new-marker",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reason": "Independent final CALLERS review found original typed helper does not infer struct destructuring. Actual OriginalSameActorProductionInputs.root is AgentdRootProductionInputs, so the prior root.take... dot receiver was unresolved. Use the same original &mut root in the real public UFCS; keep original error propagation, purpose take and owner move order.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "pre": {
+        "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+        "bytes": 11071,
+        "sha256": "7d5696eb6a9a20b2423ecb17e0341b8e12254438ee876cb051f7a97591752cc4"
+      },
+      "post": {
+        "blob": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7",
+        "bytes": 11110,
+        "sha256": "c2a1a01228813216593cde42f0aa985581f694de377c0d52a82b9d0dc348705c"
+      },
+      "ops": [
+        {
+          "old_text": "root.take_generation_publication_connection()?",
+          "new_text": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?"
+        }
+      ]
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": {
+        "blob": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+        "bytes": 885312,
+        "sha256": "319b8f8e0ba18a2842f28c1477501e38dc774dbad8579b2af5f3b37dab4c88ff"
+      },
+      "post": {
+        "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+        "bytes": 885351,
+        "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+      },
+      "ops": [
+        {
+          "old_text": "\"root.take_generation_publication_connection()?\"",
+          "new_text": "\"crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?\""
+        }
+      ]
+    }
+  ],
+  "operation_count": 2,
+  "evidence": {
+    "method_file": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+    "base": {
+      "blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "bytes": 13853,
+      "sha256": "c5f5fffd7b433e612b371ff595b6e4cccc6a242c145a70a6bf7066bf5935e340"
+    },
+    "final": {
+      "blob": "fd9ae43a0fcbc63b228c55ca5c96a801ee3fe164",
+      "bytes": 13942,
+      "sha256": "c82dde1965fef818a83a93d87a1ad6a172436fe6deb2848d1b28ffe433fba765"
+    },
+    "original_method_exact_equal": true,
+    "method": "fn take_generation_publication_connection(\n        &mut self,\n    ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {\n        self.publication_connection.take_original_connection()\n    }",
+    "reexport_file": "codex-rs/hepta-agentd/src/lib.rs",
+    "reexport": {
+      "blob": "e758333d25dc270e5470e93fe72a8f988221311b",
+      "bytes": 66693,
+      "sha256": "f596ebec608feaca718fb5ee922de01295f0538f47761565fd7556175cf9b4ad"
+    },
+    "reexport_line": "pub use root_production_inputs::AgentdRootProductionInputs;"
+  },
+  "source_semantics": {
+    "only_source_expression_changed": true,
+    "same_original_object": true,
+    "borrow": "same one &mut root",
+    "order": "same statement; result checked by the original ? before initial connector; later root move into AgentdProductionLaunch unchanged",
+    "original_method_body_equal_to_d973": true
+  },
+  "metadata_semantics": {
+    "only_one_new_Startup_protected_marker_changed": true,
+    "old_boundary_receiver_caller_patterns_unchanged": true,
+    "required_and_declared_boundaries": 638,
+    "protected_rows": 440
+  },
+  "validation": {
+    "unique_forward_reverse": true,
+    "actual_CREATE_GET_equal": true,
+    "other_bytes_equal": true,
+    "checker_run": false,
+    "typed_helper_run": false,
+    "compiler_run": false,
+    "native_run": false,
+    "refs_changed": false
+  },
+  "bounded_independent_review_notice": "hepta_audit reported the other 23 newly-added non-direct typed edges / 33 dot calls and 13 new typed boundaries have no second confirmed issue. This is bounded static reading, not full helper or global-index execution."
+}

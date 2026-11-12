@@ -40,6 +40,9 @@ pub use inputs::RootGenerationInitialEnrollmentV1;
 pub use inputs::RootGenerationInitialModeV1;
 #[path = "authority_host_generation_initial_enrollment.rs"]
 mod enrollment;
+#[path = "authority_host_generation_initial_phase.rs"]
+mod same_actor_phase;
+pub(crate) use same_actor_phase::OriginalSameActorPhaseA;
 #[path = "authority_host_generation_initial_transport.rs"]
 mod transport;
 pub(crate) use transport::Command;

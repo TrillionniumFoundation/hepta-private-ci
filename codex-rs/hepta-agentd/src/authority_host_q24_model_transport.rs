@@ -67,18 +67,60 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
     ) -> io::Result<()> {
-        let mut next_request_id = 1;
+        let next_request_id = 1;
         let pin = owner_pidfd.try_clone()?;
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
+        let channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
             .map_err(io::Error::other)?;
+        self.serve_original_q24_model_channel(
+            factory, config, registration, pin, channel, next_request_id, None,
+        )
+    }
+
+    pub(crate) fn serve_q24_model_factory_until(
+        &self,
+        factory: &RegisteredQ24ModelFactory,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> io::Result<()> {
+        let _closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);
+        phase.require_open()?;
+        let _stream_stop = phase.retain_original_stream(&stream)?;
+        let next_request_id = 1;
+        let pin = owner_pidfd.try_clone()?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream, policy, owner_pidfd, phase.deadline().instant(),
+        ).map_err(io::Error::other)?;
+        self.serve_original_q24_model_channel(
+            factory, config, registration, pin, channel, next_request_id, Some(phase),
+        )?;
+        Err(io::Error::other("required original phase Model lane ended"))
+    }
+
+    fn serve_original_q24_model_channel(
+        &self,
+        factory: &RegisteredQ24ModelFactory,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        pin: OwnedFd,
+        mut channel: HostAuthorityPeerChannel,
+        mut next_request_id: u64,
+        phase: Option<&std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
+    ) -> io::Result<()> {
         while channel
             .exchange(|bytes| {
-                self.with_learning_profile(
+                let _admission = phase.map(|gate| gate.enter_original_lane()).transpose()
+                    .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                let response = self.with_learning_profile(
                     config,
                     registration,
                     &pin,
                     &factory.learning,
                     |initial, proof| {
+                        if let Some(gate) = phase { gate.require_open()?; }
                         factory.profile.require_context(
                             &self.identity,
                             &proof,
@@ -117,6 +159,7 @@ impl HostAuthorityService {
                             / 1000;
                         let (after, reply) = transition(&before, lease, request.command, now)?;
                         if after != before {
+                            if let Some(gate) = phase { gate.require_open()?; }
                             factory
                                 .store
                                 .compare_and_set(OWNER, &before, &after)
@@ -148,10 +191,18 @@ impl HostAuthorityService {
                         .map_err(io::Error::other)
                     },
                 )
-                .map_err(|_| HostIssuerTransportError::Unavailable)
+                .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                if let Some(gate) = phase {
+                    gate.require_open().map_err(|_| HostIssuerTransportError::Unavailable)?;
+                }
+                Ok(response)
             })
             .map_err(io::Error::other)?
-        {}
+        {
+            if let Some(gate) = phase {
+                gate.require_open()?;
+            }
+        }
         Ok(())
     }
 }

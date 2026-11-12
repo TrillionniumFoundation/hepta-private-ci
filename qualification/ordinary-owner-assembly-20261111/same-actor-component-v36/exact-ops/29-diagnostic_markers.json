@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "actual_frontier_refusal_diagnostic_marker_alignment",
+  "base": {
+    "blob": "9e0a0d93ecd612ef54b85ff92347e0b3714a9a0b",
+    "bytes": 708845,
+    "sha256": "dc9771f19a30577ace4552659d4eb5ed8a9f75be0f0f8eb9814016d7f1341ad9"
+  },
+  "postimage": {
+    "blob": "13fa6f49be454a46705e8285158cc8bde8262b07",
+    "bytes": 709563,
+    "sha256": "7b0b6db1ee28a8d1e13e9117054409a6fba48eadbed2ae219d037b016df977de"
+  },
+  "diagnostic_source": "0451ca5b309b701b186ca749241e9c5f1191daa5",
+  "operations": [
+    {
+      "path": "CALLERS.toml",
+      "old_text": "\"slot.take().ok_or(AuthorityTrustError::Unavailable)?\"",
+      "new_text": "\"let mut channel = slot\\n            .take()\\n            .ok_or(AuthorityTrustError::Unavailable)\\n            .inspect_err(|_| {\\n                crate::final_use::diagnostic::record(\\n                    \\\"frontier.channel-closed\\\",\\n                    crate::final_use::FinalUseError::Unavailable,\\n                    None,\\n                );\\n            })?;\"",
+      "source_fragment": "let mut channel = slot\n            .take()\n            .ok_or(AuthorityTrustError::Unavailable)\n            .inspect_err(|_| {\n                crate::final_use::diagnostic::record(\n                    \"frontier.channel-closed\",\n                    crate::final_use::FinalUseError::Unavailable,\n                    None,\n                );\n            })?;"
+    },
+    {
+      "path": "CALLERS.toml",
+      "old_text": "\"id.checked_add(1)\"",
+      "new_text": "\"channel.next_request_id = id\\n                .checked_add(1)\\n                .ok_or(AuthorityTrustError::Unavailable)\\n                .inspect_err(|_| {\\n                    crate::final_use::diagnostic::record(\\n                        \\\"frontier.request-id-overflow\\\",\\n                        crate::final_use::FinalUseError::Unavailable,\\n                        None,\\n                    );\\n                })?;\"",
+      "source_fragment": "channel.next_request_id = id\n                .checked_add(1)\n                .ok_or(AuthorityTrustError::Unavailable)\n                .inspect_err(|_| {\n                    crate::final_use::diagnostic::record(\n                        \"frontier.request-id-overflow\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        None,\n                    );\n                })?;"
+    }
+  ],
+  "verification": {
+    "unique_forward_and_reverse": true,
+    "all_exchange_order_markers_found_in_order": true,
+    "marker_count": 24,
+    "pre_counts": {
+      "boundaries": 522,
+      "protected_files": 372
+    },
+    "post_counts": {
+      "boundaries": 522,
+      "protected_files": 372
+    },
+    "checker_changed": false,
+    "checker_executed": false
+  },
+  "scope": "Only the two actual rejection/overflow expression strings in the original Frontier protected fn exchange order. Each replacement includes the complete expression through its existing question-mark propagation. No boundary/caller/other protected entry is added, dropped or broadened. Future integration and formatting must apply these exact tokens only when still matching the real source.",
+  "path_verified_from": "Original and cumulative foundation manifests all pin the repository-root CALLERS.toml"
+}

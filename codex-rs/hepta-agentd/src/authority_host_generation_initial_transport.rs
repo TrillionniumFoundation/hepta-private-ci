@@ -54,14 +54,58 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner: OwnedFd,
     ) -> io::Result<()> {
-        let mut sequence = 1_u64;
+        let sequence = 1_u64;
         let pin = owner.try_clone()?;
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
+        let channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
             .map_err(io::Error::other)?;
+        self.serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)
+    }
+
+    pub(crate) fn serve_generation_initial_until(
+        &self,
+        slot: &RegisteredGenerationInitial,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> io::Result<()> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);
+        phase.require_open()?;
+        let _stream_stop = phase.retain_original_stream(&stream)?;
+        let sequence = 1_u64;
+        let pin = owner.try_clone()?;
+        let channel = HostAuthorityPeerChannel::from_stream_until(
+            stream, policy, owner, phase.deadline().instant(),
+        ).map_err(io::Error::other)?;
+        self.serve_initial_original_channel(
+            slot, config, registration, pin, channel, sequence, Some(phase),
+        )?;
+        phase.require_open()?;
+        closing.disarm();
+        Ok(())
+    }
+
+    fn serve_initial_original_channel(
+        &self,
+        slot: &RegisteredGenerationInitial,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        pin: OwnedFd,
+        mut channel: HostAuthorityPeerChannel,
+        mut sequence: u64,
+        phase: Option<&Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
+    ) -> io::Result<()> {
         while channel
             .exchange(|bytes| {
+                let _phase_admission = phase
+                    .map(|gate| gate.enter_original_lane())
+                    .transpose()
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 let mut encoded_response = None;
                 self.with_initial_publication_context(config, registration, &pin, |proof| {
+                    if let Some(gate) = phase { gate.require_open()?; }
                     if slot.profile.writer != proof
                         || slot.profile.identity
                             != crate::neuron_generation_process_identity_digest_v1(&self.identity)
@@ -188,6 +232,7 @@ impl HostAuthorityService {
                                 ));
                             }
                             slot.require_target(/*fresh*/ true)?;
+                            if let Some(gate) = phase { gate.require_open()?; }
                             let (owner, prepared) =
                                 NeuronGenerationCurrentOwnerV1::prepare_initial(
                                     slot.root.clone(),
@@ -210,6 +255,7 @@ impl HostAuthorityService {
                         Command::Publish {
                             signed, witness, ..
                         } => {
+                            if let Some(gate) = phase { gate.require_open()?; }
                             current
                                 .as_ref()
                                 .ok_or_else(|| {
@@ -270,10 +316,20 @@ impl HostAuthorityService {
                     Ok(())
                 })
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
-                encoded_response.ok_or(codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+                let encoded = encoded_response
+                    .ok_or(codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                if let Some(gate) = phase {
+                    gate.require_open()
+                        .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                }
+                Ok(encoded)
             })
             .map_err(io::Error::other)?
-        {}
+        {
+            if let Some(gate) = phase {
+                gate.require_open()?;
+            }
+        }
         Ok(())
     }
 }

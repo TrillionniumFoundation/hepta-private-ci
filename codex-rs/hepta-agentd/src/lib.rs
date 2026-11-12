@@ -125,6 +125,25 @@ mod authority_host_admin;
 #[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]
+mod authority_host_same_actor_q24_phase_join;
+#[cfg(target_os = "linux")]
+mod authority_host_same_actor_q24_phase_namespace;
+#[cfg(target_os = "linux")]
+mod authority_host_same_actor_q24_phase_publication;
+#[cfg(target_os = "linux")]
+mod same_actor_q24_phase_gate;
+#[cfg(target_os = "linux")]
+mod same_actor_q24_phase_protocol;
+#[cfg(target_os = "linux")]
+#[path = "authority_host_same_actor_q24_phase_record.rs"]
+mod same_actor_q24_phase_record;
+#[cfg(target_os = "linux")]
+mod same_actor_q24_phase_join_client;
+#[cfg(target_os = "linux")]
+mod same_actor_q24_phase_learning;
+#[cfg(target_os = "linux")]
+mod same_actor_q24_phase;
+#[cfg(target_os = "linux")]
 pub use authority_host_admin::ROOT_ADMIN_FRAME_BOUND;
 #[cfg(target_os = "linux")]
 pub use authority_host_admin::RootAdminAction;
@@ -148,6 +167,24 @@ pub use authority_host_runtime::HostAuthorityInitialized;
 pub use authority_host_runtime::HostIssuerLeaseRenewalPlan;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedRootSameActorQ24PhaseV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorPhaseStartV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorScopeEnrollmentCapabilityV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorScopedEnrollmentV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorHostInputsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorHostCommandV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorHostAcknowledgementV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorInitialEnrollmentCapabilityV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootSameActorPublicationEnrollmentCapabilityV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;
 #[cfg(target_os = "linux")]
@@ -232,6 +269,12 @@ pub use root_production_handoff::send_root_production_handoff;
 pub use root_production_handoff::send_root_production_writer_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_q24_model_factory_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::RootSameActorPhaseOfferV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_same_actor_phase_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_same_actor_scoped_handoff;
 #[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
@@ -1273,6 +1316,30 @@ pub use production_composition::attach_production_operation_host;
 pub use production_launcher::AgentdProductionLaunch;
 #[cfg(target_os = "linux")]
 pub use production_launcher::AgentdProductionStartup;
+#[cfg(target_os = "linux")]
+pub use production_launcher::AgentdOriginalSameActorPhaseStartupV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorATaskInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorBusinessInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorCompletedAInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorLearningInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorArtifactInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorCInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorCOutcomeInputsV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorPhaseCommandV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorPhaseEventV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::OriginalSameActorPhaseHostV1;
+#[cfg(target_os = "linux")]
+pub use same_actor_q24_phase::original_same_actor_phase_host_channel_v1;
 #[cfg(target_os = "linux")]
 pub use production_root_composition::AgentdRootProductionAttachment;
 #[cfg(target_os = "linux")]

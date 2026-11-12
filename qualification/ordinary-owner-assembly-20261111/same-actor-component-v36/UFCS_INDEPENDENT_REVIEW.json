@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "kind": "independent-final-three-real-cap-UFCS-review",
+  "status": "No confirmed blocking issue in this exact mechanical delta. The direct qualified spellings are recognized by the existing typed helper's explicit branch; no checker execution or full index is claimed.",
+  "reviewer": "hepta_audit",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "packet": {
+    "blob": "de1192f74dcedb9acd08118e2a0c53c0b889cef0",
+    "bytes": 4920,
+    "sha256": "33141b8de253f5129afe186ef602aa35b53f1487a03ae47444052a515bb93b9e"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "before": {
+        "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+        "bytes": 11161,
+        "sha256": "8d019bf0261d4e60464d7b0fb1f267496434ed02a83593cf10d562325918bd9a"
+      },
+      "after": {
+        "blob": "4c6a791d41fbfc229d322c0b3320b51397c325d3",
+        "bytes": 11258,
+        "sha256": "977dceba3f3243f859c59977a173968d0f9a0b823001634f618dfd9800fc0b9f"
+      },
+      "ops": 1,
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "before": {
+        "blob": "46c3554abd4916f9d79059d0ebdcf0c3032c82a0",
+        "bytes": 13509,
+        "sha256": "4f0bc7c023062127e42245fb817a93303c360a91204b283bf76a889566e9d7df"
+      },
+      "after": {
+        "blob": "a92be943237ff7ec597979c93f3284ebbfedef73",
+        "bytes": 13606,
+        "sha256": "4b8c9de8c699a360ca9a2cf233ab11c88ef83ba34185dfceb7f5368129ecfbe7"
+      },
+      "ops": 1,
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "before": {
+        "blob": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+        "bytes": 19888,
+        "sha256": "e177d8e161f024cc6c77726bcf15339b5d9c8053a6c870558cd3520989f772b9"
+      },
+      "after": {
+        "blob": "16dcc1c66969bf5ce11fb624882fb2d92d898ba7",
+        "bytes": 19965,
+        "sha256": "d8f9669b0581fcc205c67fbcf56ebfd26a961bd37487c7f26b0f1d4fc7344ae3"
+      },
+      "ops": 1,
+      "unique_forward_reverse": true
+    }
+  ],
+  "actual_definition_GETs": [
+    {
+      "blob": "b4b39eea3168b6fe66cb3627faec896746898a6d",
+      "bytes": 3149,
+      "sha256": "813621ef864dc93adb7c9491dc009ff078975323ce6b404891438d349ef170bb"
+    },
+    {
+      "blob": "1e5d9d6ca12ea3aff4b8bfc69ca1544c7010ab74",
+      "bytes": 2920,
+      "sha256": "97d5b017a9a05cad0b75304b1eabb9d3fc3331f7a26705bb98cdaece405577a5"
+    },
+    {
+      "blob": "b446253905da915e6830c59a579674d79b995bba",
+      "bytes": 12832,
+      "sha256": "23ad85cde0ca6a14bdf6d1686fcd73d406fcb37deeac5d729cdf4fa89b564dad"
+    }
+  ],
+  "source_observations": [
+    {
+      "target": "RootGenerationInitialEnrollmentCapabilityV1",
+      "origin": "Actual original.enable_generation_initial(initial.clone())? returned tuple in the same Root wrapper",
+      "receiver": "The same by-value initial_capability",
+      "arguments": "&gate and &current_directory, unchanged",
+      "visibility": "Actual definition is pub(in super::super) on RootGenerationInitialEnrollmentCapabilityV1 in authority_host_same_actor_initial_cap.rs. The already reviewed same-Session module ancestry remains unchanged.",
+      "effects": "No new cap, borrow substitution, clone or parameter is inserted. Only the same consuming method is spelled through generation_initial::RootGenerationInitialEnrollmentCapabilityV1."
+    },
+    {
+      "target": "RootGenerationPublicationEnrollmentCapabilityV1",
+      "origin": "Actual generation_publication::original_publication_route(&original.service, &original.config, &original.registration, &original.owner_pidfd, &learning)? returned tuple",
+      "receiver": "The same by-value capability",
+      "arguments": "gate, unchanged",
+      "visibility": "Actual definition is pub(in super::super) in authority_host_same_actor_publication_cap.rs, reachable within the same reviewed Session subtree.",
+      "effects": "The complete Joined/Claim/namespace/Scoped/offer ordering outside this one expression remains byte-identical."
+    },
+    {
+      "target": "AgentdUnixFinalUseGrantProvider",
+      "origin": "The actual AgentdUnixFinalUseGrantProvider::from_root_stream_until(issuer, bundle.root.pid, root_pidfd.try_clone()?, timeout, end) result",
+      "receiver": "The same owned constructor result; no intermediate or replacement provider",
+      "arguments": "&gate, unchanged",
+      "evaluation_order": [
+        "Evaluate original constructor and its original root_pidfd.try_clone()?",
+        "Apply original map_err(protocol)?",
+        "Borrow the same gate",
+        "Call the same consuming into_same_actor_phase",
+        "Apply original map_err(protocol)?",
+        "Construct the same surrounding Arc"
+      ],
+      "actual_definition": "pub(crate) fn into_same_actor_phase(mut self, gate: &Arc<SameActorPhaseGate>) -> Result<Self, AgentdFinalUseIssuerError>",
+      "preserved_guards": "Actual method still refuses an existing phase or a protected Root end unequal to the Gate end, obtains the same actual stream, retains its required stream guard and checks it before storing phase and disarming failure scope."
+    }
+  ],
+  "typed_helper": {
+    "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "independently_GET_and_read": true,
+    "exact_existing_branch": "qualified = rf\"\\b{re.escape(target)}\\s*::\\s*{re.escape(method)}\\s*\\(\"; found = bool(re.search(qualified, code))",
+    "explanation": "The original _bindings regex only binds named let variables and does not infer let tuple elements. It also cannot recover the chained constructor expression receiver. The new spelling includes the actual target type and matches the helper's already existing direct qualified branch. In each of these three final masked files there is exactly one corresponding qualified call and no remaining .into_same_actor_phase dot call.",
+    "bounded_raw_matches": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+        "target": "RootGenerationInitialEnrollmentCapabilityV1",
+        "qualified_actual_positions": [
+          8066
+        ],
+        "remaining_same_name_dot_positions": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+        "target": "RootGenerationPublicationEnrollmentCapabilityV1",
+        "qualified_actual_positions": [
+          12787
+        ],
+        "remaining_same_name_dot_positions": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "target": "AgentdUnixFinalUseGrantProvider",
+        "qualified_actual_positions": [
+          11422
+        ],
+        "remaining_same_name_dot_positions": []
+      }
+    ],
+    "original_helper_executed": false,
+    "authority_fields_index_built": false,
+    "full_caller_proof": false
+  },
+  "verified_limits": {
+    "unique_ops": 3,
+    "paths": 3,
+    "pre_and_post_full_bytes_verified": true,
+    "all_other_source_bytes_unchanged": true,
+    "type_definitions_unchanged": true,
+    "retained_custody_and_moves_unchanged": true,
+    "deadlines_and_error_order_unchanged": true,
+    "parser_or_checker_change": false,
+    "metadata_change_in_this_packet": false,
+    "no_fake_caller_added": true,
+    "compiler": false,
+    "native": false,
+    "h_or_PTY": false,
+    "ref_changes": false
+  },
+  "integration_note": "Use these three postimages in the final source/metadata union. Any final protected marker must reflect the actual expression and remain at least as strict. This review does not certify the later complete union or grant ordinary/independent/cold-restart acceptance.",
+  "qualification": {
+    "ordinary": 0,
+    "independent_C": 0,
+    "real_daemon_and_Root_cold_restart": 0
+  }
+}

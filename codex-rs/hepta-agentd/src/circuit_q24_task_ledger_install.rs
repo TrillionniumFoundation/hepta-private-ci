@@ -18,6 +18,57 @@ pub struct AgentdQ24LearningTaskRuntimeV1 {
     pub ledger: Arc<OriginalCellQ24TaskLedgerProducerV1>,
 }
 
+/// Actual A owners for one already-bound same-actor phase. No public provider
+/// or descriptor can construct this pair, and abandoning it closes that phase.
+pub(crate) struct OriginalSameActorATaskParts {
+    gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    bootstrap: CircuitTaskRuntimeBootstrapV1,
+    invocation: Arc<dyn AgentdCircuitTaskInvocationProviderV1>,
+    source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,
+    cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
+    ledger: Arc<OriginalCellQ24TaskLedgerProducerV1>,
+    close: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,
+}
+
+impl OriginalSameActorATaskParts {
+    pub(crate) fn into_task_parts(
+        mut self,
+        identity: &AgentdIdentity,
+        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<
+        (
+            CircuitTaskRuntimeBootstrapV1,
+            Arc<dyn AgentdCircuitTaskInvocationProviderV1>,
+            Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,
+            PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
+            Arc<OriginalCellQ24TaskLedgerProducerV1>,
+        ),
+        AgentdError,
+    > {
+        if !Arc::ptr_eq(&self.gate, gate) {
+            return Err(AgentdError::GenerationFenced(
+                "original A task belongs to another phase".into(),
+            ));
+        }
+        self.gate
+            .require_open()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        self.bootstrap.require_identity(identity)?;
+        self.bootstrap
+            .handle()
+            .require_direct_original_handle()
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        self.close.disarm();
+        Ok((
+            self.bootstrap,
+            self.invocation,
+            self.source,
+            self.cell,
+            self.ledger,
+        ))
+    }
+}
+
 struct OriginalTaskInvocation {
     source: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,
     producer: Arc<OriginalCellQ24TaskLedgerProducerV1>,
@@ -52,6 +103,52 @@ impl CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> {
                 cell: self.cell,
             },
             ledger: producer,
+        })
+    }
+}
+
+impl CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> {
+    /// Runs only after the original Initial publication and actual task-channel
+    /// construction. Opening the real producer does not invent an Outcome.
+    pub(crate) fn into_original_same_actor_task_parts(
+        self,
+        identity: &AgentdIdentity,
+        gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+        published: PublishedCircuitFeatureTaskV1,
+        inputs: OriginalCellQ24TaskLedgerInputsV1,
+    ) -> Result<OriginalSameActorATaskParts, AgentdError> {
+        let close = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&gate);
+        gate.require_open()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        self.bootstrap.require_identity(identity)?;
+        self.bootstrap
+            .handle()
+            .require_direct_original_handle()
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        let producer = Arc::new(
+            OriginalCellQ24TaskLedgerProducerV1::open_original(
+                inputs,
+                Arc::clone(&self.source),
+                self.cell.clone(),
+                published,
+                identity.clone(),
+            )
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+        );
+        let invocation = Arc::new(OriginalTaskInvocation {
+            source: self.invocation,
+            producer: Arc::clone(&producer),
+        });
+        gate.require_open()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        Ok(OriginalSameActorATaskParts {
+            gate,
+            bootstrap: self.bootstrap,
+            invocation,
+            source: self.source,
+            cell: self.cell,
+            ledger: producer,
+            close,
         })
     }
 }

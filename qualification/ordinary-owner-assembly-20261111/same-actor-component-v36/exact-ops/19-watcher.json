@@ -1,0 +1,68 @@
+{
+  "schema": "same-actor-original-receiver-deadline-watch-v1",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "file": "same_actor_q24_phase_gate.rs",
+      "pre": {
+        "blob": "631dd6114e0305b66f619ad8bb7d74b20904ed98",
+        "bytes": 15261,
+        "sha256": "fee81ac6d1e13e4b18c9014d7ccb64b6c149f67cba941fdd49345726e89adb2f"
+      },
+      "post": {
+        "blob": "2cd7b91b2f21680256cedc0ecfe1ee0bf1cc7447",
+        "bytes": 16768,
+        "sha256": "19385e73e31af6bf2ffbaaab326f689189de049c44e335d07ec90faccd38cb4e"
+      },
+      "operations": [
+        {
+          "old_text": "fn refused(message: &'static str) -> io::Error {\n    io::Error::other(message)\n}\n",
+          "new_text": "fn refused(message: &'static str) -> io::Error {\n    io::Error::other(message)\n}\n\n\n/// Own the daemon's watcher from original receive until the last context\n/// owner is dropped. The thread captures only Gate and its close guard, never\n/// this owner or Context; joining this handle cannot run on its own thread.\npub(crate) struct OriginalSameActorPhaseWatch {\n    gate: Arc<SameActorPhaseGate>,\n    worker: Option<std::thread::JoinHandle<()>>,\n}\n\nimpl OriginalSameActorPhaseWatch {\n    pub(crate) fn start(gate: &Arc<SameActorPhaseGate>) -> io::Result<Self> {\n        gate.require_open()?;\n        let watched = Arc::clone(gate);\n        // This guard exists before the thread is created, including spawn\n        // failure and a worker that is cancelled before it begins executing.\n        let closing = CloseSameActorPhaseOnDrop::new(gate);\n        let worker = std::thread::Builder::new()\n            .name(\"hepta-original-phase-end\".into())\n            .spawn(move || {\n                let _closing = closing;\n                watched.watch_original_deadline();\n            })?;\n        Ok(Self { gate: Arc::clone(gate), worker: Some(worker) })\n    }\n}\n\nimpl Drop for OriginalSameActorPhaseWatch {\n    fn drop(&mut self) {\n        // close notifies the original Condvar and shuts down every retained\n        // endpoint before join. No owner callback or Gate mutex is held here.\n        self.gate.close();\n        if let Some(worker) = self.worker.take() {\n            // Worker failure already closes the same Gate via its guard.\n            let _ = worker.join();\n        }\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "file": "root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "blob": "b89cd00489c8da80263e2ee3ca04af7fe19d2a10",
+        "bytes": 18274,
+        "sha256": "319a43a2d16aee6745dcbc4d8c82ae5393d05d1fb06b251e7c5354dd0830ba1e"
+      },
+      "post": {
+        "blob": "fae66550aea3470611ba5dfebd260de5c4fc00ba",
+        "bytes": 19442,
+        "sha256": "40d060a0bef744756af5fde4537eb4c4b77a5db44d2146cac453a03bb1e983ba"
+      },
+      "operations": [
+        {
+          "old_text": "\nuse super::*;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::Ordering;\n\nuse codex_hepta_contracts::AuthorityTrustError;\n",
+          "new_text": "\nuse super::*;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::AtomicU64;\nuse std::sync::atomic::Ordering;\n\nuse codex_hepta_contracts::AuthorityTrustError;\n"
+        },
+        {
+          "old_text": "pub(crate) struct OriginalPhaseReceiveDeadline {\n    instant: Instant,\n    boottime_ns: u64,\n}\n\nimpl OriginalPhaseReceiveStart {\n",
+          "new_text": "pub(crate) struct OriginalPhaseReceiveDeadline {\n    instant: Instant,\n    boottime_ns: u64,\n    last_boottime_ns: AtomicU64,\n}\n\nimpl OriginalPhaseReceiveStart {\n"
+        },
+        {
+          "old_text": "        if checked < self.boottime_ns || checked >= boottime_ns {\n            return Err(refused(\"original receiver BOOTTIME end elapsed\"));\n        }\n        Ok(OriginalPhaseReceiveDeadline { instant, boottime_ns })\n    }\n}\n\nimpl OriginalPhaseReceiveDeadline {\n    pub(crate) fn instant(&self) -> Instant { self.instant }\n}\n\n/// Read-only handles to the SAME live Root/consumer owners. The actual Session\n",
+          "new_text": "        if checked < self.boottime_ns || checked >= boottime_ns {\n            return Err(refused(\"original receiver BOOTTIME end elapsed\"));\n        }\n        Ok(OriginalPhaseReceiveDeadline { instant, boottime_ns, last_boottime_ns: AtomicU64::new(checked) })\n    }\n}\n\nimpl OriginalPhaseReceiveDeadline {\n    pub(crate) fn instant(&self) -> Instant { self.instant }\n\n    /// Bound bootstrap waits by these original samples too. This is only an\n    /// admission limit, never a writer proof or a newly started session.\n    pub(crate) fn remaining(&self) -> Result<Duration, AgentdError> {\n        let now = crate::root_observation_cache::boottime_ns().map_err(protocol)?;\n        if self.last_boottime_ns.fetch_update(\n            Ordering::AcqRel, Ordering::Acquire, |last| (now >= last).then_some(now),\n        ).is_err() {\n            return Err(refused(\"original receiver BOOTTIME regressed\"));\n        }\n        let boot = self.boottime_ns.checked_sub(now)\n            .filter(|remaining| *remaining != 0).map(Duration::from_nanos)\n            .ok_or_else(|| refused(\"original receiver BOOTTIME end elapsed\"))?;\n        Ok(remaining(self.instant)?.min(boot))\n    }\n}\n\n/// Read-only handles to the SAME live Root/consumer owners. The actual Session\n"
+        },
+        {
+          "old_text": "    scoped_consumed: AtomicBool,\n    initial_lifetime: Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,\n    _closing: CloseSameActorPhaseOnDrop,\n}\n\npub(crate) struct OriginalSameActorProductionInputs {\n",
+          "new_text": "    scoped_consumed: AtomicBool,\n    initial_lifetime: Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,\n    _closing: CloseSameActorPhaseOnDrop,\n    _deadline_watch: crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch,\n}\n\npub(crate) struct OriginalSameActorProductionInputs {\n"
+        },
+        {
+          "old_text": "        )?,\n    )?;\n    let mut closing = CloseSameActorPhaseOnDrop::new(&gate);\n    let end = gate.deadline().instant();\n    // Keep the original all-five acceptance barrier. No request is sent while\n    // Root is still waiting to accept another mandatory original lane.\n",
+          "new_text": "        )?,\n    )?;\n    let mut closing = CloseSameActorPhaseOnDrop::new(&gate);\n    receiver.remaining()?;\n    let deadline_watch = crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch::start(&gate)?;\n    let end = gate.deadline().instant();\n    // Keep the original all-five acceptance barrier. No request is sent while\n    // Root is still waiting to accept another mandatory original lane.\n"
+        },
+        {
+          "old_text": "        scoped_consumed: AtomicBool::new(false),\n        initial_lifetime,\n        _closing: CloseSameActorPhaseOnDrop::new(&gate),\n    });\n    let root = AgentdRootProductionInputs {\n        session, checkpoint, device, notes, grants, bootstrap: bundle, publication_connection,\n",
+          "new_text": "        scoped_consumed: AtomicBool::new(false),\n        initial_lifetime,\n        _closing: CloseSameActorPhaseOnDrop::new(&gate),\n        _deadline_watch: deadline_watch,\n    });\n    let root = AgentdRootProductionInputs {\n        session, checkpoint, device, notes, grants, bootstrap: bundle, publication_connection,\n"
+        }
+      ]
+    }
+  ],
+  "scope": "New-mode original preflight deadline remains anchored to first samples; daemon watcher starts before five-lane connection and is retained by Context. Legacy startup and default sessions unchanged.",
+  "ownership": "Watch thread captures only Gate and CloseOnDrop, not Context or watcher owner; Context construction failure or last release closes Gate, shuts all endpoints and notifies Condvar before joining the actual thread. Worker panic also closes via guard. No authority work, refresh, retry, or deadline reconstruction occurs in watcher.",
+  "limits": "Thread join is not a hard-real-time bound. No native/compiler/checker execution; actual startup/caller composition follows separately."
+}

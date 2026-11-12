@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.exact-ops.v1",
+  "scope": "same-actor sealed C task parts and original session origin comparison; not integrated",
+  "base": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "files": [
+    {
+      "file": "root_authority_session.rs",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": {
+        "blob": "cc85f6a8a3e959b2e6a80b68dac6417e3a764f1e",
+        "bytes": 29129,
+        "sha256": "4ff203f12388dc7cf12be0a061fa4903ed793fbcaa042e0d4ebf67cd27cf8963"
+      },
+      "post": {
+        "blob": "1f5bd882580fe6efe0402e5ad5ce13fd5ff99f88",
+        "bytes": 29722,
+        "sha256": "6f4863365cdc11a60c4b61ca8fba1dfc27ff09597127e2dcaadbccd096b925ad"
+      },
+      "operations": [
+        {
+          "old_text": "        self.live.end_boottime_ns\n    }\n\n    pub fn clock(&self) -> Arc<dyn AuthorityClock> {\n        self.live.clone()\n    }\n",
+          "new_text": "        self.live.end_boottime_ns\n    }\n\n    /// Origin comparison only. The caller still performs the original live\n    /// verifier checks; no new channel or authority is created by this comparison.\n    pub(crate) fn require_original_same_actor_phase_origin(\n        &self,\n        phase: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdRootAuthorityError> {\n        if !self.live.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase)) {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        Ok(())\n    }\n\n    pub fn clock(&self) -> Arc<dyn AuthorityClock> {\n        self.live.clone()\n    }\n"
+        }
+      ]
+    },
+    {
+      "file": "root_q24_successor_session.rs",
+      "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "pre": {
+        "blob": "b6f34b3b9e0452d2ca311b79084233d5c3305fb7",
+        "bytes": 3160,
+        "sha256": "8668fd4bca95644a6252535cc5bf5369873ab335ca375fb7e022867dc775aae9"
+      },
+      "post": {
+        "blob": "78047d962fce3daf5039bebfc31f2dd3098408e9",
+        "bytes": 4649,
+        "sha256": "c3e38bc3425720a1d7d9aeef786478ed8ffb0d0cc3397c13cdc7856c47c4d246"
+      },
+      "operations": [
+        {
+          "old_text": "    identity: AgentdIdentity,\n    authority: ProductionAuthorityLease,\n    verifier: Arc<dyn ProductionAuthorityVerifier>,\n}\n\nimpl OriginalQ24SuccessorSession {\n",
+          "new_text": "    identity: AgentdIdentity,\n    authority: ProductionAuthorityLease,\n    verifier: Arc<dyn ProductionAuthorityVerifier>,\n    phase: Option<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,\n}\n\nimpl OriginalQ24SuccessorSession {\n"
+        },
+        {
+          "old_text": "            identity: identity.clone(),\n            authority: session.authority(),\n            verifier: session.verifier(),\n        };\n        observed.require_current_successor_session()?;\n        Ok(observed)\n    }\n\n    pub(crate) fn identity(&self) -> &AgentdIdentity {\n        &self.identity\n    }\n",
+          "new_text": "            identity: identity.clone(),\n            authority: session.authority(),\n            verifier: session.verifier(),\n            phase: None,\n        };\n        observed.require_current_successor_session()?;\n        Ok(observed)\n    }\n\n    pub(crate) fn capture_original_same_actor_successor_session(\n        session: &AgentdRootAuthoritySession,\n        original: &HostAuthorityPublicBootstrapV1,\n        identity: &AgentdIdentity,\n        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<Self, AgentdError> {\n        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);\n        session.require_original_same_actor_phase_origin(phase)\n            .map_err(|error| refused(&error.to_string()))?;\n        let mut captured = Self::capture_original_successor_session(session, original, identity)?;\n        captured.phase = Some(Arc::clone(phase));\n        captured.require_original_same_actor_phase(phase)?;\n        closing.disarm();\n        Ok(captured)\n    }\n\n    pub(crate) fn require_original_same_actor_phase(\n        &self,\n        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        phase.require_open().map_err(|error| refused(&error.to_string()))?;\n        if !self.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase)) {\n            return Err(refused(\"successor belongs to another original same-actor phase\"));\n        }\n        self.require_current_successor_session()?;\n        phase.require_open().map_err(|error| refused(&error.to_string()))?;\n        Ok(())\n    }\n\n    pub(crate) fn identity(&self) -> &AgentdIdentity {\n        &self.identity\n    }\n"
+        }
+      ]
+    },
+    {
+      "file": "circuit_q24_successor_same_actor.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs",
+      "pre": null,
+      "post": {
+        "blob": "2f29fb002c70222aaa9c58240546934d2fc92496",
+        "bytes": 3832,
+        "sha256": "7ec22758e3f8b8b69c2f8cda04ab9d3c3d044d165c19c809666476ca32acb2a9"
+      },
+      "operations": [
+        {
+          "add_file": "//! Sealed C task parts for the same live actor and the same original phase.\n//! Only the actual retained-source/Q24 bootstrap can construct these parts.\n//! This is not an independent-consumer authorization or a restart capability.\n\nuse super::*;\nuse crate::AgentdIdentity;\nuse crate::LearningIterationRuntimeBootstrapV1;\nuse crate::root_production_inputs::OriginalQ24SuccessorSession;\nuse crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\n\npub(crate) struct OriginalSameActorSuccessorTaskParts {\n    context: Arc<OriginalQ24SuccessorContext>,\n    gate: Arc<SameActorPhaseGate>,\n    slot: Arc<SuccessorSlot>,\n    invocation: Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>,\n    phase_close: CloseSameActorPhaseOnDrop,\n    slot_close: CloseOnDrop,\n}\n\nimpl OriginalSameActorSuccessorTaskParts {\n    pub(crate) fn into_task_parts(\n        mut self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<\n        (Arc<SuccessorSlot>, Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>),\n        AgentdError,\n    > {\n        if self.context.identity() != identity || !Arc::ptr_eq(&self.gate, gate) {\n            return Err(AgentdError::GenerationFenced(\n                \"successor task parts differ from their original phase or full identity\".into(),\n            ));\n        }\n        self.context.session().require_original_same_actor_phase(gate)?;\n        self.slot.require_open().map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;\n        gate.require_open().map_err(|error| AgentdError::Protocol(error.to_string()))?;\n        self.phase_close.disarm();\n        self.slot_close.disarm();\n        Ok((self.slot, self.invocation))\n    }\n}\n\n/// Make the slot here and pass that very slot through the original aggregate's\n/// registration. There is no external slot, provider, receipt or Ready value.\npub(crate) async fn prepare_original_same_actor_successor(\n    mut learning: LearningIterationRuntimeBootstrapV1,\n    identity: &AgentdIdentity,\n    session: Arc<OriginalQ24SuccessorSession>,\n    gate: Arc<SameActorPhaseGate>,\n    capacity: usize,\n) -> Result<\n    (\n        LearningIterationRuntimeBootstrapV1,\n        PendingSuccessorOwner,\n        OriginalQ24SuccessorHandoffV1,\n        OriginalSameActorSuccessorTaskParts,\n    ),\n    AgentdError,\n> {\n    let mut phase_close = CloseSameActorPhaseOnDrop::new(&gate);\n    session.require_original_same_actor_phase(&gate)?;\n    learning.require_identity(identity)?;\n    if !(1..=64).contains(&capacity) {\n        return Err(AgentdError::Invalid(\"successor queue must be 1..64\".into()));\n    }\n    let slot = SuccessorSlot::new_pending_slot();\n    let mut slot_close = CloseOnDrop::new(&slot);\n    let context = learning.prepare_original_successor_context(identity, session, &slot).await?;\n    context.session().require_original_same_actor_phase(&gate)?;\n    let (sender, receiver) = oneshot::channel();\n    let invocation = original_pending_successor_invocation(Arc::clone(&slot));\n    let pending = PendingSuccessorOwner::new(\n        Arc::clone(&context), Arc::clone(&slot), receiver, capacity,\n    );\n    let handoff = OriginalQ24SuccessorHandoffV1 {\n        context: Arc::clone(&context),\n        slot: Arc::clone(&slot),\n        sender: Some(sender),\n        close: CloseOnDrop::new(&slot),\n    };\n    let parts = OriginalSameActorSuccessorTaskParts {\n        context,\n        gate: Arc::clone(&gate),\n        slot: Arc::clone(&slot),\n        invocation,\n        phase_close: CloseSameActorPhaseOnDrop::new(&gate),\n        slot_close: CloseOnDrop::new(&slot),\n    };\n    gate.require_open().map_err(|error| AgentdError::Protocol(error.to_string()))?;\n    slot_close.disarm();\n    phase_close.disarm();\n    Ok((learning, pending, handoff, parts))\n}\n"
+        }
+      ]
+    },
+    {
+      "file": "circuit_q24_successor.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "pre": {
+        "blob": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+        "bytes": 8190,
+        "sha256": "77e815730b1db392738095cfb18b6e6c9d68afdfe3224652c1e133dcbe60f066"
+      },
+      "post": {
+        "blob": "e947422e2ab860086abf813a8da95bfab8ac4c05",
+        "bytes": 8384,
+        "sha256": "91b36498db50823d92bf7e682b02e0e4bdcb90d0d4d161fde5555202db195c65"
+      },
+      "operations": [
+        {
+          "old_text": "mod state;\n#[path = \"circuit_q24_successor_worker.rs\"]\nmod worker;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorFeedbackV1;\n",
+          "new_text": "mod state;\n#[path = \"circuit_q24_successor_worker.rs\"]\nmod worker;\n#[path = \"circuit_q24_successor_same_actor.rs\"]\nmod same_actor;\npub(crate) use same_actor::OriginalSameActorSuccessorTaskParts;\npub(crate) use same_actor::prepare_original_same_actor_successor;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorFeedbackV1;\n"
+        }
+      ]
+    }
+  ]
+}

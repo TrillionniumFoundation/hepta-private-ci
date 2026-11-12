@@ -214,6 +214,19 @@ impl AgentdState {
             self.circuit_task_admissions.fetch_add(1, Ordering::AcqRel);
             AdmittedTask(Arc::clone(&self.circuit_task_admissions))
         };
+        #[cfg(target_os = "linux")]
+        if let Some(admission) = crate::CircuitTaskHandleV1::admit_original_same_actor_task(
+            handle,
+            provider,
+            self.identity(),
+            record,
+        )
+        .map_err(task_error)?
+        {
+            return self
+                .execute_original_same_actor_task(record, admission)
+                .await;
+        }
         let request = provider.build(self.identity(), record)?;
         request
             .validate_record(record, record.snapshot.generation)
@@ -250,6 +263,50 @@ impl AgentdState {
             );
         }
         self.require_current_run_start(record)?;
+        Ok(Some(receipt))
+    }
+
+    #[cfg(target_os = "linux")]
+    async fn execute_original_same_actor_task(
+        &self,
+        record: &RunStartRecordV1,
+        mut admission: crate::circuit_task::SameActorTaskAdmission,
+    ) -> Result<Option<CircuitTaskReceiptV1>, AgentdError> {
+        self.require_current_run_start(record)?;
+        let request = admission.build_original_task_request()?;
+        request
+            .validate_record(record, record.snapshot.generation)
+            .map_err(task_error)?;
+        self.require_current_run_start(record)?;
+        // This one ticket retains the exact owner. Unknown completion closes
+        // the phase and is not a request to resolve or submit a later phase.
+        let receipt = admission
+            .submit_original_task_request(request)
+            .await
+            .map_err(task_error)?;
+        if receipt.trace().run().outcome().is_none() || receipt.trace().run().unresolved() != 0 {
+            return Err(task_error(CircuitTaskErrorV1::ReconciliationRequired));
+        }
+        admission.require_original_phase_execution()?;
+        self.require_current_run_start(record)?;
+        admission.publish_original_task_result(&receipt)?;
+        self.require_current_run_start(record)?;
+        // Preserve task success when its genuine independent Outcome is still
+        // pending. The original producer alone may return opaque readiness.
+        let readiness = admission
+            .observe_original_task_learning(receipt.trace())
+            .await;
+        if let Err(error) = self
+            .enqueue_original_circuit_learning(record, receipt.trace(), readiness)
+            .await
+        {
+            eprintln!(
+                "committed task learning publication remains pending (run_id={}, task_committed=true, learning_error={error})",
+                record.snapshot.run_id
+            );
+        }
+        self.require_current_run_start(record)?;
+        admission.finish_original_task()?;
         Ok(Some(receipt))
     }
 }

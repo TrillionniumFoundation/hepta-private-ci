@@ -34,6 +34,10 @@ mod late_writer;
 #[path = "production_launcher_late_startup.rs"]
 mod late_startup;
 
+#[path = "production_launcher_same_actor_phase.rs"]
+mod same_actor_phase;
+pub use same_actor_phase::AgentdOriginalSameActorPhaseStartupV1;
+
 use inputs::LaunchInputs;
 use inputs::NotesUiInputs;
 use inputs::PrimaryInputs;

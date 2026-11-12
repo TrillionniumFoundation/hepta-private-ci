@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "independent-orphan-phase-handoff-helper-removal-delta",
+  "status": "No confirmed blocker in this one-operation removal; final full caller inventory remains the integrator's obligation.",
+  "packet": {
+    "blob": "1a237aa9967e296adeb4e823c5a438f1a0c70364",
+    "bytes": 2459,
+    "sha256": "98b77c7f41e45f246cb3908e711093d1bf0d3cbf2279a1a143102a1730693628"
+  },
+  "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+  "before": {
+    "blob": "9d6c7d9243a7779b9941879087520f67cf52a439",
+    "bytes": 10556,
+    "sha256": "bed03a5298710fb89cb6ea5ca7bc9ce6f42fbe56d26c56c68c00d9f5200a0395"
+  },
+  "after": {
+    "blob": "752baa69a92a33d28020e3c475322e382b7445ce",
+    "bytes": 9854,
+    "sha256": "95b0176020f34c2382ec77ac36d451dc9f625b6369495e9d7aaae25508d49b16"
+  },
+  "independently_GET_and_hashed": true,
+  "unique_forward_reverse": true,
+  "removed_bytes": 702,
+  "other_bytes_exact": true,
+  "actual_connections_checked": [
+    {
+      "path": "production_launcher_same_actor_phase.rs",
+      "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+      "finding": "Actual Startup consumes receive_root_production_writer_handoff for original bootstrap/root pidfd/writer, receives the separate phase purpose, then calls receive_original_same_actor_inputs with the same original receive deadline. It does not call the removed two-right helper."
+    },
+    {
+      "path": "root_production_same_actor_phase_inputs.rs",
+      "blob": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+      "finding": "Actual receiver connects observation, issuer, checkpoint, device and notes in order with the same captured end before any request acceptance. Session/trust/checkpoint/consumer activation remain in this real path; it does not call the removed helper."
+    }
+  ],
+  "bounds": "The author's 105-product-file exact-name inventory was not independently rerun here. Independent review covers the exact 702-byte removal and the two actual original input paths just named. The removal does not change existing sender or other receive/validation bodies, imports, deadlines or owner checks; it must not be replaced by a fictitious caller entry.",
+  "tests_or_original_checker_run": false,
+  "h_or_native_or_ref_changes": false
+}

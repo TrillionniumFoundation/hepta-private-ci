@@ -39,6 +39,10 @@ pub enum OriginalCellQ24TrainingStageErrorV1 {
 
 type Error = OriginalCellQ24TrainingStageErrorV1;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_same_actor.rs"]
+mod same_actor;
+
 /// Original retained bytes and their existing receipt, not a publication grant.
 pub struct OriginalCellQ24TrainingCompletionV1 {
     pub outcome: CellQ24TrainingOutcomeV1,
@@ -55,6 +59,8 @@ pub struct OriginalCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitn
     dataset: LearningIterationSnapshotV1,
     owners: Arc<Mutex<Owners<TW, RW>>>,
     lane: Arc<Semaphore>,
+    #[cfg(target_os = "linux")]
+    same_actor_work: Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
 }
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
@@ -87,6 +93,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             dataset: receipts.config.dataset.clone(),
             owners: Arc::new(Mutex::new(Owners { training, receipts })),
             lane: Arc::new(Semaphore::new(/*permits*/ 1)),
+            #[cfg(target_os = "linux")]
+            same_actor_work: None,
         };
         stage
             .in_lane(|owners| {
@@ -112,6 +120,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
+        #[cfg(target_os = "linux")]
+        if let Some(phase) = &self.same_actor_work {
+            return self.execute_original_same_actor_training(dataset, cancellation, phase).await;
+        }
         self.require_dataset(dataset)?;
         self.in_lane(
             move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
@@ -222,6 +234,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             &mut CellQ24TrainingOwnerV1<TW>,
         ) -> Result<T, crate::LearningIterationRuntimeErrorV1>,
     ) -> Result<T, crate::LearningIterationRuntimeErrorV1> {
+        let mut closing = self.same_actor_work.as_ref().map(|phase| phase.original_failure_scope());
         self.require_dataset(dataset)
             .map_err(|_| crate::LearningIterationRuntimeErrorV1::WrongScope)?;
         let _permit = Arc::clone(&self.lane)
@@ -241,12 +254,21 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         training
             .require_original_dataset_scope(dataset, &scope)
             .map_err(|_| crate::LearningIterationRuntimeErrorV1::WrongScope)?;
+        if let Some(phase) = &self.same_actor_work {
+            phase.require_original_work_entry()?;
+        }
         let result = work(training)?;
         training
             .require_original_dataset_provenance()
             .map_err(|_| {
                 crate::LearningIterationRuntimeErrorV1::OwnerUnavailable("original training source")
             })?;
+        if let Some(phase) = &self.same_actor_work {
+            phase.require_original_work_entry()?;
+        }
+        if let Some(closing) = &mut closing {
+            closing.disarm();
+        }
         Ok(result)
     }
 
@@ -254,6 +276,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         &self,
         work: impl FnOnce(&mut Owners<TW, RW>) -> Result<T, Error> + Send + 'static,
     ) -> Result<T, Error> {
+        #[cfg(target_os = "linux")]
+        if let Some(phase) = &self.same_actor_work {
+            return self.in_original_same_actor_training_lane(phase, work).await;
+        }
         let permit = Arc::clone(&self.lane)
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;

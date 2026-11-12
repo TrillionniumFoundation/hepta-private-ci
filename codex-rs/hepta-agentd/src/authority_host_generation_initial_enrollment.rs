@@ -13,9 +13,24 @@ impl HostAuthorityService {
         deployment: &HostGenerationInitialDeploymentV1,
         inputs: RootGenerationInitialEnrollmentV1,
     ) -> io::Result<RegisteredGenerationInitial> {
+        self.enroll_generation_initial_in_phase(
+            config, registration, owner, deployment, inputs, None,
+        )
+    }
+
+    pub(crate) fn enroll_generation_initial_in_phase(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        deployment: &HostGenerationInitialDeploymentV1,
+        inputs: RootGenerationInitialEnrollmentV1,
+        phase: Option<&Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
+    ) -> io::Result<RegisteredGenerationInitial> {
         original_root()?;
         let mut enrolled_result = None;
         self.with_initial_publication_context(config, registration, owner, |proof| {
+            let _admission = phase.map(|gate| gate.enter_original_lane()).transpose()?;
             let profile_owner = format!(
                 "generation-initial/{}",
                 crate::neuron_generation_current::types::scope_digest(deployment.target.scope(),)
@@ -120,6 +135,7 @@ impl HostAuthorityService {
                             Some(current)
                         }
                     };
+                if let Some(gate) = phase { gate.require_open()?; }
                 let profile_store = match &recovered {
                     Some((store, record)) => {
                         if record.profile != profile {
@@ -191,6 +207,7 @@ impl HostAuthorityService {
                     }
                 }
                 drop(held);
+                if let Some(gate) = phase { gate.require_open()?; }
                 Ok(enrolled)
             })();
             let enrolled = match retained_result {

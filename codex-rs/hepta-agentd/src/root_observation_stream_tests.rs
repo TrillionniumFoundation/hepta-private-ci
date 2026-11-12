@@ -247,3 +247,6 @@ subprocess.Popen(['/bin/sleep','0.6'],pass_fds=(stream.fileno(),),stdin=subproce
     assert!(started.elapsed() < Duration::from_millis(300));
     assert!(client.read::<u64>(&request()).await.is_err());
 }
+
+#[path = "root_observation_stream_deadline_tests.rs"]
+mod deadline;

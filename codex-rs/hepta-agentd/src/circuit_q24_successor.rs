@@ -25,6 +25,10 @@ mod invocation;
 mod state;
 #[path = "circuit_q24_successor_worker.rs"]
 mod worker;
+#[path = "circuit_q24_successor_same_actor.rs"]
+mod same_actor;
+pub(crate) use same_actor::OriginalSameActorSuccessorTaskParts;
+pub(crate) use same_actor::prepare_original_same_actor_successor;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorFeedbackV1;

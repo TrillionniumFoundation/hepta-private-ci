@@ -96,3 +96,6 @@ fn factory_client_refuses_noncanonical_or_missing_material_binding() {
         assert!(validate_reply(&Command::Observe, &reply).is_err());
     }
 }
+
+#[path = "root_q24_model_same_actor_tests.rs"]
+mod same_actor_tests;

@@ -41,6 +41,15 @@ pub(crate) use listeners::validate_runtime_lanes;
 #[path = "authority_host_session.rs"]
 mod session;
 pub use session::PreparedHostAuthoritySession;
+pub use session::PreparedRootSameActorQ24PhaseV1;
+pub use session::RootSameActorPhaseStartV1;
+pub use session::RootSameActorScopeEnrollmentCapabilityV1;
+pub use session::RootSameActorScopedEnrollmentV1;
+pub use session::RootSameActorHostInputsV1;
+pub use session::RootSameActorHostCommandV1;
+pub use session::RootSameActorHostAcknowledgementV1;
+pub use session::RootSameActorInitialEnrollmentCapabilityV1;
+pub use session::RootSameActorPublicationEnrollmentCapabilityV1;
 pub use session::RootGenerationInitialDeploymentFilesV1;
 pub use session::RootGenerationInitialDeploymentSessionV1;
 pub use session::RootGenerationInitialDeploymentV1;

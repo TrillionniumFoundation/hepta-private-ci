@@ -41,6 +41,9 @@ pub(crate) use publication_connection::OriginalQ24SuccessorSession;
 pub use publication_connection::RootGenerationPublicationConnectionV1;
 pub(crate) use publication_connection::RootGenerationPublicationSlot;
 
+#[path = "root_production_same_actor_phase_inputs.rs"]
+pub(crate) mod same_actor_phase;
+
 /// Retain `session` until the original runtime and recovered writer stop.
 /// Device and Notes are the actual two journal owners installed in that same
 /// live verifier; their clones share those owners, never a replacement ledger.

@@ -368,6 +368,7 @@ impl DeploymentFinalUseIssuer {
             // Preserve every original Objective and other installed route at
             // its exact position under the full original issuer-state CAS.
             changed.policies[slot] = next;
+            self.require_new_same_actor_phase_effect()?;
             self.store
                 .compare_and_set(STATE_OWNER, &state, &changed)
                 .map_err(io::Error::other)?;

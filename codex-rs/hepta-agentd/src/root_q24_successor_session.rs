@@ -8,6 +8,7 @@ pub(crate) struct OriginalQ24SuccessorSession {
     identity: AgentdIdentity,
     authority: ProductionAuthorityLease,
     verifier: Arc<dyn ProductionAuthorityVerifier>,
+    phase: Option<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
 }
 
 impl OriginalQ24SuccessorSession {
@@ -26,9 +27,58 @@ impl OriginalQ24SuccessorSession {
             identity: identity.clone(),
             authority: session.authority(),
             verifier: session.verifier(),
+            phase: None,
         };
         observed.require_current_successor_session()?;
         Ok(observed)
+    }
+
+    pub(crate) fn capture_original_same_actor_successor_session(
+        session: &AgentdRootAuthoritySession,
+        original: &HostAuthorityPublicBootstrapV1,
+        identity: &AgentdIdentity,
+        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<Self, AgentdError> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);
+        session.require_original_same_actor_phase_origin(phase)
+            .map_err(|error| refused(&error.to_string()))?;
+        let mut captured = Self::capture_original_successor_session(session, original, identity)?;
+        captured.phase = Some(Arc::clone(phase));
+        captured.require_original_same_actor_phase(phase)?;
+        closing.disarm();
+        Ok(captured)
+    }
+
+    pub(crate) fn require_original_same_actor_phase(
+        &self,
+        phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        phase.require_open().map_err(|error| refused(&error.to_string()))?;
+        if !self.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase)) {
+            return Err(refused("successor belongs to another original same-actor phase"));
+        }
+        self.require_current_successor_session()?;
+        phase.require_open().map_err(|error| refused(&error.to_string()))?;
+        Ok(())
+    }
+
+    /// A separate scoped purpose is claimed only by the original Joined
+    /// receiver's opaque ticket. This cannot duplicate the Initial slot.
+    pub(crate) fn take_original_scoped_publication_connection(
+        &self,
+        ticket: &crate::root_production_learning_inputs::same_actor_phase::OriginalScopedPublicationTicket,
+    ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {
+        ticket.claim_original_session(self)?;
+        self.require_original_same_actor_phase(ticket.gate())?;
+        let connection = RootGenerationPublicationConnectionV1 {
+            original: self.original.clone(),
+            identity: self.identity.clone(),
+            authority: self.authority.clone(),
+            verifier: Arc::clone(&self.verifier),
+        };
+        connection.require_same_successor_session(self)?;
+        self.require_original_same_actor_phase(ticket.gate())?;
+        Ok(connection)
     }
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {

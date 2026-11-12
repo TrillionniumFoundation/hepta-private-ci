@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "kind": "Independent final same-actor CALLERS union and exact Startup receiver correction review",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "完成有界 Git/static 独审；最终 dbb7/9af2 未见本次范围内剩余确定静态阻断。原 7cefc+b406 存在一处确定 typed 准入缺口，已由独立两操作修订关闭；不是原 checker、编译、native 或业务资格 PASS。",
+  "final_inputs": {
+    "callers": {
+      "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+      "bytes": 885351,
+      "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+    },
+    "startup": {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "blob": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7",
+      "bytes": 11110,
+      "sha256": "c2a1a01228813216593cde42f0aa985581f694de377c0d52a82b9d0dc348705c"
+    },
+    "canonical_94_operations": {
+      "blob": "3f8fe16d1f03dee7ea726ab076869445bd14bc89",
+      "bytes": 294160,
+      "git": "3f8fe16d1f03dee7ea726ab076869445bd14bc89",
+      "sha256": "67cfde4bfcd7c1f34327f57e2999010aa3f284d7b69df2b3c354229173b05da6"
+    },
+    "final_two_operations": {
+      "blob": "3f719387a4b568f9b2e4c42b2b49cf7e90532024",
+      "bytes": 4079,
+      "sha256": "ae18e70b73ca6a6a18d174ad427159e32e8a7ac7c25aad39796bce49a5a2c953"
+    },
+    "author_pre_correction_receipt": {
+      "blob": "5a4fdc2ba8c84d48412f5410af83f8547677044d",
+      "bytes": 175529,
+      "git": "5a4fdc2ba8c84d48412f5410af83f8547677044d",
+      "sha256": "72ad48695ad91c97f828a0d9eaff5d65b76e31162881c99d0886088db5d4385f",
+      "scope": "7cefc 和旧 b406；必须叠加 3f719387，不能把旧 receipt 当修订后的原 checker 结果。"
+    },
+    "final_inventory": {
+      "blob": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+      "bytes": 196570,
+      "sha256": "56f8adb34f926e18ddd7fdfe616e4b3b0aa904d222e7cef92f163462c2af4f26"
+    },
+    "independent_detail": {
+      "blob": "72a1a29c5cfc2fe9855393305747cf7b54afdc7e",
+      "bytes": 285976,
+      "git": "72a1a29c5cfc2fe9855393305747cf7b54afdc7e",
+      "sha256": "88bbcc8d7c8d2cf01af1a283bb32f80e1acb25bcf54c48e0f70ace21361c9793",
+      "description": "完整独立重放、逐表差分、143行保护投影、384非typed已知域调用对比、33处dot导航、13新typed导航及105最终源码pins；原始来源/范围明确。"
+    }
+  },
+  "base_and_replay": {
+    "base_callers": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+    "canonical_steps": [
+      {
+        "step": "Fresh-on-B",
+        "operations": 3,
+        "pre": {
+          "blob": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+          "bytes": 775643,
+          "sha256": "4a1ede0cf1415ab127fbc6b03b9488e3f82eb0d53e893b0b7efe21dfc112fb02"
+        },
+        "post": {
+          "blob": "17f713e4cccbafaaa5fe3bde7c0a6967fb54451c",
+          "bytes": 778633,
+          "sha256": "e3a1af1822ffb6f478d7e37ee6865b0db581fecb30e4f41e7a308241f37bc748"
+        },
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "step": "guard-extractions-on-B-Fresh",
+        "operations": 8,
+        "pre": {
+          "blob": "17f713e4cccbafaaa5fe3bde7c0a6967fb54451c",
+          "bytes": 778633,
+          "sha256": "e3a1af1822ffb6f478d7e37ee6865b0db581fecb30e4f41e7a308241f37bc748"
+        },
+        "post": {
+          "blob": "a4807e6ac81c1b543b0ac49839c6a6f2edc85021",
+          "bytes": 781227,
+          "sha256": "780c8f0740aa71548bc1762f9eb9f1ebaaae795bd99880bf7604f224957afde9"
+        },
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "step": "final-union",
+        "operations": 83,
+        "pre": {
+          "blob": "a4807e6ac81c1b543b0ac49839c6a6f2edc85021",
+          "bytes": 781227,
+          "sha256": "780c8f0740aa71548bc1762f9eb9f1ebaaae795bd99880bf7604f224957afde9"
+        },
+        "post": {
+          "blob": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+          "bytes": 885312,
+          "sha256": "319b8f8e0ba18a2842f28c1477501e38dc774dbad8579b2af5f3b37dab4c88ff"
+        },
+        "forward": true,
+        "reverse": true
+      }
+    ],
+    "all_94_forward_unique": true,
+    "all_94_reverse_unique": true,
+    "all_intermediate_git_sha256_bytes_exact": true,
+    "final_overlay": [
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "pre": {
+          "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+          "bytes": 11071,
+          "sha256": "7d5696eb6a9a20b2423ecb17e0341b8e12254438ee876cb051f7a97591752cc4"
+        },
+        "post": {
+          "bytes": 11110,
+          "blob": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7",
+          "sha256": "c2a1a01228813216593cde42f0aa985581f694de377c0d52a82b9d0dc348705c"
+        },
+        "uniqueForwardReverse": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "pre": {
+          "blob": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+          "bytes": 885312,
+          "sha256": "319b8f8e0ba18a2842f28c1477501e38dc774dbad8579b2af5f3b37dab4c88ff"
+        },
+        "post": {
+          "bytes": 885351,
+          "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+          "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+        },
+        "uniqueForwardReverse": true
+      }
+    ],
+    "operation_accounting": "canonical 94项仅CALLERS；追加两项为1个真实Rust调用+1个对应新保护marker。合计95个CALLERS操作和1个Rust表达式操作。没有再次应用旧Fresh或旧七guard包。",
+    "prior_reviews_reused": {
+      "Fresh": {
+        "review": "75c09b93d0c4d10eb2e33856605c85b0d7129ed3",
+        "operations": "332aa6ac6135acaf248446b549a88b6a688568b3",
+        "canonical_three_operations_exactly_equal": true
+      },
+      "extractions": {
+        "review": "1b411c15d734803f738c3ab329794e2a568f5c1d",
+        "operations": "6d80200e0737a935bfa13c04a1469f275c4d6d70",
+        "canonical_eight_operations_exactly_equal": true
+      },
+      "B": {
+        "review": "882e34f5c73bd64c36cb7ab6506aea75b2ff983d",
+        "manifest": "16250eb7b6294c5c37c44428ace77dbaa50cfab1"
+      },
+      "final_three_UFCS": {
+        "review": "fc75cde2cdd60b128ea0bdea270e1ca7a2d14d7a",
+        "operations": "de1192f74dcedb9acd08118e2a0c53c0b889cef0"
+      },
+      "orphan_helper_removal": {
+        "review": "a8c8786cbaded4b3a8992cd6dd389d448c1278b9",
+        "operations": "1a237aa9967e296adeb4e823c5a438f1a0c70364"
+      }
+    }
+  },
+  "preservation": {
+    "base_rows": {
+      "declared": 556,
+      "required": 524,
+      "protected": 394
+    },
+    "after_Fresh_and_extractions": {
+      "declared": 556,
+      "protected": 395
+    },
+    "final_rows": {
+      "declared": 638,
+      "unique_declared": 638,
+      "required": 638,
+      "unique_required": 638,
+      "protected": 440
+    },
+    "all_556_old_ids_preserved": true,
+    "no_old_caller_deleted": true,
+    "added_required_ids": {
+      "total": 114,
+      "already_declared_Work": 24,
+      "already_declared_B": 8,
+      "new_core_boundaries": 82,
+      "missing": [],
+      "unexpected": []
+    },
+    "union_layer_only": {
+      "old_boundary_rows": 556,
+      "unchanged_boundary_rows": 476,
+      "caller_rows_expanded": 80,
+      "actual_added_edges": 92,
+      "every_non_caller_field_byte_value_preserved": true,
+      "old_protected_rows": 395,
+      "old_protected_rows_identical": 394,
+      "only_changed_old_protected": "authority_host_same_actor_q24_phase.rs: capture_original_phase内已审Initial cap同实物UFCS，原一次method marker换成actual Type::method及原实参两个顺序markers。",
+      "new_boundaries": 82,
+      "new_protected_rows": 45
+    },
+    "whole_38ae_to_final_precision": {
+      "old_boundary_rows_with_any_field_change": 82,
+      "old_boundary_rows_with_added_callers": 81,
+      "total_added_caller_edges": 93,
+      "exceptions_to_non_caller_identity": [
+        "root_prepared_fresh_session: 新真实Root phase caller加入；旧7个raw caller markers仍完整保管在旧native入口protected.required，并有实际Linux main顺序。Fresh3项已单独独审，不能把这个有批准的表达迁移误写成所有字段逐字没变。",
+        "root_generation_publication_enable: 七guard共享body抽取包中唯一definition marker self.service→实际同参数service。原wrapper传&self.service/&self.config有独立有序保护，原caller/receiver/pattern/forbidden保持。"
+      ],
+      "other_old_boundary_fields_preserved": true,
+      "total_new_protected_rows": 46
+    },
+    "final_receiver_fix_changes_exactly_one_new_protected_marker": true,
+    "final_receiver_fix_changes_zero_boundary_or_required_inventory_fields": true,
+    "original_source_roots_ignored_fragments_and_rule_unchanged": true,
+    "original_checker_or_typed_helper_changes": false,
+    "source_or_metadata_exemptions_added": false,
+    "no_test_fixture_added_as_product_caller": true
+  },
+  "static_projection": {
+    "original_checker_pin": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper_pin": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "method": "独立纯V8 raw/comment-literal/cfg-test/nested-function mask、唯一实际fn extent、literal_calls位置及有序marker投影；逐字读取原算法来限定解释，不执行原Python程序。",
+    "product_source_pins": 105,
+    "product_source_hashes_independently_verified": 105,
+    "cached_exact_Git_source_reused": 31,
+    "additional_exact_Git_reads": 74,
+    "later_startup_and_original_take_definition_read_separately": true,
+    "protected_rows_with_known_sources": 143,
+    "other_protected_rows_not_reexecuted": 297,
+    "function_sequences": 377,
+    "function_markers": 3491,
+    "file_sequences": 39,
+    "required_raw_markers": 496,
+    "forbidden_markers": 421,
+    "projection_failures": 0,
+    "correction_projection": {
+      "protected_rows": 1,
+      "functions": 2,
+      "markers": 35,
+      "failures": 0,
+      "method_qualified_count": 1,
+      "method_dot_count": 0
+    },
+    "literal_and_nested_code_limits": "原required为raw检查；ordered与forbidden使用原mask。literal_calls仅原单字符串实调用特例；未借注释/字符串填code序列。所有被投影函数均实际唯一范围，保持序列至少2项。",
+    "source_binding_to_inventory": "105份最终product pins与5258 inventory逐项Git/bytes/SHA相等；CALLERS最终dbb7亦相等。未在本审稿重放40包474项完整源码图，也未重新读取15份组件测试。",
+    "current_native_qualification": "none"
+  },
+  "caller_review": {
+    "non_typed_rows_checked": 384,
+    "known_product_domain": 105,
+    "all_384_known_domain_actual_sets_equal_declared_intersections": true,
+    "definition_file_and_original_test_path_exclusions_preserved": true,
+    "added_core_boundaries": 82,
+    "non_typed_new": 69,
+    "typed_new": 13,
+    "unique_method_strict_call_patterns": 43,
+    "strict_pattern_meaning": "捕捉该实际唯一method的所有dot与qualified形式，不按变量名或自制豁免选caller；13个同名generic方法仍保真实receiver_type。",
+    "known_new_definition_markers_all_present": true,
+    "added_old_caller_edges": 92,
+    "all_raw_caller_markers_present": true,
+    "directly_qualified_or_pattern_visible_edges_before_fix": 69,
+    "indirectly_typed_added_edges_reviewed": 23,
+    "dot_call_positions_reviewed_before_fix": 33,
+    "typed_review_sources": "逐处核真实参数/局部类型、impl self、OriginalSameActorScopedOwners.learning、Q24StageOwners.factory；A/C的两个into_task_parts分别有真实参数类型。未将tuple或返回值链假装成原helper可推断。",
+    "confirmed_pre_fix_issues": 1,
+    "remaining_confirmed_issues_after_exact_fix": 0,
+    "no_whole_repository_typed_result": "没有完整source_index、alias/字段闭集执行或宏展开；不能把此范围结论当全638原checker PASS。",
+    "public_entry_callers": "新嵌入式Root/daemon入口在当前仓库没有默认main/Root CLI调用；空caller集合保持如实，reexport不计调用。"
+  },
+  "confirmed_finding_and_fix": {
+    "id": "startup-struct-destructure-unresolved-original-root-take",
+    "pre_source": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+    "pre_callers": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+    "old_boundary": "root_generation_connection_inputs_take",
+    "actual_field": "OriginalSameActorProductionInputs.root: AgentdRootProductionInputs",
+    "actual_binding": "let OriginalSameActorProductionInputs { mut root, context, initial } = receive_original_same_actor_inputs(...).await?;",
+    "old_call": "root.take_generation_publication_connection()?",
+    "rule_chain": [
+      "原authority_fields会从真实struct root字段索引owner=OriginalSameActorProductionInputs；Startup包含该owner，因此原has_authority_call不会以无target/owner提前返回。",
+      "原_bindings只解析简单参数、let标识符注解/构造/alias，不解析该struct解构；实际调用前没有root参数或let root类型绑定。",
+      "因此原receiver root无可推断类型，命中原UnresolvedTypedReceiver的拒绝分支。这是源与规则静读结论，未运行原helper。"
+    ],
+    "correction": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+    "original_method": {
+      "base": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "final": "fd9ae43a0fcbc63b228c55ca5c96a801ee3fe164",
+      "exact_body": "pub fn take_generation_publication_connection(\n        &mut self,\n    ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {\n        self.publication_connection.take_original_connection()\n    }",
+      "base_and_final_real_function_equal": true,
+      "actual_reexport": {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "blob": "e758333d25dc270e5470e93fe72a8f988221311b",
+        "line": "pub use root_production_inputs::AgentdRootProductionInputs;"
+      }
+    },
+    "semantics": "同一个root的一次可变借用；原?在相同位置，后续Initial connector与最终root按值move进Launch顺序和字节不变。无clone、重取cap、重试或新权限。",
+    "helper_recognition": "最终真实code只有1个AgentdRootProductionInputs::take_generation_publication_connection直接qualified调用、0个同名dot调用。使用原helper已有qualified分支，不修改helper。",
+    "final_protected_marker": "同一句完整UFCS+&mut root+?替代旧marker，前后完整序列保留；边界caller/receiver/pattern/definition不动。",
+    "supersession": "7cefc/b406保留为确有此缺口的历史原稿；最终结论仅对叠加3f719387后的dbb7/9af2。"
+  },
+  "key_final_pins": {
+    "root_wrapper": "4c6a791d41fbfc229d322c0b3320b51397c325d3",
+    "root_worker": "a92be943237ff7ec597979c93f3284ebbfedef73",
+    "daemon_receiver": "16dcc1c66969bf5ce11fb624882fb2d92d898ba7",
+    "B_controller_one_original_decision_future": "7c69d94b92859ce593076052e39edbcf53ebbedf",
+    "B_exchange_same_installation_guard": "e5a35ba8bc115d26759356f2495e4c8df0ae0fd4",
+    "B_original_stage_install_wrapper": "1e0890fc237bf9b79e11bfa3a36eab63e2bd4e56",
+    "actual_Work_custody": "42120c9640836c780860060d226c98d6c665455c",
+    "orphan_cleanup_handoff": "752baa69a92a33d28020e3c475322e382b7445ce",
+    "final_Startup": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7"
+  },
+  "limits_and_required_next_gate": {
+    "original_full_caller_verify_not_run": true,
+    "Rust_compile_or_formatter_not_run": true,
+    "component_or_Root_tests_not_run": true,
+    "ordinary_business_loops": 0,
+    "independently_controlled_C": 0,
+    "real_daemon_and_Root_cold_restart": 0,
+    "scope": "完整固定候选仍须Root执行原原生维护、QA、原caller门和组件门；此报告不赋予未执行结果。",
+    "authority": "不变更原角色/签名/B累计成本与预算、同actor分区、500ms freshness或原absolute end；没有恢复已closed能力。",
+    "completion": "当前C OutcomeAccepted不证明全部owner物理join；真实Startup仍把generic Launch Ok拒绝为未确认完成。正常completion协议仅后继设计，未混入此冻结稿。",
+    "deployment": "默认main/Root CLI装配与真实Primary/任务签名/独立Outcome/B材料/Artifact/Selection仍需实际宿主供应，未捏造材料或ordinary运行。",
+    "allowlist": "Root可单独将既有CALLERS精确SHA例外更新到最终1be3a247...，应使用dbb7的摘要，而不是被本次修订替代的319b8f8e...；此审稿没有执行allowlist/ref修改。",
+    "actions_taken": "仅Git GET、纯JS有界投影与未引用review blob CREATE/GET。没有h、PTY、native、Cargo、checker运行或ref变动。"
+  }
+}

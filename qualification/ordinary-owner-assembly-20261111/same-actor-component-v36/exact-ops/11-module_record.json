@@ -1,0 +1,30 @@
+{
+  "schema": "original-same-actor-phase-module-record-path-correction-v1",
+  "depends_on": "1e90b2f390704c32159ab0a6ea3e222d7b275e2d",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "preimage": {
+        "blob": "a78c5761a53cc1687c7261515afb42d49e7b112c",
+        "bytes": 66635,
+        "sha256": "bea506605caa6420115f38271c0ab65aeaba3e440844b7b2c676669640799a7e"
+      },
+      "postimage": {
+        "blob": "e758333d25dc270e5470e93fe72a8f988221311b",
+        "bytes": 66693,
+        "sha256": "f596ebec608feaca718fb5ee922de01295f0538f47761565fd7556175cf9b4ad"
+      },
+      "operations": [
+        {
+          "old_text": "#[cfg(target_os = \"linux\")]\nmod same_actor_q24_phase_record;\n",
+          "new_text": "#[cfg(target_os = \"linux\")]\n#[path = \"authority_host_same_actor_q24_phase_record.rs\"]\nmod same_actor_q24_phase_record;\n"
+        }
+      ]
+    }
+  ],
+  "reason": "The durable record source remains at its previously fixed actual path authority_host_same_actor_q24_phase_record.rs. The crate module keeps same_actor_q24_phase_record via explicit path. No file rename or source behavior change.",
+  "execution": {
+    "native": 0,
+    "checker": 0
+  }
+}

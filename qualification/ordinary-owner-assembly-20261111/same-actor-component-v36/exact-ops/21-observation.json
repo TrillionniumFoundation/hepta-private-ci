@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.original-observation-stream-absolute-end-exact-operations.v1",
+  "base": {
+    "source_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "source_tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "actual_product_preimage": "9d3d24bd5104be99372c8a55859360e792120605",
+    "metadata_preimage": "37ea232602494310f405cac3c612c22314fc01a3",
+    "preceding_grant_manifest": "215e3dc49c7205c943e2db142eb5e1951184ed70"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "pre_git": "9d3d24bd5104be99372c8a55859360e792120605",
+      "post_git": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c",
+      "bytes": 13169,
+      "sha256": "971216ee16d408873f4aa9acfceb79b748eb6acc807e825e5d1bf9bb4d112864",
+      "lines": 326,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+      "pre_git": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+      "post_git": "f773dd9c73f6a0c519eccdb39f99bf52e902f08e",
+      "bytes": 8807,
+      "sha256": "488c5338ed7ca4aa8c55321f1a59e2c1160ab630fea8f93c7053aaca8442a9d4",
+      "lines": 253,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a",
+      "bytes": 4676,
+      "sha256": "2d8bab1e48de976fb0326c9e89236f7386d07cc9719540fde63d5521e79dd4ae",
+      "lines": 146,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "37ea232602494310f405cac3c612c22314fc01a3",
+      "post_git": "ffa8a49d2c2d086c00f4945d25d66cac0cd5f523",
+      "bytes": 686817,
+      "sha256": "5c4273335c4c185d5473f18d6e079244aa1dacc8c63edc81658c06ff37bb64c6",
+      "lines": 7338,
+      "operations": 3,
+      "forward_reverse_equal": true
+    }
+  ],
+  "operations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "operation": "replace_unique",
+      "before": "            end: Instant::now() + lifetime,\n        })\n    }\n}\n\nimpl RootObservationStream {",
+      "after": "            end: Instant::now() + lifetime,\n        })\n    }\n\n    /// Bind this purpose stream to the daemon's original process-local end.\n    /// Remaining lifetime only validates the original bounds; it never renews.\n    pub(crate) fn from_stream_until(\n        stream: UnixStream,\n        peer: AgentdRootAuthorityPeer,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        end: Instant,\n    ) -> Result<Self, AgentdRootAuthorityError> {\n        Self::from_stream_for_uid_until(stream, peer, root_pidfd, timeout, end, 0)\n    }\n\n    fn from_stream_for_uid_until(\n        stream: UnixStream,\n        peer: AgentdRootAuthorityPeer,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        end: Instant,\n        uid: u32,\n    ) -> Result<Self, AgentdRootAuthorityError> {\n        let lifetime = end\n            .checked_duration_since(Instant::now())\n            .ok_or(AgentdRootAuthorityError::Refused)?;\n        if peer.pid == 0\n            || peer.pid > i32::MAX as u32\n            || peer.process_start_ticks == 0\n            || timeout.is_zero()\n            || timeout > Duration::from_millis(500)\n            || lifetime.is_zero()\n            || lifetime > Duration::from_secs(300)\n        {\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        let number = root_pidfd.as_raw_fd();\n        if std::fs::read_link(format!(\"/proc/self/fd/{number}\")).map_err(unavailable)?\n            != Path::new(\"anon_inode:[pidfd]\")\n            || bounded_text(&format!(\"/proc/self/fdinfo/{number}\"), 4096)?\n                .lines()\n                .find_map(|line| line.strip_prefix(\"Pid:\")?.trim().parse::<u32>().ok())\n                != Some(peer.pid)\n            || bounded_text(\"/proc/sys/kernel/random/boot_id\", 128)?.trim() != peer.boot_id\n        {\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        let stat = bounded_text(&format!(\"/proc/{}/stat\", peer.pid), 8192)?;\n        let start = stat\n            .rsplit_once(\") \")\n            .and_then(|(_, fields)| fields.split_whitespace().nth(19))\n            .and_then(|value| value.parse::<u64>().ok());\n        if start != Some(peer.process_start_ticks) {\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        check_lifetime(&root_pidfd)?;\n        stream.set_nonblocking(true).map_err(unavailable)?;\n        let stream = tokio::net::UnixStream::from_std(stream).map_err(unavailable)?;\n        let actual = stream.peer_cred().map_err(unavailable)?;\n        if actual.uid() != uid\n            || actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)\n        {\n            return Err(AgentdRootAuthorityError::Refused);\n        }\n        // SAFETY: AsyncFd exclusively owns this OwnedFd. Its number and open\n        // file description remain unchanged until AsyncFd drops it; no raw fd\n        // ownership or mutable access escapes this client.\n        let root =\n            unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }\n                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;\n        check_lifetime(root.get_ref())?;\n        if Instant::now() >= end {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        Ok(Self {\n            exchange: tokio::sync::Semaphore::new(1),\n            stream: Mutex::new(Some(stream)),\n            root: Arc::new(root),\n            timeout,\n            end,\n        })\n    }\n}\n\nimpl RootObservationStream {",
+      "why": "Add a fixed-UID0 until constructor and private exact-validation helper in the existing bootstrap impl. Original constructors, struct and full exchange/read suffix stay byte-identical."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+      "operation": "append_exact",
+      "before": "",
+      "after": "\n#[path = \"root_observation_stream_deadline_tests.rs\"]\nmod deadline;\n",
+      "why": "Preserve every original test byte and attach four separate same-UID framing components."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+      "operation": "add_file",
+      "before": null,
+      "after": "use super::*;\nuse pretty_assertions::assert_eq;\nuse std::net::Shutdown;\n\n// Same-UID framing components only. Numeric replies are not verified Root\n// observations, signatures, grants or evidence of a deployed phase.\nfn stream_until(end: Instant) -> (RootObservationStream, UnixStream) {\n    let (stream, server) = UnixStream::pair().unwrap();\n    let client = RootObservationStream::from_stream_for_uid_until(\n        stream,\n        identity_for(std::process::id()),\n        pidfd_for(std::process::id()),\n        Duration::from_millis(500),\n        end,\n        unsafe { libc::geteuid() },\n    )\n    .unwrap();\n    assert_eq!(client.end, end);\n    (client, server)\n}\n\nfn assert_closed(server: &mut UnixStream) {\n    server\n        .set_read_timeout(Some(Duration::from_secs(5)))\n        .unwrap();\n    assert_eq!(server.read(&mut [0; 1]).unwrap(), 0);\n}\n\n#[tokio::test]\nasync fn absolute_root_observation_end_keeps_original_framing_and_end() {\n    let end = Instant::now() + Duration::from_secs(60);\n    let (client, mut server) = stream_until(end);\n    let worker = std::thread::spawn(move || {\n        for _ in 0..2 {\n            read_request(&mut server);\n            reply(&mut server, b\"42\");\n        }\n    });\n    for _ in 0..2 {\n        assert_eq!(client.read::<u64>(&request()).await, Ok(42));\n        assert_eq!(client.end, end);\n    }\n    worker.join().unwrap();\n}\n\n#[tokio::test]\nasync fn absolute_root_observation_end_refuses_late_read_without_rearm() {\n    let end = Instant::now() + Duration::from_secs(2);\n    let (client, mut server) = stream_until(end);\n    tokio::time::sleep_until(tokio::time::Instant::from_std(end + Duration::from_millis(1))).await;\n    assert_eq!(\n        client.read::<u64>(&request()).await,\n        Err(AgentdRootAuthorityError::Unavailable)\n    );\n    assert_closed(&mut server);\n    assert_eq!(\n        client.read::<u64>(&request()).await,\n        Err(AgentdRootAuthorityError::Unavailable)\n    );\n}\n\n#[tokio::test]\nasync fn absolute_root_observation_lost_reply_closes_without_resend() {\n    let (client, mut server) = stream_until(Instant::now() + Duration::from_secs(60));\n    let worker = std::thread::spawn(move || {\n        read_request(&mut server);\n        server.shutdown(Shutdown::Write).unwrap();\n        assert_closed(&mut server);\n    });\n    assert_eq!(\n        client.read::<u64>(&request()).await,\n        Err(AgentdRootAuthorityError::Unavailable)\n    );\n    assert_eq!(\n        client.read::<u64>(&request()).await,\n        Err(AgentdRootAuthorityError::Unavailable)\n    );\n    worker.join().unwrap();\n}\n\n#[tokio::test]\nasync fn absolute_root_observation_constructor_keeps_identity_and_bounds() {\n    if unsafe { libc::geteuid() } != 0 {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        assert_eq!(\n            RootObservationStream::from_stream_until(\n                stream,\n                identity_for(std::process::id()),\n                pidfd_for(std::process::id()),\n                Duration::from_millis(500),\n                Instant::now() + Duration::from_secs(60),\n            )\n            .err(),\n            Some(AgentdRootAuthorityError::Refused)\n        );\n        assert_closed(&mut server);\n    }\n    for case in [\n        \"pid\",\n        \"boot\",\n        \"start\",\n        \"pidfd\",\n        \"zero_timeout\",\n        \"large_timeout\",\n        \"expired\",\n        \"too_far\",\n    ] {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        let mut peer = identity_for(std::process::id());\n        match case {\n            \"pid\" => peer.pid += 1,\n            \"boot\" => peer.boot_id = \"wrong\".into(),\n            \"start\" => peer.process_start_ticks += 1,\n            _ => {}\n        }\n        let root_pidfd: OwnedFd = if case == \"pidfd\" {\n            std::fs::File::open(\"/dev/null\").unwrap().into()\n        } else {\n            pidfd_for(std::process::id())\n        };\n        let timeout = match case {\n            \"zero_timeout\" => Duration::ZERO,\n            \"large_timeout\" => Duration::from_millis(501),\n            _ => Duration::from_millis(500),\n        };\n        let end = match case {\n            \"expired\" => Instant::now(),\n            \"too_far\" => Instant::now() + Duration::from_secs(3600),\n            _ => Instant::now() + Duration::from_secs(60),\n        };\n        assert_eq!(\n            RootObservationStream::from_stream_for_uid_until(\n                stream,\n                peer,\n                root_pidfd,\n                timeout,\n                end,\n                unsafe { libc::geteuid() },\n            )\n            .err(),\n            Some(AgentdRootAuthorityError::Refused)\n        );\n        assert_closed(&mut server);\n    }\n}\n",
+      "why": "Test actual held-end framing and refusal/closed behavior without fabricating Root authority or successful phase."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "\"root_original_root_issuer_until\"]",
+      "after": "\"root_original_root_issuer_until\",\"root_original_observation_stream_until\"]",
+      "why": "Append only the new observation absolute-end constructor ID to the complete closed inventory."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_observation_stream.rs\"\nrequired = [\"timeout > Duration::from_millis(500)\", \"lifetime > Duration::from_secs(300)\", \"request.len() > 16_384\", \"length == 0 || length > 16_384\", \"actual.uid() != uid\", \"actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)\", \"slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?\", \"anon_inode:[pidfd]\", \"Self::from_stream_for_uid(stream, peer, root_pidfd, timeout, lifetime, 0)\"]\nforbidden = [\"UnixStream::connect\", \"AllowVerifier\", \"permit_all\"]\nrequired_function_order = [\n  { function = \"fn from_stream(\", sequence = [\"Self::from_stream_for_uid(\", \"lifetime, 0)\"] },\n  { function = \"fn from_stream_for_uid(\", sequence = [\"peer.pid == 0\", \"peer.pid > i32::MAX as u32\", \"peer.process_start_ticks == 0\", \"timeout.is_zero()\", \"timeout > Duration::from_millis(500)\", \"lifetime.is_zero()\", \"lifetime > Duration::from_secs(300)\", \"root_pidfd.as_raw_fd()\", \"std::fs::read_link(\", \"Path::new(\", \"!= Some(peer.pid)\", \"peer.boot_id\", \"start != Some(peer.process_start_ticks)\", \"check_lifetime(&root_pidfd)?\", \"stream.peer_cred()\", \"actual.uid() != uid\", \"actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)\", \"AsyncFd::register_with_interest\", \"check_lifetime(root.get_ref())?\", \"Ok(Self\"] },\n  { function = \"fn framed_exchange(\", sequence = [\"write_all(&(request.len() as u32).to_be_bytes())\", \"read_exact(&mut prefix)\", \"length == 0 || length > 16_384\", \"read_exact(&mut response)\"] },\n]\nrequired_order = [[\"async fn read<R:\", \"serde_json::to_vec(request)\", \"request.len() > 16_384\", \".try_acquire()\", \"let mut stream =\", \"slot.take()\", \"check_lifetime(self.root.get_ref())?\", \"let deadline =\", \"tokio::select!\", \"framed_exchange(&mut stream, &request)\", \"check_lifetime(self.root.get_ref())?\", \"serde_json::from_slice(&response)\", \"Instant::now() >= deadline\", \"= Some(stream)\", \"Ok(parsed)\"]]\n\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_observation_stream.rs\"\nrequired = [\"timeout > Duration::from_millis(500)\", \"lifetime > Duration::from_secs(300)\", \"request.len() > 16_384\", \"length == 0 || length > 16_384\", \"actual.uid() != uid\", \"actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)\", \"slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?\", \"anon_inode:[pidfd]\", \"Self::from_stream_for_uid(stream, peer, root_pidfd, timeout, lifetime, 0)\"]\nforbidden = [\"UnixStream::connect\", \"AllowVerifier\", \"permit_all\"]\nrequired_function_order = [\n  { function = \"fn from_stream(\", sequence = [\"Self::from_stream_for_uid(\", \"lifetime, 0)\"] },\n  { function = \"fn from_stream_for_uid(\", sequence = [\"peer.pid == 0\", \"peer.pid > i32::MAX as u32\", \"peer.process_start_ticks == 0\", \"timeout.is_zero()\", \"timeout > Duration::from_millis(500)\", \"lifetime.is_zero()\", \"lifetime > Duration::from_secs(300)\", \"root_pidfd.as_raw_fd()\", \"std::fs::read_link(\", \"Path::new(\", \"!= Some(peer.pid)\", \"peer.boot_id\", \"start != Some(peer.process_start_ticks)\", \"check_lifetime(&root_pidfd)?\", \"stream.peer_cred()\", \"actual.uid() != uid\", \"actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)\", \"AsyncFd::register_with_interest\", \"check_lifetime(root.get_ref())?\", \"Ok(Self\"] },\n  { function = \"fn from_stream_until(\", sequence = [\"fn from_stream_until(\",\"Self::from_stream_for_uid_until(stream, peer, root_pidfd, timeout, end, 0)\"] },\n  { function = \"fn from_stream_for_uid_until(\", literal_calls = [\"Path::new(\\\"anon_inode:[pidfd]\\\")\",\".strip_prefix(\\\"Pid:\\\")\",\".rsplit_once(\\\") \\\")\"], sequence = [\"let lifetime = end\",\".checked_duration_since(Instant::now())\",\".ok_or(AgentdRootAuthorityError::Refused)?\",\"peer.pid == 0\",\"peer.pid > i32::MAX as u32\",\"peer.process_start_ticks == 0\",\"timeout.is_zero()\",\"timeout > Duration::from_millis(500)\",\"lifetime.is_zero()\",\"lifetime > Duration::from_secs(300)\",\"return Err(AgentdRootAuthorityError::Refused)\",\"root_pidfd.as_raw_fd()\",\"std::fs::read_link(\",\"!=\",\"Path::new(\\\"anon_inode:[pidfd]\\\")\",\".strip_prefix(\\\"Pid:\\\")\",\".parse::<u32>().ok()\",\"!= Some(peer.pid)\",\"bounded_text(\",\"128)?.trim() != peer.boot_id\",\"return Err(AgentdRootAuthorityError::Refused)\",\"let stat = bounded_text(\",\"peer.pid), 8192)?\",\".rsplit_once(\\\") \\\")\",\".split_whitespace().nth(19)\",\".parse::<u64>().ok()\",\"start != Some(peer.process_start_ticks)\",\"return Err(AgentdRootAuthorityError::Refused)\",\"check_lifetime(&root_pidfd)?\",\"stream.set_nonblocking(true)\",\"tokio::net::UnixStream::from_std(stream)\",\"stream.peer_cred()\",\"actual.uid() != uid\",\"actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)\",\"return Err(AgentdRootAuthorityError::Refused)\",\"AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)\",\"check_lifetime(root.get_ref())?\",\"if Instant::now() >= end\",\"return Err(AgentdRootAuthorityError::Unavailable)\",\"Ok(Self {\",\"exchange: tokio::sync::Semaphore::new(1)\",\"stream: Mutex::new(Some(stream))\",\"root: Arc::new(root)\",\"timeout,\",\"end,\"] },\n  { function = \"fn framed_exchange(\", sequence = [\"write_all(&(request.len() as u32).to_be_bytes())\", \"read_exact(&mut prefix)\", \"length == 0 || length > 16_384\", \"read_exact(&mut response)\"] },\n]\nrequired_order = [[\"async fn read<R:\", \"serde_json::to_vec(request)\", \"request.len() > 16_384\", \".try_acquire()\", \"let mut stream =\", \"slot.take()\", \"check_lifetime(self.root.get_ref())?\", \"let deadline =\", \"tokio::select!\", \"framed_exchange(&mut stream, &request)\", \"check_lifetime(self.root.get_ref())?\", \"serde_json::from_slice(&response)\", \"Instant::now() >= deadline\", \"= Some(stream)\", \"Ok(parsed)\"]]\n\n",
+      "why": "Preserve all existing stream protections and add exact new UID0 wrapper/private identity and immutable-end function order."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "append_exact",
+      "before": "",
+      "after": "\n[[boundary]]\nid = \"root_original_observation_stream_until\"\nsymbol = \"RootObservationStream::from_stream_until\"\nreceiver_type = \"RootObservationStream\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_observation_stream.rs\"\ndefinition_markers = [\"pub(crate) fn from_stream_until(\",\"Self::from_stream_for_uid_until(stream, peer, root_pidfd, timeout, end, 0)\",\"if Instant::now() >= end\",\"check_lifetime(root.get_ref())?\"]\nproduct_callers = []\ncaller_markers = []\n",
+      "why": "Declare the actual constructor with an empty current external caller set until runtime freezes the real new-mode receive/session callers."
+    }
+  ]
+}

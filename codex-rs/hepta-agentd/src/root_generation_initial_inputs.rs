@@ -140,3 +140,6 @@ impl RootGenerationInitialHandoffV1 {
 fn refused(message: impl Into<String>) -> AgentdError {
     AgentdError::GenerationFenced(message.into())
 }
+
+#[path = "root_generation_same_actor_inputs.rs"]
+mod same_actor_phase;

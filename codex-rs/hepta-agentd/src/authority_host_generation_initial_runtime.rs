@@ -189,3 +189,86 @@ pub(in super::super) fn serve_optional(
         result.and(served)
     })
 }
+
+impl BoundInitial {
+    pub(in super::super) fn activate_same_actor_phase(&self) -> io::Result<()> {
+        self.runtime.phase.compare_exchange(PREPARED, ACTIVE, Ordering::AcqRel, Ordering::Acquire)
+            .map_err(|_| io::Error::other("original phase Initial runtime already consumed"))?;
+        Ok(())
+    }
+
+    /// Transfer the held Initial slot only after a pre-authorized retirement
+    /// and clean EOF. The phase worker still requires the separate completed
+    /// join, validates the real physical cut, durably claims, and drops this
+    /// owner before opening successor CURRENT. EOF alone grants no transition.
+    pub(in super::super) fn serve_same_actor_phase_initial(
+        &self,
+        service: &HostAuthorityService,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+        retirement: &crate::authority_host_same_actor_q24_phase_join::OriginalInitialRetirement,
+    ) -> io::Result<crate::authority_host_service::generation_initial::RegisteredGenerationInitial> {
+        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
+        let end = gate.deadline().instant();
+        let receiver = self.runtime.receiver.try_lock()
+            .map_err(|_| io::Error::other("original phase Initial receiver busy"))?;
+        let submission = loop {
+            let epoch = gate.original_wait_epoch()?;
+            owner_alive(owner, end)?;
+            match receiver.try_recv() {
+                Ok(submission) => break submission,
+                Err(mpsc::TryRecvError::Empty) => gate.wait_original_change(epoch)?,
+                Err(mpsc::TryRecvError::Disconnected) => {
+                    return Err(io::Error::other("original phase Initial capability was dropped"));
+                }
+            }
+        };
+        if submission.inputs.mode != crate::RootGenerationInitialModeV1::Reserve {
+            return Err(io::Error::other("same-actor phase requires the original fresh A"));
+        }
+        let slot = service.enroll_generation_initial_in_phase(
+            config, registration, owner, &self.runtime.deployment, submission.inputs, Some(gate),
+        );
+        let slot = match slot {
+            Ok(slot) => {
+                gate.require_open()?;
+                submission.acknowledgement.try_send(Ok(slot.profile.binding.clone()))
+                    .map_err(|_| io::Error::other("original phase Initial acknowledgement lost"))?;
+                gate.notify_original_waiters();
+                slot
+            }
+            Err(error) => {
+                let _ = submission.acknowledgement.try_send(Err(error.to_string()));
+                gate.notify_original_waiters();
+                return Err(error);
+            }
+        };
+        let stream = loop {
+            let epoch = gate.original_wait_epoch()?;
+            owner_alive(owner, end)?;
+            match self.listener.accept() {
+                Ok((stream, _)) => break stream,
+                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                    gate.wait_original_change(epoch)?;
+                }
+                Err(error) => return Err(error),
+            }
+        };
+        verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
+        let policy = HostAuthorityPeerPolicy {
+            peer: HostIssuerPeer { uid: config.peer_uid, pid: registration.peer_pid },
+            timeout: Duration::from_millis(config.timeout_ms),
+            lifetime: Duration::from_millis(config.lifetime_ms),
+            request_bound: 16 * 1024,
+            response_bound: 16 * 1024,
+        };
+        service.serve_generation_initial_until(
+            &slot, config, registration, stream, policy, owner.try_clone()?, gate,
+        )?;
+        retirement.require_expected_eof(gate)?;
+        closing.disarm();
+        Ok(slot)
+    }
+}

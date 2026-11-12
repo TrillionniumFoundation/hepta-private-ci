@@ -30,6 +30,12 @@ pub use generation_publication::send_root_generation_publication_handoff;
 
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
+#[path = "root_production_same_actor_phase_handoff.rs"]
+pub(crate) mod same_actor_phase;
+pub use same_actor_phase::RootSameActorPhaseOfferV1;
+pub use same_actor_phase::send_root_same_actor_phase_handoff;
+pub use same_actor_phase::send_root_same_actor_scoped_handoff;
+
 #[path = "root_production_writer_handoff.rs"]
 mod writer;
 pub use writer::RootProductionWriterDescriptor;

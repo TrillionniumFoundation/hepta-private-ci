@@ -33,9 +33,14 @@ use crate::OriginalGenerationLearningReceiptOwnerV1;
 use crate::OriginalGenerationLearningRoleV1;
 use crate::PreparedLearningIterationProposalV1;
 use crate::cell_q24_learning_owner_error::owner_error as unavailable;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
 
 #[path = "cell_q24_learning_successor.rs"]
 mod successor;
+#[path = "cell_q24_learning_same_actor.rs"]
+mod same_actor;
+#[path = "cell_q24_learning_evaluation_phase.rs"]
+mod evaluation_phase;
 
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
@@ -69,6 +74,7 @@ struct Q24StageState {
     lane: Arc<Semaphore>,
     cancelled: Arc<AtomicBool>,
     successor: std::sync::OnceLock<std::sync::Weak<crate::circuit_q24_successor::SuccessorSlot>>,
+    same_actor_work: Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
 }
 
 /// No public raw-receipt or callback constructor. Each resource is an original
@@ -170,6 +176,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 lane: Arc::new(Semaphore::new(/*permits*/ 1)),
                 cancelled: Arc::new(AtomicBool::new(/*val*/ false)),
                 successor: std::sync::OnceLock::new(),
+                same_actor_work: None,
             }),
         }))
     }
@@ -190,10 +197,13 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         self.inner.require_snapshot(&snapshot)?;
         self.require_current().await?;
         let prepared = Arc::clone(&self.inner.prepared);
-        let (selection, next_use) =
+        let (selection, next_use) = if let Some(phase) = &self.inner.same_actor_work {
+            self.open_original_same_actor_generation(original, phase).await?
+        } else {
             tokio::task::spawn_blocking(move || original.into_receipt_owners(&prepared))
                 .await
-                .map_err(|_| Error::CommitUncertain)??;
+                .map_err(|_| Error::CommitUncertain)??
+        };
         self.install_generation(snapshot, selection, next_use).await
     }
 
@@ -276,12 +286,25 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                         completed.receipt.clone(),
                         completed.receipt.observed_unix_seconds,
                     )?;
+                    inner.require_original_phase_entry()?;
+                    if let Some(phase) = &inner.same_actor_work {
+                        OriginalSameActorLearningWork::require_original_evaluation_installation(
+                            phase,
+                            cut.snapshot(),
+                        )?;
+                    }
                     let mut evaluation: OriginalCellQ24EvaluationStageV1 = original
                         .into_stage(cut.snapshot().clone(), inner.prepared.scope().clone())?;
                     evaluation.require_training(cut.snapshot(), inner.prepared.scope())?;
                     runtime.block_on(
                         evaluation.require_original_training_evidence(&completed.attestation),
                     )?;
+                    if let Some(phase) = &inner.same_actor_work {
+                        OriginalSameActorLearningWork::require_original_evaluation_installation(
+                            phase,
+                            cut.snapshot(),
+                        )?;
+                    }
                     owners.evaluation = Some(evaluation);
                     Ok(())
                 },
@@ -389,6 +412,9 @@ impl Q24StageState {
         + Send
         + 'static,
     ) -> Result<T, Error> {
+        if let Some(phase) = &self.same_actor_work {
+            return self.in_original_same_actor_lane(phase, work).await;
+        }
         if self.cancelled.load(Ordering::Acquire) {
             return Err(Error::CommitUncertain);
         }

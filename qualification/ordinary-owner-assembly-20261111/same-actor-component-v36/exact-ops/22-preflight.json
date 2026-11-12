@@ -1,0 +1,34 @@
+{
+  "schema": "original-exclusive-preflight-deadline-v1",
+  "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+  "pre": {
+    "blob": "fae66550aea3470611ba5dfebd260de5c4fc00ba",
+    "bytes": 19442,
+    "sha256": "40d060a0bef744756af5fde4537eb4c4b77a5db44d2146cac453a03bb1e983ba"
+  },
+  "post": {
+    "blob": "8ea3890ea7843db319a6b43ed98b64f2abcbde12",
+    "bytes": 19706,
+    "sha256": "e5a203454b1bccaa51b4f7d3e10661595b8162e82e60d51dfaf2f288ca016b6a"
+  },
+  "operations": [
+    {
+      "old_text": "\nuse super::*;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::AtomicU64;\nuse std::sync::atomic::Ordering;\n\nuse codex_hepta_contracts::AuthorityTrustError;\n",
+      "new_text": "\nuse super::*;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::Ordering;\n\nuse codex_hepta_contracts::AuthorityTrustError;\n"
+    },
+    {
+      "old_text": "pub(crate) struct OriginalPhaseReceiveDeadline {\n    instant: Instant,\n    boottime_ns: u64,\n    last_boottime_ns: AtomicU64,\n}\n\nimpl OriginalPhaseReceiveStart {\n",
+      "new_text": "pub(crate) struct OriginalPhaseReceiveDeadline {\n    instant: Instant,\n    boottime_ns: u64,\n    last_boottime_ns: u64,\n}\n\nimpl OriginalPhaseReceiveStart {\n"
+    },
+    {
+      "old_text": "        if checked < self.boottime_ns || checked >= boottime_ns {\n            return Err(refused(\"original receiver BOOTTIME end elapsed\"));\n        }\n        Ok(OriginalPhaseReceiveDeadline { instant, boottime_ns, last_boottime_ns: AtomicU64::new(checked) })\n    }\n}\n\nimpl OriginalPhaseReceiveDeadline {\n    pub(crate) fn instant(&self) -> Instant { self.instant }\n\n    /// Bound bootstrap waits by these original samples too. This is only an\n    /// admission limit, never a writer proof or a newly started session.\n    pub(crate) fn remaining(&self) -> Result<Duration, AgentdError> {\n        let now = crate::root_observation_cache::boottime_ns().map_err(protocol)?;\n        if self.last_boottime_ns.fetch_update(\n            Ordering::AcqRel, Ordering::Acquire, |last| (now >= last).then_some(now),\n        ).is_err() {\n            return Err(refused(\"original receiver BOOTTIME regressed\"));\n        }\n        let boot = self.boottime_ns.checked_sub(now)\n            .filter(|remaining| *remaining != 0).map(Duration::from_nanos)\n            .ok_or_else(|| refused(\"original receiver BOOTTIME end elapsed\"))?;\n",
+      "new_text": "        if checked < self.boottime_ns || checked >= boottime_ns {\n            return Err(refused(\"original receiver BOOTTIME end elapsed\"));\n        }\n        Ok(OriginalPhaseReceiveDeadline { instant, boottime_ns, last_boottime_ns: checked })\n    }\n}\n\nimpl OriginalPhaseReceiveDeadline {\n    pub(crate) fn instant(&self) -> Instant { self.instant }\n\n    /// Keep an already parsed original launcher end as an additional local\n    /// upper bound. It is never converted into a newly sampled BOOTTIME end.\n    pub(crate) fn restrict_original_launcher_end(\n        mut self, original_end: Instant,\n    ) -> Result<Self, AgentdError> {\n        self.instant = self.instant.min(original_end);\n        self.remaining()?;\n        Ok(self)\n    }\n\n    /// Bound bootstrap waits by these original samples too. This is only an\n    /// admission limit, never a writer proof or a newly started session.\n    pub(crate) fn remaining(&mut self) -> Result<Duration, AgentdError> {\n        let now = crate::root_observation_cache::boottime_ns().map_err(protocol)?;\n        if now < self.last_boottime_ns {\n            return Err(refused(\"original receiver BOOTTIME regressed\"));\n        }\n        self.last_boottime_ns = now;\n        let boot = self.boottime_ns.checked_sub(now)\n            .filter(|remaining| *remaining != 0).map(Duration::from_nanos)\n            .ok_or_else(|| refused(\"original receiver BOOTTIME end elapsed\"))?;\n"
+    },
+    {
+      "old_text": "    handoff: OriginalSameActorPhaseHandoff,\n    expected: &AgentdIdentity,\n    timeout: Duration,\n    receiver: OriginalPhaseReceiveDeadline,\n) -> Result<OriginalSameActorProductionInputs, AgentdError> {\n    if timeout.is_zero() || timeout > Duration::from_millis(500) {\n        return Err(refused(\"bounded original phase five-lane timeout required\"));\n",
+      "new_text": "    handoff: OriginalSameActorPhaseHandoff,\n    expected: &AgentdIdentity,\n    timeout: Duration,\n    mut receiver: OriginalPhaseReceiveDeadline,\n) -> Result<OriginalSameActorProductionInputs, AgentdError> {\n    if timeout.is_zero() || timeout > Duration::from_millis(500) {\n        return Err(refused(\"bounded original phase five-lane timeout required\"));\n"
+    }
+  ],
+  "reason": "Make remaining require exclusive &mut access and a plain original last BOOTTIME sample; no concurrent sample/CAS can be misread as real time regression. New restrict_original_launcher_end only takes min with the original parser's retained Instant, and does not convert/renew BOOTTIME.",
+  "scope": "Only new phase preflight. Watcher/gates/authority owner protocols and old public entry remain unchanged. No native/checker/ref operation."
+}

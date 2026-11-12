@@ -148,6 +148,20 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
 }
 
 impl OriginalCellQ24RetainedLearningSourceV1 {
+    /// Read the same private Prepared/source pair at the live phase join.
+    /// This performs only the existing original trace/Ledger/file readback.
+    pub(crate) async fn require_same_actor_phase_prepared(
+        &self,
+        prepared: &Arc<CellQ24PreparedLearningV1>,
+        identity: &AgentdIdentity,
+    ) -> Result<(), AgentdError> {
+        if !Arc::ptr_eq(&self.prepared, prepared) || &self.producer.identity != identity {
+            return Err(refused("same-actor phase differs from its actual retained source"));
+        }
+        self.read_original().await?;
+        Ok(())
+    }
+
     pub(crate) fn register_original_scope(
         self,
         consumer: AgentdIdentity,

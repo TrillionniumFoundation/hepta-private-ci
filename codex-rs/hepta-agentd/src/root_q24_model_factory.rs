@@ -28,6 +28,10 @@ use crate::authority_host_service::q24_model::Request;
 use crate::authority_host_service::q24_model::Response;
 use crate::authority_host_service::q24_model::WITNESS_RECORDS;
 use crate::root_observation_stream::RootObservationStream;
+use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
+
+#[path = "root_q24_model_same_actor.rs"]
+mod same_actor;
 
 /// Non-cloneable original factory. Retains sole writable file rights, the
 /// original Root connection/pidfd and its full immutable learning scope.
@@ -42,6 +46,7 @@ pub struct AgentdRootQ24ModelFactoryV1 {
     files: Option<(File, File)>,
     owner: Option<CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>>,
     fenced: bool,
+    phase: Option<RequiredSameActorPhaseChannel>,
 }
 
 #[derive(Clone, Copy)]
@@ -52,6 +57,8 @@ enum Operation {
 
 impl AgentdRootQ24ModelFactoryV1 {
     pub(crate) async fn require_current(&mut self) -> Result<(), AgentdError> {
+        let mut phase_closing = self.original_phase_failure_scope();
+        self.require_original_phase()?;
         if self.fenced {
             return Err(refused(
                 "factory acknowledgement uncertain; original reopen required",
@@ -69,7 +76,11 @@ impl AgentdRootQ24ModelFactoryV1 {
                 "factory live enrollment changed during observation",
             ));
         }
+        self.require_original_phase()?;
         self.fenced = false;
+        if let Some(closing) = &mut phase_closing {
+            closing.disarm();
+        }
         Ok(())
     }
 
@@ -93,6 +104,7 @@ impl AgentdRootQ24ModelFactoryV1 {
             files: Some((journal, witness)),
             owner: None,
             fenced: false,
+            phase: None,
         };
         // A sealed descriptor alone is insufficient: observe the registered
         // namespace through its live original writer before returning a factory.
@@ -104,6 +116,11 @@ impl AgentdRootQ24ModelFactoryV1 {
         &self,
         original: &crate::root_production_inputs::OriginalQ24SuccessorSession,
     ) -> Result<(), AgentdError> {
+        let mut phase_closing = self.original_phase_failure_scope();
+        if let Some(phase) = &self.phase {
+            let phase: &RequiredSameActorPhaseChannel = phase;
+            original.require_original_same_actor_phase(phase.gate())?;
+        }
         original.require_current_successor_session()?;
         self.profile
             .require_context(
@@ -112,7 +129,12 @@ impl AgentdRootQ24ModelFactoryV1 {
                 &self.initial,
                 &self.scope,
             )
-            .map_err(refused)
+            .map_err(refused)?;
+        self.require_original_phase()?;
+        if let Some(closing) = &mut phase_closing {
+            closing.disarm();
+        }
+        Ok(())
     }
 
     pub(crate) fn require_local_policy(&self, policy: Digest32) -> Result<(), AgentdError> {
@@ -175,6 +197,8 @@ impl AgentdRootQ24ModelFactoryV1 {
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
         operation: Operation,
     ) -> Result<CellQ24ModelProposalReceiptV1, AgentdError> {
+        let mut phase_closing = self.original_phase_failure_scope();
+        self.require_original_phase()?;
         if self.fenced {
             return Err(refused(
                 "factory acknowledgement uncertain; original reopen required",
@@ -189,6 +213,7 @@ impl AgentdRootQ24ModelFactoryV1 {
             .require_original_dataset_provenance()
             .map_err(refused)?;
         let before = self.exchange(Command::Observe).await?.lease;
+        self.require_original_phase()?;
         let material = crate::cell_q24_model_proposal::prepare_original_q24_model_material(
             trainer,
             dataset_cut,
@@ -197,6 +222,7 @@ impl AgentdRootQ24ModelFactoryV1 {
         )
         .map_err(original_model_error)?
         .to_string();
+        self.require_original_phase()?;
         let bound = match operation {
             Operation::CommitOrReadback => {
                 self.exchange(Command::Bind {
@@ -218,11 +244,13 @@ impl AgentdRootQ24ModelFactoryV1 {
             return Err(refused("Root factory material reply differs"));
         }
         if self.owner.is_none() {
+            self.require_original_phase()?;
             let (journal, witness_file) = self
                 .files
                 .take()
                 .ok_or_else(|| refused("factory original owner rights already consumed"))?;
             self.profile.require_files(&journal, &witness_file)?;
+            self.require_original_phase()?;
             let witness = FileAnchorWitnessStore::open(
                 witness_file,
                 JournalScope {
@@ -245,6 +273,7 @@ impl AgentdRootQ24ModelFactoryV1 {
                     {
                         return Err(refused("original work expired before Model owner creation"));
                     }
+                    self.require_original_phase()?;
                     CellQ24ModelProposalOwnerV1::create(
                         journal,
                         witness,
@@ -252,6 +281,7 @@ impl AgentdRootQ24ModelFactoryV1 {
                         dataset_cut.clone(),
                     )
                 } else {
+                    self.require_original_phase()?;
                     CellQ24ModelProposalOwnerV1::recover(
                         journal,
                         witness,
@@ -264,6 +294,7 @@ impl AgentdRootQ24ModelFactoryV1 {
         } else if bound.newly_bound {
             return Err(refused("existing factory owner cannot be rebound"));
         }
+        self.require_original_phase()?;
         let owner: &mut CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore> =
             self.owner
                 .as_mut()
@@ -273,6 +304,7 @@ impl AgentdRootQ24ModelFactoryV1 {
             Operation::Readback => owner.readback(trainer, inputs),
         }
         .map_err(original_model_error)?;
+        self.require_original_phase()?;
         trainer
             .require_original_dataset_provenance()
             .map_err(refused)?;
@@ -286,11 +318,17 @@ impl AgentdRootQ24ModelFactoryV1 {
                 "factory original authority changed during owner action",
             ));
         }
+        self.require_original_phase()?;
         self.fenced = false;
+        if let Some(closing) = &mut phase_closing {
+            closing.disarm();
+        }
         Ok(receipt)
     }
 
     async fn exchange(&mut self, command: Command) -> Result<Reply, AgentdError> {
+        let mut phase_closing = self.original_phase_failure_scope();
+        self.require_original_phase()?;
         let transport = self
             .transport
             .take()
@@ -315,7 +353,12 @@ impl AgentdRootQ24ModelFactoryV1 {
             return Err(refused("factory original reply scope differs"));
         }
         validate_reply(&request.command, &response.reply)?;
+        self.require_original_phase()?;
         self.transport = Some(transport);
+        self.require_original_phase()?;
+        if let Some(closing) = &mut phase_closing {
+            closing.disarm();
+        }
         Ok(response.reply)
     }
 }

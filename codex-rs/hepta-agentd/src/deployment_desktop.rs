@@ -129,6 +129,7 @@ impl DeploymentFinalUseIssuer {
                 for (slot, policy) in slots.into_iter().zip(next_policies) {
                     changed.policies[slot] = policy;
                 }
+                self.require_new_same_actor_phase_effect()?;
                 self.store
                     .compare_and_set(STATE_OWNER, &state, &changed)
                     .map_err(io::Error::other)?;

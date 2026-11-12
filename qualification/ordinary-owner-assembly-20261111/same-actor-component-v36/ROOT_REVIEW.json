@@ -1,0 +1,1124 @@
+{
+  "schema": "hepta.same-actor-component-root-static-review.v1",
+  "status": "Static source integration review. New source has no native/checker/compiler result at freeze.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "intended_parent": {
+    "commit": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+    "tree": "384222cf500019cb1293723dd8668eeb35a1e4cb"
+  },
+  "inventory_root_comparison": {
+    "inventory": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+    "paths": 121,
+    "rust_paths": 120,
+    "metadata_paths": 1,
+    "source_bytes": 2293288,
+    "edges": 187,
+    "packages": 40,
+    "operations": 474,
+    "root_and_author_all_path_bases_edges_posts_exact": true,
+    "all_final_raw_hashes_verified": true,
+    "whole_package_topology_closed": true,
+    "mismatches": []
+  },
+  "source_inventory": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+  "source_assembly": "All 121 original/final paths and every ordered pre/post/package edge match Root's separately retained graph. Every final cached blob was rehashed as Git blob and SHA256, and the author's 40-package topological application was independently checked. Exact operation packets are retained beside this review.",
+  "ancillary_allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "pre": {
+      "blob": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b",
+      "bytes": 12066,
+      "sha256": "697e2871471f5f0acb08c95aaf1beae9e018aae7011dda8b9d091ec1ead459ab"
+    },
+    "post": {
+      "blob": "aff5b41d0f98434ac853ae11a1440e41d8882050",
+      "bytes": 12066,
+      "sha256": "feb0a72dbbee8c869970eced79460654f01397abffa5a7063584ded0235c8469"
+    },
+    "operations": [
+      {
+        "old_text": "sha256:f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd CALLERS.toml",
+        "new_text": "sha256:1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4 CALLERS.toml"
+      }
+    ],
+    "reason": "Rebind the existing single CALLERS.toml size exception to the exact verified final inventory bytes. All other allowlist bytes/paths, original 500 KiB threshold and checker are unchanged.",
+    "bound_callers": {
+      "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+      "bytes": 885351,
+      "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+    },
+    "unique_forward_reverse": true,
+    "created_and_get_equal": true
+  },
+  "final_callers": {
+    "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+    "bytes": 885351,
+    "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4",
+    "declared_boundaries": 638,
+    "required_boundary_ids": 638,
+    "protected_rows": 440,
+    "canonical_metadata_operations": "3f8fe16d1f03dee7ea726ab076869445bd14bc89",
+    "final_two_operation_correction": "3f719387a4b568f9b2e4c42b2b49cf7e90532024",
+    "exact_replay": [
+      {
+        "step": "Fresh-on-B",
+        "path": "CALLERS.toml",
+        "pre": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+        "post": "17f713e4cccbafaaa5fe3bde7c0a6967fb54451c",
+        "operations": 3,
+        "unique_forward_reverse": true
+      },
+      {
+        "step": "guard-extractions-on-B-Fresh",
+        "path": "CALLERS.toml",
+        "pre": "17f713e4cccbafaaa5fe3bde7c0a6967fb54451c",
+        "post": "a4807e6ac81c1b543b0ac49839c6a6f2edc85021",
+        "operations": 8,
+        "unique_forward_reverse": true
+      },
+      {
+        "step": "final-union",
+        "path": "CALLERS.toml",
+        "pre": "a4807e6ac81c1b543b0ac49839c6a6f2edc85021",
+        "post": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+        "operations": 83,
+        "unique_forward_reverse": true
+      }
+    ],
+    "conservation": {
+      "scope": "Bounded V8 parser for the actual single-line basic/literal strings, arrays, inline objects and required_function_order subtables; not the original TOML parser or complete caller checker.",
+      "stages": [
+        {
+          "step": "Fresh-on-B",
+          "path": "CALLERS.toml",
+          "pre": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+          "post": "17f713e4cccbafaaa5fe3bde7c0a6967fb54451c",
+          "operations": 3,
+          "unique_forward_reverse": true
+        },
+        {
+          "step": "guard-extractions-on-B-Fresh",
+          "path": "CALLERS.toml",
+          "pre": "17f713e4cccbafaaa5fe3bde7c0a6967fb54451c",
+          "post": "a4807e6ac81c1b543b0ac49839c6a6f2edc85021",
+          "operations": 8,
+          "unique_forward_reverse": true
+        },
+        {
+          "step": "final-union",
+          "path": "CALLERS.toml",
+          "pre": "a4807e6ac81c1b543b0ac49839c6a6f2edc85021",
+          "post": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+          "operations": 83,
+          "unique_forward_reverse": true
+        }
+      ],
+      "old_boundaries": 556,
+      "boundaries": 638,
+      "required_ids": 638,
+      "required_declared_exact": true,
+      "old_non_caller_fields_identical": true,
+      "old_caller_members_preserved": true,
+      "expanded_rows": 80,
+      "actual_added_edges": 92,
+      "new_boundaries": 82,
+      "old_protected": 395,
+      "protected": 440,
+      "changed_existing_protected_parsed": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+          "functions": [
+            {
+              "function": "fn open(",
+              "sequence": [
+                "let config: HostAuthorityServiceConfig = read_root_json(config_file)?",
+                "SameActorPhaseDeadline::at_original_service_start(",
+                "std::time::Duration::from_millis(config.lifetime_ms)",
+                "PreparedHostAuthoritySession::open(",
+                "config_file, registration_file, owner_pidfd",
+                "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)"
+              ]
+            },
+            {
+              "function": "fn prepare_fresh_from_registered(",
+              "sequence": [
+                "let config: HostAuthorityServiceConfig = read_root_json(config_file)?",
+                "SameActorPhaseDeadline::at_original_service_start(",
+                "std::time::Duration::from_millis(config.lifetime_ms)",
+                "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+                "config_file, registration_file, owner_pidfd",
+                ").await?",
+                "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)"
+              ]
+            },
+            {
+              "function": "fn capture_original_phase(",
+              "sequence": [
+                "SameActorPhaseGate::from_original_deadline(deadline)?",
+                "CloseSameActorPhaseOnDrop::new(&gate)",
+                "serde_json::to_vec(&config)",
+                "serde_json::to_vec(&original.config)",
+                "original.learning.is_some()",
+                "original.publication.is_some()",
+                "original.initial_publication.is_some()",
+                "original.root_admin.is_some()",
+                "original.config.sockets.device_frontier.is_none()",
+                "original.config.sockets.notes_frontier.is_none()",
+                "gate.require_open()?",
+                "original.service.bind_original_same_actor_phase_issuer(&gate)?",
+                "original.enable_generation_initial(initial.clone())?",
+                "original.service.with_initial_publication_context(",
+                "gate.require_open()?",
+                "root_end_boottime_ns: deadline.boottime_ns()",
+                "OriginalPhaseRecord::reserve(",
+                "Arc::clone(&current_directory), phase_identity.clone()",
+                "seal_bytes(&encoded)?",
+                "gate.require_open()?",
+                "retained = Some((record, descriptor, sealed))",
+                "gate.require_open()?",
+                "scope_cap::ScopeRuntime::mint(descriptor.original.root.clone(), &gate)",
+                "initial_capability.into_same_actor_phase(&gate, &current_directory)",
+                "closing.disarm()",
+                "let closing = CloseSameActorPhaseOnDrop::new(&gate)",
+                "Ok(Self { original, gate, record, descriptor, model, scope, start: Some(start), closing })"
+              ]
+            },
+            {
+              "function": "fn serve_with_ready(",
+              "sequence": [
+                "fn serve_with_ready(",
+                "worker::serve_original_phase(self, ready)"
+              ]
+            }
+          ]
+        }
+      ],
+      "changed_existing_protected_raw": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration.rs"
+      ],
+      "added_callers": [
+        {
+          "id": "root_original_writer_purpose_send",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+          ]
+        },
+        {
+          "id": "root_original_writer_purpose_receive",
+          "added": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+          ]
+        },
+        {
+          "id": "agentd_original_root_writer_consume",
+          "added": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+          ]
+        },
+        {
+          "id": "root_same_registered_bootstrap_seal",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "root_original_physical_login_install",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "root_notes_original_reserved_session_binding",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "root_original_bound_native_lanes",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+          ]
+        },
+        {
+          "id": "root_learning_original_scope_capture",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+          ]
+        },
+        {
+          "id": "root_original_registered_ready_serve",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+          ]
+        },
+        {
+          "id": "root_original_private_sealed_bytes",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "circuit_q24_ordinary_profile_assembly",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "learning_original_training_receipt_attest",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+          ]
+        },
+        {
+          "id": "cell_q24_original_training_execute",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+          ]
+        },
+        {
+          "id": "cell_q24_original_training_pair_binding",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_q24_factory_capture_original",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+          ]
+        },
+        {
+          "id": "root_q24_factory_live_observation",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_q24_factory_learning_scope",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_q24_factory_local_policy",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_learning_live_profile_action",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs"
+          ]
+        },
+        {
+          "id": "learning_original_source_attest_experience",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_source_attest_dataset",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_source_read_dataset",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_local_policy_require_context",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_local_policy_policy_digest",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_q24_generation_inputs",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_q24_source_inputs",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_q24_training_inputs",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_q24_policy_inputs",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_original_q24_require_prepared_q24",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+          ]
+        },
+        {
+          "id": "root_original_q24_into_q24_learning_runtime",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+          ]
+        },
+        {
+          "id": "q24_publication_original_lane",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+          ]
+        },
+        {
+          "id": "learning_original_q24_install_independent_evaluation",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+          ]
+        },
+        {
+          "id": "learning_original_q24_training_material_export",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "root_generation_current_original_broker_head",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"
+          ]
+        },
+        {
+          "id": "root_generation_current_from_original_root_publication",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+          ]
+        },
+        {
+          "id": "root_generation_current_bound_selection",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_generation_publication_original_stream",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+          ]
+        },
+        {
+          "id": "q24_root_artifact_qualified_phase",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_root_retained_phase",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_root_selection_adopted",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_root_selection_retained",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_task_original_outcome_submit",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_task_original_learning_prepare",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+          ]
+        },
+        {
+          "id": "q24_task_explicit_delivery_sources",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs"
+          ]
+        },
+        {
+          "id": "root_generation_connection_original_capture",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+          ]
+        },
+        {
+          "id": "root_generation_connection_inputs_take",
+          "added": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+          ]
+        },
+        {
+          "id": "root_generation_connection_live_session",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+          ]
+        },
+        {
+          "id": "root_generation_connection_original_binding",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+          ]
+        },
+        {
+          "id": "q24_training_original_readback_export",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_training_original_readback_cut",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+          ]
+        },
+        {
+          "id": "q24_retained_source_capture",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+          ]
+        },
+        {
+          "id": "q24_retained_source_root_install",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+          ]
+        },
+        {
+          "id": "root_initial_original_writer_context",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "root_initial_separate_purpose_enable",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+          ]
+        },
+        {
+          "id": "root_initial_original_stream",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+          ]
+        },
+        {
+          "id": "root_initial_exact_retained_record",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"
+          ]
+        },
+        {
+          "id": "root_initial_executable_feature_prepare",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "root_initial_actual_feature_publish",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_same_root_connection",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_context_from_registered_root",
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_actual_runtime",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_root_prepare_request",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_original_feedback_ledger",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_original_signed_finish",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ]
+        },
+        {
+          "id": "q24_successor_slot_new",
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"
+          ]
+        },
+        {
+          "id": "root_original_peer_channel_until",
+          "added": [
+            "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+            "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+            "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"
+          ]
+        },
+        {
+          "id": "root_original_final_use_frontier_until",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+          ]
+        },
+        {
+          "id": "root_original_root_issuer_until",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+          ]
+        },
+        {
+          "id": "root_original_observation_stream_until",
+          "added": [
+            "codex-rs/hepta-agentd/src/root_authority_session.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_a_parts",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_route_pending",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_a_install",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_a_close",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_a_quiescent",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_a_release",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_c_install",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_original_worker_bootstrap",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_learning_training_binding",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_learning_effect_entry",
+          "added": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+          ]
+        },
+        {
+          "id": "q24_same_actor_learning_stage_work",
+          "added": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+          ]
+        }
+      ],
+      "new_ids": [
+        "root_same_actor_phase_open",
+        "root_same_actor_phase_fresh",
+        "root_same_actor_phase_start",
+        "root_same_actor_phase_seal",
+        "root_same_actor_phase_serve",
+        "root_same_actor_phase_host",
+        "root_same_actor_deadline_start",
+        "root_same_actor_deadline_receive",
+        "root_same_actor_gate_construct",
+        "root_same_actor_durable_reserve",
+        "root_same_actor_durable_claim",
+        "root_same_actor_durable_scope",
+        "root_same_actor_actual_a_claim",
+        "root_same_actor_initial_retire",
+        "root_same_actor_initial_cap",
+        "root_same_actor_initial_register",
+        "root_same_actor_publication_cap",
+        "root_same_actor_publication_register",
+        "root_same_actor_scope_register",
+        "root_same_actor_join_accept",
+        "root_same_actor_worker_serve",
+        "root_same_actor_lane_serve",
+        "root_same_actor_issuer_bind",
+        "root_same_actor_issuer_attachment",
+        "root_same_actor_learning_reserve",
+        "root_same_actor_learning_open",
+        "root_same_actor_model_reserve",
+        "root_same_actor_model_open",
+        "root_same_actor_initial_until",
+        "root_same_actor_learning_until",
+        "root_same_actor_model_until",
+        "root_same_actor_publication_until",
+        "root_same_actor_initial_service",
+        "root_same_actor_learning_service",
+        "root_same_actor_model_service",
+        "root_same_actor_receive_start",
+        "root_same_actor_receive_inputs",
+        "root_same_actor_context_current",
+        "root_same_actor_scoped_descriptor",
+        "root_same_actor_session_connect",
+        "root_same_actor_session_activate",
+        "root_same_actor_session_origin",
+        "root_same_actor_grant_gate",
+        "root_same_actor_send_start",
+        "root_same_actor_send_scope",
+        "root_same_actor_take_start_rights",
+        "root_same_actor_take_scope_rights",
+        "root_same_actor_retire_ack",
+        "root_same_actor_join_after_a_drop",
+        "root_same_actor_joined_parts",
+        "root_same_actor_scope_receive",
+        "root_same_actor_scope_parts",
+        "root_same_actor_ticket_session",
+        "root_same_actor_ticket_connect",
+        "root_same_actor_initial_connect",
+        "root_same_actor_publication_connect",
+        "root_same_actor_initial_stream",
+        "root_same_actor_scoped_stream",
+        "root_same_actor_successor_capture",
+        "root_same_actor_successor_origin",
+        "root_same_actor_successor_scope_take",
+        "q24_same_actor_successor_factory",
+        "q24_same_actor_successor_task_parts",
+        "q24_same_actor_artifact_publish",
+        "q24_same_actor_current_connect",
+        "q24_same_actor_startup",
+        "q24_same_actor_run",
+        "q24_same_actor_initial_install",
+        "q24_same_actor_task_worker",
+        "q24_same_actor_task_worker_run",
+        "q24_same_actor_a_controller",
+        "q24_same_actor_scoped_controller",
+        "q24_same_actor_c_controller",
+        "root_same_actor_initial_enroll",
+        "root_same_actor_publication_enroll",
+        "root_same_actor_publication_service",
+        "root_same_actor_bound_five_lanes",
+        "root_same_actor_issuer_effect_entry",
+        "root_same_actor_checkpoint_effect",
+        "root_same_actor_consumer_effect",
+        "root_same_actor_learning_effect",
+        "root_same_actor_checkpoint_until"
+      ]
+    },
+    "original_checker_run": false,
+    "whole_repository_typed_index_run": false,
+    "unique_boundary_symbols": 638,
+    "conservation_scope": "The embedded 83-op conservation proof ends at 7cefc; the separately verified final 3f719 packet changes only one new Startup protected marker, preserving all 638 boundaries/required IDs and 440 protected rows."
+  },
+  "historical_guard_conservation": {
+    "fresh_original_ops_exact": 3,
+    "extracted_original_ops_exact": 8,
+    "canonical_base": "38ae7ef810b0d9dfdcc25cf0cf55900cf2fa1c65",
+    "no_guard_fork": true
+  },
+  "final_type_corrections": {
+    "first_three": {
+      "packet": "de1192f74dcedb9acd08118e2a0c53c0b889cef0",
+      "status": "Static exact postimage and semantic review only",
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+          "pre": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+          "post": "4c6a791d41fbfc229d322c0b3320b51397c325d3",
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+          "pre": "46c3554abd4916f9d79059d0ebdcf0c3032c82a0",
+          "post": "a92be943237ff7ec597979c93f3284ebbfedef73",
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "pre": "9f5ad5209e71cf4c5f3f7e6480f7954f1d70f7ee",
+          "post": "16dcc1c66969bf5ce11fb624882fb2d92d898ba7",
+          "unique_forward_reverse": true
+        }
+      ],
+      "operations": 3,
+      "actual_type_sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+          "blob": "b4b39eea3168b6fe66cb3627faec896746898a6d",
+          "signature": "RootGenerationInitialEnrollmentCapabilityV1::into_same_actor_phase(self, &Arc<SameActorPhaseGate>, &Arc<RootAuthorityDirectory>)",
+          "source": "original.enable_generation_initial(initial.clone())? returned tuple; same initial_capability consumed."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+          "blob": "1e5d9d6ca12ea3aff4b8bfc69ca1544c7010ab74",
+          "signature": "RootGenerationPublicationEnrollmentCapabilityV1::into_same_actor_phase(self, &Arc<SameActorPhaseGate>)",
+          "source": "generation_publication::original_publication_route(...) returned tuple; same capability consumed."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+          "blob": "b446253905da915e6830c59a579674d79b995bba",
+          "signature": "AgentdUnixFinalUseGrantProvider::into_same_actor_phase(mut self, &Arc<SameActorPhaseGate>) -> Result<Self, AgentdFinalUseIssuerError>",
+          "source": "Same from_root_stream_until(...) result and map_err(protocol)? are evaluated before the same gate borrow; original move and error propagation preserved."
+        }
+      ],
+      "conclusion": "Only explicit inherent UFCS receiver spelling. Same by-value self, gate/current directory arguments and ordered map_err/? evaluations; no new object, source effect, authority, cancellation or deadline path. No checker/helper modification. Compiler/typed-helper acceptance remains unexecuted.",
+      "original_checker_run": false,
+      "compiled": false,
+      "native": false
+    },
+    "last_startup": {
+      "packet": "3f719387a4b568f9b2e4c42b2b49cf7e90532024",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+          "pre": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+          "post": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7",
+          "operations": 1,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "CALLERS.toml",
+          "pre": "7cefc45596276a4e024b534cbbeb8a043710a5ca",
+          "post": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+          "operations": 1,
+          "unique_forward_reverse": true
+        }
+      ],
+      "method_body_identical_to_actual_d973": true,
+      "actual_public_reexport": true,
+      "parsed_metadata_changes": [
+        {
+          "kind": "protected_file",
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        }
+      ],
+      "preserved": "Same actual &mut root borrowed once, original result ? before initial connector and later move unchanged. No boundary, receiver, caller, deadline or authority change.",
+      "original_checker_run": false,
+      "native": false
+    }
+  },
+  "source_findings": [
+    {
+      "area": "A and Root",
+      "finding": "Same original authority, mandatory five-lane receive, actual A admission close/quiescence, retained source and durable GenV2 drain precede scoped registration. Independent C and cross-incarnation recovery are outside this same-actor contract."
+    },
+    {
+      "area": "Blocking Work",
+      "finding": "The registry retains real blocking JoinHandles and outputs through cancellation. Actual output/resource release precedes empty-registry acknowledgement; an unjoined Drop closes the gate without decrementing pending. The seven tests exercise real synchronization/descriptor ownership, but are unexecuted at freeze.",
+      "independent_review": "0f0dec1b79f877ee6a78616e327ab2afc5fa68e2"
+    },
+    {
+      "area": "Actual candidate B handoff",
+      "finding": "Only the durable real Training checkpoint and authenticated material/readback arm the Evaluation handoff. The stage lane is released before host waiting. The non-Clone installation token binds the same exchange and exact cut; original owner checks run before its first effect and after evidence await. Installed means input custody, not B success.",
+      "independent_review": "882e34f5c73bd64c36cb7ab6506aea75b2ff983d"
+    },
+    {
+      "area": "Decision future custody",
+      "finding": "The final publish controller 7c69 retains one original decision_snapshot future across Training notification and B installation. Historical 56674d would drop the pending future and close the original successor; it is excluded from final source. NoUpdate completes its existing branch without B waiting; faults remain faults."
+    },
+    {
+      "area": "Fresh and extracted guards",
+      "finding": "The original Fresh CLI raw markers remain protected; actual Linux-main ordering uses its unique complete signature. Seven extracted bodies retain their original sequences with explicit original wrappers and None arguments. The Publication helper's two parameterized raw guards are separately bound to the original service/config arguments. These are reviewed adaptations, not claims that all raw strings were unchanged.",
+      "reviews": [
+        "75c09b93d0c4d10eb2e33856605c85b0d7129ed3",
+        "1b411c15d734803f738c3ab329794e2a568f5c1d"
+      ]
+    },
+    {
+      "area": "Four explicit actual receiver calls",
+      "finding": "Only real consuming/self-borrow calls were rewritten as inherent UFCS so the existing helper's direct-qualified branch can recognize tuple/struct/chained-result receivers. By-value self, &mut root, gate arguments, error propagation and operation order remain unchanged. No checker or typed helper was modified.",
+      "reviews": [
+        "fc75cde2cdd60b128ea0bdea270e1ca7a2d14d7a"
+      ]
+    },
+    {
+      "area": "Unused new handoff helper",
+      "finding": "Only the newly added unused 702-byte wrapper was removed. Actual three-right Startup receive and original five-lane connection remain in place; no fictional caller was added.",
+      "independent_review": "a8c8786cbaded4b3a8992cd6dd389d448c1278b9"
+    },
+    {
+      "area": "Retained FinalUse diagnostics",
+      "finding": "The five diagnostic source postimages already in f48 remain exact. The until-aware Frontier uses final0451ca5b309b701b186ca749241e9c5f1191daa5, replacing f48's current-only Frontier. Diagnostics do not establish a repair."
+    }
+  ],
+  "component_test_inventory": {
+    "new_methods": 47,
+    "removed_original_methods": 0,
+    "files": 15,
+    "executed_for_this_source": false,
+    "B_tests": "Six data-only synthetic Training notification/installation metadata tests do not construct or prove real Trainer, B evaluator or ordinary task execution."
+  },
+  "entry": {
+    "inventory_readme": "60e0b3a3c4b3b57c4eff2140422569be57643172",
+    "inventory": "97eb5cf961241f52c77fd9474c4e41b7520996d1",
+    "future_plan": "9dc0a404cc4991647004785b6d861edb88020a14",
+    "plan_index": "563d13be023c1ab3073dd30b108eb8a19eec5c74",
+    "root_targeted_read": {
+      "source_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S11",
+        "S14",
+        "S15",
+        "S16"
+      ],
+      "results": [
+        {
+          "id": "S01",
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+          "blob": "403fb6ffa83a85bc539df92ca8f9b7f447636ca4",
+          "bytes": 11161,
+          "entry_mentions": [
+            "    pub async fn prepare_fresh_from_registered(",
+            "        let original = PreparedHostAuthoritySession::prepare_fresh_from_registered("
+          ]
+        },
+        {
+          "id": "S02",
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+          "blob": "d8fd1e8542983e9658553dde61a5b6adab36d41f",
+          "bytes": 8624,
+          "entry_mentions": [
+            "    pub fn serve_original_same_actor_host("
+          ]
+        },
+        {
+          "id": "S03",
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+          "blob": "b4062f73e1402d4aeac0ae7d37a3353d3413d457",
+          "bytes": 11071,
+          "entry_mentions": [
+            "pub struct AgentdOriginalSameActorPhaseStartupV1 {",
+            "impl AgentdOriginalSameActorPhaseStartupV1 {",
+            "    pub fn run_original_phase("
+          ]
+        },
+        {
+          "id": "S04",
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+          "blob": "0977e3c79b83aff01688436af99b533bda8c5a46",
+          "bytes": 10184,
+          "entry_mentions": [
+            "pub fn original_same_actor_phase_host_channel_v1("
+          ]
+        },
+        {
+          "id": "S11",
+          "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "blob": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+          "bytes": 27445,
+          "entry_mentions": [
+            "pub use same_actor_phase::AgentdOriginalSameActorPhaseStartupV1;",
+            "/// Explicit late-writer startup retains its inherited rights and comparison"
+          ]
+        },
+        {
+          "id": "S14",
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+          "bytes": 13038,
+          "entry_mentions": []
+        },
+        {
+          "id": "S15",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "blob": "cd5415cf206eeb646855f35625f31d67698a495b",
+          "bytes": 23993,
+          "entry_mentions": [
+            "                codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered("
+          ]
+        },
+        {
+          "id": "S16",
+          "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+          "blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+          "bytes": 3013,
+          "entry_mentions": [
+            "        if arguments.get(index + 1).and_then(|value| value.to_str()) != Some(\"late-writer\") {",
+            "                \"--root-production-entry requires late-writer\".into(),"
+          ]
+        }
+      ],
+      "scope": "Exact 8 pinned source bytes and literal entry-name mentions only; no exhaustive caller checker or native execution."
+    },
+    "default_main_and_root_cli_call_new_entries": false,
+    "finite_final_completion_protocol": false,
+    "semantics": "Typed public embedded-host paths and real internal consumers exist. Ordinary CLI host/provider wiring and real external inputs are required. Current Startup refuses generic Launch.run Ok as unproven physical completion."
+  },
+  "original_gates": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "harness_bytes": 50167,
+    "freshness_ms": 500,
+    "freshness_origin": "original request_started_ns",
+    "overall_timeout_seconds": 27000,
+    "full_caller_timeout_seconds": 3600,
+    "retries": 0,
+    "root_parent_roster": 17
+  },
+  "prior_results": {
+    "V34": {
+      "source": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "ordinary": 1950,
+      "root_passed": 16,
+      "root_required": 17,
+      "qa_passed": 236,
+      "full_caller_exit": 0,
+      "result": "failed-native-components at first Publish retained FinalUse verification; precise leaf not established"
+    },
+    "V35": {
+      "source": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+      "result": "failed exact-source fetch exit128 with connection reset/early EOF before checkout; no source gates executed"
+    },
+    "inheritance": "Neither prior source result is assigned to this candidate."
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer_C": "not accepted",
+    "daemon_and_Root_OS_restart": "not accepted",
+    "final_owner_join": "not accepted"
+  },
+  "limits": [
+    "Static V8 row parsing/mask projections are bounded inspection only; they do not execute the original Python caller checker, original typed helper, Rust compiler or native harness.",
+    "Exact raw source and package reconstruction does not establish that code has run.",
+    "The external deployment bundle, original signed A/C objectives and Observer Outcomes, actual B holdout/provider/cost journals and independent Selection are not fabricated by these source changes.",
+    "The existing phase end and original 500 ms request-start freshness cannot be renewed by input, B evaluation or acknowledgement.",
+    "New entry/completion work is a later source cut and is not silently inserted into this candidate."
+  ],
+  "final_independent_callers_review": {
+    "report": "f649d45c0c5dd9c859c8220e5133810ad9957df6",
+    "details": "72a1a29c5cfc2fe9855393305747cf7b54afdc7e",
+    "conclusion": "No remaining confirmed static blocker within the explicitly reviewed final-source domain; original full checker/helper, compiler and native are unexecuted."
+  },
+  "original_harness_configuration_template": {
+    "head": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+    "tree": "384222cf500019cb1293723dd8668eeb35a1e4cb",
+    "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+    "work_root": "/home/qq/af52-learning-local-decision-20261111",
+    "work_name": "ordinary-f48f3dc-seven-final-v10",
+    "attempt": "ordinary-f48f3dc-seven-final-v10",
+    "reference_repository": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+    "operator_target": "/home/qq/af52-learning-20261111/target",
+    "root_target": "/var/tmp/hepta-af52-root-component-target-20261111",
+    "just_path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+    "rustc_path": "/home/qq/.cargo/bin/rustc",
+    "cargo_home": "/home/qq/.cargo",
+    "rustup_home": "/home/qq/.rustup",
+    "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "root_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-contracts"
+    ],
+    "expected_root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "overall_timeout_seconds": 27000,
+    "full_caller_timeout_seconds": 3600
+  },
+  "next_native_configuration": "The exact original template is retained; the next invocation will replace only head/tree/work_name/attempt after this source commit exists. The original packages, Root roster, timeouts and harness bytes are unchanged.",
+  "reviewed_at_utc": "2026-11-12 13:54:50 UTC"
+}

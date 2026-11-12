@@ -25,6 +25,10 @@ mod source;
 
 pub use runtime::CircuitTaskHandleV1;
 pub use runtime::CircuitTaskRuntimeBootstrapV1;
+#[cfg(target_os = "linux")]
+pub(crate) use runtime::SameActorTaskAdmission;
+#[cfg(target_os = "linux")]
+pub(crate) use runtime::SameActorTaskRoute;
 pub use runtime::circuit_task_channel_v1;
 pub use source::CircuitTaskSourceInputV1;
 pub use source::CircuitTaskSourcePublicationV1;

@@ -199,3 +199,79 @@ pub(in super::super) fn serve_optional(
         result.and(served)
     })
 }
+
+impl BoundPublication {
+    pub(in super::super) fn activate_same_actor_phase(&self) -> io::Result<()> {
+        self.runtime.phase.compare_exchange(PREPARED, ACTIVE, Ordering::AcqRel, Ordering::Acquire)
+            .map_err(|_| io::Error::other("original phase publication runtime already consumed"))?;
+        Ok(())
+    }
+
+    pub(in super::super) fn serve_same_actor_phase_publication(
+        &self,
+        learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1,
+        service: &HostAuthorityService,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        phase: &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+    ) -> io::Result<()> {
+        let _closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+        let end = phase.gate.deadline().instant();
+        let receiver = self.runtime.receiver.try_lock()
+            .map_err(|_| io::Error::other("original phase publication receiver busy"))?;
+        let submission = loop {
+            let epoch = phase.gate.original_wait_epoch()?;
+            owner_alive(owner, end)?;
+            match receiver.try_recv() {
+                Ok(value) => break value,
+                Err(mpsc::TryRecvError::Empty) => phase.gate.wait_original_change(epoch)?,
+                Err(mpsc::TryRecvError::Disconnected) => {
+                    return Err(io::Error::other("original phase publication capability was dropped"));
+                }
+            }
+        };
+        let slot = service.enroll_generation_publication_for_phase(
+            config, registration, owner, learning, submission.inputs, phase,
+        );
+        let slot = match slot {
+            Ok(slot) => {
+                phase.require_original(&slot)?;
+                submission.acknowledgement.try_send(Ok(slot.profile.binding.clone()))
+                    .map_err(|_| io::Error::other("original phase publication acknowledgement lost"))?;
+                phase.gate.notify_original_waiters();
+                phase.require_original(&slot)?;
+                slot
+            }
+            Err(error) => {
+                let _ = submission.acknowledgement.try_send(Err(error.to_string()));
+                phase.gate.notify_original_waiters();
+                return Err(error);
+            }
+        };
+        let stream = loop {
+            let epoch = phase.gate.original_wait_epoch()?;
+            owner_alive(owner, end)?;
+            match self.listener.accept() {
+                Ok((stream, _)) => break stream,
+                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                    phase.gate.wait_original_change(epoch)?;
+                }
+                Err(error) => return Err(error),
+            }
+        };
+        verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
+        phase.require_original(&slot)?;
+        service.serve_generation_publication_until(
+            &slot, learning, config, registration, stream,
+            HostAuthorityPeerPolicy {
+                peer: HostIssuerPeer { uid: config.peer_uid, pid: registration.peer_pid },
+                timeout: Duration::from_millis(config.timeout_ms),
+                lifetime: Duration::from_millis(config.lifetime_ms),
+                request_bound: 16 * 1024,
+                response_bound: 16 * 1024,
+            },
+            owner.try_clone()?, phase,
+        )
+    }
+}

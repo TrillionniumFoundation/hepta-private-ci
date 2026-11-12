@@ -350,6 +350,7 @@ impl DeploymentFinalUseIssuer {
         let unsigned = envelope(&state.signer_id, &retained, body.clone());
         let claims =
             crate::authbus_text_claims(&identity.agent_id, &unsigned).map_err(io::Error::other)?;
+        self.require_new_same_actor_phase_effect()?;
         retained.signature_hex = self
             .key
             .sign(&claims.signing_bytes())

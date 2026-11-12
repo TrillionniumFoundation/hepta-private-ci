@@ -1,0 +1,846 @@
+{
+  "schema": "independent-same-actor-learning-work-final-static-review-v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "conclusion": "固定 Work15/31ops 在本次有界静审中未发现新增局部生产代码阻断；中间 CALLERS 明确尚未闭合，且此包不包含独立 B 安装。不得作为原 checker、编译、native 或完整 phase 资格通过。",
+  "artifacts": {
+    "manifest": {
+      "blob": "f943e4493f5294363366d1154566b644a938bab4",
+      "bytes": 13651,
+      "sha256": "a94219cff2e5ef30452963580b4c774d6a9af4e1fbd49f72e239a6d109ac6598"
+    },
+    "operations": {
+      "blob": "0c50562977ebfc5409e67c2dce3b8c037d66da9e",
+      "bytes": 136187,
+      "sha256": "7ebe260fe04ab5a361f64a497548e5a7de06cad8b8f744db6da103d19c830016"
+    },
+    "static_author_inventory": {
+      "blob": "35bda21ffc55167b9e5adacc263c301597850c92",
+      "bytes": 33339,
+      "sha256": "6b16acdadc2d618d7b87d89549f6577ee7a0bd587adbc692ddf6b13734a93a36"
+    },
+    "callers": {
+      "blob": "ee142aea0d277d77de6d3e9cda62259a3b393f11",
+      "bytes": 760086,
+      "sha256": "6bce27885a7fbf3e1181da221ccf9934dbf58f88e5949a8f4e0c12edcf09ba7a"
+    },
+    "old_caller_annex": {
+      "blob": "6f099838c970533a5a6f5b79085b191840d356b9",
+      "bytes": 13341,
+      "sha256": "9fe59ed82b1fe9e6abbcff44990b9d450bafd384d0442d8aa7ab7a86908b9f8f"
+    },
+    "prior_actual_controller_custody_review": "f1fe610f665e3950505e55d0737b935710facbb0",
+    "fresh_delta_independent_review": "75c09b93d0c4d10eb2e33856605c85b0d7129ed3",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+  },
+  "scope": {
+    "base_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "base_tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "source_paths": 15,
+    "product_source_paths": 14,
+    "component_test_source_paths": 1,
+    "exact_operations": 31,
+    "source_operations": 30,
+    "metadata_operations": 1,
+    "modified_sources": 6,
+    "new_sources": 9,
+    "independent_reads": "全部固定后像已 GET 并验证 Git/UTF-8 长度/SHA256；本轮复用 11 份此前已独立核验的 immutable GET，新取 4 份修订 helper。五实际 d973 前像与一个已冻 queue overlay 分开绑定。",
+    "absence_scope": "本报告不将作者九个新路径 absent-at-base 声明冒认成本轮新的独立目录遍历；new-file add 操作按完整字节核验。",
+    "old_private_child_inventory": "独立读取原 Stage successor/publication_material/training_material/training_readback 及实际 cell_q24_training_readback_fixture_tests.rs；未发现其他 Q24StageState/TrainingStage literal。非宏展开或类型检查。",
+    "metadata_filename_correction": "最新 f943e449 / 35bda21 只纠正静态库存的真实 private test child 路径；源码、31 ops、CALLERS、7 tests 均未变。旧 7f930 / 366fe 保历史。"
+  },
+  "immutable_source_verification": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "blob": "fa902ef2a40f3fecfe2db1687a099022b92edf2b",
+      "bytes": 13753,
+      "sha256": "81d3cfa15d5771f22efbdfd52b732649bc3742794e9a19bb1bd30963bea23aa7",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "blob": "ee320cabbb453beaf62fcb283376a5228bfb0433",
+      "bytes": 11355,
+      "sha256": "5d5a5c0f081d52cf483a73b71aa5edac3f834f495473c7f1a25aff2707d27007",
+      "reused_prior_independent_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "blob": "0c266ea74c08bbe477a225b5a05edb6784a1d897",
+      "bytes": 29832,
+      "sha256": "1951c4ad769c1c115a9090aee70415f0c9ef5d553eb6e89f9518bf51ffa3f914",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "blob": "a6e053b4034ff06bd8acb2fde2d5f0ba54f2c7a0",
+      "bytes": 7473,
+      "sha256": "f616c45fa85b9f23e7bb98b7b124e292a75e0903c27ef94a760b2f78d2a59a19",
+      "reused_prior_independent_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "blob": "99827f392e51719e18f91dacc37f7603605c7979",
+      "bytes": 13648,
+      "sha256": "10f2c9b40a64a0512d85db2c0363ece8b91c62b19eee879680f51596cfca7870",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "blob": "6b0f3b3f17f7fb59de2eaad382642772740a0c55",
+      "bytes": 5595,
+      "sha256": "9e3c685c58062ca62d0a0aed8e0921250c0a74567750dc354fdf91402d864119",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "blob": "50cedd202a98027f672153fa375d7d41ded41d22",
+      "bytes": 24121,
+      "sha256": "9a1f3a45bf9f0147e9cacf4baf6fa902b59d576d75add913a2b9ceec3c7721d6",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "blob": "7b534fd212f4d3da901878cc7dd1c2d66b2abe84",
+      "bytes": 7067,
+      "sha256": "644050d444174601eae757f7513b3aa51a61ee982b7bc886067e9e81acda0588",
+      "reused_prior_independent_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "blob": "fad2523ec6e5d9ccfc64c24605cbb7a1343e0fd9",
+      "bytes": 6074,
+      "sha256": "8bc4e4fd8b6af3a2d3626423e7d0506652ea588b10570a1529452842291ae143",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "blob": "2738b74658fb953e21e73d99faa14eee35a62b26",
+      "bytes": 18106,
+      "sha256": "80e77fa7cacf680911807f0c9ec49dbd0e5bd734c060e90c04a685068497604f",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+      "blob": "cba8c4bfef61cb1b7b0485488b75155d1b25a6ee",
+      "bytes": 1246,
+      "sha256": "717e967ca3fbaa2810c4c2ecb0aa191a44da5066e1868beac475abbf85f4abc7",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_same_actor.rs",
+      "blob": "727083c272082dfc01189015b8ec6c187257b8f5",
+      "bytes": 4976,
+      "sha256": "dec54bef7ae2f56a8a045aad1a604034948d4e9ac5cefeffd6057384084bb68c",
+      "reused_prior_independent_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs",
+      "blob": "1f6dbb79fc20bd3e18c462b8cc5b0ec0e67a3a27",
+      "bytes": 18362,
+      "sha256": "0d0414f91229b56112ec47bcb4dd25945205384720df70011ae9a4cbec3b0c55",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "blob": "b6346458f3a5d5e28fdb90bb90925d59beb31b9e",
+      "bytes": 7603,
+      "sha256": "ef8c9c688971e8b2cbfefa2f5a282df808ce6b1fa30024606b3395ffa7180adb",
+      "reused_prior_independent_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work_tests.rs",
+      "blob": "8e59fd63da4e9cf650636875a35a04e6b39c8589",
+      "bytes": 10737,
+      "sha256": "ff25a7d8c8d00166c583d9d8c2549347a1ee4d7b91ae8e24bc99f50d803b5ff1",
+      "reused_prior_independent_get": true
+    }
+  ],
+  "exact_replay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "operations": 6,
+      "forward": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "reverse": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "fixed d9737937"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "operations": 8,
+      "forward": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "reverse": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "fixed d9737937"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "operations": 1,
+      "forward": [
+        1
+      ],
+      "reverse": [
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "fixed d9737937"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "operations": 4,
+      "forward": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "reverse": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "previous frozen queue overlay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_same_actor.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs",
+      "operations": 1,
+      "forward": [
+        1
+      ],
+      "reverse": [
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "fixed d9737937"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "operations": 1,
+      "forward": [
+        1
+      ],
+      "reverse": [
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "fixed d9737937"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work_tests.rs",
+      "operations": 1,
+      "forward": [
+        "new-file exact"
+      ],
+      "reverse": [
+        "new-file exact"
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "declared new file"
+    },
+    {
+      "path": "CALLERS.toml",
+      "operations": 1,
+      "forward": [
+        1
+      ],
+      "reverse": [
+        1
+      ],
+      "full_bytes_equal": true,
+      "existing_base": "frozen Learning/Model client CALLERS overlay"
+    }
+  ],
+  "custody_findings": [
+    "真实 JoinHandle<Result<T,E>> 保存在共享 job 的 AsyncMutex 内；接收等待者借用 handle，取消 waiter 不会取走唯一 handle。await 后 joined=true、移除 handle 与保存 output 在同一同步临界段完成。",
+    "cleanup 先关闭同 Gate；复制 registry 后释放锁才 await 实际工作。join_and_discard 在 state mutex 释放后先销毁未交付 output/UnixFD/能力，再移除 registry 项及允许计数释放。",
+    "registry 为空不足以声称完成：cleanup 还等真实 pending==0，Notify enable 后再检查计数；并发 receive 暂持 exact Job Arc 或未交付 output 时不能提前返回。",
+    "最终 Job Drop 仅 state.joined 为真才减 pending，且先 drop 未交付 output。未 join 而丢 supervision 只关闭 Gate 并保 pending 非零，不把丢 handle 标作清理完成。",
+    "新 Stage/Training blocking closure 保管真实 owner、permit 和来源；原 lane/source/Root 校验后的首 effect 入场处才核 same phase Gate。旧 None 路径保留，不增加新身份、重试、假输入或将错误改成 TrainingNoUpdate。",
+    "实际已开始的 Training effect 可以在关闭后完成其原耐久结果；不能据关闭声称回滚。新阶段后续提交/receipt 入场仍受原控制和 Gate 限制，失败保持错误或不确定状态。",
+    "最终 required worker 同时驱动 Learning/delivery/successor 三 lane；首终止先 close/cancel，再 join 其余 lane。保留各实际错误的 diagnostic text；不声称三 typed error source 聚合。即使三 lane 皆 Ok 退出，仍返回 GenerationFenced。",
+    "process future 在真实 cleanup 前离开词法作用域，触发原 CancelTraining/FenceAggregate；原 request budget 和 Gate end 不重算。原 typed process result 不替换，cleanup 失败附在终态错误中。",
+    "Builder 同步产生 cleanup，真实 controller 在 await assemble 前保管并 attach；实际 progress future Drop→concrete worker await→Work cleanup 顺序已在 f1fe610f 全路径核验。",
+    "cleanup 本身没有异步 Drop join。原 RuntimeTasks wrapper abort/进程退出不证明真实 blocking closure 已物理 join；新 Startup 将 generic Launch Ok 拒为未确认 phase termination/physical owner join。该结果修正不被描述为物理 join 的实现。"
+  ],
+  "tests": {
+    "executed": false,
+    "methods": 7,
+    "blob": "8e59fd63da4e9cf650636875a35a04e6b39c8589",
+    "actual_resources": [
+      "spawn_blocking JoinHandle",
+      "owner Mutex",
+      "oneshot/barrier coordination",
+      "Unix descriptor EOF",
+      "semaphore permit",
+      "actual registry and pending counter"
+    ],
+    "cases": [
+      "关闭发生在等待真实 owner lock 时，首 effect 被拒且 permit/pending 保管到真实结束。",
+      "取消 result waiter 不丢 blocking handle、output FD 或 permit；真实 closure 结束后销毁。",
+      "取消 cleanup waiter 后由同 cap 再 join 原 handle；无重新执行。",
+      "第 4 测用 Box::pin cleanup 和 biased select 先实际 poll cleanup，再等 output FD EOF；提前 Ready 失败，EOF 后核 registry 空且 pending=1，再 drop exact Job 并等完成。替代旧 1a977 的时序较弱版本。",
+      "实际 blocking panic 的 join failure 保 sticky。",
+      "真实 owner Err 原样保留并关闭 phase。",
+      "真实成功值在 permit 释放后交付，最终 pending=0。"
+    ],
+    "limitations": "七项仅实际工作/锁/FD custody 组件源码；未编译/执行，不是 A/B/独立 C/Root 业务资格。未增加 Root parent、删除旧 tests 或以镜像布尔测试替代 owner 行为。"
+  },
+  "metadata": {
+    "base_prefix_preserved": true,
+    "old_boundary_tables": 524,
+    "declared_after": 548,
+    "old_protected_tables": 374,
+    "protected_after": 388,
+    "required_inventory_actual": {
+      "required_ids": 524,
+      "declared": 548,
+      "unclassified": [
+        "q24_same_actor_learning_builder",
+        "q24_same_actor_learning_assemble",
+        "q24_same_actor_learning_activation",
+        "q24_same_actor_learning_work_construct",
+        "q24_same_actor_learning_work_binding",
+        "q24_same_actor_learning_prepared_binding",
+        "q24_same_actor_learning_training_binding",
+        "q24_same_actor_learning_effect_entry",
+        "q24_same_actor_learning_blocking_reserve",
+        "q24_same_actor_learning_blocking_handle",
+        "q24_same_actor_learning_blocking_receive",
+        "q24_same_actor_learning_terminal_join",
+        "q24_same_actor_learning_stage_constructor",
+        "q24_same_actor_learning_stage_work",
+        "q24_same_actor_learning_generation_custody",
+        "q24_same_actor_learning_aggregate_lane",
+        "q24_same_actor_learning_training_constructor",
+        "q24_same_actor_learning_training_execute",
+        "q24_same_actor_learning_training_lane",
+        "q24_same_actor_learning_local_decision",
+        "q24_same_actor_learning_process_run",
+        "q24_same_actor_learning_required_worker",
+        "q24_same_actor_learning_required_run",
+        "q24_same_actor_learning_route_custody"
+      ]
+    },
+    "definite_final_integration_requirement": "ee142 的 required_boundary_ids 仍为 524，而声明边界 548。原 _verify_privileged_inventory 要求 exact set equality，因此最终 runtime union 必须实加这 24 IDs，并合入 19 个真实旧 caller 增量。不能将 ee142 单独称为闭合/原 checker PASS。",
+    "communicated_to": "/root、/root/runtime_access、/root/chain_nextuse；runtime 已确认最终统一 required=declared。",
+    "annex_raw_markers_missing": [],
+    "annex_scope": "19 旧 caller 增量涉及的原 caller_markers 逐字都在实际新源中；按真实类型/方法作有界静读，未运行全 authority_fields/index。",
+    "local_protection_projection": {
+      "algorithm": "已亲读原 checker，使用冻结 JS transcription 做 strip non-code/cfg(test)、真实 fn extent 与有序 find；这是局部投影，不是执行原 Python checker。",
+      "rows": 14,
+      "file_sequences": 13,
+      "function_sequences": 33,
+      "failures": [],
+      "detail": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+          "raw_required": 7,
+          "forbidden": 11,
+          "file_sequences": 7,
+          "function_sequences": [
+            {
+              "function": "fn from_original_scope(",
+              "marker_count": 6,
+              "start": 2622,
+              "end": 3417,
+              "ok": true
+            },
+            {
+              "function": "fn require_identity_and_gate(",
+              "marker_count": 5,
+              "start": 3811,
+              "end": 4326,
+              "ok": true
+            },
+            {
+              "function": "fn require_original_prepared(",
+              "marker_count": 4,
+              "start": 4344,
+              "end": 4654,
+              "ok": true
+            },
+            {
+              "function": "fn require_training_context(",
+              "marker_count": 8,
+              "start": 4672,
+              "end": 5310,
+              "ok": true
+            },
+            {
+              "function": "fn require_original_work_entry(",
+              "marker_count": 4,
+              "start": 5328,
+              "end": 5515,
+              "ok": true
+            },
+            {
+              "function": "fn reserve(",
+              "marker_count": 10,
+              "start": 6910,
+              "end": 7745,
+              "ok": true
+            },
+            {
+              "function": "fn close_and_join(",
+              "marker_count": 23,
+              "start": 8205,
+              "end": 9744,
+              "ok": true
+            },
+            {
+              "function": "fn join_locked(",
+              "marker_count": 17,
+              "start": 10901,
+              "end": 11776,
+              "ok": true
+            },
+            {
+              "function": "fn receive(",
+              "marker_count": 18,
+              "start": 11789,
+              "end": 12488,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+          "raw_required": 5,
+          "forbidden": 10,
+          "file_sequences": 1,
+          "function_sequences": [
+            {
+              "function": "fn from_original_same_actor_inputs(",
+              "marker_count": 37,
+              "start": 347,
+              "end": 5934,
+              "ok": true
+            },
+            {
+              "function": "fn require_original_same_actor_work(",
+              "marker_count": 8,
+              "start": 5952,
+              "end": 6473,
+              "ok": true
+            },
+            {
+              "function": "fn open_original_same_actor_generation(",
+              "marker_count": 14,
+              "start": 6497,
+              "end": 7956,
+              "ok": true
+            },
+            {
+              "function": "fn require_original_phase_entry(",
+              "marker_count": 3,
+              "start": 7997,
+              "end": 8203,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+          "raw_required": 3,
+          "forbidden": 10,
+          "file_sequences": 1,
+          "function_sequences": [
+            {
+              "function": "fn from_original_same_actor_owners(",
+              "marker_count": 13,
+              "start": 386,
+              "end": 1884,
+              "ok": true
+            },
+            {
+              "function": "fn execute_original_same_actor_training(",
+              "marker_count": 32,
+              "start": 1908,
+              "end": 5348,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_same_actor.rs",
+          "raw_required": 3,
+          "forbidden": 10,
+          "file_sequences": 1,
+          "function_sequences": [],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+          "raw_required": 4,
+          "forbidden": 11,
+          "file_sequences": 0,
+          "function_sequences": [
+            {
+              "function": "fn run_original_same_actor(",
+              "marker_count": 8,
+              "start": 310,
+              "end": 1321,
+              "ok": true
+            },
+            {
+              "function": "fn run_original_same_actor_commands(",
+              "marker_count": 30,
+              "start": 1334,
+              "end": 5591,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+          "raw_required": 7,
+          "forbidden": 11,
+          "file_sequences": 0,
+          "function_sequences": [
+            {
+              "function": "fn new(",
+              "marker_count": 17,
+              "start": 2325,
+              "end": 3876,
+              "ok": true
+            },
+            {
+              "function": "fn cleanup(",
+              "marker_count": 2,
+              "start": 3894,
+              "end": 3982,
+              "ok": true
+            },
+            {
+              "function": "fn assemble(",
+              "marker_count": 24,
+              "start": 4006,
+              "end": 6370,
+              "ok": true
+            },
+            {
+              "function": "fn into_original_parts(",
+              "marker_count": 8,
+              "start": 6424,
+              "end": 7063,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+          "raw_required": 6,
+          "forbidden": 10,
+          "file_sequences": 0,
+          "function_sequences": [
+            {
+              "function": "fn from_original_parts(",
+              "marker_count": 6,
+              "start": 1207,
+              "end": 1954,
+              "ok": true
+            },
+            {
+              "function": "fn run(",
+              "marker_count": 7,
+              "start": 1978,
+              "end": 2652,
+              "ok": true
+            },
+            {
+              "function": "fn run_original_lanes(",
+              "marker_count": 31,
+              "start": 2665,
+              "end": 6070,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+          "raw_required": 2,
+          "forbidden": 9,
+          "file_sequences": 0,
+          "function_sequences": [
+            {
+              "function": "fn attach_original_learning_work(",
+              "marker_count": 12,
+              "start": 205,
+              "end": 1242,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+          "raw_required": 3,
+          "forbidden": 5,
+          "file_sequences": 1,
+          "function_sequences": [
+            {
+              "function": "fn from_original_owners(",
+              "marker_count": 2,
+              "start": 4305,
+              "end": 7647,
+              "ok": true
+            },
+            {
+              "function": "fn install_published_generation(",
+              "marker_count": 7,
+              "start": 7894,
+              "end": 8656,
+              "ok": true
+            },
+            {
+              "function": "fn install_independent_evaluation(",
+              "marker_count": 9,
+              "start": 10743,
+              "end": 12780,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          "raw_required": 3,
+          "forbidden": 5,
+          "file_sequences": 2,
+          "function_sequences": [
+            {
+              "function": "fn from_original_owners(",
+              "marker_count": 6,
+              "start": 3607,
+              "end": 4698,
+              "ok": true
+            },
+            {
+              "function": "fn execute_training(",
+              "marker_count": 6,
+              "start": 5034,
+              "end": 7860,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+          "raw_required": 2,
+          "forbidden": 5,
+          "file_sequences": 0,
+          "function_sequences": [
+            {
+              "function": "fn model_action(",
+              "marker_count": 16,
+              "start": 3440,
+              "end": 7599,
+              "ok": true
+            }
+          ],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs",
+          "raw_required": 1,
+          "forbidden": 5,
+          "file_sequences": 0,
+          "function_sequences": [],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "raw_required": 1,
+          "forbidden": 5,
+          "file_sequences": 0,
+          "function_sequences": [],
+          "errors": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+          "raw_required": 3,
+          "forbidden": 8,
+          "file_sequences": 0,
+          "function_sequences": [
+            {
+              "function": "fn pending_original(",
+              "marker_count": 3,
+              "start": 2680,
+              "end": 4026,
+              "ok": true
+            },
+            {
+              "function": "fn pending_count(",
+              "marker_count": 8,
+              "start": 14856,
+              "end": 15620,
+              "ok": true
+            }
+          ],
+          "errors": []
+        }
+      ]
+    },
+    "fresh_delta": "Fresh 三 ops 可唯一叠加于 ee142；独审 75c09 已给出计算后像 58be7976d5258018fce1336876f8e3678d3af713（548/389），但本报告不将未上传的中间计算视为最终 union。"
+  },
+  "remaining_boundaries": [
+    "本包 Stage 的 evaluation 仍为 None，qualified candidate 还缺真实独立 B 等待/输入/安装接线；合法 TrainingNoUpdate 不需要 B，不据此声称有候选分支。",
+    "刚收到 fa01734 / ed094913 B 内外新包，属于后续单独审查，不继承本包结论，也不声称已执行。",
+    "最终 parent 模块/CALLERS 联合门、原完整 checker、格式、编译、全部 native 由 Root 对新固定候选执行。",
+    "同 custodian/同 principal 的新 C run 不等于独立控制者 C；真实部署 Primary/Observer/B 输入、冷重启仍有各自前提。"
+  ],
+  "execution": {
+    "original_checker": false,
+    "typed_helper": false,
+    "formatter": false,
+    "compiler": false,
+    "cargo": false,
+    "native": false,
+    "h_or_pty": false,
+    "refs_changed": false
+  },
+  "qualification": {
+    "ordinary_business": 0,
+    "independent_controlled_C": 0,
+    "real_daemon_and_Root_cold_restart": 0
+  },
+  "supersession": "完整 0c505 取代 eb92 草稿；不得两包重复 add。f943 的文档路径纠正取代 7f930，但原始失败与草稿保留。"
+}

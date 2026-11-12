@@ -1,0 +1,53 @@
+{
+  "schema": "same-actor-independent-B-original-decision-custody-correction-v1",
+  "supersedes_source": "56674d48522128dfb447a3fe79120cbd5cd6fce1",
+  "depends_on": "ed094913568a408288b5e24c2b0f7c1a11a91d06",
+  "file_count": 1,
+  "operation_count": 1,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "preimage": {
+        "blob": "56674d48522128dfb447a3fe79120cbd5cd6fce1",
+        "bytes": 12719,
+        "sha256": "fe385076d409dc1f4e7d1083bd7fb00d80ad4b6ecc8f616c243557b0e36a0f6f"
+      },
+      "postimage": {
+        "file": "same_actor_q24_phase_publish.rs",
+        "blob": "7c69d94b92859ce593076052e39edbcf53ebbedf",
+        "bytes": 13029,
+        "sha256": "4798705fc526dcc18f69511d8c1420625398fd5250f6e1dab4d3d20d4d63f061"
+      },
+      "operations": [
+        {
+          "old_text": "        // NoUpdate reaches the original decision without waiting for B. A\n        // candidate reaches this read-only notice only after the real Training\n        // checkpoint. Dropping either losing read does not submit more work.\n        let progress = tokio::select! {\n            decision = OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff) =>\n                OriginalLearningProgress::Decision(decision.map_err(phase_owner_error)?),\n            training = OriginalSameActorLearningWork::original_training_snapshot(work.as_ref()) =>\n                OriginalLearningProgress::Training(training.map_err(phase_owner_error)?),\n        };\n        let snapshot = match progress {\n            OriginalLearningProgress::Decision(snapshot) => snapshot,\n            OriginalLearningProgress::Training(training) => {\n                self.require_original_execution()?;\n                OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(\n                    owners.as_ref(), &work,\n                ).map_err(phase_owner_error)?;\n                let material = OriginalCellQ24LearningStageOwnersV1::read_original_training_material(\n                    owners.as_ref(), &training,\n                ).await.map_err(phase_owner_error)?;\n                self.require_original_execution()?;\n                let readback = OriginalCellQ24LearningStageOwnersV1::original_training_readback(\n                    owners.as_ref(), training.clone(),\n                ).await.map_err(phase_owner_error)?;\n                self.require_original_execution()?;\n                host.notify_original(\n                    &self.context,\n                    OriginalSameActorPhaseEventV1::OriginalTraining {\n                        snapshot: Box::new(training.clone()),\n                        material: Box::new(material),\n                        readback: Box::new(readback),\n                    },\n                )?;\n                let OriginalSameActorPhaseCommandV1::Evaluation(inputs) =\n                    host.receive_original(&self.context).await?\n                else {\n                    return Err(phase_refused(\n                        \"original Training requires B's independent Evaluation inputs\",\n                    ));\n                };\n                self.require_original_execution()?;\n                // This phase-only owner method rechecks the exact notified cut\n                // under the original aggregate lane, calls the real installer,\n                // and signals Learning only after successful installation and\n                // release of that lane. An error never becomes Retain/NoUpdate.\n                OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation(\n                    owners.as_ref(), &training, *inputs,\n                ).await.map_err(phase_owner_error)?;\n                self.require_original_execution()?;\n                OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff)\n                    .await.map_err(phase_owner_error)?\n            }\n        };\n",
+          "new_text": "        // Only the Training notice is a cancellable read. The original\n        // successor decision future owns CloseOnDrop, so retain ONE future\n        // across B and await that same future after the actual installation.\n        // This scope drops the completed future before handoff is moved below.\n        let snapshot = {\n            let mut decision = Box::pin(\n                OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff),\n            );\n            let progress = tokio::select! {\n                result = decision.as_mut() =>\n                    OriginalLearningProgress::Decision(result.map_err(phase_owner_error)?),\n                training = OriginalSameActorLearningWork::original_training_snapshot(work.as_ref()) =>\n                    OriginalLearningProgress::Training(training.map_err(phase_owner_error)?),\n            };\n            match progress {\n                OriginalLearningProgress::Decision(snapshot) => snapshot,\n                OriginalLearningProgress::Training(training) => {\n                    self.require_original_execution()?;\n                    OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(\n                        owners.as_ref(), &work,\n                    ).map_err(phase_owner_error)?;\n                    let material = OriginalCellQ24LearningStageOwnersV1::read_original_training_material(\n                        owners.as_ref(), &training,\n                    ).await.map_err(phase_owner_error)?;\n                    self.require_original_execution()?;\n                    let readback = OriginalCellQ24LearningStageOwnersV1::original_training_readback(\n                        owners.as_ref(), training.clone(),\n                    ).await.map_err(phase_owner_error)?;\n                    self.require_original_execution()?;\n                    host.notify_original(\n                        &self.context,\n                        OriginalSameActorPhaseEventV1::OriginalTraining {\n                            snapshot: Box::new(training.clone()),\n                            material: Box::new(material),\n                            readback: Box::new(readback),\n                        },\n                    )?;\n                    let OriginalSameActorPhaseCommandV1::Evaluation(inputs) =\n                        host.receive_original(&self.context).await?\n                    else {\n                        return Err(phase_refused(\n                            \"original Training requires B's independent Evaluation inputs\",\n                        ));\n                    };\n                    self.require_original_execution()?;\n                    // This phase-only owner method rechecks the exact notified cut\n                    // under the original aggregate lane, calls the real installer,\n                    // and signals Learning only after successful installation and\n                    // release of that lane. An error never becomes Retain/NoUpdate.\n                    OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation(\n                        owners.as_ref(), &training, *inputs,\n                    ).await.map_err(phase_owner_error)?;\n                    self.require_original_execution()?;\n                    decision.as_mut().await.map_err(phase_owner_error)?\n                }\n            }\n        };\n"
+        }
+      ]
+    }
+  ],
+  "confirmed_defect": {
+    "actual_handoff_source": "e947422e2ab860086abf813a8da95bfab8ac4c05",
+    "method": "OriginalQ24SuccessorHandoffV1::decision_snapshot",
+    "cause": "The original decision future owns CloseOnDrop for the real successor slot. The draft direct select dropped that future when Training won, permanently closing the slot. It was incorrect to call both losing reads harmless."
+  },
+  "correction": "Construct exactly one original decision future in a lexical scope before select, pin in Box, borrow its Pin via as_mut for select. A Training win retains the same future throughout actual B evidence acquisition/installation and awaits that same future. It is never recreated, repolled after completion or retried. The completed future is dropped at scope exit before later handoff move.",
+  "preserved": [
+    "Original decision_snapshot and CloseOnDrop implementation",
+    "Every actual owner check, B data/command, original installer and error propagation",
+    "NoUpdate skips B and cancels only the read-only Training notice",
+    "Any error/cancellation drops the preserved decision future and closes the original slot; outer common Gate cleanup remains",
+    "All Artifact/Selection/CURRENT/FinalUse/C/Outcome source outside the one block unchanged"
+  ],
+  "verification": {
+    "unique_forward_reverse": true,
+    "post_create_get_exact": true,
+    "actual_decision_call_sites_in_file": 1
+  },
+  "execution": {
+    "native": false,
+    "checker": false,
+    "tests": false,
+    "refs": false
+  }
+}
