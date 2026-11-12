@@ -388,6 +388,10 @@ impl LearningIterationCheckpointOwnerV1 {
 mod test_support;
 
 #[cfg(test)]
+#[path = "learning_iteration_bundle_data_tests.rs"]
+mod bundle_data_tests;
+
+#[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
 

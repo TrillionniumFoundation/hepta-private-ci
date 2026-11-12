@@ -31,7 +31,3 @@ pub(crate) fn decode_original_bundle_data(
     }
     Ok(bundle)
 }
-
-#[cfg(test)]
-#[path = "learning_iteration_bundle_data_tests.rs"]
-mod tests;
