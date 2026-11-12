@@ -54,16 +54,17 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def rejects(self, path, function, marker, replacement=""):
+    def rejects(self, path, function, marker, replacement="", *, after=None):
         source = (ROOT / path).read_text()
         code = self.code(source)
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        marker_start = start if after is None else source.index(after, start, end + 1) + len(after)
+        offset = source.index(marker, marker_start, end + 1)
         self.verifies(path, source)
         changed = source[:offset] + replacement + source[offset + len(marker):]
-        with self.assertRaises(PROOF.VerificationFailure):
+        with self.assertRaises(PROOF.VerificationFailure, msg=f"{path}: {function}: {marker}"):
             self.verifies(path, changed)
 
     def test_exact_cohort_capture_provider_and_original_policy_edges(self):
@@ -150,7 +151,7 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
 
     def test_actual_independent_outcomes_join_original_execution_without_completion_labels(self):
         for marker in (
-            "circuit_learning_run_id_v1(", "&owner.identity.agent_id", "&requested.episode_id",
+            "circuit_learning_run_id_v1(", "&owner.identity.agent_id",
             "decision.record_id != requested.behavior_run_id",
             "decision.run_snapshot_digest != input.ndu_snapshot_digest",
             "decision.selected_candidate_id != *policy.selected()",
@@ -168,6 +169,10 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             "decision.generator_signing_key_digest == outcome.observer_signing_key_digest",
         ):
             self.rejects(RECORDS, "fn read_episode(", marker)
+        self.rejects(
+            RECORDS, "fn read_episode(", "&requested.episode_id",
+            after="circuit_learning_run_id_v1(",
+        )
         for marker in ("outcomes.insert", "outcomes.keys()", "outcome: row.value"):
             self.rejects(RECORDS, "fn assemble(", marker)
 
