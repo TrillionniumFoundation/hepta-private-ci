@@ -33,13 +33,13 @@ RUNTIME = AGENT + "authority_host_learning_resident_runtime.rs"
 HOST = AGENT + "cell_q24_model_command_host.rs"
 EFFECT = AGENT + "cell_q24_model_command_effect.rs"
 EXPECTED = {
-    "learning_original_candidate_operation_begin": (READBACK, EVALUATION, MODEL),
-    "learning_original_candidate_operation_close": (READBACK, EVALUATION, MODEL),
+    "learning_original_candidate_operation_begin": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
+    "learning_original_candidate_operation_close": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
     "learning_original_candidate_operation_current_material": (EVALUATION,),
     "learning_original_candidate_operation_current_evaluation": (MODEL,),
     "learning_original_candidate_operation_evidence_read": (STAGES,),
     "learning_original_candidate_operation_evidence_execute": (STAGES,),
-    "learning_original_candidate_operation_evidence_consume": (STAGES,),
+    "learning_original_candidate_operation_evidence_consume": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
     "root_resident_concrete_stages_execute": (RUNTIME,),
     "root_resident_concrete_stages_evidence_consume": (AUTH,),
 }

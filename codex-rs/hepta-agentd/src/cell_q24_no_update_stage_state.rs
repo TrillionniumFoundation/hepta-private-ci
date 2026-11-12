@@ -188,6 +188,57 @@ impl Continuation {
             .clone())
     }
 
+    /// Move only the original, still unbound S/version endpoints after the
+    /// actual original Training result has established the Candidate branch.
+    /// NoUpdate clients, peer lifetimes and wire nonces are never repurposed.
+    pub(super) fn take_candidate_selection_channels(
+        &mut self,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+    ) -> Result<(HostAuthorityPeerChannel, HostAuthorityPeerChannel), Error> {
+        self.require_candidate_channel_cut(dataset, training)?;
+        if self.selector.is_some() || self.version.is_some() || self.original_selection.is_some() {
+            return Err(Error::WrongScope);
+        }
+        let selector = self.selector_initial.take().ok_or(Error::CommitUncertain)?;
+        let version = self.version_initial.take().ok_or(Error::CommitUncertain)?;
+        Ok((selector, version))
+    }
+
+    pub(super) fn take_candidate_next_use_channels(
+        &mut self,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+    ) -> Result<(HostAuthorityPeerChannel, HostAuthorityPeerChannel), Error> {
+        self.require_candidate_channel_cut(dataset, training)?;
+        if self.next_use.is_some() || self.readiness.is_some() || self.original_selection.is_some() {
+            return Err(Error::WrongScope);
+        }
+        let next_use = self.next_use_initial.take().ok_or(Error::CommitUncertain)?;
+        let readiness = self.readiness_initial.take().ok_or(Error::CommitUncertain)?;
+        Ok((next_use, readiness))
+    }
+
+    fn require_candidate_channel_cut(
+        &self,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+    ) -> Result<(), Error> {
+        if self.original_dataset.as_ref() != Some(dataset)
+            || self.original_training.as_ref() != Some(training)
+            || self.records.len() != 3
+            || self.records[2].0 != *training.receipt()
+            || self.records[2].1 != *training.attestation()
+            || !matches!(
+                training.receipt().observation,
+                codex_hepta_learning_artifacts::LearningIterationObservationV1::Training { .. }
+            )
+        {
+            return Err(Error::WrongScope);
+        }
+        Ok(())
+    }
+
     pub(super) async fn ensure_trainer(&mut self, owners: &Owners) -> Result<(), Error> {
         if self.trainer.is_none() {
             let dataset = OriginalCellQ24MaterialCommandClientV1::readback(&self.dataset)

@@ -140,9 +140,12 @@ impl OriginalCircuitModelPublicationContextV1 {
         }
         let decision = self.decision();
         self.scope().validate_snapshot(decision)?;
-        self.scope()
-            .require_verifier(self.verifier())
-            .map_err(|_| Error::Binding("same original frozen Model verifier"))?;
+        if self.verifier().trust_digest() != decision.owners.evidence_trust_digest
+            || self.verifier().objective_digest() != decision.request.envelope.objective_digest
+            || self.verifier().scope_digest() != self.material.freeze_evidence.scope_digest
+        {
+            return Err(Error::Binding("same original frozen Model verifier"));
+        }
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(decision.clone())?;
         let candidate = coordinator.candidate().ok_or(Error::Binding("original Model candidate"))?;
         let stages = [

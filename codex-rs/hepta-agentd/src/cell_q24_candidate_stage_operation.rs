@@ -16,6 +16,13 @@ use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24ModelCommandReceiptV1;
 use crate::OriginalCellQ24ModelReadCompletionV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
+use crate::OriginalCircuitModelSelectionCommandReceiptV1;
+use crate::OriginalCircuitCandidateNextUseCommandReceiptV1;
+use crate::OriginalCircuitModelVersionPublicationV1;
+use crate::OriginalCircuitCandidateLearningReadbackV1;
+
+#[path = "cell_q24_candidate_stage_suffix.rs"]
+mod suffix;
 
 #[derive(Default)]
 pub(super) struct OperationLane {
@@ -43,6 +50,10 @@ pub(crate) struct OriginalCandidateOperationEvidence<'a> {
     evaluation: OriginalCellEvaluationCommandReceiptV1,
     model: Option<OriginalCellQ24ModelCommandReceiptV1>,
     model_completion: Option<OriginalCellQ24ModelReadCompletionV1>,
+    selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>,
+    next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>,
+    publication: Option<OriginalCircuitModelVersionPublicationV1>,
+    completion_read: Option<OriginalCircuitCandidateLearningReadbackV1>,
 }
 
 impl<'a> CandidateOriginalOperation<'a> {
@@ -119,7 +130,7 @@ impl<'a> ClosedCandidateOriginalOperation<'a> {
     }
 
     pub(super) fn evaluation(self, evaluation: OriginalCellEvaluationCommandReceiptV1) -> Result<OriginalCandidateOperationEvidence<'a>, Error> {
-        let result = OriginalCandidateOperationEvidence { snapshot: evaluation.snapshot().clone(), operation: self, evaluation, model: None, model_completion: None };
+        let result = OriginalCandidateOperationEvidence { snapshot: evaluation.snapshot().clone(), operation: self, evaluation, model: None, model_completion: None, selection: None, next_use: None, publication: None, completion_read: None };
         result.authenticate_result(result.snapshot(), auth::now()?)?;
         Ok(result)
     }
@@ -132,17 +143,64 @@ impl<'a> ClosedCandidateOriginalOperation<'a> {
         let evaluation = completed.material().original_evaluation().clone();
         let result = OriginalCandidateOperationEvidence {
             snapshot: model.snapshot().clone(), operation: self, evaluation,
-            model: Some(model), model_completion: Some(completed),
+            model: Some(model), model_completion: Some(completed), selection: None, next_use: None,
+            publication: None, completion_read: None,
         };
         result.authenticate_result(result.snapshot(), auth::now()?)?;
         Ok(result)
     }
+    pub(super) fn selection(
+        self,
+        completed: OriginalCellQ24ModelReadCompletionV1,
+        selection: OriginalCircuitModelSelectionCommandReceiptV1,
+        publication: OriginalCircuitModelVersionPublicationV1,
+    ) -> Result<OriginalCandidateOperationEvidence<'a>, Error> {
+        let result = OriginalCandidateOperationEvidence {
+            snapshot: selection.snapshot().clone(),
+            evaluation: completed.material().original_evaluation().clone(),
+            model: Some(completed.model().clone()),
+            model_completion: Some(completed),
+            selection: Some(selection),
+            next_use: None,
+            publication: Some(publication),
+            completion_read: None,
+            operation: self,
+        };
+        result.authenticate_result(result.snapshot(), auth::now()?)?;
+        Ok(result)
+    }
+
+    pub(super) fn next_use(
+        self,
+        completed: OriginalCellQ24ModelReadCompletionV1,
+        selection: OriginalCircuitModelSelectionCommandReceiptV1,
+        next_use: OriginalCircuitCandidateNextUseCommandReceiptV1,
+        publication: OriginalCircuitModelVersionPublicationV1,
+        completion_read: OriginalCircuitCandidateLearningReadbackV1,
+    ) -> Result<OriginalCandidateOperationEvidence<'a>, Error> {
+        let result = OriginalCandidateOperationEvidence {
+            snapshot: next_use.snapshot().clone(),
+            evaluation: completed.material().original_evaluation().clone(),
+            model: Some(completed.model().clone()),
+            model_completion: Some(completed),
+            selection: Some(selection),
+            next_use: Some(next_use),
+            publication: Some(publication),
+            completion_read: Some(completion_read),
+            operation: self,
+        };
+        result.authenticate_result(result.snapshot(), auth::now()?)?;
+        Ok(result)
+    }
+
 }
 
 impl OriginalCandidateOperationEvidence<'_> {
     pub(crate) fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
 
     pub(crate) fn receipt(&self) -> &LearningIterationReceiptV1 {
+        if let Some(next_use) = &self.next_use { return next_use.receipt(); }
+        if let Some(selection) = &self.selection { return selection.receipt(); }
         match &self.model { Some(model) => model.receipt(), None => self.evaluation.receipt() }
     }
 
@@ -170,14 +228,20 @@ impl OriginalCandidateOperationEvidence<'_> {
             if input.material_digest() != model.material_digest() {
                 return Err(Error::CommitUncertain);
             }
-            if model.snapshot() != snapshot
+            if model.snapshot().request != snapshot.request
+                || model.snapshot().owners != snapshot.owners
+                || snapshot.receipts.get(..5) != Some(model.snapshot().receipts.as_slice())
                 || model.snapshot().receipts.len() != 5
                 || !model.snapshot().receipts.starts_with(&self.evaluation.snapshot().receipts)
                 || operation.supplied.receipts.get(4).is_some_and(|expected| expected != model.receipt())
             { return Err(Error::WrongScope); }
             operation.owners.common.material.scope.validate_snapshot(model.snapshot())?;
             OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(model, &signatures).map_err(|_| Error::WrongScope)?;
-        } else if self.model_completion.is_some() || self.evaluation.snapshot() != snapshot { return Err(Error::WrongScope); }
+            self.authenticate_original_suffix(model, &mut signatures, fresh)?;
+        } else if self.model_completion.is_some() || self.selection.is_some() || self.next_use.is_some()
+            || self.publication.is_some() || self.completion_read.is_some()
+            || self.evaluation.snapshot() != snapshot
+        { return Err(Error::WrongScope); }
         Ok(signatures)
     }
 

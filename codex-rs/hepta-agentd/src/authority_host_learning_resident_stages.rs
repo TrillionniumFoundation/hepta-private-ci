@@ -113,7 +113,9 @@ impl ResidentOriginalStageOwnersV3 {
         stage: Stage,
     ) -> Result<ResidentStageCompletion<'_>, Error> {
         if let Self::Candidate(stages) = self
-            && matches!(stage, Stage::Evaluation | Stage::Proposal)
+            && (matches!(stage, Stage::Evaluation | Stage::Proposal)
+                || matches!(stage, Stage::Selection | Stage::NextUse)
+                    && snapshot.training_no_update_v2().is_none())
         {
             let candidate = OriginalCellQ24CandidateStageOwnersV1::execute_original_evidence(
                 stages, snapshot, stage,

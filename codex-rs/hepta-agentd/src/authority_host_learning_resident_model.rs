@@ -37,14 +37,16 @@ impl ResidentOriginalModelProofV3 {
         original: &OriginalCellQ24ModelCommandReceiptV1,
         now: u64,
     ) -> Result<Self, Error> {
-        if original.snapshot() != snapshot || original.authority() != AuthorityPosture::DENY_ALL {
+        let prefix = fixed_model_prefix(profile, snapshot, signatures)?;
+        let predecessors = &signatures[..4];
+        if original.snapshot() != &prefix || original.authority() != AuthorityPosture::DENY_ALL {
             return Err(Error::WrongScope);
         }
         let (record, context) =
-            OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(original, signatures)
+            OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(original, predecessors)
                 .map_err(|_| Error::WrongScope)?;
-        require_record(profile, snapshot, record, now)?;
-        let binding = binding(profile, verifier, snapshot, signatures, context, record)?;
+        require_record(profile, &prefix, record, now)?;
+        let binding = binding(profile, verifier, &prefix, predecessors, context, record)?;
         Ok(Self {
             context,
             record: *record,
@@ -94,12 +96,13 @@ impl ResidentOriginalModelProofV3 {
         signatures: &[SignedLearningEvidenceV1],
         now: u64,
     ) -> Result<(), Error> {
-        require_record(profile, snapshot, &self.record, now)?;
+        let prefix = fixed_model_prefix(profile, snapshot, signatures)?;
+        require_record(profile, &prefix, &self.record, now)?;
         if binding(
             profile,
             verifier,
-            snapshot,
-            signatures,
+            &prefix,
+            &signatures[..4],
             self.context,
             &self.record,
         )? != self.binding
@@ -108,6 +111,53 @@ impl ResidentOriginalModelProofV3 {
         }
         Ok(())
     }
+}
+
+/// A later Selection or NextUse is separately signed and authenticated by
+/// Root. It cannot enlarge, replace, or re-sign the exact five-cut Model
+/// proof. Rebuild only that original prefix after validating the whole chain.
+fn fixed_model_prefix(
+    profile: &RootResidentLearningProfileV3,
+    snapshot: &LearningIterationSnapshotV1,
+    signatures: &[SignedLearningEvidenceV1],
+) -> Result<LearningIterationSnapshotV1, Error> {
+    profile.scope.validate_snapshot(snapshot)?;
+    let complete = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+    let stages = [
+        Stage::Experience,
+        Stage::Dataset,
+        Stage::Training,
+        Stage::Evaluation,
+        Stage::Proposal,
+        Stage::Selection,
+        Stage::NextUse,
+    ];
+    if snapshot.request != profile.initial.request
+        || snapshot.owners != profile.initial.owners
+        || !(5..=7).contains(&snapshot.receipts.len())
+        || signatures.len() + 1 != snapshot.receipts.len()
+        || snapshot.training_no_update_v2().is_some()
+        || complete.candidate().is_none()
+        || !snapshot
+            .receipts
+            .iter()
+            .zip(stages)
+            .all(|(receipt, stage)| receipt.observation.stage() == stage)
+    {
+        return Err(Error::WrongScope);
+    }
+    let mut prefix = LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?;
+    for receipt in &snapshot.receipts[..5] {
+        prefix.record(receipt.clone(), receipt.observed_unix_seconds)?;
+    }
+    profile.scope.validate_snapshot(prefix.snapshot())?;
+    if prefix.snapshot().receipts.len() != 5
+        || prefix.next_stage() != Some(Stage::Selection)
+        || prefix.candidate() != complete.candidate()
+    {
+        return Err(Error::WrongScope);
+    }
+    Ok(prefix.snapshot().clone())
 }
 
 fn require_record(

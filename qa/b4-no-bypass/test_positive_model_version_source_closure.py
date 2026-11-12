@@ -27,7 +27,7 @@ EXPECTED = {
         "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
     ],
     "learning_positive_publication_context_model": [],
-    "learning_positive_publication_context_receipt": [],
+    "learning_positive_publication_context_receipt": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"],
     "learning_positive_publication_context_authenticate": [
         "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs",
         "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
@@ -39,13 +39,7 @@ EXPECTED = {
         "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
         "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
     ],
-    "learning_positive_publication_context_material": [
-        "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
-        "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
-        "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
-        "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
-        "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"
-    ],
+    "learning_positive_publication_context_material": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs", "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs", "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"],
     "learning_positive_publication_context_version_pin": [
         "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs",
         "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
@@ -72,19 +66,17 @@ EXPECTED = {
     ],
     "learning_positive_selection_client_create": [],
     "learning_positive_selection_client_recover": [],
-    "learning_positive_selection_client_bind": [],
-    "learning_positive_selection_client_attest": [],
-    "learning_positive_selection_client_readback": [],
+    "learning_positive_selection_client_bind": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"],
+    "learning_positive_selection_client_attest": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"],
+    "learning_positive_selection_client_readback": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"],
     "learning_positive_selection_client_evidence": [],
-    "learning_positive_selection_receipt_context": [
-        "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"
-    ],
+    "learning_positive_selection_receipt_context": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"],
     "learning_positive_selection_owner_serve": [],
     "learning_positive_selection_owner_evidence": [],
-    "learning_positive_version_client_bind": [],
-    "learning_positive_version_client_recover": [],
-    "learning_positive_version_client_publish": [],
-    "learning_positive_version_client_readback": [],
+    "learning_positive_version_client_bind": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"],
+    "learning_positive_version_client_recover": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"],
+    "learning_positive_version_client_publish": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs"],
+    "learning_positive_version_client_readback": ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs"],
     "learning_positive_version_owner_create": [],
     "learning_positive_version_owner_recover": [],
     "learning_positive_version_owner_publish": [
