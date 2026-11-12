@@ -547,3 +547,6 @@ mod original_evidence;
 #[cfg(target_os = "linux")]
 #[path = "product_execution_holdout_current_tests.rs"]
 mod holdout_current;
+
+#[path = "product_paired_tests.rs"]
+mod paired_tests;

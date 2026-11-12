@@ -101,12 +101,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 &decision.decision.failed_metrics,
             )?,
             qualification: product_qualification_commitment_bytes(qualification),
-            estimand: product_estimand_commitment_bytes(
-                plan.base_estimand_digest,
-                plan.candidate_temporal_plan_digest,
-                plan.baseline_temporal_plan_digest,
-                &plan.metric_sources,
-            )?,
+            estimand: plan_estimand_commitment_bytes(plan)?,
             roles: evaluation_role_commitment_bytes(&bundle, roles)?,
             evaluator_payload: crate::evaluation_signing_payload_v2(&bundle, roles)?,
         })

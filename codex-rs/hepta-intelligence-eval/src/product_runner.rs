@@ -81,6 +81,7 @@ pub struct ProductFrozenEvaluationPlanV1 {
     pub base_estimand_digest: Digest32,
     pub candidate_temporal_plan_digest: Digest32,
     pub baseline_temporal_plan_digest: Digest32,
+    comparison: ProductComparisonModeV1,
     receipt_seal: Digest32,
 }
 
@@ -89,12 +90,7 @@ impl ProductFrozenEvaluationPlanV1 {
         if self.receipt_seal != product_plan_seal(self)? {
             return Err(ProductEvaluationError::Integrity("product plan"));
         }
-        let expected = bound_estimand_digest(
-            self.base_estimand_digest,
-            self.candidate_temporal_plan_digest,
-            self.baseline_temporal_plan_digest,
-            &self.metric_sources,
-        )?;
+        let expected = Digest32::of_bytes(&plan_estimand_commitment_bytes(self)?);
         if self.frozen_plan.estimand_digest != expected {
             return Err(ProductEvaluationError::Binding("bound estimand"));
         }
@@ -159,6 +155,7 @@ pub fn freeze_product_evaluation_plan_v1(
         base_estimand_digest,
         candidate_temporal_plan_digest: candidate_temporal.plan_digest,
         baseline_temporal_plan_digest: baseline_temporal.plan_digest,
+        comparison: ProductComparisonModeV1::SharedBehavior,
         receipt_seal: Digest32::ZERO,
     };
     receipt.receipt_seal = product_plan_seal(&receipt)?;
@@ -199,6 +196,17 @@ pub trait FinalHoldoutProviderV1 {
         &mut self,
         receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1>;
+
+    /// A separate typed release after the same original fenced consumption.
+    /// Legacy providers refuse it by default; they cannot silently convert a
+    /// shared-behavior cohort into two independently executed arms.
+    fn release_paired_after_consumption(
+        &mut self,
+        _receipt: &FinalHoldoutJournalReceiptV1,
+        _pairing: &OnPolicyPairingContractV1,
+    ) -> Result<OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1> {
+        Err(ProductProviderErrorV1::Rejected)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -243,11 +251,14 @@ pub struct ProductTemporalEvaluationReceiptV1 {
     receipt_seal: Digest32,
     // Only authenticated execution recovery sets this provenance pin.
     execution_evaluator: Option<AuthenticatedPrincipalV1>,
+    // Only validated paired execution or authenticated original decoding sets this.
+    paired_input_digest: Option<Digest32>,
 }
 
 impl ProductTemporalEvaluationReceiptV1 {
     fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         self.product_plan.validate_integrity()?;
+        paired::commitments::require_receipt_mode(&self.product_plan, self.paired_input_digest)?;
         self.candidate.validate_integrity()?;
         self.baseline.validate_integrity()?;
         let expected_metrics = derive_metric_gates(
@@ -258,8 +269,10 @@ impl ProductTemporalEvaluationReceiptV1 {
         if expected_metrics != self.metrics {
             return Err(ProductEvaluationError::Integrity("metric evidence"));
         }
-        let (estimate, support, confidence) =
-            comparison_digests(&self.candidate, &self.baseline, &self.metrics);
+        let (estimate, support, confidence) = paired::commitments::comparison(
+            &self.product_plan, self.paired_input_digest,
+            &self.candidate, &self.baseline, &self.metrics,
+        )?;
         if self.estimate_receipt_digest != estimate
             || self.support_audit_digest != support
             || self.confidence_receipt_digest != confidence
@@ -378,6 +391,11 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         baseline_plan: &TemporalEvaluationPlan,
         provider: &mut P,
     ) -> Result<ProductTemporalEvaluationReceiptV1, ProductEvaluationError> {
+        if matches!(product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_)) {
+            return self.evaluate_paired_on_policy_comparison(
+                product_plan, candidate_plan, baseline_plan, provider,
+            );
+        }
         product_plan.validate_integrity()?;
         if candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest
             || baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest
@@ -460,6 +478,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             authority: AuthorityPosture::DENY_ALL,
             receipt_seal: Digest32::ZERO,
             execution_evaluator: None,
+            paired_input_digest: None,
         };
         receipt.receipt_seal = product_evaluation_seal(&receipt)?;
         Ok(receipt)
@@ -798,7 +817,10 @@ fn execution_digest(
     support_digest: Digest32,
     confidence_digest: Digest32,
 ) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-execution.v1".to_vec();
+    let mut bytes = match plan.comparison_mode() {
+        ProductComparisonModeV1::SharedBehavior => b"hepta.intelligence-eval.product-execution.v1".to_vec(),
+        ProductComparisonModeV1::PairedOnPolicy(_) => b"hepta.intelligence-eval.paired-on-policy-product-execution.v1".to_vec(),
+    };
     for digest in [
         holdout.record_digest,
         holdout.use_receipt.use_digest,
@@ -823,7 +845,17 @@ fn execution_digest(
 fn product_evaluation_seal(
     receipt: &ProductTemporalEvaluationReceiptV1,
 ) -> Result<Digest32, ProductEvaluationError> {
-    let mut bytes = b"hepta.intelligence-eval.product-evaluation-receipt.v1".to_vec();
+    paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;
+    let mut bytes = match receipt.product_plan.comparison_mode() {
+        ProductComparisonModeV1::SharedBehavior => b"hepta.intelligence-eval.product-evaluation-receipt.v1".to_vec(),
+        ProductComparisonModeV1::PairedOnPolicy(_) => {
+            let mut bytes = b"hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1".to_vec();
+            bytes.extend_from_slice(
+                receipt.paired_input_digest.ok_or(ProductEvaluationError::Integrity("paired input"))?.as_array(),
+            );
+            bytes
+        }
+    };
     for digest in [
         receipt.holdout.record_digest,
         receipt.product_plan.frozen_plan.plan_digest,
@@ -854,6 +886,9 @@ fn product_plan_seal(
 fn product_plan_commitment_bytes(
     plan: &ProductFrozenEvaluationPlanV1,
 ) -> Result<Vec<u8>, ProductEvaluationError> {
+    if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {
+        return paired::commitments::plan(plan, pairing);
+    }
     let mut bytes = b"hepta.intelligence-eval.product-frozen-plan.v1".to_vec();
     for digest in [
         plan.frozen_plan.plan_digest,
@@ -899,6 +934,20 @@ fn product_plan_commitment_bytes(
         bytes.push(source.source.tag());
     }
     Ok(bytes)
+}
+
+fn plan_estimand_commitment_bytes(
+    plan: &ProductFrozenEvaluationPlanV1,
+) -> Result<Vec<u8>, ProductEvaluationError> {
+    match plan.comparison_mode() {
+        ProductComparisonModeV1::SharedBehavior => product_estimand_commitment_bytes(
+            plan.base_estimand_digest,
+            plan.candidate_temporal_plan_digest,
+            plan.baseline_temporal_plan_digest,
+            &plan.metric_sources,
+        ),
+        ProductComparisonModeV1::PairedOnPolicy(_) => paired::commitments::estimand(plan),
+    }
 }
 
 fn bound_estimand_digest(
@@ -1039,3 +1088,14 @@ mod execution_codec;
 #[path = "product_material_commitments.rs"]
 mod material_commitments;
 pub use material_commitments::OriginalProductQualificationCommitmentsV1;
+
+#[path = "product_paired.rs"]
+mod paired;
+pub use paired::OnPolicyArmBindingV1;
+pub use paired::OnPolicyArmProvenanceV1;
+pub use paired::OnPolicyEvaluationArmInputsV1;
+pub use paired::OnPolicyPairContractV1;
+pub use paired::OnPolicyPairingContractV1;
+pub use paired::OnPolicyTemporalComparisonInputsV1;
+pub use paired::ProductComparisonModeV1;
+pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;
