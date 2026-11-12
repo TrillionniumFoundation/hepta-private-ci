@@ -22,6 +22,8 @@ use crate::OriginalCellQ24TrainingReceiptOwnerV1;
 use crate::OriginalCellQ24TrainingSigningConfigV1;
 use crate::OriginalCellQ24TrainingStageV1;
 
+#[path = "cell_q24_owner_initialization_tests.rs"]
+mod initialization;
 #[path = "cell_q24_training_stage_operation_tests.rs"]
 mod scoped_operation;
 

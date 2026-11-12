@@ -108,13 +108,16 @@ async fn original_source_receipts_reopen_exact_bytes_and_dataset_uses_original_e
     let (mut experience, mut dataset_owner) =
         source_files(e_root.path(), d_root.path(), &prepared, &dataset)?
             .create(Arc::clone(&prepared), verifier.clone())?;
-    experience.require_prepared(&prepared, Stage::Experience)?;
-    dataset_owner.require_prepared(&prepared, Stage::Dataset)?;
-    assert!(
-        experience
-            .require_prepared(&prepared, Stage::Dataset)
-            .is_err()
-    );
+    prepared.with_original_prepared_operation(|read| -> anyhow::Result<()> {
+        experience.require_prepared_in_operation(&prepared, Stage::Experience, read)?;
+        dataset_owner.require_prepared_in_operation(&prepared, Stage::Dataset, read)?;
+        assert!(
+            experience
+                .require_prepared_in_operation(&prepared, Stage::Dataset, read)
+                .is_err()
+        );
+        Ok(())
+    })??;
     let e = experience.attest_experience()?;
     let d = dataset_owner.attest_dataset(&mut experience)?;
     assert_eq!(e.attestation().role, LearningEvidenceRoleV1::Observer);
@@ -318,8 +321,10 @@ async fn original_source_rejects_wrong_key_role_and_foreign_predecessor_without_
         Stage::Experience,
     )?;
     assert!(
-        experience
-            .require_prepared(&prepared, Stage::Experience)
+        prepared
+            .with_original_prepared_operation(|read| {
+                experience.require_prepared_in_operation(&prepared, Stage::Experience, read)
+            })?
             .is_err()
     );
     experience.attest_experience()?;
