@@ -14,6 +14,11 @@ mod projection;
 pub(crate) use projection::RootQ24ModelProjectionDataV1;
 #[cfg(target_os = "linux")]
 pub(crate) use projection::project_original_root_model;
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_root_admission.rs"]
+mod root;
+#[cfg(target_os = "linux")]
+pub(super) use root::validate_original_root_material;
 
 pub(super) fn owner_binding<T: AnchorWitnessStore>(
     trainer: &mut CellQ24TrainingOwnerV1<T>,

@@ -43,6 +43,11 @@ use admission::Admission;
 pub(crate) use admission::RootQ24ModelProjectionDataV1;
 #[cfg(target_os = "linux")]
 pub(crate) use admission::project_original_root_model;
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_root_owner.rs"]
+mod root;
+#[cfg(target_os = "linux")]
+pub(crate) use root::original_root_model_key;
 
 /// Derive the factory's one-time material from the original owners, including
 /// full manifests and qualified Evaluation. This is data, never a Root permit.
@@ -82,6 +87,8 @@ pub enum CellQ24ModelProposalErrorV1 {
     CommitUncertain,
     #[error("training: {0}")]
     Training(#[from] CellQ24TrainingOwnerErrorV1),
+    #[error("original Training source: {0}")]
+    OriginalSource(#[source] crate::LearningIterationRuntimeErrorV1),
     #[error("evaluation: {0}")]
     Evaluation(#[from] CellLearningEvaluationErrorV1),
     #[error("learning iteration: {0}")]
