@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.run-start.reconstructed-checkpoint.v1",
+  "head": "761aaf49176c1fae49c074c380d5c653134e162c",
+  "tree": "57e587665e9c71064ac27913ddfca03872cc51e3",
+  "bundle": {
+    "path": "qa/evidence/run-start-live-761aaf49.bundle",
+    "bytes": 59935,
+    "sha256": "f8388d23a7c385fd00f943851daa2361b549ac8208d5e76a7107113b2f9f15e1",
+    "prerequisite": "82c895ceb49732ccd7097cde39d1c4da232e8507"
+  },
+  "reconstruction": {
+    "exact_preimage": "1b279f1cda6cf4816d56751fa29ccf91de7ed0e2",
+    "change": "Three QA fixture postimages were reconstructed as new source. All Rust and CALLERS remain the exact bundled 1b source.",
+    "lost_later_source": "68e3c0ce0b6edd6978945f4f3b2f80955b75bed4",
+    "does_not_inherit_later_qualification": true
+  },
+  "development_checks": {
+    "source_mutation_tests": 15,
+    "failures": 0,
+    "native_executed": false,
+    "fmt_command": [
+      "just",
+      "fmt",
+      "--base",
+      "1b279f1cda6cf4816d56751fa29ccf91de7ed0e2"
+    ],
+    "fmt_exit_code": 0,
+    "fmt_output": "No changed files need formatting. Use --all for a full repository check.",
+    "diff_check_exit_code": 0
+  },
+  "pending": [
+    "frozen full source QA",
+    "focused actual caller scan",
+    "native Rust and actual Root subprocess tests",
+    "full ordinary A to learning to C to cold recovery"
+  ],
+  "artifact_only_hosting_branch": true
+}
