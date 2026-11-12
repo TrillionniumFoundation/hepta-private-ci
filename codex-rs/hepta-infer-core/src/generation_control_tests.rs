@@ -421,3 +421,118 @@ fn real_file_capacity_preserves_cancel_dispatch_and_maximal_result_space() -> Re
     assert_eq!(reopened.generation_record(&request)?, Some(&settled));
     Ok(())
 }
+
+#[test]
+fn generation_transitions_preserve_unrelated_result_buffers() -> Result<(), Error> {
+    let fixture = Fixture::new()?;
+    let mut control = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
+    let mut history = binding("retained-history");
+    history.result_limit_bytes = 65_536;
+    let (_, mut history_token) =
+        control.admit_generation(/*now_micros*/ 10, history.clone(), PAYLOAD)?;
+    control.dispatch_generation(/*now_micros*/ 11, &mut history_token)?;
+    let historical = control.settle_generation(&history, vec![7; 65_536])?;
+    let retained = control
+        .generation_record(&history)?
+        .expect("historical record")
+        .result
+        .as_ref()
+        .expect("historical result")
+        .bytes
+        .as_ptr();
+    let assert_history = |owner: &DurableInferenceControl| {
+        let record = owner
+            .generation_record(&history)
+            .expect("read history")
+            .expect("historical record");
+        assert_eq!(record, &historical);
+        // A copied replacement buffer is not reuse of the retained allocation.
+        // No pointer is dereferenced after a mutation.
+        assert_eq!(
+            record
+                .result
+                .as_ref()
+                .expect("historical result")
+                .bytes
+                .as_ptr(),
+            retained
+        );
+    };
+
+    let request = binding("active");
+    let (_, mut token) =
+        control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
+    assert_history(&control);
+    let other = binding("abort");
+    let (_, mut abort_token) =
+        control.admit_generation(/*now_micros*/ 10, other.clone(), PAYLOAD)?;
+    assert_history(&control);
+    control.dispatch_generation(/*now_micros*/ 11, &mut token)?;
+    assert_history(&control);
+    control.cancel_generation(&request)?;
+    assert_history(&control);
+    control.settle_generation(&request, b"original late result".to_vec())?;
+    assert_history(&control);
+    control.abort_generation(&mut abort_token, b"proven local abort".to_vec())?;
+    assert_history(&control);
+    assert!(!control.generation_has_unresolved()?);
+    let expected = control.generation.records.clone();
+    let before = locked_bytes(&control)?;
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
+    assert_eq!(reopened.generation.records, expected);
+    for binding in [history, request, other] {
+        let (record, token) =
+            reopened.admit_generation(/*now_micros*/ 200, binding.clone(), PAYLOAD)?;
+        assert_eq!(Some(&record), expected.get(&binding.request_id));
+        assert!(token.is_none());
+    }
+    assert_eq!(locked_bytes(&reopened)?, before);
+    Ok(())
+}
+
+#[test]
+fn failed_generation_append_fences_without_installing_staged_state() -> Result<(), Error> {
+    for fail_settlement in [false, true] {
+        let fixture = Fixture::new()?;
+        let mut control = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
+        let request = binding("write-failure");
+        let (_, mut token) =
+            control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
+        if fail_settlement {
+            control.dispatch_generation(/*now_micros*/ 11, &mut token)?;
+        }
+        let expected = control.generation.records.clone();
+        let before = locked_bytes(&control)?;
+        // Retain the actual locked writer while injecting a real read-only
+        // descriptor write error. This does not emulate power loss or fsync.
+        let original_file = std::mem::replace(&mut control.file, fs::File::open(fixture.path())?);
+        let failed = if fail_settlement {
+            control.settle_generation(&request, b"must not publish".to_vec())
+        } else {
+            control.dispatch_generation(/*now_micros*/ 11, &mut token)
+        };
+        assert!(matches!(failed, Err(Error::Io(_))));
+        assert!(control.poisoned);
+        assert!(token.is_none());
+        assert_eq!(control.generation.records, expected);
+        assert_eq!(
+            control.generation_record(&request),
+            Err(Error::WriterUnavailable)
+        );
+        control.file = original_file;
+        assert_eq!(locked_bytes(&control)?, before);
+        drop(control);
+
+        let mut reopened = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
+        assert_eq!(reopened.generation.records, expected);
+        let (record, token) =
+            reopened.admit_generation(/*now_micros*/ 200, request, PAYLOAD)?;
+        assert_eq!(Some(&record), expected.get("write-failure"));
+        assert!(token.is_none());
+        assert!(reopened.generation_has_unresolved()?);
+        assert_eq!(locked_bytes(&reopened)?, before);
+    }
+    Ok(())
+}
