@@ -102,6 +102,12 @@ pub(super) fn handoff_fresh_filesystem(
         Err(error) => return Err(error),
         Ok(_) => return Err(refused("fresh consumer parent already exists")),
     }
+    let prompt_runtime = identity.layout.run_root().join("prompt-runtime");
+    match std::fs::symlink_metadata(&prompt_runtime) {
+        Err(error) if error.kind() == io::ErrorKind::NotFound => {}
+        Err(error) => return Err(error),
+        Ok(_) => return Err(refused("fresh prompt runtime already exists")),
+    }
     let mut data = Vec::new();
     for path in [
         identity.layout.home_root(),
@@ -121,6 +127,13 @@ pub(super) fn handoff_fresh_filesystem(
         .mode(0o700)
         .create(&consumer_root)?;
     let consumers = pin_root_node(&consumer_root, /*directory*/ true)?;
+    // The daemon may write its own prompt state, while Registry generations
+    // and the original writer lock stay under the Root-owned run directory.
+    // Only fresh handoff creates this fixed child; recovery reopens it as-is.
+    std::fs::DirBuilder::new()
+        .mode(0o700)
+        .create(&prompt_runtime)?;
+    let prompt_runtime = pin_root_node(&prompt_runtime, /*directory*/ true)?;
     for (file, directory) in &data {
         set_custody(file, uid, gid, if *directory { 0o700 } else { 0o600 })?;
     }
@@ -128,6 +141,7 @@ pub(super) fn handoff_fresh_filesystem(
         set_custody(&workspace, uid, gid, /*mode*/ 0o700)?;
     }
     set_custody(&consumers, uid, gid, /*mode*/ 0o700)?;
+    set_custody(&prompt_runtime, uid, gid, /*mode*/ 0o700)?;
     for file in &readable {
         set_custody(file, /*uid*/ 0, gid, /*mode*/ 0o640)?;
     }
