@@ -328,6 +328,8 @@ class OriginalObserverCoverageTests(unittest.TestCase):
                 "codex-hepta-learning-artifacts",
                 "-p",
                 "codex-hepta-intelligence-eval",
+                "-p",
+                "codex-hepta-neuron",
             ],
         )
         ordinary = [
@@ -403,12 +405,13 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         )
         return namespace["postimages"], records, original, saved
 
-    def test_actual_workflow_retains_all_four_maintained_owner_postimages(self):
+    def test_actual_workflow_retains_all_five_maintained_owner_postimages(self):
         paths = (
             "codex-rs/hepta-agentd/src/owner.rs",
             "codex-rs/hepta-learning-ledger/src/witness.rs",
             "codex-rs/hepta-learning-artifacts/src/owner.rs",
             "codex-rs/hepta-intelligence-eval/src/owner.rs",
+            "codex-rs/hepta-neuron/src/witness.rs",
         )
         with tempfile.TemporaryDirectory() as temporary:
             postimages, records, original, saved = self.maintenance_driver(
@@ -436,7 +439,8 @@ class OriginalObserverCoverageTests(unittest.TestCase):
 
     def test_actual_workflow_still_refuses_maintenance_outside_exact_owner_scope(self):
         for path in (
-            "codex-rs/hepta-neuron/src/owner.rs",
+            "codex-rs/hepta-neuron-foreign/src/witness.rs",
+            "codex-rs/hepta-neuron/Cargo.toml",
             "codex-rs/hepta-agentd-foreign/src/owner.rs",
             "codex-rs/hepta-learning-ledger-foreign/src/witness.rs",
             "codex-rs/hepta-learning-ledger/Cargo.toml",

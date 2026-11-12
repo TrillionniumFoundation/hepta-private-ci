@@ -54,6 +54,8 @@ mod human_text;
 mod logind;
 #[path = "authority_host_notes_successor.rs"]
 mod notes_successor;
+#[path = "authority_host_learning_resident.rs"]
+pub(crate) mod resident;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -78,6 +80,8 @@ pub struct HostAuthorityService {
     // The exact Registry object opened by the original Root factory. Its Arc
     // shares the existing lock/owner; Notes registration must never reopen it.
     root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
+    // Same original protected Root directory, never inferred from a profile.
+    resident_store_root: Option<Arc<codex_hepta_contracts::RootAuthorityDirectory>>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
     human_text: Option<(HostAuthorityTextUiRegistration, OwnedFd)>,
@@ -101,6 +105,7 @@ impl HostAuthorityService {
             notes: None,
             calculator: None,
             root_registry: None,
+            resident_store_root: None,
             checkpoint: None,
             consumers: None,
             human_text: None,
@@ -146,6 +151,16 @@ impl HostAuthorityService {
         registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
     ) -> Self {
         self.root_registry = Some(registry);
+        self
+    }
+
+    /// Only the original Root runtime factory transfers this exact opened
+    /// directory. Keeping it does not register or authorize resident work.
+    pub(crate) fn retain_original_resident_root(
+        mut self,
+        directory: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+    ) -> Self {
+        self.resident_store_root = Some(directory);
         self
     }
 

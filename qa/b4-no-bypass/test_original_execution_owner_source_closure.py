@@ -213,6 +213,23 @@ class OriginalExecutionOwnerSourceClosureTests(unittest.TestCase):
 
     def test_file_witness_current_checks_full_history_cursor_and_sticky_poison(self):
         self.reject_witness_guard_removals({"fn current("})
+        # Both original fence reads remain required. Moving the whole read
+        # behind a condition preserves their text/order but must fail the
+        # unique top-level anchors of this exact original function.
+        source = (ROOT / WITNESS).read_text()
+        start = source.index("fn current(")
+        body_start = source.index("{", start) + 1
+        body_end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
+        self.assertIsNotNone(body_end)
+        self.verify_changed(
+            WITNESS,
+            lambda text: (
+                text[:body_start] + "\n        if self.records != 0 {\n"
+                + text[body_start:body_end]
+                + "\n        } else { Err(WitnessStoreError::Poisoned) }\n"
+                + text[body_end:]
+            ),
+        )
 
     def test_file_witness_open_and_cas_preserve_bounds_lock_and_physical_effect_order(self):
         self.reject_witness_guard_removals({"fn acquire(", "fn open(", "fn compare_and_swap("})
