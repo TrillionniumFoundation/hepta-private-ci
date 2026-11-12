@@ -1,4 +1,67 @@
 {
+  "earlier_readback": {
+    "jobs": [
+      {
+        "conclusion": "success",
+        "id": 130884857137,
+        "passed_non_skipped": 176,
+        "reported_ran_tests": 182,
+        "skipped": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 130884857440,
+        "passed_non_skipped": 176,
+        "reported_ran_tests": 182,
+        "skipped": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "id": 130884857466,
+        "passed_non_skipped": null,
+        "reported_ran_tests": null,
+        "skipped": null,
+        "status": "queued"
+      }
+    ],
+    "observed_at_utc": "2026-11-12T00:40:34Z",
+    "workflow_run_readback": [
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994167,
+        "name": "v8-canary",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994490,
+        "name": "blocking-ci",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994285,
+        "name": "Hepta architecture convergence",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994207,
+        "name": "Hepta PRED-1 CPU checks",
+        "status": "queued"
+      }
+    ]
+  },
   "jobs": [
     {
       "completed_at": null,
@@ -81,21 +144,41 @@
     },
     {
       "completed_at": null,
-      "conclusion": null,
+      "conclusion": "success",
+      "decoded_content_roundtrip_verified": true,
       "html_url": null,
       "id": 130884857466,
-      "log_file": null,
+      "log_bytes": 62486,
+      "log_file": "hosted-130884857466.log",
+      "log_sha256": "4e0f5a61f6b4113cbd0b1ba6d29bfeb5338f3eb1f7fd4afaed4291878e266b15",
       "name": "PRED-1 (ubuntu-latest)",
-      "note": "Queued at readback; no test result inferred.",
-      "passed_non_skipped": null,
-      "reported_ran_tests": null,
-      "skipped": null,
+      "passed_non_skipped": 182,
+      "reported_ran_tests": 182,
+      "skip_lines": [],
+      "skip_reason": null,
+      "skipped": 0,
+      "source_commit_in_log": true,
+      "source_identity_lines": [
+        "2026-11-12T00:45:59.3802512Z   ref: 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:45:59.8371004Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:46:05.7116224Z  * branch            10629bab4d5f948854e7c59fed331213956fb974 -> FETCH_HEAD",
+        "2026-11-12T00:46:05.7124303Z [command]/usr/bin/git rev-parse --verify --quiet 10629bab4d5f948854e7c59fed331213956fb974^{object}",
+        "2026-11-12T00:46:05.7153741Z 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:46:05.7260691Z [command]/usr/bin/git checkout --progress --force 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:46:06.6187585Z Note: switching to '10629bab4d5f948854e7c59fed331213956fb974'.",
+        "2026-11-12T00:46:06.6286261Z 10629bab4d5f948854e7c59fed331213956fb974"
+      ],
       "started_at": null,
-      "status": "queued"
+      "status": "completed",
+      "test_summary_lines": [
+        "2026-11-12T00:46:23.7700850Z Ran 182 tests in 11.141s",
+        "2026-11-12T00:46:23.7701174Z OK"
+      ]
     }
   ],
   "log_representation": "exact UTF-8 encoding of decoded log content returned by GitHub connector",
-  "observed_at_utc": "2026-11-12T00:40:34Z",
+  "observed_at_utc": "2026-11-12T00:47:25Z",
+  "pred_workflow_conclusion": "success",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "run_id": 43127994207,
   "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127994207",
@@ -103,14 +186,6 @@
   "scope": "PRED targeted CPU workflow; no repository-wide green assertion",
   "source_commit": "10629bab4d5f948854e7c59fed331213956fb974",
   "workflow_run_readback": [
-    {
-      "conclusion": null,
-      "head_sha": null,
-      "html_url": null,
-      "id": 43127994167,
-      "name": "v8-canary",
-      "status": "queued"
-    },
     {
       "conclusion": null,
       "head_sha": null,
@@ -128,12 +203,20 @@
       "status": "queued"
     },
     {
-      "conclusion": null,
+      "conclusion": "success",
+      "head_sha": null,
+      "html_url": null,
+      "id": 43127994167,
+      "name": "v8-canary",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
       "head_sha": null,
       "html_url": null,
       "id": 43127994207,
       "name": "Hepta PRED-1 CPU checks",
-      "status": "queued"
+      "status": "completed"
     }
   ]
 }

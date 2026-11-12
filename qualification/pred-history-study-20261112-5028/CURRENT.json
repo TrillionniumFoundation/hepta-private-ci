@@ -15,12 +15,15 @@
       "skipped": 6,
       "status": "success"
     },
-    "observed_at_utc": "2026-11-12T00:40:34Z",
+    "observed_at_utc": "2026-11-12T00:47:25Z",
+    "pred_workflow_conclusion": "success",
     "repository_wide_green_asserted": false,
     "run_id": 43127994207,
     "ubuntu": {
-      "status": "queued",
-      "test_result": null
+      "passed_non_skipped": 182,
+      "reported_ran_tests": 182,
+      "skipped": 0,
+      "status": "success"
     },
     "windows": {
       "passed_non_skipped": 176,
@@ -54,6 +57,29 @@
   "new_policy_real_task_comparisons": 0,
   "new_python_files": 8,
   "new_tests": 23,
+  "owner_host_list_recheck": {
+    "configured_hosts": 7,
+    "details": "OWNER_HOST_RECHECK.json",
+    "establishes_host_health_or_owner_data": false,
+    "observed_after_result_utc": "2026-11-12T00:45:24Z",
+    "status": "success"
+  },
+  "owner_source_recovery": {
+    "archive": "owner-source-recovery.tar.xz",
+    "confirmed_exited_zero": 2,
+    "current_connection_globally_unavailable_asserted": false,
+    "details": "OWNER_SOURCE_RECOVERY.json",
+    "effective_config": "success",
+    "host_list": "success",
+    "independent_effect_observer_located": false,
+    "new_readonly_observation_start_requests": 3,
+    "new_unknown_host": "ai395",
+    "new_unknown_without_session_id": 1,
+    "old_pocket4_unknown_reconciled": false,
+    "owner_database_located": false,
+    "pocket4_authenticated_ssh_health": "success",
+    "source_absence_established": false
+  },
   "physical_cost_complete": false,
   "prediction_deployed": false,
   "production_activation": false,

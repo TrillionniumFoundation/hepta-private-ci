@@ -76,7 +76,9 @@ unsupported action、完整成本账本缺项及 full-wall 缺失计数，并按
 前三个阶段的三平台 PRED 工作流均成功；摘要见 `HOSTED_STAGES.json`，原始日志见 `hosted-stages.tar.xz`。
 macOS/Windows 的 `Ran N` 包含 6 项 `Linux research execution wrapper` 跳过，不能表述为 N 项实际执行通过。
 最终源码对应 [Actions run 43127994207](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127994207)。
-截至 2026-11-12 00:40:34 UTC，Windows/macOS 均成功：182 项中实际执行通过 176 项、跳过 6 项；Ubuntu 仍排队，没有推断测试结论。详见 `HOSTED_CI.json` 的原始回读与日志摘要。
+截至 2026-11-12 00:47:25 UTC，最终三平台 PRED 工作流均已成功：Ubuntu 182 项通过、0 跳过；
+Windows/macOS 的 182 项中各实际执行通过 176 项、跳过 6 项。
+早先 Ubuntu 排队状态与后续完成状态分别保留；详见 `HOSTED_CI.json` 的原始回读与日志摘要。
 这不表示整个仓库所有 CI 都通过。
 
 当前环境缺少 `just`；`just fmt` 返回 command not found，离线 Ruff 也不在缓存中。
@@ -99,9 +101,30 @@ executor 中断造成的早期测试 UNKNOWN 与后续完整验证也分别记�
 
 ## 三、仍未闭合的真实数据入口
 
-本轮实际调用 `h.host_list` 和 `h.effective_config` 均返回 `MCP -32603: MCP request timed out`。
-尚未取得当前 owner 数据库、真实 host clock/arrival sequencer 和独立业务 effect observer。
-这不证明所有机器离线或数据库不存在；详见 `OWNER_SOURCE_OBSERVATION.json`。
+本轮最初调用 `h.host_list` 和 `h.effective_config` 均返回 `MCP -32603: MCP request timed out`，
+历史原件保留在 `OWNER_SOURCE_OBSERVATION.json`。环境恢复后，`h.host_list({})` 于
+2026-11-12 00:45:08 至 00:45:24 UTC 成功返回七个配置主机，原件见 `OWNER_HOST_RECHECK.json`。
+这解除清单入口持续超时的判断；配置清单不能证明 SSH 健康、owner 数据库或独立 effect observer 可用。
+后续有界检查已经收尾：`h.effective_config` 成功，pocket4 的认证 SSH 健康挑战成功；
+当前准确阻塞是没有定位真实 TaskFlow owner、其 arrival sequencer 和独立业务 effect observer。
+
+三次独立的新只读观察按原身份分别记账：
+
+| 主机与范围 | 完整终态 | 来源结果 |
+| --- | --- | --- |
+| pocket4 当前同 UID 的 153 个进程 | exited/0；799 bytes 完整输出 | 0 个 agentd 候选；未截断、0 错误 |
+| desktop 当前同 UID 的 277 个进程 | exited/0；873 bytes 完整输出 | 0 个 agentd 候选；仅 `hepta-paper-rus` 名称匹配，未当成 owner |
+| ai395 新当前观察 | 启动返回 MCP 超时，无 session ID | 底层 UNKNOWN；没有重试或推断候选为 0 |
+
+x230 名称元数据分页到达末页（252 条），无目标名称匹配；其它别名的查询保持有界并保留未完成分页。
+mac 返回了 Hepta runtime 和 tunnel 进程名称，也没有被升级为 TaskFlow owner 证据。
+这些非原子、按当前名称/UID 检查的结果不证明其他 UID、重命名进程、其他时刻或磁盘上不存在库。
+
+新 ai395 UNKNOWN 的幂等键为 `pred-owner-current-agentd-502873993f89-ai395-v1`，与历史 pocket4 UNKNOWN 分开。
+本轮没有取得真实 owner 数据、原生到达序列或独立效果标签，真实策略比较仍为 0。
+完整摘要见 `OWNER_SOURCE_RECOVERY.json`；`owner-source-recovery.tar.xz` 保留 16 个经过读回核验的成员。
+其中探查源码和两份 stdout 保留原字节；元数据 JSON 明确去除不必要的 PTY archive 路径，
+将绝对进程名称路径缩成 basename，变换计数及原文件摘要见 `OWNER_RECOVERY_ARCHIVE.json`。
 
 历史 pocket4 请求 `pred-owner-audit-9e3156-service-source-pocket4-01` 原件仍是没有 session ID 的 UNKNOWN。
 本轮核对了其原身份，没有用新幂等键重放，也没有宣称完成 live reconciliation。
@@ -111,6 +134,9 @@ executor 中断造成的早期测试 UNKNOWN 与后续完整验证也分别记�
 owner succeeded/failed 只结算 owner 契约，不能直接生成业务成功标签。
 
 ## 四、下一次真实验收的入口与判据
+
+真实库的只读预检、实际 agentd 配置、host/boot 时钟、arrival cursor 与独立效果字段详见
+[真实 owner 接入说明](REAL_OWNER_RUNBOOK.zh-CN.md)。它是接口说明，不代表已经执行真实采集或实验。
 
 命令：
 
