@@ -39,6 +39,8 @@ use crate::root_historical_task_read_protocol::WIRE_BOUND;
 mod learning_trust;
 #[path = "authority_host_post_a_files.rs"]
 mod post_a_files;
+#[path = "authority_host_post_a_freeze.rs"]
+mod post_a_freeze;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustResponseV1;
 use crate::root_historical_learning_trust_data::TRUST_PURPOSE;
 use learning_trust::RootHistoricalLearningTrustV1;
