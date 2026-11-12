@@ -1,8 +1,8 @@
 {
   "schema": "hepta.utility-evidence-index.v2",
-  "created_utc": "2026-11-12 08:37:08 UTC",
+  "created_utc": "2026-11-12 08:46:40 UTC",
   "production_source": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
-  "evidence_parent": "1af4b263e2fda2fd4daf713dd30e4638f96a965f",
+  "evidence_parent": "d10830bb683fc1a28780f59a394f8b8d5164ed46",
   "files": [
     {
       "path": "SOURCE_AUDIT.md",
@@ -31,10 +31,6 @@
     {
       "path": "native/agentd-6d-maintenance.patch",
       "git_blob": "9d91cc3d0ee72cf655aac45fe1f165c48fb3d907"
-    },
-    {
-      "path": "README.md",
-      "git_blob": "b00137875fb9a557079b47f847b808189494cd90"
     },
     {
       "path": "native/ERRORS_INDEX.json",
@@ -111,6 +107,22 @@
     {
       "path": "native/ARCHIVE_INTEGRITY.json",
       "git_blob": "8058a295e3422a2323da0de6f1efeb3202e88a2b"
+    },
+    {
+      "path": "windows/19aa-workflow-job-decoded.log",
+      "git_blob": "b05a53dcacfe11d9a3f05c709248af1f164ea765"
+    },
+    {
+      "path": "windows/19aa-observation.json",
+      "git_blob": "708b53269b50e4514e58b9a6137ca1012eb4eac0"
+    },
+    {
+      "path": "drivers/native-exact-driver-3c318e8d.py",
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    {
+      "path": "README.md",
+      "git_blob": "34e047e4678cffe6ea653438a5b65a53d46ab5f7"
     }
   ],
   "original_local_packages_restored": false,
@@ -118,5 +130,6 @@
   "original_6d_maintenance_status": "failed",
   "conditional_19aa_behavior_tests_started": false,
   "preparation_tree": "74c4313c45a53e3573ff23960482c1e4fd47688d",
-  "preparation_qualification": "Unpublished dirty candidate; no behavior execution claimed"
+  "preparation_qualification": "Unpublished dirty candidate; no behavior execution claimed",
+  "windows19aa_status": "failed at compile; selected LEARN behavior cases did not run"
 }
