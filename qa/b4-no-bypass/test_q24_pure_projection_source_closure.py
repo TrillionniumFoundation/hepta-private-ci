@@ -21,7 +21,7 @@ class PureProjectionSourceTests(unittest.TestCase):
 
     def test_only_actual_materializer_calls_the_private_data_kernel(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"], [MATERIALIZER, AGENT + "authority_host_post_a_derive.rs"])
+        self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"], [AGENT + 'cell_q24_dataset_historical_ledger.rs', MATERIALIZER, AGENT + 'authority_host_post_a_derive.rs'])
 
     def test_kernel_keeps_complete_frozen_records_and_sequence(self):
         self.check_markers(PURE, "fn project_original_q24_dataset_v1(", (
@@ -59,9 +59,9 @@ class PureProjectionSourceTests(unittest.TestCase):
 
     def test_actual_materializer_retains_both_owner_and_evaluator_postchecks(self):
         for occurrence in (0, 1):
-            self.reject_removal(MATERIALIZER, "fn materialize(", "task.require_current()?", occurrence)
-            self.reject_removal(MATERIALIZER, "fn materialize(", "ledger.verifier().verify(", occurrence)
-        self.check_markers(MATERIALIZER, "fn materialize(", (
+            self.reject_removal(MATERIALIZER, "fn materialize_live(", "task.require_current()?", occurrence)
+            self.reject_removal(MATERIALIZER, "fn materialize_live(", "ledger.verifier().verify(", occurrence)
+        self.check_markers(MATERIALIZER, "fn materialize_live(", (
             "project_original_q24_dataset_v1(", "ledger.witness_frontier()? != frontier",
             "ledger.snapshot()? != current", "!= selected"))
         self.reject_removal(MATERIALIZER, "fn from_original_dataset(", "batch.source = Some(source)")
