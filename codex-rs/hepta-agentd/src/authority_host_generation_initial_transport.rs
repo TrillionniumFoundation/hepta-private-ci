@@ -30,6 +30,7 @@ pub(crate) struct Request {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Command {
+    ReadLearningTrust {},
     CaptureSource {},
     CaptureAck {},
     Observe,
@@ -66,6 +67,7 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner: OwnedFd,
         source_capability: Option<&Mutex<Option<crate::RootHistoricalSourceCaptureCapabilityV1>>>,
+        session_end: std::time::Instant,
     ) -> io::Result<()> {
         let mut sequence = 1_u64;
         let pin = owner.try_clone()?;
@@ -79,6 +81,8 @@ impl HostAuthorityService {
             &pin,
             source_capability,
         );
+        let learning_trust =
+            OriginalLearningTrustExchange::new(self, slot, config, registration, &pin, session_end);
         let result = (|| {
             while channel
                 .exchange(|bytes| {
@@ -87,6 +91,10 @@ impl HostAuthorityService {
                     if source_capture.handles(&request) {
                         return source_capture
                             .exchange(&request, &mut sequence)
+                            .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable);
+                    }
+                    if matches!(&request.command, Command::ReadLearningTrust {}) {
+                        return learning_trust.exchange(&request, &mut sequence)
                             .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable);
                     }
                     let mut encoded_response = None;
@@ -130,7 +138,7 @@ impl HostAuthorityService {
                         let before = read_current(slot, current.as_ref())?;
                         let mut after = before.clone();
                         match &request.command {
-                            Command::CaptureSource {} | Command::CaptureAck {} => {
+                            Command::ReadLearningTrust {} | Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
                                 ));
@@ -196,7 +204,7 @@ impl HostAuthorityService {
                         // are known. The original initializer itself rejects any
                         // existing CURRENT; absence is never inferred from an error.
                         match &request.command {
-                            Command::CaptureSource {} | Command::CaptureAck {} => {
+                            Command::ReadLearningTrust {} | Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
                                 ));
@@ -272,7 +280,7 @@ impl HostAuthorityService {
                             .observed_unix_ms;
                         slot.require_selection(after_time)?;
                         match &request.command {
-                            Command::CaptureSource {} | Command::CaptureAck {} => {
+                            Command::ReadLearningTrust {} | Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
                                 ));
@@ -403,3 +411,9 @@ static DROP_NEXT_PUBLICATION_ACK: std::sync::atomic::AtomicBool =
 pub(crate) fn drop_next_test_publication_ack() {
     DROP_NEXT_PUBLICATION_ACK.store(true, std::sync::atomic::Ordering::Release);
 }
+
+#[path = "authority_host_initial_learning_trust_transport.rs"]
+mod learning_trust;
+pub(crate) use learning_trust::LEARNING_TRUST_PURPOSE;
+pub(crate) use learning_trust::LearningTrustResponseV1;
+use learning_trust::OriginalLearningTrustExchange;

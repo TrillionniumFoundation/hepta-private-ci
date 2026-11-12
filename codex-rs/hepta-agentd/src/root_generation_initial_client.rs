@@ -231,6 +231,9 @@ impl RootGenerationInitialClient {
 }
 
 fn validate_profile(profile: &InitialProfile) -> Result<(), AgentdError> {
+    if let Some(pin) = &profile.learning_trust {
+        pin.require_target(&profile.deployment.target)?;
+    }
     crate::neuron_generation_current::initial_root::require_original_initial_contract(
         &profile.prepared,
         &profile.deployment.operation,
@@ -250,3 +253,7 @@ fn validate_head(profile: &InitialProfile, head: Option<&CurrentHead>) -> Result
     }
     Ok(())
 }
+
+#[path = "root_generation_initial_learning_trust.rs"]
+mod learning_trust;
+pub(crate) use learning_trust::OriginalRootInitialLearningTrustV1;
