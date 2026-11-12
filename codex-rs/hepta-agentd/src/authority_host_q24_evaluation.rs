@@ -9,3 +9,6 @@ mod files;
 
 #[path = "authority_host_q24_evaluation_admission.rs"]
 mod admission;
+
+#[path = "authority_host_q24_evaluation_protocol.rs"]
+mod protocol;
