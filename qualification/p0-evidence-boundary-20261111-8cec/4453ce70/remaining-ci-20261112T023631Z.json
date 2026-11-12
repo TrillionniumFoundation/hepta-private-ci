@@ -1,0 +1,206 @@
+{
+  "schema": "hepta-original-ci-status-checkpoint-v1",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "observation_started_at_utc": "2026-11-12T02:36:30.657Z",
+  "observation_completed_at_utc": "2026-11-12T02:36:31.192Z",
+  "original_provider": "GitHub REST jobs endpoints via github_fetch; complete per_page=100 response bodies preserved separately",
+  "jobs": [
+    {
+      "run_id": 43131261958,
+      "job_id": 130910266233,
+      "name": "owners",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T01:36:29Z",
+      "completed_at": null
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130896746525,
+      "name": "Select blocking CI scope",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000116665,
+      "runner_name": "GitHub Actions 1000116665",
+      "started_at": "2026-11-12T01:49:16Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130896746841,
+      "name": "Codespell / Check for spelling errors",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000116292,
+      "runner_name": "GitHub Actions 1000116292",
+      "started_at": "2026-11-12T01:29:19Z",
+      "completed_at": "2026-11-12T01:29:54Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130896746852,
+      "name": "Blob size policy / Blob size policy",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000116788,
+      "runner_name": "GitHub Actions 1000116788",
+      "started_at": "2026-11-12T01:56:10Z",
+      "completed_at": "2026-11-12T01:59:05Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915110559,
+      "name": "Hepta scoped native checks",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": null
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915110686,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": null
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915112211,
+      "name": "cargo-deny",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_id": null,
+      "runner_name": null,
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915112625,
+      "name": "sdk",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_id": null,
+      "runner_name": null,
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915112674,
+      "name": "Lightweight prose and derived checks",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_id": null,
+      "runner_name": null,
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915112768,
+      "name": "Bazel",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_id": null,
+      "runner_name": null,
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915113005,
+      "name": "repo-checks",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_id": null,
+      "runner_name": null,
+      "started_at": "2026-11-12T01:49:38Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915113303,
+      "name": "rust-ci",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_id": null,
+      "runner_name": null,
+      "started_at": "2026-11-12T01:49:38Z",
+      "completed_at": "2026-11-12T01:49:37Z"
+    },
+    {
+      "run_id": 43131261968,
+      "job_id": 130897218818,
+      "name": "Architecture convergence (base-merge)",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000116688,
+      "runner_name": "GitHub Actions 1000116688",
+      "started_at": "2026-11-12T01:50:39Z",
+      "completed_at": "2026-11-12T01:51:15Z"
+    },
+    {
+      "run_id": 43131261968,
+      "job_id": 130897219170,
+      "name": "Architecture convergence (source-head)",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000116689,
+      "runner_name": "GitHub Actions 1000116689",
+      "started_at": "2026-11-12T01:50:39Z",
+      "completed_at": "2026-11-12T02:26:45Z"
+    },
+    {
+      "run_id": 43131261968,
+      "job_id": 130929164953,
+      "name": "Architecture required",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T02:26:45Z",
+      "completed_at": null
+    }
+  ],
+  "overall_ci_complete": false,
+  "interpretation": "Queued jobs with runner_id=0 have no observed assigned runner. API data do not establish a queue cause. Local environment unavailability is not asserted to be the cause. No queued, skipped or absent aggregate job is recorded as passed.",
+  "actions_cancelled_or_retriggered": false,
+  "original_response_files": [
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/ci-status-20261112T023631Z/run-43131261958-jobs.json",
+      "blob_sha": "3d2d5353ad2bfc7fac3782cc42999a68b75cbf0b"
+    },
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/ci-status-20261112T023631Z/run-43131262075-jobs.json",
+      "blob_sha": "b94e97f8d998d5db2fa1f8e4e0e6a3dba51c5a89"
+    },
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/ci-status-20261112T023631Z/run-43131261968-jobs.json",
+      "blob_sha": "5c69d189259bab2799ca6acebceeff9b2f593127"
+    }
+  ]
+}

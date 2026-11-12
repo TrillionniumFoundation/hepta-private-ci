@@ -1,0 +1,302 @@
+{
+  "schema": "hepta-fixed-source-implementation-qualification-report-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "base": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "commits": 3,
+    "changed_files": 10,
+    "insertions": 482,
+    "deletions": 86
+  },
+  "pull_request": {
+    "number": 6036,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6036",
+    "draft": true,
+    "merged": false
+  },
+  "archive_rule": "This append-only evidence carrier is not the tested source tree. Each original record is assigned only to its explicit source commit/tree. Earlier-source passes and overlapping engineering suites are not pooled into independent business samples.",
+  "changes": [
+    {
+      "id": "incomplete-evaluation",
+      "effect": "Authenticated insufficient evaluation evidence returns a typed error before receipt preparation, claiming or signing, preserving the original Training cut. Incomplete evidence takes precedence over failed metrics; completed Ineligible remains NoUpdate."
+    },
+    {
+      "id": "cold-recovery",
+      "effect": "Original journal/witness fixtures verify no fabricated Evaluation receipt and reject previously signed invalid NoUpdate histories before Trainer/Evaluator evidence-endpoint I/O at Training, Evaluation, Selection and retained-model next-use cuts, preserving the existing journal and witness bytes."
+    },
+    {
+      "id": "caller-locator",
+      "effect": "Private ControlConnection<P> impl makes the exact protected marker callable without changing the original verifier. Both old and qualified whole-handler timeout forms remain forbidden."
+    },
+    {
+      "id": "delayed-selector",
+      "effect": "Verified validity is bounded by the signed expiry, key expiry and last valid instant before scheduled revocation known at verification. Rejected delayed appends preserve journal/head; last-valid-instant positive controls remain."
+    }
+  ],
+  "completed_validation": [
+    {
+      "id": "local-native",
+      "kind": "engineering_behavior",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "passed": 269,
+      "skipped": 1,
+      "scope": "125 learning-artifacts +144 intelligence-eval library tests; clean source and lockfile before/after",
+      "evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/local-native/",
+      "junit_scope": "Original local JUnit XML with execution-window mtime, UUID and SHA256 is preserved in local-native evidence."
+    },
+    {
+      "id": "full-original-caller",
+      "kind": "source_boundary_verification",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "exit_code": 0,
+      "elapsed_seconds": 1839.920554,
+      "rust_files": 6370,
+      "boundaries": 330,
+      "privileged_inventory": 330,
+      "protected_files": 264,
+      "authority_granted": false,
+      "verifier_unchanged": true,
+      "evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/caller-final/"
+    },
+    {
+      "id": "format-and-selftest",
+      "kind": "source_gate",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "scope": "Pinned formatter and original caller self-test",
+      "evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/local-native/"
+    },
+    {
+      "id": "derived-view",
+      "kind": "source_gate",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "updated_derived": [],
+      "scope": "Original refresh-derived --check using exact Git-blob inputs; sparse-input failures retained",
+      "evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/derived-check/"
+    },
+    {
+      "id": "hosted-daemon-root",
+      "kind": "engineering_behavior",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "run_id": 43131262049,
+      "job_id": 130895700073,
+      "ordinary_passed": 1237,
+      "ordinary_skipped": 78,
+      "actual_uid_zero_root_passed": 12,
+      "root_nonselected": 1033,
+      "clean_equal_source_inventories": 6,
+      "source_file_count": 14508,
+      "source_inventory_sha256": "2394d9d63b07a3512135e0fd74229546143396fd51e0bf08230fe447fb09cdee",
+      "maintenance_source_changes": 0,
+      "raw_log": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/daemon-43131262049-130895700073.log",
+      "summary": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/daemon-43131262049-130895700073.summary.json",
+      "junit_scope": "Fresh native JUnit collection metadata and hashes are preserved in the original provider log and its derived summary. This archive does not claim the hosted XML itself was downloaded."
+    },
+    {
+      "id": "hosted-cell-local",
+      "kind": "engineering_behavior",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "run_id": 43131262041,
+      "job_id": 130895700600,
+      "passed": 125,
+      "skipped": 1,
+      "scope": "Original artifacts library lane; both delayed Selector regressions passed",
+      "raw_log": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/local-update-43131262041-130895700600.log"
+    },
+    {
+      "id": "hosted-windows-security",
+      "kind": "platform_boundary",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "run_id": 43131262029,
+      "job_id": 130895745408,
+      "rust_passed": 34,
+      "python_harness_passed": 6,
+      "scope": "Five selected Rust suites, positive attack rejection and expected-failing weakened controls; final tracked-clean. Not Linux learning or business A/B/C evidence",
+      "raw_log": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/windows-43131262029-130895745408.log"
+    },
+    {
+      "id": "architecture-source-head",
+      "kind": "engineering_behavior_and_source_gate",
+      "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "PASS",
+      "run_id": 43131261968,
+      "job_id": 130897219170,
+      "original_execution_records": 31,
+      "all_original_executions_passed": true,
+      "all_before_after_source_and_tree_exact_clean": true,
+      "derived_updated": [],
+      "final_source_unchanged_check": true,
+      "scope": "Original workflow commands, including inference/durable operations, module migration/rollback, objective/authority/browser semantics, selected-artifact adoption and explicit rollback, ledger/runtime/timer fences and a compiled service process-restart fixture. No real business A/B/C or complete deployed daemon-plus-Root claim.",
+      "raw_log": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/architecture-source-head-43131261968-130897219170.log",
+      "raw_log_blob": "4b0ce48733ce47eadc8f410ae028000ce7b41574"
+    }
+  ],
+  "pending_validation": [
+    "shared-framework source-head original execution",
+    "blocking scoped-native",
+    "Hepta contract gate",
+    "Architecture required aggregate",
+    "CI required aggregate"
+  ],
+  "ci_scope": {
+    "original_policy": true,
+    "derived": true,
+    "effects": true,
+    "inference": true,
+    "learning": true,
+    "lifecycle": true,
+    "native": true,
+    "objective": true,
+    "full_repo": false,
+    "full_repo_lanes": "repo-checks, Bazel, rust-ci, cargo-deny and sdk skipped by existing policy, not passed",
+    "evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/scope-43131262075-130896746525.summary.json"
+  },
+  "product_acceptance": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "P2": "NOT_ADMITTED",
+    "P3": "NOT_ADMITTED",
+    "P4": "NOT_ADMITTED",
+    "new_accepted_business_chains": 0,
+    "new_independent_benefit_updates": 0,
+    "production_adoption": false,
+    "rsi_claim": false
+  },
+  "product_requirements": [
+    "Real document/screenshot task sources, Notes target, original session handoff and durable writer/recovery custody.",
+    "A deployed Observer independent from Generator, with its original principal/controller, signing capability and valid trust distribution.",
+    "Pre-registered utility, complete cost accounting, amortization window, terminality rules and unit profile.",
+    "The actual task Cell, sealed publication, candidate set and signed Decision with original support linkage.",
+    "Original dataset freeze and stage owner/witness capabilities, plus the non-root daemon's authenticated access to the original Root CURRENT through its granted checkpoint capability, and a complete deployed daemon-plus-Root cold-restart chain."
+  ],
+  "product_readiness_evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/ordinary-chain-readiness.json",
+  "cost_qualification": "TaskLedgersBeforeFinalHoldout excludes subsequent holdout estimation, signature verification and publication overhead. Full amortized net benefit is not established by those totals.",
+  "deployment": {
+    "reachability_does_not_establish_capability_custody": true,
+    "original_notes_observer_root_capabilities": "Unverified",
+    "current_user_query": "Confirmed script terminal and complete durable output; all four service-label/domain observations incomplete, with exit113",
+    "evidence": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/deployment/sanitized-current-user-service-summary.json",
+    "repository_source_role": "Source 4453ce70 supplied exact service-label definitions only. The deployed service version/source was not established by these observations."
+  },
+  "previous_attempts": "Earlier source results, maintenance postimages, incomplete inputs and original caller timeouts remain available under their own source identities and are not replaced by later passes.",
+  "claims_not_made": [
+    "real business A→training→independent B→Adopt/NoUpdate→distinct C→whole-daemon+Root cold restart",
+    "independent future task benefit",
+    "positive Cell net benefit",
+    "production adoption",
+    "P2/P3/P4 qualification",
+    "RSI"
+  ],
+  "historical_research": {
+    "inventory": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/p1-evidence-inventory-4453ce70.json",
+    "source_read_snapshot": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "new_experiments_executed": 0,
+    "new_real_source_cluster_net_benefit_evidence": 0,
+    "MEM": "Five synthetic stream seeds, exact-key RAG strongest/cheapest; structured replay below uniform by22.5pp dynamic/20pp stationary after B; PARTIAL costs; scientific/production HOLD",
+    "CTRL": "Three independent synthetic training seeds; learned router mean value below fixed hybrid; joint/mean MPC96paired equal; full cost/external outcomes/native adoption HOLD",
+    "namespace_rule": "Historical A/B/A2 curricula and A/B/C/D objective profiles are not this user's independent A/train/B/future-C stages; prior research NoUpdate/Candidate does not decide the current real protocol."
+  },
+  "final_review": {
+    "concrete_corrections": [
+      "Narrow before-owner-I/O language to Trainer/Evaluator evidence-endpoint I/O; original evidence and owner-state reads still occur.",
+      "Clarify non-root daemon capability access to original Root CURRENT, not a non-root Root owner or arbitrary filesystem path access."
+    ],
+    "remaining_source_identity_or_qualification_overclaims_found": false,
+    "scope": "Bounded narrative and qualification-claim review; no additional code test or deployed owner audit."
+  },
+  "environment_checkpoint": {
+    "local_execution_environment_reported_unavailable": true,
+    "source_and_evidence_already_pushed": true,
+    "ongoing_actions": "Read existing GitHub CI originals and preserve exact-source results; no new local tests required.",
+    "all_reported_passes_completed_before_environment_change": true
+  },
+  "report_kind": "implementation_and_qualification_checkpoint",
+  "recorded_at_utc": "2026-11-12T02:36:31.192Z",
+  "status": "ENGINEERING_CHANGES_PUSHED_PRODUCT_QUALIFICATION_HOLD_CI_INCOMPLETE",
+  "overall_ci_complete": false,
+  "pending_job_records": [
+    {
+      "run_id": 43131261958,
+      "job_id": 130910266233,
+      "name": "owners",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T01:36:29Z",
+      "completed_at": null
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915110559,
+      "name": "Hepta scoped native checks",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": null
+    },
+    {
+      "run_id": 43131262075,
+      "job_id": 130915110686,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T01:49:37Z",
+      "completed_at": null
+    },
+    {
+      "run_id": 43131261968,
+      "job_id": 130929164953,
+      "name": "Architecture required",
+      "head_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-12T02:26:45Z",
+      "completed_at": null
+    }
+  ],
+  "blocking_CI_required_job": "No job record present in the observed original provider response",
+  "pending_status_originals": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/remaining-ci-20261112T023631Z.json",
+  "requested_core_deliverables": [
+    {
+      "deliverable": "One fixed source",
+      "status": "PUSHED",
+      "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33"
+    },
+    {
+      "deliverable": "A complete real ordinary-task learning chain",
+      "status": "NOT_ESTABLISHED",
+      "limitation": "Production startup assembly, original task capture, independent signed Notes outcome handoff and whole deployed daemon-plus-Root restart remain open."
+    },
+    {
+      "deliverable": "Independent future tasks",
+      "status": "NOT_PRODUCED_THIS_ROUND",
+      "limitation": "No qualified independent real B/C custody or future task windows were executed."
+    },
+    {
+      "deliverable": "Raw evidence establishing a Cell update's net benefit",
+      "status": "NOT_ESTABLISHED",
+      "limitation": "Historical synthetic originals and negative results are indexed; no new real-source-cluster, full-cost qualified gain was produced."
+    }
+  ],
+  "earlier_evidence_rule": "All prior source results, failed/incomplete input attempts, maintenance differences and caller timeouts retain their original identity. The final caller PASS and current-source CI passes do not retroactively convert them into successes.",
+  "full_repository_limit": "Scope=full_repo:false under the unchanged workflow. Skipped full-repository and platform lanes do not establish that earlier failures outside executed lanes were fixed."
+}
