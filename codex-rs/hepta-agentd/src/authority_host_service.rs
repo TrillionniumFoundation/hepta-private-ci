@@ -39,6 +39,7 @@ pub use generation_initial::HostGenerationInitialDeploymentV1;
 pub use generation_initial::RootGenerationInitialEnrollmentV1;
 pub use generation_initial::RootGenerationInitialModeV1;
 pub use generation_initial::RootGenerationInitialOfferV1;
+pub use generation_initial::RootHistoricalSourceInputsV1;
 #[path = "authority_host_generation_publication.rs"]
 pub(crate) mod generation_publication;
 #[path = "authority_host_learning_checkpoint.rs"]

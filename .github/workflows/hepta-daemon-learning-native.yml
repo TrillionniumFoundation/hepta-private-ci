@@ -84,6 +84,12 @@ jobs:
               "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
               "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
               "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+              "authority_host_service::generation_initial::historical_source_pin::tests::root_source_pin_preserves_exact_registration_and_never_initializes_recovery",
+              "authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_capability_rejects_replaced_lifetime_and_late_ack",
+              "authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_ack_is_data_and_keeps_the_one_shot_consumed",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",

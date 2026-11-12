@@ -25,6 +25,11 @@ mod runtime;
 pub(super) use runtime::BoundInitial;
 pub(super) use runtime::serve_optional;
 
+#[path = "authority_host_historical_source_session.rs"]
+mod source_capture;
+pub use source_capture::RootHistoricalSourceCaptureCapabilityV1;
+pub use source_capture::RootHistoricalSourceCaptureReceiptV1;
+
 const PREPARED: u8 = 0;
 const ACTIVE: u8 = 1;
 const CONSUMED: u8 = 2;
@@ -40,6 +45,8 @@ pub(super) struct InitialRuntime {
     phase: Arc<AtomicU8>,
     socket: PathBuf,
     deployment: crate::HostGenerationInitialDeploymentV1,
+    source_capture: Option<source_capture::HistoricalSourceRuntime>,
+    peer_source_capture: Mutex<Option<RootHistoricalSourceCaptureCapabilityV1>>,
 }
 
 /// A consumed original Root registration acknowledgement. The digest is a
@@ -185,6 +192,8 @@ impl PreparedHostAuthoritySession {
             phase: Arc::clone(&phase),
             socket: bundle.socket,
             deployment: bundle.deployment,
+            source_capture: None,
+            peer_source_capture: Mutex::new(None),
         });
         Ok((
             RootGenerationInitialEnrollmentCapabilityV1 {

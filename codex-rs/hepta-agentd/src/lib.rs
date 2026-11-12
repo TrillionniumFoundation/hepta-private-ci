@@ -1356,6 +1356,10 @@ pub use authority_host_runtime::RootGenerationInitialEnrollmentCapabilityV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationInitialRegistrationV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootHistoricalSourceCaptureCapabilityV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootHistoricalSourceCaptureReceiptV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostGenerationInitialDeploymentV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::RootGenerationInitialEnrollmentV1;
@@ -1363,6 +1367,8 @@ pub use authority_host_service::RootGenerationInitialEnrollmentV1;
 pub use authority_host_service::RootGenerationInitialModeV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::RootGenerationInitialOfferV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootHistoricalSourceInputsV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_initial_root::OriginalRootInitialFeatureTargetV1;
 #[cfg(target_os = "linux")]

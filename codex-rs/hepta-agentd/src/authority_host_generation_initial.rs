@@ -40,6 +40,11 @@ pub use inputs::RootGenerationInitialEnrollmentV1;
 pub use inputs::RootGenerationInitialModeV1;
 #[path = "authority_host_generation_initial_enrollment.rs"]
 mod enrollment;
+#[path = "authority_host_historical_source_pin.rs"]
+pub(crate) mod historical_source_pin;
+pub use historical_source_pin::RootHistoricalSourceInputsV1;
+#[path = "authority_host_historical_source_handoff.rs"]
+mod historical_source_handoff;
 #[path = "authority_host_generation_initial_transport.rs"]
 mod transport;
 pub(crate) use transport::Command;

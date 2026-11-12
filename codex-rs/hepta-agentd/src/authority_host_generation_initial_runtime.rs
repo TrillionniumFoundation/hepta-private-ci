@@ -53,6 +53,9 @@ impl BoundInitial {
 impl Drop for BoundInitial {
     fn drop(&mut self) {
         self.runtime.phase.store(CLOSED, Ordering::Release);
+        if let Some(source) = &self.runtime.source_capture {
+            source.close();
+        }
         if std::fs::symlink_metadata(&self.runtime.socket)
             .is_ok_and(|entry| entry.dev() == self.device && entry.ino() == self.inode)
         {
@@ -124,58 +127,88 @@ pub(in super::super) fn serve_optional(
                     return Err(error);
                 }
             };
-            let stream = loop {
-                if stopping.load(Ordering::Acquire) {
-                    return Ok(());
-                }
-                owner_alive(owner, end)?;
-                match initial.listener.accept() {
-                    Ok((stream, _)) => break stream,
-                    Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
-                        std::thread::sleep(Duration::from_millis(5));
-                    }
-                    Err(error) => return Err(error),
-                }
-            };
-            verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
-            {
-                let mut held = active
-                    .lock()
-                    .map_err(|_| io::Error::other("initial lane poisoned"))?;
-                if stopping.load(Ordering::Acquire) {
-                    return Ok(());
-                }
-                *held = Some(stream.try_clone()?);
-            }
-            let policy = HostAuthorityPeerPolicy {
-                peer: HostIssuerPeer {
-                    uid: config.peer_uid,
-                    pid: registration.peer_pid,
+            source_capture::serve_optional(
+                initial.runtime.source_capture.as_ref(),
+                source_capture::SourceCaptureContext {
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    slot: &slot,
+                    stopping: &stopping,
+                    end,
                 },
-                timeout: Duration::from_millis(config.timeout_ms),
-                lifetime: end
-                    .checked_duration_since(Instant::now())
-                    .ok_or_else(|| io::Error::other("initial Root session expired"))?,
-                request_bound: 16 * 1024,
-                response_bound: 16 * 1024,
-            };
-            let result = service.serve_generation_initial(
-                &slot,
-                config,
-                registration,
-                stream,
-                policy,
-                owner.try_clone()?,
-            );
-            if stopping.load(Ordering::Acquire) {
-                Ok(())
-            } else {
-                result
-            }
+                || {
+                    let stream = loop {
+                        if stopping.load(Ordering::Acquire) {
+                            return Ok(());
+                        }
+                        owner_alive(owner, end)?;
+                        match initial.listener.accept() {
+                            Ok((stream, _)) => break stream,
+                            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                                std::thread::sleep(Duration::from_millis(5));
+                            }
+                            Err(error) => return Err(error),
+                        }
+                    };
+                    verify_pinned_process(
+                        registration,
+                        config.peer_uid,
+                        config.peer_gid,
+                        owner,
+                        end,
+                    )?;
+                    {
+                        let mut held = active
+                            .lock()
+                            .map_err(|_| io::Error::other("initial lane poisoned"))?;
+                        if stopping.load(Ordering::Acquire) {
+                            return Ok(());
+                        }
+                        *held = Some(stream.try_clone()?);
+                    }
+                    let policy = HostAuthorityPeerPolicy {
+                        peer: HostIssuerPeer {
+                            uid: config.peer_uid,
+                            pid: registration.peer_pid,
+                        },
+                        timeout: Duration::from_millis(config.timeout_ms),
+                        lifetime: end
+                            .checked_duration_since(Instant::now())
+                            .ok_or_else(|| io::Error::other("initial Root session expired"))?,
+                        request_bound: 16 * 1024,
+                        response_bound: 16 * 1024,
+                    };
+                    let result = service.serve_generation_initial(
+                        &slot,
+                        config,
+                        registration,
+                        stream,
+                        policy,
+                        owner.try_clone()?,
+                        Some(&initial.runtime.peer_source_capture),
+                    );
+                    // The terminal client keeps its lifetime until Root closes.
+                    // Releasing this cancellation clone lets it observe EOF.
+                    active
+                        .lock()
+                        .map_err(|_| io::Error::other("initial lane poisoned"))?
+                        .take();
+                    if stopping.load(Ordering::Acquire) {
+                        Ok(())
+                    } else {
+                        result
+                    }
+                },
+            )
         });
         let result = original();
         stopping.store(true, Ordering::Release);
         initial.runtime.phase.store(CLOSED, Ordering::Release);
+        if let Some(source) = &initial.runtime.source_capture {
+            source.close();
+        }
         if let Some(stream) = active
             .lock()
             .map_err(|_| io::Error::other("initial lane poisoned"))?
