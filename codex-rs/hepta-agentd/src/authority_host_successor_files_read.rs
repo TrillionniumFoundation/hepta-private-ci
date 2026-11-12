@@ -9,6 +9,7 @@ use crate::OriginalSingleQ24SourceConfigurationV1;
 use crate::RootHistoricalSourceInputsV1;
 use crate::authority_host_service::generation_initial::cell_retention::OriginalCellFiles;
 use crate::authority_host_service::generation_initial::cell_retention::RootHistoricalCellInputsV1;
+use crate::authority_host_service::generation_initial::historical_source_pin::RetainedRootHistoricalSourceInputsV1;
 use crate::circuit_task::RootHistoricalTaskPublicationDataV1;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
@@ -202,9 +203,16 @@ impl RootOriginalSuccessorFilesV1 {
             definition: original.definition,
             source: original.source,
         };
-        let source_inputs = source_inputs
-            .retain_original(identity, target, self.uid, self.gid)?
-            .into_registered(identity, target, self.uid, self.gid)?;
+        let retained = RootHistoricalSourceInputsV1::retain_original(
+            source_inputs,
+            identity,
+            target,
+            self.uid,
+            self.gid,
+        )?;
+        let source_inputs = RetainedRootHistoricalSourceInputsV1::into_registered(
+            retained, identity, target, self.uid, self.gid,
+        )?;
         let cell = OriginalCellFiles::retain_original_cell(
             RootHistoricalCellInputsV1 {
                 journal: RetainedMaterial::original_readonly_description(&files[5])?,
