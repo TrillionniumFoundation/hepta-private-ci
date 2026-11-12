@@ -1,6 +1,8 @@
 //! Invalid closure assets exercise the actual Python rejection path. These
 //! bytes are neither trained weights nor a successful V13 inference fixture.
 
+#![cfg(test)]
+
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
