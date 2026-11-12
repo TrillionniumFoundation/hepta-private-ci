@@ -1,0 +1,48 @@
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+@@ -15,6 +15,18 @@
+     observer: TrustedLearningSignerV1,
+     experience: TrustedLearningSignerV1,
+     dataset: TrustedLearningSignerV1,
++}
++
++impl Credentials {
++    // Retain the exact original fixture actors without exposing private fields.
++    pub(super) fn resident_checkpoint_signers(&self) -> [TrustedLearningSignerV1; 4] {
++        [
++            self.experience.clone(),
++            self.dataset.clone(),
++            self.generator.clone(),
++            self.evaluator.clone(),
++        ]
++    }
+ }
+ 
+ fn signer(name: &str, role: LearningEvidenceRoleV1, seed: u8, at: u64) -> TrustedLearningSignerV1 {
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
+@@ -250,12 +250,7 @@
+             &evaluation,
+             signatures,
+             fixture.host.as_ref().expect("original Evaluator"),
+-            [
+-                credentials.experience.clone(),
+-                credentials.dataset.clone(),
+-                credentials.generator.clone(),
+-                credentials.evaluator.clone(),
+-            ],
++            credentials.resident_checkpoint_signers(),
+         )
+         .await?;
+         assert_eq!(fixture.original_files()?, original_files);
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
+@@ -63,7 +63,7 @@
+         training.clone(),
+     )?;
+     let material = client.readback().await?;
+-    assert_eq!(material.bundle(), candidate);
++    assert_eq!(material.bundle(), candidate.as_ref());
+     assert_eq!(material.model().components(), &candidate.components);
+     assert_eq!(
+         Digest32::of_bytes(material.heads()),
