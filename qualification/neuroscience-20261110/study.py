@@ -630,14 +630,43 @@ def _exact_one_sided_signflip_p(differences: list[float]) -> float:
     return count / (2 ** len(differences))
 
 
+
+def _iter_bounded_trial_rows(stream):
+    """Limit raw JSONL ingress, including blank lines, before decoding rows.
+
+    This CLI is a shadow evidence reader, not an attested evaluator. A list
+    comprehension before paired_evidence() bypassed its 400,000-record ceiling.
+    readline(size) bounds the parser-facing character count of each row.
+    """
+    max_lines = 400_000
+    max_chars = 65_536
+    for index in range(max_lines + 1):
+        line = stream.readline(max_chars + 1)
+        if not line:
+            return
+        if index == max_lines:
+            raise ContractError("raw trial JSONL input exceeds size limit")
+        if len(line) > max_chars:
+            raise ContractError("trial JSONL line exceeds character limit")
+        if not line.strip():
+            continue
+        try:
+            value = json.loads(line)
+            if type(value) is not dict:
+                raise TypeError("trial row must be an object")
+            yield TrialRow(**value)
+        except (TypeError, ValueError) as error:
+            raise ContractError("invalid trial JSONL row") from error
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--trials", type=Path, required=True,
                         help="JSONL of independent, full-cost paired TrialRow records")
     args = parser.parse_args()
     with args.trials.open(encoding="utf-8") as stream:
-        rows = [TrialRow(**json.loads(line)) for line in stream if line.strip()]
-    print(json.dumps(paired_evidence(rows), sort_keys=True, indent=2))
+        report = paired_evidence(_iter_bounded_trial_rows(stream))
+    print(json.dumps(report, sort_keys=True, indent=2))
 
 
 if __name__ == "__main__":
