@@ -155,18 +155,23 @@ def solve_boundary(problem=Problem()):
     right, _ = candidate(upper)
     if left == 0 or right == 0 or math.copysign(1, left) == math.copysign(1, right):
         raise ValueError("no bracketed interior threshold; endpoint regimes are outside this solver")
+    # Root uncertainty is amplified by the 1 / h in refitted-cost differences.
+    # Solve to FP64 resolution rather than spending that derivative error budget.
+    tolerance = 4 * np.finfo(float).eps * max(1, p.upper)
     for _ in range(128):
         middle = (lower + upper) / 2
-        residual, result = candidate(middle)
+        if middle == lower or middle == upper:
+            break
+        residual, _ = candidate(middle)
         if math.copysign(1, residual) == math.copysign(1, left):
             lower, left = middle, residual
         else:
             upper = middle
-        if upper - lower <= 1e-13 * max(1, p.upper):
-            _, result = candidate((lower + upper) / 2)
+        if upper - lower <= tolerance:
             break
     else:
         raise RuntimeError("boundary bisection exceeded its fixed budget")
+    _, result = candidate((lower + upper) / 2)
     result = BoundarySolution(p, result.boundary, rp, rm,
                               result.positive_coefficient, result.negative_coefficient,
                               (lower, upper))
