@@ -1,0 +1,29 @@
+{
+  "scope": "complete repository caller scan",
+  "command": [
+    "/usr/bin/python3",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--root",
+    "/home/qq/hepta-learn-ff41-native-fixes-20261112"
+  ],
+  "before": {
+    "sha": "b9d00ed288e6056f47c3617b2eec36cabe25e2ec",
+    "tree": "cf6955ee9a05c9709d2c02b7467f445e4abbc089",
+    "status": ""
+  },
+  "status": "completed",
+  "started_utc": "2026-11-12T07:36:35.809541+00:00",
+  "uid": 1000,
+  "exit_code": 1,
+  "elapsed_seconds": 900.4615361769684,
+  "after": {
+    "sha": "b9d00ed288e6056f47c3617b2eec36cabe25e2ec",
+    "tree": "cf6955ee9a05c9709d2c02b7467f445e4abbc089",
+    "status": ""
+  },
+  "finished_utc": "2026-11-12T07:51:36.298599+00:00",
+  "log_bytes": 184,
+  "log_sha256": "7ef2f38c65361f15e2ad4613e10d829b5239f4672e96dcf865b5d2d208177102",
+  "source_unchanged": true
+}
