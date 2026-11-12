@@ -1,0 +1,282 @@
+{
+  "schema": "hepta.native.focused-failure-observation.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "original_execution": {
+    "after": {
+      "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "dirty": false,
+      "parents": [
+        "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+        "726af8f4a345a2ffb148b971f3fa16c71436862d"
+      ],
+      "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "dirty": false,
+      "parents": [
+        "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+        "726af8f4a345a2ffb148b971f3fa16c71436862d"
+      ],
+      "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "-E",
+      "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "command_exit_code": 100,
+    "elapsed_seconds": 1213.6274161080364,
+    "error": "required tests were not observed passing",
+    "exit_code": 100,
+    "finished_at": "2026-11-12T10:08:35.873495+00:00",
+    "job": null,
+    "lane": "source-head",
+    "log_bytes": 127348,
+    "log_file": "focused.json.86e74a41e94f4f1aad924dd7c1f173ee.log",
+    "log_sha256": "062780dad91c3a372599abc631625924457c772edcb389923660d1b7be141e5a",
+    "minimum_tests": 1,
+    "observed_failed_tests": 24,
+    "observed_passed_tests": 76,
+    "output_limit_exceeded": false,
+    "returncode": 100,
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "started_at": "2026-11-12T09:48:22.066982+00:00",
+    "status": "failed",
+    "tested_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "timed_out": false,
+    "working_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa"
+  },
+  "raw": {
+    "bytes": 127348,
+    "sha256": "062780dad91c3a372599abc631625924457c772edcb389923660d1b7be141e5a"
+  },
+  "junit": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "-E",
+      "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "errors": 0,
+    "execution_file": "focused.json",
+    "execution_sha256": "a8cf5012c265b4c0b61ff2d738413269fc72ca3b099531cd32ba39582e06808e",
+    "failures": 24,
+    "job": null,
+    "junit_bytes": 45453,
+    "junit_mtime_ns": 1794478115486713300,
+    "junit_sha256": "9de2008f972854cc61a89036a586e0c1323af1485a2f124d5daadede5a68c413",
+    "kind": "native-junit-collection",
+    "native_path": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/target/nextest/local/junit.xml",
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "skipped_in_xml": 0,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "status": "retained-failed",
+    "total_testcases": 100
+  },
+  "classification": {
+    "actual_testcases": 100,
+    "passed": 76,
+    "failed": 24,
+    "stack_overflow_sigabrt": 17,
+    "test_timeouts_60s": 3,
+    "other_test_failures": 4,
+    "excluded_by_nextest_filter": 1227
+  },
+  "mixed_evidence_case": {
+    "full_name": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+    "status": "passed",
+    "seconds": 4.587
+  },
+  "failed_cases": [
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "class": "codex-hepta-agentd",
+      "time": "60.010",
+      "body": "\n            <failure type=\"test timeout\"/>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err></system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "class": "codex-hepta-agentd",
+      "time": "15.254",
+      "body": "\n            <failure message=\"Error: Circuit task Cell: Cell(IncompleteCandidates)\" type=\"test failure with exit code 101\">Error: Circuit task Cell: Cell(IncompleteCandidates)\n\nCaused by:\n    Cell(IncompleteCandidates)</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 15.23s\n\n</system-out>\n            <system-err>Error: Circuit task Cell: Cell(IncompleteCandidates)\n\nCaused by:\n    Cell(IncompleteCandidates)\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "class": "codex-hepta-agentd",
+      "time": "60.015",
+      "body": "\n            <failure type=\"test timeout\"/>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err></system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "class": "codex-hepta-agentd",
+      "time": "60.010",
+      "body": "\n            <failure type=\"test timeout\"/>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err></system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "class": "codex-hepta-agentd",
+      "time": "1.386",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c&apos; (580688) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "class": "codex-hepta-agentd",
+      "time": "1.212",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant&apos; (580868) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "class": "codex-hepta-agentd",
+      "time": "1.278",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication&apos; (580996) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "class": "codex-hepta-agentd",
+      "time": "1.223",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b&apos; (581166) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "class": "codex-hepta-agentd",
+      "time": "1.197",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners&apos; (581288) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "class": "codex-hepta-agentd",
+      "time": "1.238",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch&apos; (581480) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "class": "codex-hepta-agentd",
+      "time": "1.239",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut&apos; (581608) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "class": "codex-hepta-agentd",
+      "time": "1.236",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature&apos; (581840) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "class": "codex-hepta-agentd",
+      "time": "1.877",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute&apos; (581961) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "class": "codex-hepta-agentd",
+      "time": "2.064",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest&apos; (582108) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "class": "codex-hepta-agentd",
+      "time": "2.066",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression&apos; (582195) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "class": "codex-hepta-agentd",
+      "time": "2.067",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect&apos; (582295) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "class": "codex-hepta-agentd",
+      "time": "2.068",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature&apos; (582383) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "class": "codex-hepta-agentd",
+      "time": "2.067",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence&apos; (582454) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "class": "codex-hepta-agentd",
+      "time": "2.065",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures&apos; (582550) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "class": "codex-hepta-agentd",
+      "time": "2.924",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures&apos; (582652) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "class": "codex-hepta-agentd",
+      "time": "2.922",
+      "body": "\n            <failure message=\"process aborted with signal 6 (SIGABRT)\" type=\"test abort\">process aborted with signal 6 (SIGABRT)</failure>\n            <system-out>\nrunning 1 test\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback&apos; (582785) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "class": "codex-hepta-agentd",
+      "time": "11.038",
+      "body": "\n            <failure message=\"Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)\" type=\"test failure with exit code 101\">Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 11.01s\n\n</system-out>\n            <system-err>Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+      "class": "codex-hepta-agentd",
+      "time": "18.965",
+      "body": "\n            <failure message=\"Error: original C Observer transport: InvalidRequest\" type=\"test failure with exit code 101\">Error: original C Observer transport: InvalidRequest\n\nCaused by:\n    InvalidRequest</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 18.94s\n\n</system-out>\n            <system-err>Error: original C Observer transport: InvalidRequest\n\nCaused by:\n    InvalidRequest\n</system-err>\n        "
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+      "class": "codex-hepta-agentd",
+      "time": "17.175",
+      "body": "\n            <failure message=\"thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5\" type=\"test failure with exit code 101\">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5:\nassertion failed: client.execute_selection().await.is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 17.16s\n\n</system-out>\n            <system-err>\nthread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5:\nassertion failed: client.execute_selection().await.is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        "
+    }
+  ],
+  "all_ordinary_root": "not_started_after_focused_failure",
+  "diagnosis_limit": "These are original observed diagnostics. No cause is inferred from newer b298 source until reviewed."
+}

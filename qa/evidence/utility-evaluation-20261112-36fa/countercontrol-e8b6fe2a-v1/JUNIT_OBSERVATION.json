@@ -1,0 +1,39 @@
+{
+  "bytes": 9065,
+  "cases": [
+    {
+      "actual_mismatch_mentions_both_dispositions": true,
+      "errors": 0,
+      "failure_text": "thread 'closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning' (681263) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:106:9:\nassertion failed: `(left == right)`: missing retention\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"resource-cost\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "failures": 1,
+      "name": "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+      "skipped": 0
+    },
+    {
+      "actual_mismatch_mentions_both_dispositions": true,
+      "errors": 0,
+      "failure_text": "thread 'tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible' (681265) panicked at hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs:29:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"safety\",\n             ),\n         ),\n     ],\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "failures": 1,
+      "name": "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible",
+      "skipped": 0
+    },
+    {
+      "actual_mismatch_mentions_both_dispositions": true,
+      "errors": 0,
+      "failure_text": "thread 'closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence' (681266) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:136:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"task-utility\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "failures": 1,
+      "name": "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+      "skipped": 0
+    },
+    {
+      "actual_mismatch_mentions_both_dispositions": true,
+      "errors": 0,
+      "failure_text": "thread 'closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes' (681264) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:63:13:\nassertion failed: `(left == right)`: Qualification: missing metric-support\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"task-utility\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "failures": 1,
+      "name": "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+      "skipped": 0
+    }
+  ],
+  "mtime_ns": 1794479520200954634,
+  "sha256": "e532e67a99730363ff5144fcda40d25c1265a11e38a5997a985ebb201643f5de"
+}

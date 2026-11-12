@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-12T10:13:51.121212+00:00",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/diagnose_protected_rows.py",
+    "--root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--manifest",
+    "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/CALLERS.toml"
+  ],
+  "external_manifest": {
+    "bytes": 1039720,
+    "git_blob_sha": "0de2a553bd966ab1e2b57378bfac2809f351cbe1",
+    "path": "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/CALLERS.toml",
+    "sha256": "529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d"
+  },
+  "identity": "hepta-utility-36fa-protected-rows-e8b-v1",
+  "scope": "Read-only protected-row diagnostic only; no full gate, source write, ref change or Cargo.",
+  "script": {
+    "bytes": 6312,
+    "git_blob_sha": "af6e65b674cb9266b344133c611d5a0494e5dea3",
+    "path": "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/diagnose_protected_rows.py",
+    "sha256": "b0781a9bd491e5ab6038e784102a817c026932bbb85986b942ef8b3b5f3a2cc0"
+  },
+  "source_gate_job_unchanged": "1a1cf209cdd-2564-199e",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "timeout_seconds": 600
+}

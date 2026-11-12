@@ -1,0 +1,68 @@
+{
+  "after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "dirty": false,
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "dirty": false,
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "-E",
+    "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 1213.6274161080364,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T10:08:35.873495+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 127348,
+  "log_file": "focused.json.86e74a41e94f4f1aad924dd7c1f173ee.log",
+  "log_sha256": "062780dad91c3a372599abc631625924457c772edcb389923660d1b7be141e5a",
+  "minimum_tests": 1,
+  "observed_failed_tests": 24,
+  "observed_passed_tests": 76,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "started_at": "2026-11-12T09:48:22.066982+00:00",
+  "status": "failed",
+  "tested_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa"
+}

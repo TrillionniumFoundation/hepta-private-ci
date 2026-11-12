@@ -1,0 +1,24 @@
+{
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--locked",
+    "--offline",
+    "--retries",
+    "0",
+    "-E",
+    "test(incomplete_evidence)"
+  ],
+  "finished_at": "2026-11-12T10:32:00.229151+00:00",
+  "log_bytes": 9085,
+  "log_sha256": "14adaac3aea25299f25c1c9137de6d350813a796f286f491a080b5dfd0c646e5",
+  "observed_failed_tests": 4,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "started_at": "2026-11-12T10:31:28.880490+00:00",
+  "timed_out": false
+}

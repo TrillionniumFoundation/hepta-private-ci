@@ -1,0 +1,203 @@
+{
+  "schema": "hepta-independent-fresh-focused-and-control-junit-review-v1",
+  "source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "results": {
+    "focused": {
+      "blob_sha": "5bf99b42559ae02bd2da7ef067e87098dd247482",
+      "bytes": 45453,
+      "sha256": "9de2008f972854cc61a89036a586e0c1323af1485a2f124d5daadede5a68c413",
+      "testcases": 100,
+      "passed": 76,
+      "failed": 24,
+      "skipped": 0,
+      "failed_cases": [
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+          "class": "codex-hepta-agentd",
+          "seconds": "60.010",
+          "failure": "\n            \n\n            \n\nrunning 1 test\n\n\n            \n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+          "class": "codex-hepta-agentd",
+          "seconds": "15.254",
+          "failure": "\n            \nError: Circuit task Cell: Cell(IncompleteCandidates)\n\nCaused by:\n    Cell(IncompleteCandidates)\n\n            \n\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 15.23s\n\n\n\n            \nError: Circuit task Cell: Cell(IncompleteCandidates)\n\nCaused by:\n    Cell(IncompleteCandidates)\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+          "class": "codex-hepta-agentd",
+          "seconds": "60.015",
+          "failure": "\n            \n\n            \n\nrunning 1 test\n\n\n            \n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+          "class": "codex-hepta-agentd",
+          "seconds": "60.010",
+          "failure": "\n            \n\n            \n\nrunning 1 test\n\n\n            \n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.386",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c' (580688) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.212",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant' (580868) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.278",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication' (580996) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.223",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b' (581166) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.197",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners' (581288) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.238",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch' (581480) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.239",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut' (581608) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.236",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature' (581840) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+          "class": "codex-hepta-agentd",
+          "seconds": "1.877",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (581961) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.064",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (582108) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.066",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (582195) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.067",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (582295) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.068",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (582383) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.067",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (582454) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.065",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (582550) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.924",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (582652) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+          "class": "codex-hepta-agentd",
+          "seconds": "2.922",
+          "failure": "\n            \nprocess aborted with signal 6 (SIGABRT)\n\n            \n\nrunning 1 test\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (582785) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+          "class": "codex-hepta-agentd",
+          "seconds": "11.038",
+          "failure": "\n            \nError: OwnerUnavailable(\"original learning evidence owner\")\n\n            \n\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 11.01s\n\n\n\n            \nError: OwnerUnavailable(\"original learning evidence owner\")\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+          "class": "codex-hepta-agentd",
+          "seconds": "18.965",
+          "failure": "\n            \nError: original C Observer transport: InvalidRequest\n\nCaused by:\n    InvalidRequest\n\n            \n\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 18.94s\n\n\n\n            \nError: original C Observer transport: InvalidRequest\n\nCaused by:\n    InvalidRequest\n\n\n        "
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+          "class": "codex-hepta-agentd",
+          "seconds": "17.175",
+          "failure": "\n            \nthread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody' (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5:\nassertion failed: client.execute_selection().await.is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n            \n\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1163 filtered out; finished in 17.16s\n\n\n\n            \n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody' (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5:\nassertion failed: client.execute_selection().await.is_err()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n        "
+        }
+      ],
+      "stack_overflow_sigabrt": 17,
+      "timeouts": 3,
+      "mixed_regression": {
+        "status": "passed",
+        "seconds": "4.587"
+      }
+    },
+    "control": {
+      "blob_sha": "e1d67aedc6b6a50024eb37a3d3e4c586c52fbc5d",
+      "bytes": 9065,
+      "sha256": "e532e67a99730363ff5144fcda40d25c1265a11e38a5997a985ebb201643f5de",
+      "testcases": 4,
+      "passed": 0,
+      "failed": 4,
+      "skipped": 0,
+      "failed_cases": [
+        {
+          "name": "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+          "class": "codex-hepta-intelligence-eval",
+          "seconds": "0.007",
+          "failure": "\n            \nthread 'closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning' (681263) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:106:9:\nassertion failed: `(left == right)`: missing retention\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"resource-cost\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n            \n\nrunning 1 test\ntest closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning ... FAILED\n\nfailures:\n\nfailures:\n    closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s\n\n\n\n            \n\nthread 'closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning' (681263) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:106:9:\nassertion failed: `(left == right)`: missing retention\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"resource-cost\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n        "
+        },
+        {
+          "name": "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible",
+          "class": "codex-hepta-intelligence-eval",
+          "seconds": "0.007",
+          "failure": "\n            \nthread 'tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible' (681265) panicked at hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs:29:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"safety\",\n             ),\n         ),\n     ],\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n            \n\nrunning 1 test\ntest tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible ... FAILED\n\nfailures:\n\nfailures:\n    tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s\n\n\n\n            \n\nthread 'tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible' (681265) panicked at hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs:29:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"safety\",\n             ),\n         ),\n     ],\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n        "
+        },
+        {
+          "name": "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+          "class": "codex-hepta-intelligence-eval",
+          "seconds": "0.009",
+          "failure": "\n            \nthread 'closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence' (681266) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:136:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"task-utility\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n            \n\nrunning 1 test\ntest closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence ... FAILED\n\nfailures:\n\nfailures:\n    closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s\n\n\n\n            \n\nthread 'closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence' (681266) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:136:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"task-utility\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n        "
+        },
+        {
+          "name": "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+          "class": "codex-hepta-intelligence-eval",
+          "seconds": "0.009",
+          "failure": "\n            \nthread 'closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes' (681264) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:63:13:\nassertion failed: `(left == right)`: Qualification: missing metric-support\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"task-utility\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n            \n\nrunning 1 test\ntest closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes ... FAILED\n\nfailures:\n\nfailures:\n    closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s\n\n\n\n            \n\nthread 'closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes' (681264) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:63:13:\nassertion failed: `(left == right)`: Qualification: missing metric-support\n\nDiff < left / right > :\n (\n<    Ineligible,\n>    InsufficientEvidence,\n     [\n         StableId(\n             BoundedText(\n                 \"task-utility\",\n             ),\n         ),\n     ],\n     AuthorityPosture {\n         _deny_all: (),\n     },\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n        "
+        }
+      ]
+    }
+  },
+  "scope": "Independently parsed full original fresh XML. Native focused qualification failed. Four old-comparator failures demonstrate regression sensitivity, not a passing native pipeline. All/ordinary/Root were not started. No real ordinary qualification."
+}

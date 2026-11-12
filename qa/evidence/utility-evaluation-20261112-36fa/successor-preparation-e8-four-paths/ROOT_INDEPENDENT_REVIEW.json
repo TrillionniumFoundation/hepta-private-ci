@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.utility-evaluation.successor-four-path-independent-review.v1",
+  "base_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "base_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "base": {
+        "bytes": 1039720,
+        "sha256": "103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6",
+        "git_blob_sha": "1f6c7677c46d4e1076c1ec944ddbd9e46c998517"
+      },
+      "postimage": {
+        "bytes": 1039720,
+        "sha256": "529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d",
+        "git_blob_sha": "0de2a553bd966ab1e2b57378bfac2809f351cbe1"
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "base": {
+        "bytes": 11292,
+        "sha256": "963d6ffe4b340fe1031333c6808d466a80b6063a9e8aa792a31145c26c0c1b3f",
+        "git_blob_sha": "674d53420bc09883b1b6f50ff5098e3a8e0aab67"
+      },
+      "postimage": {
+        "bytes": 11377,
+        "sha256": "9cef1b1158e1225893b68110a8ca3937e2dd0df42a68eacdbff48eecaf63672c",
+        "git_blob_sha": "f95ca1b519912e0bbe43ddadbf0101f825e08c10"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "mode": "100644",
+      "base": {
+        "bytes": 8237,
+        "sha256": "7b4af96b6fbe850496196e54d39d2787796d7bc0cde1a3e1f20bb18c01679b7b",
+        "git_blob_sha": "a3be9f7b415d4783886b346d273296ae8ecb32e5"
+      },
+      "postimage": {
+        "bytes": 9008,
+        "sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598",
+        "git_blob_sha": "8a779085dd02536a646415406abcaa471b097c10"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "mode": "100644",
+      "base": {
+        "bytes": 10259,
+        "sha256": "5fea425ed508b38f37fc4ac17a377bb8e2629597a497707ad8ee40794dbd3bdc",
+        "git_blob_sha": "c9b8a264cbf51fbf4c405042e1252e931717524a"
+      },
+      "postimage": {
+        "bytes": 10690,
+        "sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+        "git_blob_sha": "aea0027ad5f6e51825469b5d8fb8b14d202da575"
+      }
+    }
+  ],
+  "exact_full_patch_equal": true,
+  "parsed_toml_changes": [
+    [
+      [
+        "protected_file",
+        233,
+        "required_order",
+        0,
+        13
+      ],
+      "if owners",
+      "&& owners"
+    ],
+    [
+      [
+        "protected_file",
+        235,
+        "required_order",
+        0,
+        8
+      ],
+      "if owners",
+      "&& owners"
+    ]
+  ],
+  "boundary_rows": 522,
+  "protected_rows": 381,
+  "allowlist_append_utf8": "sha256:529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d CALLERS.toml\n",
+  "prior_two_let_chain_fixes_preserved": true,
+  "source_execution_claim": false,
+  "qualification": "Reviewed four-path preparation only; requires actual scoped maintenance, freeze and fresh original gates.",
+  "prepared_tree": "aac1a58809795d17ad27d860f2d01c653fb7af26"
+}

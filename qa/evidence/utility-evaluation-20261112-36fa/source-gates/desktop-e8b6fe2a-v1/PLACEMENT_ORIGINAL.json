@@ -1,0 +1,1329 @@
+{
+  "schema": "hepta.utility.e8.desktop.source-gates.repository-package.v1",
+  "original_records_modified": false,
+  "actual_A_B_C_qualification": false,
+  "source": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "job": "1a1cf209cdd-2564-199e",
+  "actual_gate_status": {
+    "source_closure": "failed",
+    "self_test": "passed",
+    "verify": "failed",
+    "overall": "failed"
+  },
+  "original_manifest_entries": 53,
+  "identical_source_inventory_checkpoints": 7,
+  "inventory": {
+    "original_bytes": 5432085,
+    "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "compressed_bytes": 1224091,
+    "compressed_sha256": "5408870f163f6f1aba95160160b6de0fa8b3fd447ad18d283dae0e019c9c7ce8",
+    "keys": [
+      "files",
+      "filesystem_entries",
+      "schema",
+      "source",
+      "tracked_entries"
+    ],
+    "array_counts": {
+      "files": 14741
+    }
+  },
+  "diagnostic": {
+    "job": "1a1cf3fd260-2564-19d4",
+    "status": "passed_scoped_diagnostic",
+    "full_gate_status": "not_run",
+    "passed_rows": 381,
+    "failed_rows": 0,
+    "source_inputs_unchanged": true
+  },
+  "placement": {
+    "prefix": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1",
+    "entries": [
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/checkout.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0e2ba9554cfabf1134b653fb1760f1fa193ff1eb",
+        "bytes": 312,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/checkout.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de0af60793d0477287760b208764c1fc5c113b5d",
+        "bytes": 100,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/clone.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ef67fedd62f1264e7be65d0cd282017b7e1e25f",
+        "bytes": 385,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/clone.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "afc243935fa1f2bf20e38804b6f3e7f37ca2ec7b",
+        "bytes": 86,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/derived-counts-diagnostic.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "da1480df5e656f68ecfc39b31bd903936a93c735",
+        "kind": "derived_diagnostic"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/driver.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+        "bytes": 22946,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/frozen-input.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c98f568925c8f118376d88fd3f7967c0d6c7ed4",
+        "bytes": 1003,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/inventory-readback-companions/part0000.gzpart.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+        "bytes": 349529,
+        "kind": "verified_base64_companion"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/inventory-readback-companions/part0001.gzpart.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "10133dd99bb121e5005b5643a419e3524828765d",
+        "bytes": 349529,
+        "kind": "verified_base64_companion"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/inventory-readback-companions/part0002.gzpart.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+        "bytes": 349529,
+        "kind": "verified_base64_companion"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/inventory-readback-companions/part0003.gzpart.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+        "bytes": 349529,
+        "kind": "verified_base64_companion"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/inventory-readback-companions/part0004.gzpart.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+        "bytes": 234021,
+        "kind": "verified_base64_companion"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/native-EXACT_CHECKOUT.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "21490415ca88db9dfea1a8ad2ef3d43b7065a67e",
+        "bytes": 574,
+        "kind": "original_native_readiness"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/original-repository-after-clone.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/original-repository-before.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/bootstrap.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "46c85c806e3ddc67d31f9c69def53e5ebed64c42",
+        "kind": "original_bootstrap"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/diagnose_protected_rows.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "af6e65b674cb9266b344133c611d5a0494e5dea3",
+        "bytes": 6312,
+        "kind": "reviewed_input"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/diagnostic.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bbb9d4c6ed114326fdd6ad2afc89970942066323",
+        "bytes": 133715,
+        "kind": "original_diagnostic"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/diagnostic.json.gz.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "12e822c25ffd2ff96ee3c1aef57e2f896f293998",
+        "bytes": 38877,
+        "kind": "original_retained_archive"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/diagnostic.stderr.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "kind": "original_empty_stderr"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/input-packet.json.gz.b64",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5e755ba110777b70ca1327a7bea51e9282548cf8",
+        "bytes": 393153,
+        "kind": "reviewed_input_only_CALLERS_extracted"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/input-review-manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4c602849c1ce8155db9c10efc6ea74f3a7af2705",
+        "kind": "reviewed_input"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/run-result.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a32ad11695ac894c50f31d2fa0d8bf9297bee877",
+        "bytes": 1564,
+        "kind": "original_run_result"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/run-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "76d986bf3c3dc825f2e696bce06c739b1f94fdd3",
+        "bytes": 1286,
+        "kind": "original_run_start"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/supervisor/final-status-sdk.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c48f2eeafd46cd9341dd5f08479c6dbab2a6f2c",
+        "bytes": 910,
+        "kind": "original_sdk_payload"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/supervisor/launch.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3fb29c2f281ff9d20727d22970fc4a0e6a7cbb96",
+        "kind": "original_control_plane"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/supervisor/stdout-sdk.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "730396e6180480ced4aa536e898d2e886cc0e281",
+        "bytes": 5139,
+        "kind": "original_sdk_payload"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/protected-rows-diagnostic/supervisor/stdout.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "099d232a84cb31a4e9375ca614b7e6a28add7ac4",
+        "bytes": 1468,
+        "kind": "original_stdout"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "95880a5bca248ce3f4058f07c9d1c170cd9fc99d",
+        "kind": "derived_archive_explanation"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained-manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea71c0206358f04ca4bb711c65b507bdad50cd74",
+        "bytes": 9276,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/checkout.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0e2ba9554cfabf1134b653fb1760f1fa193ff1eb",
+        "bytes": 312,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/checkout.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de0af60793d0477287760b208764c1fc5c113b5d",
+        "bytes": 100,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/clone.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ef67fedd62f1264e7be65d0cd282017b7e1e25f",
+        "bytes": 385,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/clone.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "afc243935fa1f2bf20e38804b6f3e7f37ca2ec7b",
+        "bytes": 86,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/driver.py.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+        "bytes": 22946,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/frozen-input.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c98f568925c8f118376d88fd3f7967c0d6c7ed4",
+        "bytes": 1003,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/original-repository-after-clone.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/original-repository-before.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/run-result.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ce0429521d50ce7c909b3b01d43c872b8082c5f5",
+        "bytes": 5056,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/run-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c7e77022f25d100e192e4c8fd7a3453e68affe2b",
+        "bytes": 601,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/self-test-attempt.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bc00acf0de582820ffef7fdd1cccea08f63d8b3b",
+        "bytes": 155,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/SOURCE_GATES.lock.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-baseline.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-baseline.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-baseline.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-baseline.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-baseline.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-closure-attempt.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d6dade2a0748ee354721d1112b45aba37c564a2f",
+        "bytes": 160,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/source-freeze.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "591d429091226b67a8a5563f54b16051725ae9dd",
+        "bytes": 358,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/retained/verify-attempt.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c31544a771c40c5c5c3353b75f166412f43bc04",
+        "bytes": 152,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/run-result.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ce0429521d50ce7c909b3b01d43c872b8082c5f5",
+        "bytes": 5056,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/run-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c7e77022f25d100e192e4c8fd7a3453e68affe2b",
+        "bytes": 601,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test-attempt.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bc00acf0de582820ffef7fdd1cccea08f63d8b3b",
+        "bytes": 155,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/dispatch.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2edd5026da5ef9ab964a2151431a3da9cd3e51d7",
+        "bytes": 383,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/execution-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b070901726020142f25ad56d07bc6230e73848a7",
+        "bytes": 197,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/execution-terminal.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e2929073d1819f5333da1cb4438c68663a70c0d3",
+        "bytes": 412,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/forwarded.stdout.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+        "bytes": 48,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/gate-final.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "03b672956156d373738af7fb7cc92b97cd43a661",
+        "bytes": 1027,
+        "kind": "original_postpackage_final"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/gate-summary.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "199490a9cb46611feff7cf8dc336fe86313468ae",
+        "bytes": 1025,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/package-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e6430e308d7571596de2361e1a4d8fedb3ba92e4",
+        "bytes": 70,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained-manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1dab2fdd9753ae4e2910f68273b63d662501d974",
+        "bytes": 8379,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/dispatch.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2edd5026da5ef9ab964a2151431a3da9cd3e51d7",
+        "bytes": 383,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/execution-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b070901726020142f25ad56d07bc6230e73848a7",
+        "bytes": 197,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/execution-terminal.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e2929073d1819f5333da1cb4438c68663a70c0d3",
+        "bytes": 412,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/forwarded.stdout.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+        "bytes": 48,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/gate-summary.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "199490a9cb46611feff7cf8dc336fe86313468ae",
+        "bytes": 1025,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/package-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e6430e308d7571596de2361e1a4d8fedb3ba92e4",
+        "bytes": 70,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/self-test.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b427679ae3ce91a7015566ea50fa122b373dd0bb",
+        "bytes": 391,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/self-test.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+        "bytes": 48,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-after.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-after.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-after.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-after.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-after.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-after.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-before.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-before.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-before.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-before.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-before.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/retained/source-before.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/self-test.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b427679ae3ce91a7015566ea50fa122b373dd0bb",
+        "bytes": 391,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/self-test.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+        "bytes": 48,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/source-after.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/self-test/source-before.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/SOURCE_GATES.lock",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure-attempt.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d6dade2a0748ee354721d1112b45aba37c564a2f",
+        "bytes": 160,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/dispatch.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f93bc85577ef2d82bf0a32957a198da025a8d2d",
+        "bytes": 448,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/execution-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a87b8c9a948aafd40470ca9824cd20a967ea9982",
+        "bytes": 262,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/execution-terminal.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1caac2ed52c6bd603d4c9672aafaddfd92a4ed07",
+        "bytes": 2028,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/forwarded.stdout.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b62be95b3da45e549174b8f8fbdff237021adbad",
+        "bytes": 146383,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/gate-final.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3bd0f9a406419b56996df6817138687d8f604ed3",
+        "bytes": 1038,
+        "kind": "original_postpackage_final"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/gate-summary.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "12e2c94c70f8f1ca19e1d6e9730fa992791ef743",
+        "bytes": 1036,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/package-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "86eacef4314fe614e18066b850fdc30b12aad804",
+        "bytes": 70,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained-manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "219160f9cb6744b10f84ca6d33500dedc0d9ef4d",
+        "bytes": 8985,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/dispatch.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f93bc85577ef2d82bf0a32957a198da025a8d2d",
+        "bytes": 448,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/execution-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a87b8c9a948aafd40470ca9824cd20a967ea9982",
+        "bytes": 262,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/execution-terminal.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1caac2ed52c6bd603d4c9672aafaddfd92a4ed07",
+        "bytes": 2028,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/forwarded.stdout.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b62be95b3da45e549174b8f8fbdff237021adbad",
+        "bytes": 146383,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/gate-summary.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "12e2c94c70f8f1ca19e1d6e9730fa992791ef743",
+        "bytes": 1036,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/package-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "86eacef4314fe614e18066b850fdc30b12aad804",
+        "bytes": 70,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-after.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-after.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-after.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-after.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-after.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-after.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-before.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-before.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-before.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-before.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-before.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-before.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-closure.json.91d97c55a2564745abb2bed00b577f59.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b6723a68ed089fe79afe67a64cd75a6f11900fda",
+        "bytes": 144917,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/source-closure.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4cf9136dd565b04e3bbd8b891b3f0169b1efcaa7",
+        "bytes": 1640,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/retained/wrapper-exit.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8268a78422495bd8dfa4b7e9641ba4f3cea31fc5",
+        "bytes": 66,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/source-after.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/source-before.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/source-closure.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4cf9136dd565b04e3bbd8b891b3f0169b1efcaa7",
+        "bytes": 1640,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/source-closure.json.91d97c55a2564745abb2bed00b577f59.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b6723a68ed089fe79afe67a64cd75a6f11900fda",
+        "bytes": 144917,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-closure/wrapper-exit.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8268a78422495bd8dfa4b7e9641ba4f3cea31fc5",
+        "bytes": 66,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/source-freeze.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "591d429091226b67a8a5563f54b16051725ae9dd",
+        "bytes": 358,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/supervisor/final-status-sdk.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c494fcda6ca4d5b1a4f709390f6ec8e50834043f",
+        "kind": "original_sdk_payload"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/supervisor/final-stdout-sdk.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4ec85b56f816eae22f26d9e34dce00470f6e0670",
+        "bytes": 6452,
+        "kind": "original_sdk_payload"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/supervisor/launch-response.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0f445d7038fb52c1a6f0738fe5f363c9010aea54",
+        "bytes": 979,
+        "kind": "original_tool_text"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/supervisor/launch.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "840d9192103609e105452c72be2831d4603d6698",
+        "kind": "original_control_plane"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/supervisor/mid-stdout-sdk.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bfb9db7edba10768d05d8d4093ecf56f78fdf7bc",
+        "kind": "original_sdk_payload"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/supervisor/stdout.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2886b1d0466f065d4d8c5cffcc1706bbcd71da1e",
+        "bytes": 5154,
+        "kind": "original_stdout"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify-attempt.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c31544a771c40c5c5c3353b75f166412f43bc04",
+        "bytes": 152,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/dispatch.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6be2532288127605b1a2749464b68c9d4f75131a",
+        "bytes": 381,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/execution-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2467ebac8f5eef3e5c001e3a649052a08d08617a",
+        "bytes": 195,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/execution-terminal.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "206b0c71585def2a897a8a6a2b76a04d4984ef38",
+        "bytes": 414,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/forwarded.stdout.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+        "bytes": 192,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/gate-final.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea281e55746858d4273dc988fda5eb592420fef3",
+        "bytes": 1020,
+        "kind": "original_postpackage_final"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/gate-summary.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a8078715269ce9577368b542b7cff187ed1a54af",
+        "bytes": 1018,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/package-start.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3605ba8549f87bb9351166d2f85cadb85c8a136c",
+        "bytes": 70,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained-manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7bc27028533fbe6eb95594f5af17a9c632e9d702",
+        "bytes": 8371,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/dispatch.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6be2532288127605b1a2749464b68c9d4f75131a",
+        "bytes": 381,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/execution-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2467ebac8f5eef3e5c001e3a649052a08d08617a",
+        "bytes": 195,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/execution-terminal.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "206b0c71585def2a897a8a6a2b76a04d4984ef38",
+        "bytes": 414,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/forwarded.stdout.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+        "bytes": 192,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/gate-summary.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a8078715269ce9577368b542b7cff187ed1a54af",
+        "bytes": 1018,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/package-start.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3605ba8549f87bb9351166d2f85cadb85c8a136c",
+        "bytes": 70,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-after.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-after.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-after.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-after.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-after.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-after.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-before.inventory.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-before.inventory.json.part0001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-before.inventory.json.part0002",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-before.inventory.json.part0003",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+        "bytes": 262144,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-before.inventory.json.part0004",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+        "bytes": 175515,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/source-before.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/verify.json.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3cfa7bdefec6aa5af6fe523f027f39829816a7ab",
+        "bytes": 389,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/retained/verify.log.part0000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+        "bytes": 192,
+        "kind": "original_retained_part"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/source-after.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/source-before.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+        "bytes": 127,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/verify.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3cfa7bdefec6aa5af6fe523f027f39829816a7ab",
+        "bytes": 389,
+        "kind": "original_file"
+      },
+      {
+        "path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/verify/verify.log",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+        "bytes": 192,
+        "kind": "original_file"
+      }
+    ],
+    "this_manifest_path": "evidence/utility-evaluation-20261112-36fa/source-gates/desktop-e8b6fe2a-v1/package-map.json",
+    "this_manifest_self_reference": "Root adds this manifest's separately reported blob SHA; entries do not recursively contain it."
+  }
+}

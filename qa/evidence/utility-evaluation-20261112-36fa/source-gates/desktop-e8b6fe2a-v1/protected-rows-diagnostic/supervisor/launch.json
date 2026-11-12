@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "import base64,gzip,hashlib,json,os,pathlib,subprocess,sys,time\nfrom datetime import datetime,timezone\npayload=json.load(sys.stdin)\npacket=payload[\"packet_base64_gzip\"].encode()\nscript=payload[\"script_text\"].encode()\nassert len(packet)==393153 and hashlib.sha256(packet).hexdigest()==\"3bf44cb6146472a608833e6af241df1ef7614a282e92c1ce115b4566dfb90671\"\ndecoded=gzip.decompress(base64.b64decode(packet.strip(),validate=True))\nassert len(decoded)==1430175 and hashlib.sha256(decoded).hexdigest()==\"16a603cb704471effbca78312ed34504b55c0baea00e124689dddc2dabd1e255\"\ndata=json.loads(decoded)\nassert data[\"base_commit\"]==\"e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd\" and data[\"base_tree\"]==\"b607ff5f50812c5e0f932d7dae18d4c74f1269cb\"\ntarget=[f for f in data[\"files\"] if f[\"path\"]==\"CALLERS.toml\"]\nassert len(target)==1\nmanifest=base64.b64decode(target[0][\"postimage_base64\"],validate=True)\nassert len(manifest)==1039720 and hashlib.sha256(manifest).hexdigest()==\"529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d\"\nassert len(script)==6312 and hashlib.sha256(script).hexdigest()==\"b0781a9bd491e5ab6038e784102a817c026932bbb85986b942ef8b3b5f3a2cc0\"\nroot=pathlib.Path(\"/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1\")\nrecords=pathlib.Path(\"/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1\")\nassert not records.exists() and root.is_dir() and root.resolve()!=records.resolve()\nrecords.mkdir(mode=0o700)\ndef create(name,data):\n    path=records/name\n    fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400)\n    try:\n        with os.fdopen(fd,\"wb\",closefd=False) as f:\n            f.write(data);f.flush();os.fsync(f.fileno())\n    finally:os.close(fd)\n    return path\ndef encode(value):return (json.dumps(value,indent=2,sort_keys=True)+\"\\n\").encode()\ndef identity(path):\n    b=path.read_bytes()\n    return {\"path\":str(path),\"bytes\":len(b),\"sha256\":hashlib.sha256(b).hexdigest(),\"git_blob_sha\":hashlib.sha1(b\"blob \"+str(len(b)).encode()+b\"\\0\"+b).hexdigest()}\nscript_path=create(\"diagnose_protected_rows.py\",script)\nmanifest_path=create(\"CALLERS.toml\",manifest)\ncommand=[\"/usr/bin/python3\",\"-B\",str(script_path),\"--root\",str(root),\"--manifest\",str(manifest_path)]\ncreate(\"run-start.json\",encode({\"identity\":\"hepta-utility-36fa-protected-rows-e8b-v1\",\"at\":datetime.now(timezone.utc).isoformat(),\"source_sha\":\"e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd\",\"source_tree\":\"b607ff5f50812c5e0f932d7dae18d4c74f1269cb\",\"command\":command,\"timeout_seconds\":600,\"script\":identity(script_path),\"external_manifest\":identity(manifest_path),\"source_gate_job_unchanged\":\"1a1cf209cdd-2564-199e\",\"scope\":\"Read-only protected-row diagnostic only; no full gate, source write, ref change or Cargo.\"}))\nstarted=time.monotonic();timed_out=False\nwith (records/\"diagnostic.json\").open(\"xb\") as out,(records/\"diagnostic.stderr.log\").open(\"xb\") as err:\n    try:\n        result=subprocess.run(command,cwd=records,env=dict(os.environ,PYTHONDONTWRITEBYTECODE=\"1\",GIT_OPTIONAL_LOCKS=\"0\"),stdout=out,stderr=err,timeout=600)\n        returncode=result.returncode\n    except subprocess.TimeoutExpired:\n        timed_out=True;returncode=None\n    out.flush();os.fsync(out.fileno());err.flush();os.fsync(err.fileno())\nraw=(records/\"diagnostic.json\").read_bytes()\nparse_error=None\ntry:report=json.loads(raw)\nexcept Exception as error:report={};parse_error=repr(error)\ncompressed=gzip.compress(raw,mtime=0)\narchive=create(\"diagnostic.json.gz.b64\",base64.b64encode(compressed)+b\"\\n\")\nsummary={\"identity\":\"hepta-utility-36fa-protected-rows-e8b-v1\",\"finished_at\":datetime.now(timezone.utc).isoformat(),\"elapsed_seconds\":time.monotonic()-started,\"returncode\":returncode,\"timed_out\":timed_out,\"scope\":\"Only the original _verify_protected_files over 381 rows with an external reviewed manifest. Not source-closure, complete caller proof or Rust tests.\",\"full_gate_status\":\"not_run\",\"reported_status\":report.get(\"status\"),\"passed_rows\":report.get(\"passed_rows\"),\"failed_rows\":report.get(\"failed_rows\"),\"source_inputs_unchanged\":report.get(\"source_inputs_unchanged\"),\"report_parse_error\":parse_error,\"raw\":identity(records/\"diagnostic.json\"),\"stderr\":identity(records/\"diagnostic.stderr.log\"),\"archive\":identity(archive),\"archive_encoding\":\"base64 UTF-8 plus LF of gzip mtime=0; decode and gunzip then verify raw bytes/hash\",\"compressed_sha256\":hashlib.sha256(compressed).hexdigest()}\ncreate(\"run-result.json\",encode(summary))\nprint(json.dumps(summary),flush=True)\nsys.exit(0 if returncode==0 and not timed_out and report.get(\"status\")==\"passed_scoped_diagnostic\" and report.get(\"passed_rows\")==381 and report.get(\"failed_rows\")==0 and report.get(\"source_inputs_unchanged\") is True else 1)\n"
+    ],
+    "created_unix_ms": 1794478428768,
+    "cwd": "/home/qian-qi",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1cf3fd260-2564-19d4",
+    "idempotency_key": "hepta-utility-36fa-protected-rows-e8b-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1cf3fd260-2564-19d4",
+    "request_digest": "0c61488ceac39c9f15b9e10507828da6e79ebd1c7adee0b8c14ea67643952c00",
+    "request_fingerprint": 892073971267378335,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1cf3fd260-2564-19d4"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1cf3fd260-2564-19d4"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

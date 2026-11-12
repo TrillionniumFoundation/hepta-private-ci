@@ -1,0 +1,596 @@
+{
+  "format": "hepta-source-bound-github-ci-observation-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6203,
+  "observation_window_utc": {
+    "start": "2026-11-12 10:14:29 UTC",
+    "end": "2026-11-12 10:20:12 UTC"
+  },
+  "method": "Read-only GitHub connector GET resources and metadata tools, plus local hashing of retrieved immutable source text. This report is a selected-field observation, not a raw API response or executed workflow receipt.",
+  "source": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "ordered_parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ],
+    "accepted_fixed_integration_base": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+    "head_ref_readback": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "head_commit_message": "fix(learn): restore native evaluation fixtures on frozen retention base\n\nRepair ambiguous test imports, original private fixture paths, transport helper\nreuse and journal-cut decoding so the original agentd native gates can compile.\nRetain the reviewed automatic maintenance and align two exact source markers\nwith the equivalent short-circuit conditions.\n\nIntegrate the original evaluated-retention ancestry at 726af8f4, preserving its\nstrict Root authentication, four registered mechanism tests and original T/E\nconnection custody. Preparation fix and formatting passed on the exact tree;\ncanonical-head behavior and source gates remain separate required records."
+  },
+  "execution_observations": {
+    "exact_head_runs": {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd&per_page=100",
+      "initial": {
+        "total_count": 0,
+        "workflow_runs": []
+      },
+      "final": {
+        "total_count": 0,
+        "workflow_runs": []
+      }
+    },
+    "exact_head_checks": {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/check-runs?per_page=100",
+      "initial": {
+        "total_count": 0,
+        "check_runs": []
+      },
+      "final": {
+        "total_count": 0,
+        "check_runs": []
+      }
+    },
+    "exact_head_check_suites": {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/check-suites?per_page=100",
+      "response": {
+        "total_count": 0,
+        "check_suites": []
+      }
+    },
+    "exact_head_combined_status": {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/status",
+      "state": "pending",
+      "total_count": 0,
+      "statuses": [],
+      "meaning_limit": "pending with zero statuses does not establish an enqueued, running, passing or failed new-head workflow"
+    },
+    "connector_workflow_runs": {
+      "tool": "github_fetch_commit_workflow_runs",
+      "commit_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "response": {
+        "workflow_runs": []
+      },
+      "tool_scope": "Filters pull_request-triggered runs and first page only; the direct unfiltered head_sha query above separately returned zero."
+    },
+    "old_head_runs": {
+      "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "count": 7,
+      "runs": [
+        {
+          "run_id": 43179383388,
+          "workflow_id": 385583766,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "path": ".github/workflows/hepta-windows-private-state-native.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T08:33:24Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        },
+        {
+          "run_id": 43179383075,
+          "workflow_id": 391152960,
+          "name": "Production HOS2 owner proposal",
+          "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T07:59:57Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        },
+        {
+          "run_id": 43179383093,
+          "workflow_id": 336746138,
+          "name": "v8-canary",
+          "path": ".github/workflows/v8-canary.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T08:03:10Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        },
+        {
+          "run_id": 43179383222,
+          "workflow_id": 412799840,
+          "name": "Hepta shared Cell framework",
+          "path": ".github/workflows/hepta-shared-framework.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T09:47:27Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        },
+        {
+          "run_id": 43179383296,
+          "workflow_id": 336746106,
+          "name": "blocking-ci",
+          "path": ".github/workflows/blocking-ci.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T09:38:49Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        },
+        {
+          "run_id": 43179383404,
+          "workflow_id": 412153018,
+          "name": "Hepta daemon learning native",
+          "path": ".github/workflows/hepta-daemon-learning-native.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T10:07:33Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        },
+        {
+          "run_id": 43179383350,
+          "workflow_id": 344551465,
+          "name": "Hepta architecture convergence",
+          "path": ".github/workflows/hepta-architecture-convergence.yml",
+          "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "event": "pull_request",
+          "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-12T07:59:56Z",
+          "updated_at": "2026-11-12T10:11:59Z",
+          "linked_pull_request_number": 6203,
+          "linked_pull_request_current_head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+        }
+      ],
+      "identity_limit": "Each run's own head_sha remains 19aa even though its linked PR object now reports e8b6. Old runs are not e8b6 execution or acceptance."
+    }
+  },
+  "pr_observations": {
+    "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/6203",
+    "ordered_raw_observations": [
+      {
+        "phase": "initial",
+        "number": 6203,
+        "state": "open",
+        "draft": true,
+        "head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "head_ref": "codex/utility-evidence-closure-20261112-36fa",
+        "head_repository": "TrillionniumFoundation/hepta-private-ci",
+        "base_sha_reported_by_pr": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "base_ref": "codex/learn-common-profile-20261112-037c",
+        "base_repository": "TrillionniumFoundation/hepta-private-ci",
+        "mergeable": null,
+        "mergeable_state": "unknown",
+        "merge_commit_sha": null,
+        "labels": [],
+        "created_at": "2026-11-12T07:36:52Z",
+        "updated_at": "2026-11-12T09:46:21Z"
+      },
+      {
+        "phase": "after_connector_metadata_read",
+        "number": 6203,
+        "state": "open",
+        "draft": true,
+        "head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "head_ref": "codex/utility-evidence-closure-20261112-36fa",
+        "head_repository": "TrillionniumFoundation/hepta-private-ci",
+        "base_sha_reported_by_pr": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "base_ref": "codex/learn-common-profile-20261112-037c",
+        "base_repository": "TrillionniumFoundation/hepta-private-ci",
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "labels": [],
+        "created_at": "2026-11-12T07:36:52Z",
+        "updated_at": "2026-11-12T09:46:21Z"
+      },
+      {
+        "phase": "final",
+        "number": 6203,
+        "state": "open",
+        "draft": true,
+        "head_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "head_ref": "codex/utility-evidence-closure-20261112-36fa",
+        "head_repository": "TrillionniumFoundation/hepta-private-ci",
+        "base_sha_reported_by_pr": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "base_ref": "codex/learn-common-profile-20261112-037c",
+        "base_repository": "TrillionniumFoundation/hepta-private-ci",
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "labels": [],
+        "created_at": "2026-11-12T07:36:52Z",
+        "updated_at": "2026-11-12T09:46:21Z"
+      }
+    ],
+    "note": "Initial raw mergeable:null/unknown later became false/dirty. The normalized connector false is not used to infer the earlier null response was false."
+  },
+  "actual_base_branch": {
+    "ref_endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/learn-common-profile-20261112-037c",
+    "branch_endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/codex/learn-common-profile-20261112-037c",
+    "direct_ref_sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "direct_branch_sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "final_ref_sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "tree": "906546af39b07474f0b9d046a6e780b6d3342743",
+    "parents": [
+      "8faf92e260e118508fc62f4f38f3816db24cd4cc"
+    ],
+    "commit_date": "2026-11-12T10:05:54Z",
+    "subject": "docs(learn): preserve progress evidence and observed failures",
+    "pr_base_sha_is_stale": true,
+    "stale_reported_pr_base": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "comparison_from_accepted_fixed_base": {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/726af8f4a345a2ffb148b971f3fa16c71436862d...b29869e856d08db1bfb066116a9c443376ccc57d",
+      "status": "ahead",
+      "base_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "merge_base_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "ahead_by": 11,
+      "behind_by": 0,
+      "total_commits": 11,
+      "changed_files_returned": 156,
+      "commits": [
+        {
+          "sha": "a43bcfff9f778a558587235afe829965bf1082be",
+          "subject": "fix(learn): compile original owner mechanisms with Rust 1.96",
+          "parents": [
+            "726af8f4a345a2ffb148b971f3fa16c71436862d"
+          ]
+        },
+        {
+          "sha": "58739e7755721fa04d5c864e5e2f1de3591c3ecd",
+          "subject": "feat(learn): issue original evaluated-retention Selector receipts",
+          "parents": [
+            "a43bcfff9f778a558587235afe829965bf1082be"
+          ]
+        },
+        {
+          "sha": "a9d4821869ab4ad42ffd7df33be36a9f63804a13",
+          "subject": "test(learn): close evaluated Selector source authority boundaries",
+          "parents": [
+            "58739e7755721fa04d5c864e5e2f1de3591c3ecd"
+          ]
+        },
+        {
+          "sha": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+          "subject": "feat(learn): intake independently signed measurement support in V2",
+          "parents": [
+            "a9d4821869ab4ad42ffd7df33be36a9f63804a13"
+          ]
+        },
+        {
+          "sha": "5aec0987e3c705c0dc1c4e6e580d6edbb9a69f1e",
+          "subject": "fix(learn): incorporate reviewed Rust maintenance postimages",
+          "parents": [
+            "094958b83a8fd19e3bc6d01a092793c0f420bb75"
+          ]
+        },
+        {
+          "sha": "3a0671c171ee6e5d2b2408c7ec81926bd0bd96dc",
+          "subject": "feat(learn): serve evaluated Selector readback from original custody",
+          "parents": [
+            "5aec0987e3c705c0dc1c4e6e580d6edbb9a69f1e"
+          ]
+        },
+        {
+          "sha": "ffde94bd74da89994979ec8bcfe5083140e41042",
+          "subject": "feat(learn): authenticate evaluated-retention C receipts",
+          "parents": [
+            "3a0671c171ee6e5d2b2408c7ec81926bd0bd96dc"
+          ]
+        },
+        {
+          "sha": "b94c226de1ec3a0ed69f2efbc5063c9058aa5bdf",
+          "subject": "test(learn): cover original evaluated C readback and refusal",
+          "parents": [
+            "ffde94bd74da89994979ec8bcfe5083140e41042"
+          ]
+        },
+        {
+          "sha": "a1f70b6c1082551e7e897404aa2c2e758f05305f",
+          "subject": "test(learn): close evaluated C and Selector custody source boundaries",
+          "parents": [
+            "b94c226de1ec3a0ed69f2efbc5063c9058aa5bdf"
+          ]
+        },
+        {
+          "sha": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+          "subject": "fix(learn): disambiguate original current journal readback",
+          "parents": [
+            "a1f70b6c1082551e7e897404aa2c2e758f05305f"
+          ]
+        },
+        {
+          "sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+          "subject": "docs(learn): preserve progress evidence and observed failures",
+          "parents": [
+            "8faf92e260e118508fc62f4f38f3816db24cd4cc"
+          ]
+        }
+      ],
+      "source_or_configuration_paths": 63,
+      "evidence_paths_under_qualification": 93
+    },
+    "comparison_live_base_to_source": {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/b29869e856d08db1bfb066116a9c443376ccc57d...e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "status": "diverged",
+      "base_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+      "merge_base_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "ahead_by": 4,
+      "behind_by": 11,
+      "total_commits": 4,
+      "changed_files_returned": 51,
+      "commits": [
+        {
+          "sha": "91d0e10e002d285aec720e9f2b2f3a1d854b4707",
+          "subject": "fix(eval): keep partial negative evidence insufficient through learning receipts",
+          "parents": [
+            "eabfb55ef388c750725884713c2f1fe9044b334f"
+          ]
+        },
+        {
+          "sha": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+          "subject": "test(learn): align exact caller expectations with original Model owners",
+          "parents": [
+            "91d0e10e002d285aec720e9f2b2f3a1d854b4707"
+          ]
+        },
+        {
+          "sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+          "subject": "fix(learn): name original journal readback for strict caller proof",
+          "parents": [
+            "6d0da9fe0cae414975288f23a3779d7bf86e3638"
+          ]
+        },
+        {
+          "sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+          "subject": "fix(learn): restore native evaluation fixtures on frozen retention base",
+          "parents": [
+            "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+            "726af8f4a345a2ffb148b971f3fa16c71436862d"
+          ]
+        }
+      ]
+    },
+    "scope_limit": "The live base advanced by eleven commits. This observation does not accept that new integration scope, rebase the source, retarget the PR, or require chasing the mutable upstream branch."
+  },
+  "prospective_merge_ref": {
+    "ref_endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/pull/6203/merge",
+    "sha": "3fa79243e7ef053782dede0e8947969f14034a75",
+    "tree": "4634afac72f81c9475584500ac260fc3dcfb783e",
+    "parents": [
+      "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48"
+    ],
+    "message": "Merge 19aa601fa09321f1b6d1b3ff3b4d422908004e48 into 726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "commit_date": "2026-11-12T07:59:53Z",
+    "includes_current_source_as_parent": false,
+    "qualification": "This ref still represents the old 19aa head with fixed 726, not the current e8b6 head or current live base b298."
+  },
+  "workflow_source_observations": {
+    "source_workflow_tree": "1873816546bd13035644857207a3a428c46a996b",
+    "files": [
+      {
+        "path": ".github/workflows/hepta-windows-private-state-native.yml",
+        "bytes": 7208,
+        "sha256": "7eadc1c274bd12d2404f161b7167a66cfa800eb07208f047c0d615606d79c2a6",
+        "git_blob_sha": "c644fadf77f9279f053e38d671cdbef74abdf185",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/utils/path-utils/**\"\n      - \"codex-rs/hepta-prompt-registry/**\"\n      - \"codex-rs/hepta-contracts/**\"\n      - \"codex-rs/hepta-agentd/**\"\n      - \"codex-rs/hepta-intelligence-eval/**\"\n      - \"codex-rs/hepta-learning-ledger/**\"\n      - \"codex-rs/network-proxy/**\"\n      - \"codex-rs/Cargo.toml\"\n      - \"codex-rs/Cargo.lock\"\n      - \"codex-rs/rust-toolchain.toml\"\n      - \".github/workflows/hepta-windows-private-state-native.yml\"\n      - \".github/scripts/check_windows_private_state_acquisition.py\"\n      - \".github/scripts/test_check_windows_private_state_acquisition.py\"\n      - \".github/fixtures/windows-private-state-acquisition/**\"\n      - \"scripts/hepta_windows_learn_regressions.py\"\n      - \"scripts/test_hepta_windows_learn_regressions.py\"\n      - \"scripts/hepta_ci_exec.py\"\n      - \"scripts/hepta_ci_junit.py\"\n      - \"scripts/run-nextest.py\"\n      - \"codex-rs/.config/nextest.toml\"\n      - \"justfile\"\n      - \"scripts/just-shell.py\"\n  workflow_dispatch:\n",
+        "workflow_dispatch_declared": true
+      },
+      {
+        "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+        "bytes": 15689,
+        "sha256": "07ee54ad1f57a26263959f93abae4416598575018ce00dc64680a2aa6ff6a488",
+        "git_blob_sha": "31423cf5a5a81d2bbfba4a0e6d273b56414bdbfd",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  pull_request:\n    types: [opened, synchronize, reopened]\n    paths:\n      - .github/workflows/hepta-production-hos2-proposal.yml\n      - codex-rs/hepta-memory/**\n      - codex-rs/hepta-cognitive-store/**\n      - codex-rs/hepta-agentd/**\n      - codex-rs/Cargo.toml\n      - codex-rs/Cargo.lock\n      - codex-rs/rust-toolchain.toml\n      - MODULE.bazel\n      - MODULE.bazel.lock\n      - .bazelversion\n      - justfile\n      - scripts/format.py\n      - scripts/run-nextest.py\n",
+        "workflow_dispatch_declared": false
+      },
+      {
+        "path": ".github/workflows/v8-canary.yml",
+        "bytes": 17441,
+        "sha256": "8b3a8ec74c6fcfbfc0e10f756012c0a51075a61fd02038f692f4a35869281867",
+        "git_blob_sha": "c7a46b14592aef6f60244be6ac12701b30955705",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  workflow_call:\n  pull_request: {}\n  workflow_dispatch:\n\nconcurrency:\n  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}\n  cancel-in-progress: ${{ github.ref_name != 'main' }}\n",
+        "workflow_dispatch_declared": true
+      },
+      {
+        "path": ".github/workflows/hepta-shared-framework.yml",
+        "bytes": 4625,
+        "sha256": "7d3013696084d55222eacdaacbea5ead11520afeee53b7d104b398e8531e48a5",
+        "git_blob_sha": "1c60cc72e63bec9fb1de320d710ecbd785249d74",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  push:\n    branches:\n      - codex/shared-cell-framework-20261109\n      - codex/shared-cell-framework-followup-20261109-a60a\n  pull_request:\n    paths:\n      - \"codex-rs/hepta-automation/**\"\n      - \"codex-rs/hepta-neuron/**\"\n      - \"codex-rs/hepta-agentd/**\"\n      - \"scripts/hepta_ci_exec.py\"\n      - \"scripts/test_hepta_ci_exec.py\"\n      - \".github/workflows/hepta-shared-framework.yml\"\n  workflow_dispatch:\n",
+        "workflow_dispatch_declared": true
+      },
+      {
+        "path": ".github/workflows/blocking-ci.yml",
+        "bytes": 10714,
+        "sha256": "8f8a6f2d91436e03121adc0bf65ded4c45ea03e92d267632ab84b46da81f63c9",
+        "git_blob_sha": "504882ae84cad1cd604410d7a70f19b1e2febf39",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  pull_request: {}\n  push:\n    branches: [main]\n\nconcurrency:\n  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}\n  cancel-in-progress: true\n",
+        "workflow_dispatch_declared": false
+      },
+      {
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "bytes": 27811,
+        "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334",
+        "git_blob_sha": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/hepta-agentd/**\"\n      - \"codex-rs/hepta-learning-ledger/**\"\n      - \"codex-rs/hepta-learning-artifacts/**\"\n      - \"codex-rs/hepta-intelligence-eval/**\"\n      - \"codex-rs/hepta-neuron/**\"\n      - \"CALLERS.toml\"\n      - \"qa/b4-no-bypass/**\"\n      - \"scripts/verify_hepta_callers.py\"\n      - \"scripts/test_hepta_cell_research_units.py\"\n      - \"scripts/hepta_ci_exec.py\"\n      - \"scripts/hepta_ci_junit.py\"\n      - \"scripts/hepta_c_observer_coverage.py\"\n      - \"scripts/test_hepta_c_observer_coverage.py\"\n      - \".github/workflows/hepta-daemon-learning-native.yml\"\n  workflow_dispatch:\n",
+        "workflow_dispatch_declared": true
+      },
+      {
+        "path": ".github/workflows/hepta-architecture-convergence.yml",
+        "bytes": 21212,
+        "sha256": "f716b0941f6e47aa72b94d97f80d157e24273c38652d45eb9c1eb3ff1e39b6ac",
+        "git_blob_sha": "c1490cedf609e35ab0b2115f5e01c5987583c353",
+        "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "declared_trigger_text": "on:\n  # Always report a terminal identity check; select expensive boundaries below.\n  # Workflow-level path skipping can leave a required check permanently pending.\n  pull_request:\n  workflow_dispatch:\n",
+        "workflow_dispatch_declared": true
+      }
+    ],
+    "source_hashes_independently_verified_against_git_tree": true,
+    "pr_changed_paths_observed": [
+      ".github/blob-size-allowlist.txt",
+      "CALLERS.toml",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "codex-rs/hepta-intelligence-eval/src/lib_tests.rs"
+    ],
+    "trigger_filter_findings": [
+      "blocking-ci, v8-canary and architecture-convergence declare pull_request without trigger-level branch or path filters.",
+      "daemon-learning-native, windows-private-state-native and shared-framework declare pull_request paths that include the observed codex-rs/hepta-agentd changes. The daemon and Windows workflows also include the changed eval crate.",
+      "Production HOS2's only job explicitly restricts its head branch to codex/production-hos2-delivery-20261020. That explains a source-defined skip for this unrelated job, not zero runs across all workflows.",
+      "The inspected workflows do not contain a draft-PR rejection condition. The e8b6 head commit message contains no skip-ci directive.",
+      "The visible push triggers in blocking-ci and shared-framework target main or two named framework branches, not this source branch. No alternative automatic push trigger for the original daemon workflow is declared.",
+      "These are static source observations, not proof that GitHub delivered or accepted a synchronize event."
+    ]
+  },
+  "platform_blocking_signal_and_limits": {
+    "observed_signal": "The final raw PR response reports mergeable=false and mergeable_state=dirty. The actual live base is b298, not the stale PR.base.sha value 726.",
+    "supported_interpretation": "The live branches have diverged (source four commits ahead and eleven behind, merge-base 726). Together with GitHub's nonmergeable/dirty report, this is a documented platform-level blocker signal for pull_request workflows. It does not identify individual conflicting files or prove which internal event processing decision caused every missing run throughout the window.",
+    "underlying_missing_run_root_cause": "Unknown beyond the verified mutable-base advance, stale PR/merge-ref metadata and currently reported dirty state. No internal GitHub event trace or actual merge conflict computation was available.",
+    "correction_of_earlier_inference": "An intermediate suspicion that GitHub reported dirty despite the live base being an e8b6 parent was withdrawn after direct ref and branch reads proved the live base had advanced to b298. Only fixed 726, not the live base, is e8b6's second parent.",
+    "official_documentation": {
+      "repository": "github/docs",
+      "path": "content/actions/reference/workflows-and-actions/events-that-trigger-workflows.md",
+      "git_blob_sha": "b365cf2bc6c7f22f26ab2730928974d7eaadcc59",
+      "git_blob_url": "https://api.github.com/repos/github/docs/git/blobs/b365cf2bc6c7f22f26ab2730928974d7eaadcc59",
+      "retrieved_bytes": 67972,
+      "pull_request_rule": "GitHub documents that pull_request workflows do not run when the PR has a merge conflict.",
+      "dispatch_rule": "The current official page says the UI Run workflow button depends on a default-branch workflow file; after a workflow has run at least once, API/CLI dispatch can target a branch or tag."
+    }
+  },
+  "configuration_visibility": {
+    "repository_archived": false,
+    "repository_disabled": false,
+    "current_default_branch": "main",
+    "pinned_default_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "pinned_default_workflow_count": 78,
+    "daemon_and_windows_files_absent_from_pinned_default_listing": true,
+    "architecture_default_blob": "df330bc1b23af7fbdd9b92de7e1565f2a260393a",
+    "architecture_default_declares_workflow_dispatch": true,
+    "actions_workflow_catalog": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "actions_permissions": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "limitation": "Both Actions configuration URLs were rejected by the connector URL allowlist (INVALID_ARGUMENT), not by a demonstrated GitHub repository authorization decision. Actual Actions enablement, allowed-action policy and Actions write permission therefore remain Unknown. Repository permissions are not substituted for Actions permission."
+  },
+  "exact_head_trigger_capability": {
+    "original_daemon_workflow_id": 412153018,
+    "workflow_source_declares_dispatch": true,
+    "known_prior_run": 43179383404,
+    "documented_candidate_endpoint": "POST /repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/412153018/dispatches",
+    "candidate_body_not_executed": {
+      "ref": "codex/utility-evidence-closure-20261112-36fa"
+    },
+    "required_identity_check": "Any separately authorized dispatch must return a run whose own head_sha is exactly the intended frozen commit. A mutable branch name or linked PR head does not establish the executed source identity.",
+    "current_connector_exposes_workflow_dispatch": false,
+    "exposed_mutating_workflow_tools": [
+      "github_rerun_failed_workflow_run_jobs",
+      "github_rerun_workflow_job"
+    ],
+    "fetch_is_get_only": true,
+    "verified_callable_new_head_trigger": "None in the inspected connector capability set. Rerunning an old 19aa run would not validate e8b6.",
+    "execution_status": "not_attempted",
+    "permissions_or_approval_status": "Unknown; no dispatch, rerun, approval or PR event mutation was attempted."
+  },
+  "side_effects": {
+    "github_refs_changed": false,
+    "pull_request_changed": false,
+    "labels_changed": false,
+    "workflow_dispatches": 0,
+    "workflow_reruns": 0,
+    "source_files_changed": false,
+    "browser_used": false,
+    "desktop_or_token_probe_used": false,
+    "artifact_write": "Only this authorized immutable observation blob."
+  },
+  "qualification": "No e8b6 GitHub workflow execution or acceptance was observed. Native/local gate results and the pending successor remain separate source-bound records."
+}

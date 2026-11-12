@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="4" failures="4" errors="0" uuid="f37abb8c-ef53-4c6e-9a01-d0bbced0feaf" timestamp="2026-11-12T05:32:00.186-05:00" time="0.015">
+    <testsuite name="codex-hepta-intelligence-eval" tests="4" disabled="0" errors="0" failures="4">
+        <testcase name="closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T05:32:00.191-05:00" time="0.007">
+            <failure message="thread &apos;closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning&apos; (681263) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:106:9" type="test failure with exit code 101">thread &apos;closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning&apos; (681263) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:106:9:
+assertion failed: `(left == right)`: missing retention
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;resource-cost&quot;,
+             ),
+         ),
+     ],
+     AuthorityPosture {
+         _deny_all: (),
+     },
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning ... FAILED
+
+failures:
+
+failures:
+    closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>
+thread &apos;closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning&apos; (681263) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:106:9:
+assertion failed: `(left == right)`: missing retention
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;resource-cost&quot;,
+             ),
+         ),
+     ],
+     AuthorityPosture {
+         _deny_all: (),
+     },
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T05:32:00.191-05:00" time="0.007">
+            <failure message="thread &apos;tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible&apos; (681265) panicked at hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs:29:5" type="test failure with exit code 101">thread &apos;tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible&apos; (681265) panicked at hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs:29:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;safety&quot;,
+             ),
+         ),
+     ],
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible ... FAILED
+
+failures:
+
+failures:
+    tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>
+thread &apos;tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible&apos; (681265) panicked at hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs:29:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;safety&quot;,
+             ),
+         ),
+     ],
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T05:32:00.191-05:00" time="0.009">
+            <failure message="thread &apos;closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence&apos; (681266) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:136:5" type="test failure with exit code 101">thread &apos;closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence&apos; (681266) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:136:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;task-utility&quot;,
+             ),
+         ),
+     ],
+     AuthorityPosture {
+         _deny_all: (),
+     },
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence ... FAILED
+
+failures:
+
+failures:
+    closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>
+thread &apos;closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence&apos; (681266) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:136:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;task-utility&quot;,
+             ),
+         ),
+     ],
+     AuthorityPosture {
+         _deny_all: (),
+     },
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T05:32:00.191-05:00" time="0.009">
+            <failure message="thread &apos;closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes&apos; (681264) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:63:13" type="test failure with exit code 101">thread &apos;closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes&apos; (681264) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:63:13:
+assertion failed: `(left == right)`: Qualification: missing metric-support
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;task-utility&quot;,
+             ),
+         ),
+     ],
+     AuthorityPosture {
+         _deny_all: (),
+     },
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes ... FAILED
+
+failures:
+
+failures:
+    closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>
+thread &apos;closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes&apos; (681264) panicked at hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs:63:13:
+assertion failed: `(left == right)`: Qualification: missing metric-support
+
+Diff &lt; left / right &gt; :
+ (
+&lt;    Ineligible,
+&gt;    InsufficientEvidence,
+     [
+         StableId(
+             BoundedText(
+                 &quot;task-utility&quot;,
+             ),
+         ),
+     ],
+     AuthorityPosture {
+         _deny_all: (),
+     },
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

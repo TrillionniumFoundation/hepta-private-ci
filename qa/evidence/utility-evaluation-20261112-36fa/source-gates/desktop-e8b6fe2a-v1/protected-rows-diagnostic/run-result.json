@@ -1,0 +1,34 @@
+{
+  "archive": {
+    "bytes": 38877,
+    "git_blob_sha": "12e822c25ffd2ff96ee3c1aef57e2f896f293998",
+    "path": "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/diagnostic.json.gz.b64",
+    "sha256": "ef5080571eceadfa14b486143c3a66afa78d3df353916f88577490d9523caf65"
+  },
+  "archive_encoding": "base64 UTF-8 plus LF of gzip mtime=0; decode and gunzip then verify raw bytes/hash",
+  "compressed_sha256": "f8489c37fa8c12236b9d784051311c97c0b61ebef120b77e8fd7d44a14725b3b",
+  "elapsed_seconds": 4.386671673040837,
+  "failed_rows": 0,
+  "finished_at": "2026-11-12T10:13:55.523374+00:00",
+  "full_gate_status": "not_run",
+  "identity": "hepta-utility-36fa-protected-rows-e8b-v1",
+  "passed_rows": 381,
+  "raw": {
+    "bytes": 133715,
+    "git_blob_sha": "bbb9d4c6ed114326fdd6ad2afc89970942066323",
+    "path": "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/diagnostic.json",
+    "sha256": "05b42e883ea21812d68c95c1c702a2cffea89f048eb0e05c38d2d1652aac5d96"
+  },
+  "report_parse_error": null,
+  "reported_status": "passed_scoped_diagnostic",
+  "returncode": 0,
+  "scope": "Only the original _verify_protected_files over 381 rows with an external reviewed manifest. Not source-closure, complete caller proof or Rust tests.",
+  "source_inputs_unchanged": true,
+  "stderr": {
+    "bytes": 0,
+    "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "path": "/home/qian-qi/hepta-utility-36fa-protected-rows-e8b-v1/diagnostic.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "timed_out": false
+}

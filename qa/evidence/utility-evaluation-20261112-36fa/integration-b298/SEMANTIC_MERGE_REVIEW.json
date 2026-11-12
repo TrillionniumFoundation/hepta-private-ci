@@ -1,0 +1,2174 @@
+{
+  "format": "hepta-fixed-b298-read-only-semantic-merge-review-v1",
+  "status": "Read-only review and recommendations; no merge, source mutation, ref update, compilation or test execution performed by this review.",
+  "source": {
+    "e8": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "e8_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "upstream_tree": "906546af39b07474f0b9d046a6e780b6d3342743",
+    "common_base": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "later_live_refs_not_read": true
+  },
+  "comparisons": {
+    "upstream_commits": 11,
+    "changed_paths": 156,
+    "source_or_config_paths": 63,
+    "evidence_paths": 93,
+    "e8_first_parent_changed_paths": 53,
+    "e8_first_parent_overlap": 45,
+    "e8_first_parent_overlap_same_blob": 30,
+    "e8_first_parent_overlap_different_blob": 15,
+    "common_base_e8_paths": 51,
+    "common_base_overlap": 43,
+    "common_base_overlap_same_blob": 30,
+    "common_base_overlap_different_blob": 13,
+    "explanation": "The 53-path inventory compares e8 to first parent 19aa. Actual three-way integration compares both sides to common ancestor 726; that produces thirteen differing overlapping files, not fifteen."
+  },
+  "upstream_commits": [
+    {
+      "sha": "a43bcfff9f778a558587235afe829965bf1082be",
+      "parents": [
+        "726af8f4a345a2ffb148b971f3fa16c71436862d"
+      ],
+      "subject": "fix(learn): compile original owner mechanisms with Rust 1.96"
+    },
+    {
+      "sha": "58739e7755721fa04d5c864e5e2f1de3591c3ecd",
+      "parents": [
+        "a43bcfff9f778a558587235afe829965bf1082be"
+      ],
+      "subject": "feat(learn): issue original evaluated-retention Selector receipts"
+    },
+    {
+      "sha": "a9d4821869ab4ad42ffd7df33be36a9f63804a13",
+      "parents": [
+        "58739e7755721fa04d5c864e5e2f1de3591c3ecd"
+      ],
+      "subject": "test(learn): close evaluated Selector source authority boundaries"
+    },
+    {
+      "sha": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "parents": [
+        "a9d4821869ab4ad42ffd7df33be36a9f63804a13"
+      ],
+      "subject": "feat(learn): intake independently signed measurement support in V2"
+    },
+    {
+      "sha": "5aec0987e3c705c0dc1c4e6e580d6edbb9a69f1e",
+      "parents": [
+        "094958b83a8fd19e3bc6d01a092793c0f420bb75"
+      ],
+      "subject": "fix(learn): incorporate reviewed Rust maintenance postimages"
+    },
+    {
+      "sha": "3a0671c171ee6e5d2b2408c7ec81926bd0bd96dc",
+      "parents": [
+        "5aec0987e3c705c0dc1c4e6e580d6edbb9a69f1e"
+      ],
+      "subject": "feat(learn): serve evaluated Selector readback from original custody"
+    },
+    {
+      "sha": "ffde94bd74da89994979ec8bcfe5083140e41042",
+      "parents": [
+        "3a0671c171ee6e5d2b2408c7ec81926bd0bd96dc"
+      ],
+      "subject": "feat(learn): authenticate evaluated-retention C receipts"
+    },
+    {
+      "sha": "b94c226de1ec3a0ed69f2efbc5063c9058aa5bdf",
+      "parents": [
+        "ffde94bd74da89994979ec8bcfe5083140e41042"
+      ],
+      "subject": "test(learn): cover original evaluated C readback and refusal"
+    },
+    {
+      "sha": "a1f70b6c1082551e7e897404aa2c2e758f05305f",
+      "parents": [
+        "b94c226de1ec3a0ed69f2efbc5063c9058aa5bdf"
+      ],
+      "subject": "test(learn): close evaluated C and Selector custody source boundaries"
+    },
+    {
+      "sha": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+      "parents": [
+        "a1f70b6c1082551e7e897404aa2c2e758f05305f"
+      ],
+      "subject": "fix(learn): disambiguate original current journal readback"
+    },
+    {
+      "sha": "b29869e856d08db1bfb066116a9c443376ccc57d",
+      "parents": [
+        "8faf92e260e118508fc62f4f38f3816db24cd4cc"
+      ],
+      "subject": "docs(learn): preserve progress evidence and observed failures"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "f388247fff77eb4f63348d38644b37997ef80ed1",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "16bd8058a19ef09b84a667cbd15a09f444ca67f8",
+      "additions": 202,
+      "deletions": 93,
+      "changes": 295,
+      "github_patch_available": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "8b20df0711fa3bbaef70685b7a5381c6486a936e",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "22bb410849e9f5f93b433bfff4c44547822f4655",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "e16820f8bab3027ab74490f942a34c7ee5470739",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "1cac6bab796d4fd648f90d5c7ba219f4a64dd63a",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "377d40bbd92baab5c8502bc51e0f942ec996495f",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "0418a532daa7460954bec6d421d608c7aa1f16ee",
+      "additions": 4,
+      "deletions": 4,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "d32eb1681ce8e51b823ed483955d69257a25d981",
+      "additions": 10,
+      "deletions": 4,
+      "changes": 14,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "ae51e8314c790641d3b1ebd64198073d9033e9dd",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "9dd91ec0e81aff907a7760cdcee880226945993d",
+      "additions": 5,
+      "deletions": 6,
+      "changes": 11,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "d1d9deddfd7bd34a6a096cb1dbe67f046fd088c7",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+      "additions": 3,
+      "deletions": 4,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "36f1822242a88da3fd704519aa68df37674ca58c",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "5752c7e3c43931277c84bcec952450bc49415af9",
+      "additions": 2,
+      "deletions": 1,
+      "changes": 3,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "2bda6cb47bd4777636373e36a7faf9124b433d49",
+      "additions": 333,
+      "deletions": 0,
+      "changes": 333,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "additions": 531,
+      "deletions": 0,
+      "changes": 531,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "ffd7af2ce29ea5fe489c45a61a21b13ab45a61ac",
+      "additions": 87,
+      "deletions": 5,
+      "changes": 92,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "additions": 5,
+      "deletions": 0,
+      "changes": 5,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "2e301a7097eaf063f9f241d736a47340b82d4218",
+      "additions": 415,
+      "deletions": 0,
+      "changes": 415,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "c1e11662921a5b869d060dad3a9a2d53a53668fb",
+      "additions": 231,
+      "deletions": 0,
+      "changes": 231,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "27fbc11be9afac9a008fdfe08f2c29ed2b3f53df",
+      "additions": 140,
+      "deletions": 0,
+      "changes": 140,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "a83916a9e2150f4c0edc819b128b433590701a6d",
+      "additions": 367,
+      "deletions": 0,
+      "changes": 367,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "e64619d52662cb1a2b7f66fa08f371e07d64cb92",
+      "additions": 57,
+      "deletions": 6,
+      "changes": 63,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "ccaaa271ed795e4051f347e0302bac8fdb1f8043",
+      "additions": 127,
+      "deletions": 0,
+      "changes": 127,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "704673bda41352c26a5f464fc0b0ab75654eef22",
+      "additions": 33,
+      "deletions": 5,
+      "changes": 38,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+      "additions": 7,
+      "deletions": 3,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "f3e2359b83e9b88d8a4cd2751629bda29d7ca7fa",
+      "additions": 4,
+      "deletions": 5,
+      "changes": 9,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "191a74d44cfda509b24919a89144a93ec90b4f70",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "87f266fa176beb1937e09e1a8ec800be73fda47d",
+      "additions": 235,
+      "deletions": 0,
+      "changes": 235,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "821125b04b65cb63d79ac7d5d1285fbaf3155204",
+      "additions": 100,
+      "deletions": 218,
+      "changes": 318,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "02d610ad1a268e5b694c5d36d1f65de44de5453c",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "383991aab1a6e0b6aa1469d098d816c10375dfe6",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "0e7f3c909fcc97742e228eb4ad189bd074727604",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+      "additions": 0,
+      "deletions": 2,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8",
+      "additions": 0,
+      "deletions": 4,
+      "changes": 4,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "1ac83fd1f431f8911b850d77955f4cdd4c8ec23c",
+      "additions": 4,
+      "deletions": 4,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "771a33453238653a587632c04bf62b988421fb1b",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "15e500215e19d8ee1603535418a1be5cfbb0f353",
+      "additions": 4,
+      "deletions": 5,
+      "changes": 9,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+      "additions": 74,
+      "deletions": 21,
+      "changes": 95,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "c446a6870044b77f51ae4049df2a4a42482920c0",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+      "additions": 18,
+      "deletions": 2,
+      "changes": 20,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "002394b4a405abfdb51c6f80f19a203a68a62e18",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+      "additions": 4,
+      "deletions": 5,
+      "changes": 9,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "additions": 18,
+      "deletions": 9,
+      "changes": 27,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "additions": 5,
+      "deletions": 5,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "ea8b12aebdfb2441c09efa56830ff9e6417be6ae",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "246bb07544446aca95ee67c356e184befd9a5f7a",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "github_patch_available": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "b7f4bf79795381a21f77680498cb4431895e673b",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "0a4e6b6414c35aac7fdf8230c5494bf2d9552ea2",
+      "additions": 4,
+      "deletions": 4,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "e038407ef642191d77b1185f1e826f16540e5270",
+      "additions": 500,
+      "deletions": 0,
+      "changes": 500,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "72d1dc1ce3395b420507aaa6d80fe0401356faf3",
+      "additions": 4,
+      "deletions": 2,
+      "changes": 6,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "776e861fe82c208f6f61af73208a2bff263239ef",
+      "additions": 389,
+      "deletions": 0,
+      "changes": 389,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_experience_v2_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "added",
+      "git_blob_sha": "430088028179f0c28a5dccdb15d05ad748754da1",
+      "additions": 186,
+      "deletions": 0,
+      "changes": 186,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "e4795876083d972b5a655a743edcefc42f9bd1f1",
+      "additions": 46,
+      "deletions": 5,
+      "changes": 51,
+      "github_patch_available": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "kind": "source_or_configuration",
+      "status": "modified",
+      "git_blob_sha": "3d4784411e7c65e54643fe1a11d80bbc339c9650",
+      "additions": 9,
+      "deletions": 2,
+      "changes": 11,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ARTIFACTS.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "f32ea739235a22944198b50f703d977f6d6ab4a7",
+      "additions": 560,
+      "deletions": 0,
+      "changes": 560,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/INGESTION.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "a0c97f506cc7373acdd3d9a61462a441b027d2c0",
+      "additions": 458,
+      "deletions": 0,
+      "changes": 458,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/INTEGRITY.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "692e486698b4fd3e757ad38923a8debb175a66f3",
+      "additions": 157,
+      "deletions": 0,
+      "changes": 157,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/PROGRESS.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "7ef68e4014f26edd6671eb3013ec20277f064690",
+      "additions": 741,
+      "deletions": 0,
+      "changes": 741,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/README.md",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "cc8369b765fd77ffaa56ed43c12c1baa6b769eaf",
+      "additions": 80,
+      "deletions": 0,
+      "changes": 80,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/caller-ufcs.patch",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "70b2afc32b65a4a1e887eb1fdd66f871fdf6368c",
+      "additions": 26,
+      "deletions": 0,
+      "changes": 26,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/launch-receipt.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "d5bbe03c17dbefcb3f3ccfb2e60a10aaff736d77",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/manifest.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "28eab139528f03c8226b66258192bf678b6017f5",
+      "additions": 21,
+      "deletions": 0,
+      "changes": 21,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/original-result-readback.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "633688c77d5bc3fc609bc9d6ad1bb0d299b655c1",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/result.from-pty.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "858f8fb8baf76fee37210c716ca101560f361438",
+      "additions": 126,
+      "deletions": 0,
+      "changes": 126,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/result.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "858f8fb8baf76fee37210c716ca101560f361438",
+      "additions": 126,
+      "deletions": 0,
+      "changes": 126,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/rustfmt.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "github_patch_available": false
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/source-after.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "be8bbd0959037e1546fbffc56a7cfd9e438898e3",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/source-before.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "be8bbd0959037e1546fbffc56a7cfd9e438898e3",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/terminal-receipt.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "a62d47022eea73992dbda4d426622ccba3df455d",
+      "additions": 30,
+      "deletions": 0,
+      "changes": 30,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/COMPLETE_SOURCE_POSTIMAGES.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "8090798baeafc07b32b0cc32ddcc2b11f0396d42",
+      "additions": 227,
+      "deletions": 0,
+      "changes": 227,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/C_POSTIMAGES_NO_LIB.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "1103c6057d61b3cf0f299b1fbed7387844c770ea",
+      "additions": 86,
+      "deletions": 0,
+      "changes": 86,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/LOCAL_MATERIALIZED_POSTIMAGES.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "d8043662f194bdf6f1315d17cb0f6de34a058acd",
+      "additions": 587,
+      "deletions": 0,
+      "changes": 587,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/MAINTENANCE_FOLLOWUP_POSTIMAGES.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "ddc1343e8a563be25ea41b01188aa1ffa4a95118",
+      "additions": 122,
+      "deletions": 0,
+      "changes": 122,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/MATERIALIZED_QA_INPUTS.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e329d615c4de78f28cc40fd419fc90c7726c89ea",
+      "additions": 102,
+      "deletions": 0,
+      "changes": 102,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v2.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "80f9519db5d51a67677a04efe427f5b0e5e8c2f7",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v2.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "27c08bbfe3d55c91588acbb54d59405a1a21c4c6",
+      "additions": 77,
+      "deletions": 0,
+      "changes": 77,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v3.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "ca0836cbeaab5ac6c4f78c02d026606726b53e1f",
+      "additions": 28,
+      "deletions": 0,
+      "changes": 28,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v3.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "a9f3b19718e13254d5546473d8e13b9621155aef",
+      "additions": 77,
+      "deletions": 0,
+      "changes": 77,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/LOCAL_RECOVERY.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "fb1a53f2454d9b69ff39b8e83461d21c4d6f3e74",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/before-format-manifest.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "5bf21cc0b87677d3d23e30541bb55f9df41baeb8",
+      "additions": 349,
+      "deletions": 0,
+      "changes": 349,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/circuit_model_selection_material_support_tests.rs.merge.stderr",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "github_patch_available": false
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/circuit_model_selection_owner_support_tests.rs.merge.stderr",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "github_patch_available": false
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/five-reviewed-lints.patch",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "4a64ed90cbca477f8345534dc490e46a57f5eb3d",
+      "additions": 28,
+      "deletions": 0,
+      "changes": 28,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/format-only.patch",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "07c3b8f8c71639175921136ccd99c40dab57c620",
+      "additions": 20,
+      "deletions": 0,
+      "changes": 20,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/format-terminal.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "3b8a223137eb7baedbbcc0f217941eca4341c75f",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/input-manifest.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "57414cf5d92d09b20d2e628be1c9b251d53ab0bd",
+      "additions": 17,
+      "deletions": 0,
+      "changes": 17,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/integration.patch",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "d89d40268f8d5faae2860b843fb53446155b08ec",
+      "additions": 283,
+      "deletions": 0,
+      "changes": 283,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/manifest.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "4d16342dc5144b7952160f168b5c24bf974f5c9b",
+      "additions": 517,
+      "deletions": 0,
+      "changes": 517,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/rustfmt.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "github_patch_available": false
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/three-way-merges.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "3486097ddb6de87230c29e69a3082caacbdb4fb8",
+      "additions": 78,
+      "deletions": 0,
+      "changes": 78,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-final-lib-v1/result.from-pty.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "5e9f3140bf0444b7c6b6d0cdb7c26702ec057422",
+      "additions": 32,
+      "deletions": 0,
+      "changes": 32,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-final-lib-v1/root-terminal-receipt.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "f3acbdd31901ae07e0e3baa09f79a3815a295a3d",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-final-lib-v1/rustfmt-terminal.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e794b356bc75769a0acfeb7359d6c61264ab51e8",
+      "additions": 32,
+      "deletions": 0,
+      "changes": 32,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/self-test.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "a62abaa62a09c1e20231cfcc6c850de106bd8b55",
+      "additions": 15,
+      "deletions": 0,
+      "changes": 15,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/self-test.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/verify.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "2412e04d811a83e5ccc1567f80b32daa98b55c9c",
+      "additions": 15,
+      "deletions": 0,
+      "changes": 15,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/verify.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/result.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "31211898c224a8efca34120c781830987bbd33ea",
+      "additions": 26,
+      "deletions": 0,
+      "changes": 26,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/source-after.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "1271d5c59177312b9dc24f85cd6bdc2b09286a8b",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/source-before.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "1271d5c59177312b9dc24f85cd6bdc2b09286a8b",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/history/ARTIFACTS.initial.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "9c9fb647a1a64024a14dd649b0da420752f00c4c",
+      "additions": 173,
+      "deletions": 0,
+      "changes": 173,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/intake-source-preflight/INTAKE_POSTIMAGES.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "337f0863ab091629e811ae19f3e950d4dd1bde72",
+      "additions": 38,
+      "deletions": 0,
+      "changes": 38,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/intake-source-preflight/intake-integration-source-qa-v2.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "b60bc7f015de869128cb17b30aaab8ee8a91e52f",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/intake-source-preflight/intake-integration-source-qa-v2.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "68b65198879ca375a7b6a4650fac37d7930fcb2e",
+      "additions": 55,
+      "deletions": 0,
+      "changes": 55,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/RECOVERY.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "53880c4eb32100499cb03a4df838df790af6a9be",
+      "additions": 31,
+      "deletions": 0,
+      "changes": 31,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/just-fix.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "f63f334efd7ff3a92ba427b8d645a125daed4b0d",
+      "additions": 3102,
+      "deletions": 0,
+      "changes": 3102,
+      "github_patch_available": false
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/maintenance.patch",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "7ef40fe0d1f933ab1c129cea8b829ccd8e4cebee",
+      "additions": 196,
+      "deletions": 0,
+      "changes": 196,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/postimages.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "5f4351fc957c4db30580df6f10740ff1fc098d3e",
+      "additions": 66,
+      "deletions": 0,
+      "changes": 66,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/result.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "d69a12ad4550f5168de392cc4dce1696f6f7a117",
+      "additions": 51,
+      "deletions": 0,
+      "changes": 51,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/just-fix.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "15a68f424ad2acef5ef8ac9330e69b9383511e92",
+      "additions": 19,
+      "deletions": 0,
+      "changes": 19,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/just-fix.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "f10babed9aa8d1eeaf096065962dba530d324bc2",
+      "additions": 1317,
+      "deletions": 0,
+      "changes": 1317,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/native-environment.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "b42ff37ea76374ebde766093499cd25019adf1ac",
+      "additions": 78,
+      "deletions": 0,
+      "changes": 78,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/postimages.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "806aac9572712ba19891eb750855ae31ce286b2c",
+      "additions": 5,
+      "deletions": 0,
+      "changes": 5,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/result.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "454f9f02b3e18a7ac50c68a783ef47519e682264",
+      "additions": 51,
+      "deletions": 0,
+      "changes": 51,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/source-after.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "ddb291c1e386f17e11750eace89e1178c0c7fdf3",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/source-before.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "ddb291c1e386f17e11750eace89e1178c0c7fdf3",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/followup-lints.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "a3d80ed530e639106fdf7220335a23021b59ba12",
+      "additions": 30,
+      "deletions": 0,
+      "changes": 30,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/just-fix.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "bc76e601d4ea5aad919d50297e9fd1370d9f20f6",
+      "additions": 1515,
+      "deletions": 0,
+      "changes": 1515,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/maintenance.patch",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "22757caf586e93c41088eeabc8587e720fe4a6cb",
+      "additions": 269,
+      "deletions": 0,
+      "changes": 269,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/native-environment.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "7bb7d2a4ad54fa231179eb37abf9969bf405f99c",
+      "additions": 78,
+      "deletions": 0,
+      "changes": 78,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/postimages.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "c66fb0309e2ed1e6deb0486cae7ec7261709293b",
+      "additions": 120,
+      "deletions": 0,
+      "changes": 120,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/result.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "b368760a83c4305e19738913e8a9e314a0dc1b72",
+      "additions": 51,
+      "deletions": 0,
+      "changes": 51,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/source-after.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "25b194b7ba6df6a25c23249d0c9e8cfa4d97271b",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/source-before.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "679e3a1fa4ca2026159ab1f1a46c0bbae5921287",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-8faf-attempt-v1/observations.from-pty.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "ca2d8693ad2029ed167f94b67925b979a00061e6",
+      "additions": 129,
+      "deletions": 0,
+      "changes": 129,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-8faf-attempt-v1/terminal-receipt.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "17b8b76b62af489e8745fcc8c991d5b7922c4907",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-8faf-attempt-v1/terminal.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "e456a17c92d6fc8e2f0ff8ca85f057aa0108028b",
+      "additions": 68,
+      "deletions": 0,
+      "changes": 68,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/REPORT.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "879e138b4abc54a95f51cddfdca2c28ba97e3c0b",
+      "additions": 517,
+      "deletions": 0,
+      "changes": 517,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/optional-nine-case-command.txt",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "eb396a1a30376824c8c069d30aba55390e354f2b",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/ordinary-nine-cases.txt",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "16a437a8d4b8dc0d550e8d22fea534da6120408a",
+      "additions": 9,
+      "deletions": 0,
+      "changes": 9,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/root-four-cases.txt",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "c4a2b4c4ae177e162dc01d6ded0e8f09c5d79275",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/MANIFEST.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "9d5adbc0a87e41dac1291e057acad8cc95a80c03",
+      "additions": 54,
+      "deletions": 0,
+      "changes": 54,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/PACKAGING_NOTE.md",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "7c77210a021f6a0af899ea72f98c3b5d49ffb83f",
+      "additions": 30,
+      "deletions": 0,
+      "changes": 30,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/REPORT.md",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "1a79787910eec590092301d183051e382390993c",
+      "additions": 180,
+      "deletions": 0,
+      "changes": 180,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/SOURCE_MANIFEST.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "78a156cc20857ac9e6476b6df93c91aabee48cc1",
+      "additions": 498,
+      "deletions": 0,
+      "changes": 498,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/VERIFICATION.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "129da6c4739e2b313334c198ec703029cf1c823b",
+      "additions": 11,
+      "deletions": 0,
+      "changes": 11,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/verify_sources.py",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "0aa7d20cdef255a237cee26a4519aee238b0074f",
+      "additions": 39,
+      "deletions": 0,
+      "changes": 39,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/selection-source-preflight/SELECTION_POSTIMAGES.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "211633c731b3d1a125df9b4dea01bffe30545de5",
+      "additions": 98,
+      "deletions": 0,
+      "changes": 98,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/selection-source-preflight/selection-integration-source-qa-v2.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "caa9bebf7e5c321c89ed3c70ec5425ded68a3111",
+      "additions": 8,
+      "deletions": 0,
+      "changes": 8,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/selection-source-preflight/selection-integration-source-qa-v2.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "616b6497d18cc79d8610008e570cf710cd19735a",
+      "additions": 50,
+      "deletions": 0,
+      "changes": 50,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/driver.raw.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "f52a0a76c6957dc094673016ad1a0675cd310ca8",
+      "additions": 363,
+      "deletions": 0,
+      "changes": 363,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/invocation.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "5873abc601c5a6aa3f9baf1b73af640b929d2f54",
+      "additions": 34,
+      "deletions": 0,
+      "changes": 34,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/result.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "00083234c3485c2a3aabee41fb226d02521ba661",
+      "additions": 32,
+      "deletions": 0,
+      "changes": 32,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-after.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "d5dfc30383dac77f86ea2603714ef485df4da6d2",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-before.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "d5dfc30383dac77f86ea2603714ef485df4da6d2",
+      "additions": 7,
+      "deletions": 0,
+      "changes": 7,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-closure.json",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "6be15bec44b6afce5b9d3855789efdfca4b729ea",
+      "additions": 53,
+      "deletions": 0,
+      "changes": 53,
+      "github_patch_available": true
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-closure.json.2f66f61f9dd84303a2bc8904c1641737.log",
+      "kind": "retained_evidence",
+      "status": "added",
+      "git_blob_sha": "9dd60e5e6816f338a1a3a7e9b418ca08df02b826",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "github_patch_available": false
+    }
+  ],
+  "review_method": "Compared all overlapping file Git blob IDs; independently reconstructed and hashed the twelve direct text diffs excluding CALLERS, parsed the full exact 1,102,083-byte b298 CALLERS, reviewed the new production owner/protocol sources and their source-guard changes. Thirty overlapping files are byte-identical to the already reviewed e8 maintenance. This is a source review, not a formal proof or execution.",
+  "recommended_overlapping_resolutions": [
+    {
+      "path": "CALLERS.toml",
+      "choice": "b298",
+      "reason": "Retain all 534 boundary and 386 protected rows, the twelve new original-owner boundaries and two real read-only Cell observation edges. All four reviewed let-chain marker corrections are already present. The independently observed full-caller omission remains a separate root-owned review; do not silently add a caller here.",
+      "e8_blob": "1f6c7677c46d4e1076c1ec944ddbd9e46c998517",
+      "b298_blob": "16bd8058a19ef09b84a667cbd15a09f444ca67f8",
+      "recommended_blob": "16bd8058a19ef09b84a667cbd15a09f444ca67f8"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "choice": "manual_union",
+      "reason": "Keep every b298 line including exact current a1fe445e... and the existing prepared 529c421f... hash. Preserve the e8 published historical 103904d4... line as well. If the separately reviewed caller fix changes CALLERS bytes, append that new exact SHA256 rather than substituting an old manifest.",
+      "e8_blob": "674d53420bc09883b1b6f50ff5098e3a8e0aab67",
+      "b298_blob": "f388247fff77eb4f63348d38644b37997ef80ed1",
+      "recommended_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+      "choice": "e8",
+      "reason": "The only b298 difference is an additional assert_ne import; no assertions or test cases differ. Retain the already maintained e8 file.",
+      "e8_blob": "80faebd0661512735b5524cce3aed72f257a518f",
+      "b298_blob": "1cac6bab796d4fd648f90d5c7ba219f4a64dd63a",
+      "recommended_blob": "80faebd0661512735b5524cce3aed72f257a518f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "choice": "b298",
+      "reason": "Both differences only make the same two journal calls explicit as <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback. Same journal, admission key, mutable borrow and result; no owner/permission change.",
+      "e8_blob": "fd9c0684eec7f3ec700167ab64ab9b32d95d38ce",
+      "b298_blob": "d32eb1681ce8e51b823ed483955d69257a25d981",
+      "recommended_blob": "d32eb1681ce8e51b823ed483955d69257a25d981"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "choice": "b298",
+      "reason": "Keep the cfg(test) material bootstrap alias name paired with b298 learning_iteration_evidence_client.rs. No test behavior changes in the direct diff.",
+      "e8_blob": "212bdf2a13005c2f9281e1772b225e508bc39d9b",
+      "b298_blob": "5752c7e3c43931277c84bcec952450bc49415af9",
+      "recommended_blob": "5752c7e3c43931277c84bcec952450bc49415af9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "choice": "b298",
+      "reason": "Preserve the new receipt_tests module registration. Existing pretty_assertions imports are moved, not removed, and original test assertions remain.",
+      "e8_blob": "165792415bda2de4b5e27d2aafe6892847ed6cc6",
+      "b298_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "recommended_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "choice": "b298",
+      "reason": "Retain material_with_profile_and_observer. It chooses the original C actor before the first material receipt is signed, while the pre-existing wrapper retains its original default actor.",
+      "e8_blob": "7d31e65580897127dad7beaae7344ab7cc41108d",
+      "b298_blob": "704673bda41352c26a5f464fc0b0ab75654eef22",
+      "recommended_blob": "704673bda41352c26a5f464fc0b0ab75654eef22"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "choice": "b298",
+      "reason": "Retain the new fixture argument: RetainOriginalA uses its originally enrolled Observer, AdoptCandidate preserves the previous unused-positive role. No completed receipt or signature is rewritten.",
+      "e8_blob": "d00c554d5309825656fb4b0771b3915f096f3829",
+      "b298_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+      "recommended_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs",
+      "choice": "e8",
+      "reason": "The only b298 difference is an additional assert_ne import. Keep e8 without changing any test or assertion.",
+      "e8_blob": "e04fc4992adfab3ee3732672f70f2a18d8a2b130",
+      "b298_blob": "02d610ad1a268e5b694c5d36d1f65de44de5453c",
+      "recommended_blob": "e04fc4992adfab3ee3732672f70f2a18d8a2b130"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "choice": "e8",
+      "reason": "Only the import path to the same private wire differs. The host/service module organization is byte-identical between branches. Retain e8's already compiled super::wire access without changing production visibility.",
+      "e8_blob": "2db768378a7fca74daf64367e32756452cc9e894",
+      "b298_blob": "1ac83fd1f431f8911b850d77955f4cdd4c8ec23c",
+      "recommended_blob": "2db768378a7fca74daf64367e32756452cc9e894"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "choice": "b298",
+      "reason": "Retain the new original evaluated Selector readback host module/reexports and the paired original_material_bootstrap_test_ports alias.",
+      "e8_blob": "7cc094eca0b5f2a9593d9d0b47f5e1dda1709b4e",
+      "b298_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17",
+      "recommended_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "choice": "b298",
+      "reason": "Retain the new evaluated S/C types, S readback host and explicit experience V2 entrypoint. The e8 unused ModelInput alias deletion is already retained.",
+      "e8_blob": "772a9733b7a77f0bfb41271903df5a753657adee",
+      "b298_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+      "recommended_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "choice": "e8",
+      "reason": "Retain reuse of the original command_test_support::channel. The b298 replacement duplicates real pidfd/channel construction with the same effective UID, PID, 30s timeout, 300s lifetime and 16384-byte request/response bounds. Retain the e8 cfg(test) helper visibility file too; both versions preserve the same signed-material decoding and assertions.",
+      "e8_blob": "4223b3fc47afd5c72ed42b62bd1a7129d1c0747e",
+      "b298_blob": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "recommended_blob": "4223b3fc47afd5c72ed42b62bd1a7129d1c0747e"
+    }
+  ],
+  "preserve_e8_only_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "git_blob_sha": "80e37d6b6f41081cc661850ea29b9ff61a5787ef",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "git_blob_sha": "19842c55ccb2af200fe1d0095d089aba6ad8043d",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "git_blob_sha": "97d6c9cbc151cb5373ca900a7915f8f38ff941aa",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_incomplete_evidence_tests.rs",
+      "git_blob_sha": "af1c2da4aa90588a69f6d9024eeebc7c2b48a7d8",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "git_blob_sha": "d276b6ca7197a3c445b358da66d9dddd921610b5",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/legacy_incomplete_evidence_tests.rs",
+      "git_blob_sha": "9aca5525097bfb25cc1062ca8f8eb72b0a5b3a23",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "git_blob_sha": "124be43c3440b99cb9b6f6d0e30d25ffbb533352",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib_tests.rs",
+      "git_blob_sha": "fa1c1d96b416dbff3bc8cefdfd4568db402bc095",
+      "reason": "Unique e8 change since common base; preserve during the merge."
+    }
+  ],
+  "retention_guards": {
+    "original_review_manifest": "62aadcb673bed4833bf3c363792d6275b4bfb6a8",
+    "apply_to_same_original_bytes": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+        "b298_source_equals_e8_original": true,
+        "base_blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5",
+        "upstream_changed_file": false
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+        "b298_source_equals_e8_original": true,
+        "base_blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+        "upstream_changed_file": false
+      }
+    ],
+    "postimages": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+        "git_blob_sha": "8a779085dd02536a646415406abcaa471b097c10"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+        "git_blob_sha": "aea0027ad5f6e51825469b5d8fb8b14d202da575"
+      }
+    ],
+    "meaning": "Refuse a Qualified composition whose primary is Eligible while a complete retention member is Ineligible. Preserve member outcomes, original primary-negative NoUpdate and Unknown refusals. No new aggregate NoUpdate or fraud conclusion is signed."
+  },
+  "callers_manifest": {
+    "b298_blob": "16bd8058a19ef09b84a667cbd15a09f444ca67f8",
+    "bytes": 1102083,
+    "sha256": "a1fe445e3656787397731f83beb005d4454bb60b043a7f3846f15613658b74ce",
+    "counts": {
+      "old_boundary": 522,
+      "new_boundary": 534,
+      "old_protected": 381,
+      "new_protected": 386
+    },
+    "removed_boundaries": [],
+    "added_boundaries": [
+      {
+        "id": "learning_original_evaluated_selection_create",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::create_evaluated",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_selection_recover",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::recover_evaluated",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_selection_attest",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_selection",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_selection_readback",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_selection",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+        ]
+      },
+      {
+        "id": "learning_original_circuit_experience_v2_intake",
+        "symbol": "append_original_circuit_experience_v2",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_next_use_create",
+        "symbol": "OriginalCircuitNextUseReceiptOwnerV1::create_evaluated",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_next_use_recover",
+        "symbol": "OriginalCircuitNextUseReceiptOwnerV1::recover_evaluated",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_next_use_attest",
+        "symbol": "OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_completion",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_next_use_readback",
+        "symbol": "OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_completion",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_selection_readback_transfer",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::into_evaluated_readback_owner",
+        "product_callers": []
+      },
+      {
+        "id": "learning_original_evaluated_selection_readback_factory",
+        "symbol": "OriginalCircuitEvaluatedSelectionReadbackOwnerV1::from_original_receipt_owner",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs"
+        ]
+      },
+      {
+        "id": "learning_original_evaluated_selection_readback_serve",
+        "symbol": "OriginalCircuitEvaluatedSelectionReadbackOwnerV1::serve_readback",
+        "product_callers": []
+      }
+    ],
+    "changed_existing_boundaries": [
+      {
+        "id": "circuit_feature_original_next_use_observation",
+        "old_product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+        ],
+        "new_product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs"
+        ]
+      },
+      {
+        "id": "circuit_feature_original_selection_observation",
+        "old_product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs"
+        ],
+        "new_product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs"
+        ]
+      }
+    ],
+    "changed_protected_rows": [
+      {
+        "index": 167,
+        "old_path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "new_path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "changed_keys": [
+          "required"
+        ]
+      },
+      {
+        "index": 266,
+        "old_path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "new_path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "changed_keys": [
+          "forbidden",
+          "required_function_order",
+          "required"
+        ]
+      },
+      {
+        "index": 279,
+        "old_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "new_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "changed_keys": [
+          "forbidden",
+          "required_order",
+          "required_function_order",
+          "required"
+        ]
+      },
+      {
+        "index": 373,
+        "old_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+        "new_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+        "changed_keys": [
+          "forbidden",
+          "required_function_order",
+          "required"
+        ]
+      }
+    ],
+    "new_protected_paths": [
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+      "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs"
+    ],
+    "other_top_level_changes": [
+      "privileged_inventory"
+    ],
+    "guard_preservation": "All existing required markers and forbidden markers in the four modified protected rows remain; profile opacity guards are added. Existing NextUse binding/signing helpers move into the new private binding module with their own protected row. Four let-chain alignment leaves already match the prepared e8 repair. No old boundary is removed."
+  },
+  "protocol_findings": [
+    {
+      "name": "Original evaluated Selector receipt",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ],
+      "symbols": [
+        "create_evaluated",
+        "recover_evaluated",
+        "attest_original_evaluated_selection",
+        "readback_evaluated_selection",
+        "original_receipt_predecessors",
+        "require_original_receipt_owners"
+      ],
+      "implemented": "A private explicit evaluated profile consumes the opaque four-cut original T/B context; it requires changed Candidate plus actual Evaluation::NoUpdate, original complete signatures and actor/controller separation. It signs the actual retained Cell Selection through the original journal, producing a five-cut result with an evaluated-specific digest domain.",
+      "must_preserve": [
+        "Separate legacy TrainingNoUpdate profile and digest domain.",
+        "Same original T/B signatures, scope/trust/objective binding and live client rereads.",
+        "Local/evaluated predecessor reads before final actual Cell observation and final journal reread.",
+        "Recovered context is permanently Readback; FreshCreate cannot promote it or renew original deadlines.",
+        "Selection source/profile matching and immutable same-prefix checks."
+      ],
+      "not_established": "No ordinary product producer or independent process enrollment is demonstrated. create/recover/attest product callers are empty."
+    },
+    {
+      "name": "Original evaluated Selector readback service",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+      ],
+      "symbols": [
+        "into_evaluated_readback_owner",
+        "from_original_receipt_owner",
+        "serve_readback",
+        "evidence_response"
+      ],
+      "implemented": "The consuming factory retains the same original Selector owner, published Cell and original finite T/B clients. The bounded existing read-only evidence wire performs original journal/live T/B/Cell reads and returns the exact old signature, with request identity/correlation and before/after binding checks.",
+      "must_preserve": [
+        "Consume self; no replacement key, journal or fabricated result constructor.",
+        "At most four concurrent service permits and 128 exchanges; same original peer channel and bounded timeout.",
+        "Private opaque result/context fields and immutable binding checks.",
+        "Recovery remains read-only and current predecessor withdrawal remains a refusal."
+      ],
+      "not_established": "The actual serve/transfer product caller sets remain empty. Same-process fixture transport is not a daemon deployment."
+    },
+    {
+      "name": "Original evaluated C receipt",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs"
+      ],
+      "symbols": [
+        "create_evaluated",
+        "recover_evaluated",
+        "attest_original_evaluated_completion",
+        "readback_evaluated_completion",
+        "predecessors",
+        "finish_original_readback",
+        "validate_config"
+      ],
+      "implemented": "The original Observer journal binds the sealed five-cut S result. It requires live original T/B/S readbacks and an actual completed retained-model Source/Cell observation, then signs a six-cut result. A mere S receipt or unused publication is insufficient.",
+      "must_preserve": [
+        "Only RetainedModelNextUse is accepted by the evaluated receipt domain.",
+        "Distinct original T/B/S actor/controller separation from Observer.",
+        "T/B/S reread before final actual Source/Cell observation, final physical journal bytes, and authentication.",
+        "Recovered attestation entry delegates to readback; missing recovered journal cannot claim or sign.",
+        "The legacy profile explicitly rejects the evaluated five-cut because it lacks original B readback."
+      ],
+      "not_established": "No C task is executed or authorized by this receipt owner itself. Its new create/recover/attest/readback ordinary product caller sets remain empty."
+    },
+    {
+      "name": "Independent measurement intake V2",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_experience_intake.rs"
+      ],
+      "symbols": [
+        "append_original_circuit_experience_v2",
+        "append_profile_with_clock",
+        "OutcomeSupportProfile"
+      ],
+      "implemented": "An explicit V2 entry accepts the independently signed Observer's nonzero Outcome measurement-support digest while Decision support remains bound to the actual Source publication and NDU snapshot. V1 still requires Source-publication Outcome support. Both share original actor/controller authentication, same ledger/source joins, terminal time/watermark checks, exact partial-append/replay behavior, active-Decision checks and final Source reread.",
+      "must_preserve": [
+        "Do not reinterpret V1 or previously frozen Dataset inclusion contracts.",
+        "Verify both signed messages before the first append.",
+        "Decision record/episode/policy/candidate/NDU/objective bindings remain exact.",
+        "Propensity remains exactly ONE for this supported deterministic original profile.",
+        "V2 does not authorize freezing a Dataset or generating a measurement."
+      ],
+      "not_established": "The V2 ordinary product caller set is empty; a nonzero signed digest does not prove empirical independence, measurement truth, availability or causal identification."
+    }
+  ],
+  "remaining_ordinary_blockers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "symbols": [
+        "from_original",
+        "authenticate"
+      ],
+      "finding": "The ordinary Version command context still binds original Dataset plus TrainingNoUpdate. The new direct S/C receipt profile does not supply an independently wired evaluated Version command purpose."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "symbols": [
+        "mode",
+        "context_binding"
+      ],
+      "finding": "The ordinary published read wire still requires receipt[2] TrainingNoUpdateV2 and only the three-cut Selection/four-cut NextUse modes."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "symbols": [
+        "execute_stage",
+        "validate_recovery"
+      ],
+      "finding": "Candidate Selection/NextUse still refuse when training_no_update_v2 is absent. The five-cut Candidate recovery route still goes through original Model handling; new evaluated receipt mechanisms do not remove this refusal."
+    },
+    {
+      "path": "CALLERS.toml",
+      "symbols": [
+        "AgentdConfig::with_root_learning_stage_owners",
+        "RootResidentLearningRegistrationV3::into_candidate_runtime"
+      ],
+      "finding": "Ordinary startup owner assembly has no product caller. Evaluated publication/context/serve entrypoints also remain without ordinary producers."
+    },
+    {
+      "path": "evaluation and task contracts outside this upstream range",
+      "finding": "External objective admission, full deployable baseline/distribution and cost coverage, independent task/operator provenance, supported counterfactual/propensity conditions, and actual daemon-plus-Root cold recovery still need real task evidence. This owner-protocol patch range does not establish them."
+    }
+  ],
+  "new_behavioral_cases_for_later_exact_head_evidence": [
+    "evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+    "evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+    "evaluated_selector_refuses_either_original_owner_after_signed_completion",
+    "evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+    "evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+    "evaluated_c_rereads_actual_source_after_the_final_s_response",
+    "evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+    "independent_measurement_v2_preserves_original_pair_and_strict_v1",
+    "independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution"
+  ],
+  "test_scope_limit": "These source-present tests explicitly use fixture enrollment/measurement and same-process transport. The original ordinary agentd --lib suite has no test-name filter and should include them once their nested module registration is preserved, but actual names/results must be verified from the new frozen head's execution evidence. No test was run by this review.",
+  "known_unresolved_e8_observations": [
+    {
+      "kind": "original full caller failure",
+      "raw_blob": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+      "result_blob": "3cfa7bdefec6aa5af6fe523f027f39829816a7ab",
+      "finding": "learning_source_bound_training_stage_readback reports an unexpected cell_q24_training_command_readback_service.rs caller. The relevant row is unchanged in b298. Root is separately reviewing actual source authority versus conservative attribution; this review does not expand its caller list."
+    },
+    {
+      "kind": "focused native failures",
+      "original_diagnostic_blob": "96c93e6a1d89947f62416d289a248f5c5083bf11",
+      "source": "e8b6",
+      "reported_by_native_agent": "100 cases: 76 passed, 24 failed; 17 stack-overflow aborts, 3 timeouts, 4 other failures. This review has not rerun them or attributed them to the b298 fixture differences.",
+      "limitation": "The recommended channel-helper choice is behavior-equivalent at the inspected peer bounds, not a demonstrated fix for these failures."
+    },
+    {
+      "kind": "scoped protected-row diagnostic",
+      "raw_blob": "bbb9d4c6ed114326fdd6ad2afc89970942066323",
+      "source": "e8b6 original files with external prepared 0de2a553 CALLERS",
+      "reported_by_ordinary_agent": "381 rows passed, 0 failed; 313 inspected inputs unchanged. This is not the full caller proof and not b298/new-merge execution."
+    }
+  ],
+  "no_qualification_transfer": "All e8 failures and successes remain attached to e8. None are relabeled as b298 or the future merged source. Ordinary complete Adopt, ordinary evaluated NoUpdate and daemon-plus-Root qualification remain unproven by this review."
+}

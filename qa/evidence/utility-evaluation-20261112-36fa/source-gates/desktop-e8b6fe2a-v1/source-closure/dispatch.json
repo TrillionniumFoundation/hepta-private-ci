@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-12T09:40:11.701332+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "run_identity": "hepta-utility-36fa-desktop-source-gates-e8b6fe2a-v1",
+  "schema": "hepta.utility.desktop-source-gates.v1.dispatch",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "status": "preparing",
+  "timeout_seconds": 600
+}

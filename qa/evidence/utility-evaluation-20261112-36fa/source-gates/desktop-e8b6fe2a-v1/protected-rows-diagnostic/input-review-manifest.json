@@ -1,0 +1,271 @@
+{
+  "format": "hepta-reviewed-model-lane-marker-alignment-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "prepared_immutable_blobs_only_not_applied_to_source_not_full_gate_validated",
+  "base": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "parents": [
+      "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+      "726af8f4a345a2ffb148b971f3fa16c71436862d"
+    ]
+  },
+  "scope": "Only two protected-row marker leaves in CALLERS.toml and one exact-hash allowlist line. The separate four-path packet additionally carries the two previously reviewed retention guards without changing them.",
+  "diagnosis": {
+    "original_raw": {
+      "bytes": 144917,
+      "sha256": "04249cca368f3e02d4860c7d16c26ee4929d1b2a3f1c9ecc620cc8e137189711",
+      "git_blob_sha": "b6723a68ed089fe79afe67a64cd75a6f11900fda",
+      "error_sections": 28,
+      "permission_error_occurrences": 0,
+      "verification_failure_lines": 28,
+      "all_failure_lines_name_model_lane": true,
+      "explicit_ok_status_lines": 343,
+      "summary": [
+        "Ran 357 tests in 177.712s",
+        "FAILED (errors=28)"
+      ],
+      "full_github_readback_equal": true
+    },
+    "original_runner_blob": "4cf9136dd565b04e3bbd8b891b3f0169b1efcaa7",
+    "original_gate_final_blob": "3bd0f9a406419b56996df6817138687d8f604ed3",
+    "original_retained_manifest_blob": "219160f9cb6744b10f84ca6d33500dedc0d9ef4d",
+    "actual_original_source_closure_status": "failed",
+    "original_runner_observed_passed_tests": 329,
+    "original_runner_observed_failed_tests": 28,
+    "raw_explicit_ok_status_lines": 343,
+    "raw_unique_error_methods": 14,
+    "raw_error_modules": {
+      "test_original_candidate_material_source_closure": 6,
+      "test_original_training_source_capture_source_closure": 2,
+      "test_q24_model_proposal_source_closure": 9,
+      "test_root_admin_source_closure": 11
+    },
+    "counting_note": "The original runner fields are retained unchanged. The raw log has 357 test methods, 343 explicit ok lines, and 28 ERROR sections arising from 14 unique failing methods including subtests; do not represent 28 as distinct failing methods or replace the original runner counters.",
+    "precise_cause": "Both ordered source guards still expected the token 'if owners'. Clippy collapsed the nested source_bound/owners condition to 'if source_bound && owners.require_retained_attestation_current(&current).is_err()'. The original completion map_err call, source-bound condition, attestation recheck, permanent fence, error return and receipt/attestation equality check remain in their original order.",
+    "attribution": "CALLERS source-syntax marker alignment. No QA, production logic, harness or permission change is required for this observed failure.",
+    "baseline_failure_note": "All 28 recorded VerificationFailure lines name the same model-lane required-order mismatch. Three QA groups fail baseline verification before their injected mutation checks; 11 RootAdmin methods fail in setUp. This is not evidence of 28 separate authority-bypass vulnerabilities.",
+    "full_caller_gate_note": "This diagnosis does not change any original source-closure or complete-caller gate result and does not establish that the complete caller gate passed. Preserve each independently recorded gate outcome.",
+    "preserved_inputs": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "git_blob_sha": "9dd91ec0e81aff907a7760cdcee880226945993d",
+        "sha256": "9f86e375f6af5a369cc2d8536e7dcdc381e42ee0f66ff3057d7951d65171f6c4",
+        "bytes": 12136,
+        "changed": false
+      },
+      {
+        "path": "scripts/verify_hepta_callers.py",
+        "git_blob_sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+        "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+        "bytes": 38402,
+        "changed": false
+      },
+      {
+        "path": "scripts/hepta_typed_callers.py",
+        "git_blob_sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+        "bytes": 7672,
+        "changed": false
+      }
+    ]
+  },
+  "structural_proof": {
+    "changes": [
+      {
+        "path": ".protected_file[233].required_order[0][13]",
+        "before": "if owners",
+        "after": "&& owners"
+      },
+      {
+        "path": ".protected_file[235].required_order[0][8]",
+        "before": "if owners",
+        "after": "&& owners"
+      }
+    ],
+    "boundary_count_before": 522,
+    "boundary_count_after": 522,
+    "protected_file_count_before": 381,
+    "protected_file_count_after": 381,
+    "unique_protected_paths": 310,
+    "all_other_parsed_leaves_equal": true,
+    "earlier_two_let_chain_alignments_preserved": true,
+    "earlier_unchanged_rows": [
+      232,
+      234
+    ],
+    "all_caller_sets_authority_tables_and_ordered_conditions_preserved": true,
+    "no_qa_source_or_assertions_modified": true,
+    "allowlist_appended_exact_line": "sha256:529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d CALLERS.toml\n"
+  },
+  "marker_alignment_files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "base": {
+        "bytes": 1039720,
+        "sha256": "103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6",
+        "git_blob_sha": "1f6c7677c46d4e1076c1ec944ddbd9e46c998517"
+      },
+      "postimage": {
+        "bytes": 1039720,
+        "sha256": "529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d",
+        "git_blob_sha": "0de2a553bd966ab1e2b57378bfac2809f351cbe1"
+      },
+      "exact_diff": "--- a/CALLERS.toml\n+++ b/CALLERS.toml\n@@ -7147,7 +7147,7 @@\n path = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\n required = []\n forbidden = []\n-required_order = [[\"fn in_model_lane<T>\",\"training.require_live_source_if_captured()?\",\"let original = owners.read_original_completion()?\",\"let result = work(&mut owners.training, &original)\",\"let source_bound\",\"CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\",\".map_err(|_| Error::CommitUncertain)?\",\"let current = owners\",\".read_original_completion().map_err(\",\"if source_bound\",\"owners.source_fenced = true\",\"Error::CommitUncertain\",\"if source_bound\",\"if owners\",\".require_retained_attestation_current(&current)\",\".is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"current.receipt != original.receipt || current.attestation != original.attestation\",\"result\"]]\n+required_order = [[\"fn in_model_lane<T>\",\"training.require_live_source_if_captured()?\",\"let original = owners.read_original_completion()?\",\"let result = work(&mut owners.training, &original)\",\"let source_bound\",\"CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\",\".map_err(|_| Error::CommitUncertain)?\",\"let current = owners\",\".read_original_completion().map_err(\",\"if source_bound\",\"owners.source_fenced = true\",\"Error::CommitUncertain\",\"if source_bound\",\"&& owners\",\".require_retained_attestation_current(&current)\",\".is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"current.receipt != original.receipt || current.attestation != original.attestation\",\"result\"]]\n \n \n \n@@ -7163,7 +7163,7 @@\n path = \"codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\"\n required = []\n forbidden = []\n-required_order = [[\"fn in_model_lane<T>\", \"self.owners.try_lock()\", \"if owners.source_fenced\", \"return Err(Error::CommitUncertain)\", \"let original = owners.read_original_completion()?\", \"let current = owners\", \"if source_bound\", \"owners.source_fenced = true\", \"if owners\", \".require_retained_attestation_current(&current)\", \".is_err()\", \"owners.source_fenced = true\", \"return Err(Error::CommitUncertain)\"]]\n+required_order = [[\"fn in_model_lane<T>\", \"self.owners.try_lock()\", \"if owners.source_fenced\", \"return Err(Error::CommitUncertain)\", \"let original = owners.read_original_completion()?\", \"let current = owners\", \"if source_bound\", \"owners.source_fenced = true\", \"&& owners\", \".require_retained_attestation_current(&current)\", \".is_err()\", \"owners.source_fenced = true\", \"return Err(Error::CommitUncertain)\"]]\n \n \n \n",
+      "postimage_full_utf8_github_readback_equal": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "base": {
+        "bytes": 11292,
+        "sha256": "963d6ffe4b340fe1031333c6808d466a80b6063a9e8aa792a31145c26c0c1b3f",
+        "git_blob_sha": "674d53420bc09883b1b6f50ff5098e3a8e0aab67"
+      },
+      "postimage": {
+        "bytes": 11377,
+        "sha256": "9cef1b1158e1225893b68110a8ca3937e2dd0df42a68eacdbff48eecaf63672c",
+        "git_blob_sha": "f95ca1b519912e0bbe43ddadbf0101f825e08c10"
+      },
+      "exact_diff": "--- a/.github/blob-size-allowlist.txt\n+++ b/.github/blob-size-allowlist.txt\n@@ -90,3 +90,4 @@\n sha256:6a8ebaaed565060351cd7e5861206659c9b191b367bf2e42937e8df008ef7e5f CALLERS.toml\n sha256:a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b CALLERS.toml\n sha256:103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6 CALLERS.toml\n+sha256:529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d CALLERS.toml\n",
+      "postimage_full_utf8_github_readback_equal": true
+    }
+  ],
+  "target_row_diagnostic": {
+    "execution": "actually_executed_in_separate_temporary_source_subset",
+    "original_function": "scripts/verify_hepta_callers.py::_verify_protected_files",
+    "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "source_paths": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+    ],
+    "rows": [
+      233,
+      235,
+      285
+    ],
+    "before_statuses": [
+      "failed",
+      "failed",
+      "passed"
+    ],
+    "after_statuses": [
+      "passed",
+      "passed",
+      "passed"
+    ],
+    "log_blob": "3efeadf62fc7f467e016d86e4fbc1af8c0fbfb6f",
+    "limitation": "Three target rows only. No complete caller gate, source-closure unittest suite, Rust tests, mutation-suite outcome or deployed task outcome is inferred."
+  },
+  "all_protected_row_diagnostic_preparation": {
+    "script_blob": "af6e65b674cb9266b344133c611d5a0494e5dea3",
+    "execution_status": "not_run",
+    "validation": "Python syntax parsed only. Prepared for separately scheduled read-only execution against the exact e8b6 clone and external new CALLERS manifest.",
+    "expected_rows": 381,
+    "command": "python3 -B diagnose_protected_rows.py --root <exact-read-only-e8b6-clone> --manifest <external-CALLERS-blob-0de2a553>",
+    "behavior": "Checks exact commit/tree, original verifier/helper/manifests, exact two-leaf TOML delta and every protected source Git blob before calling the unchanged original function for each row. Records row failures and verifies source bytes remain unchanged. It never invokes full verify, unittest or Cargo, writes the source, or updates refs.",
+    "classification": "Only a protected-row diagnostic; any success is not a full caller/source/Rust gate PASS."
+  },
+  "separately_reviewed_retention_guard": {
+    "manifest_blob": "62aadcb673bed4833bf3c363792d6275b4bfb6a8",
+    "exact_patch_blob": "91fdfbe4f9e6f9db60d51c2cb93a7b7daeb26425",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+        "mode": "100644",
+        "base": {
+          "bytes": 8237,
+          "sha256": "7b4af96b6fbe850496196e54d39d2787796d7bc0cde1a3e1f20bb18c01679b7b",
+          "git_blob_sha": "a3be9f7b415d4783886b346d273296ae8ecb32e5"
+        },
+        "postimage": {
+          "bytes": 9008,
+          "sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598",
+          "git_blob_sha": "8a779085dd02536a646415406abcaa471b097c10"
+        },
+        "exact_diff": "--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs\n+++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs\n@@ -137,6 +137,20 @@\n                 \"original B signed the complete actual retention panel\",\n             ));\n         }\n+        // A complete negative retention result cannot authorize a positive B\n+        // decision. It is not rewritten as NoUpdate: the original signed\n+        // primary decision and every frozen member contract remain unchanged.\n+        if observed[0].qualification.product().decision.decision.disposition\n+            == IndependentEvaluationDispositionV1::EligibleForIndependentSelection\n+            && observed.iter().skip(1).any(|member| {\n+                member.qualification.product().decision.decision.disposition\n+                    != IndependentEvaluationDispositionV1::EligibleForIndependentSelection\n+            })\n+        {\n+            return Err(Error::Binding(\n+                \"qualified original B requires eligible retention\",\n+            ));\n+        }\n         Ok(())\n     }\n \n",
+        "postimage_full_utf8_github_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+        "mode": "100644",
+        "base": {
+          "bytes": 10259,
+          "sha256": "5fea425ed508b38f37fc4ac17a377bb8e2629597a497707ad8ee40794dbd3bdc",
+          "git_blob_sha": "c9b8a264cbf51fbf4c405042e1252e931717524a"
+        },
+        "postimage": {
+          "bytes": 10690,
+          "sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+          "git_blob_sha": "aea0027ad5f6e51825469b5d8fb8b14d202da575"
+        },
+        "exact_diff": "--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs\n+++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs\n@@ -223,6 +223,14 @@\n             \"original E binds the entire actual signed retention panel\",\n         ));\n     }\n+    // Current material cannot turn a positive primary result plus a complete\n+    // negative retention result into Model input. Preserve the original\n+    // decisions and fail closed; this is not a synthesized NoUpdate.\n+    if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified) {\n+        return Err(Error::Binding(\n+            \"qualified original B requires eligible retention\",\n+        ));\n+    }\n     let disposition = if primary.qualified {\n         LearningEvaluationDispositionV1::Qualified\n     } else {\n",
+        "postimage_full_utf8_github_readback_equal": true
+      }
+    ],
+    "status": "Reviewed preparation, not applied or executed by this work.",
+    "semantics": "Refuse a Qualified composition when primary is Eligible but any complete retention member is not Eligible. Preserve original member outcomes. This refusal is neither missing evidence, fraud, nor a newly signed aggregate NoUpdate. Complete primary-negative honest NoUpdate retains its original meaning; Unknown still refuses.",
+    "coverage_limit": "No forged Eligible qualification, opaque seal or added authority/API was introduced to manufacture a full signed positive-primary/negative-retention regression. Existing real negative and Unknown cases remain the honest regression scope for later execution."
+  },
+  "artifacts": [
+    {
+      "name": "exact.patch",
+      "bytes": 2990,
+      "sha256": "f7153e5ad6cff57d387e4d1706a1ae8d5c8e8fb17627727bc301a7e84d8e5484",
+      "git_blob_sha": "6ab621db91b2995176840efe4ff223b4576feb01",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "four-path-exact.patch",
+      "bytes": 4893,
+      "sha256": "0fe1b1909199a8b3befbc5eebd9e9d8f1142eb586fb8759e8e9fb130c45bb0cb",
+      "git_blob_sha": "eac341b84022c786a21e51420ad7f456fb2fbfa6",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "target-rows-diagnostic.json",
+      "bytes": 2937,
+      "sha256": "7bd19d19e6fbdc6563b2276e8a35e7a490bed26d549cc2e80a07ff678c7b2239",
+      "git_blob_sha": "3efeadf62fc7f467e016d86e4fbc1af8c0fbfb6f",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "diagnose_protected_rows.py",
+      "bytes": 6312,
+      "sha256": "b0781a9bd491e5ab6038e784102a817c026932bbb85986b942ef8b3b5f3a2cc0",
+      "git_blob_sha": "af6e65b674cb9266b344133c611d5a0494e5dea3",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "four-path-packet.json.gz.b64",
+      "bytes": 393153,
+      "sha256": "3bf44cb6146472a608833e6af241df1ef7614a282e92c1ce115b4566dfb90671",
+      "git_blob_sha": "5e755ba110777b70ca1327a7bea51e9282548cf8",
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "combined_packet": {
+    "name": "four-path-packet.json.gz.b64",
+    "encoded": {
+      "bytes": 393153,
+      "sha256": "3bf44cb6146472a608833e6af241df1ef7614a282e92c1ce115b4566dfb90671",
+      "git_blob_sha": "5e755ba110777b70ca1327a7bea51e9282548cf8"
+    },
+    "decoded_json": {
+      "bytes": 1430175,
+      "sha256": "16a603cb704471effbca78312ed34504b55c0baea00e124689dddc2dabd1e255",
+      "git_blob_sha": "720915cce4c996d186d5ef7ff7ce83742457c5af"
+    },
+    "encoding": "UTF-8 base64 of gzip-compressed JSON, ending with one LF; each files entry carries base/post identities and postimage_base64.",
+    "bytes_under_one_mib": true,
+    "source_paths_count": 4,
+    "artifact_only_no_ref_update": true
+  },
+  "application_requirements": [
+    "Keep original e8b6 raw logs, JUnit where applicable, gate JSON, commit/tree/source inventory and all failure counters unchanged.",
+    "Do not apply to the active e8b6 test clone or native worktree. Root must separately authorize application in a successor preparation.",
+    "Require exact base commit/tree and the four base blob hashes before applying the combined packet; verify decoded postimage bytes, SHA256 and Git blob hashes.",
+    "Use the original full source gate and caller entrypoints on the newly frozen successor. Do not relabel e8b6 or scoped diagnostic execution as successor execution.",
+    "No QA marker deletion, condition/ordering relaxation, caller-set expansion, test assertion modification or new signing authority is part of this preparation."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "behavioral_tests_started": true,
+  "error": "RuntimeError: original native focused driver failed",
+  "finished_at": "2026-11-12T10:08:49.284360+00:00",
+  "qualification": "Native tests only; no real authorized ordinary A/B/C iteration qualification",
+  "source_after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "stage": "focused",
+  "stages": [
+    {
+      "command_exit_code": 0,
+      "name": "toolchain",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/toolchain.json",
+      "result": 0
+    },
+    {
+      "command_exit_code": 0,
+      "name": "fix",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/fix.json",
+      "result": 0
+    },
+    {
+      "command_exit_code": 0,
+      "name": "fmt",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/fmt.json",
+      "result": 0
+    },
+    {
+      "collection": 0,
+      "name": "eval-lib",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/eval-lib.json",
+      "result": 0
+    },
+    {
+      "log_bytes": 137548,
+      "log_sha256": "88bbba1f4f87eb497513051264c05fee242a40a6f5a2184672533cfd1cd8b236",
+      "name": "focused",
+      "observed_failed_tests": 24,
+      "observed_passed_tests": 76,
+      "output_limit_exceeded": false,
+      "records": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/focused",
+      "returncode": 1,
+      "timed_out": false
+    }
+  ],
+  "started_at": "2026-11-12T09:32:01.027943+00:00",
+  "status": "failed"
+}

@@ -1,0 +1,67 @@
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -7147,7 +7147,7 @@
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+ required = []
+ forbidden = []
+-required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let source_bound","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","let current = owners",".read_original_completion().map_err(","if source_bound","owners.source_fenced = true","Error::CommitUncertain","if source_bound","if owners",".require_retained_attestation_current(&current)",".is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","current.receipt != original.receipt || current.attestation != original.attestation","result"]]
++required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let source_bound","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","let current = owners",".read_original_completion().map_err(","if source_bound","owners.source_fenced = true","Error::CommitUncertain","if source_bound","&& owners",".require_retained_attestation_current(&current)",".is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","current.receipt != original.receipt || current.attestation != original.attestation","result"]]
+ 
+ 
+ 
+@@ -7163,7 +7163,7 @@
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+ required = []
+ forbidden = []
+-required_order = [["fn in_model_lane<T>", "self.owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let original = owners.read_original_completion()?", "let current = owners", "if source_bound", "owners.source_fenced = true", "if owners", ".require_retained_attestation_current(&current)", ".is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
++required_order = [["fn in_model_lane<T>", "self.owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let original = owners.read_original_completion()?", "let current = owners", "if source_bound", "owners.source_fenced = true", "&& owners", ".require_retained_attestation_current(&current)", ".is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
+ 
+ 
+ 
+--- a/.github/blob-size-allowlist.txt
++++ b/.github/blob-size-allowlist.txt
+@@ -90,3 +90,4 @@
+ sha256:6a8ebaaed565060351cd7e5861206659c9b191b367bf2e42937e8df008ef7e5f CALLERS.toml
+ sha256:a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b CALLERS.toml
+ sha256:103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6 CALLERS.toml
++sha256:529c421f3580b87f3eedbea2b53f93fa2f39e45ea478dcbbb69b69e91a95723d CALLERS.toml
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs
+@@ -137,6 +137,20 @@
+                 "original B signed the complete actual retention panel",
+             ));
+         }
++        // A complete negative retention result cannot authorize a positive B
++        // decision. It is not rewritten as NoUpdate: the original signed
++        // primary decision and every frozen member contract remain unchanged.
++        if observed[0].qualification.product().decision.decision.disposition
++            == IndependentEvaluationDispositionV1::EligibleForIndependentSelection
++            && observed.iter().skip(1).any(|member| {
++                member.qualification.product().decision.decision.disposition
++                    != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
++            })
++        {
++            return Err(Error::Binding(
++                "qualified original B requires eligible retention",
++            ));
++        }
+         Ok(())
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs
+@@ -223,6 +223,14 @@
+             "original E binds the entire actual signed retention panel",
+         ));
+     }
++    // Current material cannot turn a positive primary result plus a complete
++    // negative retention result into Model input. Preserve the original
++    // decisions and fail closed; this is not a synthesized NoUpdate.
++    if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified) {
++        return Err(Error::Binding(
++            "qualified original B requires eligible retention",
++        ));
++    }
+     let disposition = if primary.qualified {
+         LearningEvaluationDispositionV1::Qualified
+     } else {

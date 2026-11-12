@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.native-source-inventory-parts.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/canonical-e8b6fe2a-alignment-v1/SOURCE_BEFORE.json.gz",
+  "original_version": "2050:50400507:1135501:1794475908870099465:1794475908870099465",
+  "gzip_bytes": 1135501,
+  "gzip_sha256": "f6c7ed474d865ece3bcde11bf14840a3a78adce014abb184444df4cbc88e6071",
+  "gzip_git_blob": "60155137d0e35495b942098dc0dcbe1a8de12636",
+  "reconstruction": "Base64-decode each companion without its final LF, concatenate binary parts in ascending index order, verify whole gzip bytes/SHA256, then gzip-decompress.",
+  "uncompressed_bytes_expected": 3412322,
+  "uncompressed_sha256_expected": "29f600ee486884e17c0b11b1009cf5c8f6b8d4c11a3ec05e59d8378a771b1772",
+  "uncompressed_hash_source": "Observed canonical alignment RESULT.json; gzip footer size independently checked, raw content hash awaits independent decompression.",
+  "files_expected": 14741,
+  "parts": [
+    {
+      "index": 0,
+      "offset": 0,
+      "bytes": 655360,
+      "sha256": "3842c3cf77d8750a82f0676e37449838a0fea92fd08e71ee5bf0b27b5e83fe6a",
+      "git_blob": "3f6a4b09253a276ff53e9128ceb8494c9dc690b5",
+      "binary_blob": "3f6a4b09253a276ff53e9128ceb8494c9dc690b5",
+      "base64_blob": "ecff9482cff0c6da7a1b46de13af3523238a451f",
+      "base64_full_readback_equal": true
+    },
+    {
+      "index": 1,
+      "offset": 655360,
+      "bytes": 480141,
+      "sha256": "8e6958ffd7960379f4d6645f253b8d881cd2d2261ae5b9b6100411ba0a9e97ac",
+      "git_blob": "a6f20c9d4d974d8e82c60aefd4789b0b5d4f7b00",
+      "binary_blob": "a6f20c9d4d974d8e82c60aefd4789b0b5d4f7b00",
+      "base64_blob": "704db6a923beef72e4d74163270e8821dd619738",
+      "base64_full_readback_equal": true
+    }
+  ],
+  "all_chunks_pinned_to_same_version": true
+}
