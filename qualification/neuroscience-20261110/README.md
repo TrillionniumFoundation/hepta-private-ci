@@ -41,6 +41,19 @@ silently changing that production-adjacent API.
 
 ## Run
 
+### Real-time and source-level research extension (2026-11-12)
+
+`real_time.py` separates reward occurrence discounting, state response, update
+opportunities and eligibility decay in microseconds; foreign clock/boot envelopes
+are rejected before classifying feedback as future. `source_contrast.py` freezes
+the source roster, ability/evaluator and offered budgets, compares original
+information bytes, and reports equal-weight source differences. UNKNOWN/missing
+outcomes withhold the planned-set summary. `learning_progress` retains interval
+or right-censored attainment. All identities remain unverified declarations.
+See [FOUR_TRACK_PROTOCOL.md](FOUR_TRACK_PROTOCOL.md) for the four research tracks.
+Run all reference checks with `python3 -m unittest discover -s . -p 'test_*.py'`.
+These APIs do not train or adopt weights; real-owner integration remains open.
+
 ```sh
 cd qualification/neuroscience-20261110
 python3 -m unittest -v test_study.py
