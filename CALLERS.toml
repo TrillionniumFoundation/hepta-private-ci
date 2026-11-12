@@ -2771,7 +2771,7 @@ symbol = "SourceBoundCellQ24TrainingStageV1::readback"
 receiver_type = "SourceBoundCellQ24TrainingStageV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 definition_markers = ["pub async fn readback("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"]
 caller_markers = []
 
 [[boundary]]
