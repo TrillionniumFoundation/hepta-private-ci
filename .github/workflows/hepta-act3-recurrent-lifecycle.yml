@@ -2,7 +2,9 @@ name: ACT3 recurrent lifecycle original recovery
 
 on:
   push:
-    branches: [codex/act3-recurrent-qualification-20261112-5fe4]
+    branches:
+      - codex/act3-recurrent-qualification-20261112-5fe4
+      - codex/act3-recurrent-async-qualification-20261112-5fe4
 
 permissions:
   contents: read
