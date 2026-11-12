@@ -111,6 +111,31 @@ impl<'read, TW: AnchorWitnessStore, RW: AnchorWitnessStore>
 }
 
 impl OriginalQ24TrainingOperationEvidenceV1<'_> {
+    /// Pure data from this same completed native owner. This is neither B
+    /// authority nor permission to publish the candidate in CURRENT.
+    pub(crate) fn original_candidate_material(
+        &self,
+    ) -> Result<&crate::CellQ24TrainedCandidateV1, RuntimeError> {
+        self.require_current_training_source()?;
+        let crate::CellQ24TrainingOutcomeV1::Candidate(candidate) = &self.completed.outcome else {
+            return Err(RuntimeError::WrongScope);
+        };
+        let coordinator =
+            codex_hepta_learning_artifacts::LearningIterationCoordinatorV1::from_snapshot(
+                self.snapshot.clone(),
+            )?;
+        if coordinator.candidate() != Some(&candidate.bundle)
+            || candidate.model.components() != &candidate.bundle.components
+            || candidate.model.original_head_bytes() != candidate.heads
+            || codex_hepta_types::Digest32::of_bytes(&candidate.heads)
+                != candidate.bundle.components.heads
+        {
+            return Err(RuntimeError::WrongScope);
+        }
+        self.require_current_training_source()?;
+        Ok(candidate)
+    }
+
     pub(crate) fn require_current_training_source(&self) -> Result<(), RuntimeError> {
         OriginalPreparedReadV1::revalidate_source(self.source).map_err(owner_error)
     }
