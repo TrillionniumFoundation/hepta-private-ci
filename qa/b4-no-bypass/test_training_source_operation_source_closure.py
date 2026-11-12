@@ -112,8 +112,8 @@ class TrainingSourceOperationTests(unittest.TestCase):
             "cut.record(", "completed.receipt.clone()", "completed.receipt.observed_unix_seconds",
             "snapshot: cut.snapshot().clone()", "source: self.source"))
         self.check_markers(STAGE, "fn read_original_completion_with_source(", (
-            "self.receipts.readback_with_source(training, source)?",
-            "training.readback_with_source(source)?", "Ok(OriginalCellQ24TrainingCompletionV1"))
+            "OriginalCellQ24TrainingReceiptOwnerV1::readback_with_source(",
+            "CellQ24TrainingOwnerV1::readback_with_source(training, source)?", "Ok(OriginalCellQ24TrainingCompletionV1"))
 
     def test_original_claim_witness_and_canonical_terminal_bytes_still_enclose_fit(self):
         self.check_markers(OWNER, "fn fit_or_readback_with_source(", (

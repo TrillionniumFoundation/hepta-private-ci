@@ -254,13 +254,14 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
             )) => {
                 let training: &mut CellQ24TrainingOwnerV1<TW> = &mut self.training;
                 let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> = &mut self.receipts;
-                let retained_outcome = match training.readback_with_source(source) {
-                    Ok(outcome) => Some(outcome),
-                    Err(CellQ24TrainingOwnerErrorV1::Store(
-                        ProductEvaluationExecutionStoreErrorV1::Missing,
-                    )) => None,
-                    Err(error) => return Err(error.into()),
-                };
+                let retained_outcome =
+                    match CellQ24TrainingOwnerV1::readback_with_source(training, source) {
+                        Ok(outcome) => Some(outcome),
+                        Err(CellQ24TrainingOwnerErrorV1::Store(
+                            ProductEvaluationExecutionStoreErrorV1::Missing,
+                        )) => None,
+                        Err(error) => return Err(error.into()),
+                    };
                 // Readback can block on the original witness. Check time
                 // after that I/O, before any new training or receipt claim.
                 let now = super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
@@ -301,8 +302,12 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
         source: &impl OriginalQ24DatasetReadV1,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         let training: &mut CellQ24TrainingOwnerV1<TW> = &mut self.training;
-        let (receipt, attestation) = self.receipts.readback_with_source(training, source)?;
-        let outcome = training.readback_with_source(source)?;
+        let (receipt, attestation) = OriginalCellQ24TrainingReceiptOwnerV1::readback_with_source(
+            &mut self.receipts,
+            training,
+            source,
+        )?;
+        let outcome = CellQ24TrainingOwnerV1::readback_with_source(training, source)?;
         Ok(OriginalCellQ24TrainingCompletionV1 {
             outcome,
             receipt,
