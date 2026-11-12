@@ -25,6 +25,18 @@ pub(super) struct PublicationAcceptance {
 }
 
 impl PublicationAcceptance {
+    pub(super) fn verified_at_unix_ms(&self) -> u64 {
+        self.verified_at_unix_ms
+    }
+
+    pub(super) fn original_current(&self) -> &CurrentHead {
+        &self.current
+    }
+
+    pub(super) fn original_work_expiry_seconds(&self) -> u64 {
+        self.original_work_expiry_seconds
+    }
+
     /// The only producer is the successful fresh Publish command, after its
     /// entire original Root context returned. The surrounding durable arm is
     /// still Armed; a failed final check cannot publish this fact as Ready.
@@ -109,16 +121,14 @@ impl PublicationAcceptance {
             current: expected.clone(),
             verified_at_unix_ms,
             original_work_expiry_seconds: slot.decision.request.envelope.expiry_unix_seconds,
-            previous_observation: previous
-                .observation()
-                .digest()
-                .map_err(io::Error::other)?
-                .to_string(),
-            target_observation: target
-                .observation()
-                .digest()
-                .map_err(io::Error::other)?
-                .to_string(),
+            previous_observation: Digest32::from_array(
+                previous.observation().digest().map_err(io::Error::other)?,
+            )
+            .to_string(),
+            target_observation: Digest32::from_array(
+                target.observation().digest().map_err(io::Error::other)?,
+            )
+            .to_string(),
             accepted_revocations,
         };
         accepted.require_original(&slot.reserved)?;
@@ -140,7 +150,8 @@ impl PublicationAcceptance {
             || self.current.initial.is_some()
             || published.intent != original.intent
             || self.verified_at_unix_ms == 0
-            || self.previous_observation != original.intent.previous_observation.to_string()
+            || self.previous_observation
+                != Digest32::from_array(original.intent.previous_observation).to_string()
             || self
                 .target_observation
                 .parse::<Digest32>()

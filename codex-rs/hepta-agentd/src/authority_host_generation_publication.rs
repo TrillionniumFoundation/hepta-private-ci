@@ -59,6 +59,7 @@ pub(crate) use bootstrap::decode_original_publication_bootstrap;
 pub(crate) use bootstrap::encode_original_publication_bootstrap;
 #[path = "authority_host_publication_refusal.rs"]
 mod refusal;
+pub(crate) use refusal::OriginalPublicationHistoryProofV1;
 use refusal::PublicationRefusal;
 #[path = "authority_host_publication_acceptance.rs"]
 mod acceptance;
