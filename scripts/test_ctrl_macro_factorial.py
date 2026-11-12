@@ -1,5 +1,6 @@
 """Manufactured factorial contracts; no native execution or efficacy evidence."""
 
+from collections import Counter
 from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
@@ -354,3 +355,150 @@ class FactorialContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "departed from frozen"):
             factorial.reconcile(self.args)
         self.assertFalse((Path(self.args.output) / "REPORT.json").exists())
+
+    def test_evaluate_prepares_both_plans_before_serial_create_only_schedule(self):
+        self.freeze()
+        frozen = study.read(Path(self.args.output) / "FROZEN.json")
+        calls = []
+        fixture_report = {
+            "schema": "manufactured.execution-report",
+            "native_execution": False,
+        }
+
+        def fixture_steps(execution, output, *, expected_plan_sha256, operation_order):
+            self.assertEqual(digest(execution), expected_plan_sha256)
+            mode = Path(output).parent.name
+            for operation in operation_order:
+                for other in factorial.MODES:
+                    self.assertTrue(
+                        (
+                            Path(getattr(self.args, other + "_dir"))
+                            / "EXECUTION_PLAN.json"
+                        ).is_file()
+                    )
+                calls.append((mode, operation))
+                yield operation
+
+        with (
+            patch.object(
+                macro_execution, "execute_steps", side_effect=fixture_steps
+            ) as steps,
+            patch.object(
+                macro_execution, "reconcile", return_value=fixture_report
+            ) as readback,
+            patch.object(factorial, "reconcile") as combined,
+        ):
+            factorial.evaluate(self.args)
+            expected = []
+            for entry in frozen["execution_order"]:
+                directory = Path(getattr(self.args, entry["mode"] + "_dir"))
+                plan = study.read(directory / "EXECUTION_PLAN.json")
+                pin = study.read(directory / "EXECUTION_PIN.json")["canonical_sha256"]
+                operation = "macro-" + digest(
+                    [
+                        pin,
+                        plan["cohort"]["contexts"][entry["context_index"]],
+                        entry["policy"],
+                    ]
+                )
+                expected.append((entry["mode"], operation))
+            self.assertEqual(calls, expected)
+            self.assertEqual(len(calls), 24)
+            self.assertEqual(len(set(calls)), 24)
+            self.assertEqual(
+                Counter(mode for mode, _ in calls), {"frozen": 12, "adapted": 12}
+            )
+            for mode in factorial.MODES:
+                directory = Path(getattr(self.args, mode + "_dir"))
+                self.assertEqual(
+                    study.read(directory / "EVALUATION_REPORT.json"), fixture_report
+                )
+                self.assertTrue((directory / "EVALUATE_COMPLETED.json").is_file())
+            self.assertTrue(
+                (Path(self.args.output) / "EVALUATE_COMPLETED.json").is_file()
+            )
+            combined.assert_called_once_with(self.args)
+            self.assertEqual((steps.call_count, readback.call_count), (2, 2))
+            with self.assertRaises(FileExistsError):
+                factorial.evaluate(self.args)
+            self.assertEqual(calls, expected)
+            self.assertEqual(
+                (steps.call_count, readback.call_count, combined.call_count), (2, 2, 1)
+            )
+
+
+class ExecutionScheduleContracts(unittest.TestCase):
+    def test_williams_schedule_balances_positions_and_ordered_predecessors(self):
+        cases = [
+            {
+                "source_id": f"source-{i // 4}",
+                "case_id": f"case-{i}",
+                "seed": 7,
+                "read_condition": "repeat",
+                "case": {"private_reference": f"hidden-{i}"},
+            }
+            for i in range(48)
+        ]
+        original = deepcopy(cases)
+        schedule = factorial.execution_schedule(cases)
+        self.assertEqual(schedule, factorial.execution_schedule(deepcopy(cases)))
+        self.assertEqual(cases, original)
+        changed = deepcopy(cases)
+        for case in changed:
+            case.update(read_condition="noise", case={"score": 0.0})
+        self.assertEqual(schedule, factorial.execution_schedule(changed))
+        self.assertEqual(len(schedule), 576)
+        arms = {
+            (mode, policy)
+            for mode in factorial.MODES
+            for policy in macro_policy.METHODS
+        }
+        positions, predecessors, contexts = Counter(), Counter(), []
+        for offset in range(0, len(schedule), 12):
+            block = schedule[offset : offset + 12]
+            context = block[0]["context_index"]
+            contexts.append(context)
+            self.assertTrue(
+                all(set(row) == {"context_index", "mode", "policy"} for row in block)
+            )
+            self.assertTrue(all(row["context_index"] == context for row in block))
+            sequence = [(row["mode"], row["policy"]) for row in block]
+            self.assertEqual(set(sequence), arms)
+            positions.update((arm, position) for position, arm in enumerate(sequence))
+            predecessors.update(zip(sequence, sequence[1:]))
+        self.assertEqual(sorted(contexts), list(range(48)))
+        self.assertEqual(
+            positions,
+            Counter({(arm, position): 4 for arm in arms for position in range(12)}),
+        )
+        self.assertEqual(
+            predecessors, Counter({(a, b): 4 for a in arms for b in arms if a != b})
+        )
+
+    def test_execution_order_accepts_only_unique_positive_timestamped_prefixes(self):
+        schedule = factorial.execution_schedule(
+            [{"source_id": "source", "case_id": "case", "seed": 7}]
+        )
+        starts = [(100 + i, deepcopy(row)) for i, row in enumerate(schedule)]
+        original = deepcopy(schedule)
+        for prefix in ([], starts[:5], starts):
+            with self.subTest(prefix=len(prefix)):
+                self.assertEqual(
+                    factorial.check_execution_order(schedule, list(reversed(prefix))),
+                    len(prefix),
+                )
+        unknown = {**schedule[0], "policy": "unknown"}
+        invalid = {
+            "wrong first": [(100, schedule[1])],
+            "wrong order": [(100, schedule[1]), (101, schedule[0])],
+            "repeated arm": [(100, schedule[0]), (101, schedule[0])],
+            "unknown arm": [(100, unknown)],
+            "tied timestamp": [(100, schedule[0]), (100, schedule[1])],
+            "overlong": starts + [(200, schedule[0])],
+        }
+        for timestamp in (0, -1, True, 1.5, "100"):
+            invalid[f"bad time {timestamp!r}"] = [(timestamp, schedule[0])]
+        for name, records in invalid.items():
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                factorial.check_execution_order(schedule, records)
+        self.assertEqual(schedule, original)

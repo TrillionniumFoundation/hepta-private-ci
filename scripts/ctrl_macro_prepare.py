@@ -63,11 +63,25 @@ def main():
     registry_path = root / "source-registry.json"
     registry = {s["source_id"]: s for s in load(registry_path)["sources"]}
     cases = load(catalog_path)["cases"]
+    ledger_path = root / "public-source-exposure-20261107-v3.json"
+    ledger = load(ledger_path)
+    excluded = set()
+    for key in (
+        "quarantined_source_groups",
+        "quarantined_confirmation_source_groups",
+        "excluded_pilot_new_source_groups",
+    ):
+        value = ledger.get(key, [])
+        if not isinstance(value, list) or any(not isinstance(s, str) for s in value):
+            raise ValueError("Exposure exclusions must be source identity lists")
+        excluded.update(value)
     # Filter roles before public packet I/O. Do not read reference bodies.
     eligible = [
         c
         for c in cases
-        if c["role"] in {"train", "development"} and c["task_family"] in FAMILIES
+        if c["role"] in {"train", "development"}
+        and c["task_family"] in FAMILIES
+        and c["source_id"] not in excluded
     ]
     grouped = defaultdict(list)
     for case in eligible:
@@ -184,17 +198,6 @@ def main():
         k: [s["source_id"] for s in chosen[k]] for k in ("train", "calibration")
     }
     plan["source_splits"]["future"] = []
-    ledger_path = root / "public-source-exposure-20261107-v3.json"
-    ledger = load(ledger_path)
-    excluded = set()
-    for key in (
-        "quarantined_source_groups",
-        "quarantined_confirmation_source_groups",
-        "excluded_pilot_new_source_groups",
-    ):
-        value = ledger.get(key, [])
-        if isinstance(value, list):
-            excluded.update(s for s in value if isinstance(s, str))
     plan["excluded_sources"] = sorted(excluded)
     if set(all_sources) & excluded:
         raise ValueError("Selected source is quarantined")

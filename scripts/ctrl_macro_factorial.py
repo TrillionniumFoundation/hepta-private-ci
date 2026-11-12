@@ -9,8 +9,6 @@ import argparse
 from copy import deepcopy
 import json
 from pathlib import Path
-import subprocess
-import sys
 import time
 from types import SimpleNamespace
 
@@ -19,6 +17,39 @@ from ndu_real_runtime.macro_cohort import _sha
 from ndu_real_runtime.macro_policy import METHODS
 
 MODES = ("frozen", "adapted")
+
+
+def execution_schedule(cases):
+    """Identity-only allocation to Williams rows, balanced in each 12-context block."""
+    arms = [(mode, policy) for policy in METHODS for mode in MODES]
+    order = sorted(
+        range(len(cases)),
+        key=lambda i: study.sha(
+            json.dumps(
+                [20261112, *[cases[i][k] for k in ("source_id", "case_id", "seed")]],
+                separators=(",", ":"),
+            ).encode()
+        ),
+    )
+    return [
+        {"context_index": index, "mode": mode, "policy": policy}
+        for row, index in enumerate(order)
+        for position in (0, 1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6)
+        for mode, policy in [arms[(position + row) % 12]]
+    ]
+
+
+def check_execution_order(schedule, starts):
+    """Original start clocks must establish one unique registered schedule prefix."""
+    times = [clock for clock, _ in starts]
+    if any(type(clock) is not int or clock <= 0 for clock in times) or len(
+        set(times)
+    ) != len(times):
+        raise ValueError("Execution start clocks must be distinct positive integers")
+    observed = [entry for _, entry in sorted(starts, key=lambda item: item[0])]
+    if observed != schedule[: len(observed)]:
+        raise ValueError("Original execution starts departed from the frozen order")
+    return len(observed)
 
 
 def inputs(repository, registrations):
@@ -193,6 +224,8 @@ def freeze(args):
             "on_off": "adapted/STOP",
             "on_on": "adapted/conditional",
         },
+        "execution_order": execution_schedule(loaded["frozen"][1]["evaluation_cases"]),
+        "execution_order_design": "Williams12; identity-hash context allocation seed 20261112; serial actors",
         "time_ns": time.time_ns(),
         "fixed_control": "identical complete WRITE_TEXT then STOP finalizer",
         "adaptive_control": "content-specific calibrated conditional complete-macro policy",
@@ -223,6 +256,10 @@ def thaw(args):
     ] != study.sha(Path(__file__).read_bytes()):
         raise ValueError("Factorial driver or repository changed")
     loaded, modules = inputs(args.repository, frozen["studies"])
+    if frozen["execution_order"] != execution_schedule(
+        loaded["frozen"][1]["evaluation_cases"]
+    ):
+        raise ValueError("Frozen execution schedule differs from registered design")
     from ndu_real_runtime.metacontrol_macro_contract import read_pin
 
     receipt = json.loads(read_pin(frozen["adaptation_receipt"]))
@@ -238,6 +275,11 @@ def thaw(args):
 def reconcile(args):
     root, frozen, loaded, modules = thaw(args)
     combined, rows, frontiers, actions = None, [], {}, {}
+    starts = []
+    context_indices = {
+        tuple(case[k] for k in ("source_id", "case_id", "seed")): index
+        for index, case in enumerate(loaded["frozen"][1]["evaluation_cases"])
+    }
     for mode, (directory, registered, model) in loaded.items():
         execution = study.read(directory / "EXECUTION_PLAN.json")
         pin = study.read(directory / "EXECUTION_PIN.json")["canonical_sha256"]
@@ -315,6 +357,22 @@ def reconcile(args):
             combined["one_off_costs"][name] = cohort["one_off_costs"][arm["arm_id"]]
         for row in report["rows"]:
             rows.append({**row, "arm_id": mode + "/" + row["arm_id"]})
+            if row["execution_id"] is not None:
+                start = study.read(
+                    directory / "evaluation" / row["execution_id"] / "START.json"
+                )
+                starts.append(
+                    (
+                        start["time_ns"],
+                        {
+                            "context_index": context_indices[
+                                tuple(row[k] for k in ("source_id", "case_id", "seed"))
+                            ],
+                            "mode": mode,
+                            "policy": row["arm_id"],
+                        },
+                    )
+                )
             if row["status"] != "COMPLETED":
                 continue
             branch = directory / "evaluation" / row["execution_id"]
@@ -354,6 +412,13 @@ def reconcile(args):
     result = {
         "schema": "ctrl.content-control-factorial-report.v1",
         "factorial_sha256": args.factorial_sha256,
+        "execution_order": {
+            "design": frozen["execution_order_design"],
+            "planned_executions": len(frozen["execution_order"]),
+            "verified_started_prefix": check_execution_order(
+                frozen["execution_order"], starts
+            ),
+        },
         "cohort": modules["macro_execution"].macro_cohort.evaluate(
             combined, rows, expected_plan_sha256=modules["digest"](combined)
         ),
@@ -379,6 +444,85 @@ def reconcile(args):
     )
 
 
+def evaluate(args):
+    root, frozen, loaded, modules = thaw(args)
+    study.write(
+        root / "EVALUATE_START.json",
+        {"time_ns": time.time_ns(), "factorial_sha256": args.factorial_sha256},
+    )
+    prepared = {}
+    try:
+        for mode, (directory, registered, _) in loaded.items():
+            study.write(
+                directory / "EVALUATE_START.json",
+                {
+                    "stage": "evaluate",
+                    "time_ns": time.time_ns(),
+                    "freeze_sha256": frozen["studies"][mode]["freeze_sha256"],
+                    "factorial_sha256": args.factorial_sha256,
+                },
+            )
+            execution, pin = study.prepare_evaluation(
+                directory,
+                registered,
+                modules["CriticContext"].from_wire(registered["context"]),
+                modules,
+            )
+            order = [
+                "macro-"
+                + modules["digest"](
+                    [
+                        pin,
+                        execution["cohort"]["contexts"][entry["context_index"]],
+                        entry["policy"],
+                    ]
+                )
+                for entry in frozen["execution_order"]
+                if entry["mode"] == mode
+            ]
+            modules["macro_execution"]._roster(execution, pin, order)
+            prepared[mode] = (directory, execution, pin, order)
+        streams = {
+            mode: modules["macro_execution"].execute_steps(
+                execution,
+                directory / "evaluation",
+                expected_plan_sha256=pin,
+                operation_order=order,
+            )
+            for mode, (directory, execution, pin, order) in prepared.items()
+        }
+        expected = {mode: iter(item[3]) for mode, item in prepared.items()}
+        for entry in frozen["execution_order"]:
+            mode = entry["mode"]
+            if next(streams[mode], None) != next(expected[mode]):
+                raise ValueError("Execution iterator departed from frozen schedule")
+        for mode, (directory, _, pin, _) in prepared.items():
+            if next(streams[mode], None) is not None:
+                raise ValueError("Execution iterator exceeded the full roster")
+            report = modules["macro_execution"].reconcile(
+                directory / "evaluation", expected_plan_sha256=pin
+            )
+            study.write(directory / "EVALUATION_REPORT.json", report)
+            study.write(
+                directory / "EVALUATE_COMPLETED.json", {"time_ns": time.time_ns()}
+            )
+        reconcile(args)
+        study.write(root / "EVALUATE_COMPLETED.json", {"time_ns": time.time_ns()})
+    except Exception as error:
+        failure = {
+            "time_ns": time.time_ns(),
+            "error_type": type(error).__name__,
+            "error": str(error),
+        }
+        for directory, _, _ in loaded.values():
+            if (directory / "EVALUATE_START.json").exists() and not (
+                directory / "EVALUATE_COMPLETED.json"
+            ).exists():
+                study.write(directory / "EVALUATE_FAILED.json", failure)
+        study.write(root / "EVALUATE_FAILED.json", failure)
+        raise
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=("freeze", "evaluate", "reconcile"))
@@ -396,40 +540,7 @@ def main():
     elif args.stage == "reconcile":
         reconcile(args)
     else:
-        root, frozen, _, _ = thaw(args)
-        study.write(
-            root / "EVALUATE_START.json",
-            {"time_ns": time.time_ns(), "factorial_sha256": args.factorial_sha256},
-        )
-        try:
-            for mode in MODES:
-                entry = frozen["studies"][mode]
-                subprocess.run(
-                    [
-                        sys.executable,
-                        str(Path(args.repository) / "scripts/ctrl_macro_study.py"),
-                        "evaluate",
-                        "--repository",
-                        args.repository,
-                        "--run-dir",
-                        entry["directory"],
-                        "--freeze-sha256",
-                        entry["freeze_sha256"],
-                    ],
-                    check=True,
-                )
-            reconcile(args)
-            study.write(root / "EVALUATE_COMPLETED.json", {"time_ns": time.time_ns()})
-        except Exception as error:
-            study.write(
-                root / "EVALUATE_FAILED.json",
-                {
-                    "time_ns": time.time_ns(),
-                    "error_type": type(error).__name__,
-                    "error": str(error),
-                },
-            )
-            raise
+        evaluate(args)
 
 
 if __name__ == "__main__":

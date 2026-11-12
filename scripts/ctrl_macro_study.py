@@ -283,6 +283,86 @@ def thaw(args, m):
     return root, frozen, m["CriticContext"].from_wire(frozen["context"])
 
 
+def prepare_evaluation(root, frozen, context, m):
+    """Create and validate all deployments and the complete plan before actors."""
+    plan = frozen["collection_plan"]
+    checkpoint = (root / "CHECKPOINT.json").read_bytes()
+    pin = read(root / "CHECKPOINT_PIN.json")["sha256"]
+    if read(root / "COLD_LOAD.json")["checkpoint_sha256"] != pin:
+        raise ValueError("Fresh-process checkpoint admission is missing")
+    model = m["macro_policy"].load(checkpoint, pin, context=context)
+    directory = root / "deployments"
+    directory.mkdir(exist_ok=False)
+    control = m["ControlPlan"](**read(plan["profile"]["control_plan"])["control"])
+    profiles, arms = {}, []
+    for policy in frozen["methods"]:
+        deployment = {
+            "schema": "ndu.real.macro-deployment.v1",
+            "policy": policy,
+            "context": context.to_wire(),
+            "weights_sha256": plan["profile"]["model_sha256"],
+            "control_sha256": m["digest"](asdict(control)),
+            "checkpoint_utf8": checkpoint.decode(),
+            "checkpoint_sha256": pin,
+            "read_seconds_bound": frozen["read_seconds_bound"],
+            "finalizer_seconds_reserve": frozen["finalizer_seconds_reserve"],
+        }
+        path = directory / (policy + ".json")
+        deployment_pin = write(path, deployment)
+        profiles[policy] = {
+            **plan["profile"],
+            "macro_policy": {"path": str(path), "sha256": deployment_pin},
+        }
+        arms.append(
+            {
+                "arm_id": policy,
+                "content_mode": "off",
+                "control_mode": "on"
+                if policy in {"point", "unconditional", "conditional"}
+                else "off",
+                "policy": policy,
+                "content_sha256": plan["profile"]["model_sha256"],
+                "critic_context_sha256": m["context_digest"](context),
+            }
+        )
+    cases = frozen["evaluation_cases"]
+    cohort = {
+        "schema": "ndu.real.macro-cohort.v1",
+        "contexts": [
+            {k: r[k] for k in ("source_id", "case_id", "seed")} for r in cases
+        ],
+        "arms": arms,
+        "partitions": {
+            "fit": model.data["fit_sources"],
+            "calibration": model.data["calibration_sources"],
+            "evaluation": sorted({r["source_id"] for r in cases}),
+        },
+        "shared": m["macro_execution_plan"].shared_context(plan["config"], control),
+        "one_off_costs": {
+            name: {k: None for k in ("fit", "calibration", "tuning")}
+            for name in profiles
+        },
+        "factorial": None,
+    }
+    execution = {
+        "schema": "ndu.real.macro-execution-plan.v1",
+        "cohort": cohort,
+        "cohort_sha256": m["digest"](cohort),
+        "config": plan["config"],
+        "registered_cases": cases,
+        "profiles": profiles,
+        "action_budget_seconds": plan["action_budget_seconds"],
+        "source_pins": plan["source_pins"],
+        "observer_sha256": frozen["observer_sha256"],
+    }
+    execution_pin = m["digest"](execution)
+    m["macro_execution_plan"].validate_plan(execution, execution_pin)
+    m["macro_execution_plan"].check_inputs(execution, root / "evaluation")
+    write(root / "EXECUTION_PLAN.json", execution)
+    write(root / "EXECUTION_PIN.json", {"canonical_sha256": execution_pin})
+    return execution, execution_pin
+
+
 def run_stage(args, m):
     root, frozen, context = thaw(args, m)
     plan = frozen["collection_plan"]
@@ -376,80 +456,7 @@ def run_stage(args, m):
             },
         )
     elif args.stage == "evaluate":
-        checkpoint = (root / "CHECKPOINT.json").read_bytes()
-        pin = read(root / "CHECKPOINT_PIN.json")["sha256"]
-        if read(root / "COLD_LOAD.json")["checkpoint_sha256"] != pin:
-            raise ValueError("Fresh-process checkpoint admission is missing")
-        model = m["macro_policy"].load(checkpoint, pin, context=context)
-        directory = root / "deployments"
-        directory.mkdir(exist_ok=False)
-        control = m["ControlPlan"](**read(plan["profile"]["control_plan"])["control"])
-        profiles, arms = {}, []
-        for policy in frozen["methods"]:
-            deployment = {
-                "schema": "ndu.real.macro-deployment.v1",
-                "policy": policy,
-                "context": context.to_wire(),
-                "weights_sha256": plan["profile"]["model_sha256"],
-                "control_sha256": m["digest"](asdict(control)),
-                "checkpoint_utf8": checkpoint.decode(),
-                "checkpoint_sha256": pin,
-                "read_seconds_bound": frozen["read_seconds_bound"],
-                "finalizer_seconds_reserve": frozen["finalizer_seconds_reserve"],
-            }
-            path = directory / (policy + ".json")
-            deployment_pin = write(path, deployment)
-            profiles[policy] = {
-                **plan["profile"],
-                "macro_policy": {"path": str(path), "sha256": deployment_pin},
-            }
-            arms.append(
-                {
-                    "arm_id": policy,
-                    "content_mode": "off",
-                    "control_mode": "on"
-                    if policy in {"point", "unconditional", "conditional"}
-                    else "off",
-                    "policy": policy,
-                    "content_sha256": plan["profile"]["model_sha256"],
-                    "critic_context_sha256": m["context_digest"](context),
-                }
-            )
-        cases = frozen["evaluation_cases"]
-        cohort = {
-            "schema": "ndu.real.macro-cohort.v1",
-            "contexts": [
-                {k: r[k] for k in ("source_id", "case_id", "seed")} for r in cases
-            ],
-            "arms": arms,
-            "partitions": {
-                "fit": model.data["fit_sources"],
-                "calibration": model.data["calibration_sources"],
-                "evaluation": sorted({r["source_id"] for r in cases}),
-            },
-            "shared": m["macro_execution_plan"].shared_context(plan["config"], control),
-            "one_off_costs": {
-                name: {k: None for k in ("fit", "calibration", "tuning")}
-                for name in profiles
-            },
-            "factorial": None,
-        }
-        execution = {
-            "schema": "ndu.real.macro-execution-plan.v1",
-            "cohort": cohort,
-            "cohort_sha256": m["digest"](cohort),
-            "config": plan["config"],
-            "registered_cases": cases,
-            "profiles": profiles,
-            "action_budget_seconds": plan["action_budget_seconds"],
-            "source_pins": plan["source_pins"],
-            "observer_sha256": frozen["observer_sha256"],
-        }
-        execution_pin = m["digest"](execution)
-        m["macro_execution_plan"].validate_plan(execution, execution_pin)
-        m["macro_execution_plan"].check_inputs(execution, root / "evaluation")
-        write(root / "EXECUTION_PLAN.json", execution)
-        write(root / "EXECUTION_PIN.json", {"canonical_sha256": execution_pin})
+        execution, execution_pin = prepare_evaluation(root, frozen, context, m)
         report = m["macro_execution"].execute(
             execution, root / "evaluation", expected_plan_sha256=execution_pin
         )
