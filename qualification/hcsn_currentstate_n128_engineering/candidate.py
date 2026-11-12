@@ -139,6 +139,7 @@ class CSR:
 @dataclass(frozen=True)
 class Template:
     source: str
+    generation: int
     start: F
     end: F
     target: int
@@ -282,7 +283,7 @@ def build_graph(law_path, json_path, npz_path, roster_dir):
     for item in metadata["phase"]:
         start, end = F(item["start"]), F(item["end"])
         source = source_identity(bundle, item["identity"], start, end, 1, 0, ())
-        initial.append(Template(source, start, end, 1, 0, zero, (1.0,), ()))
+        initial.append(Template(source, 1, start, end, 1, 0, zero, (1.0,), ()))
     emitted = []
     capsule_rows = []
     event_rows = []
@@ -322,6 +323,7 @@ def build_graph(law_path, json_path, npz_path, roster_dir):
                     )
                     packet = Template(
                         source,
+                        target,
                         left + F(1, 5),
                         right + F(1, 5),
                         target,
@@ -382,6 +384,7 @@ def build_graph(law_path, json_path, npz_path, roster_dir):
         for packet, record in zip(pending, records):
             actual = (
                 packet.source,
+                packet.generation,
                 packet.dimension,
                 packet.target,
                 packet.origin,
@@ -390,6 +393,7 @@ def build_graph(law_path, json_path, npz_path, roster_dir):
             )
             expected = (
                 record["source"],
+                record["generation"],
                 record["dimension"],
                 record["target"],
                 record["origin"],
