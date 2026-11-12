@@ -1,0 +1,33 @@
+{
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": ""
+  },
+  "command": [
+    "python3",
+    "scripts/hepta-module-docs.py",
+    "refresh-derived",
+    "--check"
+  ],
+  "cwd": "/workspace/scratch/8cec085888c3/adoption-work",
+  "timeout_seconds": 180,
+  "started_unix": 1794447305.2280295,
+  "initial_attempt": {
+    "status": "INPUT_UNAVAILABLE",
+    "exit_code": 1,
+    "reason": "docs/modules/MODULES.json not materialized in sparse checkout; not a derived drift result"
+  },
+  "status": "COMPLETED",
+  "exit_code": 1,
+  "ended_unix": 1794447305.3447468,
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": ""
+  },
+  "log": "/workspace/scratch/8cec085888c3/4453ce70-derived-check.log",
+  "log_sha256": "cb38c1ca821495657bf11c143d19a64b69daa015b50899988f11fa892c107ced",
+  "log_bytes": 170,
+  "source_unchanged": true
+}

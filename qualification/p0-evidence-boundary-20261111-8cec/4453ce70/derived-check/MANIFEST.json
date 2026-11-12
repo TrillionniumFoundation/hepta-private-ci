@@ -1,0 +1,72 @@
+{
+  "schema": "hepta-original-derived-check-evidence-v1",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "recorded_at_utc": "2026-11-12 01:43:37 UTC",
+  "files": [
+    {
+      "name": "4453ce70-derived-check-missing-modules.log",
+      "bytes": 162,
+      "sha256": "dd96ce054b2240f027f7146107d2e626cedcb00645ee0552639b03e76276fab3",
+      "github_blob_sha": "3388f61fe74dc86ab42156b0a52ddb8eb04f0f03"
+    },
+    {
+      "name": "4453ce70-derived-check-missing-contracts.json",
+      "bytes": 1029,
+      "sha256": "c0621b50c45c6a983cda90326c1e6d2c928d21340556f60ff440d7d175121ad9",
+      "github_blob_sha": "a5cd9233619bebcce62c20badb9f89bbb02ebf5c"
+    },
+    {
+      "name": "4453ce70-derived-check-missing-contracts.log",
+      "bytes": 170,
+      "sha256": "cb38c1ca821495657bf11c143d19a64b69daa015b50899988f11fa892c107ced",
+      "github_blob_sha": "4a13813f0b8abe6f4b93233e257119bae222830f"
+    },
+    {
+      "name": "4453ce70-derived-docs-materialization.json",
+      "bytes": 29201,
+      "sha256": "b0a327d9f5712429dd3d5f5305129bbcbfbb5768c8839ca9500926522d9906de",
+      "github_blob_sha": "c1a6e1fb9528382fa8d89000ccc05ff5fcf279dd"
+    },
+    {
+      "name": "4453ce70-derived-inputs-materialization.json",
+      "bytes": 22641,
+      "sha256": "ea41248911fce09aa249257f0121f5b89284e16ff333551afe07e219bb7f5228",
+      "github_blob_sha": "8618dc9fbf1ba5f0879c99a8b74894b3f7996da6"
+    },
+    {
+      "name": "4453ce70-derived-check.json",
+      "bytes": 996,
+      "sha256": "b9b45ab26ff232d0dea13e91842debfafa55739ebd32a280b178b4c29c23ba6a",
+      "github_blob_sha": "adce8a04556d3c752bb0a138edaf64d5a24d08a0"
+    },
+    {
+      "name": "4453ce70-derived-check.log",
+      "bytes": 42,
+      "sha256": "dd338ae2d65000941c4a2c3afe356096d35c98d69ca23ec86c7b98ba0490ab1f",
+      "github_blob_sha": "ca053c29c2105cdcfb3f441d667da91fc01b0a9f"
+    },
+    {
+      "name": "4453ce70-caller-declared-paths.json",
+      "bytes": 138,
+      "sha256": "8f50c16ea29effc837a297c5c8811242bb18125fc72ea3ff2e759e6c273b16ea",
+      "github_blob_sha": "888ba581f54e7f8500b98efeb3483ac71b2e0f1d"
+    }
+  ],
+  "initial_attempts": "Original missing MODULES.json and CONTRACTS.json input errors preserved. These are incomplete sparse-checkout inputs, not conclusions about projection drift.",
+  "materialization": "143 docs/modules files plus 111 exact catalog/declared-root files were materialized from immutable 445 Git objects. Every materialized blob was rehashed against its original Git identity. Existing source content was not edited.",
+  "original_command": [
+    "python3",
+    "scripts/hepta-module-docs.py",
+    "refresh-derived",
+    "--check"
+  ],
+  "terminal_result": {
+    "exit_code": 0,
+    "updatedDerived": [],
+    "checkOnly": true,
+    "source_before_after_clean": true
+  },
+  "caller_integrity": "The complete original caller scan continues unchanged. Materialized doc/catalog/non-Rust-root inputs are outside its codex-rs source_roots and 251 declared file inputs.",
+  "source_qualification": "An original derived-projection consistency check. It is not native task execution, independent benefit, or a completed full caller gate."
+}

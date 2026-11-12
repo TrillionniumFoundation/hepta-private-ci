@@ -1,0 +1,29 @@
+{
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": ""
+  },
+  "command": [
+    "python3",
+    "scripts/hepta-module-docs.py",
+    "refresh-derived",
+    "--check"
+  ],
+  "cwd": "/workspace/scratch/8cec085888c3/adoption-work",
+  "timeout_seconds": 180,
+  "started_unix": 1794447481.2242117,
+  "inputs": "Original docs catalogs, guides and declared roots materialized from exact445 Git blobs; original missing-input attempts preserved separately.",
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "ended_unix": 1794447481.3389807,
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": ""
+  },
+  "log": "/workspace/scratch/8cec085888c3/4453ce70-derived-check.log",
+  "log_sha256": "dd338ae2d65000941c4a2c3afe356096d35c98d69ca23ec86c7b98ba0490ab1f",
+  "log_bytes": 42,
+  "source_unchanged": true
+}
