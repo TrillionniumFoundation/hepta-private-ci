@@ -55,7 +55,7 @@ def require_armed_io(path, source):
         HANDOFF: (
             ("create_pending", "|| {"),
             ("open_record", "refusal.inspect(|| {"),
-            ("open_finalized", "retained.refusal.inspect(|| {"),
+            ("open_finalized", "RootDataRefusalV1::inspect(&retained.refusal, || {"),
             ("require_exact", "self.refusal.inspect(|| {"),
             ("replace", "self.refusal.inspect(|| {"),
         ),
