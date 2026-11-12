@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.same-session-phase-design-review-disposition.v1",
+  "status": "Design remains unimplemented. The independent findings below constrain all later implementation and acceptance.",
+  "proposal": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+  "independent_review": "d1e7ccc2db295e1c5d9a828f818991fa183ff2d2",
+  "root_read": true,
+  "accepted_required_corrections": [
+    {
+      "location": "scope_zh; binding_and_custody/Original identity and liveness",
+      "change": "Use same original custodian/runtime incarnation for PID/Root/writer continuity. Explicitly distinguish that from a different consumer/controller independence claim."
+    },
+    {
+      "location": "daemon_phase_machine/CActive; required_external_facts/new C; acceptance_cases/P1-P3",
+      "change": "State same agent/cell/principal, distinct run and input, actual authenticated ObjectiveStart and actual source/Cell completion. Keep independently controlled consumer adoption outside this V1 acceptance."
+    },
+    {
+      "location": "existing_breakpoints/late_worker_absolute_lifetime; minimal_implementation_slices",
+      "change": "Include contracts OwnerChannel, phase registration ACK wait and all phase-specific connect/accept paths in the original-absolute-end obligation. An outer remaining Duration is not sufficient."
+    },
+    {
+      "location": "root_state_machine/Claimed/Scoped/ClosedOrUncertain",
+      "change": "Specify durable one-use claim key/material, partial namespaces, offer-right consumption and cross-lane effect admission fencing. Do not treat Scoped readback as permission to send rights again."
+    },
+    {
+      "location": "minimal_implementation_slices/Fixed daemon controller",
+      "change": "Specify atomic admission permit transfer to original queue/pending accounting, not only changing the route enum or checking a slot state."
+    }
+  ],
+  "acceptance": {
+    "same_actor_fresh_task": "Requires actual original A, independent business Outcome, real Prepared, new phase contract, original Selection/FinalUse and actual C task. Not executed.",
+    "different_consumer_adoption": "Not supported by the current same agent/cell/principal successor/checkpoint contract. Requires separate authorized cross-owner evidence binding; existing guards remain.",
+    "cold_process_restart": "Not provided by the unimplemented same-session proposal; original live caps cannot be restored from persisted phase data."
+  },
+  "implementation_permission_not_changed": "This record creates no runtime authority, capability, caller edge, native result or exception.",
+  "counts": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.original-records-export-review.v10",
+  "original_exporter": "79494fe659157c453d4f0804cb01581eecce6052",
+  "original_wrapper": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+  "config": "c7c8af0ddc4f8dbaa4439d032b707a289b293410",
+  "request": "287f29ec2189b230ea6ec7ecd963a2e1cd073239",
+  "anchor": {
+    "source": "/home/qq/af52-learning-local-decision-20261111/ordinary-0081b6b-seven-final-v3/source",
+    "head": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf",
+    "terminal_source_identity": {
+      "head": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+      "status": "",
+      "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+    }
+  },
+  "work": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112",
+  "sources": [
+    {
+      "name": "ordinary-f1c9170-seven-final-v1",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1c9170-seven-final-v1/records",
+      "terminal": "progress.json",
+      "sha256": "8ef7e63d90803ae3878b75c551399143497e396c051d56fdef9e66ea6d6d447b",
+      "expected": {
+        "status": "failed",
+        "source_sha": "f1c9170c891b58d9f059302e80be5d50265798d5",
+        "source_tree": "2ca384f8cc81f9bf934939060fefc31c6f237aa8"
+      }
+    },
+    {
+      "name": "ordinary-f16bf9b-seven-final-v2",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records",
+      "terminal": "progress.json",
+      "sha256": "572b98c53429637fa9302599ce8dc4fd62eee506c87a0510ffdd78fbb04fcb9d",
+      "expected": {
+        "status": "failed",
+        "source_sha": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+        "source_tree": "d0827337173581d74ec1903e0053967e01534c29"
+      }
+    },
+    {
+      "name": "ordinary-0081b6b-seven-final-v3",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-0081b6b-seven-final-v3/records",
+      "terminal": "progress.json",
+      "sha256": "b1e7e05a4160afb5ed0ebdfde22bd572962c75edd3cbbb4eda7fca4566b0c650",
+      "expected": {
+        "status": "failed",
+        "source_sha": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+        "source_tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+      }
+    }
+  ],
+  "request_pins": {
+    "ordinary-f1c9170-seven-final-v1": {
+      "git_blob": "3decc946d333a80ea9999b255756010a704839fa",
+      "bytes": 56726,
+      "sha256": "2494ef9452f47af4344ee739c6e6ab2dabb8b5a7a61deccf66decc2a4d7cf825",
+      "retention": "Original raw request is pinned separately; archive request members are normalized JSON objects."
+    },
+    "ordinary-f16bf9b-seven-final-v2": {
+      "git_blob": "594028168c5d1db0a229fd6e7f65401b1796001c",
+      "bytes": 56726,
+      "sha256": "3c7cb6ed93bb6ffbed1416d5ccfccf6a1200c80695ad46b12009cccfb9d82d6f",
+      "retention": "Original raw request is pinned separately; archive request members are normalized JSON objects."
+    },
+    "ordinary-0081b6b-seven-final-v3": {
+      "git_blob": "0cf4a133769a12be314e6d48e5ff8f4d7effbf76",
+      "bytes": 56726,
+      "sha256": "a08bfa067fdd5b23be423d83ea967425aaa87609027be46a1c09808e0c33271e",
+      "retention": "Original raw request is pinned separately; archive request members are normalized JSON objects."
+    }
+  },
+  "checks": {
+    "unchanged_exporter_and_wrapper_bytes": true,
+    "all_three_progress_sha256_pinned": true,
+    "all_original_native_requests_exact": true,
+    "terminal_pty_complete": true,
+    "no_native_test_launched_by_exporter": true,
+    "only_writes_new_owned_export_directory": true,
+    "original_source_and_records_retained": true
+  },
+  "dispatch_status": "not-yet-dispatched"
+}

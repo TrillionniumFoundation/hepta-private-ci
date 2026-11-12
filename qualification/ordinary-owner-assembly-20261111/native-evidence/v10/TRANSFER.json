@@ -1,0 +1,1544 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.original-evidence-transfer.v1",
+  "status": "complete-byte-transfer-verified-and-git-blob-uploaded",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": {
+    "remote_host": "ai395",
+    "original_export_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112",
+    "reads_performed": {
+      "h_read_multiple_files": 1,
+      "h_binary_read": 60,
+      "h_pty_read": 0,
+      "read_errors": 0,
+      "retries": 0
+    },
+    "mutations_performed": "Only content-addressed unreferenced Git blobs created in the already-authorized repository.",
+    "not_performed": [
+      "h_pty_start",
+      "exporter rerun",
+      "remote file modification",
+      "Cargo or native execution",
+      "new process or local execution/parser channel",
+      "tar extraction or independent member parsing",
+      "branch/ref/PR changes",
+      "credential or network-policy changes"
+    ]
+  },
+  "original_export": {
+    "exact_request_blob": "287f29ec2189b230ea6ec7ecd963a2e1cd073239",
+    "config_blob": "c7c8af0ddc4f8dbaa4439d032b707a289b293410",
+    "plan_blob": "b3a4b1d729803d9d7c72e2d57b8974e1aa12d523",
+    "static_review_blob": "44ff107c659645247ec99a1a0e2ff295b002d267",
+    "exporter_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+    "wrapper_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+    "supplied_pty_terminal": {
+      "session_id": "dpty-a453f74dc6b9926dc01b5934c404463efd4cea6fcb44b84f3e755ef8772c7d37",
+      "owner_pid": 2621402,
+      "pid": 2621403,
+      "created_unix_ms": 1794460856750,
+      "exit_code": 0,
+      "output_bytes": 11099,
+      "output_complete": true,
+      "capture_error": null,
+      "provenance": "Root supplied this original terminal result; no additional PTY read was issued by this transfer."
+    },
+    "export_json": {
+      "name": "export_json",
+      "git_blob": "2dfc61e049ac313fc7075c5af5fecbac507c8524",
+      "bytes": 11490,
+      "sha256": "87681c74981b6e116e706cdd80ecaf34600fe7af84732b7aadf41f43c92247b5",
+      "version": "66306:55359760:11490:1794460857371940744:1794460857371940744"
+    },
+    "export_json_original_read_receipt": {
+      "name": "export_json_read_receipt",
+      "git_blob": "f5cf8998be5c1badda639b8294e47582cffa14f0",
+      "bytes": 13347,
+      "sha256": "2e810b5f0a815cb99c55382e923c192e68715e86afff6c4c5525d38a34aaae8e"
+    }
+  },
+  "archive": {
+    "name": "original-records.tar.xz",
+    "bytes": 2939136,
+    "sha256": "0ecb9831940d39d2d31f9901130660f4ec260266086db37810b11026848fda72",
+    "git_blob": "43d7d0b1bb5a7d6ea7533fcd09fc3ce185d78a17",
+    "fixed_remote_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261",
+    "github_create_blob_response_sha": "43d7d0b1bb5a7d6ea7533fcd09fc3ce185d78a17",
+    "transport_encoding": "base64",
+    "git_upload_response_matched_independently_computed_hash": true
+  },
+  "independent_byte_verification": {
+    "chunk_count": 60,
+    "chunk_length": 49152,
+    "last_chunk_length": 39168,
+    "concurrent_requests_maximum": 4,
+    "first_request": "Establish immutable version with offset 0; complete archive size/SHA/Git were pinned before any read.",
+    "remaining_requests": "All 59 requests passed the exact first response version as expected_version.",
+    "checked_for_every_chunk": [
+      "tool success",
+      "one original text response",
+      "exact path",
+      "same file version",
+      "same total file size",
+      "contiguous offset",
+      "returned length",
+      "next_offset",
+      "end-of-file flag",
+      "independently recomputed SHA256"
+    ],
+    "checked_after_join": [
+      "exact 2939136-byte coverage",
+      "SHA256 of all decoded bytes",
+      "SHA1 of literal Git blob header followed by all bytes",
+      "joined base64 decodes to the same full SHA256"
+    ],
+    "completed_values": {
+      "bytes": 2939136,
+      "sha256": "0ecb9831940d39d2d31f9901130660f4ec260266086db37810b11026848fda72",
+      "git_blob": "43d7d0b1bb5a7d6ea7533fcd09fc3ce185d78a17"
+    },
+    "all_matched_original_export": true
+  },
+  "member_verification": {
+    "attribution": "Original exporter verification as recorded by the exact transferred export.json; this transfer did not decompress or independently inspect members.",
+    "original_export_status": "verified-original-record-export",
+    "members": 94,
+    "payload_files": 93,
+    "excluded": [],
+    "manifest_sha256": "d2cb4ec2227835ba5f5f765600cb5a3dacd56bf0ec2d5db9c27f385bf2335b7e"
+  },
+  "source_binding": {
+    "attribution": "Exact values read from original export.json, independently compared field by field with Root's fixed expected anchor; no new source command was executed.",
+    "before": {
+      "head": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+      "status": "",
+      "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+    },
+    "after": {
+      "head": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+      "status": "",
+      "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+    }
+  },
+  "retained_attempt_outcomes": [
+    {
+      "source": "f1c9170c891b58d9f059302e80be5d50265798d5",
+      "tree": "2ca384f8cc81f9bf934939060fefc31c6f237aa8",
+      "progress_blob": "d280976ed7f6894a65328bf1bb6bcc8801d97ada",
+      "outcome": "Original just fmt command exit 0, executor exit 1 because 12 source postimages changed; behavior suites not reached."
+    },
+    {
+      "source": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+      "tree": "d0827337173581d74ec1903e0053967e01534c29",
+      "progress_blob": "bdf5b84e3b97de23ecb2fc12ab9ff9f085ff915d",
+      "outcome": "Original Clippy command exit 0, executor exit 1 because two source postimages changed; behavior suites not reached."
+    },
+    {
+      "source": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+      "tree": "87e7ef749329b0f41481873a414cdd924d5971bf",
+      "progress_blob": "baa0d956bb3f096645d5890b12c879a81c3f1661",
+      "outcome": "Maintenance and binary checks clean; B4 211 tests, 199 passed and 12 errors. Subsequent ordinary/Root behavior suites not reached."
+    }
+  ],
+  "receipt_storage": {
+    "format": "Nine JSON batches preserve all 60 original request objects and MCP response values, including original content text/base64 data; batch envelopes and verification summaries are reviewer-created.",
+    "largest_batch_bytes": 473793,
+    "all_batches_below_unchanged_512000_byte_blob_gate": true,
+    "groups": [
+      {
+        "name": "binary-read-receipts-000-006.json",
+        "git_blob": "35d116eb91efa0d7b4703dc77facdf7a3ee98e79",
+        "bytes": 473506,
+        "sha256": "7c0caea878f533c6457ac04e15212f1808ae93756e22cd9bf70e1ca850c79131",
+        "indices": {
+          "first": 0,
+          "last_inclusive": 6
+        },
+        "byte_range": {
+          "start": 0,
+          "end_exclusive": 344064
+        }
+      },
+      {
+        "name": "binary-read-receipts-007-013.json",
+        "git_blob": "5fc561e13186c5ae65b41ff9c4fe8fbeff0f979d",
+        "bytes": 473742,
+        "sha256": "0462e8e03c966d68e5fac4bc9dd3d7acb65fa792d701b6cd8387247de65229e0",
+        "indices": {
+          "first": 7,
+          "last_inclusive": 13
+        },
+        "byte_range": {
+          "start": 344064,
+          "end_exclusive": 688128
+        }
+      },
+      {
+        "name": "binary-read-receipts-014-020.json",
+        "git_blob": "56f31bb850a912a6fa083d1e8fd5c00e0a6408bb",
+        "bytes": 473752,
+        "sha256": "dd00c810aa5197d93cf3e149ca153f69b0b3d649519e7a94c5be74640329b60f",
+        "indices": {
+          "first": 14,
+          "last_inclusive": 20
+        },
+        "byte_range": {
+          "start": 688128,
+          "end_exclusive": 1032192
+        }
+      },
+      {
+        "name": "binary-read-receipts-021-027.json",
+        "git_blob": "8ee4c991fd15f28f920672f8f59ff7fee4f6fc04",
+        "bytes": 473793,
+        "sha256": "8aeaf9148c196db9bb4994f404f49927b9d985263dc9943602796839edebce69",
+        "indices": {
+          "first": 21,
+          "last_inclusive": 27
+        },
+        "byte_range": {
+          "start": 1032192,
+          "end_exclusive": 1376256
+        }
+      },
+      {
+        "name": "binary-read-receipts-028-034.json",
+        "git_blob": "9106a10d127040fd1ab59b2e15d1b1d8e585b93f",
+        "bytes": 473793,
+        "sha256": "3b7bd5324ef3fd5239beb7435ff9e317c579409a72dcf79428282df1054545ec",
+        "indices": {
+          "first": 28,
+          "last_inclusive": 34
+        },
+        "byte_range": {
+          "start": 1376256,
+          "end_exclusive": 1720320
+        }
+      },
+      {
+        "name": "binary-read-receipts-035-041.json",
+        "git_blob": "5397176e0adc0250e0477e343e8f101c653c9075",
+        "bytes": 473793,
+        "sha256": "d4df6590a60d83dc8c8358a3027fa8b873e483ce06e9d03c75f24b62f9e0a97e",
+        "indices": {
+          "first": 35,
+          "last_inclusive": 41
+        },
+        "byte_range": {
+          "start": 1720320,
+          "end_exclusive": 2064384
+        }
+      },
+      {
+        "name": "binary-read-receipts-042-048.json",
+        "git_blob": "6f2ed0335149cc4f83281e992da7bef508ce55da",
+        "bytes": 473793,
+        "sha256": "093fe31cc2391f0b9bfb41bb05df451f3bb028ffdab0cecf57f3c35238e9a135",
+        "indices": {
+          "first": 42,
+          "last_inclusive": 48
+        },
+        "byte_range": {
+          "start": 2064384,
+          "end_exclusive": 2408448
+        }
+      },
+      {
+        "name": "binary-read-receipts-049-055.json",
+        "git_blob": "e493fa485c2b46cd08a8a5ca2d5f42de7c2a982f",
+        "bytes": 473793,
+        "sha256": "f27e8a91722f7493b2d8742e67d910a5c5373d3e072e4f68448daa78dca114d6",
+        "indices": {
+          "first": 49,
+          "last_inclusive": 55
+        },
+        "byte_range": {
+          "start": 2408448,
+          "end_exclusive": 2752512
+        }
+      },
+      {
+        "name": "binary-read-receipts-056-059.json",
+        "git_blob": "f34cb293ce43b58d2263ff8a95a677702881a656",
+        "bytes": 257727,
+        "sha256": "6e7365ca1e6cb07b3cb35e79afa03dbf054342001dbb906e2e28569ef8a597f8",
+        "indices": {
+          "first": 56,
+          "last_inclusive": 59
+        },
+        "byte_range": {
+          "start": 2752512,
+          "end_exclusive": 2939136
+        }
+      }
+    ]
+  },
+  "chunk_index": [
+    {
+      "index": 0,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 0,
+        "limit": 49152
+      },
+      "response_metadata": {
+        "chunk_sha256": "d494889a3402684734767b998b311666f4b312e5503c589d21581f7719f26008",
+        "eof": false,
+        "next_offset": 49152,
+        "offset": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d494889a3402684734767b998b311666f4b312e5503c589d21581f7719f26008"
+    },
+    {
+      "index": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 49152,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "b158be6375acc1c6614e5f9e8445d7aff2a40fba053004094f5f3294a3bb339f",
+        "eof": false,
+        "next_offset": 98304,
+        "offset": 49152,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "b158be6375acc1c6614e5f9e8445d7aff2a40fba053004094f5f3294a3bb339f"
+    },
+    {
+      "index": 2,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 98304,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "e94dfad45d54c36dea29f0e4a586680ef9f86b412a9a5616927b1aababd337b2",
+        "eof": false,
+        "next_offset": 147456,
+        "offset": 98304,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "e94dfad45d54c36dea29f0e4a586680ef9f86b412a9a5616927b1aababd337b2"
+    },
+    {
+      "index": 3,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 147456,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "4d8def627708fbdbf809bd552967b16f75189d245f78085a9946649beadc87db",
+        "eof": false,
+        "next_offset": 196608,
+        "offset": 147456,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "4d8def627708fbdbf809bd552967b16f75189d245f78085a9946649beadc87db"
+    },
+    {
+      "index": 4,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 196608,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "1724939c127dbc9663bcc835c600b7b21ec934ee85c6323727bd01a1649e5611",
+        "eof": false,
+        "next_offset": 245760,
+        "offset": 196608,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "1724939c127dbc9663bcc835c600b7b21ec934ee85c6323727bd01a1649e5611"
+    },
+    {
+      "index": 5,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 245760,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "eb2d633d728ffdb398cb2a880b8c6b28a38cfccf2acdef1a2d26bb78c5ed23d7",
+        "eof": false,
+        "next_offset": 294912,
+        "offset": 245760,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "eb2d633d728ffdb398cb2a880b8c6b28a38cfccf2acdef1a2d26bb78c5ed23d7"
+    },
+    {
+      "index": 6,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 294912,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "07c78cdb9257ed85f60927063ec0d2c5c966800257b6d99bdc23312f6ae8c427",
+        "eof": false,
+        "next_offset": 344064,
+        "offset": 294912,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "07c78cdb9257ed85f60927063ec0d2c5c966800257b6d99bdc23312f6ae8c427"
+    },
+    {
+      "index": 7,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 344064,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "e082a8c01ab739d8f25069f77cdd4f7e701327378caa6c95b793904200fab041",
+        "eof": false,
+        "next_offset": 393216,
+        "offset": 344064,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "e082a8c01ab739d8f25069f77cdd4f7e701327378caa6c95b793904200fab041"
+    },
+    {
+      "index": 8,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 393216,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "7e4e976bb6eae0869a69b2ff54e03b2d6743d1667796a563ac5f10ab4eac41d4",
+        "eof": false,
+        "next_offset": 442368,
+        "offset": 393216,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "7e4e976bb6eae0869a69b2ff54e03b2d6743d1667796a563ac5f10ab4eac41d4"
+    },
+    {
+      "index": 9,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 442368,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "631b592d8b7e09adf03eda712a6cd3c3ee727f35533646d0c2aa219094a6dfc0",
+        "eof": false,
+        "next_offset": 491520,
+        "offset": 442368,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "631b592d8b7e09adf03eda712a6cd3c3ee727f35533646d0c2aa219094a6dfc0"
+    },
+    {
+      "index": 10,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 491520,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "80c9ed3ab28d265c3d6fea4aa1f41402b6bb8a25552a12c72a78b3fdb015ca1f",
+        "eof": false,
+        "next_offset": 540672,
+        "offset": 491520,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "80c9ed3ab28d265c3d6fea4aa1f41402b6bb8a25552a12c72a78b3fdb015ca1f"
+    },
+    {
+      "index": 11,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 540672,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "d10ef774bd10da985dbf81e0bac32ceef84c447e5ebc3506c6892e95ae8fc5a8",
+        "eof": false,
+        "next_offset": 589824,
+        "offset": 540672,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d10ef774bd10da985dbf81e0bac32ceef84c447e5ebc3506c6892e95ae8fc5a8"
+    },
+    {
+      "index": 12,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 589824,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "199f327b98a8c5e32bb6c1eea67e29962777ef60ef468b375372322ae88d95ff",
+        "eof": false,
+        "next_offset": 638976,
+        "offset": 589824,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "199f327b98a8c5e32bb6c1eea67e29962777ef60ef468b375372322ae88d95ff"
+    },
+    {
+      "index": 13,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 638976,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "09d351e783b8612d703b039a61cf0e67fa35acb0e24f4b2b064979db941c6b97",
+        "eof": false,
+        "next_offset": 688128,
+        "offset": 638976,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "09d351e783b8612d703b039a61cf0e67fa35acb0e24f4b2b064979db941c6b97"
+    },
+    {
+      "index": 14,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 688128,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "8ecedeb7962ea5d9ab583f2f8d88b73a9cc4666f70135c6844417fc2f1fabfa8",
+        "eof": false,
+        "next_offset": 737280,
+        "offset": 688128,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "8ecedeb7962ea5d9ab583f2f8d88b73a9cc4666f70135c6844417fc2f1fabfa8"
+    },
+    {
+      "index": 15,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 737280,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "005b581e00302c7cfb957d9c2caad80d23c4d60cb0911ca2bfe0e8a6cb11ca48",
+        "eof": false,
+        "next_offset": 786432,
+        "offset": 737280,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "005b581e00302c7cfb957d9c2caad80d23c4d60cb0911ca2bfe0e8a6cb11ca48"
+    },
+    {
+      "index": 16,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 786432,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "d47bab8d97946748bed8d0ca6fbcd162d32fa197e0bde168f8ec74101d1e55d3",
+        "eof": false,
+        "next_offset": 835584,
+        "offset": 786432,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d47bab8d97946748bed8d0ca6fbcd162d32fa197e0bde168f8ec74101d1e55d3"
+    },
+    {
+      "index": 17,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 835584,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "af5dab90f2ccda964a98856d7e79477a2e677ee84e8b9b31491492b3b6a9342b",
+        "eof": false,
+        "next_offset": 884736,
+        "offset": 835584,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "af5dab90f2ccda964a98856d7e79477a2e677ee84e8b9b31491492b3b6a9342b"
+    },
+    {
+      "index": 18,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 884736,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "21d4db405bbaf0f753ff31dc01d4b2d995b32a4ffe4943dd4c61ca292d910f9b",
+        "eof": false,
+        "next_offset": 933888,
+        "offset": 884736,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "21d4db405bbaf0f753ff31dc01d4b2d995b32a4ffe4943dd4c61ca292d910f9b"
+    },
+    {
+      "index": 19,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 933888,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "ac8fef531facfd9c5a4ef7fbe46fe4b5f5c420eab7fc420b269f46d2d9a6ca32",
+        "eof": false,
+        "next_offset": 983040,
+        "offset": 933888,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "ac8fef531facfd9c5a4ef7fbe46fe4b5f5c420eab7fc420b269f46d2d9a6ca32"
+    },
+    {
+      "index": 20,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 983040,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "d2fd3cfa6ea6d38a47f711c2d73caf3ae8aae7e5f0eb6d06d53e6e543429481d",
+        "eof": false,
+        "next_offset": 1032192,
+        "offset": 983040,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d2fd3cfa6ea6d38a47f711c2d73caf3ae8aae7e5f0eb6d06d53e6e543429481d"
+    },
+    {
+      "index": 21,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1032192,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "eb6a15647f4a45f1db6f5bc24f53985c0005875cf0e1203f205eed6a119bffba",
+        "eof": false,
+        "next_offset": 1081344,
+        "offset": 1032192,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "eb6a15647f4a45f1db6f5bc24f53985c0005875cf0e1203f205eed6a119bffba"
+    },
+    {
+      "index": 22,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1081344,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "fc8aea5707aab65dd395d0258d13df5cf7522f88f1e4c8cc50ffc57e19f85ac9",
+        "eof": false,
+        "next_offset": 1130496,
+        "offset": 1081344,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "fc8aea5707aab65dd395d0258d13df5cf7522f88f1e4c8cc50ffc57e19f85ac9"
+    },
+    {
+      "index": 23,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1130496,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "7220223e3a79037f627f8a3f9ca080f40bdcee332040564c345b9e402a8ee5a1",
+        "eof": false,
+        "next_offset": 1179648,
+        "offset": 1130496,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "7220223e3a79037f627f8a3f9ca080f40bdcee332040564c345b9e402a8ee5a1"
+    },
+    {
+      "index": 24,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1179648,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "3c3387604d0549f41ff14eaa05ef8a2d66b5cdbbf3ca11816fa0228c0c53b47e",
+        "eof": false,
+        "next_offset": 1228800,
+        "offset": 1179648,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "3c3387604d0549f41ff14eaa05ef8a2d66b5cdbbf3ca11816fa0228c0c53b47e"
+    },
+    {
+      "index": 25,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1228800,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "9c86322a4117708d0ac9968532dd66d8bdf14bb59b275f4d1e111f5374ff9c7b",
+        "eof": false,
+        "next_offset": 1277952,
+        "offset": 1228800,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "9c86322a4117708d0ac9968532dd66d8bdf14bb59b275f4d1e111f5374ff9c7b"
+    },
+    {
+      "index": 26,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1277952,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "4907e1fa9b5f1e4f43ab5974533ab9e37bdfd4497fab03a7cdabc572fce5500d",
+        "eof": false,
+        "next_offset": 1327104,
+        "offset": 1277952,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "4907e1fa9b5f1e4f43ab5974533ab9e37bdfd4497fab03a7cdabc572fce5500d"
+    },
+    {
+      "index": 27,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1327104,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "d0e72ed429f7753fdc594b33c2dfd163f6d86d3373f00735a0d556fab47337e7",
+        "eof": false,
+        "next_offset": 1376256,
+        "offset": 1327104,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d0e72ed429f7753fdc594b33c2dfd163f6d86d3373f00735a0d556fab47337e7"
+    },
+    {
+      "index": 28,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1376256,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "7f5dee36df79656f58081bc75a38d338430aebf303b88884bdf8e8b1697e587f",
+        "eof": false,
+        "next_offset": 1425408,
+        "offset": 1376256,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "7f5dee36df79656f58081bc75a38d338430aebf303b88884bdf8e8b1697e587f"
+    },
+    {
+      "index": 29,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1425408,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "862a26a8795a2f82c7eedd4404a7b3da294e4a925d3576cecdc9b8969fbbad0d",
+        "eof": false,
+        "next_offset": 1474560,
+        "offset": 1425408,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "862a26a8795a2f82c7eedd4404a7b3da294e4a925d3576cecdc9b8969fbbad0d"
+    },
+    {
+      "index": 30,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1474560,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "0d0b807f9aa1d8df33111e1b4dfc02ce6bf463914774ff3ab70fb39f307dc0f8",
+        "eof": false,
+        "next_offset": 1523712,
+        "offset": 1474560,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "0d0b807f9aa1d8df33111e1b4dfc02ce6bf463914774ff3ab70fb39f307dc0f8"
+    },
+    {
+      "index": 31,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1523712,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "726a54502a2450c1be3ca43746a989b00f3b5a12d1fc9bdf7ce827ce305ca64e",
+        "eof": false,
+        "next_offset": 1572864,
+        "offset": 1523712,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "726a54502a2450c1be3ca43746a989b00f3b5a12d1fc9bdf7ce827ce305ca64e"
+    },
+    {
+      "index": 32,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1572864,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "a360094acb5b652fd4d103e40bfdc6f2dbdef510c53a9027d2a210892ec4181f",
+        "eof": false,
+        "next_offset": 1622016,
+        "offset": 1572864,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "a360094acb5b652fd4d103e40bfdc6f2dbdef510c53a9027d2a210892ec4181f"
+    },
+    {
+      "index": 33,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1622016,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "596d4f99bff3211e9c2abd6a25bfb6d807520b0fb2243e8d6190fa8f61e80612",
+        "eof": false,
+        "next_offset": 1671168,
+        "offset": 1622016,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "596d4f99bff3211e9c2abd6a25bfb6d807520b0fb2243e8d6190fa8f61e80612"
+    },
+    {
+      "index": 34,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1671168,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "282ada511acfc80dddef33a4b579bba9d3adc15f919c13a0c58f61c6ec5c5617",
+        "eof": false,
+        "next_offset": 1720320,
+        "offset": 1671168,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "282ada511acfc80dddef33a4b579bba9d3adc15f919c13a0c58f61c6ec5c5617"
+    },
+    {
+      "index": 35,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1720320,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "f87710329e53dcf2e48c048a65683b60e040ebf80f156017c7ea592ca1963f5c",
+        "eof": false,
+        "next_offset": 1769472,
+        "offset": 1720320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "f87710329e53dcf2e48c048a65683b60e040ebf80f156017c7ea592ca1963f5c"
+    },
+    {
+      "index": 36,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1769472,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "ef302ac826433a93ae65daad973529fd6af2fa825bb19c06b1c258f2f0ba9227",
+        "eof": false,
+        "next_offset": 1818624,
+        "offset": 1769472,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "ef302ac826433a93ae65daad973529fd6af2fa825bb19c06b1c258f2f0ba9227"
+    },
+    {
+      "index": 37,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1818624,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "2948de7a6527577160969566ef4ece067a369ae3185a0e71a2b1926851ca93ae",
+        "eof": false,
+        "next_offset": 1867776,
+        "offset": 1818624,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "2948de7a6527577160969566ef4ece067a369ae3185a0e71a2b1926851ca93ae"
+    },
+    {
+      "index": 38,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1867776,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "d7620bf8293e735f95e7f1ff3c518bca240cc8807a3402a5bf73d7d5780dee80",
+        "eof": false,
+        "next_offset": 1916928,
+        "offset": 1867776,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d7620bf8293e735f95e7f1ff3c518bca240cc8807a3402a5bf73d7d5780dee80"
+    },
+    {
+      "index": 39,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1916928,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "1bcb6da27e6465d945c3792f893e00cc326980812fb9bf0bb2c87a0850406f63",
+        "eof": false,
+        "next_offset": 1966080,
+        "offset": 1916928,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "1bcb6da27e6465d945c3792f893e00cc326980812fb9bf0bb2c87a0850406f63"
+    },
+    {
+      "index": 40,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 1966080,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "a18ac50fe56e5739ba6cb759ac40e98e890d3e6fe4976c932299a897f0a0a9dc",
+        "eof": false,
+        "next_offset": 2015232,
+        "offset": 1966080,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "a18ac50fe56e5739ba6cb759ac40e98e890d3e6fe4976c932299a897f0a0a9dc"
+    },
+    {
+      "index": 41,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2015232,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "2342fd9518d0c04a2d30d395fa2d06f2b9ada6b282ae1c83ed5e02dd412aec10",
+        "eof": false,
+        "next_offset": 2064384,
+        "offset": 2015232,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "2342fd9518d0c04a2d30d395fa2d06f2b9ada6b282ae1c83ed5e02dd412aec10"
+    },
+    {
+      "index": 42,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2064384,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "f0e925fa58ec0e7d176273238277e8f98b134997a1b239032f5a57215c121c53",
+        "eof": false,
+        "next_offset": 2113536,
+        "offset": 2064384,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "f0e925fa58ec0e7d176273238277e8f98b134997a1b239032f5a57215c121c53"
+    },
+    {
+      "index": 43,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2113536,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "c61b11d29c5c420adb2349dd8af3c2149f47fd1d1a3e8d0d570cb630329511a3",
+        "eof": false,
+        "next_offset": 2162688,
+        "offset": 2113536,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "c61b11d29c5c420adb2349dd8af3c2149f47fd1d1a3e8d0d570cb630329511a3"
+    },
+    {
+      "index": 44,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2162688,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "e8d72d78f59928fc35aa840c56782478c341c349839cf7ee0c8cb350703a1db1",
+        "eof": false,
+        "next_offset": 2211840,
+        "offset": 2162688,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "e8d72d78f59928fc35aa840c56782478c341c349839cf7ee0c8cb350703a1db1"
+    },
+    {
+      "index": 45,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2211840,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "e6aa3e5fdb771a85bc0246082aa7a9f0c2f040a5e27cc024f056a4f1e1b685cf",
+        "eof": false,
+        "next_offset": 2260992,
+        "offset": 2211840,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "e6aa3e5fdb771a85bc0246082aa7a9f0c2f040a5e27cc024f056a4f1e1b685cf"
+    },
+    {
+      "index": 46,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2260992,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "91c976d627cbab1ffd42c6026026e7138c3b57ad815d77a99bcf35380d411051",
+        "eof": false,
+        "next_offset": 2310144,
+        "offset": 2260992,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "91c976d627cbab1ffd42c6026026e7138c3b57ad815d77a99bcf35380d411051"
+    },
+    {
+      "index": 47,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2310144,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "09f277c03ed5b3a19d8a1dc0713a40fb20ccdae66b0df3e38464d4bf66484d52",
+        "eof": false,
+        "next_offset": 2359296,
+        "offset": 2310144,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "09f277c03ed5b3a19d8a1dc0713a40fb20ccdae66b0df3e38464d4bf66484d52"
+    },
+    {
+      "index": 48,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2359296,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "15733e0ec985b693d4949435bf90a6d2ec2f0c4e20d88421ae550d368bfbee4c",
+        "eof": false,
+        "next_offset": 2408448,
+        "offset": 2359296,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "15733e0ec985b693d4949435bf90a6d2ec2f0c4e20d88421ae550d368bfbee4c"
+    },
+    {
+      "index": 49,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2408448,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "0205d4f36a2de0cbd8963e20c7ea79fd15876c6b9daed9127bfe58c3be6a9483",
+        "eof": false,
+        "next_offset": 2457600,
+        "offset": 2408448,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "0205d4f36a2de0cbd8963e20c7ea79fd15876c6b9daed9127bfe58c3be6a9483"
+    },
+    {
+      "index": 50,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2457600,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "b82886635b499a7bdb48c26a2bcbca7671094e7c9a39ba64ccb7275691a3307c",
+        "eof": false,
+        "next_offset": 2506752,
+        "offset": 2457600,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "b82886635b499a7bdb48c26a2bcbca7671094e7c9a39ba64ccb7275691a3307c"
+    },
+    {
+      "index": 51,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2506752,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "0d284d44725575c16423d3dfd63ce26fd369def6deb7b31cfa6200077de6600b",
+        "eof": false,
+        "next_offset": 2555904,
+        "offset": 2506752,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "0d284d44725575c16423d3dfd63ce26fd369def6deb7b31cfa6200077de6600b"
+    },
+    {
+      "index": 52,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2555904,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "dff14c193eb10d2450105dc286bb54c3f12f795fc5a8d0a2ea79b8f41d90d4cf",
+        "eof": false,
+        "next_offset": 2605056,
+        "offset": 2555904,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "dff14c193eb10d2450105dc286bb54c3f12f795fc5a8d0a2ea79b8f41d90d4cf"
+    },
+    {
+      "index": 53,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2605056,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "74bdf7539005c7729413a426f2e2924fbb19685fc0b10045e761414ca521b19d",
+        "eof": false,
+        "next_offset": 2654208,
+        "offset": 2605056,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "74bdf7539005c7729413a426f2e2924fbb19685fc0b10045e761414ca521b19d"
+    },
+    {
+      "index": 54,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2654208,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "522f62205fdb16cb8e7fcc90ce26f07039361c5da11be8ee912f01bc47fa2ea2",
+        "eof": false,
+        "next_offset": 2703360,
+        "offset": 2654208,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "522f62205fdb16cb8e7fcc90ce26f07039361c5da11be8ee912f01bc47fa2ea2"
+    },
+    {
+      "index": 55,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2703360,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "77cf746ba36f46a5d3aa72b8dfc690fddb0e68e7822e74f5f9aee01948b14af1",
+        "eof": false,
+        "next_offset": 2752512,
+        "offset": 2703360,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "77cf746ba36f46a5d3aa72b8dfc690fddb0e68e7822e74f5f9aee01948b14af1"
+    },
+    {
+      "index": 56,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2752512,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "9afbdf6d03b291169bcafa34ea3913b1e2c45a8c305cdbaddf69b5cf1820a960",
+        "eof": false,
+        "next_offset": 2801664,
+        "offset": 2752512,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "9afbdf6d03b291169bcafa34ea3913b1e2c45a8c305cdbaddf69b5cf1820a960"
+    },
+    {
+      "index": 57,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2801664,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "9ed3f9b10762ecf64a1a2738bffbb370b8c79fc179653eb312d87fad12240066",
+        "eof": false,
+        "next_offset": 2850816,
+        "offset": 2801664,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "9ed3f9b10762ecf64a1a2738bffbb370b8c79fc179653eb312d87fad12240066"
+    },
+    {
+      "index": 58,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2850816,
+        "limit": 49152,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "f1930c85c1357ae18626c2e67fee15fb62c3ebd6179fee05295480aefaa39c87",
+        "eof": false,
+        "next_offset": 2899968,
+        "offset": 2850816,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "f1930c85c1357ae18626c2e67fee15fb62c3ebd6179fee05295480aefaa39c87"
+    },
+    {
+      "index": 59,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "offset": 2899968,
+        "limit": 39168,
+        "expected_version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "response_metadata": {
+        "chunk_sha256": "2fb680634330fc7b927b5e310d58738153de754aba82465e511e2a444e3c65f6",
+        "eof": true,
+        "next_offset": 2939136,
+        "offset": 2899968,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+        "size": 2939136,
+        "version": "66306:55323798:2939136:1794460857329942261:1794460857329942261"
+      },
+      "verified_bytes": 39168,
+      "verified_sha256": "2fb680634330fc7b927b5e310d58738153de754aba82465e511e2a444e3c65f6"
+    }
+  ],
+  "acceptance_scope": {
+    "newly_executed_native_tests": 0,
+    "new_business_qualification": false,
+    "ordinary_learning": 0,
+    "ordinary_adoption": 0,
+    "independent_consumption": 0,
+    "original_failures_remain_failures": true
+  }
+}

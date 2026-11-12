@@ -1,0 +1,208 @@
+{
+  "schema": "hepta.original-record-export-v10-independent-review.v1",
+  "reviewer": "hepta_audit",
+  "status": "Static request/config/script/data review only; no h, PTY, exporter, subprocess, native, Cargo, source/ref or permissions operation was executed.",
+  "finding": "No concrete blocking parameter objection found for this exact V10 request. This is not an archive-execution or business/test acceptance.",
+  "inputs": [
+    {
+      "name": "config",
+      "git_blob": "c7c8af0ddc4f8dbaa4439d032b707a289b293410",
+      "bytes": 220861,
+      "sha256": "deb001c8ce33ff6b2461dc3ddd8312093cd4633a58c0ce8d1440a34571e8063f"
+    },
+    {
+      "name": "request",
+      "git_blob": "287f29ec2189b230ea6ec7ecd963a2e1cd073239",
+      "bytes": 244018,
+      "sha256": "62c7d33780ec8bd64e2c3466c9df021698d3470d3c695d633507a9683b321982"
+    },
+    {
+      "name": "plan",
+      "git_blob": "b3a4b1d729803d9d7c72e2d57b8974e1aa12d523",
+      "bytes": 3688,
+      "sha256": "9812041d2639f95c44db9ede5e396f824930d7bdd527abac7ddf9898065b002c"
+    },
+    {
+      "name": "exporter",
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    {
+      "name": "wrapper",
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    }
+  ],
+  "checks": {
+    "scope": "Static Git/JSON/request review only; no Python exporter execution and no host reads/PTY/Cargo.",
+    "parameters_match": true,
+    "unchanged_exporter_and_wrapper": true,
+    "config_join_bytes_equal": true,
+    "argument_byte_lengths": [
+      2,
+      2,
+      146,
+      4370,
+      48000,
+      48000,
+      48000,
+      48000,
+      28861
+    ],
+    "inputs": [
+      {
+        "kind": "f1",
+        "name": "ordinary-f1c9170-seven-final-v1",
+        "progress": {
+          "git_blob": "d280976ed7f6894a65328bf1bb6bcc8801d97ada",
+          "bytes": 18524,
+          "sha256": "8ef7e63d90803ae3878b75c551399143497e396c051d56fdef9e66ea6d6d447b"
+        },
+        "request": {
+          "git_blob": "3decc946d333a80ea9999b255756010a704839fa",
+          "bytes": 56726,
+          "sha256": "2494ef9452f47af4344ee739c6e6ab2dabb8b5a7a61deccf66decc2a4d7cf825"
+        },
+        "terminal": "failed",
+        "step_names": [
+          "original-rust-idle-preflight",
+          "isolated-clone",
+          "fetch-exact-source",
+          "checkout-exact-source",
+          "format-base-ancestry",
+          "operator-toolchain",
+          "fmt-before"
+        ],
+        "request_json_fields_equal": true,
+        "raw_request_separately_pinned": true
+      },
+      {
+        "kind": "f16",
+        "name": "ordinary-f16bf9b-seven-final-v2",
+        "progress": {
+          "git_blob": "bdf5b84e3b97de23ecb2fc12ab9ff9f085ff915d",
+          "bytes": 19054,
+          "sha256": "572b98c53429637fa9302599ce8dc4fd62eee506c87a0510ffdd78fbb04fcb9d"
+        },
+        "request": {
+          "git_blob": "594028168c5d1db0a229fd6e7f65401b1796001c",
+          "bytes": 56726,
+          "sha256": "3c7cb6ed93bb6ffbed1416d5ccfccf6a1200c80695ad46b12009cccfb9d82d6f"
+        },
+        "terminal": "failed",
+        "step_names": [
+          "original-rust-idle-preflight",
+          "isolated-clone",
+          "fetch-exact-source",
+          "checkout-exact-source",
+          "format-base-ancestry",
+          "operator-toolchain",
+          "fmt-before",
+          "fix-seven-crates"
+        ],
+        "request_json_fields_equal": true,
+        "raw_request_separately_pinned": true
+      },
+      {
+        "kind": "0081",
+        "name": "ordinary-0081b6b-seven-final-v3",
+        "progress": {
+          "git_blob": "baa0d956bb3f096645d5890b12c879a81c3f1661",
+          "bytes": 23435,
+          "sha256": "b1e7e05a4160afb5ed0ebdfde22bd572962c75edd3cbbb4eda7fca4566b0c650"
+        },
+        "request": {
+          "git_blob": "0cf4a133769a12be314e6d48e5ff8f4d7effbf76",
+          "bytes": 56726,
+          "sha256": "a08bfa067fdd5b23be423d83ea967425aaa87609027be46a1c09808e0c33271e"
+        },
+        "terminal": "failed",
+        "step_names": [
+          "original-rust-idle-preflight",
+          "isolated-clone",
+          "fetch-exact-source",
+          "checkout-exact-source",
+          "format-base-ancestry",
+          "operator-toolchain",
+          "fmt-before",
+          "fix-seven-crates",
+          "fmt-after",
+          "bins-check",
+          "qa-b4-no-bypass"
+        ],
+        "request_json_fields_equal": true,
+        "raw_request_separately_pinned": true
+      }
+    ],
+    "pty_observations": [
+      {
+        "kind": "f1",
+        "session_id": "dpty-55d633cebb9f058bb26f6c320761030d48db4c6cdf19018d16af8933d31025a7",
+        "bytes": 3289,
+        "sha256": "413d22b28e221eea441fc85af949ae35be679fedda56cd6c60642779ea022f3c",
+        "git_blob": "d5998c201484896cbdd09c1eb61aaced5f75274f",
+        "exit_code": 1,
+        "output_complete": true,
+        "all_chunk_hashes_text_hex_offsets_match": true
+      },
+      {
+        "kind": "f16",
+        "session_id": "dpty-92f5aa08ac9e1d9fbc9cbb591a28a88748a59fecdc0a8ee3ff38bdd0d7869150",
+        "bytes": 3703,
+        "sha256": "11fb3334d33e24ac4e1da83c72f7df79e9c49dd82e9f63301a67f843eba72f38",
+        "git_blob": "d21a473d21fd9edeefc41a080bcd9dc23c090352",
+        "exit_code": 1,
+        "output_complete": true,
+        "all_chunk_hashes_text_hex_offsets_match": true
+      },
+      {
+        "kind": "0081",
+        "session_id": "dpty-b37c1458dc9bf48299f5404adda42859321e90ba2d6a0282594f7c76b3265bae",
+        "bytes": 4917,
+        "sha256": "678e3761d3be20c6c3d87b441522dbee5fe2a9a2c2742e4718f2a73fbc91de51",
+        "git_blob": "75910915c6503ad2f2f62fb9b9a7cdb85480d231",
+        "exit_code": 1,
+        "output_complete": true,
+        "all_chunk_hashes_text_hex_offsets_match": true
+      }
+    ],
+    "anchor": {
+      "source": "/home/qq/af52-learning-local-decision-20261111/ordinary-0081b6b-seven-final-v3/source",
+      "head": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+      "tree": "87e7ef749329b0f41481873a414cdd924d5971bf",
+      "original_after_maintenance": {
+        "head": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+        "status": "",
+        "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+      },
+      "final_physical_source_check": "passed in retained terminal progress"
+    },
+    "write_scope": [
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/original-records.tar.xz",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/part-NNN.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/export.json",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f1-f16-and-0081-original-records-export-v10-20261112/failure.json (only on error)"
+    ],
+    "execution_restriction": "Exporter subprocesses are only fixed git rev-parse HEAD/HEAD^{tree}/status before and after. Native requests and PTY observations are serialized as data, never compiled or dispatched.",
+    "retained_checks": [
+      "all three hard progress SHA/status/source/tree",
+      "regular one-link files, 32MiB per file and 128MiB aggregate bounds",
+      "only helpers/bin executable exclusion with custody/log reason",
+      "pre/post anchor identity",
+      "original file inode/device/size/mtime and content SHA stability",
+      "tar member names exactly equal payload set and every extracted byte equals original payload"
+    ],
+    "limits": "Archive existence, current remote stability, member count/size and actual execution success remain pending. Request members are normalized JSON with exact values/argv strings, not byte-identical serialization of their separately pinned raw request blobs.",
+    "blocking_parameter_objections": []
+  },
+  "classification_zh": [
+    "f1 只到原fmt命令0而执行器因12后像dirty拒绝，行为测试0；保留该dirty源记录。",
+    "f16 原fmt clean，Clippy命令完成但2后像dirty导致原执行器拒绝，行为测试0；保留该dirty源记录。",
+    "0081 原fmt/Clippy/bins clean，B4 211 tests中12 errors原失败保留；普通/Root行为suite未到达，最终clean anchor来自该原终态source。",
+    "归档仅保管这3个终态及其原records/requests/PTY；不把任何attempt改写为通过。"
+  ],
+  "execution_limits": "Before actual Root dispatch the exporter has not listed/read remote members or created the archive. The unchanged exporter will revalidate anchor and terminal hard SHA, every regular-file stamp/content, total size and tar members; any failure remains a failure.",
+  "design_note": "The separate final same-session design is bfa322cdf161c184ec476e77d3b1f31402af88e1 (delivery manifest b500fb94f081479f02a87a52c0fd102f439fe8ce); historical f33e04 is not the final design. No phase product code was added."
+}

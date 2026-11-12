@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.original-transfer-git-verification.v1",
+  "result": "The existing V10 archive was fully transferred, independently hashed, and uploaded as the exact expected Git blob.",
+  "transfer_index": {
+    "git_blob": "2fec3531cc100e55dddbedecf6dfe594e511e994",
+    "bytes": 68952,
+    "sha256": "d6d48562ee3ead0d9689bb3fdf3250a4224a98787edadd88055a4149adf04baf"
+  },
+  "archive": {
+    "bytes": 2939136,
+    "sha256": "0ecb9831940d39d2d31f9901130660f4ec260266086db37810b11026848fda72",
+    "git_blob": "43d7d0b1bb5a7d6ea7533fcd09fc3ce185d78a17",
+    "server_sha": "43d7d0b1bb5a7d6ea7533fcd09fc3ce185d78a17",
+    "encoding": "base64",
+    "uploaded": true
+  },
+  "original_export_json": {
+    "name": "export_json",
+    "git_blob": "2dfc61e049ac313fc7075c5af5fecbac507c8524",
+    "bytes": 11490,
+    "sha256": "87681c74981b6e116e706cdd80ecaf34600fe7af84732b7aadf41f43c92247b5"
+  },
+  "original_export_json_read_receipt": {
+    "name": "export_json_read_receipt",
+    "git_blob": "f5cf8998be5c1badda639b8294e47582cffa14f0",
+    "bytes": 13347,
+    "sha256": "2e810b5f0a815cb99c55382e923c192e68715e86afff6c4c5525d38a34aaae8e"
+  },
+  "github_utf8_readbacks": [
+    {
+      "name": "export_json",
+      "git_blob": "2dfc61e049ac313fc7075c5af5fecbac507c8524",
+      "bytes": 11490,
+      "sha256": "87681c74981b6e116e706cdd80ecaf34600fe7af84732b7aadf41f43c92247b5",
+      "readback_exact": true
+    },
+    {
+      "name": "TRANSFER.json",
+      "git_blob": "2fec3531cc100e55dddbedecf6dfe594e511e994",
+      "bytes": 68952,
+      "sha256": "d6d48562ee3ead0d9689bb3fdf3250a4224a98787edadd88055a4149adf04baf",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-000-006.json",
+      "git_blob": "35d116eb91efa0d7b4703dc77facdf7a3ee98e79",
+      "bytes": 473506,
+      "sha256": "7c0caea878f533c6457ac04e15212f1808ae93756e22cd9bf70e1ca850c79131",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-007-013.json",
+      "git_blob": "5fc561e13186c5ae65b41ff9c4fe8fbeff0f979d",
+      "bytes": 473742,
+      "sha256": "0462e8e03c966d68e5fac4bc9dd3d7acb65fa792d701b6cd8387247de65229e0",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-014-020.json",
+      "git_blob": "56f31bb850a912a6fa083d1e8fd5c00e0a6408bb",
+      "bytes": 473752,
+      "sha256": "dd00c810aa5197d93cf3e149ca153f69b0b3d649519e7a94c5be74640329b60f",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-021-027.json",
+      "git_blob": "8ee4c991fd15f28f920672f8f59ff7fee4f6fc04",
+      "bytes": 473793,
+      "sha256": "8aeaf9148c196db9bb4994f404f49927b9d985263dc9943602796839edebce69",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-028-034.json",
+      "git_blob": "9106a10d127040fd1ab59b2e15d1b1d8e585b93f",
+      "bytes": 473793,
+      "sha256": "3b7bd5324ef3fd5239beb7435ff9e317c579409a72dcf79428282df1054545ec",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-035-041.json",
+      "git_blob": "5397176e0adc0250e0477e343e8f101c653c9075",
+      "bytes": 473793,
+      "sha256": "d4df6590a60d83dc8c8358a3027fa8b873e483ce06e9d03c75f24b62f9e0a97e",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-042-048.json",
+      "git_blob": "6f2ed0335149cc4f83281e992da7bef508ce55da",
+      "bytes": 473793,
+      "sha256": "093fe31cc2391f0b9bfb41bb05df451f3bb028ffdab0cecf57f3c35238e9a135",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-049-055.json",
+      "git_blob": "e493fa485c2b46cd08a8a5ca2d5f42de7c2a982f",
+      "bytes": 473793,
+      "sha256": "f27e8a91722f7493b2d8742e67d910a5c5373d3e072e4f68448daa78dca114d6",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-056-059.json",
+      "git_blob": "f34cb293ce43b58d2263ff8a95a677702881a656",
+      "bytes": 257727,
+      "sha256": "6e7365ca1e6cb07b3cb35e79afa03dbf054342001dbb906e2e28569ef8a597f8",
+      "readback_exact": true
+    }
+  ],
+  "archive_upload_validation": "All 2939136 bytes were decoded and hashed before upload; Git create_blob returned the exact independently calculated 43d7d0b1bb5a7d6ea7533fcd09fc3ce185d78a17. No separate archive GET/download is claimed.",
+  "original_mcp_reads": {
+    "small_file_calls": 1,
+    "binary_chunk_calls": 60,
+    "maximum_concurrency": 4,
+    "errors": 0,
+    "retries": 0,
+    "pty_reads": 0
+  },
+  "boundary": "Tar member verification belongs to the original exporter and its preserved export.json (94 members, 93 payload files, no exclusions). This reviewer did not extract or independently parse the tar archive. Git readback checks above cover the exact export metadata, transfer index, and all nine complete binary-read receipt batches.",
+  "original_outcomes_unchanged": "f1 formatter dirty; f16 Clippy dirty; 0081 B4 211 tests/199 passed/12 errors. No original failure was retried or relabeled.",
+  "executed_programs_by_transfer": 0,
+  "native_tests_by_transfer": 0,
+  "refs_modified": 0,
+  "ordinary_acceptance_counts": {
+    "learning": 0,
+    "adoption": 0,
+    "independent_consumption": 0
+  }
+}

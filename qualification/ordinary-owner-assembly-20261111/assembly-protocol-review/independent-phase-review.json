@@ -1,0 +1,637 @@
+{
+  "schema": "hepta.same-session-phase-independent-review.v1",
+  "reviewer": "chain_nextuse",
+  "status": "STATIC DESIGN REVIEW ONLY; no product code or authority changes, no h/PTY/Cargo/native/checker execution, no ref changes",
+  "base": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "reviewed_proposal": {
+    "git_blob": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+    "bytes": 37654,
+    "sha256": "48e2ec5faecff263fc7f53f6bc6182cd00bf0234d98aed2e268d12e8b2132371"
+  },
+  "reviewed_delivery": {
+    "git_blob": "b500fb94f081479f02a87a52c0fd102f439fe8ce",
+    "bytes": 3701,
+    "sha256": "ab8742eff0084af31656fa2882ae67901d347be05c45c201739adf2371e042ad"
+  },
+  "source_binding": {
+    "proposal_source": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "direct_proposal_files": 16,
+    "all_16_match_fixed_0081": true,
+    "additional_scope": "Selected implementation paths and functions listed below. This is not an exhaustive repository audit or a compile/runtime result."
+  },
+  "verdict": {
+    "same_live_custodian": "A real one-shot live Root/daemon phase protocol is a defensible new bounded capability contract. Existing same-instance learning guards and original owner APIs can be reused; existing optional-worker wrappers cannot simply be reinvoked.",
+    "independent_consumer": "The proposed CActive path is a real fresh task under the original agent/cell/principal if its other prerequisites are met. It does not establish adoption by a different consumer/principal/controller. This is a concrete source-level limit, not merely an untested claim.",
+    "implementation_readiness": "Proceed first with small existing-caller foundation cuts and a tightly specified Root one-shot install contract. Do not present the whole proposal as a small caller-only wiring change.",
+    "ordinary_acceptance": {
+      "complete": 0,
+      "positive_adoption": 0,
+      "no_update_or_rollback": 0,
+      "independent_consumer_c": "not accepted",
+      "physical_restart": "not accepted"
+    }
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "priority": "acceptance blocker for independent-consumer C",
+      "title": "The current successor contract deliberately preserves the A partition",
+      "facts": [
+        "feature_target requires C source.agent_id == request.agent_id, cell_id == request.cell_id, principal_digest.to_string() == request.principal_id. It requires a different run_id; predecessor additionally requires different observation bytes.",
+        "LearningIterationCoordinatorV1::validate_observation independently requires the same principal/agent/cell in both NextUse and RetainedModelNextUse, with a new run.",
+        "The actual Root publication connection verifies the same registered UID/PID/full identity and original writer lease. Selection and NextUse signers are separate role owners; their signatures do not prove that the C task controller differs from A."
+      ],
+      "consequence": "The same-session protocol may close a fresh-task successor under the same custodian. It cannot satisfy a different-consumer/principal acceptance criterion by naming that state CActive or by counting a new run/input.",
+      "required_action": "Keep every existing equality check. Rename/qualify the proposal's independent-C statements and leave cross-owner consumption as an explicit separate protocol/acceptance gap.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs",
+          "git_blob": "0ed332f92a93f4304b9aa07f0f39044a13bdc3b2",
+          "method": "feature_target; predecessor",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs"
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+          "git_blob": "b5e1137882fe7f9072b339f222d912a581d89759",
+          "method": "LearningIterationCoordinatorV1::validate_observation / NextUse and RetainedModelNextUse",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-learning-artifacts/src/learning_iteration.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+          "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+          "method": "require_original_publication_session",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/root_generation_publication_connection.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+          "git_blob": "65fc6d4e163637bf49d3675d3a02a11277356c69",
+          "method": "validate_config; authenticate; make_receipt",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs"
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "priority": "implementation blocker until deadlines reach the transport",
+      "title": "An outer absolute deadline alone does not remove the existing relative-lifetime resets",
+      "facts": [
+        "Learning, Model, learned-publication and Initial optional-worker adapters each compute Instant::now() + config.lifetime_ms.",
+        "The existing Root publication enrollment handle waits with recv_timeout(self.lifetime), measured when register is called.",
+        "At the lower transport boundary, contracts OwnerChannel::new constructs end = Instant::now() + lifetime. Passing a previously computed remaining Duration can move the effective end later by the intervening work."
+      ],
+      "required_action": "The new phase path must retain an opaque original absolute Instant for each local process and pass a not-after bound through registration wait, accept, connection and final OwnerChannel. Keep signed wall-clock request/lease/role expiry checks separately in their original clock domain. Never serialize Instant as authority or recompute a fresh full lifetime. Existing non-phased wrappers may retain their behavior; an internal absolute-bound implementation should be consumed by real wrappers and the new phase route.",
+      "acceptance": "Near-end phase installation, delayed accept/ACK and work after the original end must refuse without lease/clock/500ms freshness renewal. Check the actual final transport end, not only a top-level timeout.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+          "git_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e",
+          "method": "serve_optional",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+          "git_blob": "b987852053e2ba0a252548aadb5816bbd7fcf2ad",
+          "method": "serve_optional",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+          "git_blob": "77b578235471b9d99e2aeea832647ea52524c3d6",
+          "method": "serve_optional",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+          "git_blob": "17d7daad0e91901fe63dd4cb919545c5fa8c66b9",
+          "method": "serve_optional",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+          "method": "RootGenerationPublicationEnrollmentCapabilityV1::register",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+          "git_blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+          "method": "OwnerChannel::new; deadline; check",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-contracts/src/authority_host_channel.rs"
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "priority": "required implementation contract",
+      "title": "Same-service registration is feasible, but partial filesystem effects are not one transaction",
+      "facts": [
+        "register_learning_checkpoint and open_registered_learning_checkpoint are methods on the retained HostAuthorityService; with_learning_profile already verifies Root bind, exact registered identity, original writer/proof, live lease, clock, revocations and original pinned process before/after its action.",
+        "The public register_host_q24_model_factory begins by opening another registered writer/service. Its reserve body can be extracted into a private method on the retained same service, with the public function delegating to that body.",
+        "Learning registration and Model reservation create separate state. Model reservation creates a directory, journal, witness and frontier in sequence; a failure may leave a partial namespace."
+      ],
+      "required_action": [
+        "Create one Root-owned pre-serve phase capability with a fixed original actor/Root lifetime, original A operation and allowed transition. The daemon PreparedNotice remains advisory.",
+        "Before the first Learning/Model mutation, durably consume one exact installation record keyed to the original session/A operation, not to a caller-chosen fresh nonce. Pin actual initial head, full scope binding, writer proof, full material digest and frozen local policy before creating the new namespaces.",
+        "Use only trusted Root material plus the daemon's actual Prepared/HQ2 capability checks. Root-owned JSON does not independently prove private Cell/batch provenance; keep that existing TCB distinction explicit.",
+        "Retain each original guarded action. Do not hold an outer writer dispatch witness and recursively invoke methods which acquire the same witness; perform the one-shot record transition and original bounded actions in a defined non-nested order.",
+        "On partial effects, retain the exact stage/cause and consumed record. No Missing-to-create fallback, namespace repair, scope replacement or second factory offer."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+          "method": "register_learning_checkpoint; open_registered_learning_checkpoint; with_learning_profile",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+          "git_blob": "275842b2fd966afa349697705ab90095a913d0ff",
+          "method": "register_host_q24_model_factory; open_q24_model_factory; seal_q24_model_factory_offer",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "git_blob": "3806529bc4a51d336e495934bb31cf3c28144b18",
+          "method": "validate_binding; require_prepared_q24; into_q24_learning_runtime",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        }
+      ]
+    },
+    {
+      "id": "F4",
+      "priority": "required failure-state contract",
+      "title": "ACK loss must close future effects, not merely consume the host handle",
+      "facts": [
+        "The current model offer takes its original journal/witness rights before validation and cannot return them through the same retained factory.",
+        "The existing publication cap consumes ACTIVE before sending; failed acknowledgement leaves it consumed. The runtime rejects a failed acknowledgement before accepting the publication connection.",
+        "The proposed phase has several new lanes and state transitions. Consuming only its Root host handle does not by itself fence an already-delivered Learning/Model/C lane."
+      ],
+      "required_action": [
+        "Bind every new phase lane and its effect admission to the same opaque consumed phase record and original session.",
+        "Before entering each new mutation, recheck the phase is in the exact permitted state in addition to original Root/owner checks. On cancellation, EOF, lost phase ACK or deadline, close both the phase future-admission path and retained offer issuance; do not restore rights or generate a new purpose nonce.",
+        "Allow already-entered effects to finish/join and preserve their durable evidence as committed or uncertain. Do not promise an exactly-once success oracle after lost ACK.",
+        "ObservePhase must be data-only. It must not call writable factory-open/seal paths, reissue offers or reopen an executing phase. Persisted phase bytes cannot restore live capability after restart.",
+        "Keep ordinary task ACK-loss readback distinct: it may prove the existing source completion, but may not rerun inference, re-enroll the phase or re-publish."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+          "git_blob": "275842b2fd966afa349697705ab90095a913d0ff",
+          "method": "seal_q24_model_factory_offer",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+          "method": "register",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+          "git_blob": "77b578235471b9d99e2aeea832647ea52524c3d6",
+          "method": "serve_optional",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+          "git_blob": "606efd34bc59bfb3bf825c196eb55f48d500bd6b",
+          "method": "OriginalCircuitFeatureIngressV1::submit; observe_original_after_ack",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+        }
+      ]
+    },
+    {
+      "id": "F5",
+      "priority": "required controller linearization",
+      "title": "The new phase needs an admission permit, not a mutable task pointer",
+      "facts": [
+        "The original task handle resolves its Direct Arc, validates the RunStart, then increments pending and queues the Command. A future phase route that merely clones the A Arc before ClosingA could observe pending==0 before that previously accepted call increments it.",
+        "Original CircuitTaskRuntimeBootstrap::run is a required worker. Its child cancellation and spawn_blocking join must remain supervised.",
+        "drain_completed_task is task-local and requires exact original task/Cell ownership plus stable source completion before/after. Global drain_runtime changes the Agentd state to Draining and is not a reusable phase pause.",
+        "Learning startup currently consumes bootstrap/source delivery before runtime starts and requires original actual Root scope/owners. Existing Pending assumes those are already assembled."
+      ],
+      "required_action": [
+        "Preinstall a concrete phased owner and stable provider before A. Create the phase admission permit and close A admission under one lock/state linearization; retain that permit until original queue/inflight accounting owns the work.",
+        "Queued A requests keep their original phase/run and are never redirected to C. Missing capabilities and Pending refuse immediately, including build/submit/readback as appropriate.",
+        "After genuine A completion and independent Outcome, capture Prepared/retained source while current checks still hold, perform exact task-local drain, wait for original work and durable blockers, and join/drop only the owned A loop. The outer required controller remains alive.",
+        "Activate the original learning bootstrap/outbox through a private once-only join that retains all existing source, owner, scope, trust, Primary and Running/admission checks. A successful phase notification is not a stage receipt.",
+        "Expected Initial-purpose shutdown must be permitted only after the exact completed phase, without suppressing ordinary EOF failures or dropping the original five-lane observation service."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+          "git_blob": "9b02f4a550458e1ab1918e64f06c2ebeeedece62",
+          "method": "original_direct_handle; call; CircuitTaskRuntimeBootstrapV1::run",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+          "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+          "method": "drain_completed_task",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "git_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+          "method": "run_with_shutdown; drain_runtime",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/runtime.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+          "git_blob": "659036744c75d269509e134c924d6eb6fa84630f",
+          "method": "with_root_q24_learning_owners",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/config_root_learning.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+          "git_blob": "2d961729c0640bdf9fb9372c90dc464cbfd68ee6",
+          "method": "prepare_original_successor_context; wait_original_successor_stage",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          "git_blob": "3d7f65f119cc3aebb77fb8dc6931711f800daf50",
+          "method": "serve_selected",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_session.rs"
+        }
+      ]
+    }
+  ],
+  "cross_owner_assessment": {
+    "existing_separate_consumer_primitives": [
+      "An independently authorized consumer can use its own Root initial deployment, actual original Artifact/selection view, actual empty target journal/witness, original consumer nonce owner and its own FinalUse grant. Existing Initial enrollment binds target agent to that service's registered identity and full profile.",
+      "This is a separate deployment/authorization chain. It does not consume A's phase capability, bypass its own Root admission or supply A's NextUse receipt."
+    ],
+    "concrete_storage_constraint": "Root Initial open_artifacts passes config.peer_uid into LearningArtifactReadViewV1. Its root, heads, transactions and registries directory pins require metadata.uid == consumer_uid and reject group/other writable directories. A different-UID consumer cannot simply open A's private tree through this route. No chmod, ownership change, arbitrary copy or substituted reader is authorized by this proposal.",
+    "missing_composition": "No cross-owner NextUse contract exists in the reviewed current coordinator/Feature path: different agent/principal/cell observations are explicitly ContextMismatch. Reusing publication under another legitimately supplied deployment may be useful separate evidence, but linking it into A's checkpoint needs a separately versioned, authorized origin/consumer/role/receipt binding. Do not invent that protocol in the same-session slice.",
+    "independence_evidence": "Even a different PID or run is not proof of a distinct controller. Actual consumer identity/controller/custody and original signed execution/selection facts must be established by the applicable contract, not inferred from labels or Observer signing.",
+    "sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+        "method": "enroll_generation_initial",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+        "git_blob": "f4d0b45e19003253eb1e5490f96134b5ae9a96e0",
+        "method": "open_artifacts; open_initial_consumer",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+        "git_blob": "0c4441f0fe2c85addcffc3270a97944edd067684",
+        "method": "open_original; directory",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+        "git_blob": "b5e1137882fe7f9072b339f222d912a581d89759",
+        "method": "validate_observation",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0081b6b78fa1f0fb238a12aec814c93bdf2343a0/codex-rs/hepta-learning-artifacts/src/learning_iteration.rs"
+      }
+    ]
+  },
+  "recommended_small_cuts": [
+    {
+      "id": "C1",
+      "name": "Existing-caller foundations",
+      "production_consumer": "Keep register_host_q24_model_factory as an actual caller of an extracted same-service reserve body. Keep original non-phased serve/transport wrappers as actual callers of any private absolute-end implementation.",
+      "files": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+        "codex-rs/hepta-contracts/src/authority_host_channel.rs"
+      ],
+      "limit": "No late registration permission, new role or phase progress is granted by the extraction. Preserve original wrapper semantics and exact existing guards. Do not add an orphan factory/helper.",
+      "tests": "Meaningful original service registration/reservation checks and true absolute-end tests. A new changed source needs its own maintenance/QA/native qualification; no old acceptance inheritance."
+    },
+    {
+      "id": "C2",
+      "name": "One live Root scope installation",
+      "production_consumer": "A new explicit pre-serve Root phase capability is consumed by the same serving service's private phase worker. The trusted host supplies real post-A material; the daemon can only notice/receive and must still hold actual Prepared/retained capabilities.",
+      "files": [
+        "new narrow Root phase session/record modules",
+        "authority_host_session.rs",
+        "authority_host_learning_registration.rs",
+        "authority_host_q24_model_registration.rs",
+        "new phase-specific handoff/connection modules"
+      ],
+      "limit": "One original A and one actual batch-derived scope. Consume durably before effects, bind absolute deadline through actual transport, keep separate purpose offers, and close permanently on uncertainty. This cut should prove scope installation and real offer custody; it does not claim C completion.",
+      "tests": "Actual same Root/daemon pins; exact scope derived from real original Dataset/Prepared component input; duplicate/concurrent install, wrong material, pre-existing/partial namespace, cancellation and each lost-ACK boundary. Fixture role keys remain explicitly component inputs."
+    },
+    {
+      "id": "C3",
+      "name": "One concrete A-to-learning-to-fresh-task owner",
+      "production_consumer": "Preinstalled concrete runtime controller and stable handles, then private reuse of original learning assembly and source/outbox join. Actual original Root publication installs the new task through the original channel.",
+      "files": [
+        "new concrete Circuit phase owner/runtime",
+        "circuit_task_runtime.rs",
+        "state_circuit_task.rs",
+        "runtime.rs",
+        "config_root_learning.rs",
+        "objective_learning_outbox.rs",
+        "explicit embedded-host launch adapter"
+      ],
+      "limit": "Implement only after C2 and the admission-permit contract are fixed. Retain genuine TrainingNoUpdate/RetainParent/DeferCandidate categories; original B fair budget/cost rules remain intact. The resulting C remains the same-principal new-task contract.",
+      "tests": "Actual A and independent signed Outcome through original owners; admitted queue/lost caller barrier; natural original NoUpdate if available; original Selection/FinalUse/CURRENT and actual C task. Do not synthesize intermediate receipts or count a mere state transition as completion."
+    }
+  ],
+  "specific_proposal_text_corrections": [
+    {
+      "location": "scope_zh; binding_and_custody/Original identity and liveness",
+      "change": "Use same original custodian/runtime incarnation for PID/Root/writer continuity. Explicitly distinguish that from a different consumer/controller independence claim."
+    },
+    {
+      "location": "daemon_phase_machine/CActive; required_external_facts/new C; acceptance_cases/P1-P3",
+      "change": "State same agent/cell/principal, distinct run and input, actual authenticated ObjectiveStart and actual source/Cell completion. Keep independently controlled consumer adoption outside this V1 acceptance."
+    },
+    {
+      "location": "existing_breakpoints/late_worker_absolute_lifetime; minimal_implementation_slices",
+      "change": "Include contracts OwnerChannel, phase registration ACK wait and all phase-specific connect/accept paths in the original-absolute-end obligation. An outer remaining Duration is not sufficient."
+    },
+    {
+      "location": "root_state_machine/Claimed/Scoped/ClosedOrUncertain",
+      "change": "Specify durable one-use claim key/material, partial namespaces, offer-right consumption and cross-lane effect admission fencing. Do not treat Scoped readback as permission to send rights again."
+    },
+    {
+      "location": "minimal_implementation_slices/Fixed daemon controller",
+      "change": "Specify atomic admission permit transfer to original queue/pending accounting, not only changing the route enum or checking a slot state."
+    }
+  ],
+  "unchanged_requirements": [
+    "Original Generator/Observer/Evaluator/Selector roles, signed windows and independent role checks.",
+    "Original HQ24T002 private provenance capability; legacy None or descriptor bytes do not supply it.",
+    "Original B baseline/cumulative budget/capacity/complete authenticated costs and qualified adoption.",
+    "Original Root/consumer peer, PID/boot/start/spawn, writer proof, lease, freshness ceiling and sticky failure.",
+    "Original Feature equality guards; no cross-owner relaxation.",
+    "No cold restart, retained-cap serialization, new nonce after ACK loss, or unbounded repeated scopes."
+  ],
+  "evidence_index": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "bytes": 13390,
+      "sha256": "9b7fc5fbd163baabd4f234b8e6c1d06fcdc4ce02f024186509fbf6dfa8342e5b",
+      "proposal_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "git_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e",
+      "bytes": 7919,
+      "sha256": "c95cdc98eddda6d8bcc0036630485d45e5fa01a29f2580225d9b735a45d98e66",
+      "proposal_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "git_blob": "b987852053e2ba0a252548aadb5816bbd7fcf2ad",
+      "bytes": 6598,
+      "sha256": "5562824a9d2d57fe8112ecb7ecb28c8919e4e1cd3614db97ad44de3285100481",
+      "proposal_blob": "b987852053e2ba0a252548aadb5816bbd7fcf2ad",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+      "bytes": 9155,
+      "sha256": "d1f3c508b12d85e8db9e70efc7729066cf32a2f5eccd92b600b0129019796b44",
+      "proposal_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "git_blob": "275842b2fd966afa349697705ab90095a913d0ff",
+      "bytes": 14836,
+      "sha256": "4b17088389ad1fc8689f3d85f13047d73537e57adf54e50abb0edef22808381a",
+      "proposal_blob": "275842b2fd966afa349697705ab90095a913d0ff",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "git_blob": "0f72a32402fa990f46912ddd95872111d0a4c369",
+      "bytes": 8487,
+      "sha256": "1433d1ceea83b19a42e89004f4eea47aadd46164dcd0d92e9a3836a4772e2d6d",
+      "proposal_blob": "0f72a32402fa990f46912ddd95872111d0a4c369",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+      "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+      "bytes": 4477,
+      "sha256": "0beba1e9cc469d86b4c3c8ee59619b1db226f8251191531a28ab26fd59a412c0",
+      "proposal_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "bytes": 2003,
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577",
+      "proposal_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "git_blob": "9b02f4a550458e1ab1918e64f06c2ebeeedece62",
+      "bytes": 11434,
+      "sha256": "26f9e71bc316d74fa4943c923ce6e812c65be7545a34cc140903ebbc0786bbac",
+      "proposal_blob": "9b02f4a550458e1ab1918e64f06c2ebeeedece62",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "git_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "bytes": 31648,
+      "sha256": "90ef4ed86913dfea27cc1d8d0d7d80b44e5c4ceae97af5f44a6ce9a67be3448c",
+      "proposal_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+      "git_blob": "31065cbfee69386a9854fcb540e04448ea64de1f",
+      "bytes": 1576,
+      "sha256": "9369228e19a22e317248a27eacaccc43fbd3a5bf6856ca4eb3a93c2d534e8264",
+      "proposal_blob": "31065cbfee69386a9854fcb540e04448ea64de1f",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "git_blob": "2d961729c0640bdf9fb9372c90dc464cbfd68ee6",
+      "bytes": 5455,
+      "sha256": "306bc1b96470608366c13e563edc916de542f749f588955323590122c8c8541c",
+      "proposal_blob": "2d961729c0640bdf9fb9372c90dc464cbfd68ee6",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "git_blob": "c7e97889f1775b5e192cf2efdb38cf9d8c1719c7",
+      "bytes": 14490,
+      "sha256": "6de415c3fb1ea166236c2d70d320ac5c32b8b46baf87daac9f1c1216502613ad",
+      "proposal_blob": "c7e97889f1775b5e192cf2efdb38cf9d8c1719c7",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "git_blob": "1af60879f8ae2001eaa7d06b01a05016663f831d",
+      "bytes": 9723,
+      "sha256": "e19a730b1c0fcfbe63bba8d7216ec3b85c64e0ee4b7af7237bb02d95436c9992",
+      "proposal_blob": "1af60879f8ae2001eaa7d06b01a05016663f831d",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_outbox.rs",
+      "git_blob": "f3e3b8e986e3bd9a73f164a4ca952420fb59f9cd",
+      "bytes": 2592,
+      "sha256": "a3df883e904f8afb0bc9e8f3b5c5fbdf0c78992f166574f7d8325d7366fbc11e",
+      "proposal_blob": "f3e3b8e986e3bd9a73f164a4ca952420fb59f9cd",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "git_blob": "659036744c75d269509e134c924d6eb6fa84630f",
+      "bytes": 4054,
+      "sha256": "e805f96728bcf46e8380b421c3406426707f83986e110ab6b2859040014001a5",
+      "proposal_blob": "659036744c75d269509e134c924d6eb6fa84630f",
+      "matches_proposal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+      "git_blob": "175399043b785084633ce9040998a758bf31ac5a",
+      "bytes": 7226,
+      "sha256": "05002ba245f9d56183a23635c80ccad74f72ede1977cc590f5294162c120446d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+      "git_blob": "606efd34bc59bfb3bf825c196eb55f48d500bd6b",
+      "bytes": 13601,
+      "sha256": "33386e33467e2bf5de8cfd0b3e422ff762e42fb4b090cbc339665f634a669a3c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+      "git_blob": "65fc6d4e163637bf49d3675d3a02a11277356c69",
+      "bytes": 23966,
+      "sha256": "ab0bae81e14fa8cee2b230c1488cfcd4a382f30af2475e7c46fe7974365ca5e7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "git_blob": "3d7f65f119cc3aebb77fb8dc6931711f800daf50",
+      "bytes": 20571,
+      "sha256": "195cefae347d293ff0744bbb3400ccf5a88c004713ff3b20b5b65f2f103fd414"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "git_blob": "b6f34b3b9e0452d2ca311b79084233d5c3305fb7",
+      "bytes": 3160,
+      "sha256": "8668fd4bca95644a6252535cc5bf5369873ab335ca375fb7e022867dc775aae9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "git_blob": "3806529bc4a51d336e495934bb31cf3c28144b18",
+      "bytes": 9958,
+      "sha256": "c298f0be2b69a7424685bc4c489da9abf6ecca0fb9b6d1216874a15fb78d444e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+      "git_blob": "9521f592575e9c68a3f93d8424c6c1295752cf1e",
+      "bytes": 12393,
+      "sha256": "d994d556f4f8362170dc18ad85bfb4fd4c49ba619feb2ea7fa426276f5463577"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "git_blob": "77b578235471b9d99e2aeea832647ea52524c3d6",
+      "bytes": 7294,
+      "sha256": "18c3b8df7904bb429ed26c45e04728b543f414f1c07484842cd5b4578fca266e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "git_blob": "17d7daad0e91901fe63dd4cb919545c5fa8c66b9",
+      "bytes": 6827,
+      "sha256": "eb1ce05670237d04242fd7547a0f9198ae8158d94eab5faf8805a2987bf5d19b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "git_blob": "e48a86fca653ee173611d80d6ba330ea1b6096c4",
+      "bytes": 6155,
+      "sha256": "5439087f898fb6c7a09ccc54e9b2a1df175766abff4e5994658508975116745d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "git_blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "bytes": 13853,
+      "sha256": "c5f5fffd7b433e612b371ff595b6e4cccc6a242c145a70a6bf7066bf5935e340"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs",
+      "git_blob": "0ed332f92a93f4304b9aa07f0f39044a13bdc3b2",
+      "bytes": 13891,
+      "sha256": "6c19e678ad3c5b4616fe27a3e53568b2cbf5a1aa7450abbb6259de1c21ffbfcd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "git_blob": "e7010b23dde46c73398082d038bae73e45e3716e",
+      "bytes": 10513,
+      "sha256": "7776e029bf05e0b5f0fe2c3dd75d62e8326789105d348855a0e748d7a921950b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+      "git_blob": "f4d0b45e19003253eb1e5490f96134b5ae9a96e0",
+      "bytes": 6742,
+      "sha256": "c891ed29e8a311dc4e856def9d59adcb517dba7cc5d0ddb0f1b506e5329d61d3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "git_blob": "cdce3889936f83e06d733124b1a840d2a265c4cf",
+      "bytes": 9524,
+      "sha256": "5268171d28a80c2953f03e6acd84f83f70164caa66b144eee6c2b2ad9255c676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs",
+      "git_blob": "b7a924812160819928f131b0dc92cbb9bfcc6337",
+      "bytes": 2354,
+      "sha256": "cacce37898611ca4f97b71448d7114073bd2744333fbac838206114fb8bd1b13"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "git_blob": "b5e1137882fe7f9072b339f222d912a581d89759",
+      "bytes": 22307,
+      "sha256": "1bd416fd73b5118ce6d867b87b09c159b197cc72aedbdc0359491def43433f51"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "git_blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "bytes": 6221,
+      "sha256": "cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "git_blob": "0c4441f0fe2c85addcffc3270a97944edd067684",
+      "bytes": 6367,
+      "sha256": "1e2b9905a5c8b9e70887b652d5137d9d42e4ecdf5e17cbf84dc47a4da103c604"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+      "bytes": 9897,
+      "sha256": "9f8613d8a78e7ad0567de8c6adf02410a93e668db5ef19a2a8a20b42b0eaa071"
+    }
+  ],
+  "execution": {
+    "git_reads_and_v8_hash_verification": true,
+    "product_files_written": 0,
+    "source_mutations": 0,
+    "refs_mutated": 0,
+    "h_calls": 0,
+    "pty": 0,
+    "native": 0,
+    "qa": 0,
+    "python": 0,
+    "test_results_inferred": false
+  }
+}
