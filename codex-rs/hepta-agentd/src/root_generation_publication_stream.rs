@@ -36,7 +36,9 @@ impl OriginalPublicationStream {
         if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
             return Err(unavailable());
         }
-        let end = Instant::now().checked_add(lifetime).ok_or_else(unavailable)?;
+        let end = Instant::now()
+            .checked_add(lifetime)
+            .ok_or_else(unavailable)?;
         Self::from_stream_until(stream, root, peer, timeout, end)
     }
 
@@ -47,7 +49,9 @@ impl OriginalPublicationStream {
         timeout: Duration,
         end: Instant,
     ) -> io::Result<Self> {
-        let remaining = end.checked_duration_since(Instant::now()).ok_or_else(unavailable)?;
+        let remaining = end
+            .checked_duration_since(Instant::now())
+            .ok_or_else(unavailable)?;
         if peer.pid == 0
             || peer.pid > i32::MAX as u32
             || peer.process_start_ticks == 0

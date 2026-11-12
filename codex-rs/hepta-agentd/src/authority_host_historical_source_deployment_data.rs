@@ -19,8 +19,8 @@ use serde::Deserialize;
 use crate::AgentdIdentity;
 use crate::CircuitCellRouteV1;
 use crate::CircuitTaskSourceInputV1;
-use crate::RootHistoricalSourceInputsV1;
 use crate::OriginalSingleQ24SourceConfigurationV1;
+use crate::RootHistoricalSourceInputsV1;
 
 #[path = "authority_host_historical_source_deployment_cell.rs"]
 mod cell;
@@ -110,7 +110,9 @@ impl SourceDeploymentData {
         identity: &AgentdIdentity,
     ) -> io::Result<OriginalSingleQ24SourceConfigurationV1> {
         if self.schema_version != 1 || self.purpose != super::DEPLOYMENT_PURPOSE {
-            return Err(io::Error::other("original single Q24 Source deployment required"));
+            return Err(io::Error::other(
+                "original single Q24 Source deployment required",
+            ));
         }
         let definition = self.definition.into_definition()?;
         let source = self.source;
@@ -133,13 +135,18 @@ impl SourceDeploymentData {
             )
             .map_err(io::Error::other)?,
             circuit: self.circuit,
-            routes: self.routes.into_iter().map(|route| {
-                Ok(CircuitCellRouteV1 {
-                    candidate_id: StableId::new(route.candidate_id).map_err(io::Error::other)?,
-                    outcome: route.outcome,
-                    selected_edges: route.selected_edges,
+            routes: self
+                .routes
+                .into_iter()
+                .map(|route| {
+                    Ok(CircuitCellRouteV1 {
+                        candidate_id: StableId::new(route.candidate_id)
+                            .map_err(io::Error::other)?,
+                        outcome: route.outcome,
+                        selected_edges: route.selected_edges,
+                    })
                 })
-            }).collect::<io::Result<Vec<_>>>()?,
+                .collect::<io::Result<Vec<_>>>()?,
             definition,
             source: CircuitTaskSourceInputV1 {
                 scope: CellScopeV1 {
