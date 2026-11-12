@@ -67,7 +67,9 @@ pub(super) fn bind(
     {
         return Err(Error::WrongScope);
     }
-    let model_end = admitted_at.checked_add(model.lifetime).ok_or(Error::WrongScope)?;
+    let model_end = admitted_at
+        .checked_add(model.lifetime)
+        .ok_or(Error::WrongScope)?;
     let OriginalCellQ24CandidateStageStreamsV1 {
         common,
         candidate_material: candidate,
@@ -133,14 +135,26 @@ pub(super) fn bind(
     .map_err(|_| Error::OwnerUnavailable("original Evaluator initial connection"))?;
     let model = match origin {
         Origin::Fresh => OriginalCellQ24ModelCommandConnectionV1::from_original_stream(
-            model.stream, model.peer, model.original_owner_pidfd,
-            material.clone(), protocol.clone(), model.timeout, model.lifetime,
+            model.stream,
+            model.peer,
+            model.original_owner_pidfd,
+            material.clone(),
+            protocol.clone(),
+            model.timeout,
+            model.lifetime,
         ),
         Origin::Recovered => OriginalCellQ24ModelCommandConnectionV1::recover_from_original_stream(
-            model.stream, model.peer, model.original_owner_pidfd,
-            material.clone(), protocol.clone(), /*expected*/ None, model.timeout, model.lifetime,
+            model.stream,
+            model.peer,
+            model.original_owner_pidfd,
+            material.clone(),
+            protocol.clone(),
+            /*expected*/ None,
+            model.timeout,
+            model.lifetime,
         ),
-    }.map_err(|_| Error::OwnerUnavailable("original Model initial connection"))?;
+    }
+    .map_err(|_| Error::OwnerUnavailable("original Model initial connection"))?;
     let end = end.min(evaluator_end).min(model_end);
     let end = end.min(common.end);
     // Narrow the shared effect path too; no channel receives a later end.

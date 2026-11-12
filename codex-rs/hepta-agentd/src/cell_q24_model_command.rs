@@ -13,17 +13,17 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
+#[path = "cell_q24_model_command_client.rs"]
+mod client;
+#[path = "cell_q24_model_command_connection.rs"]
+mod connection;
 #[path = "cell_q24_model_command_context.rs"]
 pub(super) mod context;
 #[path = "cell_q24_model_command_wire.rs"]
 pub(super) mod wire;
-#[path = "cell_q24_model_command_connection.rs"]
-mod connection;
-#[path = "cell_q24_model_command_client.rs"]
-mod client;
-pub use connection::OriginalCellQ24ModelCommandConnectionV1;
-pub use client::OriginalCellQ24ModelCommandClientV1;
 pub use super::bootstrap::model_host::OriginalCellQ24ModelCommandHostV1;
+pub use client::OriginalCellQ24ModelCommandClientV1;
+pub use connection::OriginalCellQ24ModelCommandConnectionV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24ModelCommandErrorV1 {
@@ -84,31 +84,44 @@ pub struct OriginalCellQ24ModelCommandReceiptV1 {
     predecessors: [SignedLearningEvidenceV1; 4],
 }
 impl OriginalCellQ24ModelCommandReceiptV1 {
-    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
+    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.snapshot
+    }
     pub fn receipt(&self) -> &LearningIterationReceiptV1 {
         &self.snapshot.receipts[4]
     }
-    pub fn material_digest(&self) -> Digest32 { self.material }
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn material_digest(&self) -> Digest32 {
+        self.material
+    }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 
     /// Root may project only the record obtained by this original command
     /// decoder, with the exact four original signatures used by that command.
     /// This is data, not a reconstructed Model owner or signing capability.
     pub(crate) fn original_record_for_root(
-        &self, predecessors: &[SignedLearningEvidenceV1],
+        &self,
+        predecessors: &[SignedLearningEvidenceV1],
     ) -> Result<(&[u8; 80], Digest32), Error> {
         if predecessors != self.predecessors.as_slice() {
-            return Err(Error::Binding("same original Model full predecessor attestations"));
+            return Err(Error::Binding(
+                "same original Model full predecessor attestations",
+            ));
         }
         Ok((&self.record, self.context))
     }
 }
 pub(super) fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("original Model clock before Unix epoch"))
 }
 pub(super) fn require_clock(started: u64, current: u64) -> Result<(), Error> {
-    if current < started { return Err(Error::Binding("original Model clock moved backwards")); }
+    if current < started {
+        return Err(Error::Binding("original Model clock moved backwards"));
+    }
     Ok(())
 }
 

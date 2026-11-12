@@ -12,7 +12,8 @@ impl OriginalCellEvaluationCommandReceiptV1 {
         receipt: LearningIterationReceiptV1,
         evidence: SignedLearningEvidenceV1,
     ) -> Result<Self, Error> {
-        let context = Context::from_original_training(dataset, scope, registration, verifier, training)?;
+        let context =
+            Context::from_original_training(dataset, scope, registration, verifier, training)?;
         authenticate_receipt(&context, receipt, evidence, super::super::now()?)
     }
 }

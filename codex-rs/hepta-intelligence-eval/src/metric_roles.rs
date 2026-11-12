@@ -96,7 +96,10 @@ fn digest_role_contracts(
     contracts: &mut [MetricContractV1],
     metric_roles: &mut [MetricRoleContractV2],
 ) -> Result<Digest32, EvaluationClosureError> {
-    Ok(Digest32::of_bytes(&role_contract_commitment_bytes(contracts, metric_roles)?))
+    Ok(Digest32::of_bytes(&role_contract_commitment_bytes(
+        contracts,
+        metric_roles,
+    )?))
 }
 
 pub(crate) fn evaluation_role_commitment_bytes(

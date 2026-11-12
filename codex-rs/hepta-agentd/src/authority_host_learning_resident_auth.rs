@@ -34,16 +34,19 @@ pub(super) async fn original_attestations(
     cancellation: &CancellationToken,
 ) -> Result<ResidentOriginalEvidenceV3, Error> {
     owner.authority.profile.scope.validate_snapshot(snapshot)?;
-    let has_model = snapshot.receipts.iter().any(|receipt| {
-        receipt.observation.stage() == LearningIterationStageV1::Proposal
-    });
+    let has_model = snapshot
+        .receipts
+        .iter()
+        .any(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal);
     if !has_model {
         stages.validate_recovery(snapshot).await?;
     }
     let mut signatures = Vec::with_capacity(snapshot.receipts.len());
-    for receipt in snapshot.receipts.iter().filter(|receipt| {
-        receipt.observation.stage() != LearningIterationStageV1::Proposal
-    }) {
+    for receipt in snapshot
+        .receipts
+        .iter()
+        .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
+    {
         let (_, now) = owner.read(cancellation).await?;
         signatures.push(
             stages
@@ -62,13 +65,24 @@ pub(super) async fn original_attestations(
     // retained complete signature, including the earliest observer window.
     let (_, fresh) = owner.read(cancellation).await?;
     ResidentOriginalStageOwnersV3::require_initial(
-        stages, &owner.authority.profile.initial, &owner.authority.profile.scope, verifier,
+        stages,
+        &owner.authority.profile.initial,
+        &owner.authority.profile.scope,
+        verifier,
     )?;
-    let model = original_model.as_ref().map(|original| {
-        ResidentOriginalModelProofV3::from_original_readback(
-            &owner.authority.profile, verifier, snapshot, &signatures, original, fresh / 1_000,
-        )
-    }).transpose()?;
+    let model = original_model
+        .as_ref()
+        .map(|original| {
+            ResidentOriginalModelProofV3::from_original_readback(
+                &owner.authority.profile,
+                verifier,
+                snapshot,
+                &signatures,
+                original,
+                fresh / 1_000,
+            )
+        })
+        .transpose()?;
     verify_original_evidence(
         &owner.authority.profile,
         verifier,
@@ -99,9 +113,10 @@ pub(super) fn verify_original_evidence(
     now: u64,
 ) -> Result<(), Error> {
     verify_non_model_attestations(profile, verifier, snapshot, signatures, now)?;
-    let proposal = snapshot.receipts.iter().any(|receipt| {
-        receipt.observation.stage() == LearningIterationStageV1::Proposal
-    });
+    let proposal = snapshot
+        .receipts
+        .iter()
+        .any(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal);
     match (proposal, model) {
         (false, None) => Ok(()),
         (true, Some(model)) => model.require_original(profile, verifier, snapshot, signatures, now),
@@ -121,7 +136,12 @@ pub(super) fn verify_model_comparison_pin(
 ) -> Result<(), Error> {
     verify_non_model_attestations(profile, verifier, snapshot, signatures, now)?;
     ResidentOriginalModelProofV3::decode_root_reply(
-        original_model, profile, verifier, snapshot, signatures, now,
+        original_model,
+        profile,
+        verifier,
+        snapshot,
+        signatures,
+        now,
     )?;
     Ok(())
 }
@@ -138,14 +158,17 @@ fn verify_non_model_attestations(
         .map_err(|_| Error::WrongScope)?;
     profile.scope.validate_snapshot(snapshot)?;
     LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-    let proposal_count = snapshot.receipts.iter().filter(|receipt| {
-        receipt.observation.stage() == LearningIterationStageV1::Proposal
-    }).count();
+    let proposal_count = snapshot
+        .receipts
+        .iter()
+        .filter(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal)
+        .count();
     if snapshot.request != profile.initial.request
         || snapshot.owners != profile.initial.owners
         || proposal_count > 1
-        || proposal_count == 1 && (snapshot.receipts.len() != 5
-            || snapshot.receipts[4].observation.stage() != LearningIterationStageV1::Proposal)
+        || proposal_count == 1
+            && (snapshot.receipts.len() != 5
+                || snapshot.receipts[4].observation.stage() != LearningIterationStageV1::Proposal)
         || signatures.len() + proposal_count != snapshot.receipts.len()
         || signatures.len() > 5
         || verifier.trust_digest() != snapshot.owners.evidence_trust_digest
@@ -153,9 +176,12 @@ fn verify_non_model_attestations(
         return Err(Error::WrongScope);
     }
     let mut verified = Vec::with_capacity(signatures.len());
-    for (receipt, signature) in snapshot.receipts.iter().filter(|receipt| {
-        receipt.observation.stage() != LearningIterationStageV1::Proposal
-    }).zip(signatures) {
+    for (receipt, signature) in snapshot
+        .receipts
+        .iter()
+        .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
+        .zip(signatures)
+    {
         let stage = receipt.observation.stage();
         let role = match stage {
             LearningIterationStageV1::Experience

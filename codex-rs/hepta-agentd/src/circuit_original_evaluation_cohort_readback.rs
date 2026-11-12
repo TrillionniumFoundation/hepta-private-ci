@@ -231,13 +231,18 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
         &self,
         observed: &OriginalCircuitEvaluationCohortCurrentV1,
     ) -> Result<(Vec<u8>, Vec<u8>, SignedLearningEvidenceV1), Error> {
-        if self.fenced || self.original.fenced || self.last.as_ref() != Some(observed)
+        if self.fenced
+            || self.original.fenced
+            || self.last.as_ref() != Some(observed)
             || Digest32::of_bytes(&observed.commitment) != observed.binding
         {
             return Err(Error::Indeterminate);
         }
-        Ok((observed.commitment.clone(), observed.freeze_payload.clone(),
-            self.original.config.freeze_evidence.clone()))
+        Ok((
+            observed.commitment.clone(),
+            observed.freeze_payload.clone(),
+            self.original.config.freeze_evidence.clone(),
+        ))
     }
 
     pub fn authority(&self) -> AuthorityPosture {

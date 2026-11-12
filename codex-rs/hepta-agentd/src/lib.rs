@@ -403,6 +403,16 @@ pub use learning_iteration_evidence_client::OriginalCellQ24MaterialSourceConnect
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24MaterialSourceErrorV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandConnectionV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandHostV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandReceiptV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdatePeerStreamV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateStageOwnersV1;
@@ -422,16 +432,6 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapErro
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandClientV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandConnectionV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandErrorV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandHostV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandReceiptV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionErrorV1;
 #[cfg(target_os = "linux")]
@@ -480,8 +480,8 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
 mod cell_q24_material_receipt_owner;
-mod cell_q24_model_proposal;
 mod cell_q24_model_material;
+mod cell_q24_model_proposal;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
@@ -1442,10 +1442,10 @@ pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationComman
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1;
 #[cfg(target_os = "linux")]
-pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialV1;
-#[cfg(target_os = "linux")]
-pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialConnectionV1;
+pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialClientV1;
 #[cfg(target_os = "linux")]
-pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialConnectionV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialV1;

@@ -263,7 +263,10 @@ impl RootResidentLearningRuntimeV3 {
                 )
                 .await?
             }
-            None => authentication::ResidentOriginalEvidenceV3 { signatures: Vec::new(), model: None },
+            None => authentication::ResidentOriginalEvidenceV3 {
+                signatures: Vec::new(),
+                model: None,
+            },
         };
         let (current, fresh) = self.owner.read(cancellation).await?;
         if current.snapshot != original.snapshot
@@ -273,8 +276,10 @@ impl RootResidentLearningRuntimeV3 {
         }
         if let Some(snapshot) = &current.snapshot {
             ResidentOriginalStageOwnersV3::require_initial(
-                self.stages.get()?, &self.owner.authority.profile.initial,
-                &self.owner.authority.profile.scope, &self.verifier,
+                self.stages.get()?,
+                &self.owner.authority.profile.initial,
+                &self.owner.authority.profile.scope,
+                &self.verifier,
             )?;
             authentication::verify_original_evidence(
                 &self.owner.authority.profile,
@@ -304,7 +309,11 @@ async fn continue_original(
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?;
     let gate = &continuation.gate;
     while let Some(stage) = coordinator.next_stage() {
-        ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), coordinator.snapshot(), stage)?;
+        ResidentOriginalStageOwnersV3::require_stage(
+            stages.as_ref(),
+            coordinator.snapshot(),
+            stage,
+        )?;
         let predecessor = coordinator.snapshot().clone();
         gate.begin(&predecessor, stage).await?;
         // The durable local intent has been committed. Original role hosts,
@@ -346,7 +355,10 @@ async fn continue_original(
             .await?;
         let (_, fresh) = owner.read(gate.cancellation()).await?;
         ResidentOriginalStageOwnersV3::require_initial(
-            &stages, &profile.initial, &profile.scope, &verifier,
+            &stages,
+            &profile.initial,
+            &profile.scope,
+            &verifier,
         )?;
         authentication::verify_original_evidence(
             profile,

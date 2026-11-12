@@ -15,18 +15,18 @@ use super::contract::Context;
 
 #[path = "neuron_cell_evaluation_model_material_codec.rs"]
 mod codec;
-#[path = "neuron_cell_evaluation_model_material_verify.rs"]
-mod verify;
-#[path = "neuron_cell_evaluation_model_material_member.rs"]
-mod member;
-#[path = "neuron_cell_evaluation_model_material_export.rs"]
-mod export;
 #[path = "neuron_cell_evaluation_model_material_connection.rs"]
 mod connection;
-#[path = "neuron_cell_evaluation_model_material_wire.rs"]
-mod wire;
+#[path = "neuron_cell_evaluation_model_material_export.rs"]
+mod export;
+#[path = "neuron_cell_evaluation_model_material_member.rs"]
+mod member;
 #[path = "neuron_cell_evaluation_model_material_service.rs"]
 mod service;
+#[path = "neuron_cell_evaluation_model_material_verify.rs"]
+mod verify;
+#[path = "neuron_cell_evaluation_model_material_wire.rs"]
+mod wire;
 
 pub use connection::OriginalCellEvaluationModelMaterialClientV1;
 pub use connection::OriginalCellEvaluationModelMaterialConnectionV1;
@@ -54,15 +54,27 @@ pub(crate) struct OriginalCellEvaluationModelInputV1 {
 }
 
 impl OriginalCellEvaluationModelInputV1 {
-    pub(crate) fn evaluation(&self) -> &LearningIterationReceiptV1 { &self.evaluation }
-    pub(crate) fn candidate(&self) -> Digest32 { self.candidate }
-    pub(crate) fn material_digest(&self) -> Digest32 { self.material }
+    pub(crate) fn evaluation(&self) -> &LearningIterationReceiptV1 {
+        &self.evaluation
+    }
+    pub(crate) fn candidate(&self) -> Digest32 {
+        self.candidate
+    }
+    pub(crate) fn material_digest(&self) -> Digest32 {
+        self.material
+    }
 }
 
 impl OriginalCellEvaluationModelMaterialV1 {
-    pub fn binding(&self) -> Digest32 { self.binding }
-    pub(crate) fn original_evaluation(&self) -> &Receipt { &self.evaluation }
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn binding(&self) -> Digest32 {
+        self.binding
+    }
+    pub(crate) fn original_evaluation(&self) -> &Receipt {
+        &self.evaluation
+    }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 
     /// Pure final verification only. The closed Model host must separately read
     /// the original Evaluator before and after its original Trainer lane work.
@@ -84,7 +96,9 @@ impl OriginalCellEvaluationModelMaterialV1 {
             || training_evidence != &self.context.training_evidence
             || current < self.observed_at
         {
-            return Err(Error::Binding("same original Model Training cut and full signature"));
+            return Err(Error::Binding(
+                "same original Model Training cut and full signature",
+            ));
         }
         let checked = verify::material(&self.context, &self.evaluation, &self.bytes, current)?;
         if !checked.qualified {

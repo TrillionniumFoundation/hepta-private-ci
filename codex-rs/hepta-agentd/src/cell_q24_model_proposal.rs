@@ -215,7 +215,11 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         self.commit_admitted(&admission, now)
     }
 
-    fn commit_admitted(&mut self, admission: &Admission, now: u64) -> Result<CellQ24ModelProposalReceiptV1, Error> {
+    fn commit_admitted(
+        &mut self,
+        admission: &Admission,
+        now: u64,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let key = admission.key(self.binding);
         match self.journal.readback(&key) {
             Ok(state) => return self.decode_current(admission, state),

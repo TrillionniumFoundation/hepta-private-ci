@@ -17,12 +17,12 @@ use std::time::UNIX_EPOCH;
 use tokio::sync::Semaphore;
 
 use super::authentication;
+use super::model::ResidentOriginalModelProofV3;
 use super::profile;
 use super::profile::RootResidentLearningProfileV3;
 use super::profile::RootResidentLearningReadbackAuthorizationV3;
 use super::runtime::ResidentRequestModeV3;
 use super::runtime::RootResidentLearningHandleV3;
-use super::model::ResidentOriginalModelProofV3;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationRuntimeErrorV1 as Error;
@@ -50,7 +50,9 @@ impl RootResidentLearningObservationV3 {
     /// Original proof bytes for an explicit readonly recovery comparison pin.
     /// They cannot be supplied to fresh admission or any stage command.
     pub fn original_model_record(&self) -> Option<Vec<u8>> {
-        self.model.as_ref().map(ResidentOriginalModelProofV3::encode)
+        self.model
+            .as_ref()
+            .map(ResidentOriginalModelProofV3::encode)
     }
 }
 
@@ -144,7 +146,11 @@ impl AgentdRootResidentLearningClientV3 {
             profile,
             verifier,
             ClientOriginV3::Readback(authorization),
-            expected.map(|(snapshot, attestations)| ResidentReadbackPinV3 { snapshot, attestations, model: None }),
+            expected.map(|(snapshot, attestations)| ResidentReadbackPinV3 {
+                snapshot,
+                attestations,
+                model: None,
+            }),
             timeout,
             lifetime,
         )
@@ -165,7 +171,9 @@ impl AgentdRootResidentLearningClientV3 {
             .require_verifier(&verifier)
             .map_err(|_| Error::WrongScope)?;
         let readonly = matches!(&origin, ClientOriginV3::Readback(_));
-        if !readonly && expected.is_some() { return Err(Error::WrongScope); }
+        if !readonly && expected.is_some() {
+            return Err(Error::WrongScope);
+        }
         let (intent, lease) = artifacts(&profile, &origin);
         let authorization = profile::authorization_binding(&profile, intent, lease)
             .map_err(|_| Error::WrongScope)?;
@@ -180,10 +188,19 @@ impl AgentdRootResidentLearningClientV3 {
         if let Some(pin) = &expected {
             match &pin.model {
                 None => authentication::verify_attestations(
-                    &profile, &verifier, &pin.snapshot, &pin.attestations, now / 1_000,
+                    &profile,
+                    &verifier,
+                    &pin.snapshot,
+                    &pin.attestations,
+                    now / 1_000,
                 )?,
                 Some(model) => authentication::verify_model_comparison_pin(
-                    &profile, &verifier, &pin.snapshot, &pin.attestations, model, now / 1_000,
+                    &profile,
+                    &verifier,
+                    &pin.snapshot,
+                    &pin.attestations,
+                    model,
+                    now / 1_000,
                 )?,
             }
         }
@@ -349,8 +366,12 @@ impl AgentdRootResidentLearningClientV3 {
                     if let Some(snapshot) = &observed.snapshot {
                         channel.execution_requested = true;
                         channel.retained = Some(ResidentReadbackPinV3 {
-                            snapshot: snapshot.clone(), attestations: observed.attestations.clone(),
-                            model: observed.model.as_ref().map(ResidentOriginalModelProofV3::encode),
+                            snapshot: snapshot.clone(),
+                            attestations: observed.attestations.clone(),
+                            model: observed
+                                .model
+                                .as_ref()
+                                .map(ResidentOriginalModelProofV3::encode),
                         });
                     }
                     ResidentExchangeV3::Observed(observed)

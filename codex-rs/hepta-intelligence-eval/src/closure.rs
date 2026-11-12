@@ -822,7 +822,9 @@ pub(crate) fn digest_evaluation_bundle(
     failed_metrics: &[StableId],
 ) -> Result<Digest32, EvaluationClosureError> {
     Ok(Digest32::of_bytes(&evaluation_bundle_commitment_bytes(
-        bundle, disposition, failed_metrics,
+        bundle,
+        disposition,
+        failed_metrics,
     )?))
 }
 
@@ -1137,7 +1139,9 @@ pub(crate) fn original_holdout_commitment_bytes(
     validate_holdout_use_receipt_integrity(holdout)?;
     let bytes = HoldoutBindingV1::from_plan(plan).use_commitment(holdout.registry_digest);
     if Digest32::of_bytes(&bytes) != holdout.use_digest {
-        return Err(EvaluationClosureError::HoldoutUseBindingMismatch("original holdout commitment"));
+        return Err(EvaluationClosureError::HoldoutUseBindingMismatch(
+            "original holdout commitment",
+        ));
     }
     Ok(bytes)
 }

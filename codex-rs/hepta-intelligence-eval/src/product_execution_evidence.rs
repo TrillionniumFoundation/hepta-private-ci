@@ -35,7 +35,9 @@ impl OriginalProductEvaluationExecutionEvidenceV1 {
     pub fn signing_payload(&self) -> &[u8] {
         &self.payload
     }
-    pub fn original_record(&self) -> &[u8] { &self.record }
+    pub fn original_record(&self) -> &[u8] {
+        &self.record
+    }
     pub const fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
     }

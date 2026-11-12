@@ -140,10 +140,17 @@ pub(super) fn validate<T: AnchorWitnessStore, S: FinalHoldoutCasStoreV1>(
     // Complete canonical manifest payloads, both evaluated journals and the
     // original training observation enter this record, not only a model name.
     let material = crate::cell_q24_model_material::original_model_material_digest(
-        original.evidence_digest(), &comparison.candidate.manifest,
-        &comparison.fixed_expert.manifest, comparison.candidate.journal_cut,
+        original.evidence_digest(),
+        &comparison.candidate.manifest,
+        &comparison.fixed_expert.manifest,
+        comparison.candidate.journal_cut,
         comparison.fixed_expert.journal_cut,
-        inputs.evaluation.plan().product_plan().frozen_plan.plan_digest,
+        inputs
+            .evaluation
+            .plan()
+            .product_plan()
+            .frozen_plan
+            .plan_digest,
         inputs.qualification.product().evidence_digest,
     )?;
     coordinator.record(evaluation.clone(), evaluation.observed_unix_seconds)?;

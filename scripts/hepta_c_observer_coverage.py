@@ -381,7 +381,11 @@ ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES = tuple(
 
 OWNER_GROUPS = (
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
-    ("original_evaluation_model_material", PACKAGE, ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES),
+    (
+        "original_evaluation_model_material",
+        PACKAGE,
+        ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES,
+    ),
     ("original_evaluation_host", PACKAGE, ORIGINAL_EVALUATION_HOST_CASES),
     (
         "original_evaluation_panel_members",

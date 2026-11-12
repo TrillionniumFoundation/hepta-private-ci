@@ -11,9 +11,9 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
+use super::super::CellQ24ModelProposalErrorV1 as Error;
 use super::Admission;
 use super::original_binding;
-use super::super::CellQ24ModelProposalErrorV1 as Error;
 use crate::CellQ24TrainingOwnerV1;
 use crate::OriginalCellEvaluationModelMaterialV1;
 
@@ -29,7 +29,9 @@ pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
 ) -> Result<Admission, Error> {
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(training_cut.clone())?;
     let original = CellQ24TrainingOwnerV1::read_learning_observation(trainer, dataset_cut)?;
-    let training = training_cut.receipts.last()
+    let training = training_cut
+        .receipts
+        .last()
         .ok_or(Error::Binding("original Training receipt"))?;
     if training_cut.request != dataset_cut.request
         || training_cut.owners != dataset_cut.owners
@@ -47,14 +49,21 @@ pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
     // This is the sole sealed material API. It authenticates complete original
     // T/E/Product/execution evidence, both manifests, and the unchanged current
     // material window. An Ineligible result cannot produce this input.
-    let current = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
-        .map_err(|_| Error::Binding("original Model clock before Unix epoch"))?.as_secs();
-    if current < now { return Err(Error::Binding("original Model clock moved backwards")); }
-    let input = material.require_original_model_input(
-        training_cut, training_attestation, current,
-    ).map_err(|error| Error::OriginalEvaluationMaterial(Box::new(error)))?;
-    let candidate = coordinator.candidate().ok_or(Error::Binding("trained candidate"))?
-        .digest().map_err(LearningIterationError::from)?;
+    let current = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| Error::Binding("original Model clock before Unix epoch"))?
+        .as_secs();
+    if current < now {
+        return Err(Error::Binding("original Model clock moved backwards"));
+    }
+    let input = material
+        .require_original_model_input(training_cut, training_attestation, current)
+        .map_err(|error| Error::OriginalEvaluationMaterial(Box::new(error)))?;
+    let candidate = coordinator
+        .candidate()
+        .ok_or(Error::Binding("trained candidate"))?
+        .digest()
+        .map_err(LearningIterationError::from)?;
     if input.candidate() != candidate
         || !matches!(&input.evaluation().observation,
             LearningIterationObservationV1::Evaluation {
@@ -63,10 +72,13 @@ pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
             } if *candidate_bundle == candidate
                 && *evaluation_profile == training_cut.request.evaluation_profile)
     {
-        return Err(Error::Binding("actual Qualified original candidate material"));
+        return Err(Error::Binding(
+            "actual Qualified original candidate material",
+        ));
     }
     coordinator.record(
-        input.evaluation().clone(), input.evaluation().observed_unix_seconds,
+        input.evaluation().clone(),
+        input.evaluation().observed_unix_seconds,
     )?;
     Ok(Admission {
         cut: coordinator.snapshot().clone(),

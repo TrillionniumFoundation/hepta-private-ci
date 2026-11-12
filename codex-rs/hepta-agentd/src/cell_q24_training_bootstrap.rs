@@ -32,10 +32,10 @@ use crate::OriginalCellQ24TrainingStageErrorV1;
 
 #[path = "cell_q24_training_bootstrap_build.rs"]
 mod build;
-#[path = "cell_q24_training_bootstrap_service.rs"]
-mod serving;
 #[path = "cell_q24_model_command_host.rs"]
 pub(super) mod model_host;
+#[path = "cell_q24_training_bootstrap_service.rs"]
+mod serving;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24TrainingBootstrapErrorV1 {

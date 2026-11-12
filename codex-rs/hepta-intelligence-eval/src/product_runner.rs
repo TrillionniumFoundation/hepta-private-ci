@@ -845,7 +845,9 @@ fn product_evaluation_seal(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn product_plan_seal(plan: &ProductFrozenEvaluationPlanV1) -> Result<Digest32, ProductEvaluationError> {
+fn product_plan_seal(
+    plan: &ProductFrozenEvaluationPlanV1,
+) -> Result<Digest32, ProductEvaluationError> {
     Ok(Digest32::of_bytes(&product_plan_commitment_bytes(plan)?))
 }
 
@@ -906,7 +908,10 @@ fn bound_estimand_digest(
     sources: &[ProductMetricSourceContractV1],
 ) -> Result<Digest32, ProductEvaluationError> {
     Ok(Digest32::of_bytes(&product_estimand_commitment_bytes(
-        base, candidate_plan, baseline_plan, sources,
+        base,
+        candidate_plan,
+        baseline_plan,
+        sources,
     )?))
 }
 

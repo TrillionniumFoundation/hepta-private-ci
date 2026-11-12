@@ -24,16 +24,29 @@ impl AgentdRootResidentLearningClientV3 {
         profile: RootResidentLearningProfileV3,
         authorization: RootResidentLearningReadbackAuthorizationV3,
         verifier: LearningEvidenceVerifierV1,
-        expected: (LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>, Vec<u8>),
+        expected: (
+            LearningIterationSnapshotV1,
+            Vec<SignedLearningEvidenceV1>,
+            Vec<u8>,
+        ),
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
         let (snapshot, attestations, model) = expected;
         Self::bind(
-            stream, root, held_root_pidfd, profile, verifier,
+            stream,
+            root,
+            held_root_pidfd,
+            profile,
+            verifier,
             ClientOriginV3::Readback(authorization),
-            Some(ResidentReadbackPinV3 { snapshot, attestations, model: Some(model) }),
-            timeout, lifetime,
+            Some(ResidentReadbackPinV3 {
+                snapshot,
+                attestations,
+                model: Some(model),
+            }),
+            timeout,
+            lifetime,
         )
     }
 }

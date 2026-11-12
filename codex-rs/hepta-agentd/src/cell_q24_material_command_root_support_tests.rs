@@ -9,8 +9,15 @@ impl OriginalCellQ24MaterialCommandReceiptV1 {
         evidence: Vec<SignedLearningEvidenceV1>,
     ) -> Result<Self, Error> {
         let at = now()?;
-        wire::authenticate_cut(config, Role::Dataset, Self {
-            snapshot, evidence, original_context: wire::context_binding(config, at)?,
-        }, at)
+        wire::authenticate_cut(
+            config,
+            Role::Dataset,
+            Self {
+                snapshot,
+                evidence,
+                original_context: wire::context_binding(config, at)?,
+            },
+            at,
+        )
     }
 }

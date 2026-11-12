@@ -104,12 +104,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         })
     }
 
-
     /// The remote material was read outside this lane. Fresh authentication
     /// follows Native and witness I/O before the original Model header is made.
     #[cfg(target_os = "linux")]
     pub(crate) fn create_model_from_current_evaluation<MW: AnchorWitnessStore>(
-        &self, file: File, witness: MW,
+        &self,
+        file: File,
+        witness: MW,
         training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
         training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
         material: &crate::OriginalCellEvaluationModelMaterialV1,
@@ -117,8 +118,15 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.in_model_lane(|training, completed| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::create_from_current_material(
-                file, witness, training, self.dataset.clone(), training_cut, training_attestation, material,
-            ).map_err(Error::from)
+                file,
+                witness,
+                training,
+                self.dataset.clone(),
+                training_cut,
+                training_attestation,
+                material,
+            )
+            .map_err(Error::from)
         })
     }
 
@@ -126,7 +134,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     /// command readback. Preserve the original minimum-anchor suffix semantics.
     #[cfg(target_os = "linux")]
     pub(crate) fn recover_model_from_current_evaluation<MW: AnchorWitnessStore>(
-        &self, file: File, witness: MW,
+        &self,
+        file: File,
+        witness: MW,
         training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
         training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
         material: &crate::OriginalCellEvaluationModelMaterialV1,
@@ -134,8 +144,15 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.in_model_lane(|training, completed| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::recover_from_current_material(
-                file, witness, training, self.dataset.clone(), training_cut, training_attestation, material,
-            ).map_err(Error::from)
+                file,
+                witness,
+                training,
+                self.dataset.clone(),
+                training_cut,
+                training_attestation,
+                material,
+            )
+            .map_err(Error::from)
         })
     }
 
@@ -152,8 +169,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.in_model_lane(|training, completed| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::commit_current_material_or_readback(
-                model, training, training_cut, training_attestation, material,
-            ).map_err(Error::from)
+                model,
+                training,
+                training_cut,
+                training_attestation,
+                material,
+            )
+            .map_err(Error::from)
         })
     }
 
@@ -170,8 +192,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.in_model_lane(|training, completed| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::read_current_material(
-                model, training, training_cut, training_attestation, material,
-            ).map_err(Error::from)
+                model,
+                training,
+                training_cut,
+                training_attestation,
+                material,
+            )
+            .map_err(Error::from)
         })
     }
 
@@ -254,10 +281,10 @@ fn require_current_training(
     attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
     completed: &OriginalCellQ24TrainingCompletionV1,
 ) -> Result<(), Error> {
-    if cut.receipts.last() != Some(&completed.receipt)
-        || attestation != &completed.attestation
-    {
-        return Err(Error::Binding("exact retained Training receipt and attestation"));
+    if cut.receipts.last() != Some(&completed.receipt) || attestation != &completed.attestation {
+        return Err(Error::Binding(
+            "exact retained Training receipt and attestation",
+        ));
     }
     Ok(())
 }
