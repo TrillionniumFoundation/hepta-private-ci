@@ -7,12 +7,14 @@ use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellDecisionReceiptV1;
 use codex_hepta_neuron::CellGenerationCurrentV1;
 use codex_hepta_neuron::CellJournalPartitionV1;
+use codex_hepta_neuron::CellOriginalJournalFilesV1;
 use codex_hepta_neuron::CellOwnerJournalReadbackV1;
 use codex_hepta_neuron::CellOwnerSnapshotV1;
 use codex_hepta_neuron::JournalAnchor;
 use codex_hepta_neuron::SparseCheckpoint;
 use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
 use codex_hepta_neuron::observe_original_file_anchor_v1;
+use codex_hepta_neuron::observe_original_guarded_cell_v1;
 
 pub(crate) struct RootHistoricalCellInputsV1 {
     pub(crate) journal: File,
@@ -135,15 +137,90 @@ impl OriginalCellFiles {
             target,
             Arc::clone(&current),
         )?;
-        let after =
-            self.read_original_cell_once(definition, source, publication, target, current)?;
-        if before != after {
+        let after = self.read_original_cell_once(
+            definition,
+            source,
+            publication,
+            target,
+            Arc::clone(&current),
+        )?;
+        let physical = self.read_original_cell_data(definition, source, publication, target)?;
+        if before != after || physical != after {
             return Err(io::Error::other(
                 "original Cell changed across physical readback",
             ));
         }
+        current.check_current(target).map_err(io::Error::other)?;
         self.require_original_files()?;
         Ok(after)
+    }
+
+    /// Data-only readback, also usable after the original CURRENT advances.
+    /// Its caller must retain the independent Root cut and current admission;
+    /// no implementation of a live-current guard is constructed from data.
+    pub(super) fn read_original_cell_data(
+        &self,
+        definition: &CellDefinitionV1,
+        source: &CircuitTaskSourceInputV1,
+        publication: &crate::CircuitTaskSourcePublicationV1,
+        target: &CellGenerationOwnerBindingV1,
+    ) -> io::Result<OriginalCellObservation> {
+        original_root()?;
+        self.require_original_files()?;
+        require_target(target, definition, source)?;
+        let input = publication.input();
+        if input != &source.input(input.operation_id.clone())
+            || publication.bundle_digest() != definition.bundle_digest
+        {
+            return Err(io::Error::other("original Cell and Source inputs differ"));
+        }
+        let request =
+            canonical_cell_step_request_digest_v1(definition, input).map_err(io::Error::other)?;
+        let (journal, _) = FilePin::readonly(&self.inputs.journal, self.uid, self.gid)?;
+        let (witness, _) = FilePin::readonly(&self.inputs.witness, self.uid, self.gid)?;
+        let observed = observe_original_guarded_cell_v1(
+            CellOriginalJournalFilesV1 {
+                journal,
+                witness,
+                witness_scope: self.inputs.witness_scope,
+                witness_generation: self.inputs.witness_generation,
+                witness_records: self.inputs.witness_records,
+            },
+            CellJournalPartitionV1 {
+                scope: source.scope.clone(),
+                definition: definition.clone(),
+                source_frontier: source.source_frontier,
+                writer_epoch: target.writer_epoch(),
+            },
+            self.inputs.maximum_records,
+            target,
+            &input.operation_id,
+            request,
+        )
+        .map_err(io::Error::other)?;
+        publication
+            .require_decision(&observed.decision)
+            .map_err(io::Error::other)?;
+        if observed.snapshot.revision != 1
+            || observed.snapshot.writer_epoch != target.writer_epoch()
+            || observed
+                .snapshot
+                .checkpoint
+                .as_ref()
+                .map(SparseCheckpoint::digest)
+                != Some(observed.decision.checkpoint_after)
+            || observed.decision.checkpoint_after != publication.checkpoint_digest()
+        {
+            return Err(io::Error::other(
+                "original Cell checkpoint differs from Source",
+            ));
+        }
+        self.require_original_files()?;
+        Ok(OriginalCellObservation {
+            anchor: observed.anchor,
+            snapshot: observed.snapshot,
+            decision: observed.decision,
+        })
     }
 
     fn read_original_cell_once(

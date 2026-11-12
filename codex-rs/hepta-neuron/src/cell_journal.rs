@@ -19,7 +19,6 @@ use crate::CellGenerationCurrentV1;
 use crate::CellGenerationOwnerBindingV1;
 use crate::JournalAnchor;
 use crate::cell_journal_codec::MAX_FRAME_BYTES;
-use crate::cell_journal_codec::apply_record;
 use crate::cell_journal_codec::encode_admission;
 use crate::cell_journal_codec::encode_commit;
 use crate::cell_journal_codec::encode_host_queue_age;
@@ -36,6 +35,17 @@ const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 #[path = "cell_journal_readback.rs"]
 mod readback;
 pub use readback::CellOwnerJournalReadbackV1;
+#[path = "cell_journal_image.rs"]
+mod image;
+#[cfg(target_os = "linux")]
+#[path = "cell_journal_observer.rs"]
+mod observer;
+#[cfg(target_os = "linux")]
+pub use observer::CellOriginalJournalFilesV1;
+#[cfg(target_os = "linux")]
+pub use observer::CellOriginalJournalObservationV1;
+#[cfg(target_os = "linux")]
+pub use observer::observe_original_guarded_cell_v1;
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum OpenMode {
@@ -243,48 +253,18 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         self.file
             .read_exact(&mut bytes)
             .map_err(|_| CellExecutionError::OwnerUnavailable)?;
-        if bytes[..HEADER_BYTES] != self.header {
-            return Err(CellExecutionError::JournalCorrupt);
-        }
-        let mut owner = initial_owner(&self.specs)?;
-        let mut offset = HEADER_BYTES;
-        let mut head = None;
-        let mut count = 0;
-        let mut witnessed = expected.is_none();
-        while offset < bytes.len() {
-            if bytes.len() - offset < 4 {
-                break;
-            }
-            let size = u32::from_be_bytes(
-                bytes[offset..offset + 4]
-                    .try_into()
-                    .map_err(|_| CellExecutionError::JournalCorrupt)?,
-            ) as usize;
-            if size == 0 || size > MAX_FRAME_BYTES {
-                return Err(CellExecutionError::JournalCorrupt);
-            }
-            let end = offset
-                .checked_add(4 + size + 32)
-                .ok_or(CellExecutionError::JournalCorrupt)?;
-            if end > bytes.len() {
-                break;
-            }
-            count += 1;
-            if count > self.max_records {
-                return Err(CellExecutionError::CapacityExceeded);
-            }
-            let payload = &bytes[offset + 4..end - 32];
-            let anchor = next_anchor(&self.header, head, payload)?;
-            if anchor.checkpoint_digest.as_array() != &bytes[end - 32..end] {
-                return Err(CellExecutionError::JournalCorrupt);
-            }
-            apply_record(payload, &self.specs, &mut owner)?;
-            if expected == Some(anchor) {
-                witnessed = true;
-            }
-            head = Some(anchor);
-            offset = end;
-        }
+        let image::ParsedCellImage {
+            owner,
+            offset,
+            head,
+            witnessed,
+        } = image::parse_original_cell_image(
+            &bytes,
+            &self.header,
+            &self.specs,
+            self.max_records,
+            expected,
+        )?;
         if !witnessed {
             return Err(CellExecutionError::AcknowledgedHistoryMissing);
         }
