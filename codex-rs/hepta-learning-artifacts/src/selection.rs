@@ -340,7 +340,13 @@ impl ArtifactSelectionVerifierV1 {
             selector_credential_digest: signed.selector_credential_digest,
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
-            expires_at: signed.expires_at,
+            // A delayed lifecycle append must preserve the enrolled key's
+            // validity window. Expiry is inclusive; revocation is not.
+            expires_at: signed.expires_at.min(selector.expires_at).min(
+                selector
+                    .revoked_at
+                    .map_or(u64::MAX, |at| at.saturating_sub(1)),
+            ),
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -474,6 +480,7 @@ mod tests {
 
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ArtifactEvent;
@@ -681,22 +688,10 @@ mod tests {
         ));
     }
 
-    #[test]
-    fn art_12_verified_selection_records_only_selected_transition() {
-        let key = SigningKey::from_bytes(&[43; 32]);
-        let producer = id("producer");
-        let selector = id("selector");
-        let manifest = manifest(producer.clone());
-        let owner_key = SigningKey::from_bytes(&[13; 32]);
-        let owner_trust = owner_trust(&owner_key);
-        let current = current_view(&manifest, &owner_trust);
-        let verifier = must(ArtifactSelectionVerifierV1::new(
-            trust(&key, selector),
-            &owner_trust,
-        ));
-        let signed = signed_selection(&key, id("selector"), &manifest, &current);
-        let verified = must(verifier.verify(&signed, &current, 30));
-
+    fn operator_accepted_journal(
+        producer: &StableId,
+        manifest: &ArtifactManifest,
+    ) -> ArtifactLifecycleJournalV2 {
         let mut journal = ArtifactLifecycleJournalV2::new();
         let states = [
             (
@@ -735,7 +730,7 @@ mod tests {
             let expected_head = journal.head_digest();
             must(journal.append(
                 expected_head,
-                &producer,
+                producer,
                 LifecycleActorEvidenceV2 {
                     actor_id: actor_id.clone(),
                     credential_digest: credential,
@@ -759,6 +754,27 @@ mod tests {
             ));
         }
 
+        journal
+    }
+
+    #[test]
+    fn art_12_verified_selection_records_only_selected_transition() {
+        let key = SigningKey::from_bytes(&[43; 32]);
+        let producer = id("producer");
+        let selector = id("selector");
+        let manifest = manifest(producer.clone());
+        let owner_key = SigningKey::from_bytes(&[13; 32]);
+        let owner_trust = owner_trust(&owner_key);
+        let current = current_view(&manifest, &owner_trust);
+        let verifier = must(ArtifactSelectionVerifierV1::new(
+            trust(&key, selector),
+            &owner_trust,
+        ));
+        let signed = signed_selection(&key, id("selector"), &manifest, &current);
+        let verified = must(verifier.verify(&signed, &current, 30));
+
+        let mut journal = operator_accepted_journal(&producer, &manifest);
+
         let expected_head = journal.head_digest();
         let receipt = must(record_verified_selection(
             &mut journal,
@@ -774,5 +790,87 @@ mod tests {
         };
         assert_eq!(last.event.evidence_digest, verified.selection_digest());
         assert_eq!(last.actor.role, LifecycleActorRoleV2::Selector);
+        assert_eq!(last.actor.expires_at, signed.expires_at);
+    }
+
+    fn assert_selection_record_trust_window(
+        key_expires_at: u64,
+        revoked_at: Option<u64>,
+        last_allowed: u64,
+        first_refused: u64,
+    ) {
+        let key = SigningKey::from_bytes(&[44; 32]);
+        let producer = id("producer");
+        let selector = id("selector");
+        let manifest = manifest(producer.clone());
+        let owner_key = SigningKey::from_bytes(&[13; 32]);
+        let owner_trust = owner_trust(&owner_key);
+        let current = current_view(&manifest, &owner_trust);
+        let mut selected_trust = trust(&key, selector.clone());
+        selected_trust.selectors[0].expires_at = key_expires_at;
+        selected_trust.selectors[0].revoked_at = revoked_at;
+        let verifier = must(ArtifactSelectionVerifierV1::new(
+            selected_trust,
+            &owner_trust,
+        ));
+        let signed = signed_selection(&key, selector, &manifest, &current);
+        let verified = must(verifier.verify(&signed, &current, 30));
+        assert!(matches!(
+            verifier.verify(&signed, &current, first_refused),
+            Err(ArtifactSelectionError::SelectorRevoked)
+        ));
+
+        // Delaying an already-verified value must not bypass the key window
+        // that a fresh verification at this same instant correctly refuses.
+        let mut journal = operator_accepted_journal(&producer, &manifest);
+        let expected_head = journal.head_digest();
+        let before = journal.records().to_vec();
+        let result = record_verified_selection(
+            &mut journal,
+            expected_head,
+            &producer,
+            &verified,
+            id("late-selection"),
+            first_refused,
+        );
+        assert!(
+            matches!(result, Err(ArtifactSelectionError::SelectionContext)),
+            "delayed selection escaped its original trust window: {result:?}"
+        );
+        assert_eq!(journal.records(), before.as_slice());
+        assert_eq!(journal.head_digest(), expected_head);
+
+        let receipt = must(record_verified_selection(
+            &mut journal,
+            expected_head,
+            &producer,
+            &verified,
+            id("last-valid-selection"),
+            last_allowed,
+        ));
+        assert_eq!(receipt.state, ArtifactLifecycleStateV1::Selected);
+        let Some(last) = journal.records().last() else {
+            panic!("selection event missing");
+        };
+        assert_eq!(last.actor.expires_at, last_allowed);
+        assert_eq!(last.event.evidence_digest, verified.selection_digest());
+    }
+
+    #[test]
+    fn art_12_verified_selection_cannot_outlive_selector_key() {
+        assert_selection_record_trust_window(
+            /*key_expires_at*/ 40, /*revoked_at*/ None, /*last_allowed*/ 40,
+            /*first_refused*/ 41,
+        );
+    }
+
+    #[test]
+    fn art_12_verified_selection_cannot_cross_scheduled_revocation() {
+        assert_selection_record_trust_window(
+            /*key_expires_at*/ 100,
+            /*revoked_at*/ Some(40),
+            /*last_allowed*/ 39,
+            /*first_refused*/ 40,
+        );
     }
 }
