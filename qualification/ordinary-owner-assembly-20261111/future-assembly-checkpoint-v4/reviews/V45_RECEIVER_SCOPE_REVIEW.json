@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "kind": "v44_bounded_repeated_receiver_risk_review",
+  "reviewer": "hepta_audit",
+  "source_commit": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "candidate_packet": "35a64e70a156a7a855ad4f2f5338f9c1035ea870",
+  "candidate_source": "8c6b2f37c22576dd71bea2e842c1851f6d926bee",
+  "candidate_callers": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+  "source_inventory": "741d5a958dbf77eaa7a4bafc341e0d72f9b40cf2",
+  "source_count": 531,
+  "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "scope_and_method": [
+    "Fetched the exact V44 directory listing for hepta-agentd/src and both real child directories bin/native_g2_entry. Applied only the original ignored path fragments, not an invented generic test/fixture exclusion. All 531 selected Rust blobs were GET, Git-hash and byte-size checked; SHA256 inventory is supplied.",
+    "Independently transcribed the original comment/literal mask, test-only item removal and direct authority-field navigation into pure V8 analysis, attached below. No Python, original checker, typed helper, Cargo, shell, h or native execution.",
+    "Derived the direct OriginalSameActorRootContext field owner names/aliases from those actual masked same-crate sources, then navigated every dot require_current in files containing any of the resulting target/owner names. Source-local receiver meanings were read against actual signatures/impls.",
+    "The broader lexical inventory has 98 non-test dot require_current sites in this crate. Only the stage_owners file contains both a RootContext/direct-field-owner target name and a same-name dot call. Other same-name files fail that bounded target-name precondition; this is not a claim that all of their types or runtime behavior were checked."
+  ],
+  "target_fields": {
+    "aliases": [
+      "OriginalSameActorRootContext"
+    ],
+    "fields": [
+      {
+        "owner": "OriginalSameActorProductionInputs",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      },
+      {
+        "owner": "OriginalScopedPublicationTicket",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+      },
+      {
+        "owner": "OriginalSameActorScopedOwners",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+      },
+      {
+        "owner": "OriginalDaemonPhaseRetirement",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+      },
+      {
+        "owner": "OriginalJoinedSameActorA",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+      },
+      {
+        "owner": "PreparedLearningBuilder",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+      },
+      {
+        "owner": "PreparedLearningActivation",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+      },
+      {
+        "owner": "OriginalSameActorLearningWork",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs"
+      },
+      {
+        "owner": "OriginalSameActorLearningWorker",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs"
+      },
+      {
+        "owner": "OriginalSameActorTaskWorker",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"
+      },
+      {
+        "owner": "OriginalPhaseExecution",
+        "field": "context",
+        "type": "OriginalSameActorRootContext",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"
+      }
+    ]
+  },
+  "candidate_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "sha": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9"
+    }
+  ],
+  "actual_sites": [
+    {
+      "site": "from_original_owners first factory call",
+      "receiver": "factory",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "explicit mut factory parameter",
+      "changed": false
+    },
+    {
+      "site": "from_original_owners second factory call",
+      "receiver": "factory",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "same explicit parameter",
+      "changed": false
+    },
+    {
+      "site": "install_published_generation",
+      "receiver": "self",
+      "actual_type": "OriginalCellQ24LearningStageOwnersV1",
+      "source": "enclosing inherent impl",
+      "changed": false
+    },
+    {
+      "site": "Q24StageState::in_lane pre-work",
+      "receiver": "owners.factory",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "actual Q24StageOwners field",
+      "changed": true
+    },
+    {
+      "site": "Q24StageState::in_lane post-work",
+      "receiver": "owners.factory",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "same actual field",
+      "changed": true
+    },
+    {
+      "site": "LearningIterationStageOwnerPortsV1::prepare_proposal",
+      "receiver": "self",
+      "actual_type": "OriginalCellQ24LearningStageOwnersV1",
+      "source": "enclosing trait impl for concrete Stage owner",
+      "changed": false
+    }
+  ],
+  "findings": [
+    {
+      "classification": "actual original failure and confirmed local cause",
+      "file": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "pre": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9",
+      "original_lines": [
+        444,
+        452
+      ],
+      "receiver": "owners.factory",
+      "reason": "The target-only authority-fields map has no Q24StageOwners.factory entry for RootContext. Both calls are really AgentdRootQ24ModelFactoryV1::require_current(&mut self), as shown by field declaration and actual f15a3f method."
+    },
+    {
+      "classification": "existing explicit unrelated parameter calls",
+      "original_lines": [
+        127,
+        163
+      ],
+      "receiver": "factory",
+      "reason": "Both are within from_original_owners and retain the actual mut factory: AgentdRootQ24ModelFactoryV1 parameter. No intervening same-name let binding changes that type; no extra patch."
+    },
+    {
+      "classification": "existing concrete self calls",
+      "original_lines": [
+        199,
+        682
+      ],
+      "receiver": "self",
+      "reason": "First is in the inherent OriginalCellQ24LearningStageOwnersV1 impl; second is in LearningIterationStageOwnerPortsV1 for that exact concrete Stage owner. Both are explicit unrelated impl receivers; no extra patch."
+    }
+  ],
+  "post_projection": {
+    "remaining_dot_require_current": 4,
+    "actual_factory_ufcs": 2,
+    "two_expression_erasures_restore_original_entire_source": true,
+    "no_additional_confirmed_same_target_receiver_blocker_in_scope": true,
+    "additional_source_edits": 0
+  },
+  "limits": [
+    "Scope is the complete actual hepta-agentd/src subtree under the stated original path exclusions. This is not a separately fetched all-codex-rs source index, macro expansion, Rust compiler/typecheck, or original all-boundary checker result.",
+    "Direct target-field owner aliases observed here are none beyond the target itself. The report does not invent or assume aliases in unexamined external crates.",
+    "Pure V8 navigation reproduces the relevant source-analysis idea only and is evidence for review. Original Root-only full qualification remains mandatory; the V44 failed result is unchanged and prior QA is not inherited.",
+    "The fixed V45 packet remains exactly two actual source calls plus one existing full raw guard spelling, with all current caller sets/IDs/receivers/forbidden/order checks retained."
+  ],
+  "analysis_only_projection_js": "\nfunction end(s,i,a,b){if(s[i]!==a)throw Error(\"opening\");let n=0;for(let j=i;j<s.length;j++){if(s[j]===a)n++;else if(s[j]===b&&--n===0)return j;}throw Error(\"unbalanced\");}\nfunction mask(s){let o=s.split(\"\"),i=0,state=\"code\",depth=0,raw=0;const blank=j=>{if(s[j]!==\"\\n\")o[j]=\" \";};while(i<s.length){let c=s[i],n=s[i+1]??\"\";if(state===\"code\"){if(c===\"/\"&&n===\"/\"){blank(i++);blank(i++);state=\"line\";continue;}if(c===\"/\"&&n===\"*\"){blank(i++);blank(i++);depth=1;state=\"block\";continue;}if(c==='\"'){blank(i++);state=\"string\";continue;}if(c===\"'\"&&i+2<s.length&&(s[i+1]===\"\\\\\"?i+3<s.length&&s[i+3]===\"'\":s[i+2]===\"'\")){blank(i++);state=\"char\";continue;}if(c===\"r\"){const m=/^r(#{0,255})\"/.exec(s.slice(i));if(m){raw=m[1].length;for(let k=0;k<m[0].length;k++)blank(i++);state=\"raw\";continue;}}i++;continue;}if(state===\"line\"){if(c===\"\\n\")state=\"code\";else blank(i);i++;continue;}if(state===\"block\"){if(c===\"/\"&&n===\"*\"){blank(i++);blank(i++);depth++;}else if(c===\"*\"&&n===\"/\"){blank(i++);blank(i++);if(--depth===0)state=\"code\";}else blank(i++);continue;}if(state===\"string\"||state===\"char\"){const d=state===\"string\"?'\"':\"'\";if(c===\"\\\\\"){blank(i++);if(i<s.length)blank(i++);}else{blank(i++);if(c===d)state=\"code\";}continue;}if(state===\"raw\"){const term='\"'+\"#\".repeat(raw);if(s.startsWith(term,i)){for(let k=0;k<term.length;k++)blank(i++);state=\"code\";}else blank(i++);continue;}throw Error(\"state\");}return o.join(\"\");}\nfunction cfg(s){s=s.trim();if(s===\"test\")return false;const m=/^(all|any|not)\\s*\\((.*)\\)$/s.exec(s);if(!m)return null;let depth=0,start=0,args=[];for(let i=0;i<m[2].length;i++){if(m[2][i]===\"(\")depth++;else if(m[2][i]===\")\")depth--;else if(m[2][i]===\",\"&&depth===0){args.push(m[2].slice(start,i));start=i+1;}}if(m[2].slice(start).trim())args.push(m[2].slice(start));const vs=args.map(cfg);if(m[1]===\"not\")return vs.length===1&&vs[0]!==null?!vs[0]:null;if(m[1]===\"all\")return vs.includes(false)?false:vs.every(v=>v===true)?true:null;return vs.includes(true)?true:vs.every(v=>v===false)?false:null;}\nfunction itemEnd(s,start){if(/^(?:pub(?:\\([^)]*\\))?\\s+)?\\w+\\s*:(?!:)/.test(s.slice(start))){let p=0,k=0,b=0,a=0;for(let i=start;i<s.length;i++){const c=s[i];if(c===\"(\")p++;else if(c===\")\"&&p)p--;else if(c===\"[\")k++;else if(c===\"]\"&&k)k--;else if(c===\"{\")b++;else if(c===\"}\"&&b)b--;else if(c===\"}\"&&!p&&!k&&!a)return i-1;else if(c===\"<\"&&!p&&!k&&!b)a++;else if(c===\">\"&&a)a--;else if(c===\",\"&&!p&&!k&&!b&&!a)return i;}throw Error(\"field\");}let p=0,k=0;for(let i=start;i<s.length;i++){const c=s[i];if(c===\"(\")p++;else if(c===\")\"&&p)p--;else if(c===\"[\")k++;else if(c===\"]\"&&k)k--;else if(!p&&!k&&c===\";\")return i;else if(!p&&!k&&c===\"{\")return end(s,i,\"{\",\"}\");}throw Error(\"item\");}\nfunction stripTest(s){const o=s.split(\"\");let i=0;while(i<s.length){const start=s.indexOf(\"#[\",i);if(start<0)break;const ae=end(s,start+1,\"[\",\"]\");const m=/^#\\[\\s*cfg\\s*\\((.*)\\)\\s*\\]$/s.exec(s.slice(start,ae+1));if(!m||cfg(m[1])!==false){i=ae+1;continue;}let j=ae+1;while(true){while(/\\s/.test(s[j]??\"\")&&j<s.length)j++;if(!s.startsWith(\"#[\",j))break;j=end(s,j+1,\"[\",\"]\")+1;}const ie=itemEnd(s,j);for(let x=start;x<=ie;x++)if(s[x]!==\"\\n\")o[x]=\" \";i=ie+1;}return o.join(\"\");}\nfunction aliases(code,target){return [...code.matchAll(new RegExp(\"\\\\b\"+target+\"\\\\s+as\\\\s+(\\\\w+)\",\"g\")),...code.matchAll(new RegExp(\"\\\\btype\\\\s+(\\\\w+)\\\\s*=\\\\s*(?:\\\\w+::)*\"+target+\"\\\\s*;\",\"g\"))].map(x=>x[1]);}\nfunction fields(index,target){const as=new Set([target]);while(true){let added=0;for(const {code} of index)for(const n of Array.from(as))for(const a of aliases(code,n))if(!as.has(a)){as.add(a);added++;}if(!added)break;}const fs=[];for(const {path,code:raw} of index){let code=raw;for(const a of as)if(a!==target)code=code.replace(new RegExp(\"\\\\b\"+a+\"\\\\b\",\"g\"),target);if(!code.includes(target))continue;for(const m of code.matchAll(/\\bstruct\\s+(\\w+)(?:\\s*<[^{};]*>)?\\s*\\{/g)){const e=end(code,m.index+m[0].length-1,\"{\",\"}\");for(const f of code.slice(m.index+m[0].length,e).matchAll(/\\b(\\w+)\\s*:\\s*([^,;{}]+)/g)){if(new RegExp(\"\\\\b\"+target+\"\\\\b\").test(f[2]))fs.push({owner:m[1],field:f[1],type:target,path});}}}return{aliases:Array.from(as),fields:fs};}\nreturn {end,mask,cfg,itemEnd,stripTest,fields};\n",
+  "not_performed": {
+    "original_checker": false,
+    "typed_helper": false,
+    "native": false,
+    "cargo": false,
+    "h": false,
+    "ref_change": false
+  }
+}

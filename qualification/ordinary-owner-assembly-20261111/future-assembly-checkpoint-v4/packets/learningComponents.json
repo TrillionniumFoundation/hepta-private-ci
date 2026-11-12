@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "learning-purpose-release-real-idle-channel-components-increment",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "static-source; not installed or executed",
+  "base_packet": "a057e64a38fbf551740f8575430b1464d43d98fc",
+  "current_reference": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "path_count": 3,
+  "operation_count": 4,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "preimage": {
+        "git_blob": "49d33a29b18d59078420bd278ad4c84c6ad1d5af",
+        "bytes": 4461,
+        "sha256": "5d7872bb67753d32484763d3d1f5121ab469843bcfe4c796009d1b3798137a43"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "postimage": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+        "bytes": 5115,
+        "sha256": "f09ed8840d6c533a9b69e21c03a7559f6a5f67d2bc438da23c6a1855c53c415c"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+          "kind": "replace_once",
+          "old": "impl AgentdLearningCheckpointClientV1 {\n",
+          "new": "impl AgentdLearningCheckpointClientV1 {\n    // This private admission only borrows the real populated channel. It\n    // grants no retirement authority: the sole production caller first\n    // validates the actual Intent, then holds this guard through shutdown.\n    pub(super) fn lock_original_retirement_channel(\n        &self,\n    ) -> Result<std::sync::MutexGuard<'_, Option<Channel>>, AgentdError> {\n        let held = self\n            .channel\n            .try_lock()\n            .map_err(|_| refused(\"checkpoint retirement is busy or poisoned\"))?;\n        if held.is_none() {\n            return Err(refused(\"checkpoint retirement has an uncertain exchange\"));\n        }\n        Ok(held)\n    }\n\n",
+          "reason": "Factor only the draft's actual populated-channel admission for real lock/FD refusal components; true Intent remains required before production entry"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+          "kind": "replace_once",
+          "old": "        let held = self.client.channel.try_lock()\n            .map_err(|_| refused(\"checkpoint retirement is busy or poisoned\"))?;\n",
+          "new": "        let held = AgentdLearningCheckpointClientV1::lock_original_retirement_channel(\n            &self.client,\n        )?;\n",
+          "reason": "The actual Intent-validated caller uses the same private channel admission and keeps its guard through shutdown"
+        }
+      ],
+      "forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs",
+      "preimage": {
+        "git_blob": "ee867a20921f65e7c17907aac8cf53a074cba426",
+        "bytes": 13694,
+        "sha256": "0174a7e89bfc663f6711543459198764c36d2b99b6a70a0c5c9227c06c99cba2"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs",
+        "postimage": "ae34b666ab9c7f83e446c23bf524cf10dee556fd",
+        "bytes": 13779,
+        "sha256": "48fd3041ab1f68349353b8faf085168e74eb32d3bfdc69217b54ad1175e8983d"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs",
+          "kind": "replace_once",
+          "old": "#[path = \"learning_iteration_checkpoint_same_actor_tests.rs\"]\nmod same_actor_tests;\n",
+          "new": "#[path = \"learning_iteration_checkpoint_same_actor_tests.rs\"]\nmod same_actor_tests;\n\n#[path = \"learning_iteration_checkpoint_retirement_tests.rs\"]\nmod retirement_tests;\n",
+          "reason": "Wire only the new real idle-channel component tests; preserve all original tests"
+        }
+      ],
+      "forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement_tests.rs",
+        "postimage": "4e7bbd87d48d8c0016a7690b82754be943a55d16",
+        "bytes": 3425,
+        "sha256": "f715831fa75cb8da3711c32c18609e10a35de1da84f4377113afd989fc97f016"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement_tests.rs",
+          "kind": "add",
+          "content": "//! Real channel-lock and Unix socket custody components only. These tests do\n//! not construct RootIntent, close a privileged purpose, or qualify C/Root\n//! retirement. They exercise the exact private admission used after Intent.\n\nuse super::*;\nuse pretty_assertions::assert_eq;\nuse std::io::ErrorKind;\nuse std::sync::TryLockError;\n\n#[test]\nfn original_retirement_idle_admission_keeps_exact_transport_and_sequence() -> anyhow::Result<()> {\n    let history = snapshots(Decision::Update)?;\n    let (client, mut peer) = client(&history[0]);\n    peer.set_nonblocking(true)?;\n    {\n        let held = AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client)?;\n        assert_eq!(held.as_ref().unwrap().next_request_id, 1);\n        assert!(matches!(\n            client.channel.try_lock(),\n            Err(TryLockError::WouldBlock)\n        ));\n        assert!(matches!(\n            peer.read(&mut [0]),\n            Err(error) if error.kind() == ErrorKind::WouldBlock\n        ));\n    }\n    assert_eq!(\n        client.channel.lock().unwrap().as_ref().unwrap().next_request_id,\n        1\n    );\n    assert!(matches!(\n        peer.read(&mut [0]),\n        Err(error) if error.kind() == ErrorKind::WouldBlock\n    ));\n    drop(client);\n    assert_eq!(peer.read(&mut [0])?, 0);\n    Ok(())\n}\n\n#[test]\nfn original_retirement_admission_refuses_busy_and_unfinished_slots() -> anyhow::Result<()> {\n    let history = snapshots(Decision::Update)?;\n    let (client, mut peer) = client(&history[0]);\n    peer.set_nonblocking(true)?;\n    let mut held = client.channel.lock().unwrap();\n    assert!(\n        AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client).is_err()\n    );\n    let actual_in_flight = held.take().unwrap();\n    drop(held);\n    assert!(\n        AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client).is_err()\n    );\n    assert!(client.channel.lock().unwrap().is_none());\n    // The unfinished exchange still owns its real transport. Refusal neither\n    // puts it back nor claims that a missing slot was a successful close.\n    assert!(matches!(\n        peer.read(&mut [0]),\n        Err(error) if error.kind() == ErrorKind::WouldBlock\n    ));\n    drop(actual_in_flight);\n    assert_eq!(peer.read(&mut [0])?, 0);\n    assert!(client.channel.lock().unwrap().is_none());\n    Ok(())\n}\n\n#[test]\nfn original_retirement_admission_refuses_poison_without_releasing_owner() -> anyhow::Result<()> {\n    let history = snapshots(Decision::Update)?;\n    let (client, mut peer) = client(&history[0]);\n    let client = Arc::new(client);\n    peer.set_nonblocking(true)?;\n    let owned = Arc::clone(&client);\n    let worker = std::thread::spawn(move || {\n        let _held = owned.channel.lock().unwrap();\n        panic!(\"poison the actual original channel mutex\");\n    });\n    assert!(worker.join().is_err());\n    assert!(\n        AgentdLearningCheckpointClientV1::lock_original_retirement_channel(client.as_ref())\n            .is_err()\n    );\n    let poisoned = match client.channel.lock() {\n        Err(poisoned) => poisoned.into_inner(),\n        Ok(_) => panic!(\"actual channel mutex was not poisoned\"),\n    };\n    assert_eq!(poisoned.as_ref().unwrap().next_request_id, 1);\n    drop(poisoned);\n    assert!(matches!(\n        peer.read(&mut [0]),\n        Err(error) if error.kind() == ErrorKind::WouldBlock\n    ));\n    drop(client);\n    assert_eq!(peer.read(&mut [0])?, 0);\n    Ok(())\n}\n",
+          "reason": "Three real mutex/socket custody components for idle, busy/unfinished, and poisoned channel admission; no fabricated Intent or C proof"
+        }
+      ],
+      "forward_reverse_exact": true
+    }
+  ],
+  "semantics": "Only the draft's actual try_lock/populated-slot rejection is factored into a private helper. The sole production entry still validates real RootIntent first and retains the guard through actual Required-channel shutdown. Three new test methods exercise the same real channel mutex and real UnixStream ownership; they do not construct RootIntent, shut a privileged purpose, or create any completion capability.",
+  "components": [
+    {
+      "name": "original_retirement_idle_admission_keeps_exact_transport_and_sequence",
+      "proves": "Actual populated Mutex guard is held, request sequence unchanged, peer remains open until the real original client drops."
+    },
+    {
+      "name": "original_retirement_admission_refuses_busy_and_unfinished_slots",
+      "proves": "Actual held mutex and actual taken/empty Channel are refused; no restoration is performed and the in-flight Channel really owns its socket until dropped."
+    },
+    {
+      "name": "original_retirement_admission_refuses_poison_without_releasing_owner",
+      "proves": "A real thread panic poisons the original mutex; the private admission refuses, while the same actual Channel remains held until original client drop."
+    }
+  ],
+  "limits": [
+    "The existing same-UID test fixture uses actual socket/pidfd descriptors but synthetic snapshot data; it does not qualify Root custody, C, or privileged retirement.",
+    "No fake RootIntent constructor, replacement owner, receipt, callbacks or test-only authority bypass was added.",
+    "Existing transport tests remain byte-identical except the new child module declaration.",
+    "No formatter/compiler/checker/test/h/native execution; code formatting is not claimed verified.",
+    "All failure and successful retirement behavior in the other a057 files is unchanged."
+  ]
+}

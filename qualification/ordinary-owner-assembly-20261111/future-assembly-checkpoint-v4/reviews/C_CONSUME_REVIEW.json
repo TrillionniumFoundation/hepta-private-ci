@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-c-joined-purpose-consumption",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "no-confirmed-local-static-blocker; not-executed",
+  "reviewed_packet": "bce023f31547d4cab39996bb3463383d4d344119",
+  "reviewer": "chain_nextuse",
+  "scope": "Four exact source paths, six replacements, and the actual typed interfaces in a057; not a complete deployment or native qualification.",
+  "source_correspondence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+      "preimage": {
+        "blob": "bd6aa8db0536eba249d3612e5d28ccefd04e813a",
+        "bytes": 18489,
+        "sha256": "f23b86ec3a4a518e3ca0088298c8ea6ecd83f5ee73612e47fac973964a8cbdee"
+      },
+      "postimage": {
+        "blob": "42a27a06c375121d738be47b26474890b0403b95",
+        "bytes": 22461,
+        "sha256": "f8d345c8a78561783bb0e75edfd82c3ac872fbe36acf0ef5df6000d2c33b3613"
+      },
+      "operations": 3,
+      "forward_and_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "preimage": {
+        "blob": "d7d6f2fd0df8f00448a236aa0a42a7a7bcef91ee",
+        "bytes": 20444,
+        "sha256": "286183eb57b3ce3463d3dcd2e0e0fc70a5eaf0f67156d60bbe4ee1cc13c813cb"
+      },
+      "postimage": {
+        "blob": "8af6d0f93f528ddafa486cc940ed21da3b057ab5",
+        "bytes": 20506,
+        "sha256": "99df1c5e7da1fb3c382e61c968f7600652407823f8654a1bd7a88b92376a73e6"
+      },
+      "operations": 1,
+      "forward_and_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "preimage": {
+        "blob": "7c2aa29b25cf37f99d782d4ca95f67bfa40a6d75",
+        "bytes": 14644,
+        "sha256": "7bd19d2130a2906239979e555bece0ea93d418fb8fb99d5e0eacbc0b1cba0433"
+      },
+      "postimage": {
+        "blob": "a8b7d55807e5cd7c61899af97c22f14134ffb549",
+        "bytes": 14740,
+        "sha256": "9992236802aaab4a020c74a3850c489cbb1a1dca87181d009e61139917e1b9d5"
+      },
+      "operations": 1,
+      "forward_and_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "preimage": {
+        "blob": "6d1e59c308e795a0aa9add50223157ac4326841e",
+        "bytes": 5796,
+        "sha256": "3ea8a53d3871b1a10a88da0d6e587fb4dc2944a1e62d72a5f58e1186c1a989a8"
+      },
+      "postimage": {
+        "blob": "d16dd65de0dac36dc845467512580349f31c6a37",
+        "bytes": 5883,
+        "sha256": "68bd18c9ca0cb32dcbf74fe89926a6ae1454eb830f0d68a73c45c37306424c21"
+      },
+      "operations": 1,
+      "forward_and_reverse_exact": true
+    }
+  ],
+  "dependencies_read": {
+    "learning_release": "a057e64a38fbf551740f8575430b1464d43d98fc",
+    "learning_owners_source": "4b59b6cfe1bc15eba250bbf07ba12a28f321e45a",
+    "actual_published_task_retirement": "60e50bd7db42d13a80df225044ca883c942ac899",
+    "intent": "fcc069afa3cf4a48c600909f4342ac46a24c18de",
+    "original_c_source": "ad5d950d11627ae7b44373d227348ef41e00439e"
+  },
+  "findings": [
+    {
+      "claim": "Only the actual CJoined can construct CPurposesRetired.",
+      "basis": "The consuming method first checks require_retained_original_owners and the original identity/Gate-bound Intent, then destructures the actual CJoined. The new struct has private fields, no Clone, no serde and no public constructor."
+    },
+    {
+      "claim": "Actual Learning owners and the installed C CURRENT close through their original typed owners.",
+      "basis": "The method consumes OriginalRetiredLearningOwners into a057's real OriginalRetiredLearningPurposes, then calls PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent on OriginalQ24InstalledSuccessorV1::published_task(&original.installed), not a digest, event or caller-provided task."
+    },
+    {
+      "claim": "No await or unowned gap is inserted; all four owner fields move into the returned custody.",
+      "basis": "original, route, work and learning remain actual owned locals until assembly of CPurposesRetired. The original quiescence remains the first field and holds its armed failure guard; there is no disarm or Gate.close success operation in this increment."
+    },
+    {
+      "claim": "The returned capability checks sealed origin, the retired slot/route and retained Learning ownership without restarting ordinary Current.",
+      "basis": "The original binding, slot's retired origin, route Arc equality, installed identity, Learning Work equality, Phase::RetiredC and existing ticket-zero condition are rechecked. These postconditions validate a capability constructed from real earlier joins; they do not construct completion from a zero count. Any validation error closes the original Gate."
+    },
+    {
+      "claim": "The three parent changes only reexport the new private capability.",
+      "basis": "All other parent bytes exactly match their supplied preimages after removal of the three one-line exports."
+    }
+  ],
+  "interface_match": {
+    "actual_learning_consumer": "OriginalRetiredLearningOwners::retire_original_root_purposes(self, &Intent) -> Result<OriginalRetiredLearningPurposes, AgentdError>",
+    "actual_learning_postcheck": "OriginalRetiredLearningPurposes::require_original_work(&Arc<Work>)",
+    "actual_c_consumer": "OriginalSameActorCJoined::retire_original_root_purposes(self, &Intent) -> Result<OriginalSameActorCPurposesRetired, AgentdError>",
+    "actual_c_postcheck": "OriginalSameActorCPurposesRetired::require_original_phase(&AgentdIdentity, &Arc<Gate>)",
+    "caller_in_a057": "OriginalSameActorLearningJoined consumes this exact C method and wraps the returned CPurposesRetired."
+  },
+  "limits": [
+    "Original RootIntent is only permission to retire this Root's resources; it is not business C success or OS-exit evidence.",
+    "All failure guards, aliases, task/source/Cell/Ledger and Work/Route owners remain held through ACK2 and the separate actual Root exit.",
+    "No original checker, compiler, formatter, native test, h process, ref or branch mutation was run.",
+    "This review does not establish all source union caller closure or runtime liveness. New release components and final CALLERS are separate.",
+    "Same-actor C remains distinct from an independently deployed consumer. Ordinary complete/adoption/no-update-or-rollback counts remain 0/0/0."
+  ]
+}

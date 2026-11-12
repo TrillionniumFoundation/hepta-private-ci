@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "root-exit-authorized-explicit-watcher-and-runtime-cleanup",
+  "status": "isolated-source-draft-normal-outer-pending",
+  "dependencies": {
+    "ack2_exit": "c7f7a1c0031f352afe96ee989bbc933719d70995",
+    "runtime_purposes": "385fc92d812ce209c6b60218ae8714d47cc0b01a"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "preimage": "264e2bb9645d4e66121790f3e4fed90f5d795e61",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+        "blob": "bfdc850bd97953f0224ee7e02f72d6f94f6e19f7",
+        "bytes": 23724,
+        "sha256": "8dad5c8c3bca0838e47a96144e63e59ee81d3be17ca86816defa1efa8688b64f",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "impl Drop for OriginalSameActorPhaseWatch {",
+          "new": "impl OriginalSameActorPhaseWatch {\n    /// Consume the actual watcher handle only after the same Root's kernel\n    /// exit proof. Common closure wakes its Condvar before the real join.\n    /// A watcher panic remains an error instead of being discarded by Drop.\n    pub(crate) fn finish_original_after_root_exit(\n        mut self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n        identity: &crate::AgentdIdentity,\n    ) -> Result<(), crate::AgentdError> {\n        exited.require_original_cleanup_origin(identity, &self.gate)?;\n        self.gate.close();\n        let worker = self.worker.take().ok_or_else(|| {\n            crate::AgentdError::GenerationFenced(\"actual deadline watcher was already consumed\".into())\n        })?;\n        worker.join().map_err(|_| {\n            crate::AgentdError::GenerationFenced(\"actual deadline watcher panicked\".into())\n        })?;\n        exited.require_original_cleanup_origin(identity, &self.gate)\n    }\n}\n\nimpl Drop for OriginalSameActorPhaseWatch {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "preimage": "3573472907d05bc4882d36060a9cbb23c05155b6",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "blob": "53195f57791b147327d1806d49c872a28cca4e91",
+        "bytes": 22971,
+        "sha256": "15b2534975d0d05794eb535f5c0efbe914270f5972bbdf8ced6364a35dedce6f",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "    _deadline_watch: crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch,",
+          "new": "    _deadline_watch: std::sync::Mutex<Option<crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch>>,"
+        },
+        {
+          "op": "replace",
+          "old": "        _deadline_watch: deadline_watch,",
+          "new": "        _deadline_watch: std::sync::Mutex::new(Some(deadline_watch)),"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "preimage": "9fad6625b4cef54f607ab4c20289b702c8f6719b",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "blob": "9ba4eafef98caa9c3c20ff883770204475443a34",
+        "bytes": 2409,
+        "sha256": "3e1417415d0faaa79045658eafcbecaa3ef567aea84bd5f678acb1ba1a12505b",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "impl OriginalSameActorRootContext {\n",
+          "new": "impl OriginalSameActorRootContext {\n    /// The original watcher holds only Gate, not Context or Tokio tasks.\n    /// Take the real handle once, release this mutex, then join it explicitly.\n    pub(crate) fn finish_original_deadline_watch(\n        &self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n    ) -> Result<(), AgentdError> {\n        exited.require_original_cleanup_origin(&self.identity, &self.gate)?;\n        let watch = {\n            self._deadline_watch.lock()\n                .map_err(|_| refused(\"actual deadline watcher custody is poisoned\"))?\n                .take().ok_or_else(|| refused(\"actual deadline watcher was already taken\"))?\n        };\n        watch.finish_original_after_root_exit(exited, &self.identity)\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "preimage": "5a1ac28b8dd55176cd4ae938d9171d4e3c54f984",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "blob": "4dc3c3cf67278f784492899fe57ef94058412add",
+        "bytes": 9373,
+        "sha256": "b84702f5e5fa0c0f5e0cd53d8beacd902ede82792885c93da7488e4042c3dda2",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "impl OriginalRuntimeRootPurposesRetired {\n",
+          "new": "impl OriginalRuntimeRootPurposesRetired {\n    /// Capture the actual stopped owner before the first poll. Only the\n    /// kernel Root-exit observation authorizes this terminal resource drop;\n    /// the unchanged explicit MCP shutdown is actually awaited.\n    pub(crate) fn release_original_after_root_exit(\n        self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n    ) -> impl std::future::Future<Output = Result<(), AgentdError>> + 'static {\n        let checked = exited.require_original_cleanup_origin(\n            self.stopped.context.identity(), self.stopped.context.gate(),\n        );\n        async move {\n            let retained = self;\n            // Even a failed cleanup provenance check still drives the\n            // original fault shutdown; it cannot silently discard MCP work.\n            retained.stopped.close_original_runtime_resources().await;\n            checked\n        }\n    }\n\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 4,
+  "operation_count": 5,
+  "actual_contract": [
+    "The actual deadline watcher is kept in its original Context as one Mutex<Option<original owner>>, not replaced or restarted.",
+    "Only the actual same-origin kernel Root-exit observation can authorize taking that handle. The Context mutex is released before close/notify and real thread.join; panic remains Err.",
+    "The original watcher's loop still reads only original Gate/BOOTTIME/Instant and never monitors Root pidfd. Existing fault Drop remains unchanged.",
+    "Runtime purpose-retired owner consumes its actual RuntimeStopped and awaits its unchanged explicit attachment/device/MCP shutdown after same-origin cleanup validation. Even invalid cleanup provenance still executes the original fault shutdown and returns that failure.",
+    "Root-exit cleanup does not use Current, request another frame, renew a deadline, assert daemon OS exit, or declare all remaining Session/File owners released."
+  ],
+  "pending": [
+    "Actual complete outer invocation and result handling.",
+    "Explicit final Session last-Drop/handle-result/WriterCustody take from audit.",
+    "MCP shutdown return is retained as the original API contract; no additional MCP OS-exit proof is inferred without inspecting that actual implementation.",
+    "Final learning/retained owner release and tests/metadata."
+  ],
+  "verification": {
+    "unique_exact_forward_reverse": true,
+    "all_postimages_create_get_equal": true,
+    "native": 0,
+    "original_checker": 0,
+    "refs": 0
+  }
+}

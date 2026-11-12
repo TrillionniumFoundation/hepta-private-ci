@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "kind": "independent_static_review_actual_root_intent_and_joined_coordinator",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": {
+    "packets": [
+      "86065a3a91e075a8f2a8463951369608794f5b16",
+      "8ad0e86068256f5dc4f20f23a35de215abd0d828",
+      "170b5173c262c17661d6827edc7d828af8e092d4"
+    ],
+    "unique_paths": 7,
+    "file_overlay_edges": 10,
+    "operations": 30,
+    "replacements": 28,
+    "adds": 2,
+    "protocol": "77cba7adc7a61b0177306a56ad608229e9d56d65",
+    "final_intent": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+    "final_client": "1e9c0d59d17ada4aff27433da4504788f179690b",
+    "final_retained": "d93b92644d601459fea98a31d0f86035a6aaec02",
+    "final_coordinator": "b66660a510dce52b517c45e30a0a374a8c9ca32a",
+    "final_owner": "76475a83fd3680c9601a6582749e649d626979b8",
+    "final_materials": "2d3b10595febddae8c09ef08aac35c7ce3e9f6bf",
+    "final_parent": "4f99fe32037ba6fbb23b80c714a8edff8b27581d"
+  },
+  "verdict": "No confirmed local static blocker in these exact final sources. This is an owner-retention/seq1 permission cut, not full normal completion, compilation, original checker or native qualification.",
+  "evidence": {
+    "all_existing_preimages_and_all_intermediate_final_postimages_independently_get": true,
+    "every_git_blob_byte_length_sha256_equal_packet": true,
+    "all_28_replacements_unique_in_forward_and_reverse_state": true,
+    "both_new_file_payloads_equal_actual_get": true,
+    "replay": [
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "pre": "1c68ee3f07a27717279636bec7f882c278f7da09",
+        "post": "f4c29d2d36297b70951372d63c8b18f4f089f01a",
+        "ops": 5,
+        "forward": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "pre": null,
+        "post": "85cc5480a13b8d04c96f55f78a9698a78bdb51df",
+        "ops": 1,
+        "forward": [
+          "add"
+        ],
+        "reverse": [
+          "add"
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "pre": "f4f535f7d7bb53489a6cf0e2466eeff380327c4d",
+        "post": "111b253ba85c1540cf59d01f1215da1fc320b6bc",
+        "ops": 1,
+        "forward": [
+          1
+        ],
+        "reverse": [
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "pre": "85cc5480a13b8d04c96f55f78a9698a78bdb51df",
+        "post": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+        "ops": 4,
+        "forward": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "pre": "cb1f0b161ea9ff579781df4a6c8287d804f63780",
+        "post": "b66660a510dce52b517c45e30a0a374a8c9ca32a",
+        "ops": 7,
+        "forward": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "pre": "e6a038c03bb6f77898c01a21d5183c2ca25564c5",
+        "post": "2d3b10595febddae8c09ef08aac35c7ce3e9f6bf",
+        "ops": 1,
+        "forward": [
+          1
+        ],
+        "reverse": [
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+        "pre": "12b97474ae7779140cccbcca95c3f8f12e7413e6",
+        "post": "76475a83fd3680c9601a6582749e649d626979b8",
+        "ops": 8,
+        "forward": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "pre": "111b253ba85c1540cf59d01f1215da1fc320b6bc",
+        "post": "4f99fe32037ba6fbb23b80c714a8edff8b27581d",
+        "ops": 1,
+        "forward": [
+          1
+        ],
+        "reverse": [
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "pre": "f4c29d2d36297b70951372d63c8b18f4f089f01a",
+        "post": "1e9c0d59d17ada4aff27433da4504788f179690b",
+        "ops": 1,
+        "forward": [
+          1
+        ],
+        "reverse": [
+          1
+        ],
+        "post_identity": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+        "pre": null,
+        "post": "d93b92644d601459fea98a31d0f86035a6aaec02",
+        "ops": 1,
+        "forward": [
+          "add"
+        ],
+        "reverse": [
+          "add"
+        ],
+        "post_identity": true
+      }
+    ]
+  },
+  "observations": [
+    {
+      "subject": "Actual third acknowledgement provenance",
+      "detail": "The same sealed-context client retains Current registration and original-request digests only after its existing canonical acknowledgement decode, original peer lifetime and Context/Gate postchecks. The original next.take consumes the stage before request; a missing or invalid reply has no rearm path. The original channel/end and 500ms request mechanism are unchanged."
+    },
+    {
+      "subject": "Seq1 source and authority boundary",
+      "detail": "authorize_original_root_retirement consumes that exact client. It synchronously borrows actual RuntimeStopped, LearningJoined, CircuitNaturalJoin and SessionPaused, checks each before request and after the canonical reply, and keeps all four objects in the outer owner. The request is seq1/AuthorizeRootRetirement with the actual third registration/request, same binding and no original_intent. The acknowledgement is checked against the exact canonical request digest and original peer/end. No wire decode can construct the private Intent, and no ordinary Current re-entry is performed after Session pause."
+    },
+    {
+      "subject": "Confirmed superseded Drop defect and actual correction",
+      "detail": "85cc5480 held only client, whose channel preceded its required guard; bare Intent drop therefore did not establish common close before peer release. 8ad0e860 makes the actual pre-request failure guard the FIRST field in 00dc7ea, moves that same object into the result, and removes success disarm. Errors/cancellation now close the common Gate before client/channel fields release. No new authority or fresh deadline is introduced. The earlier draft remains historical and must not be selected."
+    },
+    {
+      "subject": "Real coordinator return and real thread join",
+      "detail": "The actual event loop only returns OriginalCoordinatorAtCOutcome in its expected COutcome branch, carrying the original event-loop CloseOnDrop and the whole coordinator/material/client object. The std thread transfers its actual pre-spawn CloseOnDrop into OriginalDeploymentRetained; no event or bool is used as a thread-join proof. take_original_after_c_join first validates the three genuine local caps, takes the original Option<JoinHandle> once, invokes the existing real thread.join, verifies exact Context Arc and cap origins afterward, and returns the retained actual result. Existing panic/error classification in join_original_thread is retained. The Drop path still closes then joins when a handle remains; after an actual successful take, the guards now reside in the returned owner."
+    },
+    {
+      "subject": "Whole material and guard custody across seq1",
+      "detail": "OriginalDeploymentRetained keeps its thread guard as its first field and retains OriginalCoordinatorAtCOutcome, whose own first field is the event-loop guard. Its authorize method takes only the original client from the coordinator Option, calls the actual seq1 sender, then returns (Intent, same Retained owner). It does not discard the actual material, ledger, model, evidence, ingress or other held objects. A failure after transfer drops the armed actual Intent/retained guards, not an empty status record."
+    },
+    {
+      "subject": "Original error and cancellation behavior",
+      "detail": "stop_and_join_original remains a fault operation: it closes the Gate and joins the same thread; only a real Ok retained result is then dropped. Any real Err is still propagated. The natural take method never calls fault stop and cannot manufacture a result from a finished event. Synchronous joining has no async cancellation hole; runtime.block_in_place on the actual multithread context remains the existing join strategy."
+    },
+    {
+      "subject": "Precise event limitation",
+      "detail": "OriginalCOutcomeAccepted is only the point at which the coordinator relinquishes its live event loop and returns custody. Ignoring its status for this handoff does not mint a C completion cap: the real C/Learning/Circuit/Session capabilities remain separately required. The original completion logic, independent Outcome validation and the actual normal outer caller are outside these three packets."
+    }
+  ],
+  "integration_requirements": [
+    "Actual normal outer Startup caller must retain the four real cap objects and the returned material owner throughout purpose retirement; this packet alone does not replace Startup final Err.",
+    "Session pause and every purpose release need their independently frozen concrete slices. Root seq2/Root exit and final Session/writer/attachment/guard retirement remain additional work.",
+    "The same absolute Gate/end and actual peer lifetime remain required throughout. A real thread join is not a hard-real-time return guarantee; no timeout or dead peer is converted to success.",
+    "Final module and CALLERS union must include the actual new methods/callers, with original checker execution only on Root's later fixed candidate."
+  ],
+  "explicitly_not_claimed": {
+    "original_checker_executed": false,
+    "typed_helper_executed": false,
+    "cargo": false,
+    "formatter": false,
+    "native": false,
+    "h": false,
+    "tests_executed": 0,
+    "refs_changed": 0,
+    "root_business_completion": false,
+    "c_effect_proved_by_event": false,
+    "normal_startup_success": false
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "kind": "source-bound-no-update-current-publication-retirement-review",
+  "status": "static-source-conclusion; no source change; no native execution",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "current_reference": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "reviewed_retirement": {
+    "packet": "a057e64a38fbf551740f8575430b1464d43d98fc",
+    "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+    "blob": "60e50bd7db42d13a80df225044ca883c942ac899",
+    "predicate": "matches!(&self.0.publication, Publication::Update { .. })"
+  },
+  "conclusion": "For the existing same-actor successor C path, Publication::Update denotes a new task/CURRENT publication, including a same-model successor. It does not mean the learning decision adopted a new model. The guard does not exclude a valid original NoUpdate/retain/defer C produced by this path.",
+  "source_inventory": [
+    {
+      "role": "decision",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs",
+      "blob": "0ed332f92a93f4304b9aa07f0f39044a13bdc3b2",
+      "bytes": 13891,
+      "sha256": "6c19e678ad3c5b4616fe27a3e53568b2cbf5a1aa7450abbb6259de1c21ffbfcd"
+    },
+    {
+      "role": "retained",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "blob": "bee4b106d8914a538cb3b40ab5aee81f1262da31",
+      "bytes": 14560,
+      "sha256": "12c17b46f43aac5b84ce4e2136684720d45c1424e4d1a71b051148ab09f79bf9"
+    },
+    {
+      "role": "prepare",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+      "blob": "175399043b785084633ce9040998a758bf31ac5a",
+      "bytes": 7226,
+      "sha256": "05002ba245f9d56183a23635c80ccad74f72ede1977cc590f5294162c120446d"
+    },
+    {
+      "role": "cold",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+      "blob": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673",
+      "bytes": 6651,
+      "sha256": "2b4563a5d0235f5232e4ba9400a524d18537fd11bdbab63a55f76303c02355ee"
+    },
+    {
+      "role": "publish",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "blob": "ecba0a36c6f5e8741a7fb62aeae98dc38a8a9c65",
+      "bytes": 5190,
+      "sha256": "8a860ab3149a755abf7f7501fef666b42bae140fba9f7605d1ccc1469c2c7fd9"
+    },
+    {
+      "role": "ready",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "blob": "4256c5b8a17c8e523b6438191c582883025e2b92",
+      "bytes": 7480,
+      "sha256": "34a25b49c3ebb7382914a64efdffec496f2476381e196a0d0572be6a67334f33"
+    },
+    {
+      "role": "actual Publication enum and task constructors",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "blob": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "bytes": 14061,
+      "sha256": "a2c552421260e73979c3faa0628b31ddb1e38d4a9cae786bebe8f986a9a88163"
+    }
+  ],
+  "exact_path": [
+    {
+      "step": 1,
+      "source": "0ed332f92a93f4304b9aa07f0f39044a13bdc3b2",
+      "method": "Decision::new / require_root_publication",
+      "fact": "The real coordinator snapshot must be at Selection with LocalDecisionV2, TrainingNoUpdateV2 or Evaluation::NoUpdate. The completed decision validator allows AdoptCandidate/RetainParent/DeferCandidate and non-adopting original NoUpdate. No error becomes a retention decision."
+    },
+    {
+      "step": 2,
+      "source": "bee4b106d8914a538cb3b40ab5aee81f1262da31",
+      "method": "OriginalCellQ24RetainedArtifactForRootV1::from_original_result / accept_selection",
+      "fact": "Retention rejects adopts(), validates original recovery and current owners, then accepts the real independently signed artifact selection into the common OriginalCellQ24SelectedArtifactForRootV1."
+    },
+    {
+      "step": 3,
+      "source": "175399043b785084633ce9040998a758bf31ac5a",
+      "method": "prepare_selected",
+      "fact": "adopts() selects prepare_agentd_generation_cold_drained_update_v1; !adopts() selects prepare_agentd_generation_cold_same_model_task_v1. Both return the same concrete PreparedAgentdGenerationUpdateV1 held in OriginalCellQ24PreparedPublicationV1."
+    },
+    {
+      "step": 4,
+      "source": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673",
+      "method": "prepare_agentd_generation_cold_same_model_task_v1 / prepare_cold_with_completion",
+      "fact": "The same-model branch uses OwnerDrainedSameModel and requires the actual old guarded journal's durable drain. It does not reuse a prior request/output or imply adoption."
+    },
+    {
+      "step": 5,
+      "source": "ecba0a36c6f5e8741a7fb62aeae98dc38a8a9c65",
+      "method": "OriginalCellQ24PreparedPublicationV1::publish_successor_current",
+      "fact": "After the exact FinalUse binding, live admission and original aggregate checks, both branch products call prepared.publish(&signed), then ready.into_circuit_feature_task(definition, source, previous). There is no Initial fallback."
+    },
+    {
+      "step": 6,
+      "source": "4256c5b8a17c8e523b6438191c582883025e2b92",
+      "method": "ReadyAgentdGenerationUpdateV1::into_circuit_feature_task",
+      "fact": "This unconditionally calls PublishedCircuitFeatureTaskV1::from_update with the actual published update, held journal, live Current, new definition/source and actual predecessor completion."
+    },
+    {
+      "step": 7,
+      "source": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "method": "PublishedCircuitFeatureTaskV1::from_update",
+      "fact": "The constructor checks exact predecessor publication/material/completion and rejects equal previous/source run or observation; then stores Publication::Update { original, previous }. Initial is a distinct constructor used for the initial task."
+    }
+  ],
+  "actual_same_actor_c_flow": {
+    "source": "f4be0fb2769ec29f72a6f643b07090d79e155c63",
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+    "fact": "PublishQualified and RetainOriginal converge through actual Selection, scoped Current connection, prepare_original_successor, original grant and publish. The installed C is fresh Create with OriginalLedger, and its real terminal Outcome is required."
+  },
+  "limits": [
+    "This establishes the source branch relationship, not successful business execution or full runtime qualification.",
+    "Same agent/cell/principal with a different run/observation is not a separately deployed independent consumer.",
+    "NoUpdate, RetainParent and DeferCandidate retain their original distinct signed meanings; the Update enum does not collapse those decisions.",
+    "No relaxation to Initial, arbitrary Current stores, errors, expired authority or an old A task is proposed.",
+    "Ordinary_complete_chain / positive_adoption_chain / no_update_or_rollback_chain remain 0/0/0."
+  ]
+}

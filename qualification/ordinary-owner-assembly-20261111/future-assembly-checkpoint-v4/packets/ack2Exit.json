@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "kind": "actual-root-ack2-final-peer-eof-held-pidfd-exit",
+  "status": "isolated-source-draft-normal-outer-not-yet-enabled",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "dependencies": {
+    "root_wire": "77cba7adc7a61b0177306a56ad608229e9d56d65",
+    "root_server_eof": "b9453e40d5c4c01b0ada35b5e482582254c3283e",
+    "intent": "86065a3a91e075a8f2a8463951369608794f5b16",
+    "intent_guard": "8ad0e86068256f5dc4f20f23a35de215abd0d828",
+    "coordinator": "170b5173c262c17661d6827edc7d828af8e092d4",
+    "required_shutdown": "9adb0605f1fffe5d00cac38554149e17c812549b",
+    "runtime_purposes": "385fc92d812ce209c6b60218ae8714d47cc0b01a",
+    "session_purpose": "9c810add14d85d7f40b2222dda2958a842e4a2f6",
+    "learning_purpose_interface": "chain confirmed actual implementation in progress; OriginalSameActorLearningPurposesRetired.require_original_phase(identity, gate); final source pin required before assembly"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "preimage": "1e9c0d59d17ada4aff27433da4504788f179690b",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "blob": "2f13eb143049dcbf87c0791a036a852abd3d3e4e",
+        "bytes": 8751,
+        "sha256": "f4c1e8427ea6d284626778fe9448d85b48510823523f730c97bdae5c5b393cf6",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "use std::sync::Arc;",
+          "new": "use std::os::fd::OwnedFd;\nuse std::sync::Arc;"
+        },
+        {
+          "op": "replace",
+          "old": "pub(crate) use retirement::OriginalRootRetirementIntent;",
+          "new": "pub(crate) use retirement::OriginalRootRetirementIntent;\npub(crate) use retirement::OriginalRootWorkersJoined;\npub(crate) use retirement::OriginalRootProcessExited;"
+        },
+        {
+          "op": "replace",
+          "old": "    channel: HostAuthorityPeerChannel,\n    next:",
+          "new": "    channel: HostAuthorityPeerChannel,\n    // Duplicated from the same actual held pidfd before channel construction;\n    // it is only observed for expected exit after the complete ACK2/EOF path.\n    root_exit_pidfd: OwnedFd,\n    next:"
+        },
+        {
+          "op": "replace",
+          "old": "        let root_pidfd = OriginalSameActorRootContext::root_pidfd(&context)?;\n        let channel",
+          "new": "        let root_pidfd = OriginalSameActorRootContext::root_pidfd(&context)?;\n        let root_exit_pidfd = root_pidfd.try_clone()?;\n        let channel"
+        },
+        {
+          "op": "replace",
+          "old": "            channel,\n            next:",
+          "new": "            channel,\n            root_exit_pidfd,\n            next:"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "preimage": "fcc069afa3cf4a48c600909f4342ac46a24c18de",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "80c206437d590f6f864a43f58fbf9cac5cbc4fa2",
+        "bytes": 7273,
+        "sha256": "a7f5db8d9d01bc5b10f17a133946206dc028cb5f343a61537533f1429d185e7d",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "/// Only the actual exchange below can construct this non-Clone, non-serde",
+          "new": "#[path = \"same_actor_q24_deployment_root_exit.rs\"]\nmod root_exit;\npub(crate) use root_exit::OriginalRootWorkersJoined;\npub(crate) use root_exit::OriginalRootProcessExited;\n\n/// Only the actual exchange below can construct this non-Clone, non-serde"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "preimage": "4f99fe32037ba6fbb23b80c714a8edff8b27581d",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "blob": "52c5b7df648b1639bbf71721cfd7846ef3afd125",
+        "bytes": 3796,
+        "sha256": "130432b1b746640c75465cba35c33e57b6e1645ad1fc4e1f1725fae5e1e39fb4",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use client::OriginalRootRetirementIntent;",
+          "new": "pub(crate) use client::OriginalRootRetirementIntent;\npub(crate) use client::OriginalRootWorkersJoined;\npub(crate) use client::OriginalRootProcessExited;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "preimage": "1b86a2104bbf14bba1b44e409bcd411e52bda141",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+        "blob": "264e2bb9645d4e66121790f3e4fed90f5d795e61",
+        "bytes": 22740,
+        "sha256": "452571edb5621b07802b0cf87e757257bd493a8d6bebd299a31184b9b250fedc",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "    pub(crate) fn failure_scope(&self) -> CloseSameActorPhaseOnDrop {",
+          "new": "    /// Only the exact actual ACK2 owner can close its own final peer.\n    /// All ordinary response/pidfd checks must finish before this EOF. After\n    /// it, Root is expected to exit, so no peer-alive postcheck is performed.\n    pub(crate) fn shutdown_original_after_root_workers_joined(\n        &self,\n        joined: &crate::same_actor_q24_deployment::OriginalRootWorkersJoined,\n    ) -> Result<(), crate::AgentdError> {\n        let checked = (|| {\n            joined.require_original_final_peer(self)?;\n            if self.retired.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err() {\n                return Err(refused(\"original final peer EOF was already consumed\").into());\n            }\n            {\n                let mut state = self.closing.gate.state.lock()\n                    .map_err(|_| refused(\"original final peer Gate is poisoned\"))?;\n                self.closing.gate.check_locked(&mut state)?;\n                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self._stream.id) else {\n                    return Err(refused(\"original final peer registration is unavailable\").into());\n                };\n                stream.shutdown(Shutdown::Both)?;\n                self.closing.gate.check_locked(&mut state)?;\n            }\n            // Retain the same absolute bounds without requiring an already\n            // intentionally released peer to remain alive.\n            self.closing.gate.require_open()?;\n            Ok::<(), crate::AgentdError>(())\n        })();\n        if checked.is_err() {\n            self.closing.gate.close();\n        }\n        checked\n    }\n\n    pub(crate) fn failure_scope(&self) -> CloseSameActorPhaseOnDrop {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "blob": "8d5b6bc11513a197a025f3035ed7e89ab750be51",
+        "bytes": 9404,
+        "sha256": "382a02ac3a7048cb43b0387ddc544825b9ba1127b20d5fb48b32f35fc1bebc60",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Actual Root worker acknowledgement, peer EOF, and held-pidfd exit.\n//! None of these facts is reconstructed from JSON, a count, Current refusal,\n//! or a generic Runtime return. Daemon OS exit still needs its real parent.\n\nuse std::os::fd::AsRawFd;\nuse std::os::fd::OwnedFd;\nuse std::sync::Arc;\nuse std::time::Duration;\n\nuse codex_hepta_contracts::HostAuthorityPeerChannel;\nuse tokio::io::unix::AsyncFd;\n\nuse super::*;\nuse crate::production_launcher::OriginalRuntimeRootPurposesRetired;\nuse crate::root_authority_session::OriginalRootSessionObservationRetired;\nuse crate::same_actor_q24_deployment::OriginalDeploymentRetained;\nuse crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningPurposesRetired;\n\n/// Constructed only by the real second retirement exchange after three\n/// concrete retired-owner bundles were checked. Intent is first: cancellation\n/// closes common fault custody before releasing the actual final peer.\npub(crate) struct OriginalRootWorkersJoined {\n    intent: OriginalRootRetirementIntent,\n    request: OriginalRootRetirementRequest,\n    acknowledgement: OriginalRootRetirementAcknowledgement,\n}\n\n/// Only a successful kernel observation on the same pre-held Root pidfd can\n/// construct this value, after the complete ACK2 and actual final-peer EOF.\n/// It permits cleanup of this phase's already-joined owners, never authority\n/// use or a new request. It does not retain Context or claim daemon OS exit.\npub(crate) struct OriginalRootProcessExited {\n    identity: AgentdIdentity,\n    gate: Arc<SameActorPhaseGate>,\n    root: AsyncFd<OwnedFd>,\n}\n\nimpl OriginalRootRetirementIntent {\n    /// Synchronous on the actual outer owner, with no borrowed non-Sync\n    /// resources crossing an await. The original single-frame 500 ms budget\n    /// is captured by request(), after all actual purpose-close proofs.\n    pub(crate) fn observe_original_root_workers_joined(\n        self,\n        runtime: &OriginalRuntimeRootPurposesRetired,\n        learning: &OriginalSameActorLearningPurposesRetired,\n        session: &OriginalRootSessionObservationRetired,\n        coordinator: &OriginalDeploymentRetained,\n    ) -> Result<OriginalRootWorkersJoined, AgentdError> {\n        let mut intent = self;\n        let identity = intent.client.context.identity().clone();\n        let gate = Arc::clone(intent.client.context.gate());\n        intent.require_original_origin(&identity, &gate)?;\n        runtime.require_original_origin(&identity, &gate)?;\n        learning.require_original_phase(&identity, &gate)?;\n        session.require_original_origin(&identity, &gate)?;\n        coordinator.require_original_origin(&identity, &gate)?;\n        let request = OriginalRootRetirementRequest {\n            schema_version: 1,\n            purpose: RETIREMENT_PURPOSE.into(),\n            binding: intent.request.binding.clone(),\n            sequence: 2,\n            stage: OriginalRootRetirementStage::ObserveRootWorkersJoined,\n            current_registration: intent.request.current_registration.clone(),\n            current_request: intent.request.current_request.clone(),\n            original_intent: Some(intent.intent_digest.clone()),\n        };\n        let bytes = request.encode_original()?;\n        intent.require_original_origin(&identity, &gate)?;\n        let response = HostAuthorityPeerChannel::request(&mut intent.client.channel, &bytes)\n            .map_err(uncertain)?;\n        let acknowledgement = (|| {\n            let acknowledgement = OriginalRootRetirementAcknowledgement::decode_original(\n                &response, &request, &intent.intent_digest,\n            )?;\n            // Root still holds its real joined owners and process until the\n            // final peer EOF below. Preserve every original postcheck.\n            HostAuthorityPeerChannel::check_peer_lifetime(&intent.client.channel)\n                .map_err(owner_error)?;\n            intent.require_original_origin(&identity, &gate)?;\n            runtime.require_original_origin(&identity, &gate)?;\n            learning.require_original_phase(&identity, &gate)?;\n            session.require_original_origin(&identity, &gate)?;\n            coordinator.require_original_origin(&identity, &gate)?;\n            gate.require_open()?;\n            Ok::<_, AgentdError>(acknowledgement)\n        })().map_err(uncertain)?;\n        Ok(OriginalRootWorkersJoined { intent, request, acknowledgement })\n    }\n}\n\nimpl OriginalRootWorkersJoined {\n    /// Used only by the exact required-channel shutdown implementation.\n    /// Comparing the real field address prevents this ACK2 from closing any\n    /// different channel, even another purpose under the same Gate.\n    pub(crate) fn require_original_final_peer(\n        &self, channel: &RequiredSameActorPhaseChannel,\n    ) -> Result<(), AgentdError> {\n        if !std::ptr::eq(channel, &self.intent.client.required) {\n            self.intent.client.context.gate().close();\n            return Err(refused(\"actual final retirement peer differs\"));\n        }\n        self.acknowledgement.require_original_request(\n            &self.request, &self.intent.intent_digest,\n        )?;\n        self.intent.require_original_origin(\n            self.intent.client.context.identity(), self.intent.client.context.gate(),\n        )\n    }\n\n    /// The same ACK2 owner is retained before this future's first poll.\n    /// One successful shutdown closes the exact socket and all its aliases;\n    /// only then do we observe actual Root process exit on its original pidfd.\n    pub(crate) fn wait_original_root_process_exit(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static {\n        let joined = self;\n        async move {\n            let joined = joined;\n            let identity = joined.intent.client.context.identity().clone();\n            let gate = Arc::clone(joined.intent.client.context.gate());\n            joined.require_original_final_peer(&joined.intent.client.required)?;\n            let root_pidfd = joined.intent.client.root_exit_pidfd.try_clone()?;\n            // SAFETY: this AsyncFd exclusively owns a clone of the exact\n            // pidfd verified at the original Root channel construction.\n            // No raw ownership or alternate PID lookup is introduced.\n            let root = unsafe {\n                AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)\n            }?;\n            RequiredSameActorPhaseChannel::shutdown_original_after_root_workers_joined(\n                &joined.intent.client.required, &joined,\n            )?;\n            loop {\n                let remaining = gate.require_open()?;\n                if original_pidfd_has_exited(root.get_ref())? {\n                    gate.require_open()?;\n                    let exited = OriginalRootProcessExited {\n                        identity, gate: Arc::clone(&gate), root,\n                    };\n                    // Expected final cleanup begins only AFTER the actual\n                    // kernel exit proof. All fault guards remain armed;\n                    // their common close can now release no live Root work.\n                    drop(joined);\n                    return Ok(exited);\n                }\n                tokio::select! {\n                    _ = gate.cancelled() => {\n                        return Err(refused(\"original Root exit observation was cancelled\"));\n                    }\n                    ready = root.readable() => {\n                        let mut ready = ready?;\n                        // Readiness itself is not the proof; the next single\n                        // poll verifies the same retained pidfd's kernel flags.\n                        ready.clear_ready();\n                    }\n                    _ = tokio::time::sleep(remaining.min(Duration::from_millis(5))) => {}\n                }\n            }\n        }\n    }\n}\n\nimpl OriginalRootProcessExited {\n    /// Cleanup-only provenance. Gate was intentionally closed after the\n    /// proven exit; this method cannot refresh Current or reopen a purpose.\n    pub(crate) fn require_original_cleanup_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate)\n            || !original_pidfd_has_exited(self.root.get_ref())?\n        {\n            self.gate.close();\n            return Err(refused(\"actual Root-exit cleanup origin differs\"));\n        }\n        Ok(())\n    }\n}\n\nfn original_pidfd_has_exited(fd: &OwnedFd) -> Result<bool, AgentdError> {\n    let mut pollfd = libc::pollfd {\n        fd: fd.as_raw_fd(), events: libc::POLLIN, revents: 0,\n    };\n    // SAFETY: one initialized pollfd points to this still-owned, already\n    // verified pidfd. This is a nonblocking kernel exit observation, not an\n    // authority call and not a reinterpretation of Current/PeerGone errors.\n    let observed = unsafe { libc::poll(&mut pollfd, 1, 0) };\n    if observed < 0 {\n        return Err(std::io::Error::last_os_error().into());\n    }\n    if observed == 0 {\n        return Ok(false);\n    }\n    if pollfd.revents & (libc::POLLERR | libc::POLLNVAL) != 0\n        || pollfd.revents & libc::POLLIN == 0\n    {\n        return Err(refused(\"original Root pidfd reported invalid exit readiness\"));\n    }\n    Ok(true)\n}\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 5,
+  "operation_count": 9,
+  "actual_sequence": [
+    "Use the actual original third-ACK registration/request and same seq1 Intent to construct one seq2 request on the same retained channel.",
+    "Synchronously validate the actual Runtime/Session/Learning purpose-retired owners and joined retained coordinator before request, with no non-Sync references crossing await.",
+    "Preserve the real channel's original 500ms frame and all peer/end/canonical/binding/retired-owner response postchecks; only those checks construct the private ACK2 owner.",
+    "Only that owner can ask the exact actual Required field (pointer identity, same Gate) to shutdown its socket+all aliases once. No Root-alive check is made after this expected EOF.",
+    "Clone the same pidfd originally held and verified before channel construction; directly poll its kernel exit state after EOF. Original Gate/end remain enforced, including BOOTTIME probing; no Current error is reinterpreted.",
+    "After a valid kernel exit under the original bound, create the private RootProcessExited cleanup-only observation. Drop the still-armed ACK/Intent guards only after this fact, initiating common terminal cleanup.",
+    "RootProcessExited retains no Context; later cleanup must physically join/release the actual remaining owners/watcher before the outer result can return. Daemon OS exit remains an external-parent observation."
+  ],
+  "failure_rules": [
+    "A dropped pre-poll or waiting ACK2/exit future owns the actual Intent with first-field common-close custody.",
+    "Invalid/missing ACK, mismatched owner, duplicate EOF, deadline, peer failure, invalid pidfd flags or wait cancellation returns the original bounded failure and does not retry/reconnect.",
+    "The pidfd loop is one kernel-exit observation with readiness/probes, not a repeated authority operation or a fresh frame deadline.",
+    "This source alone does not remove any current final Startup Err, fabricate a normal owner, or claim physical daemon process exit."
+  ],
+  "verification": {
+    "exact_unique_forward_reverse": true,
+    "all_full_postimages_create_get_equal": true,
+    "native": 0,
+    "compiler": 0,
+    "original_checker": 0,
+    "refs": 0
+  },
+  "pending": [
+    "Final Learning-purpose source and actual outer orchestration.",
+    "Explicit actual watcher join-result handling and final retained owner/Session/File cleanup.",
+    "Necessary component regressions and final CALLERS/allowlist exact union."
+  ]
+}

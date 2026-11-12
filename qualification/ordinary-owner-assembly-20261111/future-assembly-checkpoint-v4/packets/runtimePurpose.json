@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "kind": "actual-runtime-four-root-purpose-retirement",
+  "status": "isolated-normal-draft-no-success-enabled",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_rule": "Actual V44 source plus exact prior outer/Intent/Required shutdown overlays; none changes the running tested source.",
+  "dependencies": {
+    "outer": "aeb5f9efa8f2d94ffc8d63a2aae09bd2dfef928e",
+    "intent": "86065a3a91e075a8f2a8463951369608794f5b16",
+    "intent_first_guard": "8ad0e86068256f5dc4f20f23a35de215abd0d828",
+    "required_shutdown": "9adb0605f1fffe5d00cac38554149e17c812549b"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "preimage": "dccb655313b50b96202d7e73cd0619efd34d2a34",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "blob": "a691263dce886a35a73b0759b9740e711b76ffb1",
+        "bytes": 15584,
+        "sha256": "d17eba1003b440f1337aacc724223e9174271d2cbf60f0c697ce776a309499b1",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "}\n\nimpl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {",
+          "new": "    /// Only the actual stopped Runtime and acknowledged Root Intent reach\n    /// this close. Keep the real transport/guards, but permanently stop its\n    /// original idle lane before closing the same socket registration.\n    pub(crate) fn retire_original_root_checkpoint_purpose(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {\n        let phase = self.phase.as_ref().ok_or_else(|| {\n            crate::AgentdError::GenerationFenced(\"original checkpoint phase is absent\".into())\n        })?;\n        let mut closing = phase.failure_scope();\n        intent.require_original_gate(phase.gate())?;\n        let _exchange = self.exchange.try_acquire().map_err(|_| {\n            crate::AgentdError::GenerationFenced(\"original checkpoint is not idle\".into())\n        })?;\n        let slot = self.stream.try_lock().map_err(|_| {\n            crate::AgentdError::GenerationFenced(\"original checkpoint slot is unavailable\".into())\n        })?;\n        if slot.is_none() || Instant::now() >= self.end {\n            return Err(crate::AgentdError::GenerationFenced(\n                \"original checkpoint stream or deadline is unavailable\".into(),\n            ));\n        }\n        check_lifetime(self.root.get_ref()).map_err(|error| {\n            crate::AgentdError::Protocol(format!(\"original checkpoint peer: {error}\"))\n        })?;\n        self.exchange.close();\n        phase.shutdown_original_after_root_intent(intent)?;\n        check_lifetime(self.root.get_ref()).map_err(|error| {\n            crate::AgentdError::Protocol(format!(\"original checkpoint peer: {error}\"))\n        })?;\n        intent.require_original_gate(phase.gate())?;\n        closing.disarm();\n        Ok(())\n    }\n}\n\nimpl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "preimage": "e353e6e94be8689f33d54783dab91dd1751eab33",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "blob": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+        "bytes": 14808,
+        "sha256": "97cf9a82b473ead8a98fbbe4d19aa321c0a334e177b77fec9ceed76afb9a9346",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "    fn check_root(&self) -> Result<(), AgentdFinalUseIssuerError> {",
+          "new": "    /// Preserve the exact idle original issuer stream and peer custody while\n    /// an actual Root Intent permanently closes this required purpose.\n    pub(crate) fn retire_original_root_grant_purpose(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {\n        let phase = self.phase.as_ref().ok_or_else(|| {\n            crate::AgentdError::GenerationFenced(\"original grant phase is absent\".into())\n        })?;\n        let mut closing = phase.failure_scope();\n        intent.require_original_gate(phase.gate())?;\n        let slot = self.stream.try_lock().map_err(|_| {\n            crate::AgentdError::GenerationFenced(\"original grant purpose is not idle\".into())\n        })?;\n        if slot.is_none() || self.protected_root.is_none() {\n            return Err(crate::AgentdError::GenerationFenced(\n                \"original protected grant stream is unavailable\".into(),\n            ));\n        }\n        self.check_root().map_err(|error| {\n            crate::AgentdError::Protocol(format!(\"original grant peer: {error}\"))\n        })?;\n        phase.shutdown_original_after_root_intent(intent)?;\n        self.check_root().map_err(|error| {\n            crate::AgentdError::Protocol(format!(\"original grant peer: {error}\"))\n        })?;\n        intent.require_original_gate(phase.gate())?;\n        closing.disarm();\n        Ok(())\n    }\n\n    fn check_root(&self) -> Result<(), AgentdFinalUseIssuerError> {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "preimage": "277e498ca1e567968a639232af915039f64c0c82",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "blob": "3573472907d05bc4882d36060a9cbb23c05155b6",
+        "bytes": 22916,
+        "sha256": "94d6e28efe8cbbc739c2624e6711094e70d22e3fe4487257b41e7f5bab0aef62",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;",
+          "new": "use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;\nuse crate::same_actor_q24_phase_gate::OriginalRequiredPurposeRetirement;\n\n#[path = \"root_production_same_actor_retirement.rs\"]\nmod retirement;"
+        },
+        {
+          "op": "replace",
+          "old": "    grants: Arc<AgentdUnixFinalUseGrantProvider>,\n    scoped_consumed:",
+          "new": "    grants: Arc<AgentdUnixFinalUseGrantProvider>,\n    checkpoint_transport: Arc<AgentdUnixCognitiveCheckpointTransport>,\n    device_retirement: OriginalRequiredPurposeRetirement,\n    notes_retirement: OriginalRequiredPurposeRetirement,\n    scoped_consumed:"
+        },
+        {
+          "op": "replace",
+          "old": "    let device = open_original_phase_consumer(",
+          "new": "    let checkpoint_transport = Arc::clone(&checkpoint.transport);\n    let (device, device_retirement) = open_original_phase_consumer("
+        },
+        {
+          "op": "replace",
+          "old": "    let notes = open_original_phase_consumer(",
+          "new": "    let (notes, notes_retirement) = open_original_phase_consumer("
+        },
+        {
+          "op": "replace",
+          "old": "        grants: Arc::clone(&grants),\n        scoped_consumed:",
+          "new": "        grants: Arc::clone(&grants),\n        checkpoint_transport,\n        device_retirement,\n        notes_retirement,\n        scoped_consumed:"
+        },
+        {
+          "op": "replace",
+          "old": ") -> Result<FinalUseAuthority, AgentdError> {\n    let phase = gate.retain_required_original_stream(&stream)?;",
+          "new": ") -> Result<(FinalUseAuthority, OriginalRequiredPurposeRetirement), AgentdError> {\n    let phase = gate.retain_required_original_stream(&stream)?;\n    // This is a reference to that exact required registration, not a new FD\n    // or authority. The same phase object moves into the actual frontier.\n    let retirement = phase.original_retirement_custody();"
+        },
+        {
+          "op": "replace",
+          "old": "    let owner = job.receive_original().await?;\n    gate.require_open()?;\n    closing.disarm();\n    Ok(owner)\n",
+          "new": "    let owner = job.receive_original().await?;\n    gate.require_open()?;\n    closing.disarm();\n    Ok((owner, retirement))\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "preimage": "57127565b350698cb6ada9ad3e67435224c63a13",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "blob": "5a1ac28b8dd55176cd4ae938d9171d4e3c54f984",
+        "bytes": 8477,
+        "sha256": "4b1f6b934e0402a155fce2c927ba052addca470a3b46e9c232254162efa2954c",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "impl OriginalSameActorRuntimeStopped {",
+          "new": "/// The actual Runtime attachment remains owned after its four original\n/// Root purposes were closed with the real seq1 permission. No File, Session,\n/// device or MCP owner is dropped until the later full completion cleanup.\npub(crate) struct OriginalRuntimeRootPurposesRetired {\n    stopped: OriginalSameActorRuntimeStopped,\n}\n\nimpl OriginalRuntimeRootPurposesRetired {\n    pub(crate) fn require_original_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        self.stopped.require_original_origin(identity, gate)\n    }\n}\n\nimpl OriginalSameActorRuntimeStopped {"
+        },
+        {
+          "op": "replace",
+          "old": "    /// Fault cleanup only. No Root retirement permission or natural Session",
+          "new": "    pub(crate) fn retire_original_root_purposes(\n        self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<OriginalRuntimeRootPurposesRetired, AgentdError> {\n        self.require_original_origin(self.context.identity(), self.context.gate())?;\n        intent.require_original_origin(self.context.identity(), self.context.gate())?;\n        self.context.retire_original_runtime_purposes(intent)?;\n        self.require_original_origin(self.context.identity(), self.context.gate())?;\n        intent.require_original_origin(self.context.identity(), self.context.gate())?;\n        Ok(OriginalRuntimeRootPurposesRetired { stopped: self })\n    }\n\n    /// Fault cleanup only. No Root retirement permission or natural Session"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "preimage": "b97b6a5e7b5f649a9efd71f7fc6506c021205fa2",
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "blob": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+        "bytes": 27869,
+        "sha256": "689a86033a5f5806b08f86821cb0b8f7cb3495150cdd04ce795c6e6f63cdbafb",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use same_actor_runtime::OriginalSameActorRuntimeStopped;",
+          "new": "pub(crate) use same_actor_runtime::OriginalSameActorRuntimeStopped;\npub(crate) use same_actor_runtime::OriginalRuntimeRootPurposesRetired;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "blob": "9fad6625b4cef54f607ab4c20289b702c8f6719b",
+        "bytes": 1671,
+        "sha256": "3623edc22ab87e3c769b8aa3840694e6061eb5dfa60bdd74491f62245cc27ce0",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Retire only the four actual non-observation Root purposes retained by the\n//! sealed receiver. Session and late Learning/Model/Publication have their own\n//! actual joined owners; neither an empty count nor public data replaces them.\n\nuse super::*;\n\nimpl OriginalSameActorRootContext {\n    pub(crate) fn retire_original_runtime_purposes(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);\n        intent.require_original_origin(&self.identity, &self.gate)?;\n        // This is the same Arc returned by the actual ReadHead constructor,\n        // before its protected inputs moved into the ordinary Runtime.\n        AgentdUnixCognitiveCheckpointTransport::retire_original_root_checkpoint_purpose(\n            self.checkpoint_transport.as_ref(), intent,\n        )?;\n        AgentdUnixFinalUseGrantProvider::retire_original_root_grant_purpose(\n            self.grants.as_ref(), intent,\n        )?;\n        // Both references came from the exact required objects moved into the\n        // original consumer frontier closures. Their real jobs and consumer\n        // barriers have already joined before the four-cap Intent exists.\n        OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(\n            &self.device_retirement, intent,\n        )?;\n        OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(\n            &self.notes_retirement, intent,\n        )?;\n        intent.require_original_origin(&self.identity, &self.gate)?;\n        closing.disarm();\n        Ok(())\n    }\n}\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 6,
+  "operation_count": 13,
+  "source_evidence": {
+    "checkpoint_inputs_definition": "b2914a015352f28d96fdec04417f55453b1587e2",
+    "checkpoint_actual_readhead_constructor": "7c9354821494afa9857a536658fb2bb2e0d4d860"
+  },
+  "actual_sources": [
+    "Checkpoint: clone the exact public transport Arc returned by the unchanged actual ReadHead/Current-token constructor, before protected inputs enter the Runtime.",
+    "Grant: retain the original Context's exact Arc<AgentdUnixFinalUseGrantProvider>.",
+    "Device/Notes: obtain close-only references from each actual Required registration before that same object moves into its real frontier closure; unchanged blocking job still returns only the actual FinalUseAuthority.",
+    "These four references add no socket, authority object, replacement owner, frame, expiry or registry entry."
+  ],
+  "normal_close": [
+    "Consumes the actual owner-bearing RuntimeStopped only with the real four-cap acknowledged Intent.",
+    "Checkpoint takes its original exchange permit and actual Some stream lock, verifies held pidfd/end, closes its semaphore, then shutdowns the exact Required socket and checks the original peer again.",
+    "Grant takes its original actual Some stream mutex, requires the original protected Root peer, then uses the same Required shutdown; retired state prevents subsequent admission.",
+    "Device/Notes use their exact original registry references after the actual C/Runtime/Session joins required by Intent; no final-use operation is repeated.",
+    "Returns a private OriginalRuntimeRootPurposesRetired which still holds all original Runtime attachment/device/MCP/Session/File owners and armed guards. No normal resource Drop or completed Startup is claimed."
+  ],
+  "preservation": [
+    "Original checkpoint constructors/ReadHead/transport exchange bodies remain byte-identical; grant request/exchange/check_root bodies remain byte-identical.",
+    "The original consumer closure, FinalUseAuthority construction, real handle custody, activation and sender-binding validation remain unchanged apart from returning the pre-held close-only reference beside the actual authority.",
+    "All original times/Root frame limits, pending failure and default paths are preserved."
+  ],
+  "pending": [
+    "Actual outer sequence and ACK2/Root exit/final owner release still need wiring; this packet alone enables no success.",
+    "Whole future CALLERS union must protect these real call sites and retain all original guards."
+  ],
+  "verification": {
+    "exact_unique_forward_reverse": true,
+    "all_postimages_create_get_equal": true,
+    "native": 0,
+    "original_checker": 0,
+    "refs": 0
+  }
+}

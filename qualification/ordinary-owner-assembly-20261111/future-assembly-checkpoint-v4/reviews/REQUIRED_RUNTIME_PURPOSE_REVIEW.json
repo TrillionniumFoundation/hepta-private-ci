@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-required-socket-retirement-and-runtime-purposes",
+  "status": "no-confirmed-local-source-blocker; composition-and-original-qualification-pending",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": [
+    {
+      "packet": "9adb0605f1fffe5d00cac38554149e17c812549b",
+      "paths": 2,
+      "operations": 6,
+      "receipt": {
+        "operations": 6,
+        "files": [
+          {
+            "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+            "pre": "9fbe60227a2ca0254a2ca965c8a4d47b872cf115",
+            "post": "1b86a2104bbf14bba1b44e409bcd411e52bda141",
+            "bytes": 21101,
+            "sha256": "4fcc41e2e819d257d8d926b5f67704e1582246932c15298c35fb6059bda930aa",
+            "operations": 5,
+            "unique_forward_reverse": true
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+            "pre": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+            "post": "fcc069afa3cf4a48c600909f4342ac46a24c18de",
+            "bytes": 7100,
+            "sha256": "3353fee6aa0fc75c4a7a89521a43cf1196ab148f0350a7ec7abda3af9e435b05",
+            "operations": 1,
+            "unique_forward_reverse": true
+          }
+        ]
+      }
+    },
+    {
+      "packet": "385fc92d812ce209c6b60218ae8714d47cc0b01a",
+      "paths": 6,
+      "operations": 13,
+      "receipt": {
+        "operations": 13,
+        "files": [
+          {
+            "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+            "pre": "dccb655313b50b96202d7e73cd0619efd34d2a34",
+            "post": "a691263dce886a35a73b0759b9740e711b76ffb1",
+            "bytes": 15584,
+            "sha256": "d17eba1003b440f1337aacc724223e9174271d2cbf60f0c697ce776a309499b1",
+            "operations": 1,
+            "unique_forward_reverse": true
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+            "pre": "e353e6e94be8689f33d54783dab91dd1751eab33",
+            "post": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+            "bytes": 14808,
+            "sha256": "97cf9a82b473ead8a98fbbe4d19aa321c0a334e177b77fec9ceed76afb9a9346",
+            "operations": 1,
+            "unique_forward_reverse": true
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+            "pre": "277e498ca1e567968a639232af915039f64c0c82",
+            "post": "3573472907d05bc4882d36060a9cbb23c05155b6",
+            "bytes": 22916,
+            "sha256": "94d6e28efe8cbbc739c2624e6711094e70d22e3fe4487257b41e7f5bab0aef62",
+            "operations": 7,
+            "unique_forward_reverse": true
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+            "pre": "57127565b350698cb6ada9ad3e67435224c63a13",
+            "post": "5a1ac28b8dd55176cd4ae938d9171d4e3c54f984",
+            "bytes": 8477,
+            "sha256": "4b1f6b934e0402a155fce2c927ba052addca470a3b46e9c232254162efa2954c",
+            "operations": 2,
+            "unique_forward_reverse": true
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+            "pre": "b97b6a5e7b5f649a9efd71f7fc6506c021205fa2",
+            "post": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+            "bytes": 27869,
+            "sha256": "689a86033a5f5806b08f86821cb0b8f7cb3495150cdd04ce795c6e6f63cdbafb",
+            "operations": 1,
+            "unique_forward_reverse": true
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+            "pre": null,
+            "post": "9fad6625b4cef54f607ab4c20289b702c8f6719b",
+            "bytes": 1671,
+            "sha256": "3623edc22ab87e3c769b8aa3840694e6061eb5dfa60bdd74491f62245cc27ce0",
+            "operations": 1,
+            "unique_forward_reverse": true
+          }
+        ]
+      }
+    }
+  ],
+  "evidence_method": [
+    "Independently GET all packet bodies and every complete before/after source; Git blob identity, UTF-8 size and SHA256 match the declared complete bytes.",
+    "Every one of the 19 exact source operations was replayed with a unique literal anchor in its sequential preimage, then reversed uniquely. Complete replayed bytes equal the actual GET postimages.",
+    "Full Gate/Intent, actual checkpoint/grant frame ownership, sealed receiver consumer construction, RuntimeStopped ownership and concrete new retirement module were read. No source/checker/metadata/ref was modified."
+  ],
+  "findings": [
+    {
+      "topic": "Same socket and one-way admission",
+      "finding": "The close-only reference is made from the actual Required channel's registered stream id and shares its AtomicBool. It creates no FD or authority and cannot replace the original stream. Under the same Gate mutex the exact retained UnixStream alias is shutdown(Both). The registration and original armed CloseOnDrop remain held; the operation does not remove an alias or disarm a failure guard. IDs are monotonically checked and not reused. Required admission rejects the retired flag before and after the original Gate check."
+    },
+    {
+      "topic": "Origin and original time bounds",
+      "finding": "Intent construction still requires the actual acknowledged progress channel and four concrete stopped/joined/paused caps. The added require_original_gate delegates to the existing exact identity/Gate Arc/ACK/pidfd checks; it does not call ordinary Current. Shutdown first checks real Intent, consumes the one-way flag, then checks the original Gate deadline after obtaining the state mutex, performs the actual shutdown, and checks Gate and original peer/end again. No original end is recomputed. Wrong origin, poison, missing original registration, repeat, clock failure or postcheck failure close the common Gate."
+    },
+    {
+      "topic": "Actual checkpoint and grant quiescence",
+      "finding": "Checkpoint retirement acquires the same original exchange semaphore held through frame restoration, then the same stream-slot mutex; the slot must contain the actual stream, its original end must be live and held root pidfd live. It permanently closes that semaphore before the real alias shutdown. Grant retirement holds the same original stream mutex used for the entire exchange/restore, requires the actual protected Root stream, checks the existing held peer before and after, and shuts down the real required registration. Neither new hook replaces an original frame, resamples a request start, or drops the original transport/Required fields."
+    },
+    {
+      "topic": "Actual consumer origins",
+      "finding": "Device and Notes retirement references are created directly from each exact Required object before that same object moves into OriginalPhaseFinalUseFrontier in the original retained bootstrap blocking job. The returned FinalUseAuthority and close-only reference preserve that origin; the original bootstrap handle remains in its existing custody. The receiver merely retains the real checkpoint Arc and those two references. It does not make a new consumer authority."
+    },
+    {
+      "topic": "Retained Runtime fields",
+      "finding": "The concrete Runtime purpose result owns the same OriginalSameActorRuntimeStopped, which still owns the actual production attachment, Session, device and MCP owners. Its existing custom Drop closes the common Gate before field release. Successful purpose closure disarms only each new temporary failure scope, never an underlying Required guard. No completion result or final File release is introduced."
+    },
+    {
+      "topic": "Preservation",
+      "finding": "Old ordinary checkpoint/grant constructors and complete original exchange bodies remain byte-identical. The actual default Runtime body, its original run_with_shutdown and original failure behavior remain unchanged. The Gate deadline, original watch and original fault-shutdown implementation are unchanged outside the listed additions; existing absent-phase transport behavior has no new close branch."
+    }
+  ],
+  "limits": [
+    "The retired AtomicBool and a successful socket shutdown do not prove quiescence. A call that passed admission earlier may still exist. Actual owner locks, terminal owner bundles and real joins are prerequisites; this generic close-only reference is not their substitute.",
+    "Device/Notes have no new local exchange-lock acquisition in the close-only wrapper. Their permitted use is conditional on the actual outer four-cap sequence and concrete ConsumerSyncJob/bootstrap/Runtime custody having really joined relevant work. This review confirms origin and calls, not an unprovided final outer composition.",
+    "Generic RuntimeStopped Ok, async abort, a zero counter, an EOF, or Root process exit is not a proof that unrelated blocking work has physically ended. Any non-Circuit/non-ConsumerSyncJob blocking owner still needs its own actual handle accounting.",
+    "The final outer caller, three retired-cap conjunction, ACK2/EOF ordering, Root pidfd exit, final daemon fields/File release and external daemon exit are separate pending proofs. Neither reviewed packet alone authorizes ordinary completion.",
+    "The source-only packages include no original compiler/checker/native execution claim or new test PASS. Later source formatting/metadata must describe the actual final code without weakening existing rules."
+  ],
+  "validation": {
+    "unique_forward_reverse_operations": 19,
+    "complete_source_paths": 8,
+    "original_checker_runs": 0,
+    "compiler_runs": 0,
+    "native_runs": 0,
+    "h_calls": 0,
+    "ref_changes": 0,
+    "product_edits": 0
+  }
+}

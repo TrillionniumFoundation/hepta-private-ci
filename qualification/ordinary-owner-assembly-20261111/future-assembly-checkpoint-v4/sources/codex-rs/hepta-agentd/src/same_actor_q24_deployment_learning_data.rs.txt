@@ -1,0 +1,294 @@
+//! Root-approved ordinary Learning trust and signed data conversions.
+//! No attestation, key, role assignment, receipt or timestamp is synthesized.
+
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::AgentdError;
+
+use super::deployment_error;
+use super::deployment_refused;
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct PrincipalData {
+    pub principal_id: String,
+    pub credential_chain_digest: [u8; 32],
+    pub signing_key_digest: [u8; 32],
+    pub scope_digest: [u8; 32],
+    pub authority_epoch: u64,
+    pub authenticated_at: u64,
+    pub expires_at: u64,
+}
+
+impl PrincipalData {
+    pub(super) fn original(&self) -> Result<AuthenticatedPrincipalV1, AgentdError> {
+        Ok(AuthenticatedPrincipalV1 {
+            principal_id: StableId::new(&self.principal_id).map_err(deployment_error)?,
+            credential_chain_digest: Digest32::from_array(self.credential_chain_digest),
+            signing_key_digest: Digest32::from_array(self.signing_key_digest),
+            scope_digest: Digest32::from_array(self.scope_digest),
+            authority_epoch: self.authority_epoch,
+            authenticated_at: self.authenticated_at,
+            expires_at: self.expires_at,
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum EvidenceRoleData {
+    Generator,
+    Observer,
+    Evaluator,
+    CreditAllocator,
+    UnlearningAuthority,
+    Selector,
+}
+
+impl EvidenceRoleData {
+    fn original(self) -> LearningEvidenceRoleV1 {
+        match self {
+            Self::Generator => LearningEvidenceRoleV1::Generator,
+            Self::Observer => LearningEvidenceRoleV1::Observer,
+            Self::Evaluator => LearningEvidenceRoleV1::Evaluator,
+            Self::CreditAllocator => LearningEvidenceRoleV1::CreditAllocator,
+            Self::UnlearningAuthority => LearningEvidenceRoleV1::UnlearningAuthority,
+            Self::Selector => LearningEvidenceRoleV1::Selector,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct SignerData {
+    pub principal: PrincipalData,
+    pub controller_id: String,
+    pub verifying_key: [u8; 32],
+    pub roles: Vec<EvidenceRoleData>,
+    #[serde(deserialize_with = "required_option")]
+    pub revoked_at: Option<u64>,
+}
+
+impl SignerData {
+    fn original(&self) -> Result<TrustedLearningSignerV1, AgentdError> {
+        Ok(TrustedLearningSignerV1 {
+            principal: self.principal.original()?,
+            controller_id: StableId::new(&self.controller_id).map_err(deployment_error)?,
+            verifying_key: self.verifying_key,
+            roles: self.roles.iter().copied().map(EvidenceRoleData::original).collect(),
+            revoked_at: self.revoked_at,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct TrustData {
+    pub scope_digest: [u8; 32],
+    pub objective_digest: [u8; 32],
+    pub authority_epoch: u64,
+    pub signers: Vec<SignerData>,
+}
+
+impl TrustData {
+    fn original(&self) -> Result<LearningEvidenceTrustV1, AgentdError> {
+        Ok(LearningEvidenceTrustV1 {
+            scope_digest: Digest32::from_array(self.scope_digest),
+            objective_digest: Digest32::from_array(self.objective_digest),
+            authority_epoch: self.authority_epoch,
+            signers: self.signers.iter().map(SignerData::original)
+                .collect::<Result<Vec<_>, _>>()?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct TrustRootData {
+    pub root_id: String,
+    pub scope_digest: [u8; 32],
+    pub verifying_key: [u8; 32],
+    pub valid_from: u64,
+    pub expires_at: u64,
+    #[serde(deserialize_with = "required_option")]
+    pub revoked_at: Option<u64>,
+}
+
+impl TrustRootData {
+    fn original(&self) -> Result<LearningTrustRootV1, AgentdError> {
+        Ok(LearningTrustRootV1 {
+            root_id: StableId::new(&self.root_id).map_err(deployment_error)?,
+            scope_digest: Digest32::from_array(self.scope_digest),
+            verifying_key: self.verifying_key,
+            valid_from: self.valid_from,
+            expires_at: self.expires_at,
+            revoked_at: self.revoked_at,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct SignedTrustData {
+    pub distribution_id: String,
+    pub generation: u64,
+    pub effective_at: u64,
+    pub trust: TrustData,
+    pub root_id: String,
+    pub issued_at: u64,
+    pub expires_at: u64,
+    pub signature: Vec<u8>,
+}
+
+/// Root key, exact distribution and its independently approved digest all
+/// come from the immutable Root-owned deployment description.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct LearningAuthorityData {
+    pub root: TrustRootData,
+    pub signed: SignedTrustData,
+    pub expected_distribution_digest: [u8; 32],
+}
+
+pub(super) struct OriginalLearningAuthority {
+    pub(super) activated: ActivatedLearningTrustV1,
+    signers: Vec<TrustedLearningSignerV1>,
+}
+
+impl LearningAuthorityData {
+    pub(super) fn activate_original(
+        &self,
+        now_unix_seconds: u64,
+    ) -> Result<OriginalLearningAuthority, AgentdError> {
+        let root = self.root.original()?;
+        let trust = self.signed.trust.original()?;
+        let signers = trust.signers.clone();
+        let signed = SignedLearningTrustDistributionV1 {
+            distribution: LearningTrustDistributionV1 {
+                distribution_id: StableId::new(&self.signed.distribution_id)
+                    .map_err(deployment_error)?,
+                generation: self.signed.generation,
+                effective_at: self.signed.effective_at,
+                trust,
+            },
+            root_id: StableId::new(&self.signed.root_id).map_err(deployment_error)?,
+            issued_at: self.signed.issued_at,
+            expires_at: self.signed.expires_at,
+            signature: signature(&self.signed.signature)?,
+        };
+        // This is a fresh explicitly scoped owner, not a trust-rotation or
+        // recovery API. Root itself authenticates the complete distribution.
+        let activated = activate_learning_trust(&root, signed, None, now_unix_seconds)
+            .map_err(deployment_error)?;
+        let expected = Digest32::from_array(self.expected_distribution_digest);
+        if expected.is_zero() || activated.distribution_digest() != expected {
+            return Err(deployment_refused("actual Root Learning distribution differs"));
+        }
+        Ok(OriginalLearningAuthority { activated, signers })
+    }
+}
+
+impl OriginalLearningAuthority {
+    pub(super) fn into_original_parts(
+        self,
+    ) -> (ActivatedLearningTrustV1, Vec<TrustedLearningSignerV1>) {
+        (self.activated, self.signers)
+    }
+
+    pub(super) fn original_signer(
+        &self,
+        principal_id: &str,
+        required_role: LearningEvidenceRoleV1,
+    ) -> Result<TrustedLearningSignerV1, AgentdError> {
+        let principal = StableId::new(principal_id).map_err(deployment_error)?;
+        self.signers.iter()
+            .find(|signer| signer.principal.principal_id == principal
+                && signer.roles.contains(&required_role))
+            .cloned()
+            .ok_or_else(|| deployment_refused("required actual enrolled Learning signer is missing"))
+    }
+}
+
+/// The external Observer supplies these exact original signed fields. Parsing
+/// them never authenticates an Outcome; the actual producer performs that
+/// admission against its current verifier and committed task publication.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct SignedEvidenceData {
+    pub evidence_id: String,
+    pub principal_id: String,
+    pub role: EvidenceRoleData,
+    pub trust_digest: [u8; 32],
+    pub scope_digest: [u8; 32],
+    pub objective_digest: [u8; 32],
+    pub authority_epoch: u64,
+    pub issued_at: u64,
+    pub expires_at: u64,
+    pub payload_digest: [u8; 32],
+    pub signature: Vec<u8>,
+}
+
+impl SignedEvidenceData {
+    pub(super) fn from_original(original: &SignedLearningEvidenceV1) -> Self {
+        Self {
+            evidence_id: original.evidence_id.as_str().to_owned(),
+            principal_id: original.principal_id.as_str().to_owned(),
+            role: match original.role {
+                LearningEvidenceRoleV1::Generator => EvidenceRoleData::Generator,
+                LearningEvidenceRoleV1::Observer => EvidenceRoleData::Observer,
+                LearningEvidenceRoleV1::Evaluator => EvidenceRoleData::Evaluator,
+                LearningEvidenceRoleV1::CreditAllocator => EvidenceRoleData::CreditAllocator,
+                LearningEvidenceRoleV1::UnlearningAuthority => EvidenceRoleData::UnlearningAuthority,
+                LearningEvidenceRoleV1::Selector => EvidenceRoleData::Selector,
+            },
+            trust_digest: original.trust_digest.into_array(),
+            scope_digest: original.scope_digest.into_array(),
+            objective_digest: original.objective_digest.into_array(),
+            authority_epoch: original.authority_epoch,
+            issued_at: original.issued_at, expires_at: original.expires_at,
+            payload_digest: original.payload_digest.into_array(),
+            signature: original.signature.to_vec(),
+        }
+    }
+
+    pub(super) fn original(&self) -> Result<SignedLearningEvidenceV1, AgentdError> {
+        Ok(SignedLearningEvidenceV1 {
+            evidence_id: StableId::new(&self.evidence_id).map_err(deployment_error)?,
+            principal_id: StableId::new(&self.principal_id).map_err(deployment_error)?,
+            role: self.role.original(),
+            trust_digest: Digest32::from_array(self.trust_digest),
+            scope_digest: Digest32::from_array(self.scope_digest),
+            objective_digest: Digest32::from_array(self.objective_digest),
+            authority_epoch: self.authority_epoch,
+            issued_at: self.issued_at,
+            expires_at: self.expires_at,
+            payload_digest: Digest32::from_array(self.payload_digest),
+            signature: signature(&self.signature)?,
+        })
+    }
+}
+
+fn signature(bytes: &[u8]) -> Result<[u8; 64], AgentdError> {
+    bytes.try_into().map_err(|_| deployment_refused("original Ed25519 signature must be 64 bytes"))
+}
+
+pub(super) fn required_option<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Option::<T>::deserialize(deserializer)
+}

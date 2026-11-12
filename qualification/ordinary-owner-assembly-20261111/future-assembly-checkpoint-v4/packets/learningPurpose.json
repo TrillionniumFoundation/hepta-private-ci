@@ -1,0 +1,598 @@
+{
+  "schema_version": 1,
+  "kind": "actual_learning_model_publication_purpose_retirement_draft",
+  "status": "FROZEN_DRAFT_SOURCE_UNEXECUTED_CALLER_UNION_AND_COMPONENTS_PENDING",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_reference": {
+    "commit": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+    "tree": "6449ad41525799e42166ffca8131f0d63af7c0b3",
+    "rule": "V45 exact Stage 8c6 is the parent for its one module addition. Other non-overlay files use unchanged V44 bytes; actual Learning overlay preimages are from frozen 5959a6."
+  },
+  "dependencies": [
+    {
+      "packet": "5959a6d836df1f0fb32fa45ef282ec899847c6c2",
+      "role": "actual Learning normal joins and retained owners"
+    },
+    {
+      "packet": "ad5d950d11627ae7b44373d227348ef41e00439e",
+      "role": "actual C/Pending/route/Circuit joined owners"
+    },
+    {
+      "packet": "9adb0605f1fffe5d00cac38554149e17c812549b",
+      "gate": "1b86a2104bbf14bba1b44e409bcd411e52bda141",
+      "intent": "fcc069afa3cf4a48c600909f4342ac46a24c18de",
+      "role": "genuine RootIntent, required actual registered alias shutdown and terminal admission"
+    }
+  ],
+  "path_count": 18,
+  "operation_count": 38,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "preimage": null,
+      "postimage": "49d33a29b18d59078420bd278ad4c84c6ad1d5af",
+      "bytes": 4461,
+      "sha256": "5d7872bb67753d32484763d3d1f5121ab469843bcfe4c796009d1b3798137a43",
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Retain the same actual checkpoint client across the Learning worker join.\n//! The close-only handle is made only while that client enters its concrete\n//! phase ports. It cannot be deserialized or built from a receipt or digest.\n\nuse std::sync::Arc;\n\nuse super::*;\nuse crate::AgentdError;\nuse crate::AgentdIdentity;\nuse crate::same_actor_q24_deployment::OriginalRootRetirementIntent;\nuse crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;\n\npub(crate) struct OriginalLearningCheckpointRetirement {\n    _closing: CloseSameActorPhaseOnDrop,\n    client: Arc<AgentdLearningCheckpointClientV1>,\n    identity: AgentdIdentity,\n    work: Arc<OriginalSameActorLearningWork>,\n}\n\nimpl AgentdLearningCheckpointClientV1 {\n    pub(crate) fn into_original_retirable_checkpoint(\n        self,\n        identity: &AgentdIdentity,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(Arc<Self>, OriginalLearningCheckpointRetirement), AgentdError> {\n        let closing = work.original_failure_scope();\n        work.require_original_retirement_identity(identity, work.gate())?;\n        let phase = self.phase.as_ref().ok_or_else(|| {\n            refused(\"retirable checkpoint requires its actual phase channel\")\n        })?;\n        if !Arc::ptr_eq(phase.gate(), work.gate()) {\n            return Err(refused(\"checkpoint and Work have different original Gates\"));\n        }\n        phase.require_open()?;\n        work.require_original_delivery_request(&self.initial.request, &self.initial.owners)?;\n        if self.scope.is_none() {\n            return Err(refused(\"retirable checkpoint requires the original frozen scope\"));\n        }\n        let client = Arc::new(self);\n        let retirement = OriginalLearningCheckpointRetirement {\n            _closing: closing,\n            client: Arc::clone(&client),\n            identity: identity.clone(),\n            work: Arc::clone(work),\n        };\n        Ok((client, retirement))\n    }\n}\n\nimpl OriginalLearningCheckpointRetirement {\n    pub(crate) fn require_original_work(\n        &self,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        if !Arc::ptr_eq(&self.work, work) {\n            self.work.gate().close();\n            work.gate().close();\n            return Err(refused(\"checkpoint retirement has another original Work\"));\n        }\n        work.require_original_retirement_identity(&self.identity, work.gate())\n    }\n\n    pub(crate) fn retire_original_checkpoint_after_root_intent(\n        &self,\n        intent: &OriginalRootRetirementIntent,\n    ) -> Result<(), AgentdError> {\n        let mut closing = self.work.original_failure_scope();\n        self.require_original_work(&self.work)?;\n        intent.require_original_origin(&self.identity, self.work.gate())?;\n        let phase = self.client.phase.as_ref().ok_or_else(|| {\n            refused(\"retirable checkpoint lost its original required channel\")\n        })?;\n        if !Arc::ptr_eq(phase.gate(), self.work.gate()) {\n            return Err(refused(\"checkpoint retirement phase differs\"));\n        }\n        // The original client leaves this whole slot empty through framing\n        // and semantic validation. A competing or failed exchange is refused,\n        // never converted to a normal EOF. Keep the same slot held throughout\n        // the actual socket shutdown; do not drop its transport or guard.\n        let held = self.client.channel.try_lock()\n            .map_err(|_| refused(\"checkpoint retirement is busy or poisoned\"))?;\n        let channel = held.as_ref()\n            .ok_or_else(|| refused(\"checkpoint retirement has an uncertain exchange\"))?;\n        let root = RootObservationStream::root_lifetime(&channel.transport);\n        crate::root_observation_stream::check_lifetime(root.get_ref())\n            .map_err(refused)?;\n        phase.shutdown_original_after_root_intent(intent)?;\n        crate::root_observation_stream::check_lifetime(root.get_ref())\n            .map_err(refused)?;\n        intent.require_original_origin(&self.identity, self.work.gate())?;\n        // RequiredSameActorPhaseChannel retains its alias and armed guard.\n        // Its one-way retired state rejects every subsequent business call.\n        drop(held);\n        closing.disarm();\n        Ok(())\n    }\n}\n\nfn refused(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(error.to_string())\n}\n"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": false,
+        "add_absence_checked": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "preimage": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+      "postimage": "9a48409403cb3f751f59c7c00317c55d202b9d0a",
+      "bytes": 15160,
+      "sha256": "277d8cb71d84ec29400f8a7d00ab04bbe6e8cb0a7710cfce243fa9979ff082f1",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "mod same_actor;\n",
+          "after": "mod same_actor;\n#[path = \"learning_iteration_checkpoint_retirement.rs\"]\nmod retirement;\npub(crate) use retirement::OriginalLearningCheckpointRetirement;\n",
+          "reason": "private real checkpoint retirement module"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "preimage": "ac1bb467e112eab995c4fd4e757f4543e84b5bcb",
+      "postimage": "3b191d183d3bd13e3cdcdc6dad608425e29da8eb",
+      "bytes": 15017,
+      "sha256": "71968e738b385b49201cc14c12f9d47a1e4b3843d5f850c802fa6f12dd073d27",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "pub use transport::AgentdLearningCheckpointClientV1;\n",
+          "after": "pub use transport::AgentdLearningCheckpointClientV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use transport::OriginalLearningCheckpointRetirement;\n",
+          "reason": "crate-only actual checkpoint owner type"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+      "preimage": "8f54b20150252f6f119120810b1930ebb50d034d",
+      "postimage": "4fd09ce5ac09c0de4ba6cb98c65df2c032e6c115",
+      "bytes": 9587,
+      "sha256": "a24237d88ec4b45aa8e78411c7fe5740a9756e0ab91a2962e78f684278694110",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    RootClient(Box<AgentdLearningCheckpointClientV1>),\n",
+          "after": "    RootClient(Box<AgentdLearningCheckpointClientV1>),\n    #[cfg(target_os = \"linux\")]\n    SameActorRootClient(Arc<AgentdLearningCheckpointClientV1>),\n",
+          "reason": "retain same concrete client without changing original Box variant"
+        },
+        {
+          "op": "replace",
+          "before": "impl CheckpointedIterationPorts {\n",
+          "after": "#[cfg(target_os = \"linux\")]\nimpl AgentdLearningCheckpointClientV1 {\n    pub(crate) fn with_original_retirable_stage_owners(\n        self,\n        stages: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,\n        identity: &crate::AgentdIdentity,\n        work: &Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>,\n    ) -> Result<\n        (\n            Arc<dyn LearningIterationOwnerPortsV1>,\n            super::OriginalLearningCheckpointRetirement,\n        ),\n        crate::AgentdError,\n    > {\n        crate::OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(\n            &stages, work,\n        )\n        .map_err(|error| crate::AgentdError::GenerationFenced(error.to_string()))?;\n        let (client, retirement) =\n            AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint(\n                self, identity, work,\n            )?;\n        let ports = Arc::new(CheckpointedIterationPorts {\n            initial: client.initial.clone(),\n            checkpoint: Checkpoint::SameActorRootClient(client),\n            stages,\n        });\n        Ok((ports, retirement))\n    }\n}\n\nimpl CheckpointedIterationPorts {\n",
+          "reason": "actual phase-only ports retain concrete client"
+        },
+        {
+          "op": "replace",
+          "before": "            Checkpoint::RootClient(client) => client.frozen_scope_binding(),\n",
+          "after": "            Checkpoint::RootClient(client) => client.frozen_scope_binding(),\n            #[cfg(target_os = \"linux\")]\n            Checkpoint::SameActorRootClient(client) => client.frozen_scope_binding(),\n",
+          "reason": "same original immutable scoped binding"
+        },
+        {
+          "op": "replace",
+          "before": "                Checkpoint::RootClient(client) => {\n                    client.restore(request).await.map_err(checkpoint_error)?\n                }\n",
+          "after": "                Checkpoint::RootClient(client) => {\n                    client.restore(request).await.map_err(checkpoint_error)?\n                }\n                #[cfg(target_os = \"linux\")]\n                Checkpoint::SameActorRootClient(client) => {\n                    AgentdLearningCheckpointClientV1::restore(client, request)\n                        .await\n                        .map_err(checkpoint_error)?\n                }\n",
+          "reason": "new phase variant delegates to original real restore"
+        },
+        {
+          "op": "replace",
+          "before": "                Checkpoint::RootClient(client) => client\n                    .checkpoint(expected_head, snapshot)\n                    .await\n                    .map_err(checkpoint_error),\n",
+          "after": "                Checkpoint::RootClient(client) => client\n                    .checkpoint(expected_head, snapshot)\n                    .await\n                    .map_err(checkpoint_error),\n                #[cfg(target_os = \"linux\")]\n                Checkpoint::SameActorRootClient(client) => {\n                    AgentdLearningCheckpointClientV1::checkpoint(client, expected_head, snapshot)\n                        .await\n                        .map_err(checkpoint_error)\n                }\n",
+          "reason": "new phase variant delegates to original real checkpoint"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "preimage": "9cdfb8aa002232e67843093ab6dfb3b8a6184164",
+      "postimage": "2a77649e8cc24445f4e7936e596941927b4d5451",
+      "bytes": 11919,
+      "sha256": "41896a5f4e340c63d8bc4b395c00853dd18e5dd35854a80f581a95052e99cce0",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {\n",
+          "after": "    /// Same original scoped assembly, with a close-only handle to this exact\n    /// checkpoint client retained beside the real worker. Public/default\n    /// assembly keeps its original unique Box-backed ports unchanged.\n    pub(crate) fn into_original_retirable_learning_runtime(\n        self,\n        stages: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,\n        verifier: LearningEvidenceVerifierV1,\n        capacity: usize,\n        work: &Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>,\n    ) -> Result<\n        (\n            LearningIterationHandleV1,\n            LearningIterationRuntimeBootstrapV1,\n            crate::learning_iteration_checkpoint::OriginalLearningCheckpointRetirement,\n        ),\n        AgentdError,\n    > {\n        self.require_prepared_q24(stages.prepared())?;\n        work.require_original_retirement_identity(&self.identity, work.gate())?;\n        let scope = self.scope.ok_or_else(|| {\n            refused(\"retirable Learning requires the original scoped checkpoint\")\n        })?;\n        let (ports, checkpoint) =\n            AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners(\n                self.client,\n                Arc::clone(&stages),\n                &self.identity,\n                work,\n            )?;\n        let (handle, bootstrap) = crate::learning_iteration_channel_scoped_v2(\n            self.identity.agent_id,\n            self.identity.spawn_generation,\n            self.initial.owners,\n            ports,\n            verifier,\n            capacity,\n            scope,\n        )?;\n        let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;\n        let bootstrap = bootstrap\n            .with_original_circuit_learning_delivery(self.initial.request)?\n            .with_original_q24_stage_owners(stages)?;\n        Ok((handle, bootstrap, checkpoint))\n    }\n\n    pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {\n",
+          "reason": "phase-only concrete checkpoint custody survives original scoped assembly"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "preimage": "1b6d7aa4728c0ccad6d89a412368bc2143a3580a",
+      "postimage": "26c4d7d2120bd753f107db7d93827e30794ca3e0",
+      "bytes": 7487,
+      "sha256": "d5bfb96d2fbe363366e9479d5ab2916000c640683f5b31b5bdedf41a8f759c44",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "        let (handle, learning) = AgentdRootLearningInputsV1::into_q24_learning_runtime(\n            self.learning,\n            Arc::clone(&owners),\n            verifier,\n            capacity,\n        )?;",
+          "after": "        let (handle, learning, checkpoint) =\n            AgentdRootLearningInputsV1::into_original_retirable_learning_runtime(\n                self.learning,\n                Arc::clone(&owners),\n                verifier,\n                capacity,\n                &self.work,\n            )?;",
+          "reason": "actual phase assembly retains original checkpoint close-only owner"
+        },
+        {
+          "op": "replace",
+          "before": "            learning,\n            delivery,\n            pending,\n        )?;",
+          "after": "            learning,\n            delivery,\n            pending,\n            checkpoint,\n        )?;",
+          "reason": "transfer actual checkpoint custody directly to required worker"
+        },
+        {
+          "op": "replace",
+          "before": "pub(crate) use worker::OriginalRetiredLearningOwners;\n",
+          "after": "pub(crate) use worker::OriginalRetiredLearningOwners;\npub(crate) use worker::OriginalRetiredLearningPurposes;\npub(crate) use worker::OriginalSameActorLearningPurposesRetired;\n",
+          "reason": "actual C and outer owner consume typed retained purpose bundle"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "preimage": "d48009829d4dc0d1d19ef6806b311d3eb28eb654",
+      "postimage": "7fb771f554123b248d878ce8bc643c45019762d0",
+      "bytes": 6733,
+      "sha256": "c2038a33f48e3d152dcfeda5ce6deab4955bd5d57aaccd27b1e177c8826dc526",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "use crate::LearningIterationRuntimeBootstrapV1;\n",
+          "after": "use crate::LearningIterationRuntimeBootstrapV1;\nuse crate::learning_iteration_checkpoint::OriginalLearningCheckpointRetirement;\n",
+          "reason": "concrete checkpoint retirement owner"
+        },
+        {
+          "op": "replace",
+          "before": "    work: Arc<OriginalSameActorLearningWork>,\n    learning: LearningIterationRuntimeBootstrapV1,",
+          "after": "    work: Arc<OriginalSameActorLearningWork>,\n    checkpoint: OriginalLearningCheckpointRetirement,\n    learning: LearningIterationRuntimeBootstrapV1,",
+          "reason": "keep same actual checkpoint client beside actual worker"
+        },
+        {
+          "op": "replace",
+          "before": "        pending: PendingSuccessorOwner,\n    ) -> Result<Self, AgentdError> {",
+          "after": "        pending: PendingSuccessorOwner,\n        checkpoint: OriginalLearningCheckpointRetirement,\n    ) -> Result<Self, AgentdError> {",
+          "reason": "private factory consumes actual checkpoint control"
+        },
+        {
+          "op": "replace",
+          "before": "        learning.require_identity(context.identity())?;\n        Ok(Self {",
+          "after": "        learning.require_identity(context.identity())?;\n        OriginalLearningCheckpointRetirement::require_original_work(&checkpoint, &work)?;\n        Ok(Self {",
+          "reason": "bind checkpoint custody to the same actual Work"
+        },
+        {
+          "op": "replace",
+          "before": "            context,\n            work,\n            learning,",
+          "after": "            context,\n            work,\n            checkpoint,\n            learning,",
+          "reason": "retain concrete actual client, no replacement capability"
+        },
+        {
+          "op": "replace",
+          "before": "pub(crate) use retirement::OriginalRetiredLearningOwners;\n",
+          "after": "pub(crate) use retirement::OriginalRetiredLearningOwners;\npub(crate) use retirement::OriginalRetiredLearningPurposes;\npub(crate) use retirement::OriginalSameActorLearningPurposesRetired;\n",
+          "reason": "crate-only retained closed-purpose types"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "preimage": "7b5ab666ef7d2c67a1270a544cc5dd4e7c06f129",
+      "postimage": "4b59b6cfe1bc15eba250bbf07ba12a28f321e45a",
+      "bytes": 17053,
+      "sha256": "dddc0d45b6a749e3bc5677a681aad7c630ce7e410b6993c54d520ec9da0961a3",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    work: Arc<OriginalSameActorLearningWork>,\n    learning: OriginalLearningLoopRetired,",
+          "after": "    work: Arc<OriginalSameActorLearningWork>,\n    identity: AgentdIdentity,\n    checkpoint: OriginalLearningCheckpointRetirement,\n    learning: OriginalLearningLoopRetired,",
+          "reason": "retain actual checkpoint and exact full identity after actual joins"
+        },
+        {
+          "op": "replace",
+          "before": "        // Verify retained origin and actual completed facts only. Stopped\n",
+          "after": "        work.require_original_retirement_identity(&self.identity, work.gate())?;\n        OriginalLearningCheckpointRetirement::require_original_work(&self.checkpoint, work)?;\n        // Verify retained origin and actual completed facts only. Stopped\n",
+          "reason": "sealed custody checks do not query ordinary Current after Session pause"
+        },
+        {
+          "op": "replace",
+          "before": "            context,\n            work,\n            learning,\n",
+          "after": "            context,\n            work,\n            checkpoint,\n            learning,\n",
+          "reason": "actual checkpoint control remains held through all original joins"
+        },
+        {
+          "op": "replace",
+          "before": "            work: Arc::clone(&work),\n            learning,\n            delivery,\n            joined,\n",
+          "after": "            work: Arc::clone(&work),\n            identity: context.identity().clone(),\n            checkpoint,\n            learning,\n            delivery,\n            joined,\n",
+          "reason": "only real joined lanes transfer checkpoint custody into retained owners"
+        },
+        {
+          "op": "replace",
+          "before": "struct OriginalRetirableLearningWorker {\n",
+          "after": "/// All original owners remain here after their real purpose sockets closed.\n/// The guard stays armed through Root ACK2 and the separate actual Root exit.\npub(crate) struct OriginalRetiredLearningPurposes {\n    owners: OriginalRetiredLearningOwners,\n}\n\npub(crate) struct OriginalSameActorLearningPurposesRetired {\n    original: crate::circuit_task::OriginalSameActorCPurposesRetired,\n}\n\nstruct OriginalRetirableLearningWorker {\n",
+          "reason": "closed-purpose result retains actual joined owners and original failure custody"
+        },
+        {
+          "op": "replace",
+          "before": "impl OriginalSameActorLearningJoined {\n",
+          "after": "impl OriginalRetiredLearningOwners {\n    pub(crate) fn retire_original_root_purposes(\n        self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<OriginalRetiredLearningPurposes, AgentdError> {\n        OriginalRetiredLearningOwners::require_original_work(&self, &self.work)?;\n        intent.require_original_origin(&self.identity, self.work.gate())?;\n        OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(\n            &self.checkpoint, intent,\n        )?;\n        OriginalLearningLoopRetired::retire_original_model_purpose(\n            &self.learning, intent, &self.identity, &self.work,\n        )?;\n        intent.require_original_origin(&self.identity, self.work.gate())?;\n        // No field or armed failure guard is discarded. The actual C owner\n        // will retain this result beside its own closed CURRENT purpose.\n        Ok(OriginalRetiredLearningPurposes { owners: self })\n    }\n}\n\nimpl OriginalRetiredLearningPurposes {\n    pub(crate) fn require_original_work(\n        &self,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        OriginalRetiredLearningOwners::require_original_work(&self.owners, work)\n    }\n}\n\nimpl OriginalSameActorLearningPurposesRetired {\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(\n            &self.original, identity, gate,\n        )\n    }\n}\n\nimpl OriginalSameActorLearningJoined {\n    pub(crate) fn retire_original_root_purposes(\n        self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<OriginalSameActorLearningPurposesRetired, AgentdError> {\n        let original = OriginalSameActorCJoined::retire_original_root_purposes(\n            self.original, intent,\n        )?;\n        Ok(OriginalSameActorLearningPurposesRetired { original })\n    }\n\n",
+          "reason": "actual CJoined consumes the exact Learning bundle under real Intent"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "preimage": "8bdd6e546a039df5a72e5a117e1903b253f2d940",
+      "postimage": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+      "bytes": 3842,
+      "sha256": "a1c3ea23772244e9b0c09a9db97ac88659bacd739e57fa06d9c701efa147c564",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    pub(super) fn original_phase_failure_scope(&self) -> Option<CloseSameActorPhaseOnDrop> {\n",
+          "after": "    /// Close only this actual required Model purpose after the real worker\n    /// and local owner lanes have joined. Keep the factory, files, stream and\n    /// failure guard held; this is not a new Observe or a Model operation.\n    pub(crate) fn retire_original_model_after_root_intent(\n        &mut self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(gate);\n        intent.require_original_origin(identity, gate)?;\n        let phase = self.phase.as_ref()\n            .ok_or_else(|| refused(\"Model retirement has no original phase channel\"))?;\n        if !std::sync::Arc::ptr_eq(phase.gate(), gate) || self.fenced {\n            return Err(refused(\"Model retirement is foreign or already fenced\"));\n        }\n        phase.require_open().map_err(refused)?;\n        let transport = self.transport.as_ref()\n            .ok_or_else(|| refused(\"Model retirement has an uncertain exchange\"))?;\n        let root = RootObservationStream::root_lifetime(transport);\n        crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;\n        // Exclusive &mut self and the populated transport slot exclude any\n        // in-flight factory exchange. Fence before changing the real socket.\n        self.fenced = true;\n        phase.shutdown_original_after_root_intent(intent)?;\n        crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;\n        intent.require_original_origin(identity, gate)?;\n        closing.disarm();\n        Ok(())\n    }\n\n    pub(super) fn original_phase_failure_scope(&self) -> Option<CloseSameActorPhaseOnDrop> {\n",
+          "reason": "actual Model purpose shutdown retains all armed original owner fields"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+      "preimage": null,
+      "postimage": "c79dfccadac99fb2e987ab031491881233801254",
+      "bytes": 2389,
+      "sha256": "2942127c8606ad91e009e1b52d8d384409ed02daa48a73d2d6ca7f56aa79084a",
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Purpose retirement of the actual joined Learning aggregate. This never\n//! enters the ordinary owner lane or samples new Current after Session pause.\n\nuse super::*;\nuse crate::AgentdError;\nuse crate::AgentdIdentity;\nuse crate::same_actor_q24_deployment::OriginalRootRetirementIntent;\n\nimpl OriginalCellQ24LearningStageOwnersV1 {\n    pub(crate) fn retire_original_model_purpose(\n        &self,\n        intent: &OriginalRootRetirementIntent,\n        identity: &AgentdIdentity,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        let mut closing = work.original_failure_scope();\n        work.require_original_retirement_identity(identity, work.gate())?;\n        intent.require_original_origin(identity, work.gate())?;\n        let original = self.inner.same_actor_work.as_ref()\n            .ok_or_else(|| refused(\"aggregate has no original phase Work\"))?;\n        if !Arc::ptr_eq(original, work) || self.inner.cancelled.load(Ordering::Acquire) {\n            return Err(refused(\"aggregate retirement is foreign or already cancelled\"));\n        }\n        // The real semaphore and the real owner mutex exclude a stage effect,\n        // including a started blocking closure. Neither a count nor a token\n        // supplied by the caller stands in for these actual owner locks.\n        let _lane = self.inner.lane.try_acquire()\n            .map_err(|_| refused(\"aggregate retirement lane is busy or closed\"))?;\n        let mut owners = self.inner.owners.try_lock()\n            .map_err(|_| refused(\"aggregate retirement owner is busy or poisoned\"))?;\n        intent.require_original_origin(identity, work.gate())?;\n        if self.inner.cancelled.load(Ordering::Acquire) {\n            return Err(refused(\"aggregate was cancelled before Model retirement\"));\n        }\n        // This stops future ordinary aggregate entry without closing the\n        // common Gate or releasing the real Model/file/receipt owners.\n        self.inner.lane.close();\n        AgentdRootQ24ModelFactoryV1::retire_original_model_after_root_intent(\n            &mut owners.factory, intent, identity, work.gate(),\n        )?;\n        intent.require_original_origin(identity, work.gate())?;\n        drop(owners);\n        closing.disarm();\n        Ok(())\n    }\n}\n\nfn refused(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(error.to_string())\n}\n"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": false,
+        "add_absence_checked": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "preimage": "8c6b2f37c22576dd71bea2e842c1851f6d926bee",
+      "postimage": "72ac61e5887858558142b38ee363cd0ebc6878d7",
+      "bytes": 30790,
+      "sha256": "1a28fff149e3f5efba57018b41cbef1fb6c78f6872308129266f211a52659887",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "mod same_actor;\n",
+          "after": "mod same_actor;\n#[path = \"cell_q24_learning_retirement.rs\"]\nmod retirement;\n",
+          "reason": "private joined-owner purpose retirement; preserves V45 concrete UFCS"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+      "preimage": "cef24b30a9a65fd40890fa66b2677ca0b0d23e83",
+      "postimage": "1b5784ecca33d8fc00d4ae63540d8804ff224292",
+      "bytes": 10415,
+      "sha256": "24a96f9572c1a0225ba7897980bfe81d50c4a9ed54daf0a8e45d341ee76cfee0",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "impl LearningIterationRuntimeBootstrapV1 {\n",
+          "after": "impl OriginalLearningLoopRetired {\n    pub(crate) fn retire_original_model_purpose(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        OriginalLearningLoopRetired::require_original_work(self, work)?;\n        intent.require_original_origin(identity, work.gate())?;\n        let owners = self.bootstrap.original_q24.as_ref()\n            .ok_or_else(|| refused(\"retired Learning lost its actual aggregate\"))?;\n        OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose(\n            owners, intent, identity, work,\n        )?;\n        intent.require_original_origin(identity, work.gate())\n    }\n}\n\nimpl LearningIterationRuntimeBootstrapV1 {\n",
+          "reason": "retained actual Bootstrap supplies original Stage to purpose retirement"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "preimage": "1516f1bebd25fac58026e14ff824bbb02522fd8f",
+      "postimage": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+      "bytes": 15007,
+      "sha256": "9a049f1e8ff7f5335f5c8a57bf85a3365d24220443a36a8c805244e13b960ce6",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    gate: std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n}",
+          "after": "    gate: std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    retired: bool,\n}",
+          "reason": "one-time scoped purpose retirement, retained original failure guard"
+        },
+        {
+          "op": "replace",
+          "before": "                gate: std::sync::Arc::clone(gate),\n            }),",
+          "after": "                gate: std::sync::Arc::clone(gate),\n                retired: false,\n            }),",
+          "reason": "only actual phase constructor initializes terminal state"
+        },
+        {
+          "op": "replace",
+          "before": "    pub(crate) fn exchange(&mut self, request: &[u8]) -> io::Result<Vec<u8>> {\n",
+          "after": "    /// Only the already-joined concrete CURRENT owner can call this path.\n    /// The original stream and its Gate shutdown alias both remain owned.\n    pub(crate) fn retire_original_scoped_purpose_after_root_intent(\n        &mut self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), crate::AgentdError> {\n        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);\n        intent.require_original_origin(identity, gate)?;\n        let phase = self.phase.as_mut().ok_or_else(unavailable)?;\n        let mut original_closing =\n            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&phase.gate);\n        if !std::sync::Arc::ptr_eq(&phase.gate, gate)\n            || phase.initial_retirement.is_some()\n            || phase.retired\n            || self.end != gate.deadline().instant()\n        {\n            return Err(unavailable().into());\n        }\n        phase.gate.require_open()?;\n        crate::root_observation_stream::check_lifetime(&self.root)\n            .map_err(io::Error::other)?;\n        // The concrete CURRENT client holds its full lane mutex and has\n        // permanently fenced new exchanges before this exclusive borrow.\n        phase.retired = true;\n        self.stream.shutdown(std::net::Shutdown::Both)?;\n        crate::root_observation_stream::check_lifetime(&self.root)\n            .map_err(io::Error::other)?;\n        intent.require_original_origin(identity, gate)?;\n        original_closing.disarm();\n        closing.disarm();\n        Ok(())\n    }\n\n    pub(crate) fn exchange(&mut self, request: &[u8]) -> io::Result<Vec<u8>> {\n",
+          "reason": "close actual scoped publication endpoint only after true Intent; old exchange unchanged"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+      "preimage": "c868a7eca4117f79f5f3e35ef1ecd3f0863184d9",
+      "postimage": "dc30a2d9de377a3c43221470b408df64962b76db",
+      "bytes": 12385,
+      "sha256": "cc6543f7aecd7a18a7e3130ef58036f95f363d901b1057b9fb7790328525eb98",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    fn fence(&self) {\n",
+          "after": "    pub(crate) fn retire_original_current_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);\n        intent.require_original_origin(identity, gate)?;\n        if self.connection.original_launch_binding().1 != identity\n            || self.fenced.swap(true, Ordering::AcqRel)\n        {\n            return Err(uncertain());\n        }\n        // The original exchange holds this mutex through complete response\n        // validation. Busy/empty/poisoned never means a normal retirement.\n        let mut held = self.lane.try_lock().map_err(|_| uncertain())?;\n        let lane = held.as_mut().ok_or_else(uncertain)?;\n        OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent(\n            &mut lane.stream, intent, identity, gate,\n        )?;\n        intent.require_original_origin(identity, gate)?;\n        // Keep the exact Lane, connection, sequence, stream and failure guard.\n        // fenced is permanent; no later call can enter a business exchange.\n        drop(held);\n        closing.disarm();\n        Ok(())\n    }\n\n    fn fence(&self) {\n",
+          "reason": "same actual CURRENT client and full original lane lock permanently stop"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "preimage": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+      "postimage": "4d65369bd1c394ed6aeb2e45c7b0e2a6720ba7d7",
+      "bytes": 6626,
+      "sha256": "31dd7c6fe8d8ecffbc02ff6dcd0fd5abc1fd801c08dc8f50eadb4b64b19f9218",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {\n",
+          "after": "    #[cfg(target_os = \"linux\")]\n    pub(super) fn retire_original_root_client_after_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        match &self.store {\n            Store::Root(original) => {\n                crate::root_generation_current_client::RootGenerationCurrentClient::\n                    retire_original_current_after_root_intent(original, intent, identity, gate)\n            }\n            _ => {\n                gate.close();\n                Err(invalid(\"retirement requires the original scoped CURRENT client\"))\n            }\n        }\n    }\n\n    pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {\n",
+          "reason": "closed dispatch only to actual scoped Root backend; no load/CAS"
+        },
+        {
+          "op": "replace",
+          "before": "use crate::AgentdError;\n",
+          "after": "use crate::AgentdError;\n#[cfg(target_os = \"linux\")]\nuse crate::root_generation_current_client::RootGenerationCurrentClient;\n",
+          "reason": "concrete UFCS avoids ambiguous nested-field receiver"
+        },
+        {
+          "op": "replace",
+          "before": "                crate::root_generation_current_client::RootGenerationCurrentClient::\n                    retire_original_current_after_root_intent(original, intent, identity, gate)",
+          "after": "                RootGenerationCurrentClient::retire_original_current_after_root_intent(\n                    original, intent, identity, gate,\n                )",
+          "reason": "ordinary typed method call with exact actual concrete receiver"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+      "preimage": "c4641148de7fc97f4c35ad9efbd883c0da594881",
+      "postimage": "03d02251d457311fc0ac8e6ca6a5b909c2d0fe3d",
+      "bytes": 4177,
+      "sha256": "cf6054adf84eb59b014a111e99eeb5fed24ba186238e6864839bfefd6169a587",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "impl NeuronGenerationCurrentOwnerV1 {\n",
+          "after": "impl NeuronGenerationCurrentOwnerV1 {\n    pub(crate) fn retire_original_root_purpose_after_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        store::CurrentStore::retire_original_root_client_after_intent(\n            &self.store, intent, identity, gate,\n        )\n    }\n\n",
+          "reason": "retain concrete CURRENT owner while closing only its original purpose"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "preimage": "23b86bf6aafc8fea35cc220fb987dbe2592b6f59",
+      "postimage": "1d522ce0553ebc30d8228fa46a41970ed8c589b5",
+      "bytes": 9935,
+      "sha256": "d6e42e07f54574355b74c99a5af76ff99892bb809f6688c8520d5ee3a664b3f7",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "impl LiveGenerationCurrent {\n",
+          "after": "impl LiveGenerationCurrent {\n    #[cfg(target_os = \"linux\")]\n    pub(crate) fn retire_original_current_purpose(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);\n        intent.require_original_origin(identity, gate)?;\n        // Preserve the original artifact -> selection lock order, but perform\n        // no revalidation, clock sampling, FinalUse claim or new Current read.\n        let _artifacts = self.authorities.artifacts.try_lock().map_err(invalid)?;\n        let _selected = self.selected.try_lock().map_err(invalid)?;\n        NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent(\n            &self.current, intent, identity, gate,\n        )?;\n        intent.require_original_origin(identity, gate)?;\n        closing.disarm();\n        Ok(())\n    }\n\n",
+          "reason": "same held live owner actual idle locks; no new ordinary authority query"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "preimage": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "postimage": "60e50bd7db42d13a80df225044ca883c942ac899",
+      "bytes": 3328,
+      "sha256": "e34aa974d45ee547c1120367c4a1182e1286205222ca48b3cbf7e198ff2f6f3c",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "impl PublishedCircuitFeatureTaskV1 {\n",
+          "after": "impl PublishedCircuitFeatureTaskV1 {\n    /// The genuine CJoined owner supplies its retained actual task here.\n    /// Root Intent authorizes only this purpose shutdown, not C completion.\n    pub(crate) fn retire_original_root_current_after_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n        identity: &AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);\n        intent.require_original_origin(identity, gate)?;\n        if self.0.source.scope.agent_id.as_str() != identity.agent_id.as_str()\n            || !matches!(&self.0.publication, Publication::Update { .. })\n        {\n            return Err(invalid(\"retirement requires the actual published C task\"));\n        }\n        // C's genuine drain and join already happened. Keep its real journal\n        // locked and retained; never try to recreate that fact by a new read.\n        let _original = self.0.original.try_lock().map_err(invalid)?;\n        LiveGenerationCurrent::retire_original_current_purpose(\n            &self.0.current, intent, identity, gate,\n        )?;\n        intent.require_original_origin(identity, gate)?;\n        closing.disarm();\n        Ok(())\n    }\n\n",
+          "reason": "actual PublishedTask to retained concrete CURRENT, no public getter or fabricated cap"
+        }
+      ],
+      "forward_reverse_exact": true,
+      "verification": {
+        "create_and_get_exact": true,
+        "forward_and_reverse_unique": true,
+        "preimage_git_verified": true,
+        "add_absence_checked": false
+      }
+    }
+  ],
+  "actual_custody": {
+    "checkpoint": "Original same-actor RootLearningInputs -> original client shared by only concrete phase ports and non-Clone retirement owner -> actual required worker -> OriginalRetiredLearningOwners. Default Box-backed ports are untouched.",
+    "model": "Actual returned LearningLoop bootstrap -> original_q24 actual Stage -> original lane try_acquire + owner try_lock -> actual factory &mut and populated transport. Gate remains live; real alias is shutdown and factory stays held/fenced.",
+    "publication": "Actual CJoined installed.published_task -> private PublishedTask.current -> LiveGenerationCurrent.current -> actual CurrentStore::Root -> RootGenerationCurrentClient lane. No raw getter, arbitrary replacement owner, host-store fallback, Current read, selection revalidation or FinalUse operation.",
+    "retained": "All original joined Learning/Delivery/C owners, actual files, actual transport objects and aliases, and armed failure guards stay in owned terminal bundles through Root ACK2 and separate actual Root exit.",
+    "writer_file": "The transferred daemon Config writer File is outside this bundle and remains runtime/audit custody. Root resources and daemon File are not conflated."
+  },
+  "interfaces": {
+    "retired_learning": "OriginalRetiredLearningOwners::retire_original_root_purposes(self,&OriginalRootRetirementIntent) -> Result<OriginalRetiredLearningPurposes,AgentdError>",
+    "learning_bundle": "OriginalSameActorLearningJoined::retire_original_root_purposes(self,&OriginalRootRetirementIntent) -> Result<OriginalSameActorLearningPurposesRetired,AgentdError>",
+    "learning_check": "OriginalSameActorLearningPurposesRetired::require_original_phase(&self,&AgentdIdentity,&Arc<SameActorPhaseGate>)",
+    "actual_c_downcall": "PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent(&self,&OriginalRootRetirementIntent,&AgentdIdentity,&Arc<SameActorPhaseGate>)",
+    "pending_dependency": "audit owns actual OriginalSameActorCPurposesRetired and CJoined consumer implementation. This source draft is not independently compilable until that real producer/consumer is integrated."
+  },
+  "preservation": [
+    "RootObservationStream bfece0ef578d08bd1e44189e38a95dfe9cebfb2c remains entirely unchanged.",
+    "All original checkpoint Registered/Box RootClient arms, old RootLearning public/default assembly, old Model factory methods, and old Publication exchange/read/write methods remain unchanged.",
+    "Stage actual V45 8c6 two concrete Factory UFCS are retained; only new private module declaration is appended there.",
+    "No common Gate.close on success; no required guard disarm or stream/owner drop. Fault/poison/busy/uncertain/end/peer refusal still errors and closes through retained real failure guards.",
+    "No Root CURRENT sampling after paused Session, no new request or deadline, no receipt/signature/credential/key/role creation."
+  ],
+  "validation": {
+    "pure_v8_exact_ops": true,
+    "source_create_and_get": 18,
+    "component_execution": false,
+    "original_checker": false,
+    "typed_helper": false,
+    "native": false,
+    "refs": false
+  },
+  "metadata": {
+    "baseline": "V45 cd24b18a3ade8ae0a400bb2d52a27ad67f928074 plus semantic existing Learning 39529/Root/B/audit annexes; do not overwrite with an old whole CALLERS blob",
+    "new_actual_caller_union": "PENDING real audit CJoined and runtime ACK2 source pins",
+    "component_source": "PENDING bounded actual-lock/kernel-shutdown refusal components"
+  },
+  "qualification": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_C": false,
+    "actual_OS_restart": false
+  },
+  "not_performed": [
+    "h",
+    "PTY",
+    "native",
+    "cargo",
+    "formatter",
+    "compiler",
+    "checker",
+    "typed helper",
+    "CI",
+    "ref mutation",
+    "Chain blob/ref write"
+  ]
+}

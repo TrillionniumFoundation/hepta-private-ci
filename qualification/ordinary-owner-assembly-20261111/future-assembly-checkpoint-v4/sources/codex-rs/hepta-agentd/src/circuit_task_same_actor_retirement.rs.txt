@@ -1,0 +1,540 @@
+//! The real ordinary C completion and its admission cut. This capability is
+//! not a Learning ACK, Root retirement permission or a physical worker join.
+//! The actual installed owners remain held until the later joined bundle.
+
+use std::future::Future;
+
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
+
+use super::*;
+use crate::OriginalCellQ24TaskLedgerProducerV1;
+use crate::OriginalCellQ24TaskLedgerStatusV1;
+use crate::OriginalQ24InstalledSuccessorV1;
+use crate::PublishedCircuitFeatureCompletionV1;
+use crate::circuit_q24_successor::OriginalSuccessorWorkerJoined;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
+use crate::same_actor_q24_phase_learning::OriginalRetiredLearningOwners;
+use crate::same_actor_q24_phase_learning::OriginalRetiredLearningPurposes;
+
+/// Only the actual C drain below creates this origin. It holds weak route and
+/// slot references: the route's retained Work must not form an ownership cycle.
+pub(crate) struct OriginalCQuiescenceOrigin {
+    identity: AgentdIdentity,
+    gate: Arc<SameActorPhaseGate>,
+    route: Weak<SameActorTaskRoute>,
+    slot: Weak<SuccessorSlot>,
+}
+
+/// Non-Clone and not deserializable. The private fields contain real original
+/// owners and their durable observations, rather than a completion boolean.
+pub(crate) struct OriginalSameActorCQuiescence {
+    _closing: CloseSameActorPhaseOnDrop,
+    origin: Arc<OriginalCQuiescenceOrigin>,
+    slot: Arc<SuccessorSlot>,
+    installed: OriginalQ24InstalledSuccessorV1,
+    status: OriginalCellQ24TaskLedgerStatusV1,
+    completion: PublishedCircuitFeatureCompletionV1,
+}
+
+/// The exact C worker has returned and its route/slot were consumed only with
+/// the actual terminal Learning/delivery owner bundle. Session retirement and
+/// Root's final acknowledgement remain separate required facts.
+pub(crate) struct OriginalSameActorCJoined {
+    original: OriginalSameActorCQuiescence,
+    route: Arc<SameActorTaskRoute>,
+    work: Arc<OriginalSameActorLearningWork>,
+    learning: OriginalRetiredLearningOwners,
+}
+
+/// Only the actual joined C below can close its retained Root purposes.
+/// All original owners and failure guards remain held through ACK2 and the
+/// later actual Root exit; this capability supplies no business authority.
+pub(crate) struct OriginalSameActorCPurposesRetired {
+    // OriginalCQuiescence owns the armed close guard as its first field.
+    original: OriginalSameActorCQuiescence,
+    route: Arc<SameActorTaskRoute>,
+    work: Arc<OriginalSameActorLearningWork>,
+    learning: OriginalRetiredLearningPurposes,
+}
+
+struct OriginalCDrainAttempt {
+    closing: CloseSameActorPhaseOnDrop,
+    route: Arc<SameActorTaskRoute>,
+    installed: OriginalQ24InstalledSuccessorV1,
+    status: OriginalCellQ24TaskLedgerStatusV1,
+    work: Arc<OriginalSameActorLearningWork>,
+}
+
+struct OriginalCDrainPayload {
+    closing: CloseSameActorPhaseOnDrop,
+    installed: OriginalQ24InstalledSuccessorV1,
+    status: OriginalCellQ24TaskLedgerStatusV1,
+}
+
+impl OriginalCQuiescenceOrigin {
+    pub(crate) fn require_original_slot(
+        &self,
+        slot: &SuccessorSlot,
+    ) -> Result<(), AgentdError> {
+        self.gate.require_open().map_err(phase_error)?;
+        if !self
+            .slot
+            .upgrade()
+            .is_some_and(|original| std::ptr::eq(original.as_ref(), slot))
+        {
+            self.gate.close();
+            return Err(retirement_error("original C retirement slot differs"));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn require_original_binding(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {
+            self.gate.close();
+            return Err(retirement_error("original C retirement identity or Gate differs"));
+        }
+        self.gate.require_open().map_err(phase_error)?;
+        Ok(())
+    }
+
+    fn original_route(&self) -> Result<Arc<SameActorTaskRoute>, AgentdError> {
+        self.gate.require_open().map_err(phase_error)?;
+        self.route.upgrade().ok_or_else(|| {
+            self.gate.close();
+            retirement_error("original C retirement route is unavailable")
+        })
+    }
+}
+
+impl OriginalSameActorCQuiescence {
+    pub(crate) fn require_original_phase(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        self.origin.require_original_binding(identity, gate)?;
+        self.origin.require_original_slot(self.slot.as_ref())?;
+        let route = self.origin.original_route()?;
+        route.require_closing_original_c(&self.slot)?;
+        Ok(())
+    }
+
+    pub(crate) fn require_original_learning_work(
+        &self,
+        work: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<(), AgentdError> {
+        OriginalSameActorCQuiescence::require_original_phase(
+            self,
+            &self.origin.identity,
+            &self.origin.gate,
+        )?;
+        let route = self.origin.original_route()?;
+        let original = route.original_learning_work()?;
+        if !Arc::ptr_eq(&original, work) {
+            self.origin.gate.close();
+            return Err(retirement_error("original C retirement Work differs"));
+        }
+        OriginalSameActorLearningWork::require_identity_and_gate(
+            work,
+            &self.origin.identity,
+            &self.origin.gate,
+        )
+    }
+
+    /// The caller must separately hold the genuine terminal checkpoint and
+    /// durable delivery ACK. This check binds their exact prefix to the slot.
+    pub(crate) fn require_original_learning_snapshot(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<(), AgentdError> {
+        OriginalSameActorCQuiescence::require_original_phase(
+            self,
+            &self.origin.identity,
+            &self.origin.gate,
+        )?;
+        self.slot.require_original_retirement_snapshot(snapshot)
+    }
+
+    /// Called only after the actual Learning/Delivery normal-stop handshake.
+    /// Cancels the original C loop's local token, never the common Gate.
+    pub(crate) fn request_original_successor_retirement(&self) -> Result<(), AgentdError> {
+        OriginalSameActorCQuiescence::require_original_phase(
+            self,
+            &self.origin.identity,
+            &self.origin.gate,
+        )?;
+        self.slot
+            .request_original_retirement(Arc::clone(&self.origin))?;
+        self.origin.gate.require_open().map_err(phase_error)?;
+        Ok(())
+    }
+
+    /// The actual Learning worker calls this only after its own terminal
+    /// checkpoint, delivery ACK, retained blocking jobs and three lane joins.
+    /// No count or externally supplied success flag can create the joined cap.
+    pub(crate) fn finish_original_successor_join(
+        self,
+        joined: OriginalSuccessorWorkerJoined,
+        learning: OriginalRetiredLearningOwners,
+    ) -> Result<OriginalSameActorCJoined, AgentdError> {
+        OriginalSameActorCQuiescence::require_original_phase(
+            &self,
+            &self.origin.identity,
+            &self.origin.gate,
+        )?;
+        let route = self.origin.original_route()?;
+        let (previous, retired, work) = {
+            let mut state = route.state.lock().map_err(|_| poisoned_route())?;
+            self.origin.gate.require_open().map_err(phase_error)?;
+            let Phase::ClosingC { slot, .. } = &state.phase else {
+                return Err(retirement_error("original C route is not closing"));
+            };
+            if state.closed || state.tickets != 0 || !Arc::ptr_eq(slot, &self.slot) {
+                return Err(retirement_error("original C route still has work or differs"));
+            }
+            let mut attachment = route
+                .learning_work
+                .get()
+                .ok_or_else(poisoned_route)?
+                .lock()
+                .map_err(|_| poisoned_route())?;
+            let original_work = attachment.as_ref().ok_or_else(poisoned_route)?;
+            OriginalRetiredLearningOwners::require_original_work(&learning, original_work)?;
+            // The original route->slot lock order is retained. This consumes
+            // the actual joined capability and returns held owners. The exact
+            // attached Work Arc immediately moves into the terminal custody;
+            // no await or cancellation gap exposes an unowned None interval.
+            let retired = joined.consume_original_retirement(&self.origin)?;
+            let previous = std::mem::replace(&mut state.phase, Phase::RetiredC);
+            let work = attachment.take().ok_or_else(poisoned_route)?;
+            (previous, retired, work)
+        };
+        drop(previous);
+        drop(retired);
+        route.changed.send_replace(());
+        self.origin.gate.require_open().map_err(phase_error)?;
+        Ok(OriginalSameActorCJoined {
+            original: self,
+            route,
+            work,
+            learning,
+        })
+    }
+}
+
+impl OriginalSameActorCJoined {
+    pub(crate) fn require_original_phase(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        self.original.origin.require_original_binding(identity, gate)?;
+        self.original
+            .slot
+            .require_original_retired_slot(&self.original.origin)?;
+        let route = self.original.origin.original_route()?;
+        if !Arc::ptr_eq(&route, &self.route) {
+            return Err(retirement_error("original C terminal route custody differs"));
+        }
+        OriginalRetiredLearningOwners::require_original_work(&self.learning, &self.work)?;
+        let state = route.state.lock().map_err(|_| poisoned_route())?;
+        if state.closed || state.tickets != 0 || !matches!(state.phase, Phase::RetiredC) {
+            return Err(retirement_error("original C route has not been retired"));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn original_completion(&self) -> &PublishedCircuitFeatureCompletionV1 {
+        &self.original.completion
+    }
+
+    pub(crate) fn original_status(&self) -> &OriginalCellQ24TaskLedgerStatusV1 {
+        &self.original.status
+    }
+
+    /// Keep the real CURRENT/Cell/Source/Ledger owners until Root's exact
+    /// retirement intent permits their purpose streams to be released.
+    pub(crate) fn require_retained_original_owners(&self) -> Result<(), AgentdError> {
+        OriginalSameActorCJoined::require_original_phase(
+            self,
+            &self.original.origin.identity,
+            &self.original.origin.gate,
+        )?;
+        let installed = &self.original.installed;
+        if installed.identity != self.original.origin.identity {
+            return Err(retirement_error("retained original C identity differs"));
+        }
+        Ok(())
+    }
+}
+
+impl OriginalSameActorCJoined {
+    /// Consume the actual C and Learning owner bundles only under the real
+    /// same-peer Root Intent. No await or removable-owner gap occurs between
+    /// those fields leaving CJoined and entering the returned custody.
+    pub(crate) fn retire_original_root_purposes(
+        self,
+        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
+    ) -> Result<OriginalSameActorCPurposesRetired, AgentdError> {
+        OriginalSameActorCJoined::require_retained_original_owners(&self)?;
+        crate::same_actor_q24_deployment::OriginalRootRetirementIntent::require_original_origin(
+            intent,
+            &self.original.origin.identity,
+            &self.original.origin.gate,
+        )?;
+        let OriginalSameActorCJoined {
+            original,
+            route,
+            work,
+            learning,
+        } = self;
+        let learning = OriginalRetiredLearningOwners::retire_original_root_purposes(
+            learning, intent,
+        )?;
+        crate::PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent(
+            &OriginalQ24InstalledSuccessorV1::published_task(&original.installed),
+            intent,
+            &original.origin.identity,
+            &original.origin.gate,
+        )?;
+        crate::same_actor_q24_deployment::OriginalRootRetirementIntent::require_original_origin(
+            intent,
+            &original.origin.identity,
+            &original.origin.gate,
+        )?;
+        let retired = OriginalSameActorCPurposesRetired {
+            original,
+            route,
+            work,
+            learning,
+        };
+        OriginalSameActorCPurposesRetired::require_original_phase(
+            &retired,
+            &retired.original.origin.identity,
+            &retired.original.origin.gate,
+        )?;
+        Ok(retired)
+    }
+}
+
+impl OriginalSameActorCPurposesRetired {
+    /// Validate the already sealed terminal route/slot and actual returned
+    /// Learning owners. CURRENT and ordinary Session admission stay stopped.
+    pub(crate) fn require_original_phase(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        let checked = (|| {
+            self.original.origin.require_original_binding(identity, gate)?;
+            self.original
+                .slot
+                .require_original_retired_slot(&self.original.origin)?;
+            let route = self.original.origin.original_route()?;
+            if !Arc::ptr_eq(&route, &self.route)
+                || self.original.installed.identity != self.original.origin.identity
+            {
+                return Err(retirement_error("original C retired purpose custody differs"));
+            }
+            OriginalRetiredLearningPurposes::require_original_work(&self.learning, &self.work)?;
+            let state = route.state.lock().map_err(|_| poisoned_route())?;
+            if state.closed || state.tickets != 0 || !matches!(state.phase, Phase::RetiredC) {
+                return Err(retirement_error("original C purpose route is not retired"));
+            }
+            self.original.origin.gate.require_open().map_err(phase_error)?;
+            Ok(())
+        })();
+        if checked.is_err() {
+            self.original.origin.gate.close();
+        }
+        checked
+    }
+}
+
+impl SameActorTaskRoute {
+    fn begin_closing_original_c(
+        &self,
+        installed: &OriginalQ24InstalledSuccessorV1,
+    ) -> Result<Arc<SuccessorSlot>, AgentdError> {
+        let mut state = self.state.lock().map_err(|_| poisoned_route())?;
+        self.gate.require_open().map_err(phase_error)?;
+        let Phase::C { slot, invocation } = &state.phase else {
+            return Err(retirement_error("original C admission is not open"));
+        };
+        if state.closed {
+            return Err(retirement_error("original C route is closed"));
+        }
+        slot.require_original_c_installation(installed, &self.identity)?;
+        let slot = Arc::clone(slot);
+        let invocation = Arc::clone(invocation);
+        state.phase = Phase::ClosingC {
+            slot: Arc::clone(&slot),
+            invocation,
+        };
+        drop(state);
+        self.changed.send_replace(());
+        Ok(slot)
+    }
+
+    fn require_closing_original_c(
+        &self,
+        expected: &Arc<SuccessorSlot>,
+    ) -> Result<(), AgentdError> {
+        self.gate.require_open().map_err(phase_error)?;
+        let state = self.state.lock().map_err(|_| poisoned_route())?;
+        let Phase::ClosingC { slot, .. } = &state.phase else {
+            return Err(retirement_error("original C route is not closing"));
+        };
+        if state.closed || !Arc::ptr_eq(slot, expected) {
+            return Err(retirement_error("original C closing route differs"));
+        }
+        Ok(())
+    }
+
+    async fn wait_original_c_tickets(
+        &self,
+        expected: &Arc<SuccessorSlot>,
+    ) -> Result<(), AgentdError> {
+        let mut changed = self.changed.subscribe();
+        loop {
+            let remaining = self.gate.require_open().map_err(phase_error)?;
+            let empty = {
+                let state = self.state.lock().map_err(|_| poisoned_route())?;
+                let Phase::ClosingC { slot, .. } = &state.phase else {
+                    return Err(retirement_error("original C route is not closing"));
+                };
+                if state.closed || !Arc::ptr_eq(slot, expected) {
+                    return Err(retirement_error("original C closing route differs"));
+                }
+                // Every finished C ticket also requires its actual observer
+                // JoinHandle result. This count alone is not that evidence.
+                state.tickets == 0 && slot.pending_count() == 0
+            };
+            if empty {
+                self.gate.require_open().map_err(phase_error)?;
+                return Ok(());
+            }
+            tokio::select! {
+                _ = self.gate.cancelled() => {
+                    return Err(retirement_error("original C drain was closed"));
+                }
+                result = changed.changed() => {
+                    result.map_err(|_| poisoned_route())?;
+                }
+                _ = tokio::time::sleep(remaining.min(Duration::from_millis(5))) => {}
+            }
+        }
+    }
+
+    /// Retain this future's failure guard before its first poll. The original
+    /// Work registry keeps the same actual drain handle if this waiter drops.
+    pub(crate) fn quiesce_original_c(
+        self: &Arc<Self>,
+        installed: OriginalQ24InstalledSuccessorV1,
+        status: OriginalCellQ24TaskLedgerStatusV1,
+        work: Arc<OriginalSameActorLearningWork>,
+    ) -> impl Future<Output = Result<OriginalSameActorCQuiescence, AgentdError>> + Send + 'static {
+        let attempt = OriginalCDrainAttempt {
+            closing: CloseSameActorPhaseOnDrop::new(&self.gate),
+            route: Arc::clone(self),
+            installed,
+            status,
+            work,
+        };
+        async move {
+            // Capture the whole ordered custody object, including before the
+            // first poll. Fault Drop closes Gate before releasing its owners.
+            let attempt = attempt;
+            let route = Arc::clone(&attempt.route);
+            let work = Arc::clone(&attempt.work);
+            OriginalSameActorLearningWork::require_identity_and_gate(
+                &work,
+                &route.identity,
+                &route.gate,
+            )?;
+            let original_work = route.original_learning_work()?;
+            if !Arc::ptr_eq(&original_work, &work)
+                || !matches!(attempt.status, OriginalCellQ24TaskLedgerStatusV1::Complete { .. })
+            {
+                return Err(retirement_error("original C completion or Work differs"));
+            }
+            let slot = route.begin_closing_original_c(&attempt.installed)?;
+            route.wait_original_c_tickets(&slot).await?;
+            let job = {
+                let admission = work.reserve_original_blocking().map_err(|error| {
+                    AgentdError::GenerationFenced(error.to_string())
+                })?;
+                let actual_route = Arc::clone(&route);
+                let actual_slot = Arc::clone(&slot);
+                let payload = OriginalCDrainPayload {
+                    closing: attempt.closing,
+                    installed: attempt.installed,
+                    status: attempt.status,
+                };
+                let handle = tokio::task::spawn_blocking(move || {
+                    actual_route.require_closing_original_c(&actual_slot)?;
+                    actual_slot.require_original_c_installation(
+                        &payload.installed,
+                        &actual_route.identity,
+                    )?;
+                    let ledger = OriginalQ24InstalledSuccessorV1::original_task_ledger(
+                        &payload.installed,
+                    )
+                    .ok_or_else(|| retirement_error("original C completion has no actual Ledger"))?;
+                    if OriginalCellQ24TaskLedgerProducerV1::readback(ledger.as_ref())
+                        .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?
+                        != payload.status
+                    {
+                        return Err(retirement_error("original C terminal Ledger changed"));
+                    }
+                    actual_route.gate.require_open().map_err(phase_error)?;
+                    let completion = crate::PublishedCircuitFeatureTaskV1::drain_completed_task(
+                        &OriginalQ24InstalledSuccessorV1::published_task(&payload.installed),
+                        &payload.installed.cell,
+                        payload.installed.source.as_ref(),
+                        &actual_route.identity,
+                    )?;
+                    actual_route.gate.require_open().map_err(phase_error)?;
+                    if OriginalCellQ24TaskLedgerProducerV1::readback(ledger.as_ref())
+                        .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?
+                        != payload.status
+                    {
+                        return Err(retirement_error("original C Ledger changed across task drain"));
+                    }
+                    actual_route.require_closing_original_c(&actual_slot)?;
+                    Ok::<_, AgentdError>((payload, completion))
+                });
+                admission.retain_original_handle(handle)
+            };
+            let (payload, completion) = OriginalSameActorLearningWork::receive_original_job_with_join_cause(
+                &work,
+                job,
+            )
+                .await
+                .map_err(|error| AgentdError::Io(std::io::Error::other(error)))??;
+            route.require_closing_original_c(&slot)?;
+            let origin = Arc::new(OriginalCQuiescenceOrigin {
+                identity: route.identity.clone(),
+                gate: Arc::clone(&route.gate),
+                route: Arc::downgrade(&route),
+                slot: Arc::downgrade(&slot),
+            });
+            Ok(OriginalSameActorCQuiescence {
+                _closing: payload.closing,
+                origin,
+                slot,
+                installed: payload.installed,
+                status: payload.status,
+                completion,
+            })
+        }
+    }
+}
+
+fn retirement_error(message: &'static str) -> AgentdError {
+    AgentdError::GenerationFenced(message.into())
+}

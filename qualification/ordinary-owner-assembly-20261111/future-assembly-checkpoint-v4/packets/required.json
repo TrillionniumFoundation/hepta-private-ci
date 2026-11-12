@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "actual-required-purpose-one-way-root-intent-shutdown",
+  "status": "isolated-draft-not-installed-or-executed",
+  "dependencies": {
+    "intent_first_guard": "8ad0e86068256f5dc4f20f23a35de215abd0d828"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "preimage": {
+        "blob": "9fbe60227a2ca0254a2ca965c8a4d47b872cf115"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+        "blob": "1b86a2104bbf14bba1b44e409bcd411e52bda141",
+        "bytes": 21101,
+        "sha256": "4fcc41e2e819d257d8d926b5f67704e1582246932c15298c35fb6059bda930aa",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "use std::sync::Mutex;\n",
+          "new": "use std::sync::Mutex;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::Ordering;\n"
+        },
+        {
+          "op": "replace",
+          "old": "    _stream: SameActorPhaseStream,\n}\n\nimpl RequiredSameActorPhaseChannel",
+          "new": "    _stream: SameActorPhaseStream,\n    retired: Arc<AtomicBool>,\n}\n\n/// A close-only reference to an actual required channel registration. It\n/// creates no FD, authority or new registration. The real channel retains\n/// its armed guard and shares this one-way retirement state.\npub(crate) struct OriginalRequiredPurposeRetirement {\n    gate: Arc<SameActorPhaseGate>,\n    id: u64,\n    retired: Arc<AtomicBool>,\n}\n\nimpl RequiredSameActorPhaseChannel"
+        },
+        {
+          "op": "replace",
+          "old": "    pub(crate) fn require_open(&self) -> io::Result<()> {\n        self.closing.gate.require_open().map(|_| ())\n    }\n\n    pub(crate) fn failure_scope",
+          "new": "    pub(crate) fn require_open(&self) -> io::Result<()> {\n        if self.retired.load(Ordering::Acquire) {\n            self.closing.gate.close();\n            return Err(refused(\"original purpose is already retired\"));\n        }\n        self.closing.gate.require_open()?;\n        if self.retired.load(Ordering::Acquire) {\n            self.closing.gate.close();\n            return Err(refused(\"original purpose retired during admission\"));\n        }\n        Ok(())\n    }\n\n    /// Only the actual receiving owner retains this close-only registration.\n    /// It cannot release anything without the later real Root Intent.\n    pub(crate) fn original_retirement_custody(&self) -> OriginalRequiredPurposeRetirement {\n        OriginalRequiredPurposeRetirement {\n            gate: Arc::clone(&self.closing.gate),\n            id: self._stream.id,\n            retired: Arc::clone(&self.retired),\n        }\n    }\n\n    pub(crate) fn shutdown_original_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {\n        self.original_retirement_custody().shutdown_original_after_root_intent(intent)\n    }\n\n    pub(crate) fn failure_scope"
+        },
+        {
+          "op": "replace",
+          "old": "            _stream: stream,\n        })",
+          "new": "            _stream: stream,\n            retired: Arc::new(AtomicBool::new(false)),\n        })"
+        },
+        {
+          "op": "replace",
+          "old": "pub(crate) struct SameActorPhaseAdmission {\n",
+          "new": "impl OriginalRequiredPurposeRetirement {\n    /// Close this exact underlying socket while keeping all original aliases\n    /// and failure guards registered. This is a one-way expected-purpose EOF,\n    /// never common Gate closure, a new request, or a completion claim.\n    pub(crate) fn shutdown_original_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {\n        let checked = (|| {\n            intent.require_original_gate(&self.gate)?;\n            if self.retired.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err() {\n                return Err(refused(\"original purpose retirement was already consumed\").into());\n            }\n            {\n                let mut state = self.gate.state.lock()\n                    .map_err(|_| refused(\"original purpose Gate is poisoned\"))?;\n                self.gate.check_locked(&mut state)?;\n                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self.id) else {\n                    return Err(refused(\"original purpose stream registration is unavailable\").into());\n                };\n                // The registered alias is a clone of the actual owner's\n                // socket. shutdown affects that same socket and every clone;\n                // merely dropping one FD would leave the peer alive.\n                stream.shutdown(Shutdown::Both)?;\n                self.gate.check_locked(&mut state)?;\n            }\n            intent.require_original_gate(&self.gate)?;\n            Ok::<(), crate::AgentdError>(())\n        })();\n        if checked.is_err() {\n            self.gate.close();\n        }\n        checked\n    }\n}\n\npub(crate) struct SameActorPhaseAdmission {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "00dc7ea363b654200cc50cce2ce57d0ae75813cb",
+        "bytes": 6744,
+        "sha256": "0e12bd92760d49f3bb4b7102c6c155436104df12b200bab4992ce9f64d5f7645",
+        "create_get_equal": true
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "fcc069afa3cf4a48c600909f4342ac46a24c18de",
+        "bytes": 7100,
+        "sha256": "3353fee6aa0fc75c4a7a89521a43cf1196ab148f0350a7ec7abda3af9e435b05",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "impl OriginalRootRetirementIntent {\n",
+          "new": "impl OriginalRootRetirementIntent {\n    /// A close-only owner of a real channel may compare the exact Gate; the\n    /// identity remains the one held by this actual acknowledged client.\n    pub(crate) fn require_original_gate(\n        &self, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        self.require_original_origin(self.client.context.identity(), gate)\n    }\n\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 2,
+  "operation_count": 6,
+  "actual_contract": [
+    "Private non-Clone close-only registration is obtained from the actual Required channel; it allocates no new FD or Gate stream and shares a single AtomicBool with the original channel.",
+    "Only the actual four-cap acknowledged Root Intent may authorize the same-Gate close. It is not business admission or a completion proof.",
+    "Retirement is consumed before socket shutdown. Every original Required require_open checks retirement before and after the unchanged Gate check; unexpected later admission closes the phase.",
+    "Under the same Gate mutex, actual original deadline is checked and only the exact registered UnixStream alias is shutdown(Both); the same socket and all clones become EOF, while registration and armed failure guards remain held.",
+    "After shutdown, original Gate and actual Root peer/end are checked again; any error closes the common Gate. Poison, repeated retirement, absent registration and wrong Gate are terminal.",
+    "No common Gate close occurs on successful purpose retirement; no guard is disarmed, no alias is removed, no future owner is assumed joined."
+  ],
+  "limits": [
+    "The actual Runtime and Learning/Model/Publication owner hooks must call this only after their genuine quiescence/join proofs; this generic close-only object does not prove those facts.",
+    "No normal Startup success or Root ACK2/OS-exit claim is introduced.",
+    "Existing absent-phase paths, the original Gate deadline fields and old fault shutdown mechanism are preserved."
+  ],
+  "verification": {
+    "unique_forward_reverse": true,
+    "all_postimages_create_get_equal": true,
+    "native": 0,
+    "original_checker": 0,
+    "refs": 0
+  }
+}

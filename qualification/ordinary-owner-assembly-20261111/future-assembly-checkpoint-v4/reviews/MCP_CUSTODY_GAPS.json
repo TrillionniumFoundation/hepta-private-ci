@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "kind": "bounded-actual-configured-mcp-shutdown-custody-inventory",
+  "status": "existing-void-shutdown-is-not-physical-completion-proof",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_ref": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/configured_mcp_runtime.rs",
+      "blob": "b47ed015277fa5fde861a9678b3d464b543c4295",
+      "bytes": 7376,
+      "sha256": "8dedbd1d7a187ca0787a6af32b7e87998f0d06f8a9a40ae140d9c5b47e932b54",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/runtime.rs",
+      "blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+      "bytes": 40360,
+      "sha256": "cf1762c1ca527915de437477642d9421559e2da178f0718ba2da087c9fd7f476",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+      "blob": "46ea8dc63df82880994b221a629972c753c0b78d",
+      "bytes": 40018,
+      "sha256": "fdc760abec4d12209d855bc42e28c761604bc72c8275a566f302a1ae269de848",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+      "blob": "ff1e0c900aa52a1bce51a858763707c1df8b70cb",
+      "bytes": 50674,
+      "sha256": "f0f620bcb904c34c348159c76a9fb12f91bec6ffd5d875a407a9dd65fd0f6794",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client.rs",
+      "blob": "dc939345fa5a5ffd3e4e6cc63bd821077ab1326f",
+      "bytes": 62377,
+      "sha256": "61b31bd27715853be8e8b45f7d8281822e4a0ba718a344243b41bc2684af50a9",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+      "blob": "1f6ab22be0ee19b54bc4f5913948f56ab484b0d8",
+      "bytes": 27174,
+      "sha256": "ccbc02f935879e312f59bc581367a7f53f56bf30c35c14c6e7ecc1e0b05339c7",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/local_stdio_transport.rs",
+      "blob": "40e0e729464acfb070c7422b3875b3f8ed9fed35",
+      "bytes": 5403,
+      "sha256": "e4d0d20d6a91be710c9cddd02e2c4266a513f8ac2516749e8d03c727d39c45b1",
+      "actual_git_get": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/executor_process_transport.rs",
+      "blob": "b1fddbdf7518862ff3b2b853fd7ddb16a970d181",
+      "bytes": 19719,
+      "sha256": "ae99eda041a3e2f2cd430461351335d053c0ba42b8dc14e78e10ef01bb78dd1c",
+      "actual_git_get": true
+    }
+  ],
+  "actual_path": [
+    {
+      "owner": "ConfiguredMcpRuntime::shutdown(self)",
+      "finding": "Cancels its original startup token then awaits McpRuntime::shutdown; returns (). Its Drop only cancels startup. The actual selected original server/config/environment path is preserved."
+    },
+    {
+      "owner": "McpRuntime::shutdown(&self)",
+      "finding": "Calls latest_connections().shutdown().await and returns (). No independent task or OS process receipt is returned."
+    },
+    {
+      "owner": "McpConnectionSet::shutdown(&self)",
+      "finding": "Clones the actual connection Arcs and spawns one Tokio cleanup task to await each connection shutdown. It awaits that task, but a JoinError is only logged; the method still returns (). Cancelling the outside await leaves the actual spawned cleanup running. Thus ordinary return alone cannot certify normal cleanup or retain the original failure."
+    },
+    {
+      "owner": "AsyncManagedClient::shutdown(&self)",
+      "finding": "Cancels the original startup token; actual client().await success calls the real RmcpClient shutdown. StartupOutcomeError::Cancelled is accepted as (), other startup failure is only logged. client() may use its original reconnect.current_client before shared startup future. The selected actual readiness and any owned startup/reconnect task must be accounted for by a stricter path."
+    },
+    {
+      "owner": "RmcpClient::shutdown(&self)",
+      "finding": "Replaces its actual ClientState with Closed under the original async mutex. It attempts the owned stdio_process terminate but logs and suppresses errors, then drops previous_state. Ready contains an Arc<RunningService> and retained session lifetime. This body does not explicitly await a concrete RunningService join/cancellation result; dropping one Arc is not that proof."
+    },
+    {
+      "owner": "StdioServerProcessHandle::terminate",
+      "finding": "The original terminated AtomicBool is an admission marker, not an exit receipt. Local(Some) invokes LocalProcessTerminator and returns Ok; Local(None) also returns Ok. On Unix the terminator sends TERM and spawns a separate unretained std::thread JoinHandle for a delayed two-second KILL; both signal failures are only logged. Local launcher also spawns an unretained Tokio stderr reader."
+    },
+    {
+      "owner": "Local stdio transport ownership",
+      "finding": "StdioServerTransport actually owns LocalLegacy(TokioChildProcess), LocalModern(LocalStdioTransport), or Executor(ExecutorProcessTransport). LocalModern retains the real Tokio Child and its close awaits child.wait under the existing three-second timeout or invokes child.kill().await. StdioServerTransport.close delegates to the actual inner close after terminate. This shows an existing real process-owner path, but the current top-level void shutdown does not surface a completed transport close/join observation. The imported rmcp TokioChildProcess and RunningService internals were not read here, so their exact API/result/Drop contract is not invented."
+    },
+    {
+      "owner": "Executor transport",
+      "finding": "Its concrete close awaits the original ExecProcess.terminate and marks terminated, then returns. Its receive path separately observes actual ExecProcessEvent::Exited while processing event bytes. This review does not infer terminate==Exited, and does not claim remote service process ownership outside the actual ExecProcess capability."
+    }
+  ],
+  "minimum_strict_path": [
+    "Keep every existing default/void shutdown body unchanged. Add a distinct selected configured-runtime shutdown result only after actual same-runtime owners are closed and joined; do not make the old return into a proof by renaming it.",
+    "Propagate actual errors and join results through ConfiguredMcpRuntime, McpRuntime, McpConnectionSet, AsyncManagedClient and RmcpClient. Preserve original transport/config selection, no reconnect/new authority/new peer, and the original absolute phase end.",
+    "At the actual creation/owner sites, retain the shutdown task, any local stderr reader, process-group escalation task and real transport/service termination result in cancellation-safe custody. An outer wait cancellation may close/fault, but must not discard the only join handles.",
+    "For local child ownership, use the original Child/transport and awaited process exit, not a reconstructed PID or terminated boolean. Do not issue signals to an invented process or assert descendant-group death from direct child exit. Exact rmcp dependency APIs must be inspected before implementing the Legacy/service branch.",
+    "For executor ownership, distinguish the actual terminate request from the original terminal Exited/result and wait for the latter through its existing capability. For HTTP/in-process selected servers, account for actual local service/tasks without pretending to own or terminate the independent remote server.",
+    "Normal completion must remain Err/unknown until this source-specific strict result is real. No changes to generic RuntimeTasks, unrelated tasks, old None paths, request budgets or deadline renewal are proposed by this bounded inventory."
+  ],
+  "limits": [
+    "This is source inventory and implementation scoping, not a product patch or a review of an unseen strict implementation.",
+    "No native/checker/compiler/runtime/OS action was executed; no source/ref was changed.",
+    "The actual daemon OS exit still requires its external parent. Root pidfd exit cannot certify remaining daemon MCP tasks or File retirement."
+  ],
+  "validation": {
+    "source_files_get": 8,
+    "native": 0,
+    "h": 0,
+    "checker": 0,
+    "ref_changes": 0,
+    "product_edits": 0
+  }
+}

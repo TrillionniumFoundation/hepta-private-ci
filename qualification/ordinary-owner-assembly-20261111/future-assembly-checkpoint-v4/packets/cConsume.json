@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "kind": "actual-c-joined-root-purpose-retirement-consumer",
+  "status": "isolated-future-source-not-installed-or-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "dependencies": {
+    "actual_c_terminal_route_slot_and_natural_join": "ad5d950d11627ae7b44373d227348ef41e00439e",
+    "actual_learning_model_current_close": "a057e64a38fbf551740f8575430b1464d43d98fc",
+    "actual_root_intent_and_required_close": "9adb0605f1fffe5d00cac38554149e17c812549b",
+    "actual_root_intent_postimage": "fcc069afa3cf4a48c600909f4342ac46a24c18de"
+  },
+  "path_count": 4,
+  "operation_count": 6,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+      "preimage": {
+        "blob": "bd6aa8db0536eba249d3612e5d28ccefd04e813a",
+        "bytes": 18489,
+        "sha256": "f23b86ec3a4a518e3ca0088298c8ea6ecd83f5ee73612e47fac973964a8cbdee"
+      },
+      "postimage": {
+        "blob": "42a27a06c375121d738be47b26474890b0403b95",
+        "bytes": 22461,
+        "sha256": "f8d345c8a78561783bb0e75edfd82c3ac872fbe36acf0ef5df6000d2c33b3613"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "use crate::same_actor_q24_phase_learning::OriginalRetiredLearningOwners;\n",
+          "new": "use crate::same_actor_q24_phase_learning::OriginalRetiredLearningOwners;\nuse crate::same_actor_q24_phase_learning::OriginalRetiredLearningPurposes;\n"
+        },
+        {
+          "op": "replace",
+          "old": "struct OriginalCDrainAttempt {\n",
+          "new": "/// Only the actual joined C below can close its retained Root purposes.\n/// All original owners and failure guards remain held through ACK2 and the\n/// later actual Root exit; this capability supplies no business authority.\npub(crate) struct OriginalSameActorCPurposesRetired {\n    // OriginalCQuiescence owns the armed close guard as its first field.\n    original: OriginalSameActorCQuiescence,\n    route: Arc<SameActorTaskRoute>,\n    work: Arc<OriginalSameActorLearningWork>,\n    learning: OriginalRetiredLearningPurposes,\n}\n\nstruct OriginalCDrainAttempt {\n"
+        },
+        {
+          "op": "replace",
+          "old": "impl SameActorTaskRoute {\n    fn begin_closing_original_c(\n",
+          "new": "impl OriginalSameActorCJoined {\n    /// Consume the actual C and Learning owner bundles only under the real\n    /// same-peer Root Intent. No await or removable-owner gap occurs between\n    /// those fields leaving CJoined and entering the returned custody.\n    pub(crate) fn retire_original_root_purposes(\n        self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<OriginalSameActorCPurposesRetired, AgentdError> {\n        OriginalSameActorCJoined::require_retained_original_owners(&self)?;\n        crate::same_actor_q24_deployment::OriginalRootRetirementIntent::require_original_origin(\n            intent,\n            &self.original.origin.identity,\n            &self.original.origin.gate,\n        )?;\n        let OriginalSameActorCJoined {\n            original,\n            route,\n            work,\n            learning,\n        } = self;\n        let learning = OriginalRetiredLearningOwners::retire_original_root_purposes(\n            learning, intent,\n        )?;\n        crate::PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent(\n            &OriginalQ24InstalledSuccessorV1::published_task(&original.installed),\n            intent,\n            &original.origin.identity,\n            &original.origin.gate,\n        )?;\n        crate::same_actor_q24_deployment::OriginalRootRetirementIntent::require_original_origin(\n            intent,\n            &original.origin.identity,\n            &original.origin.gate,\n        )?;\n        let retired = OriginalSameActorCPurposesRetired {\n            original,\n            route,\n            work,\n            learning,\n        };\n        OriginalSameActorCPurposesRetired::require_original_phase(\n            &retired,\n            &retired.original.origin.identity,\n            &retired.original.origin.gate,\n        )?;\n        Ok(retired)\n    }\n}\n\nimpl OriginalSameActorCPurposesRetired {\n    /// Validate the already sealed terminal route/slot and actual returned\n    /// Learning owners. CURRENT and ordinary Session admission stay stopped.\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        let checked = (|| {\n            self.original.origin.require_original_binding(identity, gate)?;\n            self.original\n                .slot\n                .require_original_retired_slot(&self.original.origin)?;\n            let route = self.original.origin.original_route()?;\n            if !Arc::ptr_eq(&route, &self.route)\n                || self.original.installed.identity != self.original.origin.identity\n            {\n                return Err(retirement_error(\"original C retired purpose custody differs\"));\n            }\n            OriginalRetiredLearningPurposes::require_original_work(&self.learning, &self.work)?;\n            let state = route.state.lock().map_err(|_| poisoned_route())?;\n            if state.closed || state.tickets != 0 || !matches!(state.phase, Phase::RetiredC) {\n                return Err(retirement_error(\"original C purpose route is not retired\"));\n            }\n            self.original.origin.gate.require_open().map_err(phase_error)?;\n            Ok(())\n        })();\n        if checked.is_err() {\n            self.original.origin.gate.close();\n        }\n        checked\n    }\n}\n\nimpl SameActorTaskRoute {\n    fn begin_closing_original_c(\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "preimage": {
+        "blob": "d7d6f2fd0df8f00448a236aa0a42a7a7bcef91ee",
+        "bytes": 20444,
+        "sha256": "286183eb57b3ce3463d3dcd2e0e0fc70a5eaf0f67156d60bbe4ee1cc13c813cb"
+      },
+      "postimage": {
+        "blob": "8af6d0f93f528ddafa486cc940ed21da3b057ab5",
+        "bytes": 20506,
+        "sha256": "99df1c5e7da1fb3c382e61c968f7600652407823f8654a1bd7a88b92376a73e6"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use retirement::OriginalSameActorCJoined;\n",
+          "new": "pub(crate) use retirement::OriginalSameActorCJoined;\npub(crate) use retirement::OriginalSameActorCPurposesRetired;\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "preimage": {
+        "blob": "7c2aa29b25cf37f99d782d4ca95f67bfa40a6d75",
+        "bytes": 14644,
+        "sha256": "7bd19d2130a2906239979e555bece0ea93d418fb8fb99d5e0eacbc0b1cba0433"
+      },
+      "postimage": {
+        "blob": "a8b7d55807e5cd7c61899af97c22f14134ffb549",
+        "bytes": 14740,
+        "sha256": "9992236802aaab4a020c74a3850c489cbb1a1dca87181d009e61139917e1b9d5"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use same_actor_phase::OriginalSameActorCJoined;\n",
+          "new": "pub(crate) use same_actor_phase::OriginalSameActorCJoined;\n#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::OriginalSameActorCPurposesRetired;\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "preimage": {
+        "blob": "6d1e59c308e795a0aa9add50223157ac4326841e",
+        "bytes": 5796,
+        "sha256": "3ea8a53d3871b1a10a88da0d6e587fb4dc2944a1e62d72a5f58e1186c1a989a8"
+      },
+      "postimage": {
+        "blob": "d16dd65de0dac36dc845467512580349f31c6a37",
+        "bytes": 5883,
+        "sha256": "68bd18c9ca0cb32dcbf74fe89926a6ae1454eb830f0d68a73c45c37306424c21"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use runtime::OriginalSameActorCJoined;\n",
+          "new": "pub(crate) use runtime::OriginalSameActorCJoined;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalSameActorCPurposesRetired;\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    }
+  ],
+  "interfaces": {
+    "consume": "crate::circuit_task::OriginalSameActorCJoined::retire_original_root_purposes(self, &crate::same_actor_q24_deployment::OriginalRootRetirementIntent) -> Result<crate::circuit_task::OriginalSameActorCPurposesRetired, AgentdError>",
+    "require": "OriginalSameActorCPurposesRetired::require_original_phase(&self, &AgentdIdentity, &Arc<SameActorPhaseGate>) -> Result<(), AgentdError>",
+    "sole_actual_producer_caller": "same_actor_q24_phase_learning_worker_retirement.rs::OriginalSameActorLearningJoined::retire_original_root_purposes in a057/4b59b6cfe1bc15eba250bbf07ba12a28f321e45a"
+  },
+  "actual_sequence": [
+    "Validate the original non-Clone CJoined's sealed actual terminal C, retired successor slot/route, exact Work and real returned Learning owners.",
+    "Validate the real same-origin Root Intent; it is separately produced by the actual seq1 exchange after the four concrete owner checks.",
+    "Synchronously move the same original C custody, route, Work and Learning bundle; consume actual Learning owners through their concrete checkpoint/Model shutdown method. No future is created and there is no await/cancellation gap.",
+    "Call PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent on OriginalQ24InstalledSuccessorV1::published_task of the same retained actual installation. This is the real CURRENT downlink supplied by a057, not a new getter/transport/authority.",
+    "Recheck actual Intent. Only after successful CURRENT retirement construct and return CPurposesRetired with every original owner retained. Its check revalidates sealed route/slot/Work/identity/Gate; it does not reread ordinary CURRENT, Session current authority, or recreate a task completion."
+  ],
+  "resource_order": [
+    "CJoined already contains the actual C drain result, source/Cell/Ledger/CURRENT owners and terminal Learning/durable-delivery ACK/join custody. This patch does not synthesize those facts.",
+    "CPurposesRetired fields are original CQuiescence first (its own armed close guard is first), then actual route, Work, and actual OriginalRetiredLearningPurposes. No original failure guard is disarmed.",
+    "During the synchronous consume, both the original C custody and the real Learning owner bundle continue to carry their own armed failure guards. Every early error drops real armed custody and fails closed. No unowned None interval or detached handle is introduced.",
+    "The returned Learning-purpose wrapper in a057 retains this C cap; it is never stored back into Work. The original weak route/slot origin and actual removed Work ownership remain unchanged.",
+    "No File/Session/Context or actual task owners are intentionally released by successful purpose shutdown. They remain held for ACK2, actual Root exit and separately verified final daemon cleanup."
+  ],
+  "preservation": [
+    "All original C completion, drain, quiescence, actual observer job, request-start/deadline, route/slot consume, Pending join and Circuit natural-join bodies are byte-identical.",
+    "The other three files add only the exact new private type re-export under the existing Linux cfg chain; no existing function body, visibility, caller, test, or default behavior changes.",
+    "New calls to generic-named proof methods use the actual concrete UFCS type. No checker, typed-helper, CALLERS or allowlist mutation is included."
+  ],
+  "validation": {
+    "complete_preimages_get": true,
+    "complete_postimages_create_get": true,
+    "unique_forward_reverse_operations": 6,
+    "compiler": 0,
+    "formatter": 0,
+    "original_checker": 0,
+    "native": 0,
+    "h": 0,
+    "refs": 0,
+    "tests_added": 0
+  },
+  "limits": [
+    "This is the missing typed consumer for a057; it is not an independent runnable full phase. ACK2, Root pidfd exit and physical final daemon resource retirement remain separate.",
+    "No synthetic C/Outcome/Training/Root capability is introduced for testing. Existing actual barrier/FD/cancellation component packages and full native integration remain required; none are claimed executed here.",
+    "Root alone will merge the real CALLERS closed sets/protected source markers and run the unchanged fixed-source qualification. Successful source GET/replay is not compiler or native PASS.",
+    "Root process exit remains a cleanup prerequisite only; it does not substitute for last Session Drop, actual worker/result join, writer File release, or external daemon exit."
+  ]
+}
