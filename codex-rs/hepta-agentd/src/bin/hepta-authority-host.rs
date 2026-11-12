@@ -161,6 +161,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map(PathBuf::from);
         let initial_handoff =
             options.remove(std::ffi::OsStr::new("--root-generation-initial-handoff-fd"));
+        let source_deployment = options
+            .remove(std::ffi::OsStr::new("--historical-source-deployment"))
+            .map(PathBuf::from);
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -181,6 +184,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             || initial_deployment.is_some() && root_fd.is_none()
         {
             return Err("initial publication requires its explicit Root deployment, separate purpose handoff and original Root pidfd".into());
+        }
+        if source_deployment.is_some() && initial_deployment.is_none() {
+            return Err(
+                "source capture requires its original Initial deployment and session".into(),
+            );
         }
         if publication_deployment.is_some() != publication_handoff.is_some()
             || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())
@@ -322,6 +330,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             (None, None) => (None, None),
             _ => return Err("initial deployment and inherited offer must be paired".into()),
         };
+        if let Some(path) = source_deployment {
+            prepared.enable_initial_source_capture_from_deployment(&path)?;
+        }
         let initial_ready = initial_deployment
             .as_ref()
             .map(|deployment| serde_json::to_string(deployment.session()))

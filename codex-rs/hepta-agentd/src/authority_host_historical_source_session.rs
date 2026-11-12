@@ -16,6 +16,9 @@ use codex_hepta_types::Digest32;
 
 const ACKNOWLEDGED: u8 = 4;
 
+#[path = "authority_host_historical_source_deployment.rs"]
+mod deployment;
+
 struct Submission {
     acknowledgement: mpsc::SyncSender<Result<Digest32, String>>,
 }
