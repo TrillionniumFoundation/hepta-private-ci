@@ -24,6 +24,8 @@ const PIN_PURPOSE: &str = "runtime.circuit.historical-source-pin.v1";
 #[path = "authority_host_historical_source_inputs.rs"]
 mod inputs;
 pub(crate) use inputs::RetainedRootHistoricalSourceInputsV1;
+#[path = "authority_host_historical_cell_pin.rs"]
+pub(crate) mod cell;
 
 /// Original single-published-task Q24 configuration and Root-held descriptors.
 /// There is no serialized observation, generic witness or caller-authored pin.

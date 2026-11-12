@@ -293,6 +293,8 @@ pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
 pub use witness::FileAnchorWitnessStore;
+#[cfg(target_os = "linux")]
+pub use witness::observe_original_file_anchor_v1;
 
 const MAX_FEATURES: usize = 4_096;
 

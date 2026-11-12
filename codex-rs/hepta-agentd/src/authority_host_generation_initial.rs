@@ -45,6 +45,7 @@ mod enrollment;
 #[path = "authority_host_historical_source_pin.rs"]
 pub(crate) mod historical_source_pin;
 pub use historical_source_pin::RootHistoricalSourceInputsV1;
+pub(crate) use historical_source_pin::cell as cell_retention;
 #[path = "authority_host_historical_source_handoff.rs"]
 mod historical_source_handoff;
 #[path = "authority_host_generation_initial_transport.rs"]

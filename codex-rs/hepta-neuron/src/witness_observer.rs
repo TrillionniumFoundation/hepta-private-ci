@@ -5,7 +5,10 @@ use std::os::unix::fs::FileExt;
 
 use super::*;
 
-pub(crate) fn read_original_file(
+/// Observe the original physical witness codec without taking its writer lock.
+/// Returned data is not independent evidence that this cut was acknowledged;
+/// the calling owner must bind it to its separately retained trust and scope.
+pub fn read_original_file(
     file: &File,
     scope: JournalScope,
     generation: Generation,
