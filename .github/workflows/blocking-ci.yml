@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Select dependency impact
@@ -47,6 +47,7 @@ jobs:
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
             args+=(--base "$BASE_SHA")
           else
             args+=(--full)
