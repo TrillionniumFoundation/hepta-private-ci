@@ -42,10 +42,10 @@ pub use generation_initial::RootGenerationInitialOfferV1;
 pub use generation_initial::RootHistoricalSourceInputsV1;
 #[path = "authority_host_generation_publication.rs"]
 pub(crate) mod generation_publication;
-#[path = "authority_host_historical_learning_trust.rs"]
-pub(crate) mod historical_learning_trust;
 #[path = "authority_host_learning_checkpoint.rs"]
 mod learning_checkpoint;
+#[path = "authority_host_learning_time.rs"]
+mod learning_time;
 #[path = "authority_host_q24_model.rs"]
 pub(crate) mod q24_model;
 use consumers::RegisteredConsumers;
