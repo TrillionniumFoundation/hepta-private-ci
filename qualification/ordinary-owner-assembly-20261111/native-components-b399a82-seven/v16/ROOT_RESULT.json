@@ -1,0 +1,909 @@
+{
+  "schema": "hepta.fixed-source-failure-evidence.v2",
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "source_tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f",
+  "native_attempt": "ordinary-b399a82-seven-final-v16",
+  "session": "dpty-eb9d7bd51e23f236a0b48fcfca695f1f28b0b472bbebcca981112912fedaa6eb",
+  "status": "failed",
+  "terminal_exit": 1,
+  "terminal_complete": true,
+  "failure": "RuntimeError: caller-full-verify failed; original execution and raw log retained",
+  "reached_steps": [
+    {
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.03307152003981173,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      }
+    },
+    {
+      "name": "isolated-clone",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.8157047720160335,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/isolated-clone.launch.log",
+        "sha256": "ae9082b081fe9324883a17c93257d73019fff0c761d0d1848b39a8534e5691b4"
+      }
+    },
+    {
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 30.21268219104968,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/fetch-exact-source.launch.log",
+        "sha256": "8e6af84cf44caadb08a3335461077dbe48608943016875d084d8a384189ba68a"
+      }
+    },
+    {
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.5745151459705085,
+      "log": {
+        "bytes": 197,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/checkout-exact-source.launch.log",
+        "sha256": "f1b41339905639185ebf55637336200f8ea95d307153a646f696b5a5af741f76"
+      }
+    },
+    {
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.004187598126009107,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "operator-toolchain",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.418656935216859,
+      "log": {
+        "bytes": 1504,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/operator-toolchain.launch.log",
+        "sha256": "868af2bae158064b6412dcb423affb000a2fda043173152327fa243b4ba4e68f"
+      }
+    },
+    {
+      "name": "fmt-before",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.5250110710039735,
+      "log": {
+        "bytes": 1322,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/fmt-before.launch.log",
+        "sha256": "8ba02d23595ac17d43b2272dd3cecb69ebfb160bcd88505275b1d90b8ac43748"
+      }
+    },
+    {
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 127.10837323893793,
+      "log": {
+        "bytes": 73458,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/fix-seven-crates.launch.log",
+        "sha256": "d569b2c349dc97e9cca9696bc11235ed914ad0f44a38f22df369e041115c7ea4"
+      }
+    },
+    {
+      "name": "fmt-after",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.5741369191091508,
+      "log": {
+        "bytes": 1320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/fmt-after.launch.log",
+        "sha256": "00e1ebf812dc96da028e3002a0ab30e0d1ac67dcf578168fae6b010eb42938c8"
+      }
+    },
+    {
+      "name": "bins-check",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 67.3424230189994,
+      "log": {
+        "bytes": 41052,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/bins-check.launch.log",
+        "sha256": "0a447673e2efdf0c6aea56ad7202c2e9f38b507c1a1cb2a59eab4615083cf53e"
+      }
+    },
+    {
+      "name": "qa-b4-no-bypass",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 19.82250870601274,
+      "log": {
+        "bytes": 45150,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/qa-b4-no-bypass.launch.log",
+        "sha256": "4bbb4bb493d04ac7fcbef1129bdca35bc28e45e575a3b7457fa43bab96c1c7c5"
+      }
+    },
+    {
+      "name": "qa-fault-matrix",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11431833705864847,
+      "log": {
+        "bytes": 2166,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/qa-fault-matrix.launch.log",
+        "sha256": "ffab92164165e6334234c4dc6ac2b5853ac52c4df52703f609aa48a2a5aa2472"
+      }
+    },
+    {
+      "name": "qa-performance",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11430850788019598,
+      "log": {
+        "bytes": 2154,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/qa-performance.launch.log",
+        "sha256": "77a7863b82421057aa974f1b262505ca135a60146473e74f533d95fa9bb41506"
+      }
+    },
+    {
+      "name": "qa-vertical-slice",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11433583800680935,
+      "log": {
+        "bytes": 2168,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/qa-vertical-slice.launch.log",
+        "sha256": "6bfc1ce649c159d46890a3626c4b5218edf601b5cbc012269991b977c6c31806"
+      }
+    },
+    {
+      "name": "caller-self-test",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11441852385178208,
+      "log": {
+        "bytes": 1368,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/caller-self-test.launch.log",
+        "sha256": "c3d7f04f2a515573bb5d9761644663b19b96cffe829201e506ded5d2a8d8fceb"
+      }
+    },
+    {
+      "name": "caller-full-verify",
+      "state": "completed",
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 863.1977224410512,
+      "log": {
+        "bytes": 1530,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/caller-full-verify.launch.log",
+        "sha256": "519626b0580bf0557a1c03c97f450c08a8d413a79a3d2bbe314a5e72d82ad14d"
+      }
+    }
+  ],
+  "all_actual_execution_records": [
+    {
+      "name": "operator-toolchain",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "/home/qq/.cargo/bin/rustc",
+          "-Vv"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.3625091980211437,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:56:06.058936+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 196,
+        "log_file": "operator-toolchain.execution.json.1caab0cf971148a1a565311315e99306.log",
+        "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:56:05.695052+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source/codex-rs"
+      }
+    },
+    {
+      "name": "fmt-before",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 3.4765774118714035,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:56:09.634794+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 0,
+        "log_file": "fmt-before.execution.json.b18c1c44b4d34397a1af1a4c3517d11c.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:56:06.156895+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "fix-seven-crates",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "just",
+          "fix",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-p",
+          "codex-hepta-contracts",
+          "-p",
+          "codex-hepta-neuron",
+          "-p",
+          "codex-hepta-learning-ledger",
+          "-p",
+          "codex-hepta-fleet"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 127.02610891195945,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:58:16.740689+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 71925,
+        "log_file": "fix-seven-crates.execution.json.31a3572c11ec4871aa72418086dd0ffb.log",
+        "log_sha256": "5c1abd7555503ceb99dca2b741bf74bdd48febd1b32f7d3bbb60c19d226ece62",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:56:09.713237+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "fmt-after",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 3.528248859802261,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:58:20.392747+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 0,
+        "log_file": "fmt-after.execution.json.6687f9d869e24db080f6afa3d3933045.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:58:16.863354+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "bins-check",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "cargo",
+          "check",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-p",
+          "codex-hepta-contracts",
+          "-p",
+          "codex-hepta-neuron",
+          "-p",
+          "codex-hepta-learning-ledger",
+          "-p",
+          "codex-hepta-fleet",
+          "--bins"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 67.25823654094711,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:59:27.729253+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 39504,
+        "log_file": "bins-check.execution.json.10d96c3a1b3146ac9112b907061ef214.log",
+        "log_sha256": "b0a1472354710ad1c2d0d0b2f475cbaf92cc7c840135e46ad6d0d46c63f1b3fb",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:58:20.470207+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source/codex-rs"
+      }
+    },
+    {
+      "name": "qa-b4-no-bypass",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 19.753075919114053,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:59:47.623839+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 43789,
+        "log_file": "qa-b4-no-bypass.execution.json.686f4cb8a38041efb37876e07cc7d673.log",
+        "log_sha256": "51c744a0bcc8671c43ab30bacdf802c619a4b8db63bb2b437f4c3495fe1928d4",
+        "minimum_tests": 1,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 221,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:59:27.869907+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "qa-fault-matrix",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/fault-matrix",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.06650704308412969,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:59:47.797503+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 808,
+        "log_file": "qa-fault-matrix.execution.json.66669580219a442ea2d69e4e9615a0fd.log",
+        "log_sha256": "cdaac012b1e66926aec5bfc03b760a186f6caaddd9e27e64378f28dffafd5d81",
+        "minimum_tests": 1,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 5,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:59:47.730067+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "qa-performance",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/performance",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.06771403993479908,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:59:47.948700+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 798,
+        "log_file": "qa-performance.execution.json.aba1877c65274e5c9ffe673f8be22af4.log",
+        "log_sha256": "d2e2593ee77736f956cca3f549cbae73da9b7113276c4db68ce1e54e82bd594f",
+        "minimum_tests": 1,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 5,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:59:47.880287+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "qa-vertical-slice",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/vertical-slice",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.06642951699905097,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:59:48.099219+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 806,
+        "log_file": "qa-vertical-slice.execution.json.f40d7781bcc84fb0add4dae9eb643487.log",
+        "log_sha256": "0d46a2574bff0a38b57da271f9c648090d3d6b2e9bce9c78b59e37c679694fe6",
+        "minimum_tests": 1,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 5,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:59:48.032124+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "caller-self-test",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.07292193616740406,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T16:59:48.254632+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 48,
+        "log_file": "caller-self-test.execution.json.af418123ccbd40b1be514702966b576b.log",
+        "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:59:48.180966+00:00",
+        "status": "passed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    },
+    {
+      "name": "caller-full-verify",
+      "data": {
+        "after": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+          "dirty": false,
+          "parents": [
+            "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+          ],
+          "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+        },
+        "command": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "command_exit_code": 1,
+        "elapsed_seconds": 863.1224461789243,
+        "exit_code": 1,
+        "finished_at": "2026-11-12T17:14:11.456506+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 212,
+        "log_file": "caller-full-verify.execution.json.983459a8e9d44cd4aa021efa382eb0f5.log",
+        "log_sha256": "9cdf190fe7e1132d33d9bad237f15f82038ea34069360aebdd0d910c79ece4f6",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 1,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "started_at": "2026-11-12T16:59:48.332791+00:00",
+        "status": "failed",
+        "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+      }
+    }
+  ],
+  "diagnosis": {
+    "stage": "caller-full-verify",
+    "command_exit": 1,
+    "executor_exit": 1,
+    "caller_elapsed_seconds": 863.1224461789243,
+    "original_stdout": "FAIL_HEPTA_CALLER_PROOF: learning_original_q24_stage_require_current: codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs: unresolved possible OriginalCellQ24LearningStageOwnersV1::require_current receiver\n",
+    "qa_passed": 236,
+    "qa_failed": 0,
+    "caller_self_test_passed": true,
+    "source_qualification_pass": false,
+    "interpretation": "Five real Factory receivers in the phase child were implicit. Static type inspection confirms Factory; V42 supplies only explicit UFCS and matching source markers. This failed result is retained and no success is inferred."
+  },
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "final_source": {
+    "head": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+    "status": "",
+    "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+  },
+  "source_checkers_unchanged": true,
+  "original_pins": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c"
+  },
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "predecessor_results_used": false,
+  "native_retries": 0,
+  "main_merged": false,
+  "not_reached": [
+    "same-source-helper",
+    "ordinary-seven-package-native",
+    "Root17-UID0-native"
+  ],
+  "acquisition": {
+    "progress": {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/records/progress.json",
+      "bytes": 30945,
+      "sha256": "f61a161558243f09167f42e05fbc39d54f94f1d20c0c2bb1993e185137c6ad50",
+      "version": "66306:77643350:30945:1794503652093125374:1794503652093125374",
+      "complete": true
+    },
+    "all_reached_launcher_logs_complete": true,
+    "all_actual_execution_records_complete": true,
+    "child_stdout_complete_from_original_tee": true,
+    "child_stdout_files_read_separately": false,
+    "full_terminal_complete": true,
+    "terminal": {
+      "session": "dpty-eb9d7bd51e23f236a0b48fcfca695f1f28b0b472bbebcca981112912fedaa6eb",
+      "bytes": 7021,
+      "sha256": "2ea05193fadb4df3cdb4e283526336b3fc0e5becc242c58850ce74506800e65a",
+      "complete": true,
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 7021,
+        "bytes_stored": 7021,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794502532773,
+        "exit_code": 1,
+        "output_complete": true,
+        "owner_pid": 1750285,
+        "pid": 1750286,
+        "state": "exited"
+      }
+    }
+  }
+}

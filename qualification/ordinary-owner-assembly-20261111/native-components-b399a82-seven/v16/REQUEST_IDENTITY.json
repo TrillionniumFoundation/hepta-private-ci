@@ -1,0 +1,83 @@
+{
+  "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f",
+  "previous_attempt_completed_child_evidence": {
+    "kind": "original native child completion reconciled from original harness and stable direct records",
+    "attempt": "ordinary-53ed651-seven-final-v15",
+    "source": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "original_harness": {
+      "git": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "bytes": 50167,
+      "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+    },
+    "progress": {
+      "same_original_progress_bytes": true,
+      "version": "66306:77381357:23478:1794500254863618729:1794500254863618729",
+      "sha256": "da548784b6e8a8e934a28d7cf9a1ad3d4f1b8a6eea4154f7a747d6891e02051f",
+      "complete": true,
+      "direct_target_read": true
+    },
+    "steps_terminal": 11,
+    "execution_terminal": 6,
+    "all_actual_command_exit_codes_known": true,
+    "all_timeouts_and_output_limits_false": true,
+    "source_final": {
+      "head": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+      "status": "",
+      "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c"
+    },
+    "cleanup": [
+      {
+        "name": "retain-source-and-drift",
+        "status": "passed"
+      },
+      {
+        "name": "original-tool-sources",
+        "status": "passed"
+      },
+      {
+        "name": "final-physical-source",
+        "status": "passed"
+      },
+      {
+        "name": "read-only-reference",
+        "status": "passed"
+      },
+      {
+        "name": "external-tools",
+        "status": "passed"
+      }
+    ],
+    "pending_control_flow": "The sole pending_commands.append is in the launcher TimeoutExpired branch, which also sets completion_unknown. No such flag or timed_out/unknown step exists in this completed original record. After finally and this finished progress write the fixed harness can only iterate an empty pending list, print the result and exit; it cannot dispatch subsequent Cargo.",
+    "start_delivery_attempts": 3,
+    "same_idempotency_key": "af52-ordinary-53ed651-seven-final-v15",
+    "native_retries": 0,
+    "observed_actual_attempt_directories": 1,
+    "pty_session_id": null,
+    "pty_terminal_exit": null,
+    "pty_terminal_output_complete": false,
+    "limits": [
+      "No successful PTY start receipt or session ID was recovered. Three identical same-key start deliveries timed out at the MCP interface.",
+      "Two bounded current-runtime session-list pages had no exact task match; a subsequent wider metadata request timed out. No unrelated session output or process was inspected or changed.",
+      "Original Python supervisor terminal exit and full PTY output remain unobserved; that limit is separate from the recorded completed native child execution."
+    ]
+  },
+  "changed_config_fields": [
+    "head",
+    "tree",
+    "work_name",
+    "attempt"
+  ],
+  "harness": {
+    "git": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 50167,
+    "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+  },
+  "same_original_package_and_root_selection": true,
+  "native_retries": 0,
+  "ordinary_counts": [
+    0,
+    0,
+    0
+  ]
+}

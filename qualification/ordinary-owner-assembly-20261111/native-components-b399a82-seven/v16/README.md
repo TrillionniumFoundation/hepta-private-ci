@@ -1,0 +1,7 @@
+# V41 / b399a82: original full-caller failure after 236/236 QA
+
+This is the complete original v16 failed component run at source `b399a82f5bbf53fe270e477bd90ccd2cdedcdebf`, tree `53f8928f48ffe35d3a271407baa5e80c77a76c0f`. The full 7,021-byte PTY archive is complete with exit 1. All 16 reached launchers and 11 actual executor records are retained. The 11 exact child stdout streams are recovered from each complete original launcher tee and checked against its original byte count, SHA256 and execution footer; this does not claim separate child-log reads.
+
+Original maintenance and binaries passed with no source drift. QA passed 236/236 (221 + 5 + 5 + 5), caller self-test passed, then full caller verification failed after 863.1224461789243 seconds on the implicit Factory receiver in `cell_q24_learning_same_actor.rs`. Same-source helper, ordinary seven-package tests, and Root17 were not reached. All five original cleanup checks passed and final source is clean. The original checker, typed helper, 50,167-byte harness, package selection, timeouts and retry=0 were retained.
+
+V42 separately corrects the five actual Factory call spellings and their exact source guards. This archive confers no V42 qualification. The failed caller result is not NoUpdate. Ordinary complete / positive adoption / genuine NoUpdate-or-rollback remain **0 / 0 / 0**; independent C and physical daemon/Root exit/restart remain unaccepted. No main merge.
