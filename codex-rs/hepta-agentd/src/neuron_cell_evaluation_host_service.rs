@@ -19,6 +19,10 @@ use crate::OriginalCellEvaluationReceiptErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_host_diagnostics_tests.rs"]
+mod diagnostics;
+
 impl OriginalCellEvaluationHostV1 {
     /// Original connected stream and held consumer pidfd only. The original
     /// 30-second frame and 300-second session bounds are not extended. This
@@ -53,6 +57,8 @@ impl OriginalCellEvaluationHostV1 {
 
     fn serve_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
+            #[cfg(test)]
+            diagnostics::begin_request(request_id);
             if !channel.exchange(|bytes| {
                 self.command_response(bytes, request_id)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)
@@ -93,6 +99,8 @@ impl OriginalCellEvaluationHostV1 {
     }
 
     fn original_response(&self, action: wire::Action) -> Result<wire::Outcome, Error> {
+        #[cfg(test)]
+        let diagnostic_started = std::time::Instant::now();
         let completed = {
             let mut owners = match self.owners.try_lock() {
                 Ok(owners) => owners,
@@ -101,6 +109,10 @@ impl OriginalCellEvaluationHostV1 {
             self.runtime
                 .block_on(owners.completion(&self.context, action))
         };
+        #[cfg(test)]
+        if let Err(error) = &completed {
+            diagnostics::capture(action, self.binding, diagnostic_started.elapsed(), error);
+        }
         match completed {
             Ok(original) => wire::encode_completed(&self.context, original, now()?),
             Err(error) => Ok(original_state(error)),
@@ -131,7 +143,10 @@ impl OriginalCellEvaluationHostV1 {
         &self,
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
-        self.serve_channel(channel)
+        let result = self.serve_channel(channel);
+        // The original service, including its last exchange, has returned.
+        diagnostics::flush();
+        result
     }
 
     pub(crate) fn fixture_command_response(
