@@ -38,7 +38,9 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             CellQ24PreparedLearningV1::with_original_prepared_operation(&inner.prepared, |read| {
                 context.require_in_operation(read, OriginalHistoricalStageAdmissionV1::ReadOnly)?;
                 runtime
-                    .block_on(owners.factory.require_current())
+                    .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
+                        &owners.factory,
+                    ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);
@@ -63,7 +65,9 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 // factory and cancellation postchecks before the lane leaves.
                 context.require_in_operation(read, OriginalHistoricalStageAdmissionV1::ReadOnly)?;
                 runtime
-                    .block_on(owners.factory.require_current())
+                    .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
+                        &owners.factory,
+                    ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);

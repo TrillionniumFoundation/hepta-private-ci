@@ -236,7 +236,7 @@ impl StageFilesData {
         let (dataset, dataset_key) =
             self.dataset
                 .open_original(files, &authorities.dataset, objective, self.mode)?;
-        let training = self.training.open(files, objective, self.mode)?;
+        let training = JournalData::open(&self.training, files, objective, self.mode)?;
         let (receipts, receipt_key) = self.training_receipt.open_original(
             files,
             &authorities.trainer,
