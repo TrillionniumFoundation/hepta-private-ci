@@ -12,6 +12,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
     learning: &RegisteredHostLearningCheckpointV1,
     original_end: Option<Instant>,
     version: PublicationVersion,
+    prepared: Option<crate::authority_host_runtime::PreparedPublicationData>,
 ) -> io::Result<(
     PublicationRuntime,
     RootGenerationPublicationEnrollmentCapabilityV1,
@@ -72,7 +73,9 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
                     .join(version.socket()),
             };
             let bootstrap = crate::authority_host_bootstrap_seal::seal_bytes(
-                &serde_json::to_vec(&bundle).map_err(io::Error::other)?,
+                &crate::authority_host_service::generation_publication::encode_original_publication_bootstrap(
+                    &bundle, prepared.as_ref(),
+                )?,
             )?;
             if learning
                 .backend

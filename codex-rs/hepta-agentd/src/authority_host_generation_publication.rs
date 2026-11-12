@@ -52,6 +52,11 @@ mod versions;
 pub(crate) use versions::PublicationVersion;
 use versions::ReservedPublicationProfile;
 
+#[path = "authority_host_publication_bootstrap.rs"]
+mod bootstrap;
+pub(crate) use bootstrap::decode_original_publication_bootstrap;
+pub(crate) use bootstrap::encode_original_publication_bootstrap;
+
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct PublicationProfile {

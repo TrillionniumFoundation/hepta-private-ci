@@ -163,6 +163,7 @@ impl PreparedHostAuthoritySession {
             learning,
             None,
             PublicationVersion::LegacyV1,
+            None,
         )?;
         self.publication = Some(runtime);
         Ok((capability, offer))
