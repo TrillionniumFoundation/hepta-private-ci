@@ -83,13 +83,13 @@ impl OriginalControlFile {
     }
 }
 
-pub(super) struct OriginalControlRecord {
+pub(crate) struct OriginalControlRecord {
     primary: OriginalControlFile,
     lock: OriginalControlFile,
 }
 
 impl OriginalControlRecord {
-    pub(super) fn open(root: &Path, owner: &str) -> io::Result<Self> {
+    pub(crate) fn open(root: &Path, owner: &str) -> io::Result<Self> {
         super::original_root()?;
         let name = format!("frontier-v1-{}.json", Digest32::of_bytes(owner.as_bytes()));
         let held = Self {
@@ -100,12 +100,12 @@ impl OriginalControlRecord {
         Ok(held)
     }
 
-    pub(super) fn require_unchanged(&self) -> io::Result<()> {
+    pub(crate) fn require_unchanged(&self) -> io::Result<()> {
         self.primary.require_unchanged()?;
         self.lock.require_unchanged()
     }
 
-    pub(super) fn require_original_lock(&self) -> io::Result<()> {
+    pub(crate) fn require_original_lock(&self) -> io::Result<()> {
         self.lock.require_unchanged()
     }
 }

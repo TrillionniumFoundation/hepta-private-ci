@@ -36,6 +36,8 @@ use crate::root_historical_task_read_protocol::PURPOSE;
 use crate::root_historical_task_read_protocol::SOCKET;
 use crate::root_historical_task_read_protocol::WIRE_BOUND;
 
+#[path = "authority_host_completed_checkpoint.rs"]
+mod completed_checkpoint;
 #[path = "authority_host_completed_deployment.rs"]
 mod completed_deployment;
 #[path = "authority_host_completed_files.rs"]
