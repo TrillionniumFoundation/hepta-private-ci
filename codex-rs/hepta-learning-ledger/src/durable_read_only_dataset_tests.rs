@@ -6,6 +6,7 @@ use crate::AuthenticatedPrincipalV1;
 use crate::DatasetFreezeRequestV1;
 use crate::Revocation;
 use crate::freeze_dataset_receipt_v3;
+use pretty_assertions::assert_eq;
 
 fn receipt(snapshot: &LedgerSnapshot) -> TestResult<DatasetSnapshotReceiptV3> {
     let digest = |label: &str| Digest32::of_bytes(label.as_bytes());

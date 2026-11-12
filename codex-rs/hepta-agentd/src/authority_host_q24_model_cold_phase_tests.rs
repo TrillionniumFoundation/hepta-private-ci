@@ -94,7 +94,7 @@ fn root_q24_factory_v2_dedicated_root_phase() -> anyhow::Result<()> {
         &identity,
         *proof_digest.as_array(),
         initial.request.clone(),
-        initial.owners.clone(),
+        initial.owners,
         codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
         Digest32::of_bytes(UPDATE_RULE),
     )?;

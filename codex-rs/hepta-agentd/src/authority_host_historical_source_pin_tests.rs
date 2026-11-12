@@ -159,7 +159,7 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
     retained.fence()?;
     retained.fence()?;
     assert!(retained.readback_digest().is_err());
-    assert!(retain_pin(root.clone(), retained.expected.pin.clone()).is_err());
+    assert!(retain_pin(root.clone(), retained.expected.pin).is_err());
     assert!(RootHistoricalSourcePinV1::open_existing(root, &target).is_err());
     Ok(())
 }

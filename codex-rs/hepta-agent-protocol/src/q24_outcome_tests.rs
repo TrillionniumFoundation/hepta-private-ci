@@ -34,7 +34,7 @@ fn request() -> AgentdRequest {
 fn q24_original_outcome_wire_fits_existing_frame_and_roundtrips() -> Result<(), serde_json::Error> {
     let original = request();
     let bytes = serde_json::to_vec(&original)?;
-    assert!(bytes.len() + 1 <= 64 * 1024);
+    assert!(bytes.len() < 64 * 1024);
     assert_eq!(serde_json::from_slice::<AgentdRequest>(&bytes)?, original);
     Ok(())
 }
