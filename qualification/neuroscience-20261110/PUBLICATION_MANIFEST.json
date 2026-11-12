@@ -1,8 +1,8 @@
 {
   "schema": "hepta.terminal-evidence-publication.v1",
-  "created_at_utc": "2026-11-12 15:25:28 UTC",
-  "parent_commit": "ff31b9a1786408d03a6e25babb1362cf15cb87ef",
-  "base_tree": "e43e1bb1daa728adeb75fd8846e87cdc71a82b15",
+  "created_at_utc": "2026-11-12 15:31:32 UTC",
+  "parent_commit": "f9babf0be66ccdc687239e0da519b87ef25b0dcf",
+  "base_tree": "a2453622d2db42709c1bdefa43c9405c4d39a4f4",
   "scope": "Qualification-only original evidence and exact-source status; no implementation, test configuration, owner authority, actor or deployment changes.",
   "implementation_changes": false,
   "owner_decision": null,
@@ -67,6 +67,12 @@
       "bytes": 5581,
       "sha256": "e69c6aa1db8501f8389de3b1e0bdbb2f1719fae7a0925f37defd0cc7e9f3af7e",
       "git_blob": "670e13aaec668d579955b50dd6cc9a738050a348"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json",
+      "bytes": 6590,
+      "sha256": "ccead31a7b53a805c54ed513bdad489ad2eecb056ce9c7597a2c4b243beee2cb",
+      "git_blob": "fa6eb3d897381b490c455ede70a2a3efa6d54c15"
     },
     {
       "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/DIAGNOSTIC.original.json",
@@ -1372,9 +1378,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
-      "bytes": 19805,
-      "sha256": "dc1105264c1e72db3bc11c0b35fb630dcfb8acaef8f9b20b0d4d66623d385ed3",
-      "git_blob": "f6d6d244819d939016e1b99b5e57a3d27641083d"
+      "bytes": 20352,
+      "sha256": "d2b840898e90e592ab54c867405735d402064472886da70753ff729a68580b5c",
+      "git_blob": "5e475c647c37af62b9baece776e123f5cd27bd87"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/act2-upstream-20261112/BLOCKERS.ba7.original.json",
@@ -2337,6 +2343,12 @@
       "git_blob": "c96ca02036a50d457e43a4d962f675724975135d"
     },
     {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_READBACK_1532.json",
+      "bytes": 4243,
+      "sha256": "605bee83121a18fca6dc714f07e35a1571b3ee2a41a954b26b7784ee9b73b5ec",
+      "git_blob": "efc7a8a9dbbe0509c7d120199dfd743b9e7c640a"
+    },
+    {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GZIP_DECODER_REFERENCE.js.txt",
       "bytes": 3833,
       "sha256": "47e17f029edb8d0722a05a06a453347fd255a36b748b6b839751d682c6dcb707",
@@ -2386,9 +2398,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 54716,
-      "sha256": "b413aec360f88d50fdcedfe1e0f862222e1c0265f6414f08cd593d52335c155f",
-      "git_blob": "918aa00a5521296b66f767871d5919e1825ddf10"
+      "bytes": 55609,
+      "sha256": "13c85b144a0ef7c220ad20a1f2f7b92749d346f5c4476b840d64c8963942ccd8",
+      "git_blob": "113cd6845c3640894d4d9c4cb71ec2ad6d2ca3fd"
     },
     {
       "path": "qualification/notes-seed-profile-20261112/bb8-format-fix/JOBS_1408_ORIGINAL.json",
@@ -3813,6 +3825,54 @@
       "sha256": "ffd80a31be7e322750acebd4bc688a55964f67387ae2531723e9e6eb418e5a59"
     },
     {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-000.bin",
+      "git_blob": "50fd47931676c2422b9379deee1cb760b423dd47",
+      "bytes": 350000,
+      "sha256": "cea3ba473b2d69a575869f4e8c1831a1063cdbf748c689b80a0a7e9c7be150b2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-001.bin",
+      "git_blob": "cc600a4d69de74db1c59ec993d24ff9dff1c7fa2",
+      "bytes": 350000,
+      "sha256": "0e09b00fa0e08e76009707c6dddae005e8ea264e1e22010cd983d20d6077dc6c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-002.bin",
+      "git_blob": "d80c1e70068d38301d58f8e7cbdc9bd01d16326a",
+      "bytes": 350000,
+      "sha256": "15cc8e0bb6de037cc3b355d411eaf51be067eb974553c74bc645e575b6ad2c08"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-003.bin",
+      "git_blob": "64a54d53a4d18faf05bcf02e0fe1add54744aaee",
+      "bytes": 169547,
+      "sha256": "8d8afe8631a5da2abe012518249c1f81273f03ed84fc8fe63fabb95c9805fe64"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-000.bin",
+      "git_blob": "b5b5f284b825d251b8a9e40299421fce3593aa52",
+      "bytes": 350000,
+      "sha256": "bec9d53755bbfe1b7f98ee444a2bda4891a8a154af7c5b54f980716054327433"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-001.bin",
+      "git_blob": "7037557351583a61308abf1ea9e59fb40f07ba92",
+      "bytes": 350000,
+      "sha256": "521e3db2a16637249d95c088d39b32bd6e1f3c3140557b68b5be6c83b9e4b914"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-002.bin",
+      "git_blob": "7e9a40abb2ceabca606af6719e6ff89d0b7cf4ee",
+      "bytes": 350000,
+      "sha256": "e959a0ed917f66afb91827f8f9e6a24b79d0d357110bab4d3918fe499376ec74"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-003.bin",
+      "git_blob": "de90b2f2d9a8bb5ff81078fdbc6df5ff6e695f37",
+      "bytes": 153989,
+      "sha256": "e0db471497a40d709eab456948312cdab22433c93e9197281eeecd8461d48b08"
+    },
+    {
       "path": "qualification/evaluated-current-read-20261112/841fb9-rustfmt-pass/execution-commit.original.json",
       "git_blob": "51c644a9920297a94e3bfd8b8312207f637d73e7",
       "bytes": 2798,
@@ -4930,7 +4990,7 @@
   ],
   "original_mapping": "EVIDENCE_PATH_MAPPING.json",
   "gzip_bytes_verified_before_git_storage": true,
-  "github_binary_readback_status": "COMPLETE_FOR_ALL_23_NEW_BINARY_OBJECTS_AND_FULL_REASSEMBLIES",
+  "github_binary_readback_status": "COMPLETE_FOR_ALL_31_NEW_BINARY_OBJECTS_AND_SEVEN_FULL_JOB_LOG_REASSEMBLIES",
   "manifest_excludes_itself": true,
   "github_binary_readback_record": "GIT_PERSISTENCE_VERIFIED.json",
   "followup_parent": "ba20e12044cbf9d90a8823f6e3e68878b638210f",
@@ -4945,7 +5005,8 @@
     "qualification/notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ROOT_ZIP_VERIFICATION.json",
     "qualification/evaluated-current-read-20261112/source-caller-1026bd0/full-inventory/ROOT_INVENTORY_VERIFICATION.json",
     "evidence/terminal-20261112/GIT_READBACK_1507.json",
-    "evidence/terminal-20261112/GIT_READBACK_1522.json"
+    "evidence/terminal-20261112/GIT_READBACK_1522.json",
+    "evidence/terminal-20261112/GIT_READBACK_1532.json"
   ],
   "unexported_original_payloads_not_claimed": [
     "0e full tracked-source gzip inventory remains on ai395",
@@ -4956,15 +5017,17 @@
   "new_binary_readback": {
     "records": [
       "evidence/terminal-20261112/GIT_READBACK_1507.json",
-      "evidence/terminal-20261112/GIT_READBACK_1522.json"
+      "evidence/terminal-20261112/GIT_READBACK_1522.json",
+      "evidence/terminal-20261112/GIT_READBACK_1532.json"
     ],
     "staged_commits": [
       "2800dda6f31fc7f7304d9f190e769fbc961bcbc1",
-      "ff31b9a1786408d03a6e25babb1362cf15cb87ef"
+      "ff31b9a1786408d03a6e25babb1362cf15cb87ef",
+      "f9babf0be66ccdc687239e0da519b87ef25b0dcf"
     ],
-    "binary_blobs": 23,
+    "binary_blobs": 31,
     "all_verified": true,
-    "complete_original_job_logs": 5,
+    "complete_original_job_logs": 7,
     "complete_ACT_bb8_zip": {
       "bytes": 58747,
       "members": 18,
@@ -5428,6 +5491,54 @@
       "git_blob": "688534b9456fe88c2d3f6c42fc271bf9f9bc57bb",
       "bytes": 241294,
       "sha256": "ffd80a31be7e322750acebd4bc688a55964f67387ae2531723e9e6eb418e5a59"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-000.bin",
+      "git_blob": "50fd47931676c2422b9379deee1cb760b423dd47",
+      "bytes": 350000,
+      "sha256": "cea3ba473b2d69a575869f4e8c1831a1063cdbf748c689b80a0a7e9c7be150b2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-001.bin",
+      "git_blob": "cc600a4d69de74db1c59ec993d24ff9dff1c7fa2",
+      "bytes": 350000,
+      "sha256": "0e09b00fa0e08e76009707c6dddae005e8ea264e1e22010cd983d20d6077dc6c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-002.bin",
+      "git_blob": "d80c1e70068d38301d58f8e7cbdc9bd01d16326a",
+      "bytes": 350000,
+      "sha256": "15cc8e0bb6de037cc3b355d411eaf51be067eb974553c74bc645e575b6ad2c08"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-003.bin",
+      "git_blob": "64a54d53a4d18faf05bcf02e0fe1add54744aaee",
+      "bytes": 169547,
+      "sha256": "8d8afe8631a5da2abe012518249c1f81273f03ed84fc8fe63fabb95c9805fe64"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-000.bin",
+      "git_blob": "b5b5f284b825d251b8a9e40299421fce3593aa52",
+      "bytes": 350000,
+      "sha256": "bec9d53755bbfe1b7f98ee444a2bda4891a8a154af7c5b54f980716054327433"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-001.bin",
+      "git_blob": "7037557351583a61308abf1ea9e59fb40f07ba92",
+      "bytes": 350000,
+      "sha256": "521e3db2a16637249d95c088d39b32bd6e1f3c3140557b68b5be6c83b9e4b914"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-002.bin",
+      "git_blob": "7e9a40abb2ceabca606af6719e6ff89d0b7cf4ee",
+      "bytes": 350000,
+      "sha256": "e959a0ed917f66afb91827f8f9e6a24b79d0d357110bab4d3918fe499376ec74"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-003.bin",
+      "git_blob": "de90b2f2d9a8bb5ff81078fdbc6df5ff6e695f37",
+      "bytes": 153989,
+      "sha256": "e0db471497a40d709eab456948312cdab22433c93e9197281eeecd8461d48b08"
     }
   ]
 }

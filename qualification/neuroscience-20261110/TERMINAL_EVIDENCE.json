@@ -537,7 +537,8 @@
           "remaining_ms_at_mint": 16,
           "root_actual_full_logs_retrieved": true,
           "fix": "Test-only full preparation window and bounded observed expiry wait under review",
-          "evidence": "../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json"
+          "evidence": "../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json",
+          "full_logs_reassembled_from_git": true
         }
       },
       "pending_integration": {
@@ -1084,10 +1085,11 @@
     "same_original_bytes": true,
     "readback_commit": "e99ef9cca7e2185426dd91a136ad17ad0e765ea3",
     "latest_increment_all_verified": true,
-    "latest_increment_binary_blobs": 23,
+    "latest_increment_binary_blobs": 31,
     "latest_records": [
       "evidence/terminal-20261112/GIT_READBACK_1507.json",
-      "evidence/terminal-20261112/GIT_READBACK_1522.json"
+      "evidence/terminal-20261112/GIT_READBACK_1522.json",
+      "evidence/terminal-20261112/GIT_READBACK_1532.json"
     ]
   },
   "wrapper_real_asset_validation": {
@@ -1218,19 +1220,21 @@
     "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 15:18:14 UTC",
+  "latest_followup_observed_at_utc": "2026-11-12 15:31:32 UTC",
   "wrapper_completed_macro_executions": 4,
   "latest_binary_readback": {
     "staged_commits": [
       "2800dda6f31fc7f7304d9f190e769fbc961bcbc1",
-      "ff31b9a1786408d03a6e25babb1362cf15cb87ef"
+      "ff31b9a1786408d03a6e25babb1362cf15cb87ef",
+      "f9babf0be66ccdc687239e0da519b87ef25b0dcf"
     ],
-    "binary_blobs": 23,
+    "binary_blobs": 31,
     "all_verified": true,
-    "complete_original_job_logs": 5,
+    "complete_original_job_logs": 7,
     "records": [
       "evidence/terminal-20261112/GIT_READBACK_1507.json",
-      "evidence/terminal-20261112/GIT_READBACK_1522.json"
+      "evidence/terminal-20261112/GIT_READBACK_1522.json",
+      "evidence/terminal-20261112/GIT_READBACK_1532.json"
     ]
   },
   "complete_gate_audit": {
