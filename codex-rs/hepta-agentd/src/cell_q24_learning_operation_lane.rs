@@ -45,7 +45,7 @@ impl Q24StageState {
                     .map_err(unavailable)?;
                 runtime
                     .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
-                        &owners.factory,
+                        &mut owners.factory,
                     ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
@@ -56,7 +56,7 @@ impl Q24StageState {
                     .map_err(unavailable)?;
                 runtime
                     .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
-                        &owners.factory,
+                        &mut owners.factory,
                     ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
