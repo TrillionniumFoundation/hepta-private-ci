@@ -263,6 +263,36 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
         ))
 
 
+
+    def test_shared_source_preimage_preserves_original_inputs_and_registry(self):
+        data = AGENT + "authority_host_historical_source_deployment_data.rs"
+        self.rejects_removal(data, "into_inputs", (
+            "self.into_configuration(identity)?", "original.registry().map_err(io::Error::other)?",
+            "journal,\n            witness,",
+        ))
+        self.rejects_removal(data, "into_configuration", (
+            "self.schema_version != 1", "TaskFlowFence::new(", "identity.agent_id.clone()",
+            "agent_id: StableId::new(identity.agent_id.as_str())",
+            "lease_duration_ms: source.lease_duration_ms",
+        ))
+        self.rejects_removal(AGENT + "circuit_q24_source_configuration.rs", "registry", (
+            "program.program_id == self.circuit.entry_program", "CircuitCellBindingV1 {",
+            "cell: self.definition.clone()", "routes: self.routes.clone()",
+            "CircuitCellRegistryV1::new(self.circuit.clone(), vec![binding])",
+        ))
+
+    def test_shared_initial_decoder_cannot_open_root_authorities(self):
+        data = AGENT + "authority_host_initial_deployment_data.rs"
+        self.rejects_removal(data, "from_original_deployment_value", (
+            "data.schema_version != 1", "data.owner_trust.original_owner_trust()?",
+            "data.selector_trust.original_selector(&trust)?",
+            "data.target.original_observer_config()?",
+            "data.retained_current.original_current()?",
+            "data.selection.original_selection()?",
+        ))
+        self.check_mutation(data, lambda source: source + "\nRootAuthorityDirectory::open(path);\n")
+
+
 class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
