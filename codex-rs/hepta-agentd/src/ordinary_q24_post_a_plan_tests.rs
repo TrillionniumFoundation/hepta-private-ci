@@ -11,6 +11,8 @@ use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_types::Digest32;
 
 use super::RetainedOriginalAPhase;
+use super::evidence_custody::OriginalEvidenceDirectory;
+use super::evidence_custody::OriginalEvidenceDirectoryKind;
 use super::post_a_c_inputs::OriginalCInputFiles;
 use super::post_a_owner::OriginalPostAOwnerInputs;
 use super::post_a_trust::OriginalPostATrust;
@@ -29,7 +31,7 @@ pub(super) struct OriginalPostAResources {
     pub(super) data: PathBuf,
     pub(super) witness_files: PathBuf,
     pub(super) model_reservation: PathBuf,
-    pub(super) model_witness: tempfile::TempDir,
+    pub(super) model_witness: OriginalEvidenceDirectory,
     pub(super) end: Instant,
 }
 
@@ -140,7 +142,9 @@ async fn read_retired_original_frontier(
     Ok(frontier)
 }
 
-fn reserve_original_model_witness(path: &std::path::Path) -> anyhow::Result<tempfile::TempDir> {
+fn reserve_original_model_witness(
+    path: &std::path::Path,
+) -> anyhow::Result<OriginalEvidenceDirectory> {
     let mountpoint = PathBuf::from(
         std::env::var_os("HEPTA_Q24_FACTORY_WITNESS_BIND")
             .ok_or_else(|| anyhow::anyhow!("actual registered model witness bind required"))?,
@@ -157,9 +161,12 @@ fn reserve_original_model_witness(path: &std::path::Path) -> anyhow::Result<temp
         inode: metadata.ino(),
     };
     witness_bind.verify()?;
-    let directory = tempfile::Builder::new()
-        .prefix("ordinary-post-a-model-")
-        .tempdir_in(&mountpoint)?;
+    let directory = OriginalEvidenceDirectory::new(
+        tempfile::Builder::new()
+            .prefix("ordinary-post-a-model-")
+            .tempdir_in(&mountpoint)?,
+        OriginalEvidenceDirectoryKind::ModelWitness,
+    );
     super::super::owned_mode(directory.path(), 0, 0, 0o700)?;
     super::root::write_json(
         path,

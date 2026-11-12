@@ -11,6 +11,8 @@ use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
+use super::evidence_custody::OriginalEvidenceDirectory;
+use super::evidence_custody::OriginalEvidenceDirectoryKind;
 use super::post_a_plan::OriginalPostAPlan;
 use super::post_a_plan::OriginalPostAResources;
 use super::post_a_trust::B_OBSERVER;
@@ -47,7 +49,7 @@ pub(super) struct OriginalIndependentBEvaluationInputs {
     cohort: Vec<data::CohortRow>,
     protocol: protocol::OriginalProtocol,
     files: files::OriginalFiles,
-    business_directory: tempfile::TempDir,
+    business_directory: OriginalEvidenceDirectory,
 }
 
 impl OriginalIndependentBEvaluationInputs {
@@ -76,9 +78,12 @@ impl OriginalIndependentBEvaluationInputs {
         let directory = original.plan.protected.path().join("independent-b");
         std::fs::create_dir(&directory)?;
         super::super::owned_mode(&directory, 0, 0, 0o700)?;
-        let business_directory = tempfile::Builder::new()
-            .prefix("ordinary-original-independent-b-")
-            .tempdir()?;
+        let business_directory = OriginalEvidenceDirectory::new(
+            tempfile::Builder::new()
+                .prefix("ordinary-original-independent-b-")
+                .tempdir()?,
+            OriginalEvidenceDirectoryKind::IndependentBBusiness,
+        );
         super::super::owned_mode(business_directory.path(), 60002, 60001, 0o700)?;
         let training = business::prepare_training(business_directory.path(), case, resources.end)?;
         for file in std::fs::read_dir(business_directory.path())? {
