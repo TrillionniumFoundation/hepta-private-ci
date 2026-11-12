@@ -49,12 +49,6 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      PERC_CI_PRIVATE: ${{ runner.temp }}/perc-real-source-private
-      PERC_CI_PUBLIC: ${{ runner.temp }}/perc-real-source-public
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/perc-real-source-browsers
-      PERC_TEST_MOBILENET_WEIGHTS: ${{ runner.temp }}/perc-real-source-private/inputs/mobilenet_v3_small-047dcff4.pth
-      PERC_TEST_DOCUMENT_DATASET: ${{ runner.temp }}/perc-real-source-private/inputs/funsd-panel
-      PERC_TEST_DOCUMENT_OUTPUT_DIR: ${{ runner.temp }}/perc-real-source-private/document-smoke
     steps:
       - name: Check out the exact candidate source
         id: checkout
@@ -71,6 +65,13 @@ jobs:
           python-version: "3.12"
       - name: Bind source and separate publishable records from original inputs
         id: bind
+        env:
+          PERC_CI_PRIVATE: ${{ runner.temp }}/perc-real-source-private
+          PERC_CI_PUBLIC: ${{ runner.temp }}/perc-real-source-public
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/perc-real-source-browsers
+          PERC_TEST_MOBILENET_WEIGHTS: ${{ runner.temp }}/perc-real-source-private/inputs/mobilenet_v3_small-047dcff4.pth
+          PERC_TEST_DOCUMENT_DATASET: ${{ runner.temp }}/perc-real-source-private/inputs/funsd-panel
+          PERC_TEST_DOCUMENT_OUTPUT_DIR: ${{ runner.temp }}/perc-real-source-private/document-smoke
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -82,6 +83,11 @@ jobs:
           private, public = Path(os.environ['PERC_CI_PRIVATE']), Path(os.environ['PERC_CI_PUBLIC'])
           private.mkdir(mode=0o700)
           public.mkdir()
+          with Path(os.environ['GITHUB_ENV']).open('a') as exported:
+              for key in ('PERC_CI_PRIVATE', 'PERC_CI_PUBLIC', 'PLAYWRIGHT_BROWSERS_PATH',
+                          'PERC_TEST_MOBILENET_WEIGHTS', 'PERC_TEST_DOCUMENT_DATASET',
+                          'PERC_TEST_DOCUMENT_OUTPUT_DIR'):
+                  exported.write(key + '=' + os.environ[key] + '\n')
           paths = subprocess.check_output([
               'git', 'ls-files', '-z', '--', 'scripts/perc1', 'scripts/perc1_*.py',
               'scripts/perc1_*.rs', 'scripts/test_perc1*.py', 'codex-rs/hepta-neuron',
@@ -227,6 +233,8 @@ jobs:
         env:
           PRIOR_JOB_STATUS: ${{ job.status }}
           STAGE_OUTCOMES: ${{ toJSON(steps) }}
+          PERC_CI_PRIVATE: ${{ runner.temp }}/perc-real-source-private
+          PERC_CI_PUBLIC: ${{ runner.temp }}/perc-real-source-public
         run: |
           python3 - <<'PY'
           import hashlib, json, os, shutil, subprocess, sys

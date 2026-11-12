@@ -1,0 +1,17 @@
+{
+  "adoption": "NoUpdate",
+  "corrected_workflow_sha256": "b148f187a18d040abffa57b9c103b5c5947e79d61a59e9cae596326a273f90c9",
+  "correction": "Define runner paths in bind step.env; export six exact values through GITHUB_ENV. Always-run retainer supplies its own private/public step.env for early failure.",
+  "diagnosis": "Six runner.temp references in job.env violate the documented GitHub Actions context availability. This is a source-level diagnosis; the platform annotation endpoint was unavailable through the connector.",
+  "followup_hosted_outcome": "not_observed_at_record_creation",
+  "observed_conclusion": "failure",
+  "observed_jobs": [],
+  "observed_status": "completed",
+  "platform_annotation_retrieved": false,
+  "reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts",
+  "run_id": 43132523381,
+  "schema": "perc1.hosted-startup-failure.v1",
+  "scientific_status": "HOLD",
+  "source_sha": "d411c36a973eb10213f80bf7308c8c8bb6f31cc6",
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43132523381"
+}

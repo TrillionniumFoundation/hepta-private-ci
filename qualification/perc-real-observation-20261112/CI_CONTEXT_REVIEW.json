@@ -1,0 +1,137 @@
+{
+  "schema": "perc1.ci-context-review.v1",
+  "workflow_sha256": "b148f187a18d040abffa57b9c103b5c5947e79d61a59e9cae596326a273f90c9",
+  "original_hosted_failure": {
+    "run_id": 43132523381,
+    "phase": "declaration",
+    "jobs": 0,
+    "cause": "runner context used in jobs.engineering.env"
+  },
+  "official_reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+  "actionlint_available": false,
+  "github_platform_validation_executed": false,
+  "static_context_locations_checked": [
+    {
+      "location": "concurrency.group",
+      "contexts": [
+        "github"
+      ]
+    },
+    {
+      "location": "concurrency.group",
+      "contexts": [
+        "github"
+      ]
+    },
+    {
+      "location": "jobs.engineering.env.SOURCE_SHA",
+      "contexts": [
+        "github"
+      ]
+    },
+    {
+      "location": "jobs.engineering.env.PYTHONPATH",
+      "contexts": [
+        "github"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[0].with.repository",
+      "contexts": [
+        "github"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[0].with.ref",
+      "contexts": [
+        "env"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[2].env.PERC_CI_PRIVATE",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[2].env.PERC_CI_PUBLIC",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[2].env.PLAYWRIGHT_BROWSERS_PATH",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[2].env.PERC_TEST_MOBILENET_WEIGHTS",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[2].env.PERC_TEST_DOCUMENT_DATASET",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[2].env.PERC_TEST_DOCUMENT_OUTPUT_DIR",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[10].env.PRIOR_JOB_STATUS",
+      "contexts": [
+        "job"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[10].env.STAGE_OUTCOMES",
+      "contexts": [
+        "steps"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[10].env.PERC_CI_PRIVATE",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[10].env.PERC_CI_PUBLIC",
+      "contexts": [
+        "runner"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[11].with.name",
+      "contexts": [
+        "env"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[11].with.name",
+      "contexts": [
+        "github"
+      ]
+    },
+    {
+      "location": "jobs.engineering.steps[11].with.path",
+      "contexts": [
+        "runner"
+      ]
+    }
+  ],
+  "all_expressions_covered": true,
+  "bash_syntax_blocks": 9,
+  "python_ast_blocks": 4,
+  "bind_export_roundtrip": "PASS_LOCAL",
+  "retainer_before_bind_failure": "PASS_LOCAL_EXPECTED_EXIT_1_WITH_SUMMARY",
+  "artifact_private_public_paths_match": true,
+  "hosted_rerun_status": "NOT_OBSERVED_BY_REVIEWER",
+  "limitations": "Documented context-location review and local snippets do not replace GitHub declaration acceptance or execution."
+}

@@ -246,6 +246,17 @@ in the private evidence package, not the public Git repository. Hosted artifacts
 contain only selected summaries, case-status/compiler logs and hash/size lists;
 their presence is not a successful engineering or scientific gate.
 
+The first hosted run on `d411c36` failed before creating any jobs. Source review
+found six `runner.temp` expressions at job-env scope, where GitHub does not allow
+the runner context. The correction moves those bindings to step-env scope and
+exports them through `GITHUB_ENV`, with independent bindings for the always-run
+failure reporter. The corrected export and early-failure reporter were executed
+in isolation; a new platform run is required to establish hosted execution.
+The original failure and the context review remain in
+[CI_STARTUP_FAILURE.json](CI_STARTUP_FAILURE.json) and
+[CI_CONTEXT_REVIEW.json](CI_CONTEXT_REVIEW.json). Earlier YAML/shell syntax checks
+did not establish GitHub Actions context validity.
+
 The completed private package has 782 members and 39,224,877 bytes. All 780
 original-file entries were verified against their size/SHA manifest after ZIP
 creation. Its SHA-256 is
