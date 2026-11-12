@@ -20,6 +20,10 @@ use serde::Serialize;
 
 use super::files::OriginalBFileIdentity;
 
+#[path = "authority_host_q24_evaluation_acceptance.rs"]
+mod acceptance;
+use acceptance::OriginalBCompletedAcceptanceV1;
+
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct OriginalBOutputHeads {
@@ -56,6 +60,7 @@ pub(super) struct OriginalBEnrollment {
     pub(super) original_training_work:
         Option<crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1>,
     pub(super) admitted_source: Option<super::provider::OriginalBReleasedSource>,
+    pub(super) completed_acceptance: Option<OriginalBCompletedAcceptanceV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -95,8 +100,8 @@ impl OriginalBRecord {
         crate::authority_host_service::generation_initial::original_root()?;
         let owner = owner(initial)?;
         let armed = Record {
-            schema: 1,
-            purpose: "runtime.learning.independent-b-registration.v1".into(),
+            schema: 2,
+            purpose: "runtime.learning.independent-b-registration.v2".into(),
             initial_head: initial.head_digest.into_array(),
             attempt: 1,
             phase: Phase::Registering,
@@ -131,6 +136,7 @@ impl OriginalBRecord {
             || enrollment.original_training_attestation.is_some()
             || enrollment.original_training_work.is_some()
             || enrollment.admitted_source.is_some()
+            || enrollment.completed_acceptance.is_some()
             || enrollment.files.is_empty()
             || enrollment.files.len() > 64
             || enrollment.namespace == [0; 32]
@@ -219,7 +225,12 @@ impl OriginalBRecord {
                 original.original_training_attestation.clone();
             immutable.admitted_source = original.admitted_source.clone();
             immutable.original_training_work = original.original_training_work.clone();
+            immutable.completed_acceptance = original.completed_acceptance.clone();
             if &immutable != original
+                || original
+                    .completed_acceptance
+                    .as_ref()
+                    .is_some_and(|old| enrollment.completed_acceptance.as_ref() != Some(old))
                 || original
                     .original_training_work
                     .as_ref()
@@ -233,6 +244,7 @@ impl OriginalBRecord {
             {
                 return Err(io::Error::other("original B registration was changed"));
             }
+            enrollment.require_completed_acceptance()?;
             let mut ready = armed.clone();
             ready.phase = Phase::Ready;
             ready.enrollment = Some(enrollment);
@@ -261,8 +273,8 @@ impl OriginalBRecord {
                 return Err(io::Error::other(error));
             }
         };
-        if loaded.schema != 1
-            || loaded.purpose != "runtime.learning.independent-b-registration.v1"
+        if loaded.schema != 2
+            || loaded.purpose != "runtime.learning.independent-b-registration.v2"
             || loaded.initial_head != self.initial_head
             || loaded.attempt == 0
             || loaded.phase != Phase::Ready
@@ -275,6 +287,15 @@ impl OriginalBRecord {
             return Err(io::Error::other(
                 "original B attempt is absent, unfinished or refused",
             ));
+        }
+        let acceptance = loaded
+            .enrollment
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original B enrollment absent"))?
+            .require_completed_acceptance();
+        if let Err(error) = acceptance {
+            self.poisoned.store(true, Ordering::Release);
+            return Err(error);
         }
         Ok(loaded)
     }

@@ -81,6 +81,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         let end = self.end.min(frame_end);
         let mut cell_locks = None;
         OriginalBRecord::inspect(&self.record, end, |enrollment| {
+            let previously_completed = enrollment.completed_receipt;
             let mut state = self
                 .state
                 .try_lock()
@@ -329,6 +330,29 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 return Err(io::Error::other(
                     "original B Cell locks were never acquired",
                 ));
+            }
+            if previously_completed.is_none() {
+                if !matches!(operation, Operation::Complete { .. }) {
+                    return Err(io::Error::other(
+                        "B historical acceptance requires its first actual completion",
+                    ));
+                }
+                super::super::record::OriginalBEnrollment::retain_original_completed_acceptance(
+                    enrollment,
+                    service,
+                    &self.profile.require_cell_scope(&self.initial)?,
+                    &completed,
+                    &authorities.verifier,
+                )?;
+                files.require_original_files()?;
+                if enrollment.heads.as_ref()
+                    != Some(&native.original_heads(Digest32::from_array(enrollment.namespace))?)
+                    || enrollment.output_images != native.output_images(files)?
+                {
+                    return Err(io::Error::other(
+                        "original B changed during completion acceptance",
+                    ));
+                }
             }
             owner_alive(owner, end)?;
             Ok(value)

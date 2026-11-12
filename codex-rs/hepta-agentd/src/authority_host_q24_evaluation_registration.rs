@@ -77,6 +77,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         original_training_attestation: None,
                         original_training_work: None,
                         admitted_source: None,
+                        completed_acceptance: None,
                     };
                     require_files(
                         &files,
