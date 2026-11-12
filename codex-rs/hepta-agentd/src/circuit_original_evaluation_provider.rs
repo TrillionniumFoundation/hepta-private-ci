@@ -39,7 +39,11 @@ mod contract;
 mod records;
 #[path = "circuit_original_evaluation_provider_read.rs"]
 mod read;
+#[path = "circuit_original_evaluation_cohort_readback.rs"]
+mod current;
 
+pub use current::OriginalCircuitEvaluationCohortCurrentV1;
+pub use current::OriginalCircuitEvaluationCohortReadbackV1;
 pub use contract::OriginalCircuitEvaluationCohortConfigV1;
 pub use contract::OriginalCircuitEvaluationCohortRuleV1;
 pub use contract::OriginalCircuitEvaluationEpisodeV1;
@@ -71,6 +75,7 @@ struct Materialized {
     manifest: Digest32,
     dataset: DatasetSnapshotReceiptV3,
     inputs: TemporalComparisonInputsV1,
+    freeze_payload: Vec<u8>,
 }
 
 type Publications = BTreeMap<StableId, CircuitTaskSourcePublicationV1>;
@@ -139,7 +144,21 @@ impl OriginalCircuitEvaluationCohortV1 {
             original: self,
             plan,
             release_attempted: false,
+            release_completed: false,
         })
+    }
+
+    /// Cold reconstruction retains only readonly source custody. It does not
+    /// claim that any evaluation or holdout use completed and cannot release
+    /// data. The panel must separately read those original completed owners.
+    pub fn into_readback_only(
+        self,
+        plan: CellEvaluationPlanV1,
+    ) -> Result<OriginalCircuitEvaluationCohortReadbackV1, Error> {
+        binding::require_plan(&self, &plan)?;
+        let mut readback = OriginalCircuitEvaluationCohortReadbackV1::retaining(self, plan);
+        OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut readback)?;
+        Ok(readback)
     }
 
     fn read_current_with_clock(
@@ -176,6 +195,7 @@ pub struct OriginalCircuitFinalHoldoutProviderV1 {
     original: OriginalCircuitEvaluationCohortV1,
     plan: CellEvaluationPlanV1,
     release_attempted: bool,
+    release_completed: bool,
 }
 
 impl FinalHoldoutProviderV1 for OriginalCircuitFinalHoldoutProviderV1 {
@@ -192,6 +212,16 @@ impl FinalHoldoutProviderV1 for OriginalCircuitFinalHoldoutProviderV1 {
 }
 
 impl OriginalCircuitFinalHoldoutProviderV1 {
+    /// Consume only this instance's successful original release. Failed and
+    /// uncertain releases never acquire a completed brand. The returned owner
+    /// can only re-read the same original sources; it cannot release again.
+    pub fn into_original_readback(self) -> Result<OriginalCircuitEvaluationCohortReadbackV1, Error> {
+        if !self.release_completed || self.original.fenced {
+            return Err(Error::Indeterminate);
+        }
+        Ok(OriginalCircuitEvaluationCohortReadbackV1::retaining(self.original, self.plan))
+    }
+
     fn manifest_with_clock(
         &mut self,
         clock: impl FnMut() -> Result<u64, Error>,
@@ -245,6 +275,7 @@ impl OriginalCircuitFinalHoldoutProviderV1 {
         if observed.manifest != plan.final_holdout_digest {
             return Err(ProductProviderErrorV1::Indeterminate);
         }
+        self.release_completed = true;
         Ok(observed.inputs)
     }
 }

@@ -1318,6 +1318,10 @@ mod authority_host_learning_service_root_tests;
 #[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortConfigV1;
 #[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortCurrentV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortReadbackV1;
+#[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortRuleV1;
 #[cfg(target_os = "linux")]
 pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortV1;
