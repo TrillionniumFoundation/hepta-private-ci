@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.post-a-installation.source-qa.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "start_unix": 1794480243.7296042,
+  "end_unix": 1794480311.542309,
+  "exit_code": 0,
+  "before": {
+    "head": "ed6344464106d1e5e349db15ee4471073ffcc62e",
+    "tree": "ae25d51c34ac682177cac23cc5cb0413aef64ee1",
+    "status": "",
+    "source_files": 7483,
+    "sha256": "859da455f9ae711959f6621832f6c7e782b2a26f9b78ef711f106e5a4d5be63b"
+  },
+  "after": {
+    "head": "ed6344464106d1e5e349db15ee4471073ffcc62e",
+    "tree": "ae25d51c34ac682177cac23cc5cb0413aef64ee1",
+    "status": "",
+    "source_files": 7483,
+    "sha256": "859da455f9ae711959f6621832f6c7e782b2a26f9b78ef711f106e5a4d5be63b"
+  },
+  "source_unchanged": true,
+  "tests": 350,
+  "does_not_inherit_prior_source_or_native_qualification": true,
+  "log_bytes": 74333,
+  "log_sha256": "1c9084497cbb1f9e3fa70db51a8075b6d07b18d73c2d92cb40b2bc63cd7a92c2",
+  "native_executed": false
+}

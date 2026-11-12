@@ -1,0 +1,263 @@
+{
+  "schema": "hepta.post-a-installation.focused-callers.v1",
+  "start_unix": 1794480311.5437152,
+  "end_unix": 1794480425.0533276,
+  "before": {
+    "head": "ed6344464106d1e5e349db15ee4471073ffcc62e",
+    "tree": "ae25d51c34ac682177cac23cc5cb0413aef64ee1",
+    "status": "",
+    "source_files": 7483,
+    "sha256": "859da455f9ae711959f6621832f6c7e782b2a26f9b78ef711f106e5a4d5be63b"
+  },
+  "after": {
+    "head": "ed6344464106d1e5e349db15ee4471073ffcc62e",
+    "tree": "ae25d51c34ac682177cac23cc5cb0413aef64ee1",
+    "status": "",
+    "source_files": 7483,
+    "sha256": "859da455f9ae711959f6621832f6c7e782b2a26f9b78ef711f106e5a4d5be63b"
+  },
+  "source_unchanged": true,
+  "full_caller_checker_run": false,
+  "results": [
+    {
+      "id": "root_registered_learning_checkpoint_writer",
+      "symbol": "RegisteredWriter::exchange_learning_checkpoint",
+      "callPattern": null,
+      "receiverType": "RegisteredWriter",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+      ]
+    },
+    {
+      "id": "root_original_learning_checkpoint_exchange",
+      "symbol": "LearningIterationCheckpointOwnerV1::exchange_learning_checkpoint",
+      "callPattern": null,
+      "receiverType": "LearningIterationCheckpointOwnerV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+      ]
+    },
+    {
+      "id": "root_learning_same_service_serve",
+      "symbol": "HostAuthorityService::serve_learning_checkpoint",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_learning_checkpoint\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_purpose_send",
+      "symbol": "send_root_learning_handoff",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_serve_original",
+      "symbol": "HostAuthorityService::serve_q24_model_factory",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_q24_model_factory\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_purpose_send",
+      "symbol": "send_root_q24_model_factory_handoff",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    },
+    {
+      "id": "root_generation_publication_original_registration",
+      "symbol": "HostAuthorityService::enroll_generation_publication",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enroll_generation_publication\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_generation_publication_original_serve",
+      "symbol": "HostAuthorityService::serve_generation_publication",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_generation_publication\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_original_owner_absolute_end",
+      "symbol": "OwnerChannel::limit_original_end",
+      "callPattern": null,
+      "receiverType": "OwnerChannel",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+      ]
+    },
+    {
+      "id": "root_original_peer_absolute_end",
+      "symbol": "HostAuthorityPeerChannel::limit_original_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityPeerChannel",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+      ]
+    },
+    {
+      "id": "root_late_learning_checkpoint_until",
+      "symbol": "HostAuthorityService::serve_learning_checkpoint_until",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_late_learning_checkpoint_core",
+      "symbol": "HostAuthorityService::serve_learning_checkpoint_with_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_late_q24_model_factory_until",
+      "symbol": "HostAuthorityService::serve_q24_model_factory_until",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ]
+    },
+    {
+      "id": "root_late_q24_model_factory_core",
+      "symbol": "HostAuthorityService::serve_q24_model_factory_with_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_late_generation_publication_until",
+      "symbol": "HostAuthorityService::serve_generation_publication_until",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_late_generation_publication_core",
+      "symbol": "HostAuthorityService::serve_generation_publication_with_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_late_learning_listener_until",
+      "symbol": "Session::learning::serve_optional_until",
+      "callPattern": "learning\\s*::\\s*serve_optional_until\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs"
+      ]
+    },
+    {
+      "id": "root_late_q24_model_listener_until",
+      "symbol": "Session::q24_model::serve_optional_until",
+      "callPattern": "q24_model\\s*::\\s*serve_optional_until\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_late_generation_publication_listener_until",
+      "symbol": "Session::generation_publication::serve_optional_until",
+      "callPattern": "generation_publication\\s*::\\s*serve_optional_until\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_bound_learning",
+      "symbol": "BoundLearning::bind",
+      "callPattern": null,
+      "receiverType": "BoundLearning",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_installation_prepare",
+      "symbol": "post_a_worker::prepare",
+      "callPattern": "post_a_worker\\s*::\\s*prepare\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_post_a_installation_submit",
+      "symbol": "PostALearningSubmitter::submit",
+      "callPattern": null,
+      "receiverType": "PostALearningSubmitter",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_post_a_installation_serve",
+      "symbol": "post_a_worker::serve_optional",
+      "callPattern": "post_a_worker\\s*::\\s*serve_optional\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_post_a_installation_run",
+      "symbol": "run_installation",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    }
+  ],
+  "errors": [],
+  "protected_rows": 536,
+  "inventory_rows": 683,
+  "selected_rows": 24,
+  "source_files": 6598,
+  "exit_code": 0,
+  "log_bytes": 8114,
+  "log_sha256": "cdcb7dc859b4124b35b08773906d1967dcfd30933cbd1efd661e43ebaacd2901",
+  "native_executed": false
+}

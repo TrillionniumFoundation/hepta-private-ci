@@ -1,0 +1,17 @@
+setUpClass (test_post_a_installation_source_closure.PostAInstallationSourceTests) ... ERROR
+
+======================================================================
+ERROR: setUpClass (test_post_a_installation_source_closure.PostAInstallationSourceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_post_a_installation_source_closure.py", line 91, in setUpClass
+    cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 107, in _boundary_rows
+    raise VerificationFailure(f"duplicate boundary symbol: {symbol}")
+root_historical_source_proof.VerificationFailure: duplicate boundary symbol: serve_optional_until
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.133s
+
+FAILED (errors=1)
