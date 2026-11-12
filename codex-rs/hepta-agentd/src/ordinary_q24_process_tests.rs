@@ -15,6 +15,8 @@ mod cold_launch;
 mod cold_phase;
 #[path = "ordinary_q24_cold_record_tests.rs"]
 mod cold_record;
+#[path = "ordinary_q24_cold_successor_data_tests.rs"]
+mod cold_successor_data;
 #[path = "ordinary_q24_process_deployment_tests.rs"]
 mod deployment;
 #[path = "ordinary_q24_process_fixture_tests.rs"]
