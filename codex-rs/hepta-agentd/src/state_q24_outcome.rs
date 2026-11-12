@@ -1,6 +1,7 @@
 //! An accepted control future owns the real producer until its work returns.
 //! A failed postcheck is uncertainty, even if the original append completed.
 
+use codex_hepta_agent_protocol::Q24OriginalTaskObservationV1;
 use codex_hepta_agent_protocol::Q24OriginalTerminalOutcomeReceiptV1;
 use codex_hepta_agent_protocol::Q24OriginalTerminalOutcomeRequestV1;
 use codex_hepta_fleet::AgentLifecycle;
@@ -8,6 +9,22 @@ use codex_hepta_fleet::AgentLifecycle;
 use super::*;
 
 impl AgentdState {
+    pub(crate) fn read_original_q24_control_task(
+        &self,
+    ) -> Result<Q24OriginalTaskObservationV1, AgentdError> {
+        self.require_original_q24_outcome_current()?;
+        let producer: &Arc<crate::OriginalCellQ24TaskLedgerProducerV1> =
+            self.original_q24_outcome_control.get().ok_or_else(|| {
+                AgentdError::Protocol("original Q24 task observation unavailable".into())
+            })?;
+        producer.require_original_control_identity(&self.identity)?;
+        let observed = producer.read_original_task_observation().map_err(|error| {
+            AgentdError::Protocol(format!("original Q24 task observation: {error}"))
+        });
+        self.require_original_q24_outcome_current()?;
+        observed
+    }
+
     pub(crate) fn attach_original_q24_outcome_control(
         &self,
         producer: Arc<crate::OriginalCellQ24TaskLedgerProducerV1>,

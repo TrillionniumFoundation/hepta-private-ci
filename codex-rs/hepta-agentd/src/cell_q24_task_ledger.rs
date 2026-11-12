@@ -39,6 +39,8 @@ mod binding;
 pub(crate) mod control;
 #[path = "cell_q24_task_ledger_history.rs"]
 pub(crate) mod history;
+#[path = "cell_q24_task_observation_control.rs"]
+mod observation_control;
 #[path = "cell_q24_task_ledger_outcome.rs"]
 mod outcome;
 #[path = "cell_q24_task_outcome_codec.rs"]

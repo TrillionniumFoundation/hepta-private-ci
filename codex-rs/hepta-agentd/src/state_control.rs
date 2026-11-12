@@ -84,6 +84,20 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::Q24OriginalTaskObservation {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalTaskObservation(
+                        self.read_original_q24_control_task()?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original Q24 task observation unavailable on this platform".into(),
+                    ));
+                }
+            }
             crate::AgentdMethod::Q24OriginalTerminalOutcome { request } => {
                 #[cfg(target_os = "linux")]
                 {
@@ -113,6 +127,14 @@ impl AgentdState {
                 ];
                 #[cfg(target_os = "linux")]
                 if self.original_q24_outcome_control.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                     capabilities.push(
                         crate::AgentdCapability::new(
                             codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_OUTCOME_CAPABILITY,
