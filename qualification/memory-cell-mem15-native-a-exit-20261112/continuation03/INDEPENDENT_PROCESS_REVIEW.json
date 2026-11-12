@@ -1,0 +1,2348 @@
+{
+  "arms": [
+    {
+      "A_executable_pin": {
+        "bytes": 553412184,
+        "sha256": "6cce9bcd41fdacd7f1000ab72f5d5cd341f6b67f940a41a4058e06622a3cd1fe"
+      },
+      "A_exit_code": 0,
+      "A_exit_ns": 1794478816675615352,
+      "A_input": {
+        "bytes": 676,
+        "sha256": "eea7703fd7e7f5b52dbd45b417b41fba70310efe13ef7d97568bca688f7bae44"
+      },
+      "A_pid": 296752,
+      "A_start_ns": 1794478816640572880,
+      "C_executable_pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      },
+      "C_exit_code": 1,
+      "C_exit_ns": 1794478825065502764,
+      "C_input": {
+        "bytes": 105,
+        "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+      },
+      "C_pid": 297201,
+      "C_start_ns": 1794478824874613821,
+      "C_thread_id": "01a1cf45-ddcf-70bd-9f47-d909319878b7",
+      "ack_receipt_sha256": "252731f5134e4750705ff9d142b4a9ab0973df3b9c510de5a752fa32294e9460",
+      "arm": "attach",
+      "canonical_snapshot_sha256": "7fd631434290ba82bc84c207aae3bdc06fb6cb75cce6b2747ccfb13db936c349",
+      "gap_seconds": 8.198998469,
+      "journal": {
+        "bytes": 2298,
+        "sha256": "55e1db30792ba486ab57982c793d0380bccc36440435409d1b3076c66a135300"
+      },
+      "journal_events": [
+        "Reserve",
+        "Dispatch",
+        "Started",
+        "Observe"
+      ],
+      "namespace_isolated": false,
+      "outcome": "observed failed 409 capture terminal; no successful inference",
+      "parent_pid": 296676,
+      "request_id": "mem15-bbbcc630-attach-ef0c-v1",
+      "source_read_delta": 4,
+      "status": "VERIFIED_CONSISTENT"
+    },
+    {
+      "A_executable_pin": {
+        "bytes": 553412184,
+        "sha256": "6cce9bcd41fdacd7f1000ab72f5d5cd341f6b67f940a41a4058e06622a3cd1fe"
+      },
+      "A_exit_code": 0,
+      "A_exit_ns": 1794478834539578739,
+      "A_input": {
+        "bytes": 676,
+        "sha256": "3cad5ac232e6e02951744744c0688504a18077362f817f6eebc7f9598e8565dc"
+      },
+      "A_pid": 297684,
+      "A_start_ns": 1794478834515819768,
+      "C_executable_pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      },
+      "C_exit_code": 1,
+      "C_exit_ns": 1794478842832101463,
+      "C_input": {
+        "bytes": 105,
+        "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+      },
+      "C_pid": 297743,
+      "C_start_ns": 1794478842653757620,
+      "C_thread_id": "01a1cf46-2343-73dc-b2f8-de76028ab452",
+      "ack_receipt_sha256": "021f77899082839f903ae4be330e1d64fd1caec29760a3fd8204385828c13a74",
+      "arm": "reader-off",
+      "canonical_snapshot_sha256": "38280f67fbd6c60a031745c539e9b64d26c2dae12d43cdbc6219b6a10dfbb599",
+      "gap_seconds": 8.114178881,
+      "journal": {
+        "bytes": 2252,
+        "sha256": "31f189c3320b5166fcea830953d337a2bcf5817dc77e1a48a9f9d3cf347c0fa8"
+      },
+      "journal_events": [
+        "Reserve",
+        "Dispatch",
+        "Started",
+        "Observe"
+      ],
+      "namespace_isolated": false,
+      "outcome": "observed failed 409 capture terminal; no successful inference",
+      "parent_pid": 297609,
+      "request_id": "mem15-bbbcc630-reader-off-ef0c-v1",
+      "source_read_delta": 0,
+      "status": "VERIFIED_CONSISTENT"
+    },
+    {
+      "A_executable_pin": {
+        "bytes": 553412184,
+        "sha256": "6cce9bcd41fdacd7f1000ab72f5d5cd341f6b67f940a41a4058e06622a3cd1fe"
+      },
+      "A_exit_code": 0,
+      "A_exit_ns": 1794478852292689711,
+      "A_input": {
+        "bytes": 676,
+        "sha256": "c7d570c8a02cd838d8464173d48ba625c933b6f444f6b56c124393d63d80384d"
+      },
+      "A_pid": 298228,
+      "A_start_ns": 1794478852256433011,
+      "C_executable_pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      },
+      "C_exit_code": 1,
+      "C_exit_ns": 1794478860638585760,
+      "C_input": {
+        "bytes": 105,
+        "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+      },
+      "C_pid": 298245,
+      "C_start_ns": 1794478860450142666,
+      "C_thread_id": "01a1cf46-68c6-7239-9e21-2ca839424800",
+      "ack_receipt_sha256": "b855f68931f0c6a44bb07bef435803d0a6741527bde96496b3b1a8a4636a8bd7",
+      "arm": "withhold",
+      "canonical_snapshot_sha256": "c199da18703520496a804cad2228a339a6f6a1d3e069d9b64b4241c1a220bec7",
+      "gap_seconds": 8.157452955,
+      "journal": {
+        "bytes": 2306,
+        "sha256": "d2b573fa6846f28de5a72cca6563f6866876029cf09c3aa43bae8c7f061c520d"
+      },
+      "journal_events": [
+        "Reserve",
+        "Dispatch",
+        "Started",
+        "Observe"
+      ],
+      "namespace_isolated": false,
+      "outcome": "observed failed 409 capture terminal; no successful inference",
+      "parent_pid": 298158,
+      "request_id": "mem15-bbbcc630-withhold-ef0c-v1",
+      "source_read_delta": 4,
+      "status": "VERIFIED_CONSISTENT"
+    },
+    {
+      "A_executable_pin": {
+        "bytes": 553412184,
+        "sha256": "6cce9bcd41fdacd7f1000ab72f5d5cd341f6b67f940a41a4058e06622a3cd1fe"
+      },
+      "A_exit_code": 0,
+      "A_exit_ns": 1794478870074090091,
+      "A_input": {
+        "bytes": 676,
+        "sha256": "21367931bb855fff022eb6c0c6fe1f7f563bda0b29e93446145f9a7dde741a19"
+      },
+      "A_pid": 298753,
+      "A_start_ns": 1794478870050482443,
+      "C_executable_pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      },
+      "C_exit_code": 1,
+      "C_exit_ns": 1794478878352655358,
+      "C_input": {
+        "bytes": 105,
+        "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+      },
+      "C_pid": 298785,
+      "C_start_ns": 1794478878206606123,
+      "C_thread_id": "01a1cf46-ae23-763f-8177-c6745811ffe0",
+      "ack_receipt_sha256": "7ffc7797c02a3f6b246ff479f7975c0a4f58f469e5c05d220d66222dea1419c4",
+      "arm": "tombstone",
+      "canonical_snapshot_sha256": "6cf0f2daf0fda72d06591b24ee1a6dc5fe3ec48ee6c353e3b320c285acb3ab48",
+      "gap_seconds": 8.132516032,
+      "journal": {
+        "bytes": 1778,
+        "sha256": "c45362d56930a82bffb5acbd482ebec6315c49fdab882843c8da7b825a7e8e88"
+      },
+      "journal_events": [
+        "Reserve",
+        "Dispatch",
+        "AbortBeforeEffect"
+      ],
+      "namespace_isolated": false,
+      "outcome": "native final-use abort before turn; no successful inference",
+      "parent_pid": 298673,
+      "request_id": "mem15-bbbcc630-tombstone-ef0c-v1",
+      "source_read_delta": 3,
+      "status": "VERIFIED_CONSISTENT"
+    }
+  ],
+  "authoritative_outer_job_id": null,
+  "authoritative_outer_terminal": "NOT_VERIFIED_BY_THIS_REVIEW",
+  "checks": [
+    {
+      "check": "regular_original:RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "exact_supplied_RESULT_pin",
+      "passed": true
+    },
+    {
+      "check": "exact_source_before_after",
+      "passed": true
+    },
+    {
+      "check": "recorded_binary_before_after_equal",
+      "passed": true
+    },
+    {
+      "check": "frozen_model_worker_pin",
+      "passed": true
+    },
+    {
+      "check": "frozen_codex_pin",
+      "passed": true
+    },
+    {
+      "check": "local_final_source_postimage:codex-rs/hepta-agentd/src/production_episodic_process.rs",
+      "passed": true
+    },
+    {
+      "check": "local_final_source_postimage:codex-rs/hepta-agentd/src/production_episodic_process_child.rs",
+      "passed": true
+    },
+    {
+      "check": "local_final_source_postimage:codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "passed": true
+    },
+    {
+      "check": "source_A_ack_before_C_observe",
+      "passed": true
+    },
+    {
+      "check": "source_OS_status_before_EXIT_receipt",
+      "passed": true
+    },
+    {
+      "check": "source_single_import_RPC",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "attach:A:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "attach:A:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "attach:A:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "attach:A:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "attach:A:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "attach:A:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "attach:C:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "attach:C:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "attach:C:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "attach:C:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "attach:C:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "attach:C:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "attach:successful_A_before_fresh_C",
+      "passed": true
+    },
+    {
+      "check": "attach:duplicated_exit_records_match",
+      "passed": true
+    },
+    {
+      "check": "attach:single_bounded_source_snapshot",
+      "passed": true
+    },
+    {
+      "check": "attach:canonical_snapshot_digest",
+      "passed": true
+    },
+    {
+      "check": "attach:source_record_digest_and_provenance",
+      "passed": true
+    },
+    {
+      "check": "attach:unique_exact_ack",
+      "passed": true
+    },
+    {
+      "check": "attach:ack_original_input_pid_owner_binding",
+      "passed": true
+    },
+    {
+      "check": "attach:A_local_test_success",
+      "passed": true
+    },
+    {
+      "check": "attach:A_exact_child_selection",
+      "passed": true
+    },
+    {
+      "check": "attach:C_clean_fixed_prompt_no_A_payload",
+      "passed": true
+    },
+    {
+      "check": "attach:C_matches_original_worker",
+      "passed": true
+    },
+    {
+      "check": "attach:C_pairwise_cli_arguments",
+      "passed": true
+    },
+    {
+      "check": "attach:C_exact_args_identity_and_intervention",
+      "passed": true
+    },
+    {
+      "check": "attach:A_only_owner_import_environment",
+      "passed": true
+    },
+    {
+      "check": "attach:source_request_and_context_binding",
+      "passed": true
+    },
+    {
+      "check": "attach:retained_no_retry",
+      "passed": true
+    },
+    {
+      "check": "attach:public_only_fixture_authority",
+      "passed": true
+    },
+    {
+      "check": "regular_original:attach/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:attach/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "attach:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "attach:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "attach:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "attach:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "attach:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "attach:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "attach:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "attach:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "attach:journal_event_chain",
+      "passed": true
+    },
+    {
+      "check": "attach:journal_matches_retained_record",
+      "passed": true
+    },
+    {
+      "check": "attach:journal_source_principal_model",
+      "passed": true
+    },
+    {
+      "check": "attach:owner_context_presence",
+      "passed": true
+    },
+    {
+      "check": "attach:single_fixture_claim_bound_to_dispatch",
+      "passed": true
+    },
+    {
+      "check": "attach:original_native_counts_remain_null",
+      "passed": true
+    },
+    {
+      "check": "attach:correct_scope_not_production_benefit",
+      "passed": true
+    },
+    {
+      "check": "attach:source_check_delta",
+      "passed": true
+    },
+    {
+      "check": "attach:initial_owner_cut_and_claim_counter",
+      "passed": true
+    },
+    {
+      "check": "attach:failed_capture_terminal_consistent",
+      "passed": true
+    },
+    {
+      "check": "attach:failed_completion_and_owner_cut_consistent",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "reader-off:successful_A_before_fresh_C",
+      "passed": true
+    },
+    {
+      "check": "reader-off:duplicated_exit_records_match",
+      "passed": true
+    },
+    {
+      "check": "reader-off:single_bounded_source_snapshot",
+      "passed": true
+    },
+    {
+      "check": "reader-off:canonical_snapshot_digest",
+      "passed": true
+    },
+    {
+      "check": "reader-off:source_record_digest_and_provenance",
+      "passed": true
+    },
+    {
+      "check": "reader-off:unique_exact_ack",
+      "passed": true
+    },
+    {
+      "check": "reader-off:ack_original_input_pid_owner_binding",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A_local_test_success",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A_exact_child_selection",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C_clean_fixed_prompt_no_A_payload",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C_matches_original_worker",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C_pairwise_cli_arguments",
+      "passed": true
+    },
+    {
+      "check": "reader-off:C_exact_args_identity_and_intervention",
+      "passed": true
+    },
+    {
+      "check": "reader-off:A_only_owner_import_environment",
+      "passed": true
+    },
+    {
+      "check": "reader-off:source_request_and_context_binding",
+      "passed": true
+    },
+    {
+      "check": "reader-off:retained_no_retry",
+      "passed": true
+    },
+    {
+      "check": "reader-off:public_only_fixture_authority",
+      "passed": true
+    },
+    {
+      "check": "regular_original:reader-off/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:reader-off/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "reader-off:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "reader-off:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "reader-off:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "reader-off:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "reader-off:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "reader-off:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "reader-off:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "reader-off:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "reader-off:journal_event_chain",
+      "passed": true
+    },
+    {
+      "check": "reader-off:journal_matches_retained_record",
+      "passed": true
+    },
+    {
+      "check": "reader-off:journal_source_principal_model",
+      "passed": true
+    },
+    {
+      "check": "reader-off:owner_context_presence",
+      "passed": true
+    },
+    {
+      "check": "reader-off:single_fixture_claim_bound_to_dispatch",
+      "passed": true
+    },
+    {
+      "check": "reader-off:original_native_counts_remain_null",
+      "passed": true
+    },
+    {
+      "check": "reader-off:correct_scope_not_production_benefit",
+      "passed": true
+    },
+    {
+      "check": "reader-off:source_check_delta",
+      "passed": true
+    },
+    {
+      "check": "reader-off:initial_owner_cut_and_claim_counter",
+      "passed": true
+    },
+    {
+      "check": "reader-off:failed_capture_terminal_consistent",
+      "passed": true
+    },
+    {
+      "check": "reader-off:failed_completion_and_owner_cut_consistent",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "withhold:A:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "withhold:A:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "withhold:A:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "withhold:A:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "withhold:A:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "withhold:A:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "withhold:C:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "withhold:C:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "withhold:C:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "withhold:C:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "withhold:C:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "withhold:C:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "withhold:successful_A_before_fresh_C",
+      "passed": true
+    },
+    {
+      "check": "withhold:duplicated_exit_records_match",
+      "passed": true
+    },
+    {
+      "check": "withhold:single_bounded_source_snapshot",
+      "passed": true
+    },
+    {
+      "check": "withhold:canonical_snapshot_digest",
+      "passed": true
+    },
+    {
+      "check": "withhold:source_record_digest_and_provenance",
+      "passed": true
+    },
+    {
+      "check": "withhold:unique_exact_ack",
+      "passed": true
+    },
+    {
+      "check": "withhold:ack_original_input_pid_owner_binding",
+      "passed": true
+    },
+    {
+      "check": "withhold:A_local_test_success",
+      "passed": true
+    },
+    {
+      "check": "withhold:A_exact_child_selection",
+      "passed": true
+    },
+    {
+      "check": "withhold:C_clean_fixed_prompt_no_A_payload",
+      "passed": true
+    },
+    {
+      "check": "withhold:C_matches_original_worker",
+      "passed": true
+    },
+    {
+      "check": "withhold:C_pairwise_cli_arguments",
+      "passed": true
+    },
+    {
+      "check": "withhold:C_exact_args_identity_and_intervention",
+      "passed": true
+    },
+    {
+      "check": "withhold:A_only_owner_import_environment",
+      "passed": true
+    },
+    {
+      "check": "withhold:source_request_and_context_binding",
+      "passed": true
+    },
+    {
+      "check": "withhold:retained_no_retry",
+      "passed": true
+    },
+    {
+      "check": "withhold:public_only_fixture_authority",
+      "passed": true
+    },
+    {
+      "check": "regular_original:withhold/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:withhold/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "withhold:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "withhold:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "withhold:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "withhold:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "withhold:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "withhold:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "withhold:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "withhold:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "withhold:journal_event_chain",
+      "passed": true
+    },
+    {
+      "check": "withhold:journal_matches_retained_record",
+      "passed": true
+    },
+    {
+      "check": "withhold:journal_source_principal_model",
+      "passed": true
+    },
+    {
+      "check": "withhold:owner_context_presence",
+      "passed": true
+    },
+    {
+      "check": "withhold:single_fixture_claim_bound_to_dispatch",
+      "passed": true
+    },
+    {
+      "check": "withhold:original_native_counts_remain_null",
+      "passed": true
+    },
+    {
+      "check": "withhold:correct_scope_not_production_benefit",
+      "passed": true
+    },
+    {
+      "check": "withhold:source_check_delta",
+      "passed": true
+    },
+    {
+      "check": "withhold:initial_owner_cut_and_claim_counter",
+      "passed": true
+    },
+    {
+      "check": "withhold:failed_capture_terminal_consistent",
+      "passed": true
+    },
+    {
+      "check": "withhold:failed_completion_and_owner_cut_consistent",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C:identity_and_OS_timing",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C:raw_io_pins",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C:recorded_binary_pin_stable",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C:bounded_one_attempt",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C:environment_and_declared_scope",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C:separate_process_roots",
+      "passed": true
+    },
+    {
+      "check": "tombstone:successful_A_before_fresh_C",
+      "passed": true
+    },
+    {
+      "check": "tombstone:duplicated_exit_records_match",
+      "passed": true
+    },
+    {
+      "check": "tombstone:single_bounded_source_snapshot",
+      "passed": true
+    },
+    {
+      "check": "tombstone:canonical_snapshot_digest",
+      "passed": true
+    },
+    {
+      "check": "tombstone:source_record_digest_and_provenance",
+      "passed": true
+    },
+    {
+      "check": "tombstone:unique_exact_ack",
+      "passed": true
+    },
+    {
+      "check": "tombstone:ack_original_input_pid_owner_binding",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A_local_test_success",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A_exact_child_selection",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C_clean_fixed_prompt_no_A_payload",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C_matches_original_worker",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C_pairwise_cli_arguments",
+      "passed": true
+    },
+    {
+      "check": "tombstone:C_exact_args_identity_and_intervention",
+      "passed": true
+    },
+    {
+      "check": "tombstone:A_only_owner_import_environment",
+      "passed": true
+    },
+    {
+      "check": "tombstone:source_request_and_context_binding",
+      "passed": true
+    },
+    {
+      "check": "tombstone:retained_no_retry",
+      "passed": true
+    },
+    {
+      "check": "tombstone:public_only_fixture_authority",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "tombstone:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "tombstone:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "tombstone:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "tombstone:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "tombstone:complete_native_journal_line",
+      "passed": true
+    },
+    {
+      "check": "tombstone:single_tag_journal_event",
+      "passed": true
+    },
+    {
+      "check": "tombstone:journal_event_chain",
+      "passed": true
+    },
+    {
+      "check": "tombstone:journal_matches_retained_record",
+      "passed": true
+    },
+    {
+      "check": "tombstone:journal_source_principal_model",
+      "passed": true
+    },
+    {
+      "check": "tombstone:owner_context_presence",
+      "passed": true
+    },
+    {
+      "check": "tombstone:single_fixture_claim_bound_to_dispatch",
+      "passed": true
+    },
+    {
+      "check": "tombstone:original_native_counts_remain_null",
+      "passed": true
+    },
+    {
+      "check": "tombstone:correct_scope_not_production_benefit",
+      "passed": true
+    },
+    {
+      "check": "tombstone:source_check_delta",
+      "passed": true
+    },
+    {
+      "check": "tombstone:initial_owner_cut_and_claim_counter",
+      "passed": true
+    },
+    {
+      "check": "tombstone:abort_before_effect_without_turn",
+      "passed": true
+    },
+    {
+      "check": "tombstone:real_retained_tombstone_receipt_and_cuts",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/adapter/SERVER.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/adapter/SERVER.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/adapter/STOPPED.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/adapter/STOPPED.json",
+      "passed": true
+    },
+    {
+      "check": "regular_original:tombstone/LISTENER_EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_manifest_pin:tombstone/LISTENER_EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "tombstone:zero_HTTP_window_spans_C_lifetime",
+      "passed": true
+    },
+    {
+      "check": "distinct_eight_child_PIDs",
+      "passed": true
+    },
+    {
+      "check": "distinct_four_parent_PIDs_and_owner_roots",
+      "passed": true
+    },
+    {
+      "check": "same_A_test_executable_all_arms",
+      "passed": true
+    },
+    {
+      "check": "four_fresh_threads_and_source_nonces",
+      "passed": true
+    },
+    {
+      "check": "identical_public_C_stdin_four_arms",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:attach/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:reader-off/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:withhold/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/DISPATCH_INPUT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A_ACK.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/FINAL_USE_PUBLIC.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/FIXTURE_AUTHORITY.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/A/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C/INTENT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C/STARTED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C/EXIT.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C/stdin.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C/stdout.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C/stderr.bin",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/native/C.journal",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/adapter/SERVER.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/adapter/STOPPED.json",
+      "passed": true
+    },
+    {
+      "check": "original_unchanged:tombstone/LISTENER_EXIT.json",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "limitations": [
+    "Parent harness and owner remain alive across separate A and C processes; A is deterministic import, not model learning.",
+    "C has cleared environment and separate task roots but is not namespace-isolated; complete old file/tool/chat/cache closure is not established.",
+    "Binary stability is checked from retained before/after measurements and candidate pins; remote executable files and physical host are not independently authenticated.",
+    "A receipt SHA is retained and bound to the exact child output, but the full private owner receipt/database is not in this public readback; no cryptographic attestation of the owner is claimed.",
+    "Tombstone Reserve/Dispatch/AbortBeforeEffect with no Started/Observe is a retained journal fact; prepared Dispatch metadata is not an observed model request. Exact driver send-site source is not present locally, so absence of HTTP additionally relies on the complete observed zero-connection listener window.",
+    "Failed 409 observations have terminal_observed=true inside the journal; the native RESULT top-level terminal_observed=false denotes absence of successful completion.",
+    "HTTP bytes/mapping and any zero-model conclusion are independently reviewed by the separate evidence publisher; native process counts remain null.",
+    "Authoritative outer durable-job terminal is not inferred from report or archive existence.",
+    "Four separately generated nonces/owners are independent process-path fixtures, not paired memory-benefit episodes."
+  ],
+  "method": "Independent Python standard-library parsing/hashing of original process receipts, raw inputs/outputs, canonical snapshot, fixture receipt and journal. No campaign imports, remote calls, process launch, tests, models or tokenizer. No original writes.",
+  "new_model_calls": 0,
+  "original_archive_expected": {
+    "bytes": 83100,
+    "sha256": "147bd82bd791c0df8376fc14678a892313de3403884b54be2c176f112917beac"
+  },
+  "original_result": {
+    "bytes": 47948,
+    "sha256": "e67f4e4220995704db06f27d86743021e4fa4308b6daf4cb6b150312fcffa6ca"
+  },
+  "originals_modified": false,
+  "remote_calls": 0,
+  "retained_originals_verified": {
+    "RESULT.json": {
+      "bytes": 47948,
+      "sha256": "e67f4e4220995704db06f27d86743021e4fa4308b6daf4cb6b150312fcffa6ca"
+    },
+    "attach/native/A/EXIT.json": {
+      "bytes": 1119,
+      "sha256": "503f8ff9d4db5a18b97371d24138932bee5b0d0fa0bb78c8d49515ef563a7c60"
+    },
+    "attach/native/A/INTENT.json": {
+      "bytes": 4879,
+      "sha256": "13650c5be3e0395c89e942ed31ae875cfc0db8165c005a13804186df8ee6577a"
+    },
+    "attach/native/A/STARTED.json": {
+      "bytes": 299,
+      "sha256": "2a294bac6f7ae50aad4b13053c42af54463bb7ed0a7eade1cd010cbb6ad26232"
+    },
+    "attach/native/A/stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "attach/native/A/stdin.bin": {
+      "bytes": 676,
+      "sha256": "eea7703fd7e7f5b52dbd45b417b41fba70310efe13ef7d97568bca688f7bae44"
+    },
+    "attach/native/A/stdout.bin": {
+      "bytes": 699,
+      "sha256": "23f317a560427e567c26b739941d6dfcfce538b03e131e9bd3f56afd7e33b9eb"
+    },
+    "attach/native/A_ACK.json": {
+      "bytes": 514,
+      "sha256": "72eb90ac12ada741ad5384caf58fb7feb73e68dbb34f6d90c27d64a87edfa7a3"
+    },
+    "attach/native/C.journal": {
+      "bytes": 2298,
+      "sha256": "55e1db30792ba486ab57982c793d0380bccc36440435409d1b3076c66a135300"
+    },
+    "attach/native/C/EXIT.json": {
+      "bytes": 1098,
+      "sha256": "95a2581efc13cde164f946929bb8880e3767a33b7068258f844b1a8f86cf4a46"
+    },
+    "attach/native/C/INTENT.json": {
+      "bytes": 9222,
+      "sha256": "29ebc285289c0f27a457494abece55b094ac47f05d94b71ed23dd3ce4ff7d099"
+    },
+    "attach/native/C/STARTED.json": {
+      "bytes": 279,
+      "sha256": "a0cb85033a632e5a4fcaeaabbfb5ffac41ed35de430310dfebd8357f5eedf0b6"
+    },
+    "attach/native/C/stderr.bin": {
+      "bytes": 77,
+      "sha256": "252b69b663b6790f5352d0f967dcb2a5bd88ed351cb3a662a83da54ab67ecea1"
+    },
+    "attach/native/C/stdin.bin": {
+      "bytes": 105,
+      "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+    },
+    "attach/native/C/stdout.bin": {
+      "bytes": 618,
+      "sha256": "b9b5e0ff2f43927d2da7a0a2d5cfbbf2fa529069ea90aa76d82c28ce49a166ef"
+    },
+    "attach/native/DISPATCH_INPUT.json": {
+      "bytes": 2471,
+      "sha256": "5636800caa9ba7d59098c5e1ab183bb95c8cf90208fabc795b87b0d952bf98a0"
+    },
+    "attach/native/FINAL_USE_PUBLIC.json": {
+      "bytes": 626,
+      "sha256": "75d454e21abe23f5559b11f21b0e964372209ed0116fb49e4c1520dea7ee43d4"
+    },
+    "attach/native/FIXTURE_AUTHORITY.json": {
+      "bytes": 1674,
+      "sha256": "29fd659a7c5c347ab312612026ba037398908e03d11b11911f46186231995a72"
+    },
+    "attach/native/INTENT.json": {
+      "bytes": 1027,
+      "sha256": "3162b1b11585729734e80d1c40fd5a8a7041135cb2055fb87f8890d5dfa9721e"
+    },
+    "attach/native/RESULT.json": {
+      "bytes": 6298,
+      "sha256": "c63d56342efbdc7265826e81792b5eb6fcd83ac701812dee78a9ff8a2ed51e7f"
+    },
+    "reader-off/native/A/EXIT.json": {
+      "bytes": 1100,
+      "sha256": "fec284d9bac581a6424234f65d017efe8957076a6e06ea16f27bfa7957fb97a6"
+    },
+    "reader-off/native/A/INTENT.json": {
+      "bytes": 4892,
+      "sha256": "e8c17953563f243d51215fd22ab1b3096f2fd53a9dfea986d4f8464c9528e529"
+    },
+    "reader-off/native/A/STARTED.json": {
+      "bytes": 280,
+      "sha256": "326db89a5a03744aa2bcc0b2e8705b490d002fb384b3181b0e997f59d73c24ef"
+    },
+    "reader-off/native/A/stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reader-off/native/A/stdin.bin": {
+      "bytes": 676,
+      "sha256": "3cad5ac232e6e02951744744c0688504a18077362f817f6eebc7f9598e8565dc"
+    },
+    "reader-off/native/A/stdout.bin": {
+      "bytes": 699,
+      "sha256": "734fa342f898a918bab5668c6c75961fc6abb6bc011e0d71ad47a2c2e67b685f"
+    },
+    "reader-off/native/A_ACK.json": {
+      "bytes": 514,
+      "sha256": "f51fc9918b3aa8e1b10d589554edcc0d00dade6d39e57a85bc025157bb1f0fec"
+    },
+    "reader-off/native/C.journal": {
+      "bytes": 2252,
+      "sha256": "31f189c3320b5166fcea830953d337a2bcf5817dc77e1a48a9f9d3cf347c0fa8"
+    },
+    "reader-off/native/C/EXIT.json": {
+      "bytes": 1113,
+      "sha256": "e2c5ed13a38e89b56e3ee583dbfe2ca395603217f4c1f551c2af5c7e32fead45"
+    },
+    "reader-off/native/C/INTENT.json": {
+      "bytes": 8587,
+      "sha256": "dddcb91e89ec54afc20320c6fc4a14262224484ce32ded6a4e28f22eaa7cd9bc"
+    },
+    "reader-off/native/C/STARTED.json": {
+      "bytes": 294,
+      "sha256": "cf5d3269a135e63f683693589fbb7e37c82ea5a01a037398f653a32c5d44657c"
+    },
+    "reader-off/native/C/stderr.bin": {
+      "bytes": 77,
+      "sha256": "252b69b663b6790f5352d0f967dcb2a5bd88ed351cb3a662a83da54ab67ecea1"
+    },
+    "reader-off/native/C/stdin.bin": {
+      "bytes": 105,
+      "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+    },
+    "reader-off/native/C/stdout.bin": {
+      "bytes": 618,
+      "sha256": "85b9a784616e11e51817180769b224a1b47c76ad3088ef9e2d8ba70538959a44"
+    },
+    "reader-off/native/DISPATCH_INPUT.json": {
+      "bytes": 2460,
+      "sha256": "538011d66661cfab9b856e50f82bb879a22ae223e347e02d7f2931b7d95fc7fc"
+    },
+    "reader-off/native/FINAL_USE_PUBLIC.json": {
+      "bytes": 626,
+      "sha256": "3d942c06be709787659c447da9abe0af9e11864509ea45855b8156d9890f8f5e"
+    },
+    "reader-off/native/FIXTURE_AUTHORITY.json": {
+      "bytes": 1673,
+      "sha256": "24efd1456a03ee6a81c77c116fb400d96bc0f77f08e0b1147eb719f2ac91fa9b"
+    },
+    "reader-off/native/INTENT.json": {
+      "bytes": 1035,
+      "sha256": "72a5e79def42743057ffc311f7e9f6947444f4407b7014dd138875df27bfaab9"
+    },
+    "reader-off/native/RESULT.json": {
+      "bytes": 6244,
+      "sha256": "44aeef5efc3ec92f53551af883ca55e6591c1150426d6f699176b141d226a8be"
+    },
+    "tombstone/LISTENER_EXIT.json": {
+      "bytes": 86,
+      "sha256": "bbf76712df4ce8fcab7a324ade38f227706a31a7009605c8b951dfb8e99f95ec"
+    },
+    "tombstone/adapter/SERVER.json": {
+      "bytes": 221,
+      "sha256": "917dbf77d99e1217972b5f048534a62e9da23238acdb6c55b3cecf1c9a4e0b01"
+    },
+    "tombstone/adapter/STOPPED.json": {
+      "bytes": 152,
+      "sha256": "f148d1cec87c6c5c77ab3c0fd04efaf04d5a1e9ceb273dafdd8c98bfbc174db9"
+    },
+    "tombstone/native/A/EXIT.json": {
+      "bytes": 1100,
+      "sha256": "d54f2dfa5edfd98f37092daf8620dc4fe3db28647feaf531dfead9aa94958760"
+    },
+    "tombstone/native/A/INTENT.json": {
+      "bytes": 4888,
+      "sha256": "59b08f77ae66e9d7819abdf49b3b852df9e40379b81741a59e1ae4aed742c3d7"
+    },
+    "tombstone/native/A/STARTED.json": {
+      "bytes": 280,
+      "sha256": "566ed0ff0ffb187a3a22a6a4a087cbc11f4ed8533c38e901be85bbf0833f718b"
+    },
+    "tombstone/native/A/stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tombstone/native/A/stdin.bin": {
+      "bytes": 676,
+      "sha256": "21367931bb855fff022eb6c0c6fe1f7f563bda0b29e93446145f9a7dde741a19"
+    },
+    "tombstone/native/A/stdout.bin": {
+      "bytes": 699,
+      "sha256": "e360f265dcf6813e81cf3c78568d4029815a35514124914cc07dd10b92ca84b2"
+    },
+    "tombstone/native/A_ACK.json": {
+      "bytes": 514,
+      "sha256": "460e2a0892e3d3a77b4139f7bca3afc310633bb6a23e9820e3a7e00ce6f76d3e"
+    },
+    "tombstone/native/C.journal": {
+      "bytes": 1778,
+      "sha256": "c45362d56930a82bffb5acbd482ebec6315c49fdab882843c8da7b825a7e8e88"
+    },
+    "tombstone/native/C/EXIT.json": {
+      "bytes": 1097,
+      "sha256": "49a247ebec0e16c824ee7dff511701bd273acdf1a41e32aaeb8a67f5f7e3bc7f"
+    },
+    "tombstone/native/C/INTENT.json": {
+      "bytes": 9354,
+      "sha256": "eaec76930ab1a0c1a8be48fbd0f38602f768f956627b4b858e682731330a5edd"
+    },
+    "tombstone/native/C/STARTED.json": {
+      "bytes": 279,
+      "sha256": "a2d4ae3c0046f03eed84cc1e8df4ca4f12636eda900a163160b1b7b4e5732a2f"
+    },
+    "tombstone/native/C/stderr.bin": {
+      "bytes": 150,
+      "sha256": "52b3e2a7431ceedeb885a7c9e896869fc9cff67ab7db493dde6103f8022f5f5d"
+    },
+    "tombstone/native/C/stdin.bin": {
+      "bytes": 105,
+      "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+    },
+    "tombstone/native/C/stdout.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tombstone/native/DISPATCH_INPUT.json": {
+      "bytes": 2458,
+      "sha256": "76081cacbaf90c5e22861e4386785eaec3cb700adeec4e115ab1ed9064a4e039"
+    },
+    "tombstone/native/FINAL_USE_PUBLIC.json": {
+      "bytes": 626,
+      "sha256": "5e2451f767191d7349e9b8dbd26266b3d28733d1f1bddaab241e0f6d9fa53939"
+    },
+    "tombstone/native/FIXTURE_AUTHORITY.json": {
+      "bytes": 5565,
+      "sha256": "07a5c9a93eef1758e767cdf728615d11a63032a1967ad583772fdd9ce08a6342"
+    },
+    "tombstone/native/INTENT.json": {
+      "bytes": 1033,
+      "sha256": "83b61a0d5553ca95830a11392dc4651d368ca24150cd7af40d14dd526a12c0bb"
+    },
+    "tombstone/native/RESULT.json": {
+      "bytes": 5713,
+      "sha256": "ec1972401f7ca8799a93e2895f9ac22980676a4ac2ba546b75eb4b6349eb95dc"
+    },
+    "withhold/native/A/EXIT.json": {
+      "bytes": 1234,
+      "sha256": "aaa32ccef6e2df7efa2fb15c4b2485fa0096803d9b72cc8c3eb660133e574124"
+    },
+    "withhold/native/A/INTENT.json": {
+      "bytes": 4883,
+      "sha256": "eec0339cac2d45d61d93e240e6e4d330cb2adf2bf1825055d22a724ec8950e83"
+    },
+    "withhold/native/A/STARTED.json": {
+      "bytes": 414,
+      "sha256": "b8489b2fdd6666ca7e9097851ac7518f51c3d6991b520ce01181821968d6db5f"
+    },
+    "withhold/native/A/stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "withhold/native/A/stdin.bin": {
+      "bytes": 676,
+      "sha256": "c7d570c8a02cd838d8464173d48ba625c933b6f444f6b56c124393d63d80384d"
+    },
+    "withhold/native/A/stdout.bin": {
+      "bytes": 699,
+      "sha256": "877db6ee4faf7939bc9d94078f270be967143c988ef84c1d2a8f419e7325c188"
+    },
+    "withhold/native/A_ACK.json": {
+      "bytes": 514,
+      "sha256": "25e68771be7726b540180e8ac9905cf422389fd3d724c66e3eb6c06059ccda6e"
+    },
+    "withhold/native/C.journal": {
+      "bytes": 2306,
+      "sha256": "d2b573fa6846f28de5a72cca6563f6866876029cf09c3aa43bae8c7f061c520d"
+    },
+    "withhold/native/C/EXIT.json": {
+      "bytes": 1098,
+      "sha256": "fb6c70d0f5bc8cb95a6c3e4558c48d57ee245973b262e6d976ec5b558e9df597"
+    },
+    "withhold/native/C/INTENT.json": {
+      "bytes": 9342,
+      "sha256": "690fc3cbabf2fbaffc5398b6496c822ff3357ec4ff7f045982c1cf9c14737636"
+    },
+    "withhold/native/C/STARTED.json": {
+      "bytes": 279,
+      "sha256": "aa11d4881121a56b4911a43ce85da7df5ddadf6d0f14f5aa4f90d447084f5144"
+    },
+    "withhold/native/C/stderr.bin": {
+      "bytes": 77,
+      "sha256": "252b69b663b6790f5352d0f967dcb2a5bd88ed351cb3a662a83da54ab67ecea1"
+    },
+    "withhold/native/C/stdin.bin": {
+      "bytes": 105,
+      "sha256": "6ab6464c35c0fab721b9538afee93ab1a7951fa16f123da1661c2eae2a8486eb"
+    },
+    "withhold/native/C/stdout.bin": {
+      "bytes": 618,
+      "sha256": "edc327ac3505047dce187900ac452cefbaebe9c5248078f4fe1c37e6e42a10cf"
+    },
+    "withhold/native/DISPATCH_INPUT.json": {
+      "bytes": 2590,
+      "sha256": "89e2d0982f1e529376bcde1d3bf76a7996c06efcb45e9def235c26197462047d"
+    },
+    "withhold/native/FINAL_USE_PUBLIC.json": {
+      "bytes": 626,
+      "sha256": "549c99447522264f336a6b1cbfdb146315c3eb5935c12afff0f0e5776219d47f"
+    },
+    "withhold/native/FIXTURE_AUTHORITY.json": {
+      "bytes": 1685,
+      "sha256": "2b29acfb63f95452f9bbf1ac7f302b11994a8d57b998e661f5c22ab3a5178520"
+    },
+    "withhold/native/INTENT.json": {
+      "bytes": 1031,
+      "sha256": "60498701cb91897a63b678778fcc334e068b7ae6190749bc18dc5dd77335bb8e"
+    },
+    "withhold/native/RESULT.json": {
+      "bytes": 6419,
+      "sha256": "1e2dd7b32e2fe5ba7129400c6300f1aee9bba52c6c0e01ddc70004a6ecc92b79"
+    }
+  },
+  "schema": "hepta.mem15.independent-process-readback.v1",
+  "scientific_acceptance": "HOLD",
+  "source_commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+  "source_postimages": {
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs": {
+      "bytes": 10580,
+      "sha256": "56a13536ac49c6a9b55a0b18eefee849de7892531310971d5b52a1082aa23261"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs": {
+      "bytes": 9547,
+      "sha256": "0cf402e5c461f1e47c2ce5c8a150f1a785febf3da7e78bfa692b45b0de19118b"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs": {
+      "bytes": 6849,
+      "sha256": "1acfbf6310fed1eec50faa1ecf371a85116ad09083cf26c8f2a08d122deba230"
+    }
+  },
+  "source_tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+  "status": "VERIFIED_CONSISTENT"
+}
