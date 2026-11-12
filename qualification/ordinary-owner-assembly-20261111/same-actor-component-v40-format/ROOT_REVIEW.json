@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "classification": "FIXED_SOURCE_ASSEMBLY_NOT_NATIVE_OR_BUSINESS_ACCEPTANCE",
+  "parent_commit": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+  "parent_tree": "d5dde8eadb4b0e4373ba6e6156507b0482bf5cf1",
+  "native_failure_evidence": "cceb18c5ebe6cf979b19cf22a95075a8b12dd090",
+  "native_patch": {
+    "blob": "0c3d61d3df8e07c605d0a65e3e77e7727469a0b1",
+    "bytes": 6757,
+    "sha256": "67da5b50e603b560bb224203c398a1d79ebf520225f551cc37b3c025680074ec"
+  },
+  "format_postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "pre": {
+        "blob": "56e2d21b216df32a38b569099aa6f3e10626e3f9",
+        "bytes": 10856,
+        "sha256": "4c66977eccef265fc539a72e1165671a80afeeb5f12e724da13721ac32eeac9d"
+      },
+      "post": {
+        "blob": "d2a74c75dfa0296aa136469e7814d978ae08d8b8",
+        "bytes": 10890,
+        "sha256": "dee61492b77ce2d04ec9029c1b3969419a91aae03b61ff15fa0228904c7ba4b2"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": {
+        "blob": "40fcc184c79929df6d149c6b86d02460da225dd9",
+        "bytes": 13780,
+        "sha256": "05af7b72a09b5ec407d634487d1d15574f85da7824321388a5cf67662e705eae"
+      },
+      "post": {
+        "blob": "dccb655313b50b96202d7e73cd0619efd34d2a34",
+        "bytes": 13819,
+        "sha256": "13bccb8c9e2dfcca156b6585ad6c967162edb0ff92b9bcf521f3fc773e2d2c2f"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": {
+        "blob": "51a5b676de866752fe10ba2e3dc8ad338997d71f",
+        "bytes": 13304,
+        "sha256": "b000a76de905b36473e4ab980be55e52632d8a9918b60e515e36dcd562ebb78f"
+      },
+      "post": {
+        "blob": "e353e6e94be8689f33d54783dab91dd1751eab33",
+        "bytes": 13382,
+        "sha256": "f6353cdf645ff0766aae9822e020febb3f44e8cb42db45007003bacd1d4e996c"
+      },
+      "hunks": 2,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "pre": {
+        "blob": "730aab00499c1c84c337926e97b3d9695696f3cc",
+        "bytes": 15019,
+        "sha256": "b6310d8c1b79629825d9f9925208e5b91ae5465bbcdcad01d3a272ee5f8e74da"
+      },
+      "post": {
+        "blob": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+        "bytes": 15023,
+        "sha256": "61e8bae856e7a8a5e337efdade1834a80c1253c9a6a02c20a7ae669245f6b767"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "pre": {
+        "blob": "95f849829f59292003b06cf12c9bf297c6b11a52",
+        "bytes": 11445,
+        "sha256": "8cdb57c97a89895825867502fd1284255cc241d99bfe2392e38bc805845a82ef"
+      },
+      "post": {
+        "blob": "7912206162ae660e7c88b92a64ee6a5e585c4efe",
+        "bytes": 11398,
+        "sha256": "ca02cf3ce37fc3adc777e1335d213d304e28599c91b594892c48bfccb8a4a9ed"
+      },
+      "hunks": 2,
+      "classification": "whitespace_plus_one_optional_trailing_call_argument_comma_removal"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "pre": {
+        "blob": "bea124de062c301c6b39d20c79ba288a87480751",
+        "bytes": 15763,
+        "sha256": "e2dd8a301533efc7e5ffc87a3c891269bc52f955f322474954adc4257de15f7f"
+      },
+      "post": {
+        "blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+        "bytes": 15759,
+        "sha256": "acf76f678d611bc6ede72cf8f78a1b05ebaf3edda3f1e2c091805575a58a8250"
+      },
+      "hunks": 1,
+      "classification": "whitespace_only"
+    }
+  ],
+  "source_replay": "Full-index patch; exact original positions, contexts and old/new line counts; complete forward and reverse hashes; final physical dirty roster exactly the same six paths.",
+  "source_changes": "Only original native layout changes and one optional trailing comma after the same &mut root argument. No changed comments or literals; no changed callee, guard, authority, await, deadline, failure or ownership behavior.",
+  "callers": {
+    "schema_version": 1,
+    "source": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+    "native_patch": {
+      "blob": "0c3d61d3df8e07c605d0a65e3e77e7727469a0b1",
+      "bytes": 6757,
+      "sha256": "67da5b50e603b560bb224203c398a1d79ebf520225f551cc37b3c025680074ec"
+    },
+    "field_mapping": [
+      {
+        "row_index": 1049,
+        "row_kind": "protected_file",
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "field": [
+          "required_order",
+          0,
+          1
+        ],
+        "before": " -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>\n    {",
+        "after": " -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError> {",
+        "classification": "native_whitespace",
+        "source_before": {
+          "blob": "bea124de062c301c6b39d20c79ba288a87480751",
+          "offset": 3195,
+          "length": 73,
+          "function_start": 3116,
+          "function_end": 3878
+        },
+        "source_after": {
+          "blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+          "offset": 3195,
+          "length": 69,
+          "function_start": 3116,
+          "function_end": 3874
+        },
+        "function": "fn connect_original_current("
+      },
+      {
+        "row_index": 1049,
+        "row_kind": "protected_file",
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "field": [
+          "required_function_order",
+          1,
+          "sequence",
+          0
+        ],
+        "before": ") -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>\n    {",
+        "after": ") -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError> {",
+        "classification": "native_whitespace",
+        "source_before": {
+          "blob": "bea124de062c301c6b39d20c79ba288a87480751",
+          "offset": 3194,
+          "length": 74,
+          "function_start": 3116,
+          "function_end": 3878
+        },
+        "source_after": {
+          "blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+          "offset": 3194,
+          "length": 70,
+          "function_start": 3116,
+          "function_end": 3874
+        },
+        "function": "fn connect_original_current("
+      },
+      {
+        "row_index": 1053,
+        "row_kind": "protected_file",
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "field": [
+          "required_order",
+          0,
+          1
+        ],
+        "before": "self.phase.as_ref().map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope)",
+        "after": "self\n            .phase\n            .as_ref()\n            .map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope)",
+        "classification": "native_whitespace",
+        "source_before": {
+          "blob": "51a5b676de866752fe10ba2e3dc8ad338997d71f",
+          "offset": 6070,
+          "length": 103,
+          "function_start": 5856,
+          "function_end": 7994
+        },
+        "source_after": {
+          "blob": "e353e6e94be8689f33d54783dab91dd1751eab33",
+          "offset": 6109,
+          "length": 142,
+          "function_start": 5895,
+          "function_end": 8072
+        },
+        "function": "fn exchange_guarded<T>("
+      },
+      {
+        "row_index": 1058,
+        "row_kind": "protected_file",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "field": [
+          "required_function_order",
+          1,
+          "sequence",
+          14
+        ],
+        "before": "crate::AgentdRootProductionInputs::take_generation_publication_connection(\n                &mut root,\n            )?",
+        "after": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+        "classification": "native_optional_trailing_call_comma_and_whitespace",
+        "source_before": {
+          "blob": "95f849829f59292003b06cf12c9bf297c6b11a52",
+          "offset": 7910,
+          "length": 116,
+          "function_start": 4385,
+          "function_end": 9825
+        },
+        "source_after": {
+          "blob": "7912206162ae660e7c88b92a64ee6a5e585c4efe",
+          "offset": 7894,
+          "length": 85,
+          "function_start": 4385,
+          "function_end": 9778
+        },
+        "function": "fn run_original_phase("
+      },
+      {
+        "row_index": 1066,
+        "row_kind": "protected_file",
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "field": [
+          "required_function_order",
+          0,
+          "sequence",
+          2
+        ],
+        "before": "phase.map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane).transpose()?",
+        "after": "phase\n                .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)\n                .transpose()?",
+        "classification": "native_whitespace",
+        "source_before": {
+          "blob": "56e2d21b216df32a38b569099aa6f3e10626e3f9",
+          "offset": 1413,
+          "length": 97,
+          "function_start": 818,
+          "function_end": 10852
+        },
+        "source_after": {
+          "blob": "d2a74c75dfa0296aa136469e7814d978ae08d8b8",
+          "offset": 1413,
+          "length": 131,
+          "function_start": 818,
+          "function_end": 10886
+        },
+        "function": "fn enroll_generation_initial_in_phase("
+      }
+    ],
+    "field_count": 5,
+    "counts": {
+      "privileged_inventory": {
+        "total": 1,
+        "changed": 0,
+        "equal": 1
+      },
+      "boundary": {
+        "total": 638,
+        "changed": 0,
+        "equal": 638
+      },
+      "protected_file": {
+        "total": 440,
+        "changed": 4,
+        "equal": 436
+      }
+    },
+    "all_undeclared_rows_fields_array_order_unchanged": true,
+    "checkers_modified": false
+  },
+  "allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "pre": {
+      "blob": "e1bbdbcb8da88f6b63ec92ec6d42cdb13ed378a4",
+      "bytes": 12066,
+      "sha256": "2ece86201c3e8fd268197825ad17ea376186647347bde6f8daa0622d1e6a5e9e"
+    },
+    "post": {
+      "blob": "4b442bf66d8878d5c7f3a3add392d1cf3d3872d8",
+      "bytes": 12066,
+      "sha256": "ed40f145cd368cb5beb2bc1719ef187ffb9bd28c4f031e81729874cce9bbc27a"
+    },
+    "only_change": {
+      "before": "sha256:67f0d0f1e0cfad34d6bf6f38b264882477174e8d008f5e1d23ec737f98046eba CALLERS.toml",
+      "after": "sha256:7f5a212aefdc3783ede6fdf2b8033aa7c6ff92eacd85309b05520193fc750dce CALLERS.toml"
+    },
+    "threshold_and_other_entries_unchanged": true
+  },
+  "independent_review": {
+    "blob": "3f0c03d34962790c8e6f228dbd3fdd4d2687dc99",
+    "bytes": 10928,
+    "sha256": "a016a14efb82c5f369d413c16e17b90fa798bfaacfc8379a28bb3f777d16829e"
+  },
+  "invariants": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "freshness_ms": 500,
+    "request_origin": "original request_started_ns",
+    "native_retries": 0,
+    "ordinary_packages": 7,
+    "root_exact_tests": 17,
+    "overall_timeout_seconds": 27000,
+    "full_caller_timeout_seconds": 3600
+  },
+  "future_assembly_included": false,
+  "original_final_use_test_failure_leaf": "Not yet resolved or reobserved on this source; no earlier PASS inherited.",
+  "qualification": {
+    "current_source_native": "not yet run",
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "main_merged": false
+  }
+}

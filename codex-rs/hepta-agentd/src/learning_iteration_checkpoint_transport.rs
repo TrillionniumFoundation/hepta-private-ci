@@ -300,9 +300,10 @@ impl AgentdLearningCheckpointClientV1 {
             // A Conflict keeps its original error value. Only the old None
             // profile may reuse that lane; this phase closes on every error.
             if result.is_ok()
-                && let Some(closing) = &mut phase_closing {
-                    closing.disarm();
-                }
+                && let Some(closing) = &mut phase_closing
+            {
+                closing.disarm();
+            }
             result
         } else {
             Err(unavailable())

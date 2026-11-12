@@ -73,8 +73,7 @@ impl OriginalScopedPublicationTicket {
     pub(crate) async fn connect_original_current(
         mut self,
         timeout: Duration,
-    ) -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>
-    {
+    ) -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError> {
         OriginalSameActorRootContext::require_current(&self.context)?;
         let connection = self
             .context

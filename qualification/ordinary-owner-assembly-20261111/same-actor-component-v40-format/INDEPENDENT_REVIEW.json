@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "classification": "INDEPENDENT_STATIC_REVIEW_NOT_NATIVE_QUALIFICATION",
+  "subject": "V39 actual rustfmt six-file postimages and V40 exact CALLERS layout adaptation",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "9700ee930c123ba58f7ee4b1241c136ac8a84ba9",
+  "disposition": "No confirmed local semantic or metadata-protection blocker in the exact reviewed candidates.",
+  "reviewed": {
+    "native_patch": {
+      "blob": "0c3d61d3df8e07c605d0a65e3e77e7727469a0b1",
+      "bytes": 6757,
+      "sha256": "67da5b50e603b560bb224203c398a1d79ebf520225f551cc37b3c025680074ec"
+    },
+    "root_format_manifest": {
+      "blob": "24b05cfd26a6d2ab505f39a8eb2e5678b1dbe9b6",
+      "bytes": 4013,
+      "sha256": "04806c16908185d1b47dd678e68c45fb251fe94f55020e7138808af2d1fcf476"
+    },
+    "callers_pre": {
+      "blob": "129fcc5fc3d10b3a6ee0758c6ab41f111ac227c7",
+      "bytes": 891249,
+      "sha256": "67f0d0f1e0cfad34d6bf6f38b264882477174e8d008f5e1d23ec737f98046eba"
+    },
+    "callers_post": {
+      "blob": "e36da4a9a874ac5cdea0cae954de180128674dc6",
+      "bytes": 891284,
+      "sha256": "7f5a212aefdc3783ede6fdf2b8033aa7c6ff92eacd85309b05520193fc750dce"
+    },
+    "metadata_operations": {
+      "blob": "1d3a915909e9ab9513ef32081fccc4f010b30cae",
+      "bytes": 15615,
+      "sha256": "a525a30355052d4f0da99301a6a7e267a8e5ac77ff5ac9e7dcc2785f38de9c32"
+    },
+    "metadata_mapping": {
+      "blob": "b9dd29cb05513d7317fed2f0c792fe8e98721f64",
+      "bytes": 5591,
+      "sha256": "17fa1d92c506312329e4f6729bad5f56a83bb531c158045a0e9656b3c0756d15"
+    },
+    "root_bounded_projection": {
+      "blob": "514aeba1549b08eb6a5c87de52bff498dccdc747",
+      "bytes": 14958,
+      "sha256": "9a8f3b4e5c9287c1ef7d2a74b800b80dab0cf6932d313b049c750f2335c3e9f1"
+    }
+  },
+  "source_review": {
+    "file_count": 6,
+    "hunk_count": 8,
+    "all_pre_and_post_blob_hashes_bytes_sha256_verified": true,
+    "all_actual_postimages_independently_read": true,
+    "positioned_full_context_forward_reverse_equals_complete_files": true,
+    "proof": "Every +/- hunk line was checked against the original-mask code projection at its exact source position and equals code there. All other lines are preserved by the exact patch replay. Thus no changed comment or literal bytes are hidden by masking. Whole-file code tokens and remaining non-whitespace code are equal after only the one explicitly listed optional call-argument comma normalization.",
+    "only_non_whitespace_change": {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "before": "crate::AgentdRootProductionInputs::take_generation_publication_connection(\n                &mut root,\n            )?",
+      "after": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+      "meaning": "Same fully qualified callee, same unique &mut root argument, same error propagation; only the optional trailing argument comma is removed."
+    },
+    "per_file": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "pre": "56e2d21b216df32a38b569099aa6f3e10626e3f9",
+        "post": "d2a74c75dfa0296aa136469e7814d978ae08d8b8",
+        "hunks": 1,
+        "classification": "layout_only"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "pre": "40fcc184c79929df6d149c6b86d02460da225dd9",
+        "post": "dccb655313b50b96202d7e73cd0619efd34d2a34",
+        "hunks": 1,
+        "classification": "layout_only"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "pre": "51a5b676de866752fe10ba2e3dc8ad338997d71f",
+        "post": "e353e6e94be8689f33d54783dab91dd1751eab33",
+        "hunks": 2,
+        "classification": "layout_only"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "pre": "730aab00499c1c84c337926e97b3d9695696f3cc",
+        "post": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+        "hunks": 1,
+        "classification": "layout_only"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "pre": "95f849829f59292003b06cf12c9bf297c6b11a52",
+        "post": "7912206162ae660e7c88b92a64ee6a5e585c4efe",
+        "hunks": 2,
+        "classification": "layout_and_one_optional_trailing_comma_removal"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "pre": "bea124de062c301c6b39d20c79ba288a87480751",
+        "post": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+        "hunks": 1,
+        "classification": "layout_only"
+      }
+    ],
+    "preserved": "All authority calls, receivers, arguments, guards, error propagation, awaits, deadlines, borrow/move order and original refusal behavior remain unchanged. Learning's existing if-let chain only moves brace/indentation. The phase failure-scope expressions retain their same calls and placement.",
+    "future_startup_preimage": "7912206162ae660e7c88b92a64ee6a5e585c4efe"
+  },
+  "metadata_review": {
+    "unique_exact_operations": 4,
+    "forward_equals_actual_post": true,
+    "reverse_equals_actual_pre": true,
+    "changed_existing_strings": 5,
+    "changed_protected_rows": 4,
+    "classification": {
+      "whitespace_only": 4,
+      "matching_native_optional_comma_and_layout": 1
+    },
+    "all_other_rows_fields_and_array_order_exact": true,
+    "parsed_counts": {
+      "required_boundary_ids": 638,
+      "boundaries": 638,
+      "protected_files": 440
+    },
+    "independent_comparison": {
+      "<root>": {
+        "total": 1,
+        "parsed_changed": 0,
+        "raw_changed": 0
+      },
+      "privileged_inventory": {
+        "total": 1,
+        "parsed_changed": 0,
+        "raw_changed": 0
+      },
+      "boundary": {
+        "total": 638,
+        "parsed_changed": 0,
+        "raw_changed": 0
+      },
+      "protected_file": {
+        "total": 440,
+        "parsed_changed": 4,
+        "raw_changed": 4
+      },
+      "authority": {
+        "total": 1,
+        "parsed_changed": 0,
+        "raw_changed": 0
+      },
+      "protected_file.required_function_order": {
+        "total": 49,
+        "parsed_changed": 0,
+        "raw_changed": 0
+      }
+    },
+    "row_index_note": "Root mapping indexes count the 1079 inventory/boundary/protected rows. My parser additionally retains the root, authority and 49 nested function-order sections. Matching uses actual row kind/path/field and exact values; their offset is 51, not a content difference.",
+    "actual_function_spans": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "function": "fn connect_original_current(",
+        "field": [
+          "required_order",
+          0,
+          1
+        ],
+        "before": [
+          3116,
+          3878,
+          3195,
+          73
+        ],
+        "after": [
+          3116,
+          3874,
+          3195,
+          69
+        ],
+        "unique_within_function": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "function": "fn connect_original_current(",
+        "field": [
+          "required_function_order",
+          1,
+          "sequence",
+          0
+        ],
+        "before": [
+          3116,
+          3878,
+          3194,
+          74
+        ],
+        "after": [
+          3116,
+          3874,
+          3194,
+          70
+        ],
+        "unique_within_function": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "function": "fn exchange_guarded<T>(",
+        "field": [
+          "required_order",
+          0,
+          1
+        ],
+        "before": [
+          5856,
+          7994,
+          6070,
+          103
+        ],
+        "after": [
+          5895,
+          8072,
+          6109,
+          142
+        ],
+        "unique_within_function": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "function": "fn run_original_phase(",
+        "field": [
+          "required_function_order",
+          1,
+          "sequence",
+          14
+        ],
+        "before": [
+          4385,
+          9825,
+          7910,
+          116
+        ],
+        "after": [
+          4385,
+          9778,
+          7894,
+          85
+        ],
+        "unique_within_function": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "function": "fn enroll_generation_initial_in_phase(",
+        "field": [
+          "required_function_order",
+          0,
+          "sequence",
+          2
+        ],
+        "before": [
+          818,
+          10852,
+          1413,
+          97
+        ],
+        "after": [
+          818,
+          10886,
+          1413,
+          131
+        ],
+        "unique_within_function": true
+      }
+    ],
+    "final_use_duplicate_resolution": "The changed failure_scope fragment occurs twice in final_use_issuer.rs. The reviewed protected sequence starts at fn exchange_guarded<T>( and its mapped fragment is the second file occurrence, unique inside that actual function. It is not satisfied by issue's earlier occurrence.",
+    "preserved": "All 638 complete boundary rows are raw-byte equal: IDs, symbols, receiver types, definitions, callers and markers. Required IDs exactly equal declared IDs. No raw required, forbidden, literal-call, top-level, source-root, ignored-path or checker field is weakened or removed.",
+    "independent_bounded_projection": {
+      "before": {
+        "protected_rows": 8,
+        "functions": 23,
+        "file_order_sequences": 5,
+        "raw_required": 14,
+        "forbidden": 13,
+        "failures": 0
+      },
+      "after": {
+        "protected_rows": 8,
+        "functions": 23,
+        "file_order_sequences": 5,
+        "raw_required": 14,
+        "forbidden": 13,
+        "failures": 0
+      }
+    },
+    "span_tuple_order": [
+      "function_start",
+      "function_end_inclusive",
+      "marker_offset",
+      "marker_length"
+    ]
+  },
+  "limits": [
+    "Only Git reads, pure V8 reconstruction/static projection and this unreferenced review blob were performed; no source, reference, checker, helper, Cargo, h or native execution.",
+    "The projection follows the previously read original checker masking and function-extent conventions. It is not execution of the original checker or construction of its global receiver index.",
+    "The V39 run remains the reported fmt-before clean-identity failure (formatter child exit 0, executor exit 1, six dirty files). This review grants no compilation, QA, native or business PASS.",
+    "Future entry, coordinator, lifecycle and normal-completion work is outside this candidate."
+  ]
+}

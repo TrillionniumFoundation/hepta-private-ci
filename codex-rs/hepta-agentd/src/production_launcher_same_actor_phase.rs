@@ -135,8 +135,7 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
         })?;
         let phase = tokio::task::block_in_place(|| {
             let timeout = receiver.remaining()?.min(Duration::from_millis(500));
-            let phase =
-                receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
+            let phase = receive_original_phase_start(phase_handoff, timeout, receiver.instant())?;
             receiver.remaining()?;
             Ok::<_, AgentdError>(phase)
         })?;
@@ -178,9 +177,7 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
             ));
         }
         let connection =
-            crate::AgentdRootProductionInputs::take_generation_publication_connection(
-                &mut root,
-            )?;
+            crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?;
         let initial = initial
             .connect_original_same_actor_initial(
                 connection,
