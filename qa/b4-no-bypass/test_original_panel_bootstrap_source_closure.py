@@ -31,12 +31,8 @@ EXPECTED = {
     "learning_original_training_bootstrap_config_v2": [],
     "learning_original_training_bootstrap_create_v2": [],
     "learning_original_training_bootstrap_recover_v2": [],
-    "learning_original_material_create": [
-        "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
-    ],
-    "learning_original_material_recover": [
-        "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
-    ]
+    "learning_original_material_create": [],
+    "learning_original_material_recover": []
 }
 MUTATIONS = {
     "material": [

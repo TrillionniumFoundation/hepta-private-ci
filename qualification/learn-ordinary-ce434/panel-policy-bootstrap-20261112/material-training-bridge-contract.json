@@ -1864,66 +1864,7 @@
       "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs\"\nrequired = [\"impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>\",\"OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>\"]\nforbidden = [\"SigningKey::generate\",\"SigningKey::from_bytes\",\"UnixStream::connect\",\"File::open\",\"OpenOptions\",\".claim(\",\".complete(\",\"permit_all\",\"if false\",\"unwrap_or\",\"FrozenLearningScopeV2::freeze\",\"freeze_learning\",\"clone_from_original\",\"State::Awaiting\",\"create_dir\",\"std::fs::\",\"serde_json::from\",\"Vec<i64>\",\"Q24Batch\",\"dyn Fn\",\"impl Fn\",\"Arc::ptr_eq\",\"Deserialize\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn actual_context(\"\nsequence = [\"let initial = &self.config.material.initial;\",\"let snapshot = cut.snapshot();\",\"LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())\",\"snapshot.request != initial.request\",\"snapshot.owners != initial.owners\",\"snapshot.receipts.len() != 2\",\"cut.attestations().len() != 2\",\"coordinator.next_stage() != Some(LearningIterationStageV1::Training)\",\"return Err(Error::Binding(\",\"let context = OriginalCellQ24TrainingCommandContextV1 {\",\"dataset: snapshot.clone()\",\"scope: self.config.material.scope.clone()\",\"verifier: self.config.material.verifier.clone()\",\"request.require_context(&context, context.binding()?, next_request_id)?\",\"self.require_fresh_cut(cut, started_at)?\",\"Ok(context)\"]\ntop_level = [\"let initial = &self.config.material.initial;\",\"let snapshot = cut.snapshot();\",\"request.require_context(&context, context.binding()?, next_request_id)?\",\"self.require_fresh_cut(cut, started_at)?\",\"Ok(context)\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn require_fresh_cut(\"\nsequence = [\"OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(\",\"&self.dataset\",\"cut\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&self.dataset\",\"&self.config.material\",\"require_panel_initial(&self.config, self.panel.as_deref())?;\",\"if let Some(panel) = self.panel.as_deref() {\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(\",\"panel,\",\"cut.snapshot(),\",\".map_err(|_| Error::Binding(\",\"at < started_at\",\"matches!(self.origin, Origin::Fresh)\",\"at\",\">= self\",\".config\",\".material\",\".initial\",\".request\",\".envelope\",\".expiry_unix_seconds\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&self.config.generator\",\"at\",\"Ok(())\"]\ntop_level = [\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"Ok(())\",\"require_panel_initial(&self.config, self.panel.as_deref())?;\",\"if let Some(panel) = self.panel.as_deref() {\"]\n\n[[protected_file.required_function_order]]\nfunction = \"fn build_original_owner(\"\nsequence = [\"let source_config = OriginalCellQ24TrainingSourceConfigV1 {\",\"dataset: cut.snapshot().clone()\",\"scope: self.config.material.scope.clone()\",\"rule: self.config.material.rule\",\"optimizer: self.config.optimizer\",\"freeze_plan: self.config.material.freeze_plan.clone()\",\"freeze_evidence: self.config.material.freeze_evidence.clone()\",\"experience_evidence: cut.attestations()[0].clone()\",\"dataset_evidence: cut.attestations()[1].clone()\",\"verifier: self.config.material.verifier.clone()\",\"OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(\",\"material_source\",\"source_config.clone()\",\"capture_original_remote_cell_q24_training_source_v1(\",\"OriginalCellQ24RemoteTrainingSourceOwnersV1 {\",\"material\",\"baseline\",\"experience\",\"dataset\",\"source_config\",\".await?\",\"self.require_fresh_cut(&cut, started_at)?\",\"let signing = OriginalCellQ24TrainingSigningConfigV1 {\",\"dataset: context.dataset.clone()\",\"scope: context.scope.clone()\",\"signer: self.config.generator.clone()\",\"verifier: context.verifier.clone()\",\"maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds\",\"let origin = self.origin;\",\"let panel = self.panel.clone();\",\"let original_dataset = Arc::clone(&self.dataset);\",\"let material_config = self.config.material.clone();\",\"let original_cut = cut.clone();\",\"tokio::task::spawn_blocking(move || {\",\"OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?\",\"OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(\",\"&original_dataset\",\"&original_cut\",\"OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(\",\"&original_dataset\",\"&material_config\",\"if let Some(panel) = panel.as_deref() {\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_initial(\",\"panel,\",\"&material_config.initial,\",\".map_err(|_| Error::Binding(\",\"OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(\",\"panel,\",\"original_cut.snapshot(),\",\".map_err(|_| Error::Binding(\",\"at < started_at\",\"matches!(origin, Origin::Fresh)\",\"at >= material_config.initial.request.envelope.expiry_unix_seconds\",\"return Err(Error::Binding(\",\".require_signer_binding(\",\"LearningEvidenceRoleV1::Generator\",\"&signing.signer\",\"at\",\"let native = match origin {\",\"Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(\",\"native_file\",\"native_witness\",\"source\",\"Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(\",\"native_file\",\"native_witness\",\"source\",\"let receipts = match origin {\",\"Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(\",\"receipt_file\",\"receipt_witness\",\"signing\",\"generator_key\",\"Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(\",\"receipt_file\",\"receipt_witness\",\"signing\",\"generator_key\",\"Ok::<_, Error>((native, receipts))\",\".await\",\".map_err(|_| Error::Uncertain)??\",\"OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)\",\"SourceBoundCellQ24TrainingStageV1::from_original_stage(original)\",\"let owner = match self.origin {\",\"Origin::Fresh => {\",\"OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(\",\"stage\",\"context\",\"Arc::clone(&self.cancellation)\",\"Origin::Recovered => {\",\"OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(\",\"stage\",\"context\",\"Arc::clone(&self.cancellation)\",\"self.require_fresh_cut(&cut, started_at)?\",\"Ok(Arc::new(owner))\"]\ntop_level = [\"let source_config = OriginalCellQ24TrainingSourceConfigV1 {\",\"let origin = self.origin;\",\"let original_dataset = Arc::clone(&self.dataset);\",\"let material_config = self.config.material.clone();\",\"let original_cut = cut.clone();\",\"let owner = match self.origin {\",\"Ok(Arc::new(owner))\",\"let panel = self.panel.clone();\"]\n\n"
     }
   ],
-  "boundary_replacements": [
-    {
-      "id": "learning_original_material_create",
-      "before_raw": "[[boundary]]\nid = \"learning_original_material_create\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::create\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn create(\"]\nproduct_callers = []\ncaller_markers = []\n\n",
-      "before": {
-        "id": "learning_original_material_create",
-        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create",
-        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
-        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
-        "definition_markers": [
-          "pub fn create("
-        ],
-        "product_callers": [],
-        "caller_markers": []
-      },
-      "after": {
-        "id": "learning_original_material_create",
-        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::create",
-        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
-        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
-        "definition_markers": [
-          "pub fn create("
-        ],
-        "product_callers": [
-          "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
-        ],
-        "caller_markers": []
-      },
-      "after_raw": "[[boundary]]\nid = \"learning_original_material_create\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::create\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn create(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"]\ncaller_markers = []\n\n"
-    },
-    {
-      "id": "learning_original_material_recover",
-      "before_raw": "[[boundary]]\nid = \"learning_original_material_recover\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::recover\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn recover(\"]\nproduct_callers = []\ncaller_markers = []\n\n",
-      "before": {
-        "id": "learning_original_material_recover",
-        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::recover",
-        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
-        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
-        "definition_markers": [
-          "pub fn recover("
-        ],
-        "product_callers": [],
-        "caller_markers": []
-      },
-      "after": {
-        "id": "learning_original_material_recover",
-        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::recover",
-        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
-        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
-        "definition_markers": [
-          "pub fn recover("
-        ],
-        "product_callers": [
-          "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
-        ],
-        "caller_markers": []
-      },
-      "after_raw": "[[boundary]]\nid = \"learning_original_material_recover\"\nsymbol = \"OriginalCellQ24MaterialReceiptOwnersV1::recover\"\nreceiver_type = \"OriginalCellQ24MaterialReceiptOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"\ndefinition_markers = [\"pub fn recover(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\"]\ncaller_markers = []\n\n"
-    }
-  ],
+  "boundary_replacements": [],
   "boundary_additions": [
     {
       "row": {
@@ -2019,8 +1960,8 @@
     "learning_original_training_bootstrap_recover_v2"
   ],
   "manifest_after": {
-    "sha": "6f882e37be23f6d783502960ef5aafb9406aaa58",
-    "bytes": 1545819,
+    "sha": "210a143b3bd2cdb96fd359ddf436d6d5c7c8ad23",
+    "bytes": 1545695,
     "before": {
       "boundary": 710,
       "protected_file": 489,
@@ -2031,9 +1972,9 @@
       "protected_file": 489,
       "full_records": 1205
     },
-    "exact_full_record_replacements": 6,
+    "exact_full_record_replacements": 4,
     "new_boundary_records": 6,
-    "unowned_raw_records_preserved": 1193,
+    "unowned_raw_records_preserved": 1195,
     "multiset_after_equals_before_minus_exact_replacements_plus_after_plus_additions": true,
     "path_deduplication": false,
     "inter_record_trailing_whitespace_ignored_only_for_counter": true
@@ -2041,17 +1982,15 @@
   "legacy_qa_patch": {
     "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
     "before_blob": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
-    "after_blob": "2010c4ee88e24fa663bc75ee6ae87fff2a601cfc",
-    "before_fragment": "            self.assertEqual(self.boundaries[identifier].product_callers, ())\n        for identifier in (\"learning_original_material_experience_attest\",",
-    "after_fragment": "            self.assertEqual(self.boundaries[identifier].product_callers, (OWNER,))\n        for identifier in (\"learning_original_material_experience_attest\",",
+    "after_blob": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
     "original_test_methods": 9,
     "retained_test_methods": 9,
-    "change": "only the exact legacy create/recover caller assertions now include the actual in-file V2 delegation"
+    "change": "none; original complete QA bytes retained because definition-file internal delegation is excluded by the unchanged verifier"
   },
   "new_source_qa": {
     "path": "qa/b4-no-bypass/test_original_panel_bootstrap_source_closure.py",
-    "sha": "5b0622f31272800b4a5a55d6c8034e1a7a3e8cac",
-    "bytes": 17523,
+    "sha": "05c2d7e1ab078176f3f45cd9a17cbf593f50a693",
+    "bytes": 17371,
     "methods": 7,
     "groups": {
       "material": 16,
@@ -2138,5 +2077,16 @@
     "NoUpdate_or_fallback": 0,
     "C": 0,
     "cold_restart": 0
+  },
+  "supersedes_contract_blob": "633a5e0070170f3605db10236e22f72bbb95b3eb",
+  "caller_accounting_correction": {
+    "original_verifier_path": "scripts/verify_hepta_callers.py",
+    "original_verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "function": "_verify_boundary",
+    "exact_existing_rule": "if relative == boundary.definition_path or _is_ignored(relative, ignored_fragments): continue",
+    "material_v1_external_product_callers": [],
+    "material_v2_internal_delegations": "Original create/recover remain called only inside their definition file; the protected full function bodies enforce these internal edges.",
+    "superseded_commit": "495d4930ceac929197504d44fe0ccdb0026a823e",
+    "python_or_typed_pass_claimed": false
   }
 }

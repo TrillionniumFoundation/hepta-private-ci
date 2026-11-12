@@ -104,7 +104,7 @@ class OriginalMaterialEvidenceClosureTests(unittest.TestCase):
             "learning_original_material_create",
             "learning_original_material_recover",
         ):
-            self.assertEqual(self.boundaries[identifier].product_callers, (OWNER,))
+            self.assertEqual(self.boundaries[identifier].product_callers, ())
         for identifier in ("learning_original_material_experience_attest",
                            "learning_original_material_dataset_attest"):
             self.assertEqual(self.boundaries[identifier].product_callers, (COMMAND,))
