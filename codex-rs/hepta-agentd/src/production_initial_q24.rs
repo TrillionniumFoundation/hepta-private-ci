@@ -136,6 +136,7 @@ impl AgentdProductionLaunch {
         };
         self.require_original_initial_q24_session(config.identity())?;
         self.retain_original_initial_source_capture(&published)?;
+        self.retain_original_initial_run_start(&published)?;
         let profile = CircuitQ24TaskProfileV1 {
             files: task,
             source_mode: CircuitQ24TaskOpenModeV1::Create,

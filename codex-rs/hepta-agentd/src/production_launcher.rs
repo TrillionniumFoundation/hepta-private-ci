@@ -25,6 +25,8 @@ use crate::desktop_root_composition::attach_root_desktop_operation_host_with_sta
 #[path = "production_q24_successor.rs"]
 mod successor;
 
+#[path = "production_run_start_retention.rs"]
+pub(crate) mod run_start_retention;
 #[path = "production_source_capture.rs"]
 pub(crate) mod source_capture;
 
@@ -81,6 +83,7 @@ pub struct AgentdProductionLaunch {
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
     initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
     original_source_capture: Option<source_capture::OriginalSourceCaptureRequestV1>,
+    original_run_start_retention: Option<run_start_retention::OriginalInitialRunStartRetainerV1>,
     session_end: Instant,
 }
 
@@ -298,6 +301,7 @@ impl AgentdProductionStartup {
                         publication,
                         initial_publication,
                         original_source_capture: None,
+                        original_run_start_retention: None,
                         session_end,
                     }),
                 ))
@@ -391,6 +395,9 @@ impl AgentdProductionLaunch {
         }
         if let Some(capture) = self.original_source_capture {
             config.install_original_source_capture(capture)?;
+        }
+        if let Some(retained) = self.original_run_start_retention {
+            config.install_original_run_start_retention(retained)?;
         }
         let RuntimeInputs {
             primary,

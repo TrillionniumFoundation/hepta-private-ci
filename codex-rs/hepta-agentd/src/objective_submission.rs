@@ -282,6 +282,10 @@ impl ObjectiveRuntimeHost {
             ));
         }
 
+        #[cfg(target_os = "linux")]
+        self.retain_original_run_start_before_execution(agentd, &record, &published)
+            .await?;
+
         let disposition = P::execute(agentd, &record).await?;
 
         Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
