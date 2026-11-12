@@ -252,3 +252,6 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
     assert_eq!(runner.bytes(), consumed);
     original.finish().await
 }
+
+#[path = "circuit_original_evaluation_panel_tests.rs"]
+mod panel_members;

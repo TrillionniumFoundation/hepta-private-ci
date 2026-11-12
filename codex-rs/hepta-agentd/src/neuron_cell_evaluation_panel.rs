@@ -143,3 +143,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_panel_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_panel_access_tests.rs"]
+mod test_access;

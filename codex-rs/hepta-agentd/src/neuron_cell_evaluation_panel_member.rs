@@ -51,7 +51,9 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         task: &OriginalCellEvaluationPanelTaskV1,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
     ) -> Result<OriginalCellEvaluationPanelMemberReadbackV1, Error> {
-        let started_at = clock()?;
+        // The original Qualification owns its internal SystemTime checks.
+        // The panel's final common clock reauthenticates every window later.
+        let started_at = original::now()?;
         let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?;
         let before = self.read_cells()?;
         let mut sources = OriginalCellEvaluationQualificationSourcesV1 {

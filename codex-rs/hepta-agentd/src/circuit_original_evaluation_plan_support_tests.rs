@@ -11,6 +11,7 @@ use pretty_assertions::assert_eq;
 pub(crate) struct ProviderPlanFixture {
     fixture: Fixture,
     pub(crate) plan: CellEvaluationPlanV1,
+    execution_namespace: Digest32,
 }
 impl ProviderPlanFixture {
     pub(crate) fn new(
@@ -19,7 +20,34 @@ impl ProviderPlanFixture {
         training: &LearningIterationSnapshotV1,
         [candidate_manifest, baseline_manifest]: [CellBackendManifestV2; 2],
     ) -> anyhow::Result<Self> {
-        let mut fixture = Fixture::new(Costs::Complete);
+        Self::with_original_fixture(
+            cohort, rule, training, [candidate_manifest, baseline_manifest],
+            Fixture::new(Costs::Complete), digest("binding"), "comparison",
+        )
+    }
+
+    pub(crate) fn for_panel(
+        cohort: &OriginalCircuitEvaluationCohortV1,
+        rule: &OriginalCircuitEvaluationCohortRuleV1,
+        training: &LearningIterationSnapshotV1,
+        manifests: [CellBackendManifestV2; 2],
+    ) -> anyhow::Result<Self> {
+        let namespace = digest(&format!("explicit-original-panel-holdout:{}", rule.plan_id));
+        let fixture = Fixture::with_original_namespace(Costs::Complete, 2, namespace);
+        Self::with_original_fixture(
+            cohort, rule, training, manifests, fixture, namespace, rule.plan_id.as_str(),
+        )
+    }
+
+    fn with_original_fixture(
+        cohort: &OriginalCircuitEvaluationCohortV1,
+        rule: &OriginalCircuitEvaluationCohortRuleV1,
+        training: &LearningIterationSnapshotV1,
+        [candidate_manifest, baseline_manifest]: [CellBackendManifestV2; 2],
+        mut fixture: Fixture,
+        execution_namespace: Digest32,
+        run_id: &str,
+    ) -> anyhow::Result<Self> {
         let coordinator = codex_hepta_learning_artifacts::LearningIterationCoordinatorV1::from_snapshot(
             training.clone(),
         )?;
@@ -43,13 +71,13 @@ impl ProviderPlanFixture {
         comparison.candidate.structure_after = candidate_manifest.evolution.structure;
         comparison.fixed_expert.structure_before = baseline_manifest.evolution.structure;
         comparison.fixed_expert.structure_after = baseline_manifest.evolution.structure;
-        fixture.candidate = journal_with_manifest(
+        fixture.candidate = journal_with_manifest_for_run(
             fixture.directory.path(), "original-B-candidate-cost", Costs::Complete,
-            rule.task_digest.into_array(), candidate_manifest,
+            rule.task_digest.into_array(), candidate_manifest, run_id,
         );
-        fixture.fixed = journal_with_manifest(
+        fixture.fixed = journal_with_manifest_for_run(
             fixture.directory.path(), "original-B-baseline-cost", Costs::Complete,
-            rule.task_digest.into_array(), baseline_manifest,
+            rule.task_digest.into_array(), baseline_manifest, run_id,
         );
         fixture.candidate_temporal = rule.candidate_plan.clone();
         fixture.baseline_temporal = rule.baseline_plan.clone();
@@ -59,7 +87,7 @@ impl ProviderPlanFixture {
             training.request.evaluation_profile,
         )?;
         assert_eq!(plan.product_plan().frozen_plan.final_holdout_digest, cohort.observed_manifest_digest()?);
-        Ok(Self { fixture, plan })
+        Ok(Self { fixture, plan, execution_namespace })
     }
 
     pub(crate) fn run(
@@ -79,3 +107,6 @@ impl ProviderPlanFixture {
         self.fixture.holdout_bytes()
     }
 }
+
+#[path = "circuit_original_evaluation_panel_member_support_tests.rs"]
+pub(crate) mod panel_members;
