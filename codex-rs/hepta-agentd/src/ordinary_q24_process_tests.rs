@@ -9,6 +9,8 @@ mod b_publication_observer;
 mod cold_administration;
 #[path = "ordinary_q24_cold_deployment_tests.rs"]
 mod cold_deployment;
+#[path = "ordinary_q24_cold_launch_tests.rs"]
+mod cold_launch;
 #[path = "ordinary_q24_cold_phase_tests.rs"]
 mod cold_phase;
 #[path = "ordinary_q24_process_deployment_tests.rs"]
