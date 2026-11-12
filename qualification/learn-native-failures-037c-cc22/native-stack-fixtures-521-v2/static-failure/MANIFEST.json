@@ -1,0 +1,38 @@
+{
+  "operation_id": "6d893cf66f4f46c63b85e10216d075526c33f1c790d791ddfe6dde356406f4de",
+  "original_file": {
+    "path": "/home/qian-qi/hepta-learn-037c-evidence/stack-static-prologues-cc22-v1/result.json",
+    "version": "2050:2425343:503:1794484403590874883:1794484403590874883",
+    "size": 503,
+    "sha256": "4eec43c84c1382699784efdb2037a3cd7fca7dc384ada867c644fa4da991f833"
+  },
+  "files": [
+    {
+      "path": "readback-tool-page.json",
+      "bytes": 2374,
+      "sha256": "9cd0f0bc19be72ed2136582c3fbb87ec56d1a57147bc88db26733d0c987594ea",
+      "git_blob": "4a96d0b81fa2962d6e45b495d21bb4c0c1e89a5a"
+    },
+    {
+      "path": "original-sdk-payload.exact.json",
+      "bytes": 1139,
+      "sha256": "66694c5aaf816adfb4c2cf5ee788791110f2d452821f4ab834082fdee64a975e",
+      "git_blob": "efae0ca7f82d9de2e5d1a1d8ee4275b576bf4e78"
+    },
+    {
+      "path": "result.json",
+      "bytes": 503,
+      "sha256": "4eec43c84c1382699784efdb2037a3cd7fca7dc384ada867c644fa4da991f833",
+      "git_blob": "496e1183281e565035ba89d16a1f7c947339dc73"
+    }
+  ],
+  "status": "Actual static diagnostic exit1; original immutable read result recovered with full hashes. No binary instructions were recovered.",
+  "root_terminal_summary": {
+    "status": "exit1/output_complete",
+    "stage": "first BINARY.stat",
+    "exception": "FileNotFoundError",
+    "failed_binary_path": "/data/hepta-learn-037c-20261112/target-cache-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "source": "root reported direct PTY observation; raw root receipt retained in root functions.store native-static-root-terminal-first"
+  },
+  "no_replay": true
+}

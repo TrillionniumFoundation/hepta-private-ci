@@ -1,0 +1,178 @@
+{
+  "schema": "learn-native-failures-037c-cc22-v1",
+  "status": "IN_PROGRESS",
+  "evidence_snapshot": "FROZEN_LOCAL",
+  "assembled_at": "2026-11-12T12:10:44.113000+00:00",
+  "repository_path": "qualification/learn-native-failures-037c-cc22",
+  "published_by_this_task": false,
+  "latest_source": {
+    "commit": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+    "tree": "f947d38de96534b3882fba023e51ecd0476c809d",
+    "parent": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+    "changed_files": 7,
+    "production_rust_changed": false,
+    "publication_manifest": "root-native-sevenfile-review/PUBLISHED.json"
+  },
+  "ordinary_qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "daemon_plus_root_cold_recovery": 0,
+    "multigeneration_improver": 0
+  },
+  "frozen_publication_modified": false,
+  "prior_packages_modified": false,
+  "results": {
+    "cc22_focused_native": {
+      "status": "FAILED",
+      "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+      "tests_run": 109,
+      "passed": 78,
+      "failed_excluding_timeouts": 29,
+      "explicit_failures": 5,
+      "stack_overflow_abort_failures": 24,
+      "timeouts": 2,
+      "hepta_failed_tests_including_timeouts": 31,
+      "hepta_command_exit": 100,
+      "outer_driver_exit": 1,
+      "whole_driver_timed_out": false,
+      "original_stack_bytes": 8388608,
+      "original_case_timeout_seconds": 60,
+      "started_at": "2026-11-12T10:56:21.432612+00:00",
+      "finished_at": "2026-11-12T11:15:08.494881+00:00",
+      "source_before_after_equal": true,
+      "inventory_entries": 14842,
+      "inventory_sha256": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+      "raw_log": "native-cc22-focused-review/focused.raw.log",
+      "junit": "native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/focused.xml"
+    },
+    "nine_named_cases": {
+      "status": "ALL_NINE_OBSERVED_ONCE_BUT_COVERAGE_NOT_PASSING",
+      "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "selection": {
+        "observed": 3,
+        "passed": 0,
+        "stack_failures": 3
+      },
+      "next_use": {
+        "observed": 4,
+        "passed": 0,
+        "stack_failures": 4
+      },
+      "intake_v2": {
+        "observed": 2,
+        "passed": 2
+      },
+      "record": "native-cc22-focused-review/originals/native-launch-cc22a69972d0-focused-v1/nine-named-cases-coverage.json"
+    },
+    "helper_build_and_verify": {
+      "status": "EXIT_ZERO_SUPPORT_ONLY",
+      "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "qualifies_native_suite": false,
+      "records": [
+        "native-cc22-focused-review/originals/helper-build.json",
+        "native-cc22-focused-review/originals/helper-verification-before.json",
+        "native-cc22-focused-review/originals/helpers/manifest.json"
+      ]
+    },
+    "gdb_original_case": {
+      "status": "FAILED_DIAGNOSTIC_NATURAL_TERMINAL",
+      "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+      "original_runner_exit": 100,
+      "passed": 0,
+      "failed": 1,
+      "timed_out": false,
+      "manual_kill": false,
+      "signals": [
+        "SIGSEGV",
+        "SIGABRT"
+      ],
+      "active_path": "initial preregistration Admission poll before completed_member",
+      "per_frame_size_measured": false,
+      "three_box_cuts_proven_sufficient": false,
+      "record": "native-cc22-stack-diagnostic-v1/originals/result.json"
+    },
+    "static_prologues": {
+      "status": "FAILED_FILE_NOT_FOUND",
+      "intended_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "intended_tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+      "exit_code": 1,
+      "binary_admitted": false,
+      "disassembly_obtained": false,
+      "rust_executed": false,
+      "source_revalidated_by_this_attempt": false,
+      "record": "native-stack-fixtures-521-v2/static-failure/result.json"
+    },
+    "single_caller_boundary": {
+      "status": "SCOPED_PASS_NOT_FULLCALLER",
+      "execution_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "execution_tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+      "overlay": "one registry boundary includes the actual existing split readback service",
+      "later_publication": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "rust_files_scanned": 6595,
+      "before_failed": true,
+      "after_passed": true,
+      "unregistered_caller_attacks_rejected": 3,
+      "source_and_git_metadata_unchanged": true,
+      "verifier_changed": false,
+      "authority_granted": false,
+      "record": "candidate-sourcebound-caller-cc22-v1/execution-readback/result.json"
+    },
+    "test_repairs_and_diagnostics": {
+      "status": "PUBLISHED_NATIVE_UNVERIFIED",
+      "draft_base": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "published_commit": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "published_tree": "f947d38de96534b3882fba023e51ecd0476c809d",
+      "test_files_changed": 7,
+      "product_files_changed": 0,
+      "timeouts_increased": false,
+      "stack_increased": false,
+      "withdrawn_provider_v1_retained": true,
+      "effective_provider_version": 2,
+      "withdrawal_and_deep_timeout_remain_diagnostic_only": true,
+      "failure_response_map": "FAILURE_RESPONSE_MAP.json"
+    },
+    "actual_formatting": {
+      "status": "SIX_PLUS_ONE_ISOLATED_RUSTFMT_EXIT_ZERO",
+      "draft_base": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "toolchain": "Rust 1.96.0",
+      "six_file_format_changed": [
+        "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs"
+      ],
+      "deep_format_changed": [],
+      "native_tests_run": false,
+      "whole_4ab_checkout_maintenance_proven": false,
+      "all_seven_postimages_match_published_blobs": true,
+      "records": [
+        "native-failures-sixfile-formatted-v1/manifest.json",
+        "native-deep-stage-markers-521-v1/actual-format/manifest.json"
+      ]
+    },
+    "full_source_gate": {
+      "status": "PASS_ON_CC22_ONLY",
+      "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+      "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+      "passed": 397,
+      "failed": 0,
+      "evidence_commit": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+      "evidence_repository_path": "qualification/learn-evaluated-retention-037c-cc22/source-cc22-passed/source-result/source-closure.json",
+      "same_result_applied_to_4ab": false
+    },
+    "full_caller_gate": {
+      "status": "NOT_RUN_ON_REPAIRED_COMMON_SOURCE_IN_THIS_SNAPSHOT",
+      "latest_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "previous_8faf_failure_preserved_in_prior_snapshot": true,
+      "single_boundary_proof_is_not_full_gate": true
+    }
+  },
+  "pending": [
+    "Exact 4ab native execution and actual results",
+    "Resolution of remaining withdrawal/deep/stack failures",
+    "Full caller proof on the repaired common source",
+    "Full source proof for any source after cc22",
+    "Original ordinary launcher/Root capability handoff and complete ordinary qualification"
+  ],
+  "inventory_comparison_rule": "Compare before and after only within the same original driver/algorithm. Native and caller/source driver digests differ and are not cross-compared.",
+  "subsequent_attempts": "Any later maintenance/native/source/caller result belongs in a new append-only snapshot; this frozen package is not rewritten."
+}

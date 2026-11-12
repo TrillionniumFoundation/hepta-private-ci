@@ -1,0 +1,21 @@
+{
+  "scope": "Existing exact cc22 binary static symbol/prologue reads only; no inferior/Rust test/compile/format/installation/stack or timeout change.",
+  "binary_sha256": "670f90e41e4313efdf00d5452e23ea1b0359c9942b0d7c6092b332416136ba04",
+  "requires_installed_tools": [
+    "nm",
+    "objdump"
+  ],
+  "behavior_if_missing": "Fail explicitly without installing anything or invoking Rust.",
+  "target_count": 9,
+  "prologue_max_bytes": 512,
+  "max_symbols": 64,
+  "script": {
+    "bytes": 7936,
+    "sha256": "6176a9c8bb3f4c07ece13e97fe1d9f9721ec4d11249dda841faa0fc309acc5fb"
+  },
+  "request": {
+    "bytes": 8645,
+    "sha256": "521fc92512ddc35189a90c60e5db0677c6df42f622f0cc7efd200e6393b7c658"
+  },
+  "validation": "Python AST parse only, NOT_EXECUTED remotely; root owns first submit."
+}

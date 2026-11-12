@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "performed_at": "2026-11-12T12:10:44.113000+00:00",
+  "scope": "local evidence byte and consistency verification only",
+  "copied_artifacts": 151,
+  "all_copied_bytes_equal_sources": true,
+  "no_new_rust_source_or_caller_execution": true,
+  "focused_raw_matches_original_full_bytes_sha256": true,
+  "focused_xml_matches_original_full_bytes_sha256": true,
+  "junit_109_cases_78_passed_31_failed": true,
+  "all_31_failure_byte_ranges_and_stderr_hashes_match": true,
+  "nine_names_match_original_junit_once_each_two_passed": true,
+  "native_source_before_after_exact_bytes_equal": true,
+  "gdb_nine_original_jsons_present": true,
+  "gdb_and_runner_logs_match_original_complete_sha256": true,
+  "gdb_source_before_after_exact_bytes_equal": true,
+  "static_result_is_original_file_not_found_exit_1": true,
+  "caller_nine_originals_verified_against_original_transfer_manifest": true,
+  "caller_source_and_metadata_before_after_equal": true,
+  "six_plus_one_actual_format_exit_zero": true,
+  "seven_base_and_postimage_identities_match_actual_publication": true,
+  "previous_93_and_153_packages_full_local_inventory_unchanged": true,
+  "no_standalone_rust_source_copies": true,
+  "per_artifact_bytes_strictly_less_than": 512000,
+  "qualification_counts_remain_zero": true,
+  "source_gate_pass_applies_only_to_cc22": true,
+  "limitations": [
+    "This verification is not native acceptance.",
+    "Remote-only and deliberately excluded artifacts are listed in UNPACKAGED_REFERENCES.json.",
+    "No new full source or full caller gate was executed.",
+    "Three Box cuts and seven-file repair native sufficiency remain unproven."
+  ]
+}

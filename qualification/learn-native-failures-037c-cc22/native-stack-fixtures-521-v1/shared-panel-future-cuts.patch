@@ -1,0 +1,60 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
+@@ -56,7 +56,9 @@
+         BFixture::original_manifests(original),
+     )?;
+     let provider = cohort.consume(runner.plan.clone())?;
+-    PanelMemberFixture::complete(
++    // Keep the owned runner/provider setup out of this enclosing member
++    // future; the original inputs and the retention-first order are unchanged.
++    Box::pin(PanelMemberFixture::complete(
+         runner,
+         provider,
+         &original.initial,
+@@ -67,13 +69,17 @@
+         &original.credentials.evaluator,
+         original.config.verifier.clone(),
+         retention_receipt_digests,
+-    )
++    ))
+     .await
+ }
+ 
+ impl PanelFixture {
+     async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
+-        Self::completed_for_publication(peer, PublicationMode::AdoptCandidate).await
++        Box::pin(Self::completed_for_publication(
++            peer,
++            PublicationMode::AdoptCandidate,
++        ))
++        .await
+     }
+ 
+     async fn completed_for_publication(
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
+@@ -200,8 +200,10 @@
+             verifier,
+             training_evidence,
+         )?;
+-        let qualification = qualification_owner
+-            .qualify_or_readback(OriginalCellEvaluationQualificationSourcesV1 {
++        // Do not inline the original Qualification readback state into the
++        // surrounding member setup, which owns both physical runner journals.
++        let qualification = Box::pin(qualification_owner.qualify_or_readback(
++            OriginalCellEvaluationQualificationSourcesV1 {
+                 runner: &mut fixture.runner,
+                 journals: CellEvaluationJournalsV1 {
+                     candidate: &fixture.candidate,
+@@ -211,8 +213,9 @@
+                 baseline_plan: &fixture.baseline_temporal,
+                 executions: &mut executions,
+                 trainer: &trainer,
+-            })
+-            .await?;
++            },
++        ))
++        .await?;
+         // The original evaluator computes this negative result from the equal
+         // supported policies. It is never rewritten to fabricate improvement.
+         assert_eq!(

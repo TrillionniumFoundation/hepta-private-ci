@@ -1,0 +1,206 @@
+{
+  "integration_version": 1,
+  "base_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "base_tree": "778a2c1c1f77fd1ea3d3cd0c203cef6c38db2ec0",
+  "original_native_failed_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "scope": "exactly four Rust test files; no production or panel/stack/deep changes",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "base": {
+        "bytes": 19866,
+        "sha256": "c4c61e035f641cd2715af7ee074c46176bfd5c4003f25e7be812c17ec79eb894",
+        "git_blob": "191a74d44cfda509b24919a89144a93ec90b4f70"
+      },
+      "postimage": {
+        "bytes": 20803,
+        "sha256": "ec21b2dbf8322e171be194a96799334aa17a774d124dd6cfaae5272ef03d254a",
+        "git_blob": "0169864d8a5743a1ce00eacf293392a118026d8d"
+      },
+      "postimage_path": "postimages/codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "base": {
+        "bytes": 15931,
+        "sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+        "git_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908"
+      },
+      "postimage": {
+        "bytes": 18765,
+        "sha256": "653c2143cf100a951c3fbf34fd20a995e69a772af928e6d222190ccf94a8136b",
+        "git_blob": "85e74f31a7eef4d7021b41e9477ba25c2e3d64b6"
+      },
+      "postimage_path": "postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "base": {
+        "bytes": 3082,
+        "sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4",
+        "git_blob": "bcb42c2d31f06a306d0cb3c4032494621b45e69a"
+      },
+      "postimage": {
+        "bytes": 4438,
+        "sha256": "563d82440c91f580e49dfcc55569900b7777fbd88ac8cfc83eff856540704647",
+        "git_blob": "5a462fab5c7b93038596953957434c52e62a00ee"
+      },
+      "postimage_path": "postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "base": {
+        "bytes": 15632,
+        "sha256": "1e88352e7772386890d722077d42fdbcd44b96cec0e6ceb58c4223959464d1d0",
+        "git_blob": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b"
+      },
+      "postimage": {
+        "bytes": 16278,
+        "sha256": "bd866a688d4a501ba7d427bc36fb999b51b49cc789220a636513635c6399a0de",
+        "git_blob": "139596784fcb0c337392ed9ed86174582a58de34"
+      },
+      "postimage_path": "postimages/codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs"
+    }
+  ],
+  "input_patches_in_order": [
+    {
+      "order": 1,
+      "owner": "candidate_audit",
+      "path": "inputs/candidate-provider-native-failures-521-v2/provider-fixture-and-expiry-v2.patch",
+      "bytes": 10170,
+      "sha256": "d71a003818363272a382759e7afed37cdd26755dfe191285ba3c6b623d104b32",
+      "git_blob": "0a2180ae43720f9ea33acf34f2791f8bcb793546"
+    },
+    {
+      "order": 2,
+      "owner": "recovery_audit",
+      "path": "inputs/native-timeout-split-v1/provider-timeout-only.patch",
+      "bytes": 2386,
+      "sha256": "982a7a32bb2b44292b34fe799c0442bef8dd052371174a2e7fc4d35fb8856d17",
+      "git_blob": "21fb7bac9aad1bf2b3216fbe841370298311d499"
+    },
+    {
+      "order": 3,
+      "owner": "profile_audit",
+      "path": "inputs/native-command-failures-cc22-v1/expiry-window-tests.patch",
+      "bytes": 2606,
+      "sha256": "e075bfd4d7d205e7940457910f2afcad8057968625f043a69d10635251248597",
+      "git_blob": "71832610dec19e6ea608edbe6ad010262d80e4de"
+    },
+    {
+      "order": 4,
+      "owner": "profile_audit",
+      "path": "inputs/native-command-failures-cc22-v1/withdrawal-diagnostic-after-expiry.patch",
+      "bytes": 1661,
+      "sha256": "4a769af98b3d91e585897aab79f964a9a850039b608bef883544e159ae43a103",
+      "git_blob": "e8b2895ead3943f8518c832da9842cf8b461e77a"
+    }
+  ],
+  "combined_patch": {
+    "path": "native-failures-integration-v1.patch",
+    "bytes": 16462,
+    "sha256": "ee2dc1237f525da635131792093a7aaae9825bc4963e9bc029c3f02ecd127d71",
+    "git_blob": "8e11f9a645e64db0cd7cdc2e8f3ee626457f99d1"
+  },
+  "integration_validation": {
+    "provider_actual_three_way_exit_code": 0,
+    "provider_three_way_stderr_empty": true,
+    "exact_sequential_application_equals_three_way": true,
+    "original_patches_zero_fuzz_zero_offset": true,
+    "recovery_reverse_exact_base": true,
+    "combined_patch_roundtrip_all_four_exact": true,
+    "no_conflict_resolution_edits": true,
+    "profile_final_postimages_match_author": true,
+    "candidate_task_support_matches_author": true,
+    "source_inventory_test_functions_before": 16,
+    "source_inventory_test_functions_after": 21
+  },
+  "unchanged_runtime_budget": {
+    "existing_timeout_seconds": 60,
+    "existing_stack_bytes": 8388608,
+    "runner_settings_modified": false,
+    "runtime_enforcement_reexecuted": false
+  },
+  "scenario_map": "REPORT.md#provider-scenario-mapping",
+  "source_name_audit": {
+    "result": "No stale exact provider test-name requirement in inspected exact source guard and relevant workflows",
+    "evidence": "checks/source-name-audit/RESULT.json",
+    "qa_or_ci_patch_added": false
+  },
+  "execution": {
+    "h": "NOT_USED",
+    "Rust": "NOT_RUN",
+    "rustfmt": "UNRUN",
+    "native": "UNRUN",
+    "new_source_suite": "NOT_RUN",
+    "commit": "NOT_CREATED"
+  },
+  "qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "full_daemon_root_cold_recovery": 0,
+    "this_integration_changes_counts": false
+  },
+  "evidence": [
+    {
+      "path": "BASE_IDENTITIES.json",
+      "bytes": 1688,
+      "sha256": "6c43bcbe0958ddb6e70f4f385ead25d6fa00d05a2df4d4157bae7587923b43a7",
+      "git_blob": "915a4255b769962a454c7baf5563e87e8b2241b9"
+    },
+    {
+      "path": "INTEGRATION_CHECKS.json",
+      "bytes": 5515,
+      "sha256": "3e6e27e69e73601b2d07560fdf2560926bcaef94d419349817d708ee282fa8a2",
+      "git_blob": "245b13026f13bb11e60116441d3fc6a69f9962ad"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 9521,
+      "sha256": "27720dd0d6b671c1dd5113b6480e5b47223c65f533ed97b8fca6a744bc3c9a34",
+      "git_blob": "57cd05473200cede3540819ff00945eb0760eb7b"
+    },
+    {
+      "path": "checks/provider-three-way.json",
+      "bytes": 947,
+      "sha256": "91b9ecaf0acc4daf620f45db9599237f0001589c0d35cd18e5a977e24598b67d",
+      "git_blob": "37d0e7b18477815b6b56d6c6aa75062bd2a8f85e"
+    },
+    {
+      "path": "checks/provider-three-way.stdout",
+      "bytes": 18765,
+      "sha256": "653c2143cf100a951c3fbf34fd20a995e69a772af928e6d222190ccf94a8136b",
+      "git_blob": "85e74f31a7eef4d7021b41e9477ba25c2e3d64b6"
+    },
+    {
+      "path": "checks/provider-three-way.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "checks/patch-application.json",
+      "bytes": 6375,
+      "sha256": "66886eb2f545f44724d8640166054ca5411cfdedad7eac4b23b9ac4877fe2d60",
+      "git_blob": "0aad43a1ab303221f701291cb4ed5493dcb10d07"
+    },
+    {
+      "path": "checks/combined-patch-roundtrip.json",
+      "bytes": 655,
+      "sha256": "e5f174ce1b7c421e9d7227bbb529fd83c769181b97925c910f8368bc3fbae9b5",
+      "git_blob": "05c876afc347144f6444de036ece04a928bd1b3d"
+    },
+    {
+      "path": "checks/source-name-audit/RESULT.json",
+      "bytes": 7166,
+      "sha256": "4a413041c84ba857da54bb32dfa78f4ff0f33913c22589e1c1850e26f215894f",
+      "git_blob": "49ebac07ca00a92264eb5c6b2a210917fcdd2e39"
+    },
+    {
+      "path": "checks/source-name-audit/FETCHED_IDENTITIES.json",
+      "bytes": 1499,
+      "sha256": "0765e1b98caa1434587855710e4e60457d44122223468c79d18501dacef34a0f",
+      "git_blob": "65bcf1a781460a34e9c3df068697401d31230c65"
+    }
+  ]
+}

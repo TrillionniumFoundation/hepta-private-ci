@@ -1,0 +1,238 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+@@ -257,9 +257,9 @@
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+-async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support()
++async fn original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes()
+ -> anyhow::Result<()> {
+-    let (original, primary, _retention, registration) = preregistered().await?;
++    let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;
+     let trust_time = primary.at - 124;
+     let objective = primary.rule.objective_digest;
+     drop(primary);
+@@ -272,7 +272,16 @@
+         assert!(CohortAt::read(b.owners(), config, b.at).is_err());
+         assert_eq!(b.source_bytes()?, bytes);
+     }
+-    for mutation in ["freeze-renewal", "training-renewal", "expired-window"] {
++    original.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_provider_refuses_renewed_original_signatures() -> anyhow::Result<()> {
++    let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;
++    let trust_time = primary.at - 124;
++    let objective = primary.rule.objective_digest;
++    drop(primary);
++    for mutation in ["freeze-renewal", "training-renewal"] {
+         let mut b = BFixture::new("original-B", objective, trust_time)?;
+         b.populate(
+             &original,
+@@ -283,64 +292,107 @@
+         let config = b.config(&original, &registration)?;
+         let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
+         let before = cohort.bytes()?;
+-        if mutation == "expired-window" {
+-            cohort.at = cohort.original_config().training_evidence.expires_at;
++        let mut signed = if mutation == "freeze-renewal" {
++            cohort.original_config().freeze_evidence.clone()
+         } else {
+-            let mut signed = if mutation == "freeze-renewal" {
+-                cohort.original_config().freeze_evidence.clone()
+-            } else {
+-                cohort.original_config().training_evidence.clone()
+-            };
+-            signed.expires_at += 1;
+-            signed.evidence_id = id(&format!("valid-original-{mutation}"));
+-            signed.signature =
+-                SigningKey::from_bytes(&[if mutation == "freeze-renewal" { 42 } else { 41 }; 32])
+-                    .sign(&signed.signing_bytes())
+-                    .to_bytes();
+-            // Signature and payload are valid; the complete original byte pin
+-            // changes. No new body, label or corrupt signature is substituted.
+-            cohort.validate_signature(&signed, /*freeze*/ mutation == "freeze-renewal")?;
+-            if mutation == "freeze-renewal" {
+-                cohort.resign_freeze(signed);
+-            } else {
+-                cohort.resign_training(signed);
+-            }
++            cohort.original_config().training_evidence.clone()
++        };
++        signed.expires_at += 1;
++        signed.evidence_id = id(&format!("valid-original-{mutation}"));
++        signed.signature =
++            SigningKey::from_bytes(&[if mutation == "freeze-renewal" { 42 } else { 41 }; 32])
++                .sign(&signed.signing_bytes())
++                .to_bytes();
++        // Signature and payload are valid; the complete original byte pin
++        // changes. No new body, label or corrupt signature is substituted.
++        cohort.validate_signature(&signed, /*freeze*/ mutation == "freeze-renewal")?;
++        if mutation == "freeze-renewal" {
++            cohort.resign_freeze(signed);
++        } else {
++            cohort.resign_training(signed);
+         }
+         let rejected = cohort.current();
+-        if mutation == "expired-window" {
+-            assert!(matches!(
++        assert!(
++            matches!(
+                 rejected,
+-                Err(OriginalCircuitEvaluationProviderErrorV1::Evidence(_))
+-            ));
+-        } else {
+-            assert!(
+-                matches!(
+-                    rejected,
+-                    Err(OriginalCircuitEvaluationProviderErrorV1::Binding(
+-                        "same exact original cohort and signatures"
+-                    ))
+-                ),
+-                "{mutation}: {rejected:?}"
+-            );
+-        }
++                Err(OriginalCircuitEvaluationProviderErrorV1::Binding(
++                    "same exact original cohort and signatures"
++                ))
++            ),
++            "{mutation}: {rejected:?}"
++        );
+         assert!(matches!(
+             cohort.current(),
+             Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)
+         ));
+         assert_eq!(cohort.bytes()?, before);
+     }
+-    let mut b = BFixture::new("original-B", objective, trust_time)?;
+-    b.populate(
+-        &original,
+-        ObservationMode::Complete,
+-        /*changed_candidate_action*/ true,
+-    )
+-    .await?;
+-    let config = b.config(&original, &registration)?;
+-    let cohort = CohortAt::read(b.owners(), config, b.at)?;
++    original.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_provider_expired_training_signature_permanently_fences_readback()
++-> anyhow::Result<()> {
++    let (original, mut primary, _retention, registration) = Box::pin(preregistered()).await?;
++    primary
++        .populate(
++            &original,
++            ObservationMode::Complete,
++            /*changed_candidate_action*/ false,
++        )
++        .await?;
++    let config = primary.config(&original, &registration)?;
++    let mut cohort = CohortAt::read(primary.owners(), config, primary.at)?;
++    let before = cohort.bytes()?;
++    let original_signature = cohort.original_config().training_evidence.clone();
++    // The original signature's expiry is inclusive. First verify its last
++    // valid second, then cross that boundary while the work envelope is live.
++    cohort.at = original_signature.expires_at;
++    cohort.validate_signature(&original_signature, /*freeze*/ false)?;
++    cohort.at = cohort.at.checked_add(1).expect("bounded original expiry");
++    assert!(
++        cohort.at
++            < cohort
++                .original_config()
++                .training
++                .request
++                .envelope
++                .expiry_unix_seconds
++    );
++    let rejected = cohort.current();
++    assert!(
++        matches!(
++            rejected,
++            Err(OriginalCircuitEvaluationProviderErrorV1::Evidence(
++                codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
++            ))
++        ),
++        "{rejected:?}"
++    );
++    assert!(matches!(
++        cohort.current(),
++        Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)
++    ));
++    assert_eq!(cohort.original_config().training_evidence, original_signature);
++    assert_eq!(cohort.bytes()?, before);
++    original.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_provider_zero_support_consumes_holdout_once() -> anyhow::Result<()> {
++    let (original, mut primary, _retention, registration) = Box::pin(preregistered()).await?;
++    primary
++        .populate(
++            &original,
++            ObservationMode::Complete,
++            /*changed_candidate_action*/ true,
++        )
++        .await?;
++    let config = primary.config(&original, &registration)?;
++    let cohort = CohortAt::read(primary.owners(), config, primary.at)?;
+     let mut runner = ProviderPlanFixture::new(
+         &cohort.original,
+-        &b.rule,
++        &primary.rule,
+         &BFixture::training(&original)?,
+         BFixture::original_manifests(&original),
+     )?;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs
+@@ -24,6 +24,26 @@
+         definition.candidates[0].activation_index;
+     definition.candidates[0].activation_index = selected_activation;
+     let selected = definition.candidates[selected_index].candidate_id.clone();
++    let candidate_count = definition.candidates.len();
++    // Freeze the fixture definition in the actual input's complete order.
++    // Cell admission compares definition and masks position by position;
++    // permuting only the masks would reject before any B publication exists.
++    // The original candidate-to-activation mapping and selected ID stay fixed.
++    let mut candidates = std::mem::take(&mut definition.candidates)
++        .into_iter()
++        .map(|candidate| (candidate.candidate_id.clone(), candidate))
++        .collect::<std::collections::BTreeMap<_, _>>();
++    anyhow::ensure!(candidates.len() == candidate_count);
++    definition.candidates = input
++        .candidates
++        .iter()
++        .map(|mask| {
++            candidates
++                .remove(&mask.candidate_id)
++                .ok_or_else(|| anyhow::anyhow!("complete original fixture candidate order"))
++        })
++        .collect::<anyhow::Result<Vec<_>>>()?;
++    anyhow::ensure!(candidates.is_empty());
+     let (mut circuit, mut bindings) = configuration();
+     bindings[0].cell = definition.clone();
+     circuit.parameter_bundle_digest =
+@@ -72,7 +92,21 @@
+         .await?;
+     owner.publish_result(&identity, &record, &receipt)?;
+     let publication = owner.read_publication(&identity, &record)?;
+-    pretty_assertions::assert_eq!(publication.original_policy()?.selected(), &selected);
++    let policy = publication.original_policy()?;
++    pretty_assertions::assert_eq!(policy.selected(), &selected);
++    pretty_assertions::assert_eq!(
++        policy
++            .entries()
++            .iter()
++            .map(|entry| &entry.candidate_id)
++            .collect::<Vec<_>>(),
++        publication
++            .input()
++            .candidates
++            .iter()
++            .map(|mask| &mask.candidate_id)
++            .collect::<Vec<_>>()
++    );
+     drop(driver);
+     store.close().await;
+     Ok((identity, owner, publication))

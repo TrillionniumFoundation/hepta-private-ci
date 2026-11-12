@@ -1,0 +1,96 @@
+{
+  "source_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "source_tree": "778a2c1c1f77fd1ea3d3cd0c203cef6c38db2ec0",
+  "input_json": {
+    "bytes": 40450,
+    "sha256": "bd7658e8171d0d0072d2332cb7eaf4191ceab549c1f4ad4a4cd59f49bd21558b",
+    "blob": "7826f72c95fcea612d6b6f00c8252b8ea7f529cb"
+  },
+  "input_gzip": {
+    "bytes": 9711,
+    "sha256": "1b74653a568b7334cb981a66fd75e08365a08446dc823287acad295fc887315a",
+    "blob": "83176d34c2236d6269f61e0c54494e8304e9254c"
+  },
+  "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n",
+  "rustfmt_binary": {
+    "bytes": 5288720,
+    "sha256": "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c",
+    "blob": "e00621fd3784b63d4437d85e6bbedde777aac862"
+  },
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config",
+    "imports_granularity=Item,skip_children=true",
+    "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1/postimages/codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs"
+  ],
+  "started_at": "2026-11-12T11:53:30.289352+00:00",
+  "finished_at": "2026-11-12T11:53:30.418168+00:00",
+  "returncode": 0,
+  "error": null,
+  "raw_log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "origin": {
+        "base_git_blob": "218cbb06e2e078be28f48d2019cc901aee478499",
+        "non_diagnostic_source_bytes_unchanged": true,
+        "task": "deep-timeout-test-only-stage-markers"
+      },
+      "base": {
+        "bytes": 13323,
+        "sha256": "dd5d7906176bd4681b103522bcf9f204d5490c7c272122065031f3a965d89870",
+        "blob": "218cbb06e2e078be28f48d2019cc901aee478499"
+      },
+      "before": {
+        "bytes": 14725,
+        "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+        "blob": "7179071338fb9779017a7e138742ce0b389c086e"
+      },
+      "after": {
+        "bytes": 14725,
+        "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+        "blob": "7179071338fb9779017a7e138742ce0b389c086e"
+      }
+    }
+  ],
+  "format_changed": [],
+  "input_files_preserved": true,
+  "checkout_access": false,
+  "target_access": false,
+  "native_tests_run": false,
+  "native_stack_fix_proven": false,
+  "qualification": "isolated one-file diagnostic formatting only; no native or ordinary qualification",
+  "artifacts": [
+    {
+      "path": "deep-stage-markers-prefmt.patch",
+      "bytes": 6429,
+      "sha256": "baa525ed25469cba63d382c9dca1c5835a378f2c50b65a05a9c09ed3a2aff8be",
+      "blob": "349691497587b2167b03328499888a768ea2b8f6"
+    },
+    {
+      "path": "deep-stage-markers-formatted.patch",
+      "bytes": 6429,
+      "sha256": "baa525ed25469cba63d382c9dca1c5835a378f2c50b65a05a9c09ed3a2aff8be",
+      "blob": "349691497587b2167b03328499888a768ea2b8f6"
+    },
+    {
+      "path": "format-only.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "complete-postimages.json.gz",
+      "bytes": 5881,
+      "sha256": "23486951da9de173b942af53c69d5617ab18f373e04de3001fa140ab1cc573fb",
+      "blob": "b637c4832c08ef1a615f872bedb516b7492f0786"
+    }
+  ]
+}

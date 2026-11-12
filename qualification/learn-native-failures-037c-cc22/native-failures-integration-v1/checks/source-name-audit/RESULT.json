@@ -1,0 +1,121 @@
+{
+  "status": "No exact renamed-provider case requirement in the inspected exact 521 source guard and three relevant CI workflows; no QA/CI patch needed",
+  "targets": [
+    "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+    "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+    "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "original_evaluation_provider_refuses_renewed_original_signatures",
+    "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+    "original_evaluation_provider_zero_support_consumes_holdout_once",
+    "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+    "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows"
+  ],
+  "exact_sources": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "git_blob": "6b7e5887b39117398119e58a7aa1f6867c741574",
+      "source_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/521283379701cca53987cf5c3fe85b85fdda04e6/qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "bytes": 18610,
+      "sha256": "dd6c77b43cce19264c864b1e3701e7bae47fe68c999f2b16b568688593427aed",
+      "exact_name_matches": []
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "git_blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+      "source_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/521283379701cca53987cf5c3fe85b85fdda04e6/.github/workflows/hepta-daemon-learning-native.yml",
+      "bytes": 27811,
+      "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334",
+      "exact_name_matches": []
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "git_blob": "c7d7e7acbec213f2380ca2457737bf2e8aae9087",
+      "source_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/521283379701cca53987cf5c3fe85b85fdda04e6/.github/workflows/hepta-consolidated-source.yml",
+      "bytes": 33612,
+      "sha256": "769b27482d6466d2bbf2a8a82b8f2945df9576f0098a8a8324d416906c598593",
+      "exact_name_matches": []
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "git_blob": "612b8821d7ff64fb547017845dbed540f838f868",
+      "source_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/521283379701cca53987cf5c3fe85b85fdda04e6/.github/workflows/hepta-converged-learning.yml",
+      "bytes": 10196,
+      "sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f",
+      "exact_name_matches": []
+    }
+  ],
+  "local_scan_roots": [
+    "root-final-source-integration/qa",
+    "root-final-source-integration/.github",
+    "root-final-source-integration/scripts"
+  ],
+  "local_exact_name_matches": [],
+  "local_scope_note": "Primary root-final-source-integration is sparse; this is not a claim that all repository CI and QA files were downloaded or inspected. Exact provider QA and relevant workflows were additionally fetched by commit.",
+  "original_full_source_log": "source-cc22a69972d0-gate-v1/source-result/source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+  "original_full_source_suite_count": 10,
+  "source_guard_checks_product_boundaries_not_native_test_names": true,
+  "native_workflow_selection_context": [
+    {
+      "line": 167,
+      "lines": [
+        "                  report.rename(records / (name + \"-prior-junit-excluded.xml\"))",
+        "              command = [\"python3\", \"scripts/hepta_ci_exec.py\", \"--timeout-seconds\", \"7200\",",
+        "                         \"--minimum-tests\", \"1\", \"--output\", str(records / (name + \".json\")),",
+        "                         \"--\", \"just\", \"test\", \"--locked\", \"--offline\", *arguments,",
+        "                         \"--retries\", \"0\", \"--status-level\", \"pass\", \"--success-output\", \"final\", \"--failure-output\", \"final\"]",
+        "              if root:",
+        "                  names = (\"PATH\", \"SOURCE_SHA\", \"TESTED_SHA\", \"HEPTA_CI_LANE\",",
+        "                           \"GITHUB_RUN_ID\", \"GITHUB_RUN_ATTEMPT\", \"GITHUB_JOB\",",
+        "                           \"PYTHONDONTWRITEBYTECODE\", \"CARGO_INCREMENTAL\", \"CARGO_BUILD_JOBS\","
+      ]
+    },
+    {
+      "line": 185,
+      "lines": [
+        "                                     HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=str(root_dir / \"source\"),",
+        "                                     HEPTA_CHECKPOINT_TEST_ROOT=str(root_dir / \"checkpoints\"))",
+        "                  environment.update(json.loads((records / \"helpers/env.json\").read_text()))",
+        "                  # sudo is outside the recorder: its observed command remains real just test.",
+        "                  check_uid = \"import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')\"",
+        "                  command = [\"sudo\", \"-n\", \"env\", \"-i\",",
+        "                             *(key + \"=\" + value for key, value in sorted(environment.items())),",
+        "                             \"python3\", \"-c\", check_uid, *command[1:]]",
+        "              save(name + \"-launch.json\", {\"command\": command, \"required_euid\": 0 if root else os.geteuid()})"
+      ]
+    },
+    {
+      "line": 280,
+      "lines": [
+        "              after = snapshot(\"after-tests\")",
+        "              assert before == after, \"source changed during tests\"",
+        "              maintenance_started = True",
+        "              stage(\"fix\", [\"just\", \"fix\", \"--locked\", \"--offline\", *packages])",
+        "              stage(\"fmt\", [\"just\", \"fmt\", \"--base\", os.environ[\"FORMAT_BASE_SHA\"]], 600)",
+        "              maintenance_complete = True",
+        "              maintained = snapshot(\"after-maintenance\")",
+        "              # No behavior tests after fix/fmt; this is compile-only binary validation.",
+        "              os.chdir(repo / \"codex-rs\")"
+      ]
+    },
+    {
+      "line": 328,
+      "lines": [
+        "          fi",
+        "      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "        with:",
+        "          tool: just@1.51.0,nextest@0.9.103",
+        "      - name: Install repository-pinned uv for Python maintenance",
+        "        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0",
+        "        with:",
+        "          version: \"0.11.3\"",
+        "      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a"
+      ]
+    }
+  ],
+  "existing_S_C_intake_test_names_changed": false,
+  "native_or_source_tests_run_for_this_audit": false
+}

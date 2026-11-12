@@ -1,0 +1,4575 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling hyper v1.12.0
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-learning-ledger)
+   Compiling hyper-util v0.1.21
+   Compiling predicates-core v1.0.10
+   Compiling hyper-rustls v0.27.10
+   Compiling hyper-tls v0.6.0
+   Compiling hyper-timeout v0.5.2
+   Compiling reqwest v0.12.28
+   Compiling tonic v0.14.6
+   Compiling codex-http-client v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/http-client)
+   Compiling codex-protocol v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/protocol)
+   Compiling codex-websocket-client v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/websocket-client)
+   Compiling tonic-prost v0.14.6
+   Compiling codex-client v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/codex-client)
+   Compiling opentelemetry-proto v0.31.0
+   Compiling opentelemetry-http v0.31.0
+   Compiling opentelemetry-otlp v0.31.1
+   Compiling aws-smithy-http-client v1.5.1
+   Compiling axum v0.8.9
+   Compiling codex-file-system v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/git-utils)
+   Compiling codex-api v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/codex-api)
+   Compiling codex-shell-command v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/shell-command)
+   Compiling codex-otel v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/otel)
+   Compiling codex-model-provider-info v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/model-provider-info)
+   Compiling codex-features v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/features)
+   Compiling codex-config v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/config)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/windows-sandbox-rs)
+   Compiling codex-sandboxing v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/sandboxing)
+   Compiling codex-exec-server-protocol v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/exec-server-protocol)
+   Compiling codex-secrets v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/secrets)
+   Compiling aws-smithy-runtime v1.16.1
+   Compiling codex-exec-server v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/exec-server)
+   Compiling aws-runtime v1.10.0
+   Compiling codex-history v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/history)
+   Compiling codex-agent-identity v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/agent-identity)
+   Compiling codex-state v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/state)
+   Compiling codex-workload-identity v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/workload-identity)
+   Compiling codex-login v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/login)
+   Compiling codex-utils-output-truncation v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/utils/output-truncation)
+   Compiling oauth2 v5.0.0
+   Compiling reqwest v0.13.5
+   Compiling aws-sdk-signin v1.27.0
+   Compiling rmcp v3.9.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-sdk-sts v1.119.0
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling codex-utils-plugins v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/utils/plugins)
+   Compiling codex-plugin v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/plugin)
+   Compiling aws-config v1.12.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/third_party/aws-config-1.12.0)
+   Compiling sentry v0.46.2
+   Compiling codex-feedback v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/aws-auth)
+   Compiling codex-models-manager v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/models-manager)
+   Compiling codex-response-debug-context v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/response-debug-context)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/code-mode-protocol)
+   Compiling codex-model-provider v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/rmcp-client)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+   Compiling codex-exec-server-test-support v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/exec-server/tests/support)
+   Compiling codex-tools v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/codex-mcp)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+   Compiling codex-context-fragments v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/context-fragments)
+   Compiling codex-rollout v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/extension-api)
+   Compiling codex-app-server-protocol v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/app-server-protocol)
+   Compiling codex-skills v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/skills)
+   Compiling codex-hooks v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hooks)
+   Compiling codex-apply-patch v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/shell-escalation)
+   Compiling codex-prompts v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/memories/read)
+   Compiling codex-utils-audio v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/utils/audio)
+   Compiling codex-hepta-operations v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-operations)
+   Compiling codex-backend-client v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/backend-client)
+   Compiling codex-hepta-memory v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-memory)
+   Compiling codex-analytics v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/analytics)
+   Compiling codex-thread-store v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/thread-store)
+   Compiling codex-core-plugins v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/skills)
+   Compiling codex-core v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/core)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/linux-sandbox)
+   Compiling codex-arg0 v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/arg0)
+   Compiling codex-home v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-authbus)
+   Compiling codex-hepta-evidence v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-evidence)
+   Compiling codex-connectors-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/utils/cli)
+   Compiling codex-hepta-governance v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/hepta-memory)
+   Compiling codex-git-attribution v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-automation)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-intelligence-eval)
+   Compiling num_cpus v1.17.0
+   Compiling difflib v0.4.0
+   Compiling termtree v0.5.1
+   Compiling deadpool-runtime v0.1.4
+   Compiling deadpool v0.12.3
+   Compiling predicates-tree v1.0.13
+   Compiling dtor v0.1.1
+   Compiling predicates v3.1.4
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-prompt-optimizer)
+   Compiling assert-json-diff v2.0.2
+   Compiling wait-timeout v0.2.1
+   Compiling ctor v0.6.3
+   Compiling assert_cmd v2.2.2
+   Compiling wiremock v0.6.5
+   Compiling codex-memories-write v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/memories/write)
+   Compiling codex-external-agent-migration v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/external-agent-migration)
+   Compiling codex-memories-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/memories)
+   Compiling codex-agent-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/agent)
+   Compiling codex-mcp-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/mcp)
+   Compiling codex-web-search-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/web-search)
+   Compiling codex-goal-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/goal)
+   Compiling codex-app-server-transport v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/app-server-transport)
+   Compiling codex-history-notes-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/history-notes)
+   Compiling codex-guardian-v2 v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/guardian-v2)
+   Compiling codex-chatgpt v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/chatgpt)
+   Compiling codex-image-generation-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/image-generation)
+   Compiling codex-cloud-config v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/cloud-config)
+   Compiling codex-queue-extension v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/ext/queue)
+   Compiling codex-hepta-supervisor v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-supervisor)
+   Compiling codex-app-server v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/app-server)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-bellman-operator)
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling core_test_support v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/core/tests/common)
+   Compiling app_test_support v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/app-server/tests/common)
+   Compiling codex-app-server-client v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-agentd)
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `selection` is never read
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:32:5
+   |
+31 | pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
+   |            ---------------------------------------- field in this struct
+32 |     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+   |     ^^^^^^^^^
+
+warning: method `original_selection` is never used
+  --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:51:19
+   |
+38 | impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+   | --------------------------------------------- method in this implementation
+...
+51 |     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+   |
+19 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+23 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-infer-worker-host)
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+warning: associated items `with_unlearning_authority` and `bytes` are never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+    |
+ 84 | impl LedgerFixture {
+    | ------------------ associated items in this implementation
+...
+ 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+    |                   ^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `append_decision` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+    |
+177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+    |               ^^^^^^^^^^^^^^^
+
+warning: function `closure` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+    |
+212 | pub(super) fn closure(
+    |               ^^^^^^^
+
+warning: associated function `with_unlearning_authority` is never used
+  --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+   |
+84 | impl LedgerFixture {
+   | ------------------ associated function in this implementation
+...
+89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `at` is never read
+  --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+   |
+91 | pub(super) struct Fixture {
+   |                   ------- field in this struct
+92 |     root: PathBuf,
+93 |     pub(super) at: u64,
+   |                ^^
+
+warning: associated function `from_research_store` is never used
+   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+    |
+133 | impl LearningIterationCheckpointOwnerV1 {
+    | --------------------------------------- associated function in this implementation
+...
+141 |     pub(crate) fn from_research_store(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: function `ledger` is never used
+  --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+   |
+80 | pub(super) fn ledger(
+   |               ^^^^^^
+
+warning: function `material` is never used
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+    |
+302 | pub(super) fn material(
+    |               ^^^^^^^^
+
+warning: function `material_with_profile` is never used
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+    |
+437 | pub(super) fn material_with_profile(
+    |               ^^^^^^^^^^^^^^^^^^^^^
+
+warning: type alias `Selector` is never used
+  --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+   |
+43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+   |                 ^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 13 warnings (2 duplicates)
+    Finished `test` profile [unoptimized] target(s) in 9m 56s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.39.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 0dd3f6d6-ae06-44b7-b4c7-a0d639422367 with nextest profile: local
+    Starting 109 tests across 2 binaries (1223 tests skipped)
+        PASS [   3.353s] codex-hepta-agentd cell_q24_dataset::tests::binding::legacy_signed_freeze_cannot_be_reinterpreted_as_the_exact_source_profile
+        PASS [   7.662s] codex-hepta-agentd cell_q24_dataset::tests::binding::original_observer_measurement_support_is_preserved_without_source_relabeling
+        PASS [   7.084s] codex-hepta-agentd cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads
+        PASS [  12.681s] codex-hepta-agentd cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled
+        PASS [  25.434s] codex-hepta-agentd cell_q24_dataset::tests::binding::signed_ledger_facts_cannot_substitute_another_source_profile_or_policy
+        PASS [   1.551s] codex-hepta-agentd cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims
+        PASS [   1.315s] codex-hepta-agentd circuit_experience_intake::tests::exact_request_continues_a_previously_committed_decision
+        PASS [   1.629s] codex-hepta-agentd cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound
+        PASS [   1.251s] codex-hepta-agentd circuit_experience_intake::tests::expiry_after_decision_keeps_partial_pair_unacknowledged_without_resigning
+        PASS [   1.287s] codex-hepta-agentd circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution
+        PASS [   2.782s] codex-hepta-agentd circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1
+        PASS [   2.820s] codex-hepta-agentd circuit_experience_intake::tests::signed_pair_replays_without_adding_or_rewriting_original_bytes
+        PASS [   4.834s] codex-hepta-agentd circuit_experience_intake::tests::untrusted_or_wrong_source_measurements_cannot_append_a_decision
+        PASS [   3.877s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::changed_original_predecessors_and_bundles_are_refused
+        PASS [   2.906s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation
+        PASS [   2.894s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut
+        PASS [   2.861s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::repeated_current_checks_keep_original_bytes_and_expiry_is_an_error
+        PASS [   6.131s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::signed_decisions_map_to_original_iteration_without_new_authority
+        PASS [   6.457s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::unsigned_profile_cannot_be_added_to_a_non_learning_plan
+        PASS [   0.189s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion
+        PASS [   0.068s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors
+        PASS [   0.100s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty
+        PASS [   0.126s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty
+        PASS [   0.119s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore
+        PASS [   0.113s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery
+        PASS [   0.066s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail
+        PASS [   3.269s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::wrong_signatures_context_and_protocol_never_become_no_update
+        SLOW [> 30.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+        PASS [  29.995s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning
+        PASS [  20.198s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_accepts_distinct_nonzero_observer_measurement_references
+ TERMINATING [> 60.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+     TIMEOUT [  60.012s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+        FAIL [  18.114s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes
+        SLOW [> 30.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication
+        PASS [  45.490s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication
+        SLOW [> 30.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+        SLOW [> 30.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+ TERMINATING [> 60.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+     TIMEOUT [  60.143s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+        FAIL [  57.206s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+     SIGABRT [   1.237s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c
+     SIGABRT [   1.221s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant
+     SIGABRT [   1.217s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication
+     SIGABRT [   1.213s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b
+     SIGABRT [   1.246s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners
+     SIGABRT [   1.215s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch
+     SIGABRT [   1.223s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed
+     SIGABRT [   1.223s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion
+     SIGABRT [   1.206s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut
+     SIGABRT [   1.216s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
+     SIGABRT [   1.216s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs
+        SLOW [> 30.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption
+     SIGABRT [   1.230s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim
+     SIGABRT [   1.204s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response
+     SIGABRT [   1.243s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut
+     SIGABRT [   1.213s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature
+        PASS [  34.775s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption
+     SIGABRT [   1.221s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute
+     SIGABRT [   1.210s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest
+     SIGABRT [   2.086s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression
+     SIGABRT [   2.064s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect
+     SIGABRT [   2.062s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature
+     SIGABRT [   2.062s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence
+     SIGABRT [   2.067s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures
+     SIGABRT [   3.083s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures
+     SIGABRT [   3.078s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback
+        PASS [  12.894s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes
+        PASS [  15.274s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption
+        PASS [  12.067s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery
+        PASS [  13.639s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning
+        PASS [  12.158s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source
+        PASS [  12.529s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication
+        PASS [  12.152s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore
+        PASS [  12.295s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery
+        PASS [  13.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery
+        PASS [  11.969s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision
+        PASS [  16.450s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal
+        PASS [   8.724s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant
+        PASS [   5.018s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update
+        PASS [  28.895s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim
+        PASS [   7.537s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use
+        PASS [   7.510s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending
+        PASS [   5.809s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare
+        PASS [   6.227s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest
+        PASS [  10.060s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c
+        PASS [  15.236s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch
+        PASS [  13.086s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission
+        PASS [  15.368s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly
+        PASS [  11.163s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch
+        FAIL [  13.792s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+        FAIL [  20.608s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+        PASS [  10.273s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication
+        PASS [   9.633s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose
+        PASS [  12.971s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch
+        PASS [  14.516s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending
+        PASS [  18.130s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch
+        PASS [  12.666s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal
+        PASS [  10.664s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly
+        PASS [   7.004s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches
+        FAIL [  20.143s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+        PASS [   7.251s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch
+        PASS [  10.458s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature
+        PASS [   6.903s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations
+        PASS [   7.690s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read
+        PASS [   9.027s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
+        PASS [   8.594s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature
+        PASS [  11.250s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+        PASS [  11.501s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature
+        PASS [  17.135s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack
+        PASS [   7.799s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold
+        PASS [   6.467s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim
+        PASS [   8.832s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation
+        PASS [  15.784s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest
+        PASS [  10.481s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use
+        PASS [   0.203s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+        PASS [  14.548s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use
+────────────
+     Summary [ 527.987s] 109 tests run: 78 passed (2 slow), 29 failed, 2 timed out, 1223 skipped
+        PASS [   3.353s] codex-hepta-agentd cell_q24_dataset::tests::binding::legacy_signed_freeze_cannot_be_reinterpreted_as_the_exact_source_profile
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::binding::legacy_signed_freeze_cannot_be_reinterpreted_as_the_exact_source_profile ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 3.33s
+
+
+        PASS [   7.662s] codex-hepta-agentd cell_q24_dataset::tests::binding::original_observer_measurement_support_is_preserved_without_source_relabeling
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::binding::original_observer_measurement_support_is_preserved_without_source_relabeling ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.64s
+
+
+        PASS [  25.434s] codex-hepta-agentd cell_q24_dataset::tests::binding::signed_ledger_facts_cannot_substitute_another_source_profile_or_policy
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::binding::signed_ledger_facts_cannot_substitute_another_source_profile_or_policy ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 25.42s
+
+
+        PASS [   7.084s] codex-hepta-agentd cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.06s
+
+
+        PASS [  12.681s] codex-hepta-agentd cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.66s
+
+
+        PASS [   1.551s] codex-hepta-agentd cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 1.53s
+
+
+        PASS [   1.629s] codex-hepta-agentd cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound
+  stdout ───
+
+    running 1 test
+    test cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 1.61s
+
+
+        PASS [   1.315s] codex-hepta-agentd circuit_experience_intake::tests::exact_request_continues_a_previously_committed_decision
+  stdout ───
+
+    running 1 test
+    test circuit_experience_intake::tests::exact_request_continues_a_previously_committed_decision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 1.30s
+
+
+        PASS [   1.251s] codex-hepta-agentd circuit_experience_intake::tests::expiry_after_decision_keeps_partial_pair_unacknowledged_without_resigning
+  stdout ───
+
+    running 1 test
+    test circuit_experience_intake::tests::expiry_after_decision_keeps_partial_pair_unacknowledged_without_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 1.23s
+
+
+        PASS [   2.782s] codex-hepta-agentd circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1
+  stdout ───
+
+    running 1 test
+    test circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1 ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 2.76s
+
+
+        PASS [   1.287s] codex-hepta-agentd circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution
+  stdout ───
+
+    running 1 test
+    test circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 1.27s
+
+
+        PASS [   2.820s] codex-hepta-agentd circuit_experience_intake::tests::signed_pair_replays_without_adding_or_rewriting_original_bytes
+  stdout ───
+
+    running 1 test
+    test circuit_experience_intake::tests::signed_pair_replays_without_adding_or_rewriting_original_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 2.80s
+
+
+        PASS [   4.834s] codex-hepta-agentd circuit_experience_intake::tests::untrusted_or_wrong_source_measurements_cannot_append_a_decision
+  stdout ───
+
+    running 1 test
+    test circuit_experience_intake::tests::untrusted_or_wrong_source_measurements_cannot_append_a_decision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 4.81s
+
+
+        PASS [   3.877s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::changed_original_predecessors_and_bundles_are_refused
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::changed_original_predecessors_and_bundles_are_refused ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 3.86s
+
+
+        PASS [   2.906s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 2.88s
+
+
+        PASS [   2.894s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 2.88s
+
+
+        PASS [   2.861s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::repeated_current_checks_keep_original_bytes_and_expiry_is_an_error
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::repeated_current_checks_keep_original_bytes_and_expiry_is_an_error ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 2.84s
+
+
+        PASS [   6.131s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::signed_decisions_map_to_original_iteration_without_new_authority
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::signed_decisions_map_to_original_iteration_without_new_authority ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 6.11s
+
+
+        PASS [   6.457s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::unsigned_profile_cannot_be_added_to_a_non_learning_plan
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::unsigned_profile_cannot_be_added_to_a_non_learning_plan ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 6.44s
+
+
+        PASS [   3.269s] codex-hepta-agentd neuron_cell_evaluation::tests::learning::wrong_signatures_context_and_protocol_never_become_no_update
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation::tests::learning::wrong_signatures_context_and_protocol_never_become_no_update ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 3.25s
+
+
+        PASS [   0.189s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.17s
+
+
+        PASS [   0.068s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.05s
+
+
+        PASS [   0.100s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.08s
+
+
+        PASS [   0.126s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.11s
+
+
+        PASS [   0.119s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.10s
+
+
+        PASS [   0.113s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.10s
+
+
+        PASS [   0.066s] codex-hepta-agentd neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail
+  stdout ───
+
+    running 1 test
+    test neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 0.05s
+
+
+        PASS [  29.995s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 29.97s
+
+  stderr ───
+    HEPTA_DEEP_S_C_MATERIAL_COUNTS dataset=1 source=44 experience=44 dataset_evidence=44
+
+        PASS [  20.198s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_accepts_distinct_nonzero_observer_measurement_references
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_accepts_distinct_nonzero_observer_measurement_references ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 20.17s
+
+
+        PASS [  15.274s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 15.25s
+
+
+        PASS [  12.894s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.87s
+
+
+        PASS [  12.067s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.04s
+
+
+        PASS [  13.639s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 13.61s
+
+
+        PASS [  12.158s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.13s
+
+
+        PASS [  12.529s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.51s
+
+
+        PASS [  12.152s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.13s
+
+
+        PASS [  12.295s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.27s
+
+
+        PASS [  13.000s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.98s
+
+
+        PASS [  11.969s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 11.94s
+
+
+        PASS [  16.450s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 16.43s
+
+
+        PASS [  28.895s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 28.86s
+
+
+        PASS [   8.724s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 8.67s
+
+
+        PASS [   5.018s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 4.98s
+
+
+        PASS [   7.537s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.51s
+
+
+        PASS [   7.510s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.48s
+
+
+        PASS [   5.809s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 5.79s
+
+
+        PASS [   6.227s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 6.20s
+
+
+        PASS [  10.060s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 10.03s
+
+
+        PASS [  15.236s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 15.21s
+
+
+        PASS [  13.086s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 13.06s
+
+
+        PASS [  15.368s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 15.34s
+
+
+        PASS [  11.163s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 11.14s
+
+
+        PASS [  10.273s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 10.25s
+
+
+        PASS [   9.633s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_requires_original_selection_and_consumes_wrong_purpose ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 9.60s
+
+
+        PASS [  12.971s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.92s
+
+
+        PASS [  14.516s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 14.49s
+
+
+        PASS [  18.130s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 18.11s
+
+
+        PASS [  12.666s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.64s
+
+
+        PASS [  10.664s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 10.64s
+
+
+        PASS [   7.004s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 6.98s
+
+
+        PASS [   7.251s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.23s
+
+
+        PASS [  10.458s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 10.43s
+
+
+        PASS [   6.903s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 6.89s
+
+
+        PASS [   7.690s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.67s
+
+
+        PASS [   9.027s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 9.00s
+
+
+        PASS [  11.250s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 11.22s
+
+
+        PASS [   8.594s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 8.57s
+
+
+        PASS [  11.501s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 11.48s
+
+
+        PASS [  17.135s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 17.11s
+
+
+        PASS [   7.799s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 7.77s
+
+
+        PASS [   6.467s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 6.44s
+
+
+        PASS [  15.784s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 15.76s
+
+
+        PASS [   8.832s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 8.81s
+
+
+        PASS [  10.481s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 10.46s
+
+
+        PASS [  14.548s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 14.52s
+
+
+        PASS [   0.203s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 158 filtered out; finished in 0.17s
+
+
+        SLOW [  45.490s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 45.47s
+
+
+        SLOW [  34.775s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 34.74s
+
+
+     TIMEOUT [  60.012s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources
+  stdout ───
+
+    running 1 test
+
+    (test timed out)
+
+        FAIL [  18.114s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 18.09s
+
+  stderr ───
+    Error: Circuit task Cell: Cell(IncompleteCandidates)
+
+    Caused by:
+        Cell(IncompleteCandidates)
+
+     TIMEOUT [  60.143s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows
+  stdout ───
+
+    running 1 test
+
+    (test timed out)
+
+        FAIL [  57.206s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 57.18s
+
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support' (815575) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:311:13:
+    assertion failed: matches!(rejected, Err(OriginalCircuitEvaluationProviderErrorV1::Evidence(_)))
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+     SIGABRT [   1.237s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c' (817670) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.221s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant' (817785) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.217s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication' (817815) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.213s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b' (817846) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.246s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners' (817875) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.215s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch' (817933) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.223s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed' (817961) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.223s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion' (817988) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.206s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut' (818012) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.216s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion' (818035) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.216s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs' (818095) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.230s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim' (818132) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.204s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response' (818156) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.243s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut' (818181) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.213s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature' (818211) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.221s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (818269) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   1.210s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (818330) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.086s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (818335) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.064s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (818385) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.062s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (818412) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.062s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (818436) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   2.067s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (818499) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   3.083s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (818523) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+     SIGABRT [   3.078s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback
+  stdout ───
+
+    running 1 test
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (818540) has overflowed its stack
+    fatal runtime error: stack overflow, aborting
+
+    (test aborted with signal 6: SIGABRT)
+
+        FAIL [  20.608s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 20.58s
+
+  stderr ───
+    Error: original C Observer transport: InvalidRequest
+
+    Caused by:
+        InvalidRequest
+
+        FAIL [  13.792s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 13.77s
+
+  stderr ───
+    Error: OwnerUnavailable("original learning evidence owner")
+
+        FAIL [  20.143s] codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+  stdout ───
+
+    running 1 test
+    test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody ... FAILED
+
+    failures:
+
+    failures:
+        runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 20.12s
+
+  stderr ───
+
+    thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody' (827945) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:414:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     (
+         [
+             72,
+             69,
+             80,
+             84,
+             69,
+             88,
+             48,
+             49,
+             247,
+             32,
+             91,
+             42,
+             20,
+             14,
+             194,
+             213,
+             26,
+             101,
+             33,
+             97,
+             39,
+             226,
+             229,
+             29,
+             230,
+             131,
+             252,
+             56,
+             69,
+             73,
+             217,
+             224,
+             31,
+             109,
+             220,
+             87,
+             184,
+             40,
+             145,
+             169,
+             226,
+             140,
+             44,
+             165,
+             154,
+             155,
+             171,
+             207,
+             220,
+             97,
+             146,
+             145,
+             233,
+             39,
+             81,
+             174,
+             97,
+             119,
+             141,
+             102,
+             94,
+             128,
+             71,
+             76,
+             154,
+             33,
+             156,
+             145,
+             46,
+             207,
+             224,
+             58,
+    <        0,
+    <        0,
+    <        0,
+    <        116,
+    <        0,
+    <        0,
+    <        81,
+    <        99,
+    <        105,
+    <        114,
+    <        99,
+    <        117,
+    <        105,
+    <        116,
+    <        46,
+    <        108,
+    <        101,
+    <        97,
+    <        114,
+    <        110,
+    <        105,
+    <        110,
+    <        103,
+    <        46,
+    <        57,
+    <        98,
+    <        50,
+    <        50,
+    <        102,
+    <        54,
+    <        50,
+    <        102,
+    <        101,
+    <        97,
+    <        52,
+    <        48,
+    <        97,
+    <        99,
+    <        98,
+    <        100,
+    <        52,
+    <        98,
+    <        53,
+    <        49,
+    <        53,
+    <        52,
+    <        99,
+    <        98,
+    <        102,
+    <        51,
+    <        98,
+    <        102,
+    <        99,
+    <        48,
+    <        55,
+    <        102,
+    <        97,
+    <        101,
+    <        97,
+    <        53,
+    <        49,
+    <        100,
+    <        48,
+    <        50,
+    <        97,
+    <        97,
+    <        99,
+    <        49,
+    <        53,
+    <        54,
+    <        51,
+    <        48,
+    <        53,
+    <        102,
+    <        98,
+    <        49,
+    <        99,
+    <        48,
+    <        97,
+    <        55,
+    <        101,
+    <        51,
+    <        53,
+    <        50,
+    <        100,
+    <        101,
+    <        100,
+    <        53,
+    <        247,
+    <        32,
+    <        91,
+    <        42,
+    <        20,
+    <        14,
+    <        194,
+    <        213,
+    <        26,
+    <        101,
+    <        33,
+    <        97,
+    <        39,
+    <        226,
+    <        229,
+    <        29,
+    <        230,
+    <        131,
+    <        252,
+    <        56,
+    <        69,
+    <        73,
+    <        217,
+    <        224,
+    <        31,
+    <        109,
+    <        220,
+    <        87,
+    <        184,
+    <        40,
+    <        145,
+    <        169,
+    <        250,
+    <        232,
+    <        104,
+    <        245,
+    <        72,
+    <        60,
+    <        18,
+    <        248,
+    <        156,
+    <        245,
+    <        227,
+    <        225,
+    <        182,
+    <        83,
+    <        28,
+    <        66,
+    <        151,
+    <        164,
+    <        95,
+    <        220,
+    <        113,
+    <        98,
+    <        133,
+    <        149,
+    <        172,
+    <        61,
+    <        98,
+    <        25,
+    <        125,
+    <        208,
+    <        210,
+    <        235,
+    <        0,
+    <        0,
+    <        7,
+    <        168,
+    <        1,
+    <        0,
+    <        81,
+    <        99,
+    <        105,
+    <        114,
+    <        99,
+    <        117,
+    <        105,
+    <        116,
+    <        46,
+    <        108,
+    <        101,
+    <        97,
+    <        114,
+    <        110,
+    <        105,
+    <        110,
+    <        103,
+    <        46,
+    <        57,
+    <        98,
+    <        50,
+    <        50,
+    <        102,
+    <        54,
+    <        50,
+    <        102,
+    <        101,
+    <        97,
+    <        52,
+    <        48,
+    <        97,
+    <        99,
+    <        98,
+    <        100,
+    <        52,
+    <        98,
+    <        53,
+    <        49,
+    <        53,
+    <        52,
+    <        99,
+    <        98,
+    <        102,
+    <        51,
+    <        98,
+    <        102,
+    <        99,
+    <        48,
+    <        55,
+    <        102,
+    <        97,
+    <        101,
+    <        97,
+    <        53,
+    <        49,
+    <        100,
+    <        48,
+    <        50,
+    <        97,
+    <        97,
+    <        99,
+    <        49,
+    <        53,
+    <        54,
+    <        51,
+    <        48,
+    <        53,
+    <        102,
+    <        98,
+    <        49,
+    <        99,
+    <        48,
+    <        97,
+    <        55,
+    <        101,
+    <        51,
+    <        53,
+    <        50,
+    <        100,
+    <        101,
+    <        100,
+    <        53,
+    <        247,
+    <        32,
+    <        91,
+    <        42,
+    <        20,
+    <        14,
+    <        194,
+    <        213,
+    <        26,
+    <        101,
+    <        33,
+    <        97,
+    <        39,
+    <        226,
+    <        229,
+    <        29,
+    <        230,
+    <        131,
+    <        252,
+    <        56,
+    <        69,
+    <        73,
+    <        217,
+    <        224,
+    <        31,
+    <        109,
+    <        220,
+    <        87,
+    <        184,
+    <        40,
+    <        145,
+    <        169,
+    <        123,
+    <        34,
+    <        115,
+    <        99,
+    <        104,
+    <        101,
+    <        109,
+    <        97,
+    <        34,
+    <        58,
+    <        49,
+    <        44,
+    <        34,
+    <        112,
+    <        97,
+    <        121,
+    <        108,
+    <        111,
+    <        97,
+    <        100,
+    <        34,
+    <        58,
+    <        91,
+    <        49,
+    <        48,
+    <        52,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        50,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        52,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        49,
+    <        49,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        51,
+    <        44,
+    <        52,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        48,
+    <        44,
+    <        52,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        49,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        49,
+    <        49,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        49,
+    <        49,
+    <        56,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        48,
+    <        44,
+    <        52,
+    <        54,
+    <        44,
+    <        49,
+    <        49,
+    <        56,
+    <        44,
+    <        52,
+    <        57,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        56,
+    <        49,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        49,
+    <        49,
+    <        55,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        52,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        49,
+    <        49,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        51,
+    <        44,
+    <        52,
+    <        54,
+    <        44,
+    <        53,
+    <        55,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        53,
+    <        52,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        53,
+    <        50,
+    <        44,
+    <        52,
+    <        56,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        48,
+    <        44,
+    <        53,
+    <        50,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        52,
+    <        57,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        53,
+    <        50,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        53,
+    <        49,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        52,
+    <        56,
+    <        44,
+    <        53,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        52,
+    <        57,
+    <        44,
+    <        49,
+    <        48,
+    <        48,
+    <        44,
+    <        52,
+    <        56,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        52,
+    <        57,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        53,
+    <        52,
+    <        44,
+    <        53,
+    <        49,
+    <        44,
+    <        52,
+    <        56,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        52,
+    <        57,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        52,
+    <        56,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        53,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        53,
+    <        49,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        48,
+    <        48,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        55,
+    <        53,
+    <        44,
+    <        55,
+    <        55,
+    <        44,
+    <        50,
+    <        49,
+    <        51,
+    <        44,
+    <        50,
+    <        51,
+    <        52,
+    <        44,
+    <        49,
+    <        52,
+    <        55,
+    <        44,
+    <        49,
+    <        57,
+    <        52,
+    <        44,
+    <        49,
+    <        48,
+    <        54,
+    <        44,
+    <        49,
+    <        49,
+    <        51,
+    <        44,
+    <        49,
+    <        55,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        49,
+    <        56,
+    <        54,
+    <        44,
+    <        49,
+    <        49,
+    <        55,
+    <        44,
+    <        51,
+    <        50,
+    <        44,
+    <        49,
+    <        52,
+    <        51,
+    <        44,
+    <        50,
+    <        51,
+    <        56,
+    <        44,
+    <        50,
+    <        50,
+    <        53,
+    <        44,
+    <        50,
+    <        48,
+    <        56,
+    <        44,
+    <        55,
+    <        54,
+    <        44,
+    <        52,
+    <        56,
+    <        44,
+    <        50,
+    <        51,
+    <        51,
+    <        44,
+    <        49,
+    <        51,
+    <        56,
+    <        44,
+    <        50,
+    <        50,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        53,
+    <        53,
+    <        44,
+    <        50,
+    <        48,
+    <        48,
+    <        44,
+    <        51,
+    <        51,
+    <        44,
+    <        49,
+    <        57,
+    <        54,
+    <        44,
+    <        49,
+    <        57,
+    <        51,
+    <        44,
+    <        51,
+    <        51,
+    <        44,
+    <        49,
+    <        53,
+    <        56,
+    <        44,
+    <        51,
+    <        48,
+    <        44,
+    <        54,
+    <        57,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        50,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        50,
+    <        48,
+    <        44,
+    <        49,
+    <        49,
+    <        50,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        52,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        49,
+    <        44,
+    <        57,
+    <        56,
+    <        44,
+    <        49,
+    <        49,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        49,
+    <        49,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        52,
+    <        53,
+    <        44,
+    <        49,
+    <        49,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        49,
+    <        48,
+    <        49,
+    <        44,
+    <        57,
+    <        57,
+    <        44,
+    <        49,
+    <        49,
+    <        54,
+    <        44,
+    <        49,
+    <        49,
+    <        49,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        49,
+    <        51,
+    <        50,
+    <        44,
+    <        54,
+    <        50,
+    <        44,
+    <        49,
+    <        52,
+    <        51,
+    <        44,
+    <        49,
+    <        48,
+    <        54,
+    <        44,
+    <        54,
+    <        55,
+    <        44,
+    <        49,
+    <        51,
+    <        52,
+    <        44,
+    <        54,
+    <        55,
+    <        44,
+    <        53,
+    <        55,
+    <        44,
+    <        49,
+    <        50,
+    <        49,
+    <        44,
+    <        54,
+    <        55,
+    <        44,
+    <        49,
+    <        48,
+    <        51,
+    <        44,
+    <        49,
+    <        54,
+    <        52,
+    <        44,
+    <        55,
+    <        56,
+    <        44,
+    <        54,
+    <        49,
+    <        44,
+    <        49,
+    <        51,
+    <        51,
+    <        44,
+    <        49,
+    <        49,
+    <        51,
+    <        44,
+    <        51,
+    <        57,
+    <        44,
+    <        50,
+    <        57,
+    <        44,
+    <        50,
+    <        50,
+    <        44,
+    <        49,
+    <        55,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        55,
+    <        44,
+    <        53,
+    <        54,
+    <        44,
+    <        49,
+    <        52,
+    <        49,
+    <        44,
+    <        57,
+    <        53,
+    <        44,
+    <        50,
+    <        48,
+    <        48,
+    <        44,
+    <        49,
+    <        52,
+    <        49,
+    <        44,
+    <        49,
+    <        55,
+    <        57,
+    <        44,
+    <        50,
+    <        48,
+    <        48,
+    <        44,
+    <        53,
+    <        54,
+    <        44,
+    <        49,
+    <        52,
+    <        49,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        49,
+    <        52,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        54,
+    <        44,
+    <        50,
+    <        52,
+    <        53,
+    <        44,
+    <        49,
+    <        53,
+    <        57,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        53,
+    <        44,
+    <        49,
+    <        51,
+    <        48,
+    <        44,
+    <        55,
+    <        54,
+    <        44,
+    <        49,
+    <        51,
+    <        51,
+    <        44,
+    <        49,
+    <        51,
+    <        55,
+    <        44,
+    <        50,
+    <        53,
+    <        53,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        57,
+    <        44,
+    <        49,
+    <        56,
+    <        49,
+    <        44,
+    <        55,
+    <        52,
+    <        44,
+    <        50,
+    <        48,
+    <        44,
+    <        50,
+    <        50,
+    <        44,
+    <        50,
+    <        50,
+    <        48,
+    <        44,
+    <        51,
+    <        53,
+    <        44,
+    <        49,
+    <        52,
+    <        50,
+    <        44,
+    <        50,
+    <        52,
+    <        51,
+    <        44,
+    <        50,
+    <        50,
+    <        53,
+    <        44,
+    <        57,
+    <        49,
+    <        44,
+    <        49,
+    <        54,
+    <        44,
+    <        56,
+    <        49,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        50,
+    <        49,
+    <        44,
+    <        50,
+    <        52,
+    <        50,
+    <        44,
+    <        50,
+    <        50,
+    <        53,
+    <        44,
+    <        54,
+    <        49,
+    <        44,
+    <        52,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        50,
+    <        57,
+    <        44,
+    <        50,
+    <        51,
+    <        49,
+    <        44,
+    <        49,
+    <        52,
+    <        57,
+    <        44,
+    <        49,
+    <        51,
+    <        52,
+    <        44,
+    <        49,
+    <        54,
+    <        51,
+    <        44,
+    <        51,
+    <        52,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        56,
+    <        52,
+    <        44,
+    <        50,
+    <        53,
+    <        52,
+    <        44,
+    <        54,
+    <        49,
+    <        44,
+    <        53,
+    <        48,
+    <        44,
+    <        49,
+    <        56,
+    <        50,
+    <        44,
+    <        55,
+    <        49,
+    <        44,
+    <        49,
+    <        57,
+    <        51,
+    <        44,
+    <        49,
+    <        52,
+    <        55,
+    <        44,
+    <        49,
+    <        50,
+    <        57,
+    <        44,
+    <        50,
+    <        50,
+    <        52,
+    <        44,
+    <        49,
+    <        52,
+    <        56,
+    <        44,
+    <        50,
+    <        53,
+    <        52,
+    <        44,
+    <        49,
+    <        53,
+    <        56,
+    <        44,
+    <        49,
+    <        49,
+    <        55,
+    <        44,
+    <        49,
+    <        48,
+    <        44,
+    <        49,
+    <        52,
+    <        50,
+    <        44,
+    <        52,
+    <        53,
+    <        44,
+    <        49,
+    <        57,
+    <        54,
+    <        44,
+    <        49,
+    <        48,
+    <        55,
+    <        44,
+    <        49,
+    <        57,
+    <        54,
+    <        44,
+    <        51,
+    <        57,
+    <        44,
+    <        52,
+    <        51,
+    <        44,
+    <        49,
+    <        52,
+    <        44,
+    <        50,
+    <        48,
+    <        57,
+    <        44,
+    <        49,
+    <        53,
+    <        52,
+    <        44,
+    <        50,
+    <        50,
+    <        44,
+    <        49,
+    <        56,
+    <        54,
+    <        44,
+    <        50,
+    <        55,
+    <        44,
+    <        49,
+    <        51,
+    <        50,
+    <        44,
+    <        49,
+    <        49,
+    <        52,
+    <        44,
+    <        49,
+    <        49,
+    <        55,
+    <        93,
+    <        44,
+    <        34,
+    <        101,
+    <        118,
+    <        105,
+    <        100,
+    <        101,
+    <        110,
+    <        99,
+    <        101,
+    <        95,
+    <        105,
+    <        100,
+    <        34,
+    <        58,
+    <        34,
+    <        111,
+    <        114,
+    <        105,
+    <        103,
+    <        105,
+    <        110,
+    <        97,
+    <        108,
+    <        45,
+    <        99,
+    <        105,
+    <        114,
+    <        99,
+    <        117,
+    <        105,
+    <        116,
+    <        45,
+    <        115,
+    <        101,
+    <        108,
+    <        101,
+    <        99,
+    <        116,
+    <        105,
+    <        111,
+    <        110,
+    <        58,
+    <        102,
+    <        55,
+    <        50,
+    <        48,
+    <        53,
+    <        98,
+    <        50,
+    <        97,
+    <        49,
+    <        52,
+    <        48,
+    <        101,
+    <        99,
+    <        50,
+    <        100,
+    <        53,
+    <        49,
+    <        97,
+    <        54,
+    <        53,
+    <        50,
+    <        49,
+    <        54,
+    <        49,
+    <        50,
+    <        55,
+    <        101,
+    <        50,
+    <        101,
+    <        53,
+    <        49,
+    <        100,
+    <        101,
+    <        54,
+    <        56,
+    <        51,
+    <        102,
+    <        99,
+    <        51,
+    <        56,
+    <        52,
+    <        53,
+    <        52,
+    <        57,
+    <        100,
+    <        57,
+    <        101,
+    <        48,
+    <        49,
+    <        102,
+    <        54,
+    <        100,
+    <        100,
+    <        99,
+    <        53,
+    <        55,
+    <        98,
+    <        56,
+    <        50,
+    <        56,
+    <        57,
+    <        49,
+    <        97,
+    <        57,
+    <        34,
+    <        44,
+    <        34,
+    <        112,
+    <        114,
+    <        105,
+    <        110,
+    <        99,
+    <        105,
+    <        112,
+    <        97,
+    <        108,
+    <        95,
+    <        105,
+    <        100,
+    <        34,
+    <        58,
+    <        34,
+    <        101,
+    <        120,
+    <        112,
+    <        108,
+    <        105,
+    <        99,
+    <        105,
+    <        116,
+    <        45,
+    <        111,
+    <        98,
+    <        115,
+    <        101,
+    <        114,
+    <        118,
+    <        101,
+    <        114,
+    <        45,
+    <        115,
+    <        101,
+    <        108,
+    <        101,
+    <        99,
+    <        116,
+    <        111,
+    <        114,
+    <        34,
+    <        44,
+    <        34,
+    <        114,
+    <        111,
+    <        108,
+    <        101,
+    <        34,
+    <        58,
+    <        51,
+    <        44,
+    <        34,
+    <        116,
+    <        114,
+    <        117,
+    <        115,
+    <        116,
+    <        95,
+    <        100,
+    <        105,
+    <        103,
+    <        101,
+    <        115,
+    <        116,
+    <        34,
+    <        58,
+    <        34,
+    <        48,
+    <        57,
+    <        54,
+    <        50,
+    <        99,
+    <        101,
+    <        102,
+    <        101,
+    <        53,
+    <        55,
+    <        54,
+    <        56,
+    <        99,
+    <        50,
+    <        97,
+    <        51,
+    <        56,
+    <        98,
+    <        57,
+    <        51,
+    <        57,
+    <        98,
+    <        51,
+    <        51,
+    <        55,
+    <        48,
+    <        51,
+    <        49,
+    <        97,
+    <        97,
+    <        54,
+    <        50,
+    <        54,
+    <        52,
+    <        102,
+    <        102,
+    <        51,
+    <        50,
+    <        97,
+    <        49,
+    <        102,
+    <        102,
+    <        98,
+    <        52,
+    <        57,
+    <        48,
+    <        99,
+    <        56,
+    <        52,
+    <        100,
+    <        55,
+    <        99,
+    <        51,
+    <        52,
+    <        48,
+    <        100,
+    <        55,
+    <        100,
+    <        53,
+    <        98,
+    <        54,
+    <        101,
+    <        54,
+    <        56,
+    <        34,
+    <        44,
+    <        34,
+    <        115,
+    <        99,
+    <        111,
+    <        112,
+    <        101,
+    <        95,
+    <        100,
+    <        105,
+    <        103,
+    <        101,
+    <        115,
+    <        116,
+    <        34,
+    <        58,
+    <        34,
+    <        102,
+    <        97,
+    <        55,
+    <        57,
+    <        57,
+    <        54,
+    <        50,
+    <        102,
+    <        99,
+    <        51,
+    <        101,
+    <        55,
+    <        100,
+    <        48,
+    <        48,
+    <        49,
+    <        48,
+    <        100,
+    <        99,
+    <        101,
+    <        101,
+    <        53,
+    <        48,
+    <        50,
+    <        50,
+    <        57,
+    <        56,
+    <        57,
+    <        53,
+    <        54,
+    <        98,
+    <        55,
+    <        54,
+    <        48,
+    <        56,
+    <        52,
+    <        54,
+    <        101,
+    <        57,
+    <        50,
+    <        97,
+    <        57,
+    <        57,
+    <        54,
+    <        53,
+    <        54,
+    <        57,
+    <        98,
+    <        56,
+    <        97,
+    <        54,
+    <        50,
+    <        51,
+    <        48,
+    <        50,
+    <        55,
+    <        52,
+    <        97,
+    <        100,
+    <        57,
+    <        56,
+    <        102,
+    <        49,
+    <        100,
+    <        34,
+    <        44,
+    <        34,
+    <        111,
+    <        98,
+    <        106,
+    <        101,
+    <        99,
+    <        116,
+    <        105,
+    <        118,
+    <        101,
+    <        95,
+    <        100,
+    <        105,
+    <        103,
+    <        101,
+    <        115,
+    <        116,
+    <        34,
+    <        58,
+    <        34,
+    <        57,
+    <        102,
+    <        98,
+    <        54,
+    <        102,
+    <        54,
+    <        51,
+    <        100,
+    <        49,
+    <        99,
+    <        48,
+    <        50,
+    <        48,
+    <        102,
+    <        52,
+    <        48,
+    <        57,
+    <        56,
+    <        99,
+    <        57,
+    <        48,
+    <        49,
+    <        98,
+    <        102,
+    <        51,
+    <        49,
+    <        102,
+    <        99,
+    <        51,
+    <        57,
+    <        102,
+    <        100,
+    <        51,
+    <        49,
+    <        56,
+    <        102,
+    <        52,
+    <        100,
+    <        98,
+    <        97,
+    <        52,
+    <        100,
+    <        50,
+    <        53,
+    <        53,
+    <        55,
+    <        57,
+    <        53,
+    <        51,
+    <        53,
+    <        49,
+    <        99,
+    <        97,
+    <        52,
+    <        100,
+    <        53,
+    <        55,
+    <        97,
+    <        52,
+    <        53,
+    <        56,
+    <        48,
+    <        57,
+    <        54,
+    <        34,
+    <        44,
+    <        34,
+    <        97,
+    <        117,
+    <        116,
+    <        104,
+    <        111,
+    <        114,
+    <        105,
+    <        116,
+    <        121,
+    <        95,
+    <        101,
+    <        112,
+    <        111,
+    <        99,
+    <        104,
+    <        34,
+    <        58,
+    <        49,
+    <        44,
+    <        34,
+    <        105,
+    <        115,
+    <        115,
+    <        117,
+    <        101,
+    <        100,
+    <        95,
+    <        97,
+    <        116,
+    <        34,
+    <        58,
+    <        49,
+    <        55,
+    <        57,
+    <        52,
+    <        52,
+    <        56,
+    <        50,
+    <        48,
+    <        50,
+    <        56,
+    <        44,
+    <        34,
+    <        101,
+    <        120,
+    <        112,
+    <        105,
+    <        114,
+    <        101,
+    <        115,
+    <        95,
+    <        97,
+    <        116,
+    <        34,
+    <        58,
+    <        49,
+    <        55,
+    <        57,
+    <        52,
+    <        52,
+    <        56,
+    <        50,
+    <        51,
+    <        50,
+    <        56,
+    <        44,
+    <        34,
+    <        112,
+    <        97,
+    <        121,
+    <        108,
+    <        111,
+    <        97,
+    <        100,
+    <        95,
+    <        100,
+    <        105,
+    <        103,
+    <        101,
+    <        115,
+    <        116,
+    <        34,
+    <        58,
+    <        34,
+    <        48,
+    <        57,
+    <        101,
+    <        48,
+    <        57,
+    <        57,
+    <        49,
+    <        101,
+    <        56,
+    <        49,
+    <        102,
+    <        54,
+    <        97,
+    <        99,
+    <        51,
+    <        53,
+    <        50,
+    <        48,
+    <        53,
+    <        100,
+    <        50,
+    <        51,
+    <        48,
+    <        48,
+    <        49,
+    <        49,
+    <        50,
+    <        101,
+    <        49,
+    <        52,
+    <        56,
+    <        56,
+    <        97,
+    <        50,
+    <        102,
+    <        57,
+    <        56,
+    <        57,
+    <        101,
+    <        53,
+    <        99,
+    <        48,
+    <        102,
+    <        54,
+    <        98,
+    <        98,
+    <        55,
+    <        49,
+    <        49,
+    <        56,
+    <        100,
+    <        50,
+    <        99,
+    <        98,
+    <        102,
+    <        100,
+    <        100,
+    <        57,
+    <        98,
+    <        98,
+    <        56,
+    <        51,
+    <        53,
+    <        53,
+    <        34,
+    <        44,
+    <        34,
+    <        115,
+    <        105,
+    <        103,
+    <        110,
+    <        97,
+    <        116,
+    <        117,
+    <        114,
+    <        101,
+    <        34,
+    <        58,
+    <        91,
+    <        54,
+    <        49,
+    <        44,
+    <        49,
+    <        52,
+    <        49,
+    <        44,
+    <        57,
+    <        55,
+    <        44,
+    <        51,
+    <        51,
+    <        44,
+    <        49,
+    <        55,
+    <        50,
+    <        44,
+    <        53,
+    <        56,
+    <        44,
+    <        49,
+    <        57,
+    <        52,
+    <        44,
+    <        49,
+    <        48,
+    <        52,
+    <        44,
+    <        54,
+    <        44,
+    <        49,
+    <        52,
+    <        56,
+    <        44,
+    <        50,
+    <        50,
+    <        51,
+    <        44,
+    <        49,
+    <        54,
+    <        57,
+    <        44,
+    <        51,
+    <        53,
+    <        44,
+    <        54,
+    <        57,
+    <        44,
+    <        50,
+    <        50,
+    <        49,
+    <        44,
+    <        50,
+    <        51,
+    <        53,
+    <        44,
+    <        49,
+    <        51,
+    <        57,
+    <        44,
+    <        50,
+    <        44,
+    <        53,
+    <        51,
+    <        44,
+    <        57,
+    <        49,
+    <        44,
+    <        50,
+    <        49,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        49,
+    <        48,
+    <        57,
+    <        44,
+    <        50,
+    <        53,
+    <        53,
+    <        44,
+    <        49,
+    <        57,
+    <        48,
+    <        44,
+    <        50,
+    <        49,
+    <        48,
+    <        44,
+    <        49,
+    <        48,
+    <        53,
+    <        44,
+    <        50,
+    <        48,
+    <        57,
+    <        44,
+    <        49,
+    <        56,
+    <        49,
+    <        44,
+    <        49,
+    <        57,
+    <        56,
+    <        44,
+    <        49,
+    <        51,
+    <        57,
+    <        44,
+    <        50,
+    <        50,
+    <        54,
+    <        44,
+    <        49,
+    <        56,
+    <        44,
+    <        54,
+    <        53,
+    <        44,
+    <        48,
+    <        44,
+    <        50,
+    <        51,
+    <        44,
+    <        53,
+    <        50,
+    <        44,
+    <        51,
+    <        53,
+    <        44,
+    <        49,
+    <        52,
+    <        48,
+    <        44,
+    <        49,
+    <        53,
+    <        53,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        51,
+    <        52,
+    <        44,
+    <        49,
+    <        53,
+    <        48,
+    <        44,
+    <        54,
+    <        57,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        49,
+    <        52,
+    <        55,
+    <        44,
+    <        54,
+    <        53,
+    <        44,
+    <        49,
+    <        53,
+    <        44,
+    <        56,
+    <        49,
+    <        44,
+    <        50,
+    <        49,
+    <        48,
+    <        44,
+    <        50,
+    <        52,
+    <        53,
+    <        44,
+    <        50,
+    <        49,
+    <        51,
+    <        44,
+    <        49,
+    <        56,
+    <        51,
+    <        44,
+    <        53,
+    <        52,
+    <        44,
+    <        49,
+    <        53,
+    <        57,
+    <        44,
+    <        49,
+    <        48,
+    <        56,
+    <        44,
+    <        49,
+    <        53,
+    <        54,
+    <        44,
+    <        49,
+    <        52,
+    <        48,
+    <        44,
+    <        52,
+    <        49,
+    <        44,
+    <        49,
+    <        48,
+    <        50,
+    <        44,
+    <        50,
+    <        50,
+    <        44,
+    <        54,
+    <        52,
+    <        44,
+    <        49,
+    <        52,
+    <        54,
+    <        44,
+    <        56,
+    <        93,
+    <        125,
+    <        86,
+    <        221,
+    <        205,
+    <        187,
+    <        252,
+    <        36,
+    <        137,
+    <        254,
+    <        36,
+    <        123,
+    <        134,
+    <        39,
+    <        78,
+    <        219,
+    <        226,
+    <        171,
+    <        80,
+    <        119,
+    <        38,
+    <        227,
+    <        231,
+    <        170,
+    <        78,
+    <        54,
+    <        148,
+    <        140,
+    <        238,
+    <        65,
+    <        245,
+    <        145,
+    <        153,
+    <        145,
+         ],
+         [
+             72,
+             80,
+             84,
+             78,
+             87,
+             65,
+             48,
+             49,
+             72,
+             14,
+             56,
+             202,
+             19,
+             158,
+             101,
+             235,
+             228,
+             59,
+             50,
+             220,
+             194,
+             230,
+             41,
+             53,
+             130,
+             44,
+             235,
+             56,
+             235,
+             56,
+             23,
+             163,
+             56,
+             194,
+             205,
+             180,
+             233,
+             217,
+             50,
+             159,
+             159,
+             182,
+             246,
+             61,
+             28,
+             2,
+             15,
+             64,
+             152,
+             201,
+             1,
+             191,
+             49,
+             252,
+             57,
+             253,
+             49,
+             143,
+             77,
+             186,
+             77,
+             37,
+             87,
+             149,
+             53,
+             28,
+             164,
+             213,
+             122,
+             69,
+             128,
+             150,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             1,
+             103,
+             230,
+             116,
+             85,
+             6,
+             166,
+             215,
+             231,
+             54,
+             198,
+             35,
+             145,
+             249,
+             106,
+             226,
+             179,
+             130,
+             174,
+             141,
+             10,
+             238,
+             194,
+             32,
+             170,
+             253,
+             3,
+             212,
+             251,
+             79,
+             152,
+             139,
+             104,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             0,
+             1,
+             199,
+             218,
+             214,
+             160,
+             194,
+             9,
+             237,
+             90,
+             58,
+             105,
+             251,
+             211,
+             240,
+             222,
+             52,
+             84,
+             15,
+             247,
+             155,
+             44,
+             211,
+             63,
+             74,
+             33,
+             102,
+             41,
+             81,
+             30,
+             112,
+             75,
+             65,
+             218,
+             94,
+             39,
+             242,
+             199,
+             157,
+             74,
+             254,
+             125,
+             117,
+             214,
+             104,
+             8,
+             244,
+             13,
+             8,
+             114,
+             48,
+             87,
+             71,
+             173,
+             160,
+             96,
+             102,
+             37,
+             29,
+             134,
+             22,
+             116,
+             208,
+             30,
+             229,
+             129,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        1,
+    <        199,
+    <        218,
+    <        214,
+    <        160,
+    <        194,
+    <        9,
+    <        237,
+    <        90,
+    <        58,
+    <        105,
+    <        251,
+    <        211,
+    <        240,
+    <        222,
+    <        52,
+    <        84,
+    <        15,
+    <        247,
+    <        155,
+    <        44,
+    <        211,
+    <        63,
+    <        74,
+    <        33,
+    <        102,
+    <        41,
+    <        81,
+    <        30,
+    <        112,
+    <        75,
+    <        65,
+    <        218,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        2,
+    <        250,
+    <        232,
+    <        104,
+    <        245,
+    <        72,
+    <        60,
+    <        18,
+    <        248,
+    <        156,
+    <        245,
+    <        227,
+    <        225,
+    <        182,
+    <        83,
+    <        28,
+    <        66,
+    <        151,
+    <        164,
+    <        95,
+    <        220,
+    <        113,
+    <        98,
+    <        133,
+    <        149,
+    <        172,
+    <        61,
+    <        98,
+    <        25,
+    <        125,
+    <        208,
+    <        210,
+    <        235,
+    <        98,
+    <        70,
+    <        138,
+    <        62,
+    <        110,
+    <        245,
+    <        255,
+    <        217,
+    <        182,
+    <        72,
+    <        40,
+    <        116,
+    <        208,
+    <        149,
+    <        137,
+    <        35,
+    <        145,
+    <        45,
+    <        250,
+    <        146,
+    <        50,
+    <        116,
+    <        42,
+    <        174,
+    <        122,
+    <        38,
+    <        131,
+    <        150,
+    <        78,
+    <        27,
+    <        22,
+    <        51,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        2,
+    <        250,
+    <        232,
+    <        104,
+    <        245,
+    <        72,
+    <        60,
+    <        18,
+    <        248,
+    <        156,
+    <        245,
+    <        227,
+    <        225,
+    <        182,
+    <        83,
+    <        28,
+    <        66,
+    <        151,
+    <        164,
+    <        95,
+    <        220,
+    <        113,
+    <        98,
+    <        133,
+    <        149,
+    <        172,
+    <        61,
+    <        98,
+    <        25,
+    <        125,
+    <        208,
+    <        210,
+    <        235,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        0,
+    <        3,
+    <        86,
+    <        221,
+    <        205,
+    <        187,
+    <        252,
+    <        36,
+    <        137,
+    <        254,
+    <        36,
+    <        123,
+    <        134,
+    <        39,
+    <        78,
+    <        219,
+    <        226,
+    <        171,
+    <        80,
+    <        119,
+    <        38,
+    <        227,
+    <        231,
+    <        170,
+    <        78,
+    <        54,
+    <        148,
+    <        140,
+    <        238,
+    <        65,
+    <        245,
+    <        145,
+    <        153,
+    <        145,
+    <        85,
+    <        7,
+    <        241,
+    <        5,
+    <        107,
+    <        9,
+    <        222,
+    <        107,
+    <        241,
+    <        166,
+    <        51,
+    <        53,
+    <        201,
+    <        96,
+    <        174,
+    <        102,
+    <        223,
+    <        182,
+    <        88,
+    <        239,
+    <        192,
+    <        77,
+    <        118,
+    <        108,
+    <        0,
+    <        138,
+    <        135,
+    <        254,
+    <        151,
+    <        32,
+    <        192,
+    <        228,
+         ],
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

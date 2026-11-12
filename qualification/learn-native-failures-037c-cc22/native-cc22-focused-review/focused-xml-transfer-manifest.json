@@ -1,0 +1,49 @@
+{
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "remote": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/focused.xml",
+    "sha256": "ea7c874639254904e3491e4c6abc3f187cd3ce11bbd4cf05ddc49314c4b492fd",
+    "size": 139423,
+    "version": "2050:1904576:139423:1794482108526646962:1794482108526646962"
+  },
+  "local": "/workspace/scratch/037c0371c195/native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/focused.xml",
+  "chunks": [
+    {
+      "readback": "focused-xml-chunk-0-readback.json",
+      "offset": 0,
+      "bytes": 65536,
+      "sha256": "7137344e8b77d3e88b955c874f70a865a7b13f071ba37b8d8fdf9f2159b46d8e"
+    },
+    {
+      "readback": "focused-xml-chunk-65536-readback.json",
+      "offset": 65536,
+      "bytes": 65536,
+      "sha256": "00667798ce14487a3bf9354d8f842a3a74b2268d311eb6d103fc01beadaddbcf"
+    },
+    {
+      "readback": "focused-xml-chunk-131072-readback.json",
+      "offset": 131072,
+      "bytes": 8351,
+      "sha256": "7bad9ed93e5ceba6001a4e723aaa43a718f6ce46dc84302a75d1ba0c1c155c92"
+    }
+  ],
+  "junit_cases": 109,
+  "junit_result_tags": {
+    "passed": 78,
+    "failure": 31,
+    "error": 0,
+    "skipped": 0
+  },
+  "qualification": "failed exact-source focused suite; original XML, no pass claim"
+}

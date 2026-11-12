@@ -1,0 +1,40 @@
+{
+  "base_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "base_tree": "778a2c1c1f77fd1ea3d3cd0c203cef6c38db2ec0",
+  "original_failed_execution_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "source_unchanged_between_refs": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "baseline_sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+      "baseline_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+      "draft_sha256": "5d763f2d8a056e6b43a5d1d6f4952a39d6f12a6b05c106038554a805bfcdc965",
+      "draft_blob": "be9d4aeabfe40247069c5c8375bb50ba00e480bf",
+      "lines": 438
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "baseline_sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4",
+      "baseline_blob": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+      "draft_sha256": "563d82440c91f580e49dfcc55569900b7777fbd88ac8cfc83eff856540704647",
+      "draft_blob": "5a462fab5c7b93038596953957434c52e62a00ee",
+      "lines": 113
+    }
+  ],
+  "patch_sha256": "8f2a8e7cdb1b1b9416743b7ece96e61b3f20da3c28666853dbbfc4f263b91fde",
+  "production_changed": false,
+  "timeout_changed": false,
+  "native": "UNRUN",
+  "rustfmt": "UNRUN",
+  "qualification": false,
+  "shared_file_scope": "Only replaces old refuses_missing_outcomes_renewal_and_zero_support body with four cases; withdrawal/corruption function unchanged for recovery agent",
+  "scenario_mapping": {
+    "MissingLast": "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "WrongUnitLast": "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "freeze-renewal": "original_evaluation_provider_refuses_renewed_original_signatures",
+    "training-renewal": "original_evaluation_provider_refuses_renewed_original_signatures",
+    "expired-window": "original_evaluation_provider_expired_work_window_permanently_fences_readback",
+    "zero-support": "original_evaluation_provider_zero_support_consumes_holdout_once",
+    "NonCanonicalOrder": "original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes"
+  }
+}
