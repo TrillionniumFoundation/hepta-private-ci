@@ -61,6 +61,7 @@ pub use training_plan::CellQ24TrainingPlanErrorV1;
 pub use training_plan::CellQ24TrainingSampleV1;
 pub use training_plan::cell_q24_dataset_run_snapshot_digest_v1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
+pub(crate) use training_plan::project_original_q24_dataset_v1;
 
 #[cfg(target_os = "linux")]
 pub use training_plan::CellQ24DatasetFreezePreparationV1;

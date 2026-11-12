@@ -29,6 +29,7 @@ pub use dataset::CellQ24DatasetErrorV1;
 pub use dataset::CellQ24DatasetProjectionV1;
 pub use dataset::CellQ24DatasetTaskV1;
 pub use dataset::cell_q24_dataset_run_snapshot_digest_v1;
+pub(crate) use dataset::project_original_q24_dataset_v1;
 
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_learning_preparation.rs"]
