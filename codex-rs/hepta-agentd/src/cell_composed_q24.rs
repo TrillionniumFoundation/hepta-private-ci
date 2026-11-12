@@ -121,8 +121,15 @@ pub struct CellQ24GenerationWorkerV1 {
     clock: Arc<dyn Fn() -> u64 + Send + Sync>,
 }
 
+#[cfg(target_os = "linux")]
+#[path = "cell_composed_q24_benchmark.rs"]
+mod benchmark;
 #[path = "cell_composed_q24_candidate_data.rs"]
 mod candidate_data;
+#[cfg(target_os = "linux")]
+pub(crate) use benchmark::OriginalQ24BenchmarkMeterV1;
+#[cfg(target_os = "linux")]
+pub(crate) use benchmark::original_q24_benchmark_meter_contract;
 
 impl LoadedCellQ24ModelV1 {
     /// Consume already opened files. No path is reopened and no executable is
