@@ -182,6 +182,7 @@ impl OriginalBExecution {
                 &mut OriginalBSink {
                     journal: &mut self.publication,
                     execution: execution.temporal().execution_digest,
+                    manifest: &self.plan.record().candidate.manifest,
                     mode,
                 },
             )
@@ -288,6 +289,7 @@ impl OriginalBExecution {
 struct OriginalBSink<'a> {
     journal: &'a mut OriginalBJournal,
     execution: Digest32,
+    manifest: &'a codex_hepta_neuron::CellBackendManifestV2,
     mode: OriginalBResultMode,
 }
 
@@ -305,14 +307,12 @@ impl ProductQualificationEvidenceSinkV1 for OriginalBSink<'_> {
         {
             return Err(ProductEvidenceSinkErrorV1::Rejected);
         }
-        let bytes = [
-            b"hepta.root.independent-b.qualification-publication.v1\0".as_slice(),
-            execution.as_array(),
-            decision.authentication_digest.as_array(),
-            decision.trust_digest.as_array(),
-            decision.decision.evidence_digest.as_array(),
-        ]
-        .concat();
+        let bytes = crate::OriginalRootBPublicationDataV2::encode_original(
+            execution,
+            decision,
+            self.manifest,
+        )
+        .map_err(|_| ProductEvidenceSinkErrorV1::Rejected)?;
         self.journal
             .original_bytes(&bytes, self.mode)
             .map_err(|_| ProductEvidenceSinkErrorV1::Indeterminate)?;
