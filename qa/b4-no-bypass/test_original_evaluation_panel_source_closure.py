@@ -25,7 +25,7 @@ EXPECTED = {
     "cell_generation_original_physical_current": (MEMBER,),
     "learning_original_evaluation_panel_registration": (),
     "learning_original_evaluation_panel_owner": (),
-    "learning_original_evaluation_panel_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
+    "learning_original_evaluation_panel_current": (),
     "learning_original_evaluation_panel_member_current": (CORE,),
     "learning_original_evaluation_cohort_readback_current": (PROVIDER, MEMBER),
     "learning_original_evaluation_cohort_member_binding": (BINDING,),
@@ -145,7 +145,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         for marker in (
             "let before = self.read_cells()?",
             "self.qualification.completed_bytes()?",
-            "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?",
+            "sources\n            .prepare(&self.qualification.config, started_at, training)\n            .await?",
             ".finish_readback(",
             "drop(sources)",
             "let after = self.read_cells()?",
@@ -158,12 +158,12 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
                 self.verifies(MEMBER, (ROOT / MEMBER).read_text() + "\nfn bypass() { " + effect + "; }\n")
 
     def test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms(self):
-        self.rejects(CORE, "fn read_current(", "self.read_current_with_clock(original::now).await")
-        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock).await"):
+        self.rejects(CORE, "fn read_current(", "self.read_current_with_clock(original::now, TrainingRead::Independent)")
+        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock, training).await"):
             self.rejects(CORE, "fn read_current_with_clock(", marker)
         for marker in (
-            "let before = self.read_members(clock).await?",
-            "let after = self.read_members(clock).await?",
+            "let before = self.read_members(clock, training).await?",
+            "let after = self.read_members(clock, training).await?",
             "if before != after",
             "self.require_observed_panel(&after)?",
             "let current = clock()?",

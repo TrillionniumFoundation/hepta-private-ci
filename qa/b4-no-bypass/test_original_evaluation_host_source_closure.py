@@ -21,6 +21,8 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
 HOST = AGENT + "neuron_cell_evaluation_host.rs"
+OPERATION = AGENT + "neuron_cell_evaluation_receipt_operation.rs"
+FACTORY = AGENT + "neuron_cell_evaluation_host_training_readback.rs"
 CONTRACT = AGENT + "neuron_cell_evaluation_host_contract.rs"
 COMMAND = AGENT + "neuron_cell_evaluation_host_command.rs"
 WIRE = AGENT + "neuron_cell_evaluation_host_wire.rs"
@@ -31,9 +33,9 @@ READBACK = AGENT + "cell_q24_candidate_stage_readback.rs"
 AUTH = AGENT + "authority_host_learning_resident_auth.rs"
 EXPECTED = {
     "learning_original_evaluation_host_consume": (),
-    "learning_original_evaluation_host_profile": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
+    "learning_original_evaluation_host_profile": (HOST, FACTORY),
     "learning_original_evaluation_host_receipt_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
-    "learning_original_evaluation_host_constructor": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",),
+    "learning_original_evaluation_host_constructor": (OWNER, FACTORY),
     "learning_original_evaluation_host_serve": (),
     "learning_original_evaluation_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_evaluation_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
@@ -105,7 +107,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
     def test_original_brand_and_all_current_reads_precede_final_full_authentication(self):
         self.rejects(OWNER, "fn create(", "host_origin: HostOrigin::FreshCreate")
         self.rejects(OWNER, "fn recover(", "host_origin: HostOrigin::ReadbackOnly")
-        self.rejects(OWNER, "fn attest_original_completion<", "self.host_origin = HostOrigin::ReadbackOnly")
+        self.rejects(OPERATION, "fn attest_with_training<", "self.host_origin = HostOrigin::ReadbackOnly")
         for marker in (
             "receipt.training != primary.training", "receipt.scope != primary.scope",
             "receipt.plan != primary.plan",
@@ -115,20 +117,23 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
         ):
             self.rejects(HOST, "fn from_original_receipt_owner(", marker)
         for marker in (
-            "let before = self.read_panel().await?",
+            "let before = self.read_panel(training).await?",
             "before.training_evidence() != &context.training_evidence",
             "qualification: before.primary().qualification()",
-            "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
-            "OriginalCellEvaluationReceiptOwnerV1::readback(",
-            "let after = self.read_panel().await?", "if before != after",
-            "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
-            "self.authenticate_panel(&after, current)?",
-            "config.signing.verifier.require_signer_binding(",
-            "contract::authenticate_receipt(context, completed.0, completed.1, current)?",
-            "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)",
+            "OriginalCellEvaluationReceiptOwnerV1::attest_with_training(",
+            "OriginalCellEvaluationReceiptOwnerV1::readback_with_training(",
+            "let after = self.read_panel(training).await?", "if before != after",
         ):
             self.rejects(HOST, "fn read_original_completion(", marker)
-        self.rejects(HOST, "fn completion(", "self.fenced = true")
+        for marker in (
+            "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+            "self.authenticate_panel(after, current)?",
+            "config.signing.verifier.require_signer_binding(",
+            "contract::authenticate_receipt(",
+            "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)",
+        ):
+            self.rejects(HOST, "fn finish_original_completion(", marker)
+        self.rejects(HOST, "fn fence_result<T>", "self.fenced = true")
         self.rejects(OWNER, "fn require_original_host_completed(", "self.journal.read(&self.saved)? != expected")
 
     def test_initial_original_connection_cannot_renew_or_promote_recovery(self):
