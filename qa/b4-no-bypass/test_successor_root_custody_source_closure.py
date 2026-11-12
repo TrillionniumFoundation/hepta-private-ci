@@ -179,7 +179,7 @@ class SuccessorRootCustodySourceTests(unittest.TestCase):
 
     def test_original_configuration_target_and_readonly_descriptions_surround_action(self):
         # Generic marker remains exact; use the global protected-file guard.
-        for marker in ("identity,", "original.source_journal != self.data.source_journal.path", "original.source_witness != self.data.source_witness.path", "!= *target", ".retain_original(identity, target, self.uid, self.gid)?", ".into_registered(identity, target, self.uid, self.gid)?", "source.require_unchanged()?", "target_data.require_unchanged()?", "ingress.require_unchanged()?", "file.require_original()?"):
+        for marker in ("identity,", "original.source_journal != self.data.source_journal.path", "original.source_witness != self.data.source_witness.path", "!= *target", "RootHistoricalSourceInputsV1::retain_original(", "RetainedRootHistoricalSourceInputsV1::into_registered(", "source.require_unchanged()?", "target_data.require_unchanged()?", "ingress.require_unchanged()?", "file.require_original()?"):
             def change(source, marker=marker):
                 key = "fn with_inputs<T>("
                 body, _ = route.function(source, key)
