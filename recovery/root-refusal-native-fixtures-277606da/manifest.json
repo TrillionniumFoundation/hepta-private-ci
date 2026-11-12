@@ -1,0 +1,31 @@
+{
+  "source": "277606dab335e324120c5486151a055f95f4e3fb",
+  "tree": "8e0e9c8de127e972f6637ba15a860970555d6e84",
+  "prerequisite": "da0f6e55966fb5803d827b64707d3446b0e121e9",
+  "commits": [
+    "77c90b39c01328beb809a73de84b694f43348543",
+    "a28109e19cfac7957ee511a046ffa87e9905bb99",
+    "277606dab335e324120c5486151a055f95f4e3fb"
+  ],
+  "bundle_bytes": 6738,
+  "bundle_sha256": "19aad4c381183a7db7be2839f2539794b3e57d24bafabe026e368cdace0b0c37",
+  "bundle_blob": "0fcb698901031f802372b501ff1bc6954ec690cb",
+  "fmt_exit": 0,
+  "diff_check_exit": 0,
+  "native": "not run; Root owns execution",
+  "scope": "test-only Root RunStart independent scope fixtures and publication durable refusal lifecycle; product unchanged",
+  "original_failed_native_source": "da0f6e55966fb5803d827b64707d3446b0e121e9",
+  "original_raw_log_sha256": "5d21f812ce49ade44faf2cd82de0b791a4854d34cd75e981c7c74b7e2f22aad2",
+  "original_failed_test_ids": [
+    "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_data_never_promotes_pending_or_missing_refusal",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+  ],
+  "required_semantics": [
+    "same-scope changed run cannot create another marker",
+    "Pending and missing marker refuse without primary replacement",
+    "actual registered Root refusal attempt progresses monotonically",
+    "all CURRENT/claims and four journal/witness bytes and physical file custody remain equal",
+    "only exact refusal record and terminal publication fenced bit may change",
+    "independent stale Prepare and revoked cases each reject subsequent explicit original Reopen"
+  ]
+}
