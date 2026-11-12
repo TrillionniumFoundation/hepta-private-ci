@@ -1,0 +1,316 @@
+{
+  "schema": "ctrl.macro-ci-final-verification.v1",
+  "observed_at_utc": "2026-11-12T05:18:26Z",
+  "observed_at_new_york": "2026-11-12T00:18:26-05:00",
+  "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+  "source_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+  "scope": "Original downloaded artifacts and raw job logs; manufactured contracts/native fixtures only",
+  "cpu": {
+    "run_id": 43133891398,
+    "job_id": 130904422343,
+    "suite_count": 21,
+    "unique_passed_methods": 149,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "source_before_after_unchanged": true
+  },
+  "native": {
+    "identity.json": {
+      "schema": "ctrl.native-fixture.identity.v1",
+      "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "source_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+      "tested_sha": "82344e182cff3f6526a7f0dc521d67139ab01029",
+      "tested_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+      "parents": [
+        "b8cb4bdc200b00927a88a7edb2dd85b8844c9821",
+        "e5ed7174fe80201a942395a5b1f8366f3f0a7314"
+      ],
+      "event": "pull_request",
+      "run_id": "43133891410",
+      "run_attempt": "1",
+      "scope": "fixture-only tested tree; no historical or policy qualification"
+    },
+    "macro-tests.json": {
+      "schema": "ctrl.native-macro.tests.v1",
+      "status": "PASSED_NATIVE_FIXTURE",
+      "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "tested_sha": "82344e182cff3f6526a7f0dc521d67139ab01029",
+      "tested_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+      "suite": "ndu_real_runtime.test_macro_native.NativeMacroTests",
+      "minimum_tests": 2,
+      "required_test_ids": [
+        "ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score",
+        "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"
+      ],
+      "discovered_test_ids": [
+        "ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score",
+        "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"
+      ],
+      "executed_tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "control_training_labels": "manufactured fixture only",
+      "independent_real_tasks_added": 0,
+      "policy_evaluation_performed": false,
+      "full_physical_cost_observed": false,
+      "adoption_authorized": false
+    },
+    "runtime.json": {
+      "schema": "ctrl.native-fixture.runtime.v1",
+      "system": "Linux",
+      "kernel": "7.0.0-1017-azure",
+      "machine": "x86_64",
+      "uid": 1001,
+      "python": "3.11.18",
+      "numpy": "2.3.5",
+      "scipy": "1.16.3",
+      "pillow": "12.0.0",
+      "torch": "2.5.1+cpu",
+      "cuda_build": null,
+      "seccomp_library": "libseccomp.so.2",
+      "landlock_abi": 8,
+      "landlock_errno": 0,
+      "tesseract": "tesseract 5.3.4",
+      "qualification_scope": "native fixture integration only",
+      "policy_evaluation_performed": false
+    },
+    "tests.json": {
+      "schema": "ctrl.native-fixture.tests.v1",
+      "status": "PASSED_FIXTURE",
+      "executed_tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "historical_content_root_cause_established": false,
+      "policy_improvement_established": false
+    }
+  },
+  "finite_value": {
+    "tests.json": {
+      "schema": "ctrl.finite-value.tests.v1",
+      "status": "PASSED_CONTRACTS",
+      "executed_tests": 4,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "real_paired_experiment_performed": false,
+      "policy_improvement_established": false,
+      "adoption_authorized": false
+    },
+    "identity.json": {
+      "schema": "ctrl.finite-value.identity.v1",
+      "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "python": "3.12.14",
+      "files_sha256": {
+        "scripts/ndu_real_runtime/metacontrol_value_gate.py": "d8b8238c0bd52a445e17a72f8e7b6c8734d46dee5b065f954dbe629009f1f4cc",
+        "scripts/ndu_real_runtime/test_metacontrol_value_gate.py": "016f8367e86b9bc9cca4706cbc094b0b45d1a66cf891ade2d5c3f46420f2197c"
+      },
+      "scope": "finite-cohort arithmetic contracts only",
+      "real_paired_experiment_performed": false,
+      "adoption_authorized": false
+    }
+  },
+  "artifact_download_verification": [
+    {
+      "artifact_id": 13911931157,
+      "bytes": 2875,
+      "sha256": "9b23098158c8715a7cd47f35817cc606861b89d1d6001a0eea5e9e315ee112b6",
+      "matches_github_digest": true
+    },
+    {
+      "artifact_id": 13911014571,
+      "bytes": 1269,
+      "sha256": "6d9490a178367da22b50a9a85a7c3c502877a4d41fa33a74fe7e3e79acc8f43c",
+      "matches_github_digest": true
+    },
+    {
+      "artifact_id": 13912040694,
+      "bytes": 30030,
+      "sha256": "ddbf88da4bbc7d8f5f7371cad2d27322c94961b1ec02b183814cf1f739e7877c",
+      "matches_github_digest": true
+    }
+  ],
+  "cpu_suite_receipts": [
+    {
+      "name": "test_candidate_coverage.json",
+      "passed": 12,
+      "failed": 0,
+      "log_sha256": "477b6a1522d7992a61d6ab6d2791b069820dae5ed34d172c46444334f80cdb8f"
+    },
+    {
+      "name": "test_candidate_coverage_legacy.json",
+      "passed": 5,
+      "failed": 0,
+      "log_sha256": "cdbbd15948d5e78768f31ffe45425b8d83d6631144e24a5945c94811399a1e2a"
+    },
+    {
+      "name": "test_candidate_expansion.json",
+      "passed": 7,
+      "failed": 0,
+      "log_sha256": "78836d888fa133a220dbe33b7a98cceba432a1ac44eb314c76c2ef0d6668a287"
+    },
+    {
+      "name": "test_candidate_gap_diagnostic.json",
+      "passed": 8,
+      "failed": 0,
+      "log_sha256": "5417de25e9cc228bc4180f41bf513602d9082b7f885d422fcb3bca3c7bd87f22"
+    },
+    {
+      "name": "test_critic_context.json",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "b59b004d471766587924bb156fb5cc87326acccb47ed0c9e0d7f6b27f8b56184"
+    },
+    {
+      "name": "test_macro_actor.json",
+      "passed": 6,
+      "failed": 0,
+      "log_sha256": "c5b2d143df913e1cb458e77126a69377503909d50b235260ba7a58f195e1960a"
+    },
+    {
+      "name": "test_macro_cohort.json",
+      "passed": 13,
+      "failed": 0,
+      "log_sha256": "542aeb166bcae168a30aac8d627da1d4cafe50bfade94355f54a5334d932c192"
+    },
+    {
+      "name": "test_macro_execution.json",
+      "passed": 5,
+      "failed": 0,
+      "log_sha256": "419536652754ef097c4494a9a675c74e29f38e124d3cd2941d1d13b34c8a9c90"
+    },
+    {
+      "name": "test_macro_execution_plan.json",
+      "passed": 3,
+      "failed": 0,
+      "log_sha256": "b60ed2b2732c2d24e4a12e459cd3bff4c3eea26e186513dbba786e3e0c2b7e30"
+    },
+    {
+      "name": "test_macro_policy.json",
+      "passed": 17,
+      "failed": 0,
+      "log_sha256": "1ce053d9666747421ea787b12f1daf282a8ec2225a36f4e2c01922040afc7627"
+    },
+    {
+      "name": "test_macro_policy_checkpoint.json",
+      "passed": 7,
+      "failed": 0,
+      "log_sha256": "fe7442195919a2f9e72990ebd5a0973b1e257cb50d30c7aa3f6859c137159631"
+    },
+    {
+      "name": "test_macro_realization.json",
+      "passed": 13,
+      "failed": 0,
+      "log_sha256": "d285505c4971e64d3a7365bdf23e2b4b26ab5d8a29064312010916f12180d617"
+    },
+    {
+      "name": "test_macro_training_pairs.json",
+      "passed": 6,
+      "failed": 0,
+      "log_sha256": "36a9288e231407368b672b7ef417b9c97f90ecd55deb42bef23a82f3cb9d2788"
+    },
+    {
+      "name": "test_macro_result_binding.json",
+      "passed": 4,
+      "failed": 0,
+      "log_sha256": "04b0a9ba183d8bb5975d479bcb375a74f4eaedb9b28dd1f4fb9587d17ad5bb19"
+    },
+    {
+      "name": "test_macro_wire_delivery_admission.json",
+      "passed": 2,
+      "failed": 0,
+      "log_sha256": "9382c7238c3a7a1add7b09e9722d32b302f9b1e4c46994ce468d007320d304d0"
+    },
+    {
+      "name": "test_metacontrol.json",
+      "passed": 14,
+      "failed": 0,
+      "log_sha256": "fcb6db4b02e2b01ab758463548999f4f1f055293f2f90a51ac0d3d3b165a2edd"
+    },
+    {
+      "name": "test_metacontrol_context.json",
+      "passed": 5,
+      "failed": 0,
+      "log_sha256": "79f7c7e7a428a84a2176b93a1621bd2f1cae16c6c20b9b4e660e50ed1c78bec0"
+    },
+    {
+      "name": "test_metacontrol_native_pairs.json",
+      "passed": 7,
+      "failed": 0,
+      "log_sha256": "4269d281a16ea3b96691d1c9db05c93cfdf2a33046aa9c9a464da45db4d62370"
+    },
+    {
+      "name": "test_metacontrol_reporting.json",
+      "passed": 3,
+      "failed": 0,
+      "log_sha256": "96e638266f95324781fab0b084c8cf5dbae5a8f659ef1bf6248b61c857b73783"
+    },
+    {
+      "name": "test_metacontrol_study.json",
+      "passed": 7,
+      "failed": 0,
+      "log_sha256": "959de6e0bec943323bbdba65928fa85cd181440b3e0c32446e3a98c83c9ac698"
+    },
+    {
+      "name": "test_metacontrol_value_gate.json",
+      "passed": 4,
+      "failed": 0,
+      "log_sha256": "808bfcb6e67a6921a0a15f9c3d6fdacf4c5a6af3be4879e846a11ec84478150c"
+    }
+  ],
+  "raw_job_logs": [
+    {
+      "job_id": 130904422614,
+      "utf8_bytes": 61866,
+      "utf8_sha256": "c33a36c0a3cbadf497d25fc108d42dff9dc528b9743bb00510b8ee4d0e57f35f"
+    },
+    {
+      "job_id": 130904422889,
+      "utf8_bytes": 30944,
+      "utf8_sha256": "76140b8b4e603aa5ce439bd88f2159e328f559cc6b2d99df1b6356cf7c60ba6a"
+    },
+    {
+      "job_id": 130904422343,
+      "utf8_bytes": 110048,
+      "utf8_sha256": "d65a4919e9f45a07d4399da2830947dee7548e0e33c63b54e75cbb2e261dff2b"
+    }
+  ],
+  "native_stdout": {
+    "path": "CI_NATIVE_TESTS.log",
+    "bytes": 2489,
+    "sha256": "82545d80ae9e57444a065212135c29ea5fb4c2b917ecc19112885fd4fe80998e",
+    "segments": [
+      {
+        "artifact_member": "tests.log",
+        "byte_offset": 0,
+        "bytes": 875,
+        "sha256": "7c9a300bc6305bd7d19595c844821cf73e1e903f1f72c03432eaa8776ca8c4c4"
+      },
+      {
+        "artifact_member": "macro-tests.log",
+        "byte_offset": 875,
+        "bytes": 1614,
+        "sha256": "65c67201cfe719e36b1045691ee158629b2fb64837a88df6e15b634838ea9aa0"
+      }
+    ]
+  },
+  "verification": {
+    "all_21_cpu_inner_log_hashes_and_bytes_verified": true,
+    "all_149_method_ids_unique": true,
+    "all_test_logs_have_zero_skips": true,
+    "native_source_and_tested_tree_equal": true
+  },
+  "qualification": {
+    "independent_real_tasks_added": 0,
+    "policy_evaluation_performed": false,
+    "full_physical_cost_observed": false,
+    "adoption_authorized": false,
+    "decision": "HOLD / NoUpdate"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "ctrl.readonly-reconciliation-observation.v1",
+  "observed_at_utc": "2026-11-12T01:11:42+00:00",
+  "observed_at_new_york": "2026-11-11T20:11:42-05:00",
+  "status": "INCONCLUSIVE_ORIGINAL_IDENTITIES_UNRESOLVED",
+  "scope": "read-only original identity recovery; no business launch or replay",
+  "originals": [
+    {
+      "label": "V4",
+      "dispatch_private_json_sha256": "0ec91f6b0ca7bc82e8085d5f81ff558d21d2fb6c8f31fa5f17ae21159a4e172a",
+      "original_request_status": "EXACT_PRIVATE_ORIGINAL_NOT_RECOVERED",
+      "original_business_job_status": "NO_VERIFIED_BUSINESS_JOB_ID",
+      "terminal_status": "UNKNOWN",
+      "public_record_sha256": "6c55b51080096589e6f905891a3bc22fd2f2607f65afd1f5c8ca115d9f6f0c73",
+      "public_record_bytes": 5146,
+      "record_status": "UNCHANGED"
+    },
+    {
+      "label": "FIT40_GAP",
+      "dispatch_private_json_sha256": "cafb9d55e02816687ff3e559ed066b87a3691f8a0084b98cbb9251a33c3916e3",
+      "original_request_status": "EXACT_PRIVATE_ORIGINAL_NOT_RECOVERED",
+      "original_business_job_status": "NO_VERIFIED_BUSINESS_JOB_ID",
+      "terminal_status": "UNKNOWN",
+      "public_record_sha256": "a2c1c0e00312c061a14c4f897a5382b0f169104a04924503a5a61810f7da9c19",
+      "public_record_bytes": 3978,
+      "record_status": "UNCHANGED"
+    }
+  ],
+  "local_recovery_status": "NO_KNOWN_SHA_MATCH_IN_BOUNDED_NAMED_JSON_SCAN",
+  "personal_context_status": "UNAVAILABLE",
+  "inventory": {
+    "status": "INCOMPLETE_CURSOR_CHAIN",
+    "first_page_status": "VALIDATION_PENDING_NOT_COMPLETE",
+    "second_page_status": "CURSOR_OR_SNAPSHOT_ERROR",
+    "probe_rounds": 1,
+    "page_calls": 2,
+    "returned_jobs_in_partial_observation": 0,
+    "inventory_complete": false,
+    "status_authoritative": false,
+    "started_utc": "2026-11-12T01:09:30.539Z",
+    "finished_utc": "2026-11-12T01:10:31.194Z"
+  },
+  "business_launch_status": "NOT_ATTEMPTED",
+  "replay_status": "NOT_ATTEMPTED",
+  "original_id_status_query_status": "NOT_ATTEMPTED_NO_VERIFIED_ID",
+  "staging_job_status": "EXCLUDED_FROM_BUSINESS_CONCLUSION",
+  "existing_unknown_status": "UNCHANGED",
+  "artifacts": [
+    {
+      "artifact": "personal-context-result.json",
+      "sha256": "c156eb452e32dc38ea1a58af5c4de209844736039c1987236b74924e73d43236",
+      "bytes": 147,
+      "status": "PRIVATELY_RETAINED_TOOL_RESPONSE_OR_METADATA"
+    },
+    {
+      "artifact": "process-inventory-page-001.json",
+      "sha256": "3faf4fbe6cec954da42bd90f9ee8391bde9914334f2be8ef42f700d0a09ad15b",
+      "bytes": 583,
+      "status": "PRIVATELY_RETAINED_TOOL_RESPONSE_OR_METADATA"
+    },
+    {
+      "artifact": "process-inventory-page-002.json",
+      "sha256": "d6d22719dc79cae4aeea268d79c855cdfb4bbaa37f58b54f7c9d25987e8e8766",
+      "bytes": 231,
+      "status": "PRIVATELY_RETAINED_TOOL_RESPONSE_OR_METADATA"
+    },
+    {
+      "artifact": "round-metadata.json",
+      "sha256": "42727000f5395599fdd01181a53ed7595df25e44f13d2c3f227cac8aafedce01",
+      "bytes": 807,
+      "status": "PRIVATELY_RETAINED_TOOL_RESPONSE_OR_METADATA"
+    }
+  ]
+}
