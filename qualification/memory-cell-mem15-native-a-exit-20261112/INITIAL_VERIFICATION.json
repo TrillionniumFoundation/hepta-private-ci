@@ -1,0 +1,227 @@
+{
+  "schema": "hepta.mem15.initial-native-capture-readonly-recovery.v1",
+  "original_archive": {
+    "file": "capture-bbbcc630-01.tar.xz",
+    "bytes": 68348,
+    "sha256": "7ccd0c04afabd3faa37a21f8431b3791235e3a1f963bb658cc4e29e729276b8d",
+    "complete": true
+  },
+  "original_archive_sdk_transport": {
+    "chunks": [
+      {
+        "offset": 0,
+        "bytes": 65536,
+        "sha256": "6918ec5622e775fb713198e17726b7c2551919d68dddd175e8b8af982e53f0c6",
+        "version": "66306:46185359:68348:1794475984910592521:1794475984910592521",
+        "operation_id": "4312b8c4d1a0d7f312d459161f0052ffe5b57d0d45aeeafe784f93f4b2d21e57",
+        "original_sdk": {
+          "bytes": 87807,
+          "sha256": "daa38859429efcf04cf717f47bd1abd45609e7a838685612c7b2849b901b14ea"
+        },
+        "sdk_pages": 6,
+        "eof": false
+      },
+      {
+        "offset": 65536,
+        "bytes": 2812,
+        "sha256": "62bdd2ec6724a33ac45571d0b343cfb0cb39e1c7e309236ead261fc1033dccef",
+        "version": "66306:46185359:68348:1794475984910592521:1794475984910592521",
+        "operation_id": "d753c085fac93a4b6f124366b293808b62ae13dae4cc219b674dc154f6760406",
+        "original_sdk": {
+          "bytes": 4178,
+          "sha256": "3448584e35670827123a6645611780af9276da7063e8b5ea117abc98fc2800c2"
+        },
+        "sdk_pages": 1,
+        "eof": true
+      }
+    ],
+    "all_original_sdk_and_chunk_hashes_verified": true,
+    "version_pinned_after_first_chunk": true
+  },
+  "publication": {
+    "file": "CAPTURE_BBBCC630_01_PUBLICATION.json",
+    "bytes": 306,
+    "sha256": "098d9025e5445018aaac75904a5e80b5d2779535edf76678a00694bfa669cd9b",
+    "matches_whole_archive": true
+  },
+  "publication_and_blocker_original_sdk": {
+    "bytes": 1702,
+    "sha256": "3aaabb9b952048462e503947de579eb2bb81c4c030219aafb2a577d9cb137073"
+  },
+  "tar_safety": {
+    "members": 42,
+    "regular_files": 42,
+    "directories": 0,
+    "unsafe_paths": 0,
+    "links": 0,
+    "special_files": 0,
+    "duplicate_paths": 0
+  },
+  "original_member_manifest": {
+    "file": "extracted/MEMBER_MANIFEST.json",
+    "bytes": 5829,
+    "sha256": "5c61773cf4f1c38f3c51e836d6b36bde09ad60d279b2e6abb93d7688288edd56",
+    "entries": 41,
+    "all_member_hashes_verified": true,
+    "covers_all_other_regular_files": true
+  },
+  "original_result": {
+    "file": "RESULT.json",
+    "bytes": 13583,
+    "sha256": "d108ba62295c0c9bbf23225db219ef35801bca365d56702eac58e55037a01a15",
+    "status": "incomplete",
+    "original_bytes_preserved": true
+  },
+  "terminal": {
+    "job_id": "1a1cf155b58-2564-197e",
+    "state": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "cancelled": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "terminal_original_sdk": {
+    "file": "TERMINAL.original-sdk-payload.json",
+    "bytes": 905,
+    "sha256": "b5944cef02ff59bcbe143a8881739dc0eee394f44577b0746b26d7fed81666d2"
+  },
+  "source": {
+    "commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+    "tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+    "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+    "clean_before_and_after": true,
+    "source_unchanged": true,
+    "archived_postimages_verified": 14,
+    "formatted_postimages_verified": 9,
+    "adapter_postimages_verified": 5,
+    "source_rewrite_patch_bytes": 0
+  },
+  "phase_receipts": [
+    {
+      "phase": "verified-v8",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1539,
+        "sha256": "590ef0fcc3eabfb727ff9a1d8bb0fa9cfaa6fcc516e0f301347575776179c921"
+      },
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_before_after_clean": true,
+      "observed_tests": 0
+    },
+    {
+      "phase": "native-binaries",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1722,
+        "sha256": "c9610f28939142eced82de0d4685e53cbaeddbc9d89e181141b0c765b2f9df8c"
+      },
+      "log": {
+        "bytes": 72384,
+        "sha256": "9f6bc3a44f982556e3b4b84eec5b865d63d70d5896cd7ca3a7fc16550e9df1e8"
+      },
+      "source_before_after_clean": true,
+      "observed_tests": 0
+    },
+    {
+      "phase": "capture-precompile",
+      "exit_code": 2,
+      "status": "failed",
+      "receipt": {
+        "bytes": 1702,
+        "sha256": "92489984775bb37fb61b6fc95593d4a1c2ade3936d695109277b6033c701539d"
+      },
+      "log": {
+        "bytes": 461,
+        "sha256": "6efde22e243471a30ea88fba2f12bc2e557f1f5a777f4cca2f42ae5d721de3b5"
+      },
+      "source_before_after_clean": true,
+      "observed_tests": 0
+    },
+    {
+      "phase": "final-format",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1493,
+        "sha256": "50ce4b0fa92a01f8269bbe8f47c75a497477c9f1c23b25bae2204c684b3bf5b6"
+      },
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_before_after_clean": true,
+      "observed_tests": 0
+    }
+  ],
+  "capture_precompile_failure": {
+    "exit_code": 2,
+    "cause": "just test expands to cargo nextest run --no-fail-fast; --no-fail-fast cannot be combined with --no-run",
+    "original_log": {
+      "file": "extracted/capture-precompile.receipt.json.043a0031127942d69065eb8622937ee4.log",
+      "bytes": 461,
+      "sha256": "6efde22e243471a30ea88fba2f12bc2e557f1f5a777f4cca2f42ae5d721de3b5"
+    },
+    "argument_parse_failure_before_test_execution": true
+  },
+  "execution_boundary": {
+    "new_control_tests_executed": 0,
+    "capture_arms_started": 0,
+    "basis": "Only setup, verified-v8, native-binaries, failed capture-precompile, and final-format phases occurred; all receipts observe zero tests; original arms array is empty.",
+    "original_model_generation_count": null,
+    "original_physical_native_http_count": null,
+    "original_null_measurements_preserved": true,
+    "observer_authenticated": false,
+    "scored_memory_benefit_episodes": 0,
+    "scientific_acceptance": "HOLD"
+  },
+  "native_binaries_build_passed": true,
+  "format_passed": true,
+  "recorded_binaries_before": {
+    "codex": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/codex",
+      "pin": {
+        "bytes": 560467144,
+        "sha256": "d1d7220a54e11f3bd8d96dd997e45db7184939961c8aa433c9eb8d95ee2e91fe"
+      }
+    },
+    "hepta-infer-worker": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/hepta-infer-worker",
+      "pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      }
+    }
+  },
+  "recorded_binaries_after": {
+    "codex": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/codex",
+      "pin": {
+        "bytes": 560467144,
+        "sha256": "d1d7220a54e11f3bd8d96dd997e45db7184939961c8aa433c9eb8d95ee2e91fe"
+      }
+    },
+    "hepta-infer-worker": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/hepta-infer-worker",
+      "pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      }
+    }
+  },
+  "recorded_binary_bytes_unchanged": true,
+  "binary_verification_basis": "Identical recorded before/after pins in the original RESULT. Native binary bytes were not downloaded.",
+  "recovery_actions": {
+    "native_jobs_started": 0,
+    "tests_run": 0,
+    "model_calls_started": 0,
+    "code_changes": 0,
+    "publication_or_pr": false
+  }
+}
