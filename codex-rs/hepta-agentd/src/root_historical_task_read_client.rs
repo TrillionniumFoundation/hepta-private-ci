@@ -277,6 +277,27 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         fence.armed = false;
         result
     }
+
+    /// Borrow the same complete Root cut for the historical Feature fact.
+    /// There is no local file read or second client between its two physical
+    /// Root observations. The callback result cannot bypass either postcheck.
+    pub(crate) fn with_current_feature_read<T>(
+        &self,
+        action: impl FnOnce(
+            &codex_hepta_neuron::CellGenerationOwnerBindingV1,
+            crate::CircuitTaskSourcePublicationV1,
+            codex_hepta_neuron::CellDecisionReceiptV1,
+        ) -> io::Result<T>,
+    ) -> io::Result<T> {
+        OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |ledger| {
+            let (source, decision) = self
+                .data
+                .publication
+                .validate_against(ledger)
+                .map_err(io::Error::other)?;
+            action(&ledger.target, source, decision)
+        })
+    }
 }
 
 fn refused() -> io::Error {
