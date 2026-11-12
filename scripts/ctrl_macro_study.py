@@ -45,6 +45,7 @@ def modules(repository):
     from ndu_real_runtime.critic_context import CriticContext, context_digest
     from ndu_real_runtime.metacontrol_macro_contract import digest, validate_plan
     from ndu_real_runtime.objective import utility_profile
+    import ctrl_macro_analysis
 
     return {
         "macro_actor": macro_actor,
@@ -60,6 +61,7 @@ def modules(repository):
         "digest": digest,
         "validate_plan": validate_plan,
         "utility_profile": utility_profile,
+        "analysis": ctrl_macro_analysis,
     }
 
 
@@ -144,12 +146,51 @@ def freeze(args, m):
     cal = set(plan["source_splits"]["calibration"])
     if plan["source_splits"]["future"]:
         raise ValueError("No sealed/future source release is provided")
+    if type(evaluation) is not list or not 1 <= len(evaluation) <= 4096:
+        raise ValueError("A bounded nonempty evaluation roster is required")
+    contexts = set()
+    for registered in evaluation:
+        if type(registered) is not dict or set(registered) != {
+            "source_id",
+            "case_id",
+            "seed",
+            "case",
+            "read_condition",
+        }:
+            raise ValueError("Unexpected evaluation registration fields")
+        case = registered["case"]
+        if (
+            type(case) is not dict
+            or any(
+                type(registered[k]) is not str or not 0 < len(registered[k]) <= 512
+                for k in ("source_id", "case_id")
+            )
+            or case.get("source_id") != registered["source_id"]
+            or case.get("id") != registered["case_id"]
+            or type(registered["seed"]) is not int
+            or registered["seed"] < 0
+            or registered["read_condition"] != "original"
+            or registered["source_id"] in plan["excluded_sources"]
+        ):
+            raise ValueError(
+                "Invalid evaluation identity, seed, READ condition or excluded source"
+            )
+        key = tuple(registered[k] for k in ("source_id", "case_id", "seed"))
+        if key in contexts:
+            raise ValueError("Duplicate registered evaluation context")
+        contexts.add(key)
     seen, physical = {}, {}
     for item in [*plan["pairs"], *evaluation]:
         case = item["case"]
         if case["role"] not in {"train", "development", "retention_validation"}:
             raise PermissionError("Sealed case is forbidden")
         source, pin = case["source_id"], case["source_sha256"]
+        if (
+            type(pin) is not str
+            or len(pin) != 64
+            or any(c not in "0123456789abcdef" for c in pin)
+        ):
+            raise ValueError("Registered physical source byte identity is required")
         if seen.get(source, pin) != pin or physical.get(pin, source) != source:
             raise ValueError("Physical source aliases or mixed images in one source")
         seen[source], physical[pin] = pin, source
@@ -175,6 +216,7 @@ def freeze(args, m):
         "converter_sha256": m["macro_training_pairs"].source_sha256(),
         "fitter_sha256": m["macro_policy"].source_sha256(),
         "observer_sha256": m["digest"](m["macro_realization"].source_manifest()),
+        "analysis_sha256": sha(Path(m["analysis"].__file__).read_bytes()),
         "methods": list(m["macro_policy"].METHODS),
         "alpha": prepared.get("alpha", 0.1),
         "ridge": prepared.get("ridge", 0.001),
@@ -225,6 +267,7 @@ def thaw(args, m):
         or frozen["fitter_sha256"] != m["macro_policy"].source_sha256()
         or frozen["observer_sha256"]
         != m["digest"](m["macro_realization"].source_manifest())
+        or frozen["analysis_sha256"] != sha(Path(m["analysis"].__file__).read_bytes())
     ):
         raise ValueError("Codec, converter, fitter or observer source changed")
     from ndu_real_runtime.metacontrol_macro_contract import read_pin
@@ -255,6 +298,15 @@ def run_stage(args, m):
         )
         write(root / "EXPORT.json", report)
         write(root / "EXPORT_PIN.json", {"canonical_sha256": m["digest"](report)})
+        write(
+            root / "COLLECTION_ANALYSIS.json",
+            m["analysis"].analyze(
+                report,
+                collection_root=root / "collection",
+                expected_export_sha256=m["digest"](report),
+                context=context,
+            ),
+        )
         print(
             json.dumps(
                 {
