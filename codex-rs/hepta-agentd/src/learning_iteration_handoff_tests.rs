@@ -102,7 +102,10 @@ async fn queued_learning_submit_survives_waiter_loss_and_reconciles_once() {
             .map(|receipt| receipt.observation.stage())
             .collect::<Vec<_>>()
     );
-    assert_eq!(ok(store.pending_circuit_learning(/*limit*/ 1).await), claimed);
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
     let executed = ok(ports.inner.executed.lock()).clone();
     let checkpoints = ok(ports.inner.checkpoint_calls.lock()).clone();
     assert_eq!(
@@ -171,7 +174,10 @@ async fn explicit_learning_cancel_precedes_an_already_queued_submit() {
     assert_eq!(ports.restores.load(Ordering::SeqCst), 0);
     assert!(ok(ports.inner.executed.lock()).is_empty());
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
-    assert_eq!(ok(store.pending_circuit_learning(/*limit*/ 1).await), claimed);
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
     cognitive.close().await;
     store.close().await;
 }
@@ -229,7 +235,9 @@ async fn detached_learning_submit_still_cancels_and_recovers_without_new_work() 
     cancellation.cancel();
     ok(ok(tokio::time::timeout(Duration::from_secs(5), worker)
         .await
-        .expect("original supervisor cancels the detached submission")));
+        .expect(
+            "original supervisor cancels the detached submission",
+        )));
     assert!(resume.send(()).is_err());
     let initial = ok(LearningIterationCoordinatorV1::new(
         request.clone(),
@@ -242,7 +250,10 @@ async fn detached_learning_submit_still_cancels_and_recovers_without_new_work() 
         *ok(ports.inner.executed.lock()),
         vec![LearningIterationStageV1::Experience]
     );
-    assert_eq!(*ok(ports.inner.checkpoint_calls.lock()), vec![Digest32::ZERO]);
+    assert_eq!(
+        *ok(ports.inner.checkpoint_calls.lock()),
+        vec![Digest32::ZERO]
+    );
 
     // Reopen only the actor over the original test owners. A partial original
     // checkpoint permits readback, never a fresh attempt under another identity.
@@ -271,8 +282,14 @@ async fn detached_learning_submit_still_cancels_and_recovers_without_new_work() 
         *ok(ports.inner.executed.lock()),
         vec![LearningIterationStageV1::Experience]
     );
-    assert_eq!(*ok(ports.inner.checkpoint_calls.lock()), vec![Digest32::ZERO]);
-    assert_eq!(ok(store.pending_circuit_learning(/*limit*/ 1).await), claimed);
+    assert_eq!(
+        *ok(ports.inner.checkpoint_calls.lock()),
+        vec![Digest32::ZERO]
+    );
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
     cancellation.cancel();
     ok(ok(worker.await));
     cognitive.close().await;
@@ -324,7 +341,10 @@ async fn detached_learning_submit_preserves_its_expired_work_deadline() {
     assert_eq!(ports.restores.load(Ordering::SeqCst), 2);
     assert!(ok(ports.inner.executed.lock()).is_empty());
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
-    assert_eq!(ok(store.pending_circuit_learning(/*limit*/ 1).await), claimed);
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
     cancellation.cancel();
     ok(ok(worker.await));
     cognitive.close().await;
