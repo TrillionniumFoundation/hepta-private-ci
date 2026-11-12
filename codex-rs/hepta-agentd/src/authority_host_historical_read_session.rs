@@ -30,7 +30,7 @@ impl PreparedHostAuthoritySession {
 
     pub fn seal_original_historical_task_read(&self) -> io::Result<RootHistoricalTaskReadOfferV1> {
         original_root()?;
-        let runtime = self
+        let runtime: &HistoricalTaskReadRuntime = self
             .historical_read
             .as_ref()
             .ok_or_else(|| io::Error::other("original complete historical deployment missing"))?;

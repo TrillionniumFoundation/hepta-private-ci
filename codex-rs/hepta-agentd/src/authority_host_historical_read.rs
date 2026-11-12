@@ -98,7 +98,7 @@ impl HistoricalTaskReadRuntime {
             &deployment.initial,
             |_, proof| {
                 metadata.require_metadata_unchanged()?;
-                let mut profile = HistoricalTaskReadProfileV1 {
+                let mut profile: HistoricalTaskReadProfileV1 = HistoricalTaskReadProfileV1 {
                     purpose: PURPOSE.into(),
                     identity: crate::neuron_generation_process_identity_digest_v1(&identity)
                         .map_err(io::Error::other)?

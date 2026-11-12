@@ -46,7 +46,7 @@ impl CellQ24DatasetTaskV1 {
         let (publication, decision) = receipt
             .read_original_publication()
             .map_err(|_| Error::Binding("complete original historical Task required"))?;
-        let source = Arc::new(HistoricalTaskSource { receipt });
+        let source: Arc<HistoricalTaskSource> = Arc::new(HistoricalTaskSource { receipt });
         if source.read()? != publication {
             return Err(Error::Binding("historical Task changed during capture"));
         }

@@ -103,15 +103,16 @@ impl AgentdProductionLaunch {
             ));
         }
         let historical_read = if let Some(historical) = historical {
-            let connection = root.take_historical_task_read_connection()?;
-            let client = historical
-                .connect_original(
-                    connection,
-                    remaining(bootstrap_deadline)?.min(Duration::from_millis(500)),
-                    session_end,
-                )
-                .await?;
-            client.require_same_original_session(&root.session)?;
+            let connection =
+                AgentdRootProductionInputs::take_historical_task_read_connection(&mut root)?;
+            let client = crate::RootHistoricalTaskReadHandoffV1::connect_original(
+                historical,
+                connection,
+                remaining(bootstrap_deadline)?.min(Duration::from_millis(500)),
+                session_end,
+            )
+            .await?;
+            crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1::require_same_original_session(&client, &root.session)?;
             Some(client)
         } else {
             None
