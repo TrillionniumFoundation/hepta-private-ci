@@ -7,6 +7,8 @@ mod b_evaluate;
 mod b_publication_observer;
 #[path = "ordinary_q24_cold_administration_tests.rs"]
 mod cold_administration;
+#[path = "ordinary_q24_cold_deployment_tests.rs"]
+mod cold_deployment;
 #[path = "ordinary_q24_process_deployment_tests.rs"]
 mod deployment;
 #[path = "ordinary_q24_process_fixture_tests.rs"]
