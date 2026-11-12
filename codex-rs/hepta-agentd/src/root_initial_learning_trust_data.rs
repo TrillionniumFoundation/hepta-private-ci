@@ -243,7 +243,7 @@ impl LearningTrustPayloadV1 {
 }
 
 impl LearningTrustSignerDataV1 {
-    fn original_signer(&self) -> io::Result<TrustedLearningSignerV1> {
+    pub(crate) fn original_signer(&self) -> io::Result<TrustedLearningSignerV1> {
         Ok(TrustedLearningSignerV1 {
             principal: AuthenticatedPrincipalV1 {
                 principal_id: StableId::new(&self.principal_id).map_err(io::Error::other)?,
