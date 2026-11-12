@@ -1,0 +1,69 @@
+--- original-unrun
++++ revised-unrun
+@@ -96,7 +96,7 @@
+     argv = ['python3', 'scripts/hepta_ci_exec.py', '--timeout-seconds', '7200',
+             '--minimum-tests', '1', '--output', str(OUT / (name + '.json')), '--',
+             'just', 'test', '--locked', '--offline', *arguments, '--retries', '0',
+-            '--success-output', 'final', '--failure-output', 'final']
++            '--success-output', 'final', '--failure-output', 'final', '--no-tests', 'fail']
+     root = expected is not None
+     if root:
+         keys = ['PATH', 'SOURCE_SHA', 'TESTED_SHA', 'HEPTA_CI_LANE', 'PYTHONDONTWRITEBYTECODE',
+@@ -126,6 +126,8 @@
+             restore_ownership()
+     observed = [p for p in reports if p.exists()]
+     collection = dict(status='missing-fresh-native-report', paths=[str(p) for p in observed])
++    for index, report in enumerate(observed):
++        shutil.copyfile(report, OUT / f'{name}-fresh-native-observed-{index}.xml')
+     if len(observed) == 1:
+         collected = collect(OUT / (name + '.json'), observed[0], OUT / (name + '.xml'))
+         collection = json.loads((OUT / (name + '.summary.json')).read_text())
+@@ -133,7 +135,9 @@
+         if expected is not None and (OUT / (name + '.xml')).exists():
+             cases = list(ET.parse(OUT / (name + '.xml')).iter('testcase'))
+             actual = [c.attrib['name'] for c in cases if c.find('skipped') is None]
+-            coverage = dict(expected=expected, observed=actual, exact=sorted(actual) == sorted(expected))
++            coverage = dict(expected=expected, observed=actual,
++                            skipped=sum(c.find('skipped') is not None for c in cases),
++                            exact=len(cases) == len(expected) and sorted(actual) == sorted(expected))
+             save(OUT / (name + '-parent-coverage.json'), coverage)
+             collection['exact_parent_coverage'] = coverage['exact']
+     save(OUT / (name + '-collection.json'), collection)
+@@ -188,6 +192,17 @@
+     os.environ.update(environment)
+ 
+ 
++def prepare_a_library_binaries():
++    # Actual UID1000 preparation only: no tests execute and no native PASS is
++    # inferred. The sole execution below remains the exact A parent via just.
++    assert os.getuid() == os.geteuid() == 1000
++    argv = ['cargo', 'nextest', 'list', '--locked', '--offline',
++            '-p', 'codex-hepta-agentd', '-p', 'codex-hepta-contracts', '--lib',
++            '--list-type', 'binaries-only', '--message-format', 'json']
++    assert command('a-library-binaries-build-uid1000', argv, REPO / 'codex-rs') == 0, 'actual UID1000 test-binary preparation failed'
++    assert snapshot() == result['before'], 'source changed during UID1000 test-binary preparation'
++
++
+ persist()
+ started = time.monotonic()
+ owner = None
+@@ -228,6 +243,7 @@
+                                     'codex-hepta-infer-worker-host', '--output-dir', str(PUBLIC / 'helpers'), '--verify-only']) == 0
+     os.environ.update(json.loads((PUBLIC / 'helpers/env.json').read_text()))
+     prepare_products()
++    prepare_a_library_binaries()
+     assert snapshot() == result['before']
+     setup = '''import os,pathlib,subprocess,json
+ assert os.geteuid()==0
+@@ -243,10 +259,7 @@
+ ''' % str(ROOT)
+     mounts_created = True
+     assert command('root-mount-setup', ['sudo', '-n', 'python3', '-c', setup]) == 0
+-    workflow = (REPO / '.github/workflows/hepta-daemon-learning-native.yml').read_text()
+-    parents = ast.literal_eval(re.search(r'          parents = (\[.*?\n          \])', workflow, re.S)[1])
+-    assert len(parents) == len(set(parents)) == 45
+-    save(OUT / 'root-parent-roster.json', parents)
++    save(OUT / 'ordinary-a-parent-roster.json', [A_PARENT])
+     result['status'] = 'testing'
+     persist()
+     root_args = ['-p', 'codex-hepta-agentd', '-p', 'codex-hepta-contracts', '--lib',
