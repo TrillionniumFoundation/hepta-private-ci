@@ -91,7 +91,7 @@ impl OriginalCircuitModelPublicationContextV1 {
             model,
             training_cut: cut.snapshot().clone(),
         };
-        context.authenticate(now()?, false)?;
+        context.authenticate(now()?, /*new_work*/ false)?;
         Ok(context)
     }
 
@@ -209,7 +209,7 @@ impl OriginalCircuitModelPublicationContextV1 {
         &self,
         lower: u64,
     ) -> Result<(codex_hepta_types::Digest32, codex_hepta_types::Digest32), Error> {
-        let (_, current) = self.authenticate_at_current(lower, false)?;
+        let (_, current) = self.authenticate_at_current(lower, /*new_work*/ false)?;
         let (initial, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
                 .map_err(|_| Error::Binding("same original Version initial Material"))?;

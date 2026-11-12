@@ -17,7 +17,7 @@ impl Host {
     pub(super) fn require_prepared_control(
         &self, context: &Context, intent: Digest32, expected: Option<&FinalUseBinding>,
     ) -> Result<(), Error> {
-        let coordinator = context.authenticate(super::super::now()?, false)?;
+        let coordinator = context.authenticate(super::super::now()?, /*new_work*/ false)?;
         let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
         let original = NeuronGenerationCurrentOwnerV1::recover_operation(
             &self.control, operation.as_str(), intent,
@@ -53,7 +53,7 @@ impl Host {
             return Err(Error::CommitUncertain);
         }
         operation.require_current(started)?;
-        actual.authenticate_material(operation.material(), started, false)?;
+        actual.authenticate_material(operation.material(), started, /*new_work*/ false)?;
         let artifact_before = self.artifacts.read_current()?;
         let observe = || -> Result<Readback, Error> {
             match &installed {
@@ -71,7 +71,7 @@ impl Host {
         artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?;
         if before != after { return Err(Error::CommitUncertain); }
         self.require_lifetime()?;
-        actual.authenticate_material(completed.material(), started, false)?;
+        actual.authenticate_material(completed.material(), started, /*new_work*/ false)?;
         Ok(after)
     }
 }

@@ -86,7 +86,7 @@ impl Outcome {
         }
     }
     pub(super) fn decode(self, context: &Context) -> Result<Readback, Error> {
-        context.authenticate(super::now()?, false)?;
+        context.authenticate(super::now()?, /*new_work*/ false)?;
         match self {
             Self::Prepared { intent } => Ok(Readback { intent: digest(&intent)?, publication: None }),
             Self::Published { intent, publication, task, selection, bundle, run } => {

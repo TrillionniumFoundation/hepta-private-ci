@@ -29,7 +29,7 @@ impl Host {
         let mut channel = original_owner_command_channel_v1(
             stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
         )?;
-        let queued = QueuedService(Arc::new(AtomicBool::new(false)));
+        let queued = QueuedService(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&queued.0);
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
@@ -60,7 +60,7 @@ impl Host {
         let actual = match request.action {
             wire::Action::Publish => self.runtime.block_on(self.publish_original(&request, cancelled)),
             wire::Action::Readback => {
-                self.requested.store(true, Ordering::Release);
+                self.requested.store(/*val*/ true, Ordering::Release);
                 self.runtime.block_on(self.read_original(Some(&request)))
             }
         };
@@ -107,12 +107,12 @@ impl Host {
     pub async fn run_original_c(
         self: Arc<Self>, arg0_paths: codex_arg0::Arg0DispatchPaths,
     ) -> Result<(), Error> {
-        if self.origin != Origin::Fresh || self.runtime_started.swap(true, Ordering::AcqRel) {
+        if self.origin != Origin::Fresh || self.runtime_started.swap(/*val*/ true, Ordering::AcqRel) {
             return Err(Error::ReadbackRequired);
         }
         self.wait_installed().await?;
         let owner = Arc::clone(&self);
-        let queued = QueuedService(Arc::new(AtomicBool::new(false)));
+        let queued = QueuedService(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&queued.0);
         let config = tokio::task::spawn_blocking(move || {
             require_not_cancelled(&cancelled)?;
@@ -121,7 +121,7 @@ impl Host {
             require_not_cancelled(&cancelled).map_err(|_| Error::CommitUncertain)?;
             let mut state = owner.state.try_lock().map_err(|_| Error::Busy)?;
             let context = state.context.as_ref().ok_or(Error::CommitUncertain)?;
-            context.authenticate(super::super::now()?, true)?;
+            context.authenticate(super::super::now()?, /*new_work*/ true)?;
             if state.intent != Some(current.intent_digest()) {
                 return Err(Error::CommitUncertain);
             }
@@ -167,7 +167,7 @@ impl Host {
             stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
         )?;
         self.wait_installed().await?;
-        let queued = QueuedService(Arc::new(AtomicBool::new(false)));
+        let queued = QueuedService(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&queued.0);
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
@@ -203,7 +203,7 @@ impl Host {
         let mut channel = original_owner_command_channel_v1(
             stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
         )?;
-        let queued = QueuedService(Arc::new(AtomicBool::new(false)));
+        let queued = QueuedService(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&queued.0);
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
@@ -228,7 +228,7 @@ impl Host {
         let mut channel = original_owner_command_channel_v1(
             stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
         )?;
-        let queued = QueuedService(Arc::new(AtomicBool::new(false)));
+        let queued = QueuedService(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&queued.0);
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
@@ -272,7 +272,7 @@ impl Host {
 
 struct QueuedService(Arc<AtomicBool>);
 impl Drop for QueuedService {
-    fn drop(&mut self) { self.0.store(true, Ordering::Release); }
+    fn drop(&mut self) { self.0.store(/*val*/ true, Ordering::Release); }
 }
 
 fn require_not_cancelled(cancelled: &AtomicBool) -> Result<(), Error> {

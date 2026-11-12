@@ -89,7 +89,7 @@ pub(super) fn authenticate(
     context: &Context,
     at: u64,
 ) -> Result<Vec<codex_hepta_learning_ledger::VerifiedLearningEvidenceV1>, Error> {
-    crate::OriginalCircuitModelPublicationContextV1::authenticate(context.publication.as_ref(), at, false)
+    crate::OriginalCircuitModelPublicationContextV1::authenticate(context.publication.as_ref(), at, /*new_work*/ false)
         .map_err(|_| Error::Binding("full original Model and four predecessor windows"))?;
     let selected_mode = mode(context)?;
     let snapshot = &context.prefix;

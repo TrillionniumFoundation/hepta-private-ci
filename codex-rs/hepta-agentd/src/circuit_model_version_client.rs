@@ -20,7 +20,7 @@ struct Channel {
 }
 struct Cancelled(Arc<AtomicBool>);
 impl Drop for Cancelled {
-    fn drop(&mut self) { self.0.store(true, Ordering::Release); }
+    fn drop(&mut self) { self.0.store(/*val*/ true, Ordering::Release); }
 }
 pub struct OriginalCircuitModelVersionClientV1 {
     channel: Mutex<Option<Channel>>,
@@ -43,7 +43,7 @@ impl OriginalCircuitModelVersionClientV1 {
         if context.prefix() != context.decision() || context.decision().receipts.len() != 5 {
             return Err(Error::Binding("exact original Model before positive Version"));
         }
-        context.model_publication_context().authenticate(started, false)?;
+        context.model_publication_context().authenticate(started, /*new_work*/ false)?;
         let expected = context.model_publication_context().original_version_binding(started)?;
         peer.check_peer_lifetime()?;
         let fresh = now()?;
@@ -92,7 +92,7 @@ impl OriginalCircuitModelVersionClientV1 {
             return Err(Error::Binding("bounded positive Version request"));
         }
         channel.next += 1;
-        let cancellation = Cancelled(Arc::new(AtomicBool::new(false)));
+        let cancellation = Cancelled(Arc::new(AtomicBool::new(/*v*/ false)));
         let queued = Arc::clone(&cancellation.0);
         let (channel, response) = tokio::task::spawn_blocking(move || {
             channel.peer.check_peer_lifetime()?;
@@ -117,7 +117,7 @@ impl OriginalCircuitModelVersionClientV1 {
         if response.request != request { return Err(Error::Binding("same positive Version response")); }
         let fresh = now()?;
         require_clock(started, fresh).map_err(|_| Error::CommitUncertain)?;
-        self.context.model_publication_context().authenticate(fresh, false)
+        self.context.model_publication_context().authenticate(fresh, /*new_work*/ false)
             .map_err(|_| Error::CommitUncertain)?;
         let structured = matches!(&response.result, wire::Outcome::Busy
             | wire::Outcome::ReadbackRequired | wire::Outcome::Uncertain

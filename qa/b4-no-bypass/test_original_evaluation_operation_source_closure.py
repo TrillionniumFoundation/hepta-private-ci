@@ -85,7 +85,7 @@ class OriginalEvaluationOperationClosureTests(unittest.TestCase):
                         self.assertIsNotNone(end)
                         cursor = start
                         for token in rule["sequence"][:index + 1]:
-                            at = source.index(token, cursor, end + 1)
+                            at = code.index(token, cursor, end + 1)
                             cursor = at + len(token)
                         self.reject_change(path, source[:at] + source[cursor:])
 

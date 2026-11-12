@@ -132,7 +132,7 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
             context,
             timeout,
             lifetime,
-            false,
+            /*execution_requested*/ false,
             None,
         )
     }
@@ -149,7 +149,7 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, true, expected,
+            stream, peer, original_owner_pidfd, context, timeout, lifetime, /*execution_requested*/ true, expected,
         )
     }
 

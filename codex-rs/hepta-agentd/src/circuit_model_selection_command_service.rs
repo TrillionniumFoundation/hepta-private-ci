@@ -176,15 +176,15 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitModelSelectionComman
         self.context.authenticate(now()?)?;
         let result = match request.action {
             wire::Action::Execute => {
-                if self.execution_requested.swap(true, Ordering::AcqRel) {
+                if self.execution_requested.swap(/*val*/ true, Ordering::AcqRel) {
                     wire::CommandResult::ReadbackRequired
                 } else if now()? >= self.context.decision().request.envelope.expiry_unix_seconds {
                     wire::CommandResult::Expired
                 } else {
-                    self.original_response(true)?
+                    self.original_response(/*execute*/ true)?
                 }
             }
-            wire::Action::Readback => self.original_response(false)?,
+            wire::Action::Readback => self.original_response(/*execute*/ false)?,
         };
         // Original owner guard is released only after full Model/E closure and
         // both physical Selector journal reads. No retained response is reused.
