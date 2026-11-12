@@ -25,10 +25,10 @@ CALLERS = {
     "root_current_historical_identity": (CONNECTION,),
     "root_current_historical_connection": (RECEIPT,),
     "root_current_historical_receipt_connection": (CURRENT,),
-    "root_current_historical_client_match": (STORE,),
+    "root_current_historical_client_match": (STORE, A + "root_generation_current_client.rs"),
     "root_current_historical_backend": (OWNER,),
-    "root_current_historical_owner": (RECOVER,),
-    "q24_current_historical_recover": (),
+    "root_current_historical_owner": (RECOVER, A + "neuron_generation_update_live.rs", A + "circuit_feature_historical_source.rs"),
+    "q24_current_historical_recover": (A + "production_post_a_continuation.rs",),
 }
 
 
@@ -158,7 +158,10 @@ class CurrentHistoricalARecoverySourceTests(unittest.TestCase):
         self.check(CURRENT, "require_original_historical_receipt", (
             "self.observe()?", "original.initial_snapshot()", "self.profile.initial != initial.head_digest.to_string()",
             "self.profile.learning_operation != initial.request.operation_id.as_str()", "if result.is_err()", "self.fence()"))
-        self.mutate(STORE, lambda s: s.replace("Store::Root(client) =>", "Store::Host(_) => Ok(()),\n            Store::Root(client) =>", 1))
+        def add_wrong_backend(source):
+            _, raw = route.function(source, "fn require_original_root_historical_receipt(")
+            return source.replace(raw, raw.replace("Store::Root(client) =>", "Store::Host(_) => Ok(()),\n            Store::Root(client) =>", 1), 1)
+        self.mutate(STORE, add_wrong_backend)
         self.check(OWNER, "require_original_root_historical_receipt", (
             "CurrentStore::require_original_root_historical_receipt(&self.store, original)",))
 
