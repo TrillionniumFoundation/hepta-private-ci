@@ -168,7 +168,7 @@ impl ReadOnlyRunStartViewV1 {
                 .ok_or(RunStartStoreError::Corrupt)?;
             Ok(Some(RunStartReadOnlyFrameV1 {
                 observed: RunStartReadOnlyPublicationV1 {
-                    record: record.clone(),
+                    record: record.as_ref().clone(),
                     publication: RunStartPublication {
                         sequence: stored.sequence,
                         record_digest: stored.record_digest,
