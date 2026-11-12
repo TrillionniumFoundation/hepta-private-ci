@@ -25,8 +25,8 @@ def _check_sensitivity_shape(model, content):
     if marked.ndim != 2 or not 1 <= marked.shape[1] <= 16:
         raise ValueError("one to sixteen fixed signed channels required")
     cells, channels = model.spatial.intervals + 5, marked.shape[1] + 1
-    if 6 * cells * channels > 8192 or 5 * cells * cells * channels > 2_000_000:
-        raise ValueError("declared augmented-state/Jacobian budget exceeded")
+    if 6 * cells * channels > 32768 or 20 * cells * cells > 12_000_000:
+        raise ValueError("declared augmented-state/dense-coefficient budget exceeded")
 
 
 def solve_partials(model, query_times, active, content, phase=(), **options):
@@ -200,14 +200,49 @@ def _solve_variational(
     support[n + 3, :n] = 1
     support[n + 4, : n + 1] = 1
     self_support = block_diag([csr_matrix(support != 0)] * channels, format="csr")
-    # Conservative same-channel primal-to-partial blocks, no cross-mark mixing.
-    cross = block_diag([csr_matrix(np.ones((size, size)))] * channels, format="csr")
     blocks = [[None] * 6 for _ in range(6)]
     for j in range(6):
         blocks[j][j] = self_support
         if j:
-            blocks[j][0] = cross
+            # Delayed flux and source release are known history/forcing in
+            # each method-of-steps segment, not instantaneous state couplings.
+            # The remaining primal-to-partial coupling is d(linear)/dtheta,
+            # plus the two explicitly overwritten discounted integrators.
+            cross_support = dl[j - 1] != 0
+            cross_support[n + 3, :n] = (derivative_lower[j - 1] != 0) | (
+                (dq[j - 1] != 0) & (lower != 0)
+            )
+            cross_support[n + 4, : n + 1] = dq[j - 1] != 0
+            blocks[j][0] = block_diag(
+                [csr_matrix(cross_support)] * channels, format="csr"
+            )
     sparsity = bmat(blocks, format="csr")
+    if sparsity.nnz > 2_000_000:
+        raise ValueError("declared actual sparse-Jacobian nonzero budget exceeded")
+
+    def instantaneous_jacobian(time, unused_state):
+        exponential = math.exp(-model.discount * time)
+        current_linear = linear.copy()
+        current_linear[n + 3, :n] = exponential * lower
+        current_linear[n + 4, : n + 1] = exponential
+        diagonal = block_diag([csr_matrix(current_linear)] * channels, format="csr")
+        values = [[None] * 6 for _ in range(6)]
+        for j in range(6):
+            values[j][j] = diagonal
+            if j:
+                coupling = dl[j - 1].copy()
+                coupling[n + 3, :n] = exponential * (
+                    derivative_lower[j - 1] - time * dq[j - 1] * lower
+                )
+                coupling[n + 4, : n + 1] = -time * dq[j - 1] * exponential
+                values[j][0] = block_diag(
+                    [csr_matrix(coupling)] * channels, format="csr"
+                )
+        result = bmat(values, format="csr")
+        if not np.all(np.isfinite(result.data)):
+            raise ArithmeticError("instantaneous Jacobian is nonfinite")
+        return result
+
     initial_flux = state[:, :, :n] @ lower
     initial_flux[1:] += np.einsum("cn,jn->jc", state[0, :, :n], derivative_lower)
 
@@ -271,7 +306,7 @@ def _solve_variational(
             rtol=rtol,
             atol=atol,
             max_step=max_step,
-            jac_sparsity=sparsity,
+            jac=instantaneous_jacobian,
             dense_output=True,
         )
         if not integration.success or not np.all(np.isfinite(integration.y)):
@@ -313,6 +348,9 @@ def _solve_variational(
         fixed_initial_relative_law=True,
         episode_prior_gradients=False,
         reset_semantics="piecewise_affine_fixed_stencil",
+        augmented_state_scalars=6 * channels * size,
+        instantaneous_jacobian_nonzeros=int(sparsity.nnz),
+        instantaneous_jacobian_shape=list(sparsity.shape),
         rtol=rtol,
         atol=atol,
     )
