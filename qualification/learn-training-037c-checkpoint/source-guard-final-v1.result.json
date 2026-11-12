@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/guard-with-current",
+  "started_at": "2026-11-12T16:05:13.663580+00:00",
+  "duration_seconds": 3.5912979479981004,
+  "returncode": 0,
+  "raw_log": {
+    "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/source-guard-final-v1.raw.log",
+    "bytes": 4367,
+    "sha256": "1f827ce39df5df07f6c9efa199b0af756a9d594a16fd8e360ab6eda1306d4280",
+    "blob": "19dce5159166ca0041c8eb7e064fd0641379696c"
+  },
+  "scope": "18 source checks in four relevant QA modules, actual formatted Current13 + T9; partial mirror, not whole repository gate or native qualification"
+}

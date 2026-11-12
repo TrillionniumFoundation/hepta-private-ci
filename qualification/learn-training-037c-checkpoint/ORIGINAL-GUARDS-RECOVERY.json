@@ -1,0 +1,90 @@
+{
+  "schema": "learn-training-original-guards-recovery-v1",
+  "status": "ALL_THREE_ORIGINAL_T_QA_AND_FINAL_DELTA_RECOVERED_EXACT_BYTES_NATIVE_UNRUN",
+  "actual_product_checkpoint": "6c19310a69497ff313dcc08081f7860b6008ef96",
+  "original_source_base": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "method": "One read-only call after environment recovery; all original files independently rehashed against retained frozen bytes/SHA256/Git blob identities.",
+  "files": [
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/CALLERS-DELTA.json",
+      "bytes": 47147,
+      "sha256": "3a780c5f8846c6cd6c637306ea62e1049a5eb67fe86feedf24daaa6d4c8b42c8",
+      "blob": "b757cfe9292861f8e2a0e9b17d33930e2f1252d2"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_training_read_transaction_source_closure.py",
+      "bytes": 11061,
+      "sha256": "35321542e88887630373801e7d903aab786f76c18320711b5c7d7fb316790abe",
+      "blob": "72db2dfd45fb0d3153e26fcbb3f2922a2fdae9bf"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "bytes": 12223,
+      "sha256": "c9e148857d7f4ba1c2697bc46c3b0039dc25d59b109694715acbb74917795fd3",
+      "blob": "b143221d0b15b5da2dd076ddc199bf6f4eadd77a"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "bytes": 9962,
+      "sha256": "faceed119e66c617455b1ee5a3264ab1e2fe954803c45f92179aab713fb1c79f",
+      "blob": "0d3aece1ccf5769913c5953053baba5ff2a5a2b1"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/DELIVERY.json",
+      "bytes": 2671,
+      "sha256": "9f30796c69e29f1b633bfefcac47502b361806b6bbf62eeeb4fcd883c4091a7d",
+      "blob": "fa8f728df0c14c9f6a8b57ec6d8eb6102709b31d"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/source-guard-final-v1.raw.log",
+      "bytes": 4367,
+      "sha256": "1f827ce39df5df07f6c9efa199b0af756a9d594a16fd8e360ab6eda1306d4280",
+      "blob": "19dce5159166ca0041c8eb7e064fd0641379696c"
+    },
+    {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/source-guard-final-v1.result.json",
+      "bytes": 838,
+      "sha256": "0f25fc7fb14152c7291fd20552c46d1919ea205832cdbc72dfa3c36201c00f59",
+      "blob": "8fef9baf1a62aeb51458965c6f699f89fe125f15"
+    }
+  ],
+  "actual_original_scoped_result": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "*source_closure.py",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/guard-with-current",
+    "started_at": "2026-11-12T16:05:13.663580+00:00",
+    "duration_seconds": 3.5912979479981004,
+    "returncode": 0,
+    "raw_log": {
+      "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/source-guard-final-v1.raw.log",
+      "bytes": 4367,
+      "sha256": "1f827ce39df5df07f6c9efa199b0af756a9d594a16fd8e360ab6eda1306d4280",
+      "blob": "19dce5159166ca0041c8eb7e064fd0641379696c"
+    },
+    "scope": "18 source checks in four relevant QA modules, actual formatted Current13 + T9; partial mirror, not whole repository gate or native qualification"
+  },
+  "original_18_pass_scope_preserved": true,
+  "no_new_tests_run": true,
+  "new_identity_reconstruction_draft": {
+    "status": "NOT_ADOPTED_NOT_PUBLISHED_NOT_TESTED",
+    "sha256": "9b2b318428f70227481cefc5dbecba5d9e49aaeb6def31fd321d24ca6222dcb4",
+    "reason": "Recovered original delta and QA exactly; no need to substitute new identities."
+  },
+  "global_callers_modified": false,
+  "ordinary_NoUpdate_qualification_count": 0,
+  "main_pr_updated": false,
+  "notes": [
+    "Original partial checkpoint and missing-byte observations remain untouched as historical facts.",
+    "This recovery does not assert complete integration or native qualification.",
+    "Original delta is preserved as an evidence artifact; the central assembler owns global CALLERS merge."
+  ]
+}
