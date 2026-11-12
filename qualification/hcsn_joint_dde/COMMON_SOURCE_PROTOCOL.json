@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn-common-source-reexecution-v1",
+  "base_source": "fb663f141f5763692a5fc05e09ae60e8d7da4bdf",
+  "map_binding_source": "16466e0bbb7808783453c6854803201560acab45",
+  "historical_evidence_commit": "67b93060451117c7cc14465b384dd6da124b5761",
+  "source_change": "Only add state_io.py to the audit_graded import-closure guard; numerical model and existing gates unchanged. Add this protocol and the common execution orchestrator.",
+  "publication": "Publish and read back a new common source commit before execution. Keep the historical graded evidence immutable; it does not count as execution of the new source.",
+  "execution_order": ["qualify_state: 28 tests, no skips, plus actual fresh-process restore", "audit_graded: unchanged original 14336 retained positions on both 256 and 512 meshes, plus 30 direct DDE runs"],
+  "all_positions_method": "Linear first-excursion M/H/A kernel and continuation on every original prior/posterior; not 14336 independently integrated DDE trajectories.",
+  "persistent_state_scope": "Existing state controls and declared fresh-process fixture; no claim of cold restoration of every retained posterior.",
+  "original_continuation_threshold": 0.01,
+  "original_summary_sha256": "12fa561e6b5e6f710d1239d2a00bcf596da9d0060bf4691473ff337b7b5d0822",
+  "resource_limits": {"numerical_threads": 1, "concurrent_lanes": 1, "lane_timeout_seconds": 1800},
+  "design_status": "Engineering reexecution on exposed data; not independent future-task confirmation.",
+  "excluded_lanes": ["Torch cascade gradients", "moving-reset model from PR 6151", "neural retraining", "complete C2 training replay"],
+  "status": "HOLD_NO_GO"
+}

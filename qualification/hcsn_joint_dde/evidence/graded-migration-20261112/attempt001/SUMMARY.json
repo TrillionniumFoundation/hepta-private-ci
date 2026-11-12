@@ -1,0 +1,233 @@
+{
+  "schema": "hcsn-graded-executable-migration-research-v1",
+  "overall_status": "HOLD_NO_GO",
+  "engineering_checks_passed": true,
+  "reports": [
+    {
+      "intervals": 256,
+      "positions": 14336,
+      "migration": {
+        "maximum_basis_mass_residual": 1.1102230246251565e-16,
+        "lower_mass_transferred": [
+          0.0007857064234573636,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lower_mean_shift": [
+          3.704007503172972e-07,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tail_upper_overshoot_probability": 0.04076220397836621,
+        "tail_expected_upper_overshoot": 0.04076220397836621
+      },
+      "max_scaled_continuation_error": 1.5874878671907167e-05,
+      "continuation_failures_at_original_1pct": 0,
+      "max_noncancelling_scaled_error": 1.5874908044083096e-05,
+      "noncancelling_failures_at_original_1pct": 0,
+      "finite": [
+        {
+          "law": "prior",
+          "max_absolute_M_H_A": [
+            1.7784134808649342e-05,
+            1.749397509329901e-05,
+            8.77189461401251e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.007769047259543532,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        },
+        {
+          "law": "posterior",
+          "max_absolute_M_H_A": [
+            1.349082708386462e-05,
+            1.329848092001401e-05,
+            8.505281680337706e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.0004732575143550016,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "positions": 14336,
+      "migration": {
+        "maximum_basis_mass_residual": 2.220446049250313e-16,
+        "lower_mass_transferred": [
+          0.000390551363783708,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lower_mean_shift": [
+          9.151822065198853e-08,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tail_upper_overshoot_probability": 0.04076220397836621,
+        "tail_expected_upper_overshoot": 0.04076220397836621
+      },
+      "max_scaled_continuation_error": 4.009563388424706e-06,
+      "continuation_failures_at_original_1pct": 0,
+      "max_noncancelling_scaled_error": 4.009592859123869e-06,
+      "noncancelling_failures_at_original_1pct": 0,
+      "finite": [
+        {
+          "law": "prior",
+          "max_absolute_M_H_A": [
+            4.457279544094715e-06,
+            4.384565298763167e-06,
+            2.1991316981329057e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.0019479489029922453,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        },
+        {
+          "law": "posterior",
+          "max_absolute_M_H_A": [
+            3.379573559891824e-06,
+            3.3314072179491117e-06,
+            2.131856423059908e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.00011570577353054835,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        }
+      ]
+    }
+  ],
+  "direct_DDE_executions": 30,
+  "max_spectral_DDE_error": 2.091088413536113e-11,
+  "continuum_64_128_max_difference": 1.9012569296705806e-14,
+  "source_before": {
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/audit_graded.py": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/graded_migration.py": "35ab6ff2bd60c29b97c973a71331c21148ca1e830d283bae45d7f64d7a75e25e",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/model.py": "47481efd6c6988cc874af26855dc23ce5afa2bdae80b518521b5318dd37150e7",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/GRADED_PROTOCOL.json": "06565dfb67472256ffdf3ab38c06f84334f3a7e4be32ac935e5c2fc9bd556ce2",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "source_after": {
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/audit_graded.py": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/graded_migration.py": "35ab6ff2bd60c29b97c973a71331c21148ca1e830d283bae45d7f64d7a75e25e",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/model.py": "47481efd6c6988cc874af26855dc23ce5afa2bdae80b518521b5318dd37150e7",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_joint_dde/GRADED_PROTOCOL.json": "06565dfb67472256ffdf3ab38c06f84334f3a7e4be32ac935e5c2fc9bd556ce2",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "/workspace/scratch/d706671efa74/hcsn-numeric/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "input_sha256": {
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/SUMMARY.json": "12fa561e6b5e6f710d1239d2a00bcf596da9d0060bf4691473ff337b7b5d0822",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c0_b0.derived.jsonl": "7c3ec231c245674ad8d57a6e1cf6d1ce1449a635eae82e30a924890539fb647b",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c0_b0.audit.json": "69edd3e81cb18db014032c09f291eccbf32ec36b8c03dc3e4703779390dfc67f",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c0_b1.derived.jsonl": "13189239900b94f17e6d27d0f8437f99159ec0c935d598b0f8be64362104a825",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c0_b1.audit.json": "f6ca8b0e15e69f78a53e1803b44b89b9cb2f4816a93b15728c0ee2d3486208c7",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c1_b0.derived.jsonl": "571fff21dd3570af0a1184e6ba0faeae85054d4b906601fa0dfc3206cfb071f3",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c1_b0.audit.json": "e0ff59896aadc4640eaa3f00df66e1428a97866fabb5f59dc56fa11046b18289",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c1_b1.derived.jsonl": "8a593fee2921afad7e5c41131a45988efa6506e13119472f13640cf6231ff723",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c1_b1.audit.json": "37c87dc2defba624b69f758e0d454afa12e8f711a995826adcff094259b072a9",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c0_b1.derived.jsonl": "c4b06bbeb452bfca8df800d3a6c22754428211bcaff2ee945626d263416a760f",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c0_b1.audit.json": "198417e7db04ad1962a2d0a30af1b7b8bbb356d510c88a56165fb801acb9d542",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c1_b0.derived.jsonl": "78aba9e581783e5cd8ba17ca66b26dec2e98c684f9790735ff733177228d3d4a",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c1_b0.audit.json": "1c64e256619c15d6fe6a84c8d65af8e920d43307994699051332acdc119940b2",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c1_b1.derived.jsonl": "b556c392b9213e8e69b24c0bc558efe20fcb6ce313ce51b552252816317a01ed",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c1_b1.audit.json": "6594604b7b71c62afa6b16b5f7bbd827f56942c06ac092ca913cbfc842061a61",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c0_b0.derived.jsonl": "8717d2bbe5cba00ca185fad0eb4cf6b429d82b37d8900ae24f51e1357a4f00a8",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c0_b0.audit.json": "10761b536c70839a2513a5f697073e9ddc24e47a95517dd085703f7b11f456e9",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c1_b0.derived.jsonl": "89a7978a26fe043871ed74bb5dac2d3c767ed2639549c19653d06e8029ff8a0d",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c1_b0.audit.json": "f27f29fabd1b651eb324e235fdd90d8f0a4f1bb42efce74ac09e138dcf4f53a3",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c1_b1.derived.jsonl": "ab3dc70461374e19c6b98a2f42fb837d3bbe08236d78928873a83fbacb38b3b7",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c1_b1.audit.json": "dea904c0151a4ed25df1a6f3ddbdb34b26fef4dbe1e16e631ebeaab8917239ad",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c0_b0.derived.jsonl": "a81624fc72f024b5e59aeb1bc8c797aa6dbd4399e8a77dae285f6eef57512a37",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c0_b0.audit.json": "84df27473492fa2badac20fffb2dc2f481900ef6e19b0dbbc61ff486314cb858",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c0_b1.derived.jsonl": "4ae6aa0980a387c20621b44dad599f13f66ebaa1bf37380518eca16fbea624f4",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c0_b1.audit.json": "b377b7932bef61be0e283db6daa3f80005091a1d1e05fe7755f98c13a9ea91f7"
+  },
+  "output_sha256": {
+    "ALL_GRADED_512.npz": "9f459e4e2b4086b66c67ee3ac42e225bf6e141ac7a07b84998e8f64ddebcc261",
+    "ALL_GRADED_256.npz": "d703ccca391a78601e9e4282116620048224c217371645d728e1d45be825df51",
+    "IDENTITIES.json": "9c28b0377c92b01497482b8d2ecf611120c5c59de95bac9e9b6cd4b7ed6c57d1",
+    "DIRECT_DDE.json": "8b6e807f91322318f75927230f7fbc87974f10db4a2209367404b9adf14b1f84"
+  },
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "wall_seconds": 110.36100838099992,
+  "cpu_seconds": 109.757514729,
+  "model_training_calls": 0,
+  "independent_future_tasks": 0,
+  "not_qualified": [
+    "observation filtering",
+    "recursive posterior rollout",
+    "full-network AD",
+    "complete C2 replay",
+    "independent future tasks",
+    "rare-tail relative accuracy below 1e-12",
+    "production or default-cell adoption"
+  ]
+}

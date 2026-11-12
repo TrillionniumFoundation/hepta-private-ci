@@ -1,0 +1,270 @@
+{
+  "schema": "hcsn-common-source-reexecution-v1",
+  "status": "HOLD_NO_GO",
+  "engineering_checks_passed": true,
+  "execution_source_commit": "9f6c7c4dc24510472ca012647ebd1d96c1405c69",
+  "started_utc": "2026-11-12T06:49:47.618820+00:00",
+  "finished_utc": "2026-11-12T06:54:22.994004+00:00",
+  "source_before": {
+    "qualification/hcsn_joint_dde/audit_graded.py": "ffe6e3ee2aadb346ff0d26696c8901be2b1971d307224441918d779c8236ffcf",
+    "qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+    "qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "qualification/hcsn_joint_dde/graded_migration.py": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4",
+    "qualification/hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+    "qualification/hcsn_joint_dde/qualify_common.py": "5c39cdb62ce2e6407bd5e8738d11f04f1105a6ced7f8315f8d4015c206cef155",
+    "qualification/hcsn_joint_dde/qualify_state.py": "339db2c38b1950ea814e83ddba94c0f7de27384869062d162825f3932d9b1a06",
+    "qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+    "qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+    "qualification/hcsn_joint_dde/state_io.py": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c",
+    "qualification/hcsn_joint_dde/test_graded.py": "9b2b1453c82d0adfacc7b3211a211650c1317de2b85fae6a3f1efc24ccce4092",
+    "qualification/hcsn_joint_dde/test_migration_binding.py": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa",
+    "qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+    "qualification/hcsn_joint_dde/test_state.py": "52ac862ca2bcaccadb758d9267507d18f38cb6360d2067b08168ca30e1ea29d7",
+    "qualification/hcsn_joint_dde/GRADED_PROTOCOL.json": "06565dfb67472256ffdf3ab38c06f84334f3a7e4be32ac935e5c2fc9bd556ce2",
+    "qualification/hcsn_joint_dde/COMMON_SOURCE_PROTOCOL.json": "0bbded22491b225d91638f3e0f623fe8e265956140a8118296de6cf66864e58b",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "source_after": {
+    "qualification/hcsn_joint_dde/audit_graded.py": "ffe6e3ee2aadb346ff0d26696c8901be2b1971d307224441918d779c8236ffcf",
+    "qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+    "qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "qualification/hcsn_joint_dde/graded_migration.py": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4",
+    "qualification/hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+    "qualification/hcsn_joint_dde/qualify_common.py": "5c39cdb62ce2e6407bd5e8738d11f04f1105a6ced7f8315f8d4015c206cef155",
+    "qualification/hcsn_joint_dde/qualify_state.py": "339db2c38b1950ea814e83ddba94c0f7de27384869062d162825f3932d9b1a06",
+    "qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+    "qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+    "qualification/hcsn_joint_dde/state_io.py": "9c09b22679eb63f89ebacbb24ceea6b2c94f0b973e621bf62f4122767a455c7c",
+    "qualification/hcsn_joint_dde/test_graded.py": "9b2b1453c82d0adfacc7b3211a211650c1317de2b85fae6a3f1efc24ccce4092",
+    "qualification/hcsn_joint_dde/test_migration_binding.py": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa",
+    "qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+    "qualification/hcsn_joint_dde/test_state.py": "52ac862ca2bcaccadb758d9267507d18f38cb6360d2067b08168ca30e1ea29d7",
+    "qualification/hcsn_joint_dde/GRADED_PROTOCOL.json": "06565dfb67472256ffdf3ab38c06f84334f3a7e4be32ac935e5c2fc9bd556ce2",
+    "qualification/hcsn_joint_dde/COMMON_SOURCE_PROTOCOL.json": "0bbded22491b225d91638f3e0f623fe8e265956140a8118296de6cf66864e58b",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "executions": [
+    {
+      "lane": "STATE",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.qualify_state",
+        "--output",
+        "evidence/common-001/state"
+      ],
+      "returncode": 0,
+      "wall_seconds": 61.27567954500046,
+      "user_cpu_seconds": 46.945273,
+      "system_cpu_seconds": 2.70989,
+      "maximum_child_rss_kib": 81560
+    },
+    {
+      "lane": "DOMAIN",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.audit_graded",
+        "--input-root",
+        "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit",
+        "--output-dir",
+        "evidence/common-001/domain"
+      ],
+      "returncode": 0,
+      "wall_seconds": 214.09270965299947,
+      "user_cpu_seconds": 161.32812,
+      "system_cpu_seconds": 5.819244000000001,
+      "maximum_child_rss_kib": 343620
+    }
+  ],
+  "tests_passed": 28,
+  "skipped": 0,
+  "cold_process_restore": true,
+  "resume_clock": 0.417,
+  "cold_maximum_absolute_error": 7.671177582047051e-11,
+  "domain_reports": [
+    {
+      "intervals": 256,
+      "positions": 14336,
+      "migration": {
+        "maximum_basis_mass_residual": 1.1102230246251565e-16,
+        "lower_mass_transferred": [
+          0.0007857064234573636,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lower_mean_shift": [
+          3.704007503172972e-07,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tail_upper_overshoot_probability": 0.04076220397836621,
+        "tail_expected_upper_overshoot": 0.04076220397836621
+      },
+      "max_scaled_continuation_error": 1.5874878671907167e-05,
+      "continuation_failures_at_original_1pct": 0,
+      "max_noncancelling_scaled_error": 1.5874908044083096e-05,
+      "noncancelling_failures_at_original_1pct": 0,
+      "finite": [
+        {
+          "law": "prior",
+          "max_absolute_M_H_A": [
+            1.7784134808649342e-05,
+            1.749397509329901e-05,
+            8.77189461401251e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.007769047259543532,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        },
+        {
+          "law": "posterior",
+          "max_absolute_M_H_A": [
+            1.349082708386462e-05,
+            1.329848092001401e-05,
+            8.505281680337706e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.0004732575143550016,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        }
+      ]
+    },
+    {
+      "intervals": 512,
+      "positions": 14336,
+      "migration": {
+        "maximum_basis_mass_residual": 2.220446049250313e-16,
+        "lower_mass_transferred": [
+          0.000390551363783708,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lower_mean_shift": [
+          9.151822065198853e-08,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tail_upper_overshoot_probability": 0.04076220397836621,
+        "tail_expected_upper_overshoot": 0.04076220397836621
+      },
+      "max_scaled_continuation_error": 4.009563388424706e-06,
+      "continuation_failures_at_original_1pct": 0,
+      "max_noncancelling_scaled_error": 4.009592859123869e-06,
+      "noncancelling_failures_at_original_1pct": 0,
+      "finite": [
+        {
+          "law": "prior",
+          "max_absolute_M_H_A": [
+            4.457279544094715e-06,
+            4.384565298763167e-06,
+            2.1991316981329057e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.0019479489029922453,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        },
+        {
+          "law": "posterior",
+          "max_absolute_M_H_A": [
+            3.379573559891824e-06,
+            3.3314072179491117e-06,
+            2.131856423059908e-07
+          ],
+          "max_relative_M_at_least_1e-12": 0.00011570577353054835,
+          "relative_denominator": 14336,
+          "excluded_below_relative_floor": 0
+        }
+      ]
+    }
+  ],
+  "direct_DDE_executions": 30,
+  "max_spectral_DDE_error": 2.091088413536113e-11,
+  "all_positions_evaluation": "linear first-excursion kernel; not 14336 separate DDE trajectories",
+  "persistent_recovery_scope": "28 source tests and the declared fresh-process fixture; not all retained laws",
+  "optimizer_calls": 0,
+  "complete_c2_replays": 0,
+  "independent_future_tasks": 0,
+  "prior_results_pooled": false,
+  "cell_adoption": false,
+  "raw_output_sha256": {
+    "DOMAIN.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "DOMAIN.stdout": "e75214d09a946bfb545146e02017623c74a60d7ca646316bc0ff791ffe4a2773",
+    "EXECUTIONS.json": "ee6eb13d846563685fbb2d1e4dff11b9b928da4b16acc1a8f9864365a50c40c2",
+    "SOURCE_BEFORE.json": "cd263860417d8ffd08b01990680d8d2c9eaffe2af5cfb1fcecac8f60482d3031",
+    "STATE.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "STATE.stdout": "3d8f340a51be40c56df2a5c0c6394a99e326ea2d18ccf740fd15a9fce0f3fd87",
+    "domain/ALL_GRADED_256.npz": "d703ccca391a78601e9e4282116620048224c217371645d728e1d45be825df51",
+    "domain/ALL_GRADED_512.npz": "9f459e4e2b4086b66c67ee3ac42e225bf6e141ac7a07b84998e8f64ddebcc261",
+    "domain/DIRECT_DDE.json": "1f88abb47fa8832fad7302bb67c0a902a4dad002be91c4cfc8c31d769b9b673f",
+    "domain/IDENTITIES.json": "9c28b0377c92b01497482b8d2ecf611120c5c59de95bac9e9b6cd4b7ed6c57d1",
+    "domain/SUMMARY.json": "22e0d4d839c7e286b49749d2b341df6b95480c6ee14190f0b42fef56607f2219",
+    "state/AFTER.json.gz": "3c4f5530ba7fdeef2b29b8ca984d9497f90c83b548606b31128792e1ddc4c767",
+    "state/BEFORE.json.gz": "b219d50fe28288a34241f1d807167dbed9c5582993c46acf0c7ee57a02e6b03c",
+    "state/RESTORE.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "state/RESTORE.stdout": "d7f4578ee3773df86c4e9baaee8ab2a905dde4d86839e4d41c371fcd23c65cd6",
+    "state/RESULT.json": "3d8f340a51be40c56df2a5c0c6394a99e326ea2d18ccf740fd15a9fce0f3fd87",
+    "state/TEST.stderr": "e93fae88928f6fce4641ca533917080a2790e0a70ad63ebe29c0b6ef5cdb75cb",
+    "state/TEST.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
