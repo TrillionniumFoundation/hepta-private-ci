@@ -56,11 +56,20 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         .restore(&actual.request)
                         .map_err(io::Error::other)?;
                     let scope = self.profile.require_cell_scope(&actual)?;
-                    if let Some(current) = &before {
-                        scope.validate_snapshot(current).map_err(io::Error::other)?;
-                        if current.training_no_update_v2().is_some() {
-                            return Err(io::Error::other("NoUpdate does not accept B source data"));
-                        }
+                    let current = before
+                        .as_ref()
+                        .ok_or_else(|| io::Error::other("original B Training checkpoint absent"))?;
+                    scope.validate_snapshot(current).map_err(io::Error::other)?;
+                    if current.training_no_update_v2().is_some()
+                        || training_prefix(current)? != *current
+                        || enrollment.realized_training_head
+                            != Some(current.head_digest.into_array())
+                        || enrollment.realized_plan.is_none()
+                        || enrollment.cell_images.is_none()
+                    {
+                        return Err(io::Error::other(
+                            "B source admission requires the actual prepared Training candidate",
+                        ));
                     }
                     drop(files.source.original_readonly()?);
                     let source = files.source.read_stable(SOURCE_BOUND)?;

@@ -135,6 +135,13 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         let root = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
         let record = OriginalBRecord::open(root, initial)?;
         let files = OriginalBRecord::inspect(&record, request_end, |enrollment| {
+            // A new process cannot use a new notice/source opportunity to
+            // complete an interrupted first admission after candidate release.
+            if enrollment.realized_plan.is_some() && enrollment.admitted_source.is_none() {
+                return Err(io::Error::other(
+                    "original B candidate source admission was incomplete",
+                ));
+            }
             let files = service.with_learning_profile(
                 config,
                 registration,

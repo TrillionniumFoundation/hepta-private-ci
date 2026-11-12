@@ -4,6 +4,7 @@
 use super::*;
 use crate::root_independent_b_source_protocol::FRAME_BOUND;
 use crate::root_independent_b_source_protocol::PURPOSE;
+use crate::root_independent_b_source_protocol::SourceAcknowledgement;
 use crate::root_independent_b_source_protocol::SourceRequest;
 
 pub(super) fn serve_until(
@@ -31,6 +32,7 @@ pub(super) fn serve_until(
     let active = Mutex::new(None::<UnixStream>);
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
+            let result = (|| {
             let stream = loop {
                 if stop.load(Ordering::Acquire) {
                     return Ok(());
@@ -70,6 +72,7 @@ pub(super) fn serve_until(
                 HostAuthorityPeerChannel::from_stream(stream, policy, peer.original_descriptor()?)
                     .map_err(io::Error::other)?;
             channel.limit_original_end(end).map_err(io::Error::other)?;
+            let mut admitted = None;
             let exchanged = channel
                 .exchange_with_original_deadline(|bytes, frame_end| {
                     let request: SourceRequest = serde_json::from_slice(bytes)
@@ -83,7 +86,9 @@ pub(super) fn serve_until(
                     {
                         return Err(HostIssuerTransportError::InvalidRequest);
                     }
-                    OriginalRootIndependentBEvaluationFilesV1::retain_original_signed_source(
+                    bound.runtime.source.flow.require_prepared()
+                        .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                    let response = OriginalRootIndependentBEvaluationFilesV1::retain_original_signed_source(
                         &bound.runtime.host,
                         service,
                         config,
@@ -93,7 +98,14 @@ pub(super) fn serve_until(
                         frame_end,
                         &request,
                     )
-                    .map_err(|_| HostIssuerTransportError::Unavailable)
+                    .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                    let acknowledgement: SourceAcknowledgement = serde_json::from_slice(&response)
+                        .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                    if serde_json::to_vec(&acknowledgement).map_err(|_| HostIssuerTransportError::Unavailable)? != response {
+                        return Err(HostIssuerTransportError::Unavailable);
+                    }
+                    admitted = Some(acknowledgement);
+                    Ok(response)
                 })
                 .map_err(io::Error::other)?;
             if !exchanged && !stop.load(Ordering::Acquire) {
@@ -101,10 +113,27 @@ pub(super) fn serve_until(
                     "original B source ended without admission",
                 ));
             }
+            if exchanged {
+                let source = admitted.ok_or_else(|| io::Error::other("original B source exchange retained no cut"))?;
+                // Only the full original admission and its frame have returned.
+                // This readiness is DATA; Complete rechecks the retained files.
+                bound.runtime.source.flow.publish_admitted(source, end, || {
+                    if stop.load(Ordering::Acquire) {
+                        return Err(io::Error::other("original B source serving stopped"));
+                    }
+                    // The source may exit after receiving its actual ACK.
+                    // Its incarnation was checked inside and after admission.
+                    owner_alive(owner, end)
+                })?;
+            }
             Ok(())
+            })();
+            if result.is_err() { bound.runtime.source.flow.refuse(); }
+            result
         });
         let result = original();
         stop.store(true, Ordering::Release);
+        bound.runtime.source.flow.refuse();
         if let Some(stream) = active
             .lock()
             .map_err(|_| io::Error::other("B source stream poisoned"))?

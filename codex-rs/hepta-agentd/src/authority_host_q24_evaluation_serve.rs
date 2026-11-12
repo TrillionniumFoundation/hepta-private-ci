@@ -54,6 +54,7 @@ fn serve_evaluation_until(
     let active = Mutex::new(None::<UnixStream>);
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
+            let result = (|| {
             let stream = loop {
                 if stop.load(Ordering::Acquire) {
                     return Ok(());
@@ -93,7 +94,9 @@ fn serve_evaluation_until(
                     .map_err(io::Error::other)?;
             channel.limit_original_end(end).map_err(io::Error::other)?;
             let mut sequence = 1_u64;
-            while channel
+            let mut wait_source = false;
+            loop {
+                let exchanged = channel
                 .exchange_with_original_deadline(|bytes, frame_end| {
                     let request: Request = serde_json::from_slice(bytes)
                         .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
@@ -137,7 +140,7 @@ fn serve_evaluation_until(
                             let (_, signed) =
                                 crate::learning_owner_evidence::decode(&training_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                            OriginalRootIndependentBEvaluationFilesV1::prepare_original_candidate(&bound.runtime.host,
+                            let (response, candidate) = OriginalRootIndependentBEvaluationFilesV1::prepare_original_candidate(&bound.runtime.host,
                                     service,
                                     config,
                                     registration,
@@ -153,7 +156,19 @@ fn serve_evaluation_until(
                                         )
                                     },
                                 )
-                                .map_err(|_| HostIssuerTransportError::Unavailable)?
+                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                            // The complete original Root context and durable Ready
+                            // have returned. Only DATA is sent to the source here.
+                            bound.runtime.source.flow.publish_candidate(candidate, frame_end, || {
+                                if stop.load(Ordering::Acquire) {
+                                    return Err(io::Error::other("original B serving stopped"));
+                                }
+                                owner_alive(owner, end)?;
+                                if let Some(peer) = &bound.runtime.source.peer { peer.require_live()?; }
+                                Ok(())
+                            }).map_err(|_| HostIssuerTransportError::Unavailable)?;
+                            wait_source = true;
+                            response
                         }
                         Command::Complete {
                             training_head,
@@ -213,12 +228,28 @@ fn serve_evaluation_until(
                         .ok_or(HostIssuerTransportError::Unavailable)?;
                     Ok(response)
                 })
-                .map_err(io::Error::other)?
-            {}
+                .map_err(io::Error::other)?;
+                if !exchanged { break; }
+                if wait_source {
+                    // No active frame, B state mutex or Root record gate is
+                    // held while the independent source performs its business.
+                    bound.runtime.source.flow.wait_admitted(end, || {
+                        if stop.load(Ordering::Acquire) {
+                            return Err(io::Error::other("original B serving stopped"));
+                        }
+                        owner_alive(owner, end)
+                    })?;
+                    wait_source = false;
+                }
+            }
             Ok(())
+            })();
+            if result.is_err() { bound.runtime.source.flow.refuse(); }
+            result
         });
         let result = original();
         stop.store(true, Ordering::Release);
+        bound.runtime.source.flow.refuse();
         bound.runtime.phase.store(2, Ordering::Release);
         if let Some(stream) = active
             .lock()
