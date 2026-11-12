@@ -147,10 +147,12 @@ class EvaluatedRetentionClosureTests(unittest.TestCase):
             "&learning_iteration_receipt_signing_bytes_v1(receipt)?",
             "&evidence.principal().principal_id != actor",
             "verify_signed_actor_separation(&verified[0], &verified[1], at)?",
-            "at >= snapshot.request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(marker=marker):
-                self.rejects(CONTEXT, "fn authenticate(", marker)
+                self.rejects(CONTEXT, "fn verify_original_predecessors(", marker)
+
+        self.rejects(CONTEXT, "fn authenticate(", "self.verify_original_predecessors(at)?")
+        self.rejects(CONTEXT, "fn authenticate(", "at >= snapshot.request.envelope.expiry_unix_seconds")
 
     def test_both_original_owners_are_reread_before_final_fresh_authentication(self):
         for marker in (

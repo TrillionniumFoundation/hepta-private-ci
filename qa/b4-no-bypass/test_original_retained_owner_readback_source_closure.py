@@ -43,6 +43,21 @@ class OriginalRetainedOwnerReadbackClosureTests(unittest.TestCase):
             PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def rejects(self, path, function, marker, replacement="", occurrence=0):
+        if path == AGENT + "circuit_selection_receipt_owner.rs":
+            # The same checks now receive the private evaluated/TNU profile.
+            # C retains its existing signature and remote/local ordering.
+            changes = (
+                ("authenticate_training(&self.config,", "authenticate_training(&self.config, &self.profile,"),
+                ("require_new_attestation(&self.config,", "require_new_attestation(&self.config, &self.profile,"),
+                ("receipt(&self.config,", "receipt(&self.config, &self.profile,"),
+                ("if matches!(source.location(), ObservationLocation::RemoteOwner) {",
+                 "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        ) {"),
+                ("ObservationLocation::LocalOwner => {",
+                 "ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {"),
+            )
+            for before, after in changes:
+                marker = marker.replace(before, after)
+                replacement = replacement.replace(before, after)
         source = (ROOT / path).read_text()
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
         start = code.index(function)
