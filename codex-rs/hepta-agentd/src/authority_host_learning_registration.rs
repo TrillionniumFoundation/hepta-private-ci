@@ -30,7 +30,7 @@ const OWNER: &str = "root-learning-checkpoint-v1";
 mod derived;
 
 pub(crate) struct RegisteredHostLearningCheckpointV1 {
-    pub(crate) backend: LearningIterationCheckpointOwnerV1,
+    pub(crate) backend: std::sync::Arc<LearningIterationCheckpointOwnerV1>,
     pub(crate) profile: HostAuthorityLearningProfileV1,
     pub(crate) socket_path: PathBuf,
     pub(crate) q24_model:
@@ -116,7 +116,7 @@ impl HostAuthorityService {
         paths.push(&socket_path);
         crate::authority_host_runtime::validate_lane_paths(&paths, config.peer_gid)?;
         Ok(RegisteredHostLearningCheckpointV1 {
-            backend,
+            backend: std::sync::Arc::new(backend),
             profile,
             socket_path,
             q24_model: None,
