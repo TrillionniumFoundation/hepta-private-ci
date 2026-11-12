@@ -126,7 +126,8 @@ impl HostAuthorityService {
                     &pin,
                     &factory.learning,
                     |initial, proof| {
-                        factory.profile.require_context(
+                        LiveFactoryProfile::require_context(
+                            &factory.profile,
                             &self.identity,
                             &proof,
                             &initial,

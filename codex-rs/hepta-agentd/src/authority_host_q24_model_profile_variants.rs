@@ -45,9 +45,9 @@ impl LiveFactoryProfile {
     ) -> io::Result<()> {
         match self {
             Self::LegacyV1(profile) => profile.require_context(identity, proof, initial, scope),
-            Self::SessionV2(profile) => {
-                profile.require_live_context(identity, proof, initial, scope)
-            }
+            Self::SessionV2(profile) => LiveQ24ModelFactoryProfileV2::require_live_context(
+                profile, identity, proof, initial, scope,
+            ),
         }
     }
 

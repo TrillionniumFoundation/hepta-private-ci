@@ -237,7 +237,8 @@ impl HostAuthorityService {
             &factory.learning,
             |initial, proof| {
                 let before = factory.current(config)?;
-                factory.profile.require_context(
+                LiveFactoryProfile::require_context(
+                    &factory.profile,
                     &self.identity,
                     &proof,
                     &initial,
