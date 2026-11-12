@@ -1,0 +1,144 @@
+{
+  "schema": "hcsn-e901-execution-attempts-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "full_numerical_admission": "HOLD_NO_GO",
+  "independent_c2_replays": 0,
+  "original_c2_assets_modified": false,
+  "attempts": [
+    {
+      "kind": "native_worktree_preparation",
+      "host": "desktop",
+      "job_id": "1a1cd2ed04c-2564-11f9",
+      "idempotency_key": "hcsn-e901-prepare-frozen-5a1db6f-worktree-20261112",
+      "observed_new_source": "5a1db6f9da54d877e1660c4c964df0e227745719",
+      "observed_original_source": "a83b2ecda37b0e18b05e7fedcaee0a63037c464f",
+      "worktree": "/home/qian-qi/hcsn-projected-gradients-e901-20261112"
+    },
+    {
+      "kind": "native_runtime_selection",
+      "host": "desktop",
+      "job_id": "1a1cd36be89-2564-1217",
+      "idempotency_key": "hcsn-e901-native-tests-and-evidence-5a1db6f-20261112",
+      "tests_run": 0,
+      "observed_stderr": "no existing Torch 2.8 runtime found; no tests run\n",
+      "boundary": "Bounded search result, not proof no compatible runtime exists anywhere on the host.",
+      "output_directory": "/home/qian-qi/hcsn-projected-gradients-e901-native-20261112"
+    },
+    {
+      "kind": "native_pinned_runtime_setup_then_sparse_source_failure",
+      "host": "desktop",
+      "job_id": "1a1cd3e9bd3-2564-1234",
+      "idempotency_key": "hcsn-e901-native-tests-v2-pinned-cpu-5a1db6f-20261112",
+      "tests_run": 0,
+      "python": "3.12.3",
+      "pinned_torch": "2.8.0+cpu",
+      "runtime_path": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+      "failure": "FileNotFoundError for exact tracked tests/test_training_domain.py before the test suites started.",
+      "output_directory": "/home/qian-qi/hcsn-projected-gradients-e901-native-v2-20261112",
+      "original_file_receipt": {
+        "atomic_snapshot": false,
+        "encoding": "utf-8",
+        "files": [
+          {
+            "eof": true,
+            "path": "/home/qian-qi/hcsn-projected-gradients-e901-native-v2-20261112/runner.log",
+            "sha256": "b27a39c753129cc70286b183765222fbb31d8e81d6536206578eae7578cfd7d2",
+            "size": 934,
+            "text": "Traceback (most recent call last):\n  File \"/home/qian-qi/hcsn-projected-gradients-e901-native-v2-20261112/native_runner.py\", line 12, in <module>\n    before=sources()\n           ^^^^^^^^^\n  File \"/home/qian-qi/hcsn-projected-gradients-e901-native-v2-20261112/native_runner.py\", line 11, in sources\n    return {p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in paths}\n                             ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1021, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-projected-gradients-e901-20261112/qualification/hcsn_differentiable/tests/test_training_domain.py'\n",
+            "version": "2050:2165010:934:1794444914364345747:1794444914364345747"
+          },
+          {
+            "eof": true,
+            "path": "/home/qian-qi/hcsn-projected-gradients-e901-native-v2-20261112/pip-freeze.txt",
+            "sha256": "6c5af9a2e3f466f0ef36694a0e4ee527a61ac52069c26e38069e11195f1c4ea1",
+            "size": 192,
+            "text": "filelock==4.2.4\nfsspec==2026.9.0\nJinja2==3.1.6\nMarkupSafe==3.0.3\nmpmath==1.3.0\nnetworkx==3.7\nnumpy==2.5.4\npip==24.0\nsetuptools==78.1.0\nsympy==1.14.0\ntorch==2.8.0+cpu\ntyping_extensions==4.16.0\n",
+            "version": "2050:2165006:192:1794444914282153803:1794444914282153803"
+          }
+        ],
+        "snapshot_scope": "independent_file",
+        "truncated": false
+      }
+    },
+    {
+      "kind": "native_source_materialization_and_import_path_correction",
+      "host": "desktop",
+      "job_id": null,
+      "idempotency_key": "hcsn-e901-native-tests-v3-materialized-source-5a1db6f-20261112",
+      "source_head": "5a1db6f9da54d877e1660c4c964df0e227745719",
+      "launch_receipt": "MCP request timed out",
+      "same_key_same_payload_reconciliation": "MCP request timed out",
+      "state": "PRODUCER_RESULT_RETAINED_DURABLE_TERMINAL_UNKNOWN",
+      "tests_run": 23,
+      "native_pass_admitted": true,
+      "output_directory": "/home/qian-qi/hcsn-projected-gradients-e901-native-v3-20261112",
+      "possible_effects": "The requested process completed its test child and published the frozen-source producer report plus raw archive. The durable supervisor's terminal receipt has not been retrieved; it is not inferred from the publication.",
+      "producer_evidence_commit": "c065466c3d5dcdd547eb1eb6633d4deea966f1fb",
+      "producer_status": "passed_scoped_tests",
+      "child_returncode": 0,
+      "source_unchanged": true,
+      "archive_sha256": "882510d2d4fe504b1ea252d00d0d469e8ea938a49a1ba1d8371c1aeebb353faa",
+      "archive_bytes": 41189,
+      "fixture_trace_sha256": "c71bedb120f2df5fbf999d8cf22f4adcb15cd0d0e439d79532e334b688262b1a",
+      "phases": [
+        {
+          "errors": 0,
+          "failures": 0,
+          "label": "projected_gradients",
+          "skipped": 0,
+          "success": true,
+          "tests_run": 9
+        },
+        {
+          "errors": 0,
+          "failures": 0,
+          "label": "existing_trace_regression",
+          "skipped": 0,
+          "success": true,
+          "tests_run": 14
+        }
+      ]
+    },
+    {
+      "kind": "native_existing_actions_archive_download_only",
+      "host": "desktop",
+      "job_id": null,
+      "idempotency_key": "hcsn-e901-retain-actions-43127659504-original-20261112",
+      "artifact_id": 13905662105,
+      "launch_receipt": "MCP request timed out",
+      "state": "UNKNOWN",
+      "test_executions_requested": 0,
+      "model_executions_requested": 0,
+      "output_directory": "/home/qian-qi/hcsn-projected-gradients-e901-actions-43127659504"
+    },
+    {
+      "kind": "cloud_archive_extraction",
+      "state": "UNAVAILABLE",
+      "observed_error": "No usable execution environment is available. Wait for an environment to become available before using this tool.",
+      "test_executions_requested": 0
+    },
+    {
+      "kind": "github_actions_source_tests",
+      "run_id": 43127659504,
+      "job_id": 130887082387,
+      "source_head": "5a1db6f9da54d877e1660c4c964df0e227745719",
+      "status": "completed",
+      "conclusion": "success",
+      "new_projected_tests": 9,
+      "existing_core_tests": 95,
+      "other_fixture_tests": 113,
+      "total_test_executions": 217,
+      "independent_c2_replays": 0
+    }
+  ],
+  "formatting": {
+    "just_fmt_verified": false,
+    "performed": false,
+    "codex_rs_present": false,
+    "just_executable": "/home/qian-qi/.cargo/bin/just",
+    "reason": "codex-rs is absent from this isolated sparse checkout",
+    "rustfmt_executable": "/home/qian-qi/.cargo/bin/rustfmt",
+    "receipt": "c065466c3d5dcdd547eb1eb6633d4deea966f1fb:qualification/hcsn_differentiable/evidence/projected-gradients-e901-20261112/PROVENANCE.json"
+  },
+  "prepared_utc": "2026-11-12 01:29:53 UTC"
+}

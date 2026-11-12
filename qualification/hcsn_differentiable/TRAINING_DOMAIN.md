@@ -105,3 +105,40 @@ accuracy certificate or a new scientific acceptance gate.
 Historical C2 and original numerical evidence remain pinned to their original
 source identities. This change must be tested and accepted as a distinct
 candidate; do not rebind earlier training traces to this source.
+
+## Recorded-law projected-flow derivatives
+
+`training_domain_projected_gradients` supplies a separate reusable check:
+
+```sh
+python -m qualification.hcsn_differentiable.training_domain_projected_gradients \
+  --trace run/trace.jsonl --output run/new-projected-gradients.json \
+  --max-records 16 --max-wall-seconds 120
+```
+
+It differentiates every transported probability coefficient and the five
+distinct physical readouts for each retained prior, with respect to boundary,
+drift, noise, absolute reset and discount. The prior is held fixed: this is a
+partial Jacobian of the flow from that recorded law, not every matrix entry,
+the raw-parameter transformation, learned conditioning, or the task loss.
+The existing archived real 32-cell/two-update task-loss AD/FD results remain
+separate evidence; this tool does not replace or extend their qualification.
+
+First-order reverse AD is compared with central differences at two declared
+steps. The absolute-plus-relative tolerance and step-refinement check are
+fixed in source. Reports retain full AD/FD arrays, actual steps and ordinary
+relative errors. The absolute tolerance can admit inaccurate relative errors
+for small derivatives; a pass is not rare-tail relative-gradient qualification.
+A stencil leaving the physical domain is held rather than silently replaced.
+
+Source mismatch, source changes during audit, truncated traces, partial record
+coverage, nonfinite derivatives and exceeded resource budgets cannot pass.
+Time is checked before each forward and reverse coordinate; a native operation
+already running is not preempted. This does not certify continuum first-hit,
+renewal-rate or delay accuracy. Full numerical and scientific admission remain
+HOLD_NO_GO even when every recorded-flow derivative passes.
+
+The new CI fixture retains its input trace and full derivative report after
+two actual Adam updates on synthetic mechanism inputs. It tests the reusable
+auditor and its negative controls. It is not a new real-data campaign, an
+independent C2 training replay, or evidence of task benefit.

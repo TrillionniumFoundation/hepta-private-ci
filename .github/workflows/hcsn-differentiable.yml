@@ -134,6 +134,35 @@ jobs:
         run: |
           python -m unittest -v qualification.hcsn_differentiable.test_training_domain_strict_trace 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/p1-trace-parser-tests.log"
 
+      - name: Audit recorded-law projected flow Jacobians (no science admission)
+        id: p1-projected-gradients
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          from qualification.hcsn_differentiable.run_qualification import RecordedResult
+          from qualification.hcsn_differentiable import test_training_domain_projected_gradients as module
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+          with (out / "projected-gradient-tests.log").open("x") as stream:
+              result = unittest.TextTestRunner(stream=stream, verbosity=2, resultclass=RecordedResult).run(suite)
+          trace = getattr(module.ProjectedGradientTests, "trace_bytes", None)
+          if trace is not None:
+              (out / "projected-gradient-fixture-trace.jsonl").write_bytes(trace)
+          report = {"schema": "hcsn-recorded-flow-gradient-ci-v1", "tests_run": result.testsRun,
+                    "failures": len(result.failures), "errors": len(result.errors), "skipped": len(result.skipped),
+                    "scientific_admission": "HOLD_NO_GO", "whole_training_qualification": False,
+                    "source_head": os.environ["SOURCE_HEAD"], "tests": result.records,
+                    "fixture_trace_sha256": hashlib.sha256(trace).hexdigest() if trace is not None else None}
+          (out / "projected-gradient-tests.json").write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n")
+          print((out / "projected-gradient-tests.log").read_text())
+          raise SystemExit(0 if result.wasSuccessful() and result.testsRun > 0 and not result.skipped else 1)
+          PY
+
       - name: Enforce the predeclared numerical error budget
         id: budget
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
@@ -228,7 +257,7 @@ jobs:
           out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
           out.mkdir(exist_ok=True)
           steps = json.loads(os.environ["HCSN_STEPS"])
-          required = ("checkout", "identity", "python", "runtime", "qualification", "c2-recovery", "budget", "evidence", "qvi", "controls", "clean")
+          required = ("checkout", "identity", "python", "runtime", "qualification", "c2-recovery", "p1-trace-parser", "p1-projected-gradients", "budget", "evidence", "qvi", "controls", "clean")
           outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
           passed = all(value == "success" for value in outcomes.values())
           codes = {name: int((out / (name + ".exit-code")).read_text())
