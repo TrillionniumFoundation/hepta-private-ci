@@ -76,6 +76,8 @@ pub(super) struct ResponseGate {
 
 pub(super) struct PagePeer {
     pub frames: Arc<AtomicU64>,
+    pub original_begins: Arc<AtomicU64>,
+    pub original_finishes: Arc<AtomicU64>,
     server: JoinHandle<anyhow::Result<u64>>,
 }
 
@@ -108,7 +110,11 @@ pub(super) fn page_peer(
         )?,
     };
     let frames = Arc::new(AtomicU64::new(0));
+    let original_begins = Arc::new(AtomicU64::new(0));
+    let original_finishes = Arc::new(AtomicU64::new(0));
     let observed = Arc::clone(&frames);
+    let began = Arc::clone(&original_begins);
+    let finished = Arc::clone(&original_finishes);
     let server = std::thread::spawn(move || -> anyhow::Result<u64> {
         let mut session = candidate_wire::Session::new();
         for request_id in 1..=128_u64 {
@@ -125,6 +131,18 @@ pub(super) fn page_peer(
                 disposition = next;
                 let mut response: candidate_wire::Response = serde_json::from_slice(&bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                // Observe the real handler's successful physical boundary,
+                // before a transport fault changes or withholds its reply.
+                if response.request.phase == candidate_wire::Phase::Begin
+                    && matches!(&response.result, candidate_wire::MaterialResult::Page { .. })
+                {
+                    began.fetch_add(1, Ordering::AcqRel);
+                }
+                if response.request.phase == candidate_wire::Phase::Finish
+                    && matches!(&response.result, candidate_wire::MaterialResult::Finished { .. })
+                {
+                    finished.fetch_add(1, Ordering::AcqRel);
+                }
                 if request_id == 1 {
                     if let Some(gate) = &gate {
                         gate.reached.notify_one();
@@ -197,7 +215,7 @@ pub(super) fn page_peer(
         }
         anyhow::bail!("original Candidate connection frame budget exhausted")
     });
-    Ok((connection, PagePeer { frames, server }))
+    Ok((connection, PagePeer { frames, original_begins, original_finishes, server }))
 }
 
 pub(super) fn bind(

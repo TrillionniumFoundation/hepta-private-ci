@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.next-use-late-response.peer-review.v1",
+  "reviewed_commit": "48a07807cfba2e91725c5ec8c0fb4d0325d755a6",
+  "tree": "14adf3d284e5036c1634b2408c02d079ef697bd4",
+  "parent": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+  "reviewed_contract_blob": "655774a646666835889052ad90d9f72bb069c5e9",
+  "source_pins": [
+    {
+      "key": "owner_tests",
+      "sha": "467b3172deb5d9df4ea895a1eb6354aaa9468f84",
+      "bytes": 22853,
+      "sha256": "64c5b2a9b51ba59352939c80b478adfcb84aac8840b18af86884d5aa1e041645"
+    },
+    {
+      "key": "evidence",
+      "sha": "8f2b039c6c96ce90029ef22e29d2ccf5d1ed6039",
+      "bytes": 5093,
+      "sha256": "96c0d7202cbc9dfb2569eeedda8db4640b77cc8500b369ccd1d7731c21e47bf5"
+    },
+    {
+      "key": "support",
+      "sha": "b1b0193a7be2d9e8317d12ea66c0b75bc21d8721",
+      "bytes": 11152,
+      "sha256": "5b51214d1a1610f45ac1891793162b2e11c92b5dbf38558a10d44c955b5605f5"
+    },
+    {
+      "key": "old_owner_tests",
+      "sha": "4274d202bdd47d261139018bd89b7cb64b0b9670",
+      "bytes": 20355,
+      "sha256": "f6bf48c1e887578162c51c58d63211dc2b076cd84cf5dadfd267252f7ce4b47c"
+    },
+    {
+      "key": "old_evidence",
+      "sha": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "bytes": 3928,
+      "sha256": "7fc3c615118e417c75d95cb2309838b1b468e9fdd70c72bbc20be597bb0f64a7"
+    },
+    {
+      "key": "old_support",
+      "sha": "34dfaeb725b5a32f65f824c97407e5e7ac4e4772",
+      "bytes": 11090,
+      "sha256": "af6500fc8a69985bdbf3712c7bd1b7047b1dcd6b588983f7f00a0d75e6019e14"
+    },
+    {
+      "key": "evidence_client",
+      "sha": "83e76788acc7e65a912d9507a11afb2a6117e5bf",
+      "bytes": 15004,
+      "sha256": "b7e373854bb67087a307961129cfaa20452be466c8943c7617d2f098e6ce9a6e"
+    },
+    {
+      "key": "observation_stream",
+      "sha": "9d3d24bd5104be99372c8a55859360e792120605",
+      "bytes": 9788,
+      "sha256": "e2e6f4d977f2648aafef7717ce670228856019ff6fa5f201f0571b68db94cefb"
+    },
+    {
+      "key": "peer",
+      "sha": "36e4524baea04320b7610325579f0ff206690fab",
+      "bytes": 6672,
+      "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352"
+    },
+    {
+      "key": "channel",
+      "sha": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "bytes": 6221,
+      "sha256": "cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78"
+    },
+    {
+      "key": "command_service",
+      "sha": "01b1f7d02600b16eba09c581e1dab831b7c9e248",
+      "bytes": 10673,
+      "sha256": "6e647333a42e14fc5b5be36ae3ae414574ffd64d2774371901af2068fbc17413"
+    },
+    {
+      "key": "current_stage",
+      "sha": "9d66c79cd8ee3890275543c949e554f6bed487f4",
+      "bytes": 21210,
+      "sha256": "f61c9bd1e51ad2b05ca4fd448bd1467610b65306b815e6e2b6b04a6938d4fa02"
+    },
+    {
+      "key": "command_client",
+      "sha": "9c0b806cf23653a776d3cf75232fec8f06027f78",
+      "bytes": 19806,
+      "sha256": "eb68b8e7a21517c02c83bf11270124f23da7159d2e33cc8d258d794003fc01e7"
+    }
+  ],
+  "scope": "Three exact changed blobs and original receiver/transport/current call sites. Git API and pure V8 comparison only.",
+  "exact_replay": {
+    "owner_tests": "One unique old function body replaced; complete rest of file byte-identical.",
+    "evidence": "Entire original 3928-byte production file preserved as prefix; appended helper is cfg(test).",
+    "support": "One unique cfg(test) support re-export only.",
+    "six_native_case_names_preserved": [
+      "q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+      "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+      "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+      "q24_next_use_command_pins_both_original_signatures_before_dispatch",
+      "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "q24_next_use_command_preserves_original_expiry_and_external_custody"
+    ],
+    "Rust_path_membership_unchanged": true,
+    "source_roots_Rust_count_remains": 6655,
+    "whole_repository_tracked_Rust_count_remains": 6777
+  },
+  "findings": [
+    {
+      "id": "actual-response-before-gate",
+      "result": "No blocking issue found",
+      "evidence": "Helper calls the same private evidence_response(bytes, 1) and increments original_responses only after success. Only then does it receive the release message and return those exact original response bytes."
+    },
+    {
+      "id": "no-early-failure-success",
+      "result": "No blocking issue found",
+      "evidence": "Joined original_responses must equal 1. Only original transport DeadlineElapsed/Closed/Unavailable are accepted; InvalidRequest, count zero, and a delivered successful reply cannot satisfy the test."
+    },
+    {
+      "id": "legacy-purpose-and-consumption",
+      "result": "No blocking issue found",
+      "evidence": "The unchanged evidence_client binds both original endpoints to 500 ms. EvidenceClient takes its only channel before I/O and restores it only after complete response/fresh verification. RootObservationStream also takes its stream and leaves it empty on timeout. The second legacy attempt is the same already-failed client and sends no new frame."
+    },
+    {
+      "id": "same-command-current",
+      "result": "No blocking issue found",
+      "evidence": "The command client used to attest actual C remains held. Before withdrawal its new independent readback returns a fully equal opaque completed receipt and exact attestation, after the same actual owner readback_remote and final authentication."
+    },
+    {
+      "id": "actual-withdrawal",
+      "result": "No blocking issue found",
+      "evidence": "The original version.withdraw call remains. The same command then performs the physical post-withdrawal read and must return CommitUncertain. C owner bytes and source/Cell/control journal bytes are checked unchanged."
+    },
+    {
+      "id": "explicit-frames",
+      "result": "No blocking issue found",
+      "evidence": "One existing original command channel performs exactly Execute, Readback CURRENT, and Readback withdrawal: server count3. One existing legacy channel records exactly one actual original response and no successful delivery; the second legacy call fails locally."
+    },
+    {
+      "id": "runtime-progress",
+      "result": "No blocking issue found",
+      "evidence": "Only fixture-owned std thread joins move to spawn_blocking and are awaited, allowing the current-thread Tokio test reactor to continue driving the owner Handle.block_on I/O. No transport retry, longer timeout, forced cancellation, signal, or production runtime change is introduced."
+    },
+    {
+      "id": "original-framer",
+      "result": "No blocking issue found",
+      "evidence": "The unchanged HostAuthorityPeerChannel checks its original deadline after the handler and before any response prefix. Errors consume/shutdown the same channel. The test helper does not bypass that code."
+    },
+    {
+      "id": "timing-claim-limit",
+      "result": "Qualification",
+      "evidence": "Source ordering proves successful actual owner response precedes the ACK gate. It does not establish that the owner response completes before the client's 500-ms deadline, nor that the gate alone causes timeout. A real owner read already longer than500ms remains possible; the exact new candidate still needs native execution."
+    }
+  ],
+  "source_scope": "The actual legacy NoUpdate NextUse CURRENT adapter uses OriginalCircuitNextUseCommandClientV1::readback. This review does not claim coverage of positive Candidate adoption or final ordinary acceptance.",
+  "limitations": {
+    "Python_or_Rust_execution": false,
+    "H_query_or_dispatch": false,
+    "native_pass": false,
+    "full_caller_pass": false,
+    "source_edits": false,
+    "full_qualified_E_to_Version_effects": false,
+    "ordinary_acceptance": 0
+  },
+  "reviewer": "learn_evaluator_budget"
+}
