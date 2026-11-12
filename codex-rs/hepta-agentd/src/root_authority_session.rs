@@ -152,14 +152,17 @@ impl LiveRoot {
             || check_lifetime(self.root.get_ref())
                 .inspect_err(|_error| {
                     #[cfg(test)]
-                    eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}");
+                    eprintln!(
+                        "ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}"
+                    );
                 })
                 .is_err()
         {
             #[cfg(test)]
             eprintln!(
                 "ROOT_SESSION_DIAGNOSTIC phase=current-final-check now_unix_ms={} lease_expiry_seconds={}",
-                now, self.proof.authority().lease_expires_at_unix_seconds,
+                now,
+                self.proof.authority().lease_expires_at_unix_seconds,
             );
             self.cache.fence();
             return Err(AgentdRootAuthorityError::Unavailable);
@@ -286,7 +289,9 @@ impl AgentdRootAuthoritySession {
                         .await
                         .inspect_err(|_error| {
                             #[cfg(test)]
-                            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}");
+                            eprintln!(
+                                "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
+                            );
                         })
                         .is_err()
                     {
@@ -481,7 +486,11 @@ async fn refresh(
     let head = observation.revocations.clone();
     let changed = !live.cache.revocations_match(&head);
     #[cfg(test)]
-    timing.mark(if changed { "accept-changed-head" } else { "accept-same-head" });
+    timing.mark(if changed {
+        "accept-changed-head"
+    } else {
+        "accept-same-head"
+    });
     if changed {
         live.cache.begin_update();
     }

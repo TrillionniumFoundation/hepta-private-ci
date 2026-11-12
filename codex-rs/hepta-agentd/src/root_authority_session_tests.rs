@@ -421,7 +421,6 @@ pub(crate) fn original_config(
 #[path = "root_authority_file_custody_tests.rs"]
 mod file_custody;
 
-
 // A prior failed/cancelled refresh must not be misclassified as an intentional
 // component shutdown merely because its worker has not returned yet.
 pub(super) struct RefreshCompletion<'a> {
@@ -459,11 +458,7 @@ pub(crate) async fn drop_original_production_after_idle(
     let live = Arc::clone(&inputs.session.live);
     let worker = inputs.session.worker.abort_handle();
     tokio::time::timeout(timeout, async move {
-        let _serial = live
-            .serial
-            .acquire()
-            .await
-            .map_err(std::io::Error::other)?;
+        let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
             return Err(std::io::Error::other(
                 "original Root observation worker failed or finished before deliberate Drop",
@@ -492,7 +487,6 @@ pub(crate) async fn drop_original_production_after_idle(
         )
     })?
 }
-
 
 #[cfg(test)]
 impl AgentdRootAuthoritySession {

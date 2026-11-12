@@ -2,7 +2,6 @@
 //! owner are production implementations; no FileCas/test authority is used.
 
 use super::*;
-use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -10,6 +9,7 @@ use crate::HostAuthorityConsumersConfig;
 use crate::HostAuthoritySocketPaths;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostIssuerRecordProfile;
+use anyhow::Context;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_fleet::AgentLifecycle;
@@ -113,7 +113,10 @@ impl Fixture {
             &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
         )?;
         owned_mode(
-            &fleet_path, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+            &fleet_path,
+            /*uid*/ 0,
+            /*gid*/ 60001,
+            /*mode*/ 0o710,
         )?;
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         registry.register(AgentManifest::new(
@@ -508,18 +511,20 @@ impl Fixture {
         let snapshot = std::thread::scope(|scope| {
             let registration = scope.spawn(|| -> anyhow::Result<_> {
                 let timing = crate::root_authority_session::tests::component_phase_timing(
-                    "publication.root.wait-learning-ready", phase,
+                    "publication.root.wait-learning-ready",
+                    phase,
                 );
                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
                 drop(timing);
                 let timing = crate::root_authority_session::tests::component_phase_timing(
-                    "publication.root.deployment-register", phase,
+                    "publication.root.deployment-register",
+                    phase,
                 );
                 deployment.component_trigger_original(&late_material)?;
                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
-                let registered = deployment
-                    .wait_and_register(&stopping)
-                    .with_context(|| format!("publication {phase:?}: original late registration"))?;
+                let registered = deployment.wait_and_register(&stopping).with_context(|| {
+                    format!("publication {phase:?}: original late registration")
+                })?;
                 anyhow::ensure!(
                     !registered.binding().parse::<Digest32>()?.is_zero(),
                     "actual Root acknowledgement"
@@ -541,7 +546,11 @@ impl Fixture {
                         .ok_or_else(|| anyhow::anyhow!("same serving issuer"))?;
                     let before = issuer.revocations()?;
                     assert_eq!(before.authority_epoch, record.signed.grant.authority_epoch);
-                    assert!(!before.revoked_grant_ids.contains(&record.signed.grant.grant_id));
+                    assert!(
+                        !before
+                            .revoked_grant_ids
+                            .contains(&record.signed.grant.grant_id)
+                    );
                     let mut expected = before.clone();
                     expected.revision = expected
                         .revision

@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "review": "Independent static review of V7 shared diagnostic timing; runtime_access reviewing hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": {
+    "commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1"
+  },
+  "source_operations": {
+    "git_blob": "2f2c61a37440aa9767ac28bca01ce7c8e035ef3a",
+    "bytes": 11706,
+    "sha256": "9336455a92557e6a3c1f509d546320e020470e58cc246d7c8220ab0efd043886"
+  },
+  "manifest": {
+    "git_blob": "1a0d1d00f58ce9a1ba02ee9e511391e91f22eccc",
+    "bytes": 10140,
+    "sha256": "82a9353c3692d9a6b863e5f33e8068d9508881d59dd1df4436e559701e63ac44"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+        "bytes": 20232,
+        "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      "postimage": {
+        "git_blob": "c36482e33fc43cd35b18f79740188eacf8e49558",
+        "bytes": 20883,
+        "sha256": "2790341d9a9758caeee268f68e7c5e568a88e897d5730b2e0377250e0a9f39d6"
+      },
+      "forward": true,
+      "reverse": true,
+      "fetched_post_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": {
+        "git_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+        "bytes": 12120,
+        "sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+      },
+      "postimage": {
+        "git_blob": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+        "bytes": 12990,
+        "sha256": "3928bc9c99a27b9de0b2d15e986cd3ec2739e89fc0058f1794fcd385ac61cfb3"
+      },
+      "forward": true,
+      "reverse": true,
+      "fetched_post_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+        "bytes": 20216,
+        "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871"
+      },
+      "postimage": {
+        "git_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+        "bytes": 24410,
+        "sha256": "6940d7099460bbd7804ee44959597a74ae845b71a738f3e8dc1e44233f0a8088"
+      },
+      "forward": true,
+      "reverse": true,
+      "fetched_post_equal": true
+    }
+  ],
+  "independently_verified": {
+    "fixed_commit_preimages_fetched": true,
+    "each_operation_unique_forward_and_reverse": true,
+    "all_source_git_sha_size_and_sha256_checked": true,
+    "separately_fetched_postimages_equal_reconstruction": true,
+    "normal_projection": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "added_cfg_items": 7,
+        "normal_projection_byte_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "added_cfg_items": 7,
+        "normal_projection_byte_equal": true
+      }
+    ],
+    "existing_test_module_prefix_unchanged": true,
+    "added_tests": 0,
+    "authority_call_changes": 0,
+    "callers_operations": [],
+    "original_500ms_bound_changed": false,
+    "original_refresh_sleep_changed": false
+  },
+  "findings": [
+    {
+      "area": "Original refresh and its serial permit",
+      "result": "The new timing guard is declared before the original serial acquisition. The original refresh failure latch and the original permit drop before the outer diagnostic guard writes. Original started and ended values are copied with mark_original; none is replaced or clamped. Extra sampling cannot update the observation cache, consumer state, clock projection or authority proof. Original current, proof, acceptance, consumer barrier and final success/error ordering remain byte-identical when the newly added test-only items are projected out."
+    },
+    {
+      "area": "Original writer dispatch and witness",
+      "result": "The writer timing guard is outside the entire original with_live path. The nested callback guard only records BOOTTIME samples into the fixed local eight-slot array. It does not format or write diagnostics inside the original authority callback. The outer guard writes after dispatch_authority_lease_with_witness has returned or unwound and released its original state guard. No witness, grant, key, nonce, file, verifier or side-effect callback is replaced."
+    },
+    {
+      "area": "Normal-build and platform reachability",
+      "result": "Both affected production files have only new cfg(test) items plus diagnostic comments. Removing exactly those seven items in each and the new comments reconstructs its full fixed preimage byte for byte. The helper is appended to the existing root_authority_session_tests.rs, loaded only through the original cfg(test) module. Exact lib blob 2cbcceb440a7c39313e687a4b0baa1f172defcd3 already gates both deployment_issuer and root_authority_session to Linux. No new normal-build callable surface was added."
+    },
+    {
+      "area": "Bounded diagnostic output",
+      "result": "The atomic reservation counter accounts for outstanding and already emitted spans. A constructor reserves a slot before starting its measured work. An emitted slot is never returned; at most 64 output records are attempted per process. Only a successful writer span below the diagnostic-only 20000000 ns threshold returns an unused reservation. Each span retains at most eight marks and 64 phase characters. The actual call sites use fixed labels and small Phase enums or literal phase strings."
+    },
+    {
+      "area": "Sampling and output failure",
+      "result": "All new BOOTTIME sample failures become None. Checked elapsed subtraction is diagnostic data only. Neither missing samples nor a stderr write error changes an original Result, condition, timeout or authority decision. All new extra samples are separate from the original acceptance samples."
+    },
+    {
+      "area": "Result interpretation",
+      "result": "A fixture span with reported_outcome=None proves only that its scope ended without declaring an outcome. It must not be interpreted as success or failure. Only the original successful refresh final check or an actual Ok writer result calls complete. No test result, source qualification or completed ordinary operation follows from these diagnostics."
+    },
+    {
+      "area": "Timing attribution limits",
+      "result": "The writer phase before callback-entry includes original lock acquisition, validation, clock work and witness construction. It is not pure mutex-wait time. The callback span measures callback work while the original lease guard is held, not the complete lock lifetime. Missing records may reflect budget exhaustion or suppression; they do not prove that work did not occur. The added sampling and bounded logging can still affect scheduling, so future evidence belongs only to its exact new source."
+    }
+  ],
+  "evidence_boundary": {
+    "junit": {
+      "git_blob": "c1a7678e07626c99ef76ca0d115f83032774070d",
+      "bytes": 10126,
+      "sha256": "eabc21351aa241a8de861ba933e746a57617a4c3a22a98fefda33174d28fa5e7"
+    },
+    "initial_age_ns": 533636917,
+    "publication_age_ns": 603668108,
+    "original_limit_ns": 500000000,
+    "time_regressed": false,
+    "conclusion": "The original V7 failures are real stale observations. last_checked also advances during ordinary current(), so it is not an RPC completion timestamp. These source changes diagnose possible shared-lane delay; they do not identify the V7 causal phase or repair freshness."
+  },
+  "conclusion": "No confirmed static blocker found in the three-file diagnostic-only delta. Original authorization, fence, 500 ms freshness, lock scope, error mapping, witness and actor behavior are preserved by the exact normal-build projection. Parent must qualify the combined fixed source; no runtime result is inferred from this review.",
+  "validation": {
+    "static_read": true,
+    "source_reconstruction": true,
+    "normal_projection": true,
+    "rustfmt": false,
+    "rust_compile": false,
+    "native": false,
+    "root_execution": false,
+    "full_official_caller_scan": false,
+    "h_requests": false,
+    "refs_changed": false,
+    "original_test_roster_changed": false
+  },
+  "current_dependency_policy": {
+    "current_operations": "2f2c61a37440aa9767ac28bca01ce7c8e035ef3a",
+    "current_manifest": "1a0d1d00f58ce9a1ba02ee9e511391e91f22eccc",
+    "superseded_operations": "9f96018c5689dbdda32b8f9e4fde663bce81cfef",
+    "metadata_only_correction": "writer has seven new cfg(test) items; actual source postimages did not change"
+  },
+  "ordinary_acceptance": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_or_rollback": 0,
+    "cold_restart": 0
+  }
+}

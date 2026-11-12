@@ -88,12 +88,68 @@
   "diagnosis": "Original 500ms freshness refusal remains enforced. No failed check, timeout, proof, ownership or retirement requirement is waived.",
   "exact_request_blob": "cde29911abdedfea73c5b53a47b29770942a5e25",
   "harness_blob": "d109e6d532f1cce69d9afd03483b374d19092ed9",
-  "full_original_archive": "V8 immutable export/transfer pending; seven raw result files already retained exactly in Git.",
+  "full_original_archive": "Complete original V8 archive transferred and independently verified by part and whole digests; the original failed native outcome is unchanged.",
   "ordinary_complete_chains": 0,
   "positive_adoption_chains": 0,
   "ordinary_no_update_rollback_chains": 0,
   "independent_ordinary_consumer": false,
   "cold_process_restart": false,
   "full_qualification": false,
-  "no_result_inheritance": true
+  "no_result_inheritance": true,
+  "cleanup_observation": {
+    "source": "original progress.json, independently viewed after terminal",
+    "steps": [
+      {
+        "name": "unmount-witness-bind",
+        "status": "passed"
+      },
+      {
+        "name": "unmount-bind",
+        "status": "passed"
+      },
+      {
+        "name": "remove-owned-fixture",
+        "status": "passed"
+      },
+      {
+        "name": "record-ownership",
+        "status": "passed"
+      },
+      {
+        "name": "retain-source-and-drift",
+        "status": "passed"
+      },
+      {
+        "name": "original-tool-sources",
+        "status": "passed"
+      },
+      {
+        "name": "final-physical-source",
+        "status": "passed"
+      },
+      {
+        "name": "read-only-reference",
+        "status": "passed"
+      },
+      {
+        "name": "external-tools",
+        "status": "passed"
+      }
+    ]
+  },
+  "helper_and_root_build_records": "operator toolchain, same-source helper build/preverify/postverify, UID0 toolchain/cargo metadata/binary-list passed; original root JUnit and root test records retained failed.",
+  "original_archive_v8": {
+    "source": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "native_export_metadata_and_stdout_match": true,
+    "original_request_matches_frozen_request": true,
+    "all_37_parts_and_whole_verified_by_independent_transfer_agent": true,
+    "native_exporter_tar_readback_members": 89,
+    "independent_second_local_tar_parse_performed": false,
+    "archive": "54018241b0f6b38e1c1d5f24ee95b940f319dc98",
+    "bytes": 1312528,
+    "sha256": "3c7dd2c0e690f019a1a8fd3bb4a9c7bd9ed7c41de01d01d2c74021f6d68fa05e",
+    "transfer": "6c160ca361838d5a0df63339750e2e73e9563c8e",
+    "result_inheritance": false
+  }
 }

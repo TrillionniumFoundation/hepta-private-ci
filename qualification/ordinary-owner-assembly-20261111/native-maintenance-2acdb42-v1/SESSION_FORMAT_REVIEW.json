@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "review": "Independent static review of three actual native just-fmt postimages",
+  "baseline": {
+    "commit": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+    "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb"
+  },
+  "original_evidence": {
+    "postimages": {
+      "git_blob": "c8845629d1321bb68a5b34544c86d2fd30417bca",
+      "bytes": 193634,
+      "sha256": "d87394cbdd12ea5413d8643839b0aee080652dad086a75ec3410a98197cb6bf9"
+    },
+    "patch": {
+      "git_blob": "bfe52e598ecff73026aca7ad37fce9d975016273",
+      "bytes": 24638,
+      "sha256": "ecb0ccd5db20e60de920b4230b201668a103281621fa591598507e6d6a4884fd"
+    },
+    "execution": "78e4dcf713b1241b180c20b1eefca7a514271dd6",
+    "classification": "Original just fmt command exited 0; its source-identity executor exited 1 because the before-clean checkout became dirty. No timeout/truncation. This is a retained formatting-drift failure, not successful qualification or an executed behavior test."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "base": {
+        "git_blob": "c36482e33fc43cd35b18f79740188eacf8e49558",
+        "bytes": 20883,
+        "sha256": "2790341d9a9758caeee268f68e7c5e568a88e897d5730b2e0377250e0a9f39d6"
+      },
+      "postimage": {
+        "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+        "bytes": 21031,
+        "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94"
+      },
+      "hunks": 3,
+      "lexical_tokens": 3218,
+      "lexical_tokens_and_literals_equal": true,
+      "forward_patch_exact": true,
+      "reverse_patch_exact": true,
+      "nonwhitespace_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "base": {
+        "git_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+        "bytes": 24410,
+        "sha256": "6940d7099460bbd7804ee44959597a74ae845b71a738f3e8dc1e44233f0a8088"
+      },
+      "postimage": {
+        "git_blob": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+        "bytes": 24356,
+        "sha256": "39393346218a9e40bde0291ff78751acfacd61c583838ab0b0ccdb06855c06dd"
+      },
+      "hunks": 3,
+      "lexical_tokens": 4461,
+      "lexical_tokens_and_literals_equal": true,
+      "forward_patch_exact": true,
+      "reverse_patch_exact": true,
+      "nonwhitespace_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "base": {
+        "git_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+        "bytes": 16628,
+        "sha256": "6f5cf48ad4379cc79f132fa5793c0c2ce91c05bc226b21b6c1e642ee2dd1798e"
+      },
+      "postimage": {
+        "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+        "bytes": 16596,
+        "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+      },
+      "hunks": 4,
+      "lexical_tokens": 2167,
+      "lexical_tokens_and_literals_equal": true,
+      "forward_patch_exact": true,
+      "reverse_patch_exact": true,
+      "nonwhitespace_equal": true
+    }
+  ],
+  "checks": [
+    "The full original 193634-byte postimages JSON and 24638-byte patch were fetched and their SHA256 values independently matched.",
+    "Each of the three exact baseline files was fetched by the fixed 2ac commit. Decoded native bytes match their embedded byte counts and SHA256 values.",
+    "Git blob SHA1 was independently recomputed for all three old and new files and matches both fixed-source and native-export identities.",
+    "Every relevant original patch hunk applies forward exactly to the authoritative native postimage and reverses exactly to the baseline.",
+    "All three files retain identical lexical token, string-literal and comment sequences; removing whitespace also yields equal text. Changes are formatting only.",
+    "The complete new bounded timing-helper suffix in root_authority_session_tests.rs is byte-for-byte unchanged.",
+    "refresh timing remains declared before the original serial permit, while RefreshCompletion remains declared after it. Failure-latch writes and permit release still precede timing Drop output.",
+    "Session Drop still fences the cache, aborts the original worker and clears original consumers in the same order.",
+    "The original 100 ms worker sleep, original request started/ended sampling, exclusive refresh, consumer barrier and final live.current remain unchanged.",
+    "RootObservationCache still uses the original 500000000 ns bound, rejects genuine regression/staleness/ceiling violations, and preserves original try_lock and sticky-fence behavior. No clock, acceptance, revival or error-path changes occurred."
+  ],
+  "callers": {
+    "registry_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "examined_scope": "Only the three reviewed source paths and their exact original registry entries; not a full official guard run.",
+    "protected_rows": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "required": [
+          "synchronize_consumers",
+          "live.cache.begin_update()",
+          "live.cache.end_update()",
+          "update_revocations(head.clone())"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all"
+        ],
+        "missing": [],
+        "forbidden_hits": [],
+        "order": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "required": [
+          "self.live.cache.fence()",
+          "self.worker.abort()",
+          "self.live.consumers.lock()",
+          "consumers.clear()"
+        ],
+        "forbidden": [],
+        "missing": [],
+        "forbidden_hits": [],
+        "order": [
+          {
+            "sequence": [
+              "impl Drop for AgentdRootAuthoritySession",
+              "self.live.cache.fence()",
+              "self.worker.abort()",
+              "self.live.consumers.lock()",
+              "consumers.clear()"
+            ],
+            "positions": [
+              14737,
+              14899,
+              14932,
+              15219,
+              15359
+            ],
+            "preserved": true
+          }
+        ]
+      }
+    ],
+    "boundary_note": "final_use_revocation_update retains root_authority_session.rs as its existing product caller and the update_revocations marker remains exact. No boundary is defined in these three files.",
+    "absent_rows": "No protected_file entry targets root_observation_cache.rs or root_authority_session_tests.rs in this registry. The existing _tests.rs exclusion is unchanged.",
+    "required_whitespace_deltas": [],
+    "operations": 0
+  },
+  "conclusion": "No static blocker found. Use these actual native postimages as authoritative; do not replace them with a handformatted reconstruction. The three reviewed paths need no CALLERS edit.",
+  "scope": {
+    "rust_or_registry_written": false,
+    "refs_changed": false,
+    "pr_changed": false,
+    "h_calls": false,
+    "native_or_cargo_started": false,
+    "full_official_guard_run": false,
+    "formatter_rerun": false,
+    "other_four_native_changed_files_not_reviewed_here": true
+  }
+}
