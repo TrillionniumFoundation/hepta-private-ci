@@ -21,7 +21,7 @@
   "test_retries": 0,
   "driver_python_compile": "NOT_RUN",
   "request_dispatched": false,
-  "execution_status": "NOT_DISPATCHED_HOLD_ORIGINAL_HOSTED_FINAL_STAGE_DIAGNOSIS",
+  "execution_status": "NOT_DISPATCHED_SUPERSEDED_BY_BB8_FORMAT_FIX",
   "existing_hosted_run": 43217423865,
   "existing_hosted_job": 131198882642,
   "existing_hosted_observation": "2026-11-12 13:41:19 UTC: caller passed; two-binary build in_progress; six methods not yet observed",
@@ -29,5 +29,5 @@
   "owner_decision": null,
   "scientific_qualification": false,
   "replaced_original_line": "env.update(PLAN[\"environment\"]) is moved inside prepare_clang_environment after inherited selection sanitization; original test/build pipeline unchanged.",
-  "latest_hosted_observation": "2026-11-12 13:49:21 UTC: six exact methods passed; final combined receipt/format/clean step failed. Inspect original artifact before any new run."
+  "latest_hosted_observation": "Original5fc artifact independently root-decoded: all1+5 tests and both named-case receipts passed; only fmt failed. Exactbb8 format-only fix published with its own CI run43231943175. No5fc v4 dispatch."
 }

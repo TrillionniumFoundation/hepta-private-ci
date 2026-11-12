@@ -6,7 +6,7 @@
   "job": 131198882642,
   "status": "completed",
   "conclusion": "failure",
-  "observed_at_utc": "2026-11-12 13:49:21 UTC",
+  "observed_at_utc": "2026-11-12 14:10:42 UTC",
   "original_log": {
     "bytes": 641754,
     "sha256": "914f4b0c5974e65938d645ece2d97ecbdd95436bba5577513ae168c41ad90ca1",
@@ -45,7 +45,8 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 75335,
       "raw_inner_log_sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
-      "not_an_independently_retrieved_artifact_original": true
+      "not_an_independently_retrieved_artifact_original": false,
+      "original_artifact_bytes_root_verified": true
     },
     {
       "command": [
@@ -74,7 +75,8 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 104315,
       "raw_inner_log_sha256": "9868b940efddb7b71c8fd4d0ccd1021b5bc91f80b97a81e5690e588d70d7acf2",
-      "not_an_independently_retrieved_artifact_original": true
+      "not_an_independently_retrieved_artifact_original": false,
+      "original_artifact_bytes_root_verified": true
     },
     {
       "command": [
@@ -100,7 +102,8 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 34959,
       "raw_inner_log_sha256": "e07a5809a96073317cde7d248bdb11a8ee0ed08eb0bac7a757d62f6bbe5217ee",
-      "not_an_independently_retrieved_artifact_original": true
+      "not_an_independently_retrieved_artifact_original": false,
+      "original_artifact_bytes_root_verified": true
     },
     {
       "command": [
@@ -127,7 +130,8 @@
       "observed_failed": 0,
       "raw_inner_log_bytes": 177117,
       "raw_inner_log_sha256": "73fc8578ed2c094d50672fd1e5252d407ce232f40d664f30b1254f0a42c22619",
-      "not_an_independently_retrieved_artifact_original": true
+      "not_an_independently_retrieved_artifact_original": false,
+      "original_artifact_bytes_root_verified": true
     }
   ],
   "exact_named_pass_lines": [
@@ -147,16 +151,29 @@
   "explicit_retries_flag_in_hosted_test_record": false,
   "retry_pass_lines_observed": 0,
   "post_test_receipt_and_format_step": "FAILED",
-  "precise_failure_cause": "PENDING_READBACK_OF_ORIGINAL_ARTIFACT_RECEIPTS_AND_FORMAT_LOG",
+  "precise_failure_cause": "Original format.log rejects only the one ensure! formatting expansion. Both original named-case receipts passed.",
   "job_log_contains_python_traceback": false,
   "artifact": {
     "id": 13950881413,
     "bytes": 59125,
     "sha256": "58e908b0755dceacc75e2ad3eb57a94d12c370ed5a5f51f440beb286a729d33a",
     "members_reported": 18,
-    "original_members_root_readback": false
+    "original_members_root_readback": true,
+    "full_zip_root_crc32_size_sha256_verified": true,
+    "members_verified": 18
   },
-  "v4_contingency": "NOT_DISPATCHED; inspect original final-stage failure before another test attempt",
+  "v4_contingency": "NOT_DISPATCHED_SUPERSEDED_BY_BB8_FORMAT_FIX",
   "owner_decision": null,
-  "scientific_or_production_qualification": false
+  "scientific_or_production_qualification": false,
+  "named_case_receipt": "passed",
+  "regression_case_receipt": "passed",
+  "new_exact_source": {
+    "source": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+    "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+    "only_change": "One ensure! formatting expansion",
+    "run": 43231943175,
+    "job": 131229238631,
+    "status": "in_progress",
+    "results_from_5fc_inherited": false
+  }
 }

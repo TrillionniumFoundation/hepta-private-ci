@@ -1,0 +1,54 @@
+{
+  "after": {
+    "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "dirty": false,
+    "parents": [
+      "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+      "639f894e088cdc5b30b65ed3732dcaa0a2fbe004"
+    ],
+    "tree": "03dee89cec18fc7275755a77042b973e1d6728a6"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "dirty": false,
+    "parents": [
+      "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+      "639f894e088cdc5b30b65ed3732dcaa0a2fbe004"
+    ],
+    "tree": "03dee89cec18fc7275755a77042b973e1d6728a6"
+  },
+  "command": [
+    "python3",
+    "scripts/hepta_cell_test_helpers.py",
+    "--package",
+    "codex-hepta-infer-worker-host",
+    "--output-dir",
+    "/home/runner/work/_temp/daemon-learning-records/helpers",
+    "--github-env",
+    "/home/runner/work/_temp/_runner_file_commands/set_env_9899d18e-b0f6-44aa-b986-88977c3c98f9"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 590.5915410020001,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T13:08:25.045158+00:00",
+  "job": "native",
+  "lane": "source-head",
+  "log_bytes": 173,
+  "log_file": "helper-build.json.551a8c4e4a344bb5b1a7e0a18205a1ca.log",
+  "log_sha256": "ee101f8d7690e6ef53d5bb7b6371da8af194f581626152581e302c06d73fae7b",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "43213823243",
+  "schema_version": 1,
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "started_at": "2026-11-12T12:58:34.453088+00:00",
+  "status": "passed",
+  "tested_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

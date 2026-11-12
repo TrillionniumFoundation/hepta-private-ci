@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.owner1026.inventory.root-complete-readback.v1",
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "source_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "job": "1a1cfb4675b-2564-1a8e",
+  "original_asset_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller-v2/source-after.files.json.gz",
+  "gzip_bytes": 777704,
+  "gzip_sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8",
+  "raw_bytes": 2739429,
+  "raw_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
+  "crc32": "92b91083",
+  "deflate_blocks": 37,
+  "unique_records": 15046,
+  "original_json_not_reserialized": true,
+  "parts": [
+    {
+      "path": "original/source-after.files.json.gz.part000",
+      "offset": 0,
+      "bytes": 294912,
+      "sha256": "ff96aafe129dd511f30f33366f84a5fa187468e09b2c226df41690b842da5116",
+      "git_blob": "536e3bcc150c33d72ffaae1246c75493d6c7120c",
+      "transport_path": "transport/part000.base64.txt",
+      "transport_git_blob": "9330d3ea7cc754807f1de3403ec34f6f3179c994"
+    },
+    {
+      "path": "original/source-after.files.json.gz.part001",
+      "offset": 294912,
+      "bytes": 147456,
+      "sha256": "9f11a75bef33f25db5480285f6f29caa54199eec96e8fa193308142ef57bf58e",
+      "git_blob": "0d542a8c604e0c7a88c3a8ee0e4268e3ebedc5cb",
+      "transport_path": "transport/part001.base64.txt",
+      "transport_git_blob": "0a110cadbe2eed7f36407a4777518659a442d439"
+    },
+    {
+      "path": "original/source-after.files.json.gz.part002",
+      "offset": 442368,
+      "bytes": 335336,
+      "sha256": "13860f36c11b7d4be99b125172461917198d8cbcea5a6ef723ec902796c83b2b",
+      "git_blob": "bef6a98ad1dc8ba0c179d6e5433a8d48195a3cc8",
+      "transport_path": "transport/part002.base64.txt",
+      "transport_git_blob": "ac74d1b06aa6fdbf8d2f3076416e1ab1d63100e8"
+    }
+  ],
+  "base64_text_git_readback_verified": true,
+  "binary_git_readback": "PENDING_NEXT_STAGED_COMMIT",
+  "direct_blob_fetch_errors_preserved": [
+    {
+      "part": 0,
+      "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    {
+      "part": 1,
+      "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    {
+      "part": 2,
+      "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  ],
+  "selected_original_records": [
+    {
+      "bytes": 12803,
+      "mode": "100644",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha256": "007182d5c7e351e5d227b732706a520d2ef8b5dafdd059c6877dd22b1e17cb18"
+    },
+    {
+      "bytes": 1108372,
+      "mode": "100644",
+      "path": "CALLERS.toml",
+      "sha256": "64153616508ffa8319f06cdf209dba5b1b19d4f6dc202293cfe286c8dafbbf02"
+    },
+    {
+      "bytes": 38402,
+      "mode": "100644",
+      "path": "scripts/verify_hepta_callers.py",
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    }
+  ],
+  "qualification": "Original1026 ordinary source-after inventory only; not native hosted inventories and not newebe source results.",
+  "source_results_transferred": false,
+  "new_jobs_or_tests_started": false
+}

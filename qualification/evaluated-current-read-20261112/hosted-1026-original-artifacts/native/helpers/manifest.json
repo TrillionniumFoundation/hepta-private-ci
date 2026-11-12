@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "source_sha_after": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "source_status_before": "",
+  "source_status_after": "",
+  "workspace": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/runner/work/_temp/daemon-learning-records/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/runner/work/_temp/daemon-learning-records/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 0,
+      "cargo_finished": true,
+      "complete": true
+    }
+  ],
+  "artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "compiler_executable": "/home/runner/work/_temp/hepta-daemon-learning-target/debug/hepta-joint-propose",
+      "executable": "/home/runner/work/_temp/daemon-learning-records/helpers/bin/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "d957bcfe69d82e33d087363b5b8248b02e74f19d5b60db0980a3bebc6be8d16c",
+      "bytes": 1439888
+    }
+  },
+  "complete": true,
+  "exit_code": 0
+}

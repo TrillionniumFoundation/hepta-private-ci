@@ -1,0 +1,98 @@
+$env:RUST_MIN_STACK = "8388608"; $env:NEXTEST_PROFILE = "local"; python ../scripts/run-nextest.py @($args | Select-Object -Skip 1)
+   Compiling codex-utils-path v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\utils\path-utils)
+    Finished `test` profile [unoptimized] target(s) in 1.55s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_msvc@0.52.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID d49d0e4d-3695-449e-9ad7-91fb7ae2d852 with nextest profile: local
+    Starting 2 tests across 1 binary (18 tests skipped)
+        SKIP [         ] codex-utils-path private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file
+        SKIP [         ] codex-utils-path private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories
+        SKIP [         ] codex-utils-path private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state
+        FAIL [   0.023s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open
+  stdout ───
+
+    running 1 test
+    test private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open ... FAILED
+
+    failures:
+
+    failures:
+        private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.02s
+
+  stderr ───
+    PRIVATE_STATE_ACQUISITION substitution swapped=true denied=false redirected=true
+
+    thread 'private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open' (8436) panicked at utils\path-utils\src\private_state_windows_directory_tests.rs:146:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     (
+    <    false,
+         true,
+    >    false,
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open
+        SKIP [         ] codex-utils-path private_state_windows::tests::hard_link_is_rejected
+        SKIP [         ] codex-utils-path private_state_windows::tests::malformed_ace_sid_bounds_fail_closed
+        SKIP [         ] codex-utils-path private_state_windows::tests::malformed_getace_spans_fail_closed
+        SKIP [         ] codex-utils-path private_state_windows::tests::public_read_access_is_not_private
+        SKIP [         ] codex-utils-path private_state_windows::tests::retained_directory_opens_private_single_link_children
+        SKIP [         ] codex-utils-path private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop
+        SKIP [         ] codex-utils-path tests::native_workdir::non_windows_paths_are_unchanged
+        SKIP [         ] codex-utils-path tests::native_workdir::windows_verbatim_paths_are_simplified
+        SKIP [         ] codex-utils-path tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized
+        SKIP [         ] codex-utils-path tests::path_comparison::matches_identical_existing_paths
+        SKIP [         ] codex-utils-path tests::path_comparison::matches_windows_verbatim_paths
+        PASS [   0.018s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf
+  stdout ───
+
+    running 1 test
+    test private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.01s
+
+  stderr ───
+    PRIVATE_STATE_ACQUISITION creation denied=true created=false
+
+────────────
+     Summary [   0.043s] 2 tests run: 1 passed, 1 failed, 18 skipped
+        PASS [   0.018s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf
+        SKIP [         ] codex-utils-path private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file
+        SKIP [         ] codex-utils-path private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories
+        SKIP [         ] codex-utils-path private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security
+        SKIP [         ] codex-utils-path private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open
+        SKIP [         ] codex-utils-path private_state_windows::tests::hard_link_is_rejected
+        SKIP [         ] codex-utils-path private_state_windows::tests::malformed_ace_sid_bounds_fail_closed
+        SKIP [         ] codex-utils-path private_state_windows::tests::malformed_getace_spans_fail_closed
+        SKIP [         ] codex-utils-path private_state_windows::tests::public_read_access_is_not_private
+        SKIP [         ] codex-utils-path private_state_windows::tests::retained_directory_opens_private_single_link_children
+        SKIP [         ] codex-utils-path private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop
+        SKIP [         ] codex-utils-path tests::native_workdir::non_windows_paths_are_unchanged
+        SKIP [         ] codex-utils-path tests::native_workdir::windows_verbatim_paths_are_simplified
+        SKIP [         ] codex-utils-path tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized
+        SKIP [         ] codex-utils-path tests::path_comparison::matches_identical_existing_paths
+        SKIP [         ] codex-utils-path tests::path_comparison::matches_windows_verbatim_paths
+        FAIL [   0.023s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open
+error: test run failed
+error: recipe `test` failed on line 93 with exit code 1

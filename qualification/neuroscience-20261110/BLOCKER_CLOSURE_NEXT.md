@@ -1,4 +1,4 @@
-# Blocker 闭合清单与当前证据（2026-11-12 13:49:21 UTC）
+# Blocker 闭合清单与当前证据（2026-11-12 14:12:00 UTC）
 
 **整体仍为 RESEARCH_ONLY / SHADOW_ONLY / HOLD；owner_decision=null，adoption=NOT_REQUESTED。**
 本页以原始证据区分“子项已闭合”和“完整资格尚未通过”。缺件、失败、未启动和 UNKNOWN 都不是原 owner 的 NoUpdate。原始报告中的研究标签保持原样。
@@ -18,7 +18,7 @@
 | 原真实 fit 与模型 cold-load | frozen/adapted 各 126 pairs、UNKNOWN0，fit72/cal54；两个 checkpoint 的完整字节、pin 和独立子进程 cold-load 一致。 | 两份 calibration.complete=false；不是已选模型在普通 C／Root 重启后使用。 |
 | 实际公开输入回归 | [#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) exact 2d1f610f...：新的 ai395 原入口实际 19 policy＋7 checkpoint 全通过，原日志与 source-before/after 已归档。 | source inventory SHA256 ea34e33b...，执行环境与 hosted 不同。生产归一化修复来自上游 3c94，不冒充本 PR 新修复。 |
 | 开发输出 HOLD 语义及完整合同回归 | [#6240](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6240) exact 24112612...：28 套件 **200/200 实际通过、0 失败、0 跳过**；format/lint exit0。root 从 GitHub 回读完整 96,284 B gzip，独立解压并校验全部 149 原文件、28 组原日志、原记录和源码前后384项。 | Python3.12.14、NumPy2.3.5、Pillow11.3.0；普通UID1000，不计 hosted CI。v1 199/200失败、v2/v3零套件的外部driver失败原件保留，产品与断言未改。原3c94的NoUpdate标签仍是历史原文。 |
-| evaluated CURRENT 源码与历史证据 | [#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) exact1026补齐12边界的21条诊断后调用关系及26个QA期望tuple；新源398/398、parser16/16、caller自检/完整审计均通过，hosted完整caller也通过。 | Linux原native实际在E0659宏导入歧义处编译失败，0测试执行；Windows定向36/36通过、597未选。最小import修复已核，固定a96新opaque读取接口整合中，不能转移旧结果。 |
+| evaluated CURRENT 源码与历史证据 | [#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) exact1026补齐12边界的21条诊断后调用关系及26个QA期望tuple；新源398/398、parser16/16、caller自检/完整审计均通过，hosted完整caller也通过。 | Linux原native实际在E0659宏导入歧义处编译失败，0测试执行；Windows定向36/36通过、597未选。最小import及固定a96 opaque接口整合已核，ebe短验证待回读，不能转移旧结果。 |
 | MEM v3 原生成终态 | [#6201](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6201) 的7个原文件已独立核验；原execution fa3b624...返回exit0、1次model call。 | 原process registry仍UNKNOWN/job_id=null。新只读分页仅128/63578条，字段无key/digest，不能据此判断未登记或猜job。记忆效益0。 |
 
 完整原件入口：[终态与 root 核验](evidence/terminal-20261112/README.md)、[无损 REPORT](evidence/report-lossless-archive-20261112/)、[content receipt](evidence/content-receipt-lossless-archive-20261112/)、[原只读分析](evidence/report-readonly-analysis-20261112/)、[19/26 实际验证清单](../runtime-validation-20261112/PR6240_PR6221_EVIDENCE_MANIFEST.json)、[MEM 原件](evidence/mem11-v3-reconciliation-20261112/)。
@@ -46,23 +46,31 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 
 ## 3. 当前正在处理的工程阻塞
 
-[#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 当前已发布源码仍为1026bd09bc16e0035e8ea28053def5731d0a235e / tree03dee89cec18fc7275755a77042b973e1d6728a6。旧620的完整537边界诊断及14,886项inventory、1,353,660 B原source index均已独立解压核验；13份原调用源码与诊断逐项绑定。1026诊断后修复为12边界、21条调用边；相对639祖先累计22条，还包含更早的1条readback_owner边，不改写原21条修复记录。
+### CURRENT：旧源码失败已定位，新接口整合完成静态审查
 
-1026普通v2原job1a1cfb4675b...的source398/398、parser16/16、自检及完整caller均通过，251315 B原完整caller日志已核。随后hosted run43213823243/job131167901712也实际完成success：537边界、537权限清单项、386受保护文件、6597 Rust源码，authorityGranted=false。完整2,132,795 B原job日志已由root取得并按字节分片保存。见[hosted原件清单](../evaluated-current-read-20261112/hosted-1026-caller-success/MANIFEST.json)。完整1026源码inventory gzip仍单独转运，不冒充已核载荷。
+[#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 已发布源码仍为1026bd09bc16e0035e8ea28053def5731d0a235e / tree03dee89cec18fc7275755a77042b973e1d6728a6。其普通source398/398、parser16/16、自检和完整caller均通过；hosted完整caller job131167901712也成功，覆盖537边界、537权限清单项、386受保护文件、6597 Rust源码，authorityGranted=false。完整2,132,795 B原日志已分片保存并从Git重新读回核验。原ordinary source-after清单777,704 B gzip也已全量读回、独立解压核CRC/SHA，原JSON2,739,429 B、15,046个唯一文件记录；源码pin与1026一致。此清单与尚未转运的hosted native inventory分别记账。
 
-同一1026的Linux native job131167901028实际失败：原helper build已成功，随后原just test在hepta-learning-artifacts的owner_service_readback_support_tests.rs:109报E0659、assert_eq歧义，退出101，0测试运行。JUnit因不存在被原collector拒绝，Root/fix/fmt均未执行。完整2,009,920 B原job日志保留。Windows run43213822708/job131167903537实际36/36定向方法通过；597个方法不在过滤范围，不能写成整套633项通过。见[root原日志核验及最小import修复](../evaluated-current-read-20261112/hosted-1026-native-failure/ROOT_LOG_VERIFICATION.json)。
+同源Linux native job131167901028在原helper build成功后，原just test编译报E0659、assert_eq歧义，退出101，0测试执行。原ordinary.json、33,065 B编译日志及missing-JUnit拒绝记录均已核；Root/fix/fmt未执行。完整2,009,920 B原job日志及1,049,638 B原helper CargoJSONL均按连续字节重组验证。Windows job131167903537原execution、receipt和9,050 B JUnit一致，36个唯一方法全部通过、0失败/跳过；597个方法未选，原命令明确retries0。三个原source identity文件完全相同。完整native inventory/ZIP不冒充已由root转运。[核心原件核验](../evaluated-current-read-20261112/hosted-1026-original-artifacts/ROOT_CORE_VERIFICATION.json)与[完整job日志核验](../evaluated-current-read-20261112/hosted-1026-native-failure/ROOT_LOG_VERIFICATION.json)分别保留。
 
-当前固定a96d1b821d10ed3d9e99dd06c5141f9f242ae318为三方整合目标，祖先639、ours1026。上游已新增opaque Evaluated read profile、4-cut Selection和5-cut NextUse及独立wire域；保留其canonical实现，迁移本分支真实T/E与2×2 CURRENT正例和全部对应拒绝性质。两类公开read profile主动降为Readback；原retention的fresh/cold区别、NewWork拒绝与实际CURRENT读数/文件不变仍分别验证。CALLERS仅按真实源码补齐，旧proof getter和旧权限登记不强行拼回。已核collector所需8个实际测试名及显式pretty_assertions::assert_eq最小import修复一并保留。较早4ab八/九路径候选均未执行、未推；a96候选也尚未执行，旧成功不能转移。
+固定a96d1b821d10ed3d9e99dd06c5141f9f242ae318作为整合目标，不追逐后续移动base。root独立重算code tree9281fae8...和review treeb5f2e580...，创建未推candidate ebe67237b8645415fd4942ac167753c19ce8f5c4，父提交为1026与a96。保留上游opaque Evaluated profile、4-cut Selection/5-cut NextUse及独立wire域；两个read profile主动降为Readback。实际T/E与2×2 CURRENT正例、原字节不变和对应拒绝性质已迁移。三个生产文件只加cfg(test)段，去除这些段即逐字恢复a96。
 
-ACT [#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243) exact5fc34e1ac0f1cf7e98162c210414ad72845a6b4c / tree35d5a86106db8ced1c71ff447546cb9375f1ee47。原v3 caller实际通过154.426秒；完整75,335 B caller日志与23,843 B build日志已核。build仍是原exit101：Clang21.1.8缺少stddef.h，六方法/receipt/fmt未跑。旧7d的V8断连、普通120秒caller超时，以及8514/7d两次hosted120秒超时都保留。
+CALLERS共541边界、541权限清单项、389保护项；相对a96只改12个调用行，22条累计新边均与原源码/符号对应，其余约1.1 MiB逐行相同。22包含旧620诊断后21条修复和更早1条readback_owner，不改写历史21。allowlist保持双方原条目的次序，仅补新CALLERS的精确SHA；显式assert_eq import和collector8个实际方法名修复一并保留。详见[三方整合root审查](../evaluated-current-read-20261112/merge-a96-review/ROOT_INTEGRATION_REVIEW.json)。
 
-匹配Clang资源准备原job1a1cfde1d88-2564-1ad1已实际succeeded/exit0，完整stdout301B、stderr0且durable。官方同版本资源包的完整hash、288项目录清单和同一libclang C API对照均已核验：原baseline有fatal missing-stddef，显式隔离resource后parse0、诊断为空、实际包含三个预期头文件。见[资源准备root核验](../notes-seed-profile-20261112/clang-resource-preparation-20261112/ROOT_REVIEW.json)。这只闭合依赖前置，不宣称native通过。v4资源绑定备用driver已完整静态核对，未派发。
+新candidate短验证v1在准备阶段因object_source的origin是本地路径而拒绝，exit2、stages=[]，没有fetch或fmt结果。[原失败](../evaluated-current-read-20261112/ebe6723-format-source-v1-failure/RESULT.original.json)保持不变。v2只恢复已用原mirror路径并换隔离checkout/evidence/key；原9235 B runner、候选源码/tree和各门不变。v2原job1a1d01383ed-2564-1b22已受理，结果待回读；先fmt，再source/parser/self-test，不请求native/Rust测试。旧1026成功不转给新candidate，较早4ab候选也未执行。
 
-截至13:49:21 UTC，原5fc hosted run43217423865/job131198882642已completed/failure。caller、两个实际binary build、原launcher case及五个回归步骤均成功；root在完整641754 B原job日志中核到六个预期方法各一次PASS、两原test record source/tree前后一致且clean。两过滤分别另有1/792方法未选，不计入通过数。最后同一步的具名receipt／format／clean gate失败，原日志未见Python traceback；精确原因须取原18成员artifact中的两个receipt与format.log。暂不修改parser，不启动备用v4。实际hosted test命令未显式传--retries 0，与v3/v4备用请求区分。见[原日志root核验](../notes-seed-profile-20261112/hosted-5fc-native-result-20261112/ROOT_LOG_REVIEW.json)。
+### ACT：原六方法及receipt通过，唯一格式失败已修复
 
-真实wrapper B/C已全部完成：四个固定宏执行均COMPLETED、STOP、read_executed=false、quality0；FAILED/UNKNOWN/缺失均0。C canonical REPORT SHA e4c769b8...与完整原stdout、wrapper/controller及两组TERM/REALIZATION一致。六份40017 B来源快照hash均为d234bca7...；最后三路径的原只读读取job1a1cfecfddc...实际成功，逐项记录版本、完整SHA和读取前后stat不变。该归档读取验证快照文件，未再遍历全部96个实时输入。见[B/C完整root核验](evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json)。两个已暴露development来源不计独立确认，计时差没有质量增益，full_cost=false、owner=null。
+[#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243) 原5fc34e1ac0f1cf7e98162c210414ad72845a6b4c / tree35d5a86106db8ced1c71ff447546cb9375f1ee47的ordinary v3 caller实际通过154.426秒；随后build因Clang21.1.8缺少stddef.h退出101，0方法执行。旧V8断连、普通/hosted120秒caller超时原件保留。匹配官方Clang资源的准备job1a1cfde1d88-2564-1ad1已succeeded/exit0；完整288项manifest、同一libclang baseline fatal与显式资源后的无诊断C API对照均已核。这只闭合依赖准备。
 
-MEM原生成文件已闭合，原监督器身份仍UNKNOWN。新增两次只读页含一条pending与128条数据，total63578、inventory_complete=false；行字段没有原key或digest，未猜job、未查相似请求、未重派发。见[范围清单](evidence/mem11-v3-reconciliation-20261112/registry-bounded-readback/MANIFEST.json)。
+同一5fc的hosted run43217423865/job131198882642实际完成caller、双binary build、原launcher1方法和新5回归，六个精确方法各一次PASS。root从Git读回原59,125 B ZIP，独立核18个成员的central/local header、原大小、CRC32和SHA256，原两个named-case receipt均passed；唯一失败为format.log要求将一个ensure!扩成四行。原source-before/after相同、最终patch/status均0 B；整体CI仍failure。完整641,754 B原job日志与18个原成员都保留，见[完整ZIP独立核验](../notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ROOT_ZIP_VERIFICATION.json)。原hosted命令未显式传retries0，不能套用ordinary备用请求的配置。
+
+只按原formatter差异修复一处，+4/-1，表达式、错误文字及其余文件字节均相同。新head bb8ac6fe22d1314c36643b0cab95eb031cd86832 / tree383351558b0f15c5995fd94cdc2ae7ebe6fa9878已推并核ref。新run43231943175/job131229238631截至14:08已in_progress、有实际runner，前置步骤成功、caller审计执行中；新source的测试结果尚未取得。未派发的5fc v4备用请求保留为superseded，不启动重复native。详见[最小格式修复审查](../notes-seed-profile-20261112/bb8-format-fix/ROOT_STATIC_REVIEW.json)。
+
+### 原执行与尚未取得的身份
+
+真实wrapper B/C四个固定宏执行均COMPLETED、STOP、read_executed=false、quality0；FAILED/UNKNOWN/缺失均0。完整stdout/report/四组TERM与REALIZATION均核对；六份40,017 B来源快照完整SHA相同。最后只读job验证的是快照文件及版本/stat，未再遍历96个实时输入。新独立来源0、full_cost=false、owner=null。[B/C完整核验](evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json)。
+
+MEM原生成七文件已闭合，原监督器身份仍UNKNOWN。两次只读页含一条pending与128条数据，total63578、inventory_complete=false；字段没有原key/digest，未猜job、未重派发，也没有据此证明缺席。[范围清单](evidence/mem11-v3-reconciliation-20261112/registry-bounded-readback/MANIFEST.json)。
 
 ## 4. 原 scope 的12项完整资格门
 
@@ -71,7 +79,7 @@ MEM原生成文件已闭合，原监督器身份仍UNKNOWN。新增两次只读�
 | 来源／暴露认证 | OPEN；字节／split／source ID 一致性已核对，REPORT 的24 fit、18 cal、16 eval来源名互斥。 | 原来源 owner 的 acquisition/receipt/exposure 链、历史隔离／quarantine；名字互斥不能证明真实来源独立。 |
 | 真实时钟 | OPEN；四个时间量与 Q24 已分开。 | 真实动作、信息可用、结果与更新时刻的原 owner 记录；clock domain／boot、跨恢复锚点和误差界。 |
 | 持久 cadence／CAS | OPEN；当前时间 gate 仍无状态／参考。 | 原 LearningOwnerJournal/CURRENT 权限上的跨进程、并发、崩溃和回滚验证；机会只消费一次，pending不重派发。 |
-| 原 owner bridge | OPEN；1026源四门与hosted完整caller通过；Linux原native编译失败，Windows定向36方法通过。固定a96生产接口与最小import/collector修复整合中，尚未新验证。 | 同一精确tree的原StageOwner→verifier→Selection/decision→FinalUse→CURRENT原生执行，原authority及拒绝路径完整；当前验证结果不能预记成功。 |
+| 原 owner bridge | OPEN；1026源四门与hosted完整caller通过；Linux原native编译失败，Windows定向36方法通过。固定a96接口与最小import/collector修复已静态整合；ebe短验证待回读，新source native尚未执行。 | 同一精确tree的原StageOwner→verifier→Selection/decision→FinalUse→CURRENT原生执行，原authority及拒绝路径完整；当前验证结果不能预记成功。 |
 | T 时间教学效益 | OPEN；数值／路由机制已验。 | 同完整向量、可用时刻与预算下正确／打乱路由及 eligibility，真实训练、强普通基线、独立效益与旧能力门。 |
 | R 独立情景／技能回放 | OPEN；MEM仅1次未评分生成；ACT是受控恢复机制，真实 seed 失败修复在验。 | 同一真实任务 E/S 2×2 与另一个等总预算面板；统一池／普通基线、MEM禁用后ACT独立路径、实际效果与成本。 |
 | V 感知／检查效益 | OPEN；上游576次完整开发面板，conditional未READ；wrapper B/C四个固定宏执行均COMPLETED、均STOP、质量0。 | 校准覆盖问题解决后的独立冻结试验、强基线、同信息循环／付费观察／独立checker分别比较、真实净效益。 |

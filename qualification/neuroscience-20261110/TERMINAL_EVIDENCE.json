@@ -1,6 +1,6 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 13:49:21 UTC",
+  "observed_at_utc": "2026-11-12 14:12:00 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "publication_parent": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
   "scope": "Evidence and documentation only. Four pre-frozen B/C development macro executions reconciled; original failures and UNKNOWN records retained. Exact-source native/source test outcomes remain separately bound.",
@@ -474,6 +474,16 @@
           "authority_granted": false,
           "root_full_original_log_verified": true,
           "evidence": "../evaluated-current-read-20261112/hosted-1026-caller-success/MANIFEST.json"
+        },
+        "full_original_inventory": {
+          "records": 15046,
+          "gzip_bytes": 777704,
+          "gzip_sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8",
+          "raw_bytes": 2739429,
+          "raw_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
+          "root_independent_decode": true,
+          "ordinary_source_after_snapshot": true,
+          "evidence": "../evaluated-current-read-20261112/source-caller-1026bd0/full-inventory/ROOT_INVENTORY_VERIFICATION.json"
         }
       },
       "previous_0e_validation": {
@@ -562,7 +572,9 @@
           "fix": "NOT_RUN",
           "fmt": "NOT_RUN",
           "full_original_job_log_bytes": 2009920,
-          "full_original_job_log_sha256": "0e35ce7b3c97ebb4a89f110b5d38bc0b0b39f544d6157fe7439382a09a47633d"
+          "full_original_job_log_sha256": "0e35ce7b3c97ebb4a89f110b5d38bc0b0b39f544d6157fe7439382a09a47633d",
+          "original_inner_compile_log_bytes": 33065,
+          "original_missing_junit_collector_preserved": true
         },
         "windows": {
           "run": 43213822708,
@@ -574,23 +586,53 @@
           "not_selected": 597,
           "original_job_log_bytes": 376423,
           "original_job_log_sha256": "e649e3afccec55e17c42c3a6ec743aaba6ec1a7d33b4d58d0ed648e9f2e57956",
-          "scope": "Targeted LEARN/current regressions, not the full Linux owner or Root suite"
+          "scope": "Targeted LEARN/current regressions, not the full Linux owner or Root suite",
+          "original_junit_bytes": 9050,
+          "root_exact_junit_and_receipt_verified": true,
+          "original_test_retries": 0
         },
         "original_job_logs_root_verified": true,
-        "original_artifact_members_root_verified": false,
-        "evidence": "../evaluated-current-read-20261112/hosted-1026-native-failure/ROOT_LOG_VERIFICATION.json"
+        "original_artifact_members_root_verified": "CORE_MEMBERS_VERIFIED_NOT_WHOLE_NATIVE_ARCHIVE",
+        "evidence": "../evaluated-current-read-20261112/hosted-1026-native-failure/ROOT_LOG_VERIFICATION.json",
+        "core_originals_root_verification": "../evaluated-current-read-20261112/hosted-1026-original-artifacts/ROOT_CORE_VERIFICATION.json"
       },
       "pending_integration": {
         "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
         "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
         "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-        "status": "IN_PROGRESS_NOT_EXECUTED_NOT_PUBLISHED",
+        "status": "STATIC_REVIEW_COMPLETE_SHORT_GATES_ADMITTED_NOT_PUBLISHED",
         "canonical_upstream": "Opaque Evaluated read profile for original 4-cut Selection / 5-cut NextUse; independent wire operation/domain; read profiles actively attenuate to Readback.",
         "retain": "Actual T/E and 2x2 CURRENT positive observations, original bytes unchanged, equivalent original refusal conditions, exact source-bound caller registration.",
         "minimal_compile_fix_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
         "collector_fix_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
         "previous_4ab_candidate_not_executed": true,
-        "prior_source_results_transferred": false
+        "prior_source_results_transferred": false,
+        "candidate_commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+        "candidate_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+        "code_tree": "9281fae831d016aec213e95341bf0788ae1ffd0b",
+        "root_static_review": "../evaluated-current-read-20261112/merge-a96-review/ROOT_INTEGRATION_REVIEW.json",
+        "static_boundaries": 541,
+        "static_privileged_entries": 541,
+        "static_protected_files": 389,
+        "actual_source_bound_edges_added": 22,
+        "first_short_attempt": {
+          "job": "1a1d00fef8b-2564-1b19",
+          "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v1",
+          "status": "FAILED_PREPARATION_UNSUPPORTED_ORIGIN_TRANSPORT",
+          "fetch_started": false,
+          "stages": [],
+          "source_changes": false
+        },
+        "second_short_attempt": {
+          "job": "1a1d01383ed-2564-1b22",
+          "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v2",
+          "digest": "997e54fb636ae7913372b84dbacaf6d58eb883a0561cd11534aa1a02e25a32a7",
+          "status": "ADMITTED_RESULT_PENDING",
+          "request_blob": "b73248a78526fc0d0adfbb6be64686742f5ce0d3",
+          "changed_only": "original object mirror path and isolated checkout/evidence/key",
+          "rust_tests_requested": false
+        },
+        "new_source_gates_proven": false
       }
     }
   ],
@@ -649,8 +691,8 @@
       },
       "fix": {
         "pr": 6243,
-        "head": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
-        "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+        "head": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+        "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
         "static_review": true,
         "required_methods": 6,
         "dedicated_runs": [
@@ -692,11 +734,29 @@
             "two_binary_build": "success",
             "original_launcher_case": "passed",
             "five_regressions": "passed",
-            "named_case_receipt": "Original artifact not yet read",
+            "named_case_receipt": "passed",
             "exact_required_methods_observed": 6,
             "receipt_and_format_stage": "failure",
-            "precise_post_test_failure_cause": "PENDING_ORIGINAL_ARTIFACT_READBACK",
-            "explicit_retries_flag_in_original_test_command": false
+            "precise_post_test_failure_cause": "Original format.log: one ensure! expansion requested by rustfmt",
+            "explicit_retries_flag_in_original_test_command": false,
+            "regression_case_receipt": "passed",
+            "original_full_zip_root_verified": true,
+            "original_artifact_members_verified": 18,
+            "root_zip_verification": "../notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ROOT_ZIP_VERIFICATION.json"
+          },
+          {
+            "run": 43231943175,
+            "job": 131229238631,
+            "head": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+            "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+            "status": "in_progress",
+            "conclusion": null,
+            "observed_at_utc": "2026-11-12 14:08:27 UTC",
+            "runner": "GitHub Actions 1000131571",
+            "stage": "Verify the original caller boundaries",
+            "prior_setup_steps": "success",
+            "tests_proven": 0,
+            "previous_source_results_inherited": false
           }
         ],
         "ordinary_native": "V3_FAILED_BUILD_MISSING_CLANG_BUILTIN_HEADER; CALLER_PASSED",
@@ -800,9 +860,10 @@
         "v4_contingency": {
           "request_blob": "90fd33ad91d3f97729a003d77e4b34439e9d9f2a",
           "driver_blob": "de7a6944df620e1e65010b2eb0669b6ecdeb3f43",
-          "status": "NOT_DISPATCHED_HOLD_ORIGINAL_FINAL_STAGE_DIAGNOSIS",
+          "status": "NOT_DISPATCHED_SUPERSEDED_BY_BB8_FORMAT_FIX",
           "static_review": "../notes-seed-profile-20261112/native-validation-proposal-5fc-v4-20261112/ROOT_STATIC_REVIEW.json",
-          "six_methods_proven": 0
+          "six_methods_proven": 0,
+          "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c"
         },
         "hosted_six_methods": {
           "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
@@ -814,10 +875,21 @@
           "failed": 0,
           "exact_six_methods_once": true,
           "source_unchanged_for_caller_build_and_both_test_stages": true,
-          "overall_job_status": "FAILED_FINAL_COMBINED_RECEIPT_FORMAT_STEP",
-          "original_artifact_members_pending": true,
-          "evidence": "../notes-seed-profile-20261112/hosted-5fc-native-result-20261112/ROOT_LOG_REVIEW.json"
-        }
+          "overall_job_status": "FAILED_ONLY_FMT",
+          "original_artifact_members_pending": false,
+          "evidence": "../notes-seed-profile-20261112/hosted-5fc-native-result-20261112/ROOT_LOG_REVIEW.json",
+          "original_artifact_members_verified": 18,
+          "both_named_case_receipts": "passed",
+          "format_failure": "One ensure! expansion",
+          "root_complete_zip_verification": "../notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ROOT_ZIP_VERIFICATION.json"
+        },
+        "previous_head": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+        "previous_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+        "ordinary_attempt_source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+        "ordinary_attempt_source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+        "current_change": "Exact original rustfmt-requested one-line ensure! expansion, +4/-1, otherwise identical source",
+        "current_source_status": "HOSTED_CI_IN_PROGRESS_RESULTS_NOT_INHERITED",
+        "current_static_review": "../notes-seed-profile-20261112/bb8-format-fix/ROOT_STATIC_REVIEW.json"
       }
     }
   },
@@ -826,14 +898,15 @@
     "owner_current_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
     "owner_current_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
     "fixed_upstream_integration_target": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-    "status": "IN_PROGRESS",
+    "status": "STATIC_INTEGRATION_COMPLETE_SHORT_GATES_ADMITTED",
     "pr_api_base_sha_is_stale": true,
     "actual_branch_ref_used": true,
     "previous_completed_integration": "620235b + 639f894 -> 1026bd09",
     "original_21_edge_diagnostic_fix_retained": true,
     "cumulative_ours_vs_639_caller_edges": 22,
     "cumulative_count_explanation": "21 actual edges fixed after the 620 diagnostic plus one earlier readback_owner edge; do not rewrite the historical 21-edge fix count.",
-    "source_results_do_not_transfer": true
+    "source_results_do_not_transfer": true,
+    "candidate_commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4"
   },
   "remaining_gates": [
     "Original source/exposure custody",
@@ -892,7 +965,7 @@
     "evidence": "evidence/rv-v2-entry-assets-20261112/",
     "source_confirmation": false
   },
-  "latest_act_admission_observed_at_utc": "2026-11-12 13:49:21 UTC",
+  "latest_act_admission_observed_at_utc": "2026-11-12 14:08:27 UTC",
   "wrapper_actor_calls_scope": "Four pre-frozen native macro effects completed, all STOP and no READ. The original controller actor_calls_this_request remains null; total model/provider/tool contacts are not inferred.",
   "wrapper_development_execution": {
     "scope": "Existing exposed development sources; not independent B/C qualification",
@@ -991,6 +1064,13 @@
     "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 13:49:21 UTC",
-  "wrapper_completed_macro_executions": 4
+  "latest_followup_observed_at_utc": "2026-11-12 14:12:00 UTC",
+  "wrapper_completed_macro_executions": 4,
+  "latest_binary_readback": {
+    "staged_commit": "96801ded9111449a3c337438bd325ffcdbc89cf6",
+    "complete_original_job_logs": 3,
+    "binary_blobs": 16,
+    "all_verified": true,
+    "record": "evidence/terminal-20261112/GIT_READBACK_1400.json"
+  }
 }

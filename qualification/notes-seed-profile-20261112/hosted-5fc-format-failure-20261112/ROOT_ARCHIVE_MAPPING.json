@@ -1,7 +1,7 @@
 {
   "schema": "hepta.act5fc.original-archive-path-mapping.v1",
   "source_manifest_blob": "2f1d731f54a092adc4d901ed873c4cbe2ea845b0",
-  "all_original_artifact_members": "Original 18-member ZIP saved unchanged; independent root ZIP decode follows staged Git readback.",
+  "all_original_artifact_members": "Complete unchanged ZIP was read back from staged96801; root independently decoded and checked all18 central/local headers, original byte lengths, CRC32 and SHA256. All18 text members are also preserved under originals/.",
   "complete_job_log": {
     "original_manifest_path": "qualification/notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ORIGINAL_JOB_LOG.log",
     "original_blob": "b806c803ea7ea9e24ab71a284dddb402b57adcc2",
@@ -25,5 +25,6 @@
     "bytes": 641754,
     "sha256": "914f4b0c5974e65938d645ece2d97ecbdd95436bba5577513ae168c41ad90ca1"
   },
-  "standalone_text_members_root_verified": 14
+  "standalone_text_members_root_verified": 18,
+  "root_verification": "ROOT_ZIP_VERIFICATION.json"
 }

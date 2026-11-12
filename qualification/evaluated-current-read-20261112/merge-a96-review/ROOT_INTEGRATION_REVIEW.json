@@ -1,0 +1,313 @@
+{
+  "schema": "hepta.evaluated-current.a96-root-static-review.v1",
+  "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+  "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "code_tree": "9281fae831d016aec213e95341bf0788ae1ffd0b",
+  "review_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+  "unpublished_candidate": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+  "checks": {
+    "boundaries": 541,
+    "protected_files": 389,
+    "callers_added": 22,
+    "whole_manifest_other_lines_identical": true,
+    "allowlist_upstream_and_ours_preserved": true,
+    "allowlist_only_new_line": "sha256:07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf CALLERS.toml",
+    "runtimeChecks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "ok": true
+      }
+    ]
+  },
+  "source_bindings": {
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs",
+        "ok": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+        "ok": true
+      }
+    ],
+    "edges": [
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_owner_command_channel",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+        "symbol": "original_owner_command_channel_v1",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_circuit_selection_remote_readback",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_selector_command_context",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "symbol": "OriginalCircuitSelectionCommandContextV1::from_original_training",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_selector_command_owner_profile",
+        "caller": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_command_profile",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_selector_command_owner_factory",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+        "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_dataset_readback_current",
+        "caller": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+        "symbol": "OriginalCellQ24DatasetCommandReadbackV1::readback",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_material_initial_context_check",
+        "caller": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_material_initial_context_check",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_material_dataset_context_check",
+        "caller": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_material_dataset_context_check",
+        "caller": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_next_use_command_owner_factory",
+        "caller": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+        "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_evaluation_host_profile",
+        "caller": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_evaluation_host_receipt_current",
+        "caller": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      },
+      {
+        "boundary": "boundary:learning_original_evaluation_host_constructor",
+        "caller": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+        "symbol": "OriginalCellEvaluationHostV1::from_original_receipt_owner",
+        "contextMatches": true,
+        "callAtClaimedLines": true
+      }
+    ]
+  },
+  "metadata_correction": "Original upstream context tests exist at31839e7d...; corrected MANIFEST/MERGE_DELTAS are retained here. Code tree was unchanged.",
+  "original_v1_failure": {
+    "job": "1a1d00fef8b-2564-1b19",
+    "status": "preparation_or_execution_failed",
+    "reason": "unsupported origin transport",
+    "stages": [],
+    "no_fetch_or_gate_started": true
+  },
+  "v2": {
+    "job": "1a1d01383ed-2564-1b22",
+    "request_digest": "997e54fb636ae7913372b84dbacaf6d58eb883a0561cd11534aa1a02e25a32a7",
+    "request_blob": "b73248a78526fc0d0adfbb6be64686742f5ce0d3",
+    "plan_changes": [
+      {
+        "field": "checkout",
+        "before": "/home/qq/neuro-owner-6213-ebe6723-format-qa-v1-862531d11598",
+        "after": "/home/qq/neuro-owner-6213-ebe6723-format-qa-v2-862531d11598"
+      },
+      {
+        "field": "evidence",
+        "before": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-ebe6723-format-qa-v1",
+        "after": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-ebe6723-format-qa-v2"
+      },
+      {
+        "field": "object_source",
+        "before": "/home/qq/neuro-owner-6213-1026bd0-qa-v2-862531d11598",
+        "after": "/home/qq/ctrl-macro-20261112-736c"
+      }
+    ],
+    "runner_unchanged": true,
+    "status": "ADMITTED_RESULT_PENDING",
+    "native_or_rust_tests_requested": false
+  },
+  "owner_decision": null
+}
