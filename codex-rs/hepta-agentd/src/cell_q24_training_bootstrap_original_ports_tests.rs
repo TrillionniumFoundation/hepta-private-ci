@@ -1,6 +1,7 @@
 //! Same-process adapters to the actual deferred Trainer. The initial channels
 //! are created before Material/T completion and never return canned evidence.
 use super::super::connection;
+pub(crate) use super::super::connection::recovered_peer;
 use super::super::readonly;
 use super::*;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
