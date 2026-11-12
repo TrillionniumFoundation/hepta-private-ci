@@ -13,10 +13,11 @@ use codex_hepta_learning_ledger::verify_signed_actor_separation;
 use codex_hepta_types::AuthorityPosture;
 
 use super::super::auth;
-use super::CandidateRead;
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
+use super::OriginalCandidateOperationEvidence;
+use super::operation::CandidateOriginalOperation;
 use crate::OriginalCellEvaluationCommandClientV1;
 use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellEvaluationCommandErrorV1;
@@ -53,7 +54,7 @@ impl EvaluationLane {
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-enum Action {
+pub(super) enum Action {
     Execute,
     Readback,
 }
@@ -101,7 +102,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        let original = self.original_evaluation(snapshot, Action::Execute).await?;
+        let original = self.original_evaluation(snapshot, Action::Execute).await?.into_evaluation()?;
         Ok(original.receipt().clone())
     }
 
@@ -109,115 +110,41 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         &self,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
-        self.original_evaluation(snapshot, Action::Readback).await
+        self.original_evaluation(snapshot, Action::Readback).await?.into_evaluation()
     }
 
-    async fn original_evaluation(
+    pub(super) async fn original_evaluation(
         &self,
         snapshot: &LearningIterationSnapshotV1,
         action: Action,
-    ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
-        let started_at = auth::now()?;
-        self.require_live_deadline()?;
-        let training_cut = self.training_prefix(snapshot)?;
+    ) -> Result<OriginalCandidateOperationEvidence<'_>, Error> {
         if action == Action::Execute
-            && (self.common.origin != Origin::Fresh || snapshot != &training_cut)
+            && (self.common.origin != Origin::Fresh || snapshot.receipts.len() != 3)
         {
             return Err(Error::WrongScope);
         }
-        let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;
-        if lane.failed {
-            return Err(Error::CommitUncertain);
-        }
-        // Cancellation leaves this same instance fenced. Only a separately
-        // delivered original readonly recovery may inspect the actual effect.
-        lane.failed = true;
-        let mode = if action == Action::Execute {
-            CandidateRead::Dispatch
-        } else {
-            CandidateRead::Readback
-        };
-        let before = OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
-            self,
-            &training_cut,
-            mode,
-        )
-        .await?;
-        let (dataset, training) = {
-            let mut common = self
-                .common
-                .continuation
-                .try_lock()
-                .map_err(|_| Error::QueueFull)?;
-            common.read_prefix(&self.common, &training_cut).await?;
-            (
-                common
-                    .original_dataset
-                    .as_ref()
-                    .ok_or(Error::CommitUncertain)?
-                    .clone(),
-                common
-                    .original_training
-                    .as_ref()
-                    .ok_or(Error::CommitUncertain)?
-                    .clone(),
-            )
-        };
-        if before.receipt() != training.receipt() || before.attestation() != training.attestation()
-        {
-            return Err(Error::WrongScope);
-        }
-        if lane.client.is_none() {
-            let connection = lane.initial.take().ok_or(Error::CommitUncertain)?;
-            lane.client = Some(
-                OriginalCellEvaluationCommandConnectionV1::bind_original_training(
-                    connection,
-                    dataset.snapshot().clone(),
-                    &training,
-                )
-                .map_err(evaluation_failure)?,
-            );
-        }
+        let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
+        let before = self.read_candidate_in_operation(&operation).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::OwnerUnavailable(
                 "fresh resident Evaluation continuation",
             ))?;
-            // The actual pending intent is T -> E. Neither an E result nor
-            // readback of its signature changes Root's checkpoint prematurely.
             RootResidentLearningEffectGateV3::require_current(
                 gate,
-                &training_cut,
+                &operation.training_cut,
                 &self.common.material.scope,
-            )
-            .await?;
+            ).await?;
         }
-        let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
-        let result = match action {
-            Action::Execute => {
-                OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await
-            }
-            Action::Readback => OriginalCellEvaluationCommandClientV1::readback(client).await,
-        };
+        let original = self.read_evaluation_in_operation(&operation, action).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
-            if RootResidentLearningEffectGateV3::require_current(
+            RootResidentLearningEffectGateV3::require_current(
                 gate,
-                &training_cut,
+                &operation.training_cut,
                 &self.common.material.scope,
-            )
-            .await
-            .is_err()
-            {
-                return Err(Error::CommitUncertain);
-            }
+            ).await?;
         }
-        let original = result.map_err(evaluation_failure)?;
-        let after = OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
-            self,
-            &training_cut,
-            mode,
-        )
-        .await?;
+        let after = self.read_candidate_in_operation(&operation).await?;
         if before.bundle() != after.bundle()
             || before.heads() != after.heads()
             || before.receipt() != after.receipt()
@@ -225,44 +152,56 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::CommitUncertain);
         }
-        let mut common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
-        common.read_prefix(&self.common, &training_cut).await?;
+        let closed = operation.close().await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
-            if RootResidentLearningEffectGateV3::require_current(
+            RootResidentLearningEffectGateV3::require_current(
                 gate,
-                &training_cut,
+                snapshot,
                 &self.common.material.scope,
-            )
-            .await
-            .is_err()
-            {
-                return Err(Error::CommitUncertain);
-            }
+            ).await?;
         }
-        // All original Source, role and Root I/O precedes this common fresh
-        // validation of the complete original E/D/T/Evaluation signatures.
-        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
-        auth::require_clock(started_at, fresh)?;
-        auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
-        let current_training = common
-            .original_training
-            .as_ref()
-            .ok_or(Error::CommitUncertain)?;
-        if current_training != &training {
+        // This borrowed result keeps the operation fenced until the same Root
+        // continuation checks its final clock and consumes all original bytes.
+        closed.evaluation(original)
+    }
+
+    pub(super) async fn read_evaluation_in_operation(
+        &self,
+        operation: &CandidateOriginalOperation<'_>,
+        action: Action,
+    ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
+        operation.require_owner(self)?;
+        if action == Action::Execute
+            && (self.common.origin != Origin::Fresh
+                || operation.supplied != operation.training_cut)
+        {
             return Err(Error::WrongScope);
         }
-        self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?;
+        let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;
+        if lane.failed { return Err(Error::CommitUncertain); }
+        lane.failed = true;
+        if lane.client.is_none() {
+            let connection = lane.initial.take().ok_or(Error::CommitUncertain)?;
+            lane.client = Some(
+                OriginalCellEvaluationCommandConnectionV1::bind_original_training(
+                    connection,
+                    operation.dataset.snapshot().clone(),
+                    &operation.training,
+                ).map_err(evaluation_failure)?,
+            );
+        }
+        let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
+        let original = match action {
+            Action::Execute => OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await,
+            Action::Readback => OriginalCellEvaluationCommandClientV1::readback(client).await,
+        }.map_err(evaluation_failure)?;
+        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
+        self.verify_original_evaluation(
+            &operation.supplied, &operation.training_cut, &operation.training, &original, fresh,
+        )?;
         self.require_live_deadline()?;
-        if lane
-            .retained
-            .as_ref()
-            .is_some_and(|saved| saved != &original)
-        {
+        if lane.retained.as_ref().is_some_and(|saved| saved != &original) {
             return Err(Error::WrongScope);
         }
         lane.retained = Some(original.clone());

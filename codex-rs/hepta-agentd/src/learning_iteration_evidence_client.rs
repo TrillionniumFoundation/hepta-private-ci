@@ -33,6 +33,7 @@ mod command_evidence;
 
 #[path = "cell_q24_no_update_stage_owners.rs"]
 mod ordinary_stage_owners;
+pub(crate) use ordinary_stage_owners::OriginalCandidateOperationEvidence;
 pub use ordinary_stage_owners::OriginalCellQ24CandidateStageOwnersV1;
 pub use ordinary_stage_owners::OriginalCellQ24CandidateStageStreamsV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;

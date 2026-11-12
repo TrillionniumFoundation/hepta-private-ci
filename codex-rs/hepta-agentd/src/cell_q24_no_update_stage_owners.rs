@@ -32,6 +32,7 @@ mod state;
 
 #[path = "cell_q24_candidate_stage_owners.rs"]
 mod candidate;
+pub(crate) use candidate::OriginalCandidateOperationEvidence;
 pub use candidate::OriginalCellQ24CandidateStageOwnersV1;
 pub use candidate::OriginalCellQ24CandidateStageStreamsV1;
 

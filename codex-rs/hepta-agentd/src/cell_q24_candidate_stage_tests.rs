@@ -87,11 +87,15 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
         end,
     )?;
     adapter.validate_recovery(&snapshot).await?;
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
+    // An independent request must perform all original reads again. The
+    // previous operation's private proof never becomes a reusable cache.
+    adapter.validate_recovery(&snapshot).await?;
     let signature = adapter
         .receipt_attestation(&snapshot, training.receipt(), command_now()?)
         .await?;
     assert_eq!(signature, *training.attestation());
-    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 6);
     assert_eq!((fixture.bytes()?, fixture.training_bytes()?), originals);
     // Recovery remains readonly even with an actual Candidate and ready bytes.
     assert!(matches!(
@@ -100,17 +104,81 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
             .await,
         Err(StageError::WrongScope)
     ));
-    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 6);
     drop(adapter);
-    assert_eq!(candidate_peer.finish()?, 3);
-    assert_eq!(material_ports::finish(e_peer)?, 2);
-    assert_eq!(material_ports::finish(d_peer)?, 2);
+    assert_eq!(candidate_peer.finish()?, 6);
+    assert_eq!(material_ports::finish(e_peer)?, 4);
+    assert_eq!(material_ports::finish(d_peer)?, 4);
     assert_eq!(
         training_server
             .join()
             .expect("original Trainer command peer")?,
-        4
+        6
     );
+    drop(owner);
+    let counts = finish_material(peers)?;
+    assert_eq!(counts[0], 1);
+    assert!(counts[1] > 0 && counts[2] > 0 && counts[3] > 0);
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn candidate_stage_cancelled_operation_cannot_reuse_original_prefix()
+-> anyhow::Result<()> {
+    let registered = protocol("original-primary-fold-and-unit-rule")?;
+    let fixture = MaterialCommandFixture::candidate_pages_for_evaluation_profile(
+        registered.evaluation_profile(),
+    ).await?;
+    let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
+    let reached = Arc::new(tokio::sync::Notify::new());
+    let (release, released) = std::sync::mpsc::channel();
+    let (candidate_connection, candidate_peer) = page_peer(
+        Arc::clone(&owner), fixture.config.clone(), Origin::Recovered,
+        /*expected*/ None, Fault::Original,
+        Some(ResponseGate { reached: Arc::clone(&reached), release: released }),
+        Duration::from_secs(300),
+    )?;
+    let (training_connection, training_server) = prebound(
+        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh,
+        /*expected*/ None, Duration::from_secs(300),
+    )?;
+    let (experience, e_peer) = material_ports::commands(&fixture, MaterialRole::Experience)?;
+    let (dataset, d_peer) = material_ports::commands(&fixture, MaterialRole::Dataset)?;
+    let cut = complete_material(&fixture).await?;
+    let trainer = training_connection.bind_original_dataset(cut.clone())?;
+    let training = trainer.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(cut.snapshot().clone())?;
+    coordinator.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
+    let snapshot = coordinator.snapshot().clone();
+    let originals = (fixture.bytes()?, fixture.training_bytes()?);
+    let common = stages::recovered_candidate_clients(
+        fixture.config.clone(), experience, dataset, trainer,
+    )?;
+    let adapter = Arc::new(stages::fixture_from_original_clients(
+        common, registered, fixture.training_baseline(), candidate_connection,
+        Instant::now() + Duration::from_secs(300),
+    )?);
+    let pending = tokio::spawn({
+        let adapter = Arc::clone(&adapter);
+        let snapshot = snapshot.clone();
+        async move { adapter.validate_recovery(&snapshot).await }
+    });
+    tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    // Abort only this await. The actual original read may still finish and its
+    // bytes must remain unchanged; the same adapter must never reuse it.
+    pending.abort();
+    match pending.await {
+        Err(error) => assert!(error.is_cancelled()),
+        Ok(_) => anyhow::bail!("original Candidate operation was not cancelled"),
+    }
+    assert!(matches!(adapter.validate_recovery(&snapshot).await, Err(StageError::CommitUncertain)));
+    release.send(())?;
+    drop(adapter);
+    assert_eq!(candidate_peer.finish()?, 3);
+    assert_eq!(material_ports::finish(e_peer)?, 1);
+    assert_eq!(material_ports::finish(d_peer)?, 1);
+    assert_eq!(training_server.join().expect("original Trainer command peer")?, 2);
+    assert_eq!((fixture.bytes()?, fixture.training_bytes()?), originals);
     drop(owner);
     let counts = finish_material(peers)?;
     assert_eq!(counts[0], 1);
