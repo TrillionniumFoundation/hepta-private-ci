@@ -41,6 +41,9 @@ CALLERS = {
         AGENT + "authority_host_initial_learning_trust_transport.rs",
         AGENT + "authority_host_historical_cell_registration.rs",
         AGENT + "authority_host_historical_cell_session.rs",
+        AGENT + "authority_host_run_start_deployment.rs",
+        AGENT + "authority_host_run_start_store.rs",
+        AGENT + "authority_host_run_start_context.rs",
     ),
     "root_historical_source_fixed_inputs": (SESSION,),
     "root_historical_source_registered_inputs": (PIN,),
@@ -55,13 +58,20 @@ CALLERS = {
     "root_historical_source_handoff_fence": (TRANSPORT,),
     "root_historical_source_pin_publisher": (HANDOFF,),
     "root_initial_data_refusal_fresh": (
-        RECORD, HANDOFF, AGENT + "authority_host_historical_cell_registration.rs"
+        RECORD, HANDOFF, AGENT + "authority_host_historical_cell_registration.rs",
+        AGENT + "authority_host_run_start_store.rs",
     ),
-    "root_initial_data_refusal_existing": (RECORD, HANDOFF),
+    "root_initial_data_refusal_existing": (
+        RECORD, HANDOFF, AGENT + "authority_host_run_start_store.rs",
+    ),
     "root_initial_data_refusal_inspect": (
-        RECORD, HANDOFF, AGENT + "authority_host_historical_cell_pin.rs"
+        RECORD, HANDOFF, AGENT + "authority_host_historical_cell_pin.rs",
+        AGENT + "authority_host_run_start_store.rs",
+        AGENT + "authority_host_run_start_context.rs",
     ),
-    "root_initial_data_refusal_refuse": (RECORD, HANDOFF),
+    "root_initial_data_refusal_refuse": (
+        RECORD, HANDOFF, AGENT + "authority_host_run_start_transport.rs",
+    ),
     "root_historical_source_armed_capture": (PIN,),
     "root_historical_source_armed_record": (PIN,),
     "root_generation_current_original_broker_head": (
@@ -69,6 +79,7 @@ CALLERS = {
         AGENT + "authority_host_generation_publication_transport.rs",
         AGENT + "authority_host_generation_initial_enrollment.rs",
         AGENT + "authority_host_generation_initial_transport.rs", PIN,
+        AGENT + "authority_host_run_start_context.rs",
     ),
     "root_initial_exact_retained_record": (
         AGENT + "authority_host_generation_initial_enrollment.rs",
@@ -76,6 +87,8 @@ CALLERS = {
         AGENT + "root_generation_initial_client.rs", PIN, TRANSPORT,
         AGENT + "root_generation_initial_source_capture.rs",
         AGENT + "root_generation_initial_learning_trust.rs",
+        AGENT + "authority_host_run_start_context.rs",
+        AGENT + "root_generation_initial_run_start.rs",
     ),
 }
 

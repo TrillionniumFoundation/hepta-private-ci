@@ -32,7 +32,8 @@ CALLERS = {
     ],
     "root_initial_artifact_store_client": [
         "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs",
-        AGENT + "neuron_generation_current_initial_learning_trust.rs"
+        AGENT + "neuron_generation_current_initial_learning_trust.rs",
+        AGENT + "neuron_generation_current_initial_run_start.rs"
     ],
     "root_initial_artifact_same_session": [
         "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs",

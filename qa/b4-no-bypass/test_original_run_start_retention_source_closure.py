@@ -4,6 +4,7 @@ These mutations are source checks. Actual Root/store subprocess execution and
 the ordinary A/Outcome/learning chain require separate retained native results.
 """
 
+from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
@@ -25,6 +26,27 @@ TRANSPORT = A + "authority_host_run_start_transport.rs"
 CLIENT = A + "root_generation_initial_run_start.rs"
 OBJECTIVE = A + "objective_run_start_retention.rs"
 SUBMISSION = A + "objective_submission.rs"
+CALLERS = {
+    "root_initial_run_start_enable": (A + "bin/hepta-authority-host.rs",),
+    "root_initial_run_start_fixed_files": (),
+    "root_initial_run_start_original_files": (INPUTS, CONTEXT),
+    "root_initial_run_start_register": (A + "authority_host_generation_initial_runtime.rs",),
+    "root_initial_run_start_live_retain": (TRANSPORT,),
+    "root_initial_run_start_original_pin": (STORE,),
+    "root_initial_run_start_original_observe": (CONTEXT, STORE),
+    "root_initial_run_start_cold_data": (),
+    "root_initial_run_start_cold_digest": (),
+    "root_initial_run_start_cold_physical": (),
+    "root_initial_run_start_client": (A + "neuron_generation_current_initial_run_start.rs",),
+    "root_initial_run_start_current": (A + "production_run_start_retention.rs",),
+    "ordinary_initial_run_start_select": (A + "production_initial_q24.rs",),
+    "ordinary_initial_run_start_original_append": (OBJECTIVE,),
+    "ordinary_initial_run_start_config": (A + "production_launcher.rs",),
+    "ordinary_initial_run_start_take": (A + "runtime.rs",),
+    "ordinary_initial_run_start_objective": (A + "runtime.rs",),
+    "ordinary_initial_run_start_before_execution": (SUBMISSION,),
+    "root_initial_run_start_original_trust_data": (INPUTS,),
+}
 
 
 def span(code, marker):
@@ -99,6 +121,45 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
+        paths = {path for identifier, expected in CALLERS.items()
+                 for path in (cls.boundaries[identifier].definition_path, *expected)}
+        cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
+            (ROOT / path).read_text())) for path in paths}
+
+    def test_original_root_and_daemon_callers_are_exact(self):
+        for identifier, expected in CALLERS.items():
+            with self.subTest(boundary=identifier):
+                self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
+                row = self.boundaries[identifier]
+                self.assertEqual(row.product_callers, expected)
+                PROOF._verify_boundary(ROOT, row, self.sources, ())
+
+    def test_every_actual_live_caller_must_remain_declared(self):
+        for identifier, expected in CALLERS.items():
+            for missing in expected:
+                with self.subTest(boundary=identifier, missing=missing):
+                    row = replace(self.boundaries[identifier], product_callers=tuple(
+                        path for path in expected if path != missing))
+                    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                        PROOF._verify_boundary(ROOT, row, self.sources, ())
+
+    def test_unregistered_live_and_cold_callers_are_rejected(self):
+        for identifier in (
+            "root_initial_run_start_enable", "root_initial_run_start_register",
+            "root_initial_run_start_live_retain", "root_initial_run_start_cold_data",
+            "root_initial_run_start_cold_digest", "root_initial_run_start_cold_physical",
+            "ordinary_initial_run_start_select",
+        ):
+            with self.subTest(boundary=identifier):
+                row = self.boundaries[identifier]
+                method = row.symbol.rsplit("::", 1)[-1]
+                call = (f"fn unregistered(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
+                        if row.receiver_type else f"fn unregistered() {{ {row.symbol}(); }}")
+                sources = dict(self.sources)
+                sources[A + "unregistered_run_start.rs"] = call
+                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                    PROOF._verify_boundary(ROOT, row, sources, ())
 
     def verify_path(self, root, path):
         rows = [r for r in self.manifest["protected_file"] if r["path"] == path]
