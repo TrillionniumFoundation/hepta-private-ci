@@ -58,6 +58,11 @@ async fn deferred_training_uses_actual_material_cut_and_original_source_without_
         None,
         Duration::from_secs(300),
     )?;
+    let (readback_connection, readback_server) = original_readback::prebound(
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Duration::from_secs(300),
+    )?;
     let before = fixture.training_bytes()?;
     assert!(before[0].is_empty() && before[2].is_empty());
     assert_eq!(fixture.bytes()?, original_material);
@@ -99,22 +104,21 @@ async fn deferred_training_uses_actual_material_cut_and_original_source_without_
         Err(CommandError::ReadbackRequired)
     ));
 
-    // Exercise the old 500-ms evidence protocol against this same actual
-    // remote-source Stage. A slower chain must fail visibly, not widen time.
-    let (evidence, channel) = transport::evidence_client(&context)?;
+    // The deep original Source stays live, while this distinct read-only
+    // command purpose keeps its initially admitted 30-s/300-s bounds.
+    // Existing local-owner legacy evidence mechanisms still cover 500 ms.
+    let evidence = readback_connection.bind_original_training(cut, completed.clone())?;
     let started = Instant::now();
-    let evidence_server =
-        transport::serve_evidence(owner.ready()?.expect("same original Ready lane"), channel);
     let observed = evidence
         .readback(&context.dataset, completed.receipt())
         .await;
     let client_elapsed = started.elapsed().as_micros();
     drop(evidence);
-    let server_result = evidence_server
+    let server_result = readback_server
         .join()
-        .expect("actual Training evidence producer");
+        .expect("actual Training read-only producer");
     eprintln!(
-        "HEPTA_DEFERRED_TRAINING_EVIDENCE client_us={client_elapsed} total_us={} client={:?} server={:?}",
+        "HEPTA_DEFERRED_TRAINING_READONLY client_us={client_elapsed} total_us={} client={:?} server={:?}",
         started.elapsed().as_micros(),
         observed.as_ref().map(|_| ()).map_err(ToString::to_string),
         server_result
@@ -128,6 +132,10 @@ async fn deferred_training_uses_actual_material_cut_and_original_source_without_
     assert_eq!(finish(client, server)?, 4);
     drop(owner);
     let counts = finish_material(peers)?;
+    eprintln!(
+        "HEPTA_DEFERRED_TRAINING_MATERIAL_COUNTS dataset={} source={} experience={} dataset_evidence={}",
+        counts[0], counts[1], counts[2], counts[3]
+    );
     assert_eq!(
         counts[0], 1,
         "the host reads the actual Dataset command once"
@@ -553,3 +561,6 @@ mod command_connection;
 
 #[path = "cell_q24_training_candidate_tests.rs"]
 mod candidate_material;
+
+#[path = "cell_q24_training_readback_tests.rs"]
+mod original_readback;

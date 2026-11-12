@@ -59,22 +59,43 @@ impl ResidentOriginalStageOwnersV3 {
     /// A branch choice neither adds a producer nor expands the original Root
     /// grant. Candidate Evaluation contacts its original material and the
     /// separately delivered original B/retention Evaluator command capability.
-    pub(super) fn require_stage(&self, stage: Stage) -> Result<(), Error> {
+    pub(super) fn require_stage(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        stage: Stage,
+    ) -> Result<(), Error> {
         match stage {
-            Stage::Proposal => Err(Error::OwnerUnavailable(
-                "resident Model and independent adoption capabilities are absent",
-            )),
-            Stage::Evaluation => match self {
+            Stage::Evaluation | Stage::Proposal => match self {
                 Self::NoUpdate(_) => Err(Error::OwnerUnavailable(
-                    "resident NoUpdate profile has no Candidate Evaluation route",
+                    "resident NoUpdate profile has no Candidate Evaluation or Model route",
                 )),
                 Self::Candidate(_) => Ok(()),
             },
+            Stage::Selection | Stage::NextUse
+                if matches!(self, Self::Candidate(_))
+                    && snapshot.training_no_update_v2().is_none() =>
+            {
+                Err(Error::OwnerUnavailable(
+                    "original Candidate selection and adoption route is absent",
+                ))
+            }
             Stage::Experience
             | Stage::Dataset
             | Stage::Training
             | Stage::Selection
             | Stage::NextUse => Ok(()),
+        }
+    }
+
+    pub(super) async fn read_original_model(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<crate::OriginalCellQ24ModelCommandReceiptV1, Error> {
+        match self {
+            Self::Candidate(stages) => {
+                OriginalCellQ24CandidateStageOwnersV1::read_original_model(stages, snapshot).await
+            }
+            Self::NoUpdate(_) => Err(Error::OwnerUnavailable("NoUpdate has no Model record")),
         }
     }
 }

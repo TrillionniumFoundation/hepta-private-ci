@@ -132,4 +132,74 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         OriginalCellQ24TrainingStageV1::read_model_proposal(&self.original, model, inputs)
     }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn create_model_from_current_evaluation<MW: AnchorWitnessStore>(
+        &self,
+        file: File,
+        witness: MW,
+        training_cut: &LearningIterationSnapshotV1,
+        training_attestation: &SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
+        self.original.create_model_from_current_evaluation(
+            file,
+            witness,
+            training_cut,
+            training_attestation,
+            material,
+        )
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn recover_model_from_current_evaluation<MW: AnchorWitnessStore>(
+        &self,
+        file: File,
+        witness: MW,
+        training_cut: &LearningIterationSnapshotV1,
+        training_attestation: &SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
+        self.original.recover_model_from_current_evaluation(
+            file,
+            witness,
+            training_cut,
+            training_attestation,
+            material,
+        )
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn commit_model_from_current_evaluation(
+        &self,
+        model: &mut CellQ24ModelProposalOwnerV1<impl AnchorWitnessStore>,
+        training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
+        OriginalCellQ24TrainingStageV1::commit_model_from_current_evaluation(
+            &self.original,
+            model,
+            training_cut,
+            training_attestation,
+            material,
+        )
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn read_model_from_current_evaluation(
+        &self,
+        model: &mut CellQ24ModelProposalOwnerV1<impl AnchorWitnessStore>,
+        training_cut: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        material: &crate::OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
+        OriginalCellQ24TrainingStageV1::read_model_from_current_evaluation(
+            &self.original,
+            model,
+            training_cut,
+            training_attestation,
+            material,
+        )
+    }
 }

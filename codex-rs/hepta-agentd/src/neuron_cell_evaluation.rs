@@ -461,3 +461,6 @@ impl Error for CellEvaluationErrorV1 {}
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_tests.rs"]
 pub(crate) mod tests;
+
+#[path = "neuron_cell_evaluation_material_projection.rs"]
+mod material_projection;

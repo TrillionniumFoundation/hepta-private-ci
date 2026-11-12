@@ -106,8 +106,9 @@ impl ResidentRootFixture {
         verifier: &LearningEvidenceVerifierV1,
         lifetime_ms: u64,
     ) -> anyhow::Result<Self> {
-        assert_eq!(unsafe { libc::getuid() }, 0);
-        assert_eq!(unsafe { libc::geteuid() }, 0);
+        // SAFETY: getuid/geteuid only read the original fixture process credentials.
+        let credentials = unsafe { (libc::getuid(), libc::geteuid()) };
+        assert_eq!(credentials, (0, 0));
         let parent = PathBuf::from(
             std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
                 .ok_or_else(|| anyhow::anyhow!("explicit protected Root bind parent required"))?,

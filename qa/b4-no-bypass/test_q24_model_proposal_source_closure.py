@@ -116,11 +116,11 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
 
     def test_commit_cannot_skip_durable_claim_completion_or_witness(self):
         for marker in (
-            "self.journal.claim(&key)",
-            "self.journal.complete(&key, &payload)",
+            "self.journal.claim(key)",
+            "self.journal.complete(key, payload)",
         ):
             with self.subTest(marker=marker):
-                self.rejects(OWNER, "fn commit_or_readback<", marker)
+                self.rejects(OWNER, "fn complete_admitted(", marker)
 
     def test_owner_creation_cannot_skip_original_trainer(self):
         self.rejects(

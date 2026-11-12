@@ -408,3 +408,7 @@ pub(crate) use serving::tests::bootstrap_ports;
 mod retained_version_tests;
 #[cfg(test)]
 pub(crate) use retained_version_tests::retained_version_dataset_fixture;
+
+#[cfg(test)]
+#[path = "cell_q24_material_command_root_support_tests.rs"]
+mod root_model_support;

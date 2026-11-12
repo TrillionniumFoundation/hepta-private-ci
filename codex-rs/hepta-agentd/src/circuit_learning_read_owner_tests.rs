@@ -104,7 +104,9 @@ async fn q24_remote_selection_reads_original_publication_before_c_and_recovers_s
     let owner = original(&f.original, context.clone())?;
     let (live, channel) = transport::client(context)?;
     let server = transport::serve(owner, channel);
-    let (trainer, peer) = f.peer(f.config.training_evidence.clone(), 20)?;
+    // Missing observes T once; successful attest/readback/cold read each
+    // bracket the same original Selector journal with exactly two T reads.
+    let (trainer, peer) = f.peer(f.config.training_evidence.clone(), 7)?;
     let mut selector = f.create()?;
     let before = f.bytes()?;
     let source_before = owner_bytes(&f.original.session)?;
@@ -219,7 +221,7 @@ async fn q24_remote_c_requires_actual_completion_and_original_selector_signature
     );
     let (live, channel) = transport::client(context)?;
     let server = transport::serve(owner, channel);
-    let peers = f.original.peers(18)?;
+    let peers = f.original.peers(6)?;
     let mut observer = f.original.create_owner()?;
     let saved = observer
         .attest_original_remote_completion(remote_c(&f.original.config.selection, &live, &peers))
@@ -261,7 +263,7 @@ async fn q24_remote_current_refuses_withdrawal_after_a_successful_read() -> anyh
     let server = transport::serve(owner, channel);
     live.read_current().await?;
     f.original.version.withdraw()?;
-    let (trainer, peer) = f.peer(f.config.training_evidence.clone(), 1)?;
+    let (trainer, peer) = f.peer(f.config.training_evidence.clone(), 0)?;
     let mut selector = f.create()?;
     let before = f.bytes()?;
     assert!(matches!(
