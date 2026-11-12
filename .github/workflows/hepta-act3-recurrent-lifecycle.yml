@@ -1,0 +1,55 @@
+name: ACT3 recurrent lifecycle original recovery
+
+on:
+  push:
+    branches: [codex/act3-recurrent-qualification-20261112-5fe4]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: act3-recurrent-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  recurrent-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 16
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Build pinned Python test environment
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/act3-recurrent-setup"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m venv "$RUNNER_TEMP/act3-recurrent-venv"
+          "$RUNNER_TEMP/act3-recurrent-venv/bin/pip" install numpy==2.3.5
+          "$RUNNER_TEMP/act3-recurrent-venv/bin/pip" freeze > "$RUNNER_TEMP/act3-recurrent-setup/packages.txt"
+      - name: Execute every planned test and retain original process-death evidence
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-recurrent-venv/bin/python" scripts/act2_learning/qualify_recurrent_lifecycle.py --output "$RUNNER_TEMP/act3-recurrent"
+          just fmt --base 8c11ca58559f0fc05678387e09588bf2368d4d84 --check > "$RUNNER_TEMP/act3-recurrent/formatter-check.log" 2>&1
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act3-recurrent-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/act3-recurrent
+            ${{ runner.temp }}/act3-recurrent-setup
+          if-no-files-found: error
+          retention-days: 30
