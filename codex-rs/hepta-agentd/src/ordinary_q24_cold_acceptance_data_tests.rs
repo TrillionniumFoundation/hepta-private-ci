@@ -269,13 +269,15 @@ fn record_paths(directory: &Path, owner: &str) -> Vec<PathBuf> {
     ]
 }
 
-/// Scheduling data only: completion still requires the product's original
-/// acceptance exchange and successful daemon/Root shutdown in the parent.
+/// Wait for both the original physical Root first fact and the daemon's typed
+/// acknowledgement after every delivery postcheck. Disk Ready alone cannot
+/// authorize the parent to stop the daemon before it has received its ACK.
 pub(super) async fn wait_for_original_terminal_acceptance(
     running: &RunningOrdinaryPostA,
     terminal: &OriginalCheckpointData,
 ) -> anyhow::Result<Digest32> {
     let plan = &running.plan;
+    let client = running.client()?;
     let initial = plan.profile.original_initial_data()?;
     let directory = &plan.resources.original.plan.root.authority;
     let owner = completed_learning_acceptance_owner(&initial);
@@ -342,7 +344,7 @@ pub(super) async fn wait_for_original_terminal_acceptance(
                 );
                 require_actual_acceptance(&accepted, &checkpoint, plan, terminal)?;
                 let digest = accepted.data_digest()?;
-                first = Some(accepted);
+                first = Some(accepted.clone());
                 if let Some(after) = observe_original_record::<Refusal>(
                     directory,
                     &refusal_owner,
@@ -355,7 +357,65 @@ pub(super) async fn wait_for_original_terminal_acceptance(
                     previous_attempt = after.attempt;
                     if before == after && after.phase == Phase::Ready && after.attempt >= 2 {
                         running.require_live()?;
-                        return Ok(digest);
+                        if let Some(acknowledged) =
+                            client.original_q24_terminal_acceptance().await?
+                        {
+                            running.require_live()?;
+                            acknowledged.validate_data().map_err(anyhow::Error::msg)?;
+                            let accepted_data = serde_json::to_value(&accepted)?;
+                            let terminal = terminal.snapshot.as_ref().ok_or_else(|| {
+                                anyhow::anyhow!("actual terminal checkpoint absent")
+                            })?;
+                            anyhow::ensure!(
+                                acknowledged.identity_digest
+                                    == crate::neuron_generation_process_identity_digest_v1(
+                                        &plan.resources.successor.identity,
+                                    )?
+                                    .to_string()
+                                    && acknowledged.initial == initial.head_digest.to_string()
+                                    && Some(acknowledged.frozen_scope.as_str())
+                                        == accepted_data["frozen_scope"].as_str()
+                                    && acknowledged.terminal_head
+                                        == terminal.head_digest.to_string()
+                                    && acknowledged.acceptance == digest.to_string()
+                                    && Some(acknowledged.data_cut.as_str())
+                                        == accepted_data["original_task"].as_str(),
+                                "daemon acknowledgement differs from the original Root first fact"
+                            );
+                            let actual = observe_original_record::<
+                                RootCompletedLearningAcceptanceDataV1,
+                            >(directory, &owner, |_| {
+                                Ok(())
+                            })?
+                            .ok_or_else(|| {
+                                anyhow::anyhow!("first fact changed after daemon acknowledgement")
+                            })?;
+                            let final_attempt = observe_original_record::<Refusal>(
+                                directory,
+                                &refusal_owner,
+                                &validate_refusal,
+                            )?
+                            .ok_or_else(|| {
+                                anyhow::anyhow!("acceptance attempt changed after acknowledgement")
+                            })?;
+                            anyhow::ensure!(
+                                actual == accepted && final_attempt == after,
+                                "original acceptance changed across the daemon ACK observation"
+                            );
+                            running.require_live()?;
+                            super::root::write_json(
+                                &plan
+                                    .resources
+                                    .original
+                                    .plan
+                                    .protected
+                                    .path()
+                                    .join("ordinary-terminal-acknowledgement.json"),
+                                &acknowledged,
+                            )?;
+                            running.require_live()?;
+                            return Ok(digest);
+                        }
                     }
                 }
             }
