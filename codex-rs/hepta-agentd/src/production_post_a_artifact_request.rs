@@ -89,13 +89,20 @@ pub(super) fn original_request(
         created_at: signed_current_head.witness.issued_at,
         expires_at: signed_current_head.witness.expires_at,
     };
+    // The independent issuer signs the registry head containing this admission
+    // digest. Encode its original timestamp so transport delay cannot change
+    // that head; current-time validity is checked separately below and again
+    // by the real publication owner.
+    let signed_at = signed_current_head.witness.issued_at;
     let admission = admit_manifest_at_withdrawal_head_v3(
         owner.withdrawal_registry(),
         owner.withdrawal_registry().head_digest(),
         original,
-        now,
+        signed_at,
     )
     .map_err(refused)?;
+    validate_artifact_publication_v3(&admission, owner.withdrawal_registry(), now)
+        .map_err(refused)?;
     Ok(LearningArtifactPublishRequestV1 {
         operation_id: decision.artifact_operation.clone(),
         admission,

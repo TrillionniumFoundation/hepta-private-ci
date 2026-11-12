@@ -66,8 +66,11 @@ class PostAArtifactsSourceTests(unittest.TestCase):
         self.check_markers(REQ, 'fn original_request(', (
             'created_at: signed_current_head.witness.issued_at',
             'expires_at: signed_current_head.witness.expires_at',
+            'let signed_at = signed_current_head.witness.issued_at',
             'admit_manifest_at_withdrawal_head_v3(', 'owner.withdrawal_registry()',
-            'owner.withdrawal_registry().head_digest()', 'operation_id: decision.artifact_operation.clone()',
+            'owner.withdrawal_registry().head_digest()', 'original,\n        signed_at,',
+            'validate_artifact_publication_v3(&admission, owner.withdrawal_registry(), now)',
+            'operation_id: decision.artifact_operation.clone()',
             'signed_current_head,', 'expected_registry_predecessor_head: owner.registry().snapshot().head_digest'))
         self.check_markers(A + 'production_post_a_artifact_data.rs', 'fn original_signed_lease(', (
             'signer_id: StableId::new(&self.signer_id)',
