@@ -84,7 +84,7 @@ impl OriginalInputPin {
         uid: u32,
         gid: u32,
     ) -> io::Result<Self> {
-        files.with_original_files(|journal, profile, trust| {
+        RootInitialRunStartFilesV1::with_original_files(files, |journal, profile, trust| {
             let decoded = decode_inputs(journal, profile, trust, identity, uid, gid)?;
             let profile_digest = decoded.profile.digest().map_err(io::Error::other)?;
             let binding = crate::objective_runtime::run_start_binding(identity, profile_digest);
@@ -122,7 +122,7 @@ impl OriginalInputPin {
         gid: u32,
         now: u64,
     ) -> io::Result<RunStartReadOnlyFrameV1> {
-        files.with_original_files(|journal, profile, trust| {
+        RootInitialRunStartFilesV1::with_original_files(files, |journal, profile, trust| {
             let decoded = decode_inputs(journal, profile, trust, identity, uid, gid)?;
             self.require_decoded(&decoded)?;
             if publication.run_id != target.scope().run_id

@@ -66,7 +66,7 @@ impl HostAuthorityService {
             .state
             .try_lock()
             .map_err(|_| io::Error::other("original RunStart retention busy"))?;
-        let (next, reply) = retained.refusal.inspect(|| {
+        let (next, reply) = RootDataRefusalV1::inspect(&retained.refusal, || {
             require_end(request_end)?;
             state.require_exact_unchecked()?;
             require_original(
@@ -121,7 +121,8 @@ impl HostAuthorityService {
                         .refresh_projection()
                         .map_err(io::Error::other)?
                         .observed_unix_ms;
-                    let observed = state.expected.original.inputs.observe(
+                    let observed = OriginalInputPin::observe(
+                        &state.expected.original.inputs,
                         &retained.files,
                         &self.identity,
                         &slot.profile.deployment.target,
@@ -135,7 +136,8 @@ impl HostAuthorityService {
                         .refresh_projection()
                         .map_err(io::Error::other)?
                         .observed_unix_ms;
-                    let confirmed = state.expected.original.inputs.observe(
+                    let confirmed = OriginalInputPin::observe(
+                        &state.expected.original.inputs,
                         &retained.files,
                         &self.identity,
                         &slot.profile.deployment.target,
@@ -188,7 +190,7 @@ impl HostAuthorityService {
             if reply.len() > 16 * 1024 {
                 return Err(io::Error::other("original RunStart receipt exceeds bound"));
             }
-            retained.files.with_original_files(|_, _, _| Ok(()))?;
+            RootInitialRunStartFilesV1::with_original_files(&retained.files, |_, _, _| Ok(()))?;
             // The actual absolute end is checked after primary CAS/readback
             // and receipt construction, before this exact arm can become Ready.
             require_end(request_end)?;
