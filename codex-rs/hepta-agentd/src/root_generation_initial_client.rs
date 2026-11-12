@@ -16,6 +16,8 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+#[path = "root_generation_initial_peer_ready.rs"]
+mod peer_ready;
 #[path = "root_generation_initial_run_start.rs"]
 mod run_start;
 #[path = "root_generation_initial_source_capture.rs"]
