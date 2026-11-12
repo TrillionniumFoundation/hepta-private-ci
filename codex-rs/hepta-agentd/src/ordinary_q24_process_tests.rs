@@ -11,6 +11,8 @@ mod inputs;
 mod launch;
 #[path = "ordinary_q24_process_observer_tests.rs"]
 mod observer;
+#[path = "ordinary_q24_post_a_artifact_inputs_tests.rs"]
+mod post_a_artifact_inputs;
 #[path = "ordinary_q24_post_a_c_inputs_tests.rs"]
 mod post_a_c_inputs;
 #[path = "ordinary_q24_post_a_deployment_tests.rs"]
