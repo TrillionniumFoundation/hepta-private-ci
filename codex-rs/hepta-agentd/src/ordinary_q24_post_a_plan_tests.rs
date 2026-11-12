@@ -98,7 +98,7 @@ impl OriginalPostAResources {
                 .original_profile(&self.original, &self.successor, evaluation_profile)?;
         let root = super::post_a_deployment::write_original_root_plans(&self, &profile)?;
         let bytes = super::post_a_deployment::original_daemon_data(&self)?;
-        let sealed = crate::authority_host_bootstrap_seal::seal_bytes(&bytes)?;
+        let sealed = super::fixture::seal_original_readonly_deployment(&bytes)?;
         anyhow::ensure!(
             Instant::now() < self.end,
             "original successor configuration deadline"

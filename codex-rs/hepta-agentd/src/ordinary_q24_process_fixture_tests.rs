@@ -2,6 +2,7 @@
 //! enrollment, Initial publication, Objective admission and the real A task.
 
 use std::fs::File;
+use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -274,8 +275,7 @@ impl OrdinaryAPlan {
             "cell":files.cell_data(objective.objective), "inference_control":files.inference,
             "inference_capacity":32, "worker_generation":1, "maximum_cell_records":4, "queue_capacity":4
         });
-        let sealed =
-            crate::authority_host_bootstrap_seal::seal_bytes(&serde_json::to_vec(&launch)?)?;
+        let sealed = seal_original_readonly_deployment(&serde_json::to_vec(&launch)?)?;
         Ok(Self {
             protected,
             runtime: run_directory,
@@ -296,6 +296,22 @@ impl OrdinaryAPlan {
             artifact_owner: Some(artifact_owner),
         })
     }
+}
+
+pub(super) fn seal_original_readonly_deployment(bytes: &[u8]) -> anyhow::Result<File> {
+    let producer = crate::authority_host_bootstrap_seal::seal_bytes(bytes)?;
+    // Seals prohibit writes but do not change the producer's O_RDWR open-file
+    // description. The ordinary consumer must inherit a distinct O_RDONLY
+    // description of that exact sealed object, never a dup of its producer.
+    let consumer = File::open(format!("/proc/self/fd/{}", producer.as_raw_fd()))?;
+    let original = producer.metadata()?;
+    let received = consumer.metadata()?;
+    anyhow::ensure!(
+        (original.dev(), original.ino()) == (received.dev(), received.ino()),
+        "original sealed deployment inode differs"
+    );
+    crate::authority_host_bootstrap_seal::validate_sealed(&consumer, bytes.len() as u64)?;
+    Ok(consumer)
 }
 
 async fn original_replay_frontier(identity: &crate::AgentdIdentity) -> anyhow::Result<Digest32> {
