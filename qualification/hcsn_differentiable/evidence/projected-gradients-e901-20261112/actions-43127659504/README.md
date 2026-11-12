@@ -1,6 +1,6 @@
 # Exact-source projected-gradient execution and delay disclosure
 
-The source candidate `5a1db6f9da54d877e1660c4c964df0e227745719` passed the declared CPU fixtures. Scientific admission and full numerical admission remain **HOLD_NO_GO**. The successful fixtures establish the specific numerical/program properties below; they do not establish a real-task advantage or qualify a replacement cell.
+The source candidate `5a1db6f9da54d877e1660c4c964df0e227745719` passed the declared CPU fixtures. A subsequent [independent arithmetic review](../native-review/README.md) verified the native archive and all 675 retained partial derivatives; the CI ZIP-copy operation remains separate. Scientific admission and full numerical admission remain **HOLD_NO_GO**. The successful fixtures establish the specific numerical/program properties below; they do not establish a real-task advantage or qualify a replacement cell.
 
 ## Execution identity
 
@@ -45,7 +45,7 @@ The synthetic mechanism fixture performs two Adam updates, retains three model i
 
 The passing test asserts 675 partial-derivative coordinates, complete retained coverage, unchanged source, baseline event replay, and agreement between first-order reverse AD and two central-FD step sizes. The declared error gate is `1e-7 + 5e-4 * max(abs(AD), abs(FD))`; the coarse/fine stability gate has the corresponding form. A source mismatch, truncated recorder, omitted visit, expired budget, detached gradient, corrupt event count, or out-of-domain stencil cannot earn the complete-fixture pass.
 
-The native producer's summary reports a maximum absolute AD/fine-FD difference of **1.268078309024645e-9** and maximum tolerance ratio **4.8071145460457015e-5**. The native maximum absolute AD signal is nonzero for all five parameters: log boundary 1.346982740849868, drift 0.12243049566719796, diffusion 0.9705235305382852, absolute reset 0.9778099259997853, and discount 0.019631174038891974. These values are attributed to the retained native producer summary; independent recomputation of the raw arrays is not claimed here.
+The native producer's summary reports a maximum absolute AD/fine-FD difference of **1.268078309024645e-9** and maximum tolerance ratio **4.8071145460457015e-5**. The native maximum absolute AD signal is nonzero for all five parameters: log boundary 1.346982740849868, drift 0.12243049566719796, diffusion 0.9705235305382852, absolute reset 0.9778099259997853, and discount 0.019631174038891974. These values were initially recorded from the native producer summary and have subsequently been confirmed by [the separate arithmetic review](../native-review/INDEPENDENT_ARRAY_REVIEW.json). That review also preserves the approximately 3.7313% maximum defined ordinary relative error on a derivative of order 1e-14, and the 246 undefined zero-reference ratios; it grants no relative rare-tail certificate.
 
 The check holds the prior fixed. It does not qualify every transition-matrix entry, general signed/correlated content-mass derivatives, the raw-to-physical parameterization, observation filtering, end-to-end task-loss differentiation, an entire training trajectory, continuum accuracy, or relative accuracy for rare-tail gradients. Very small derivatives can pass through the absolute part of the tolerance. These visits use synthetic mechanism inputs, not a new UCI task replay.
 
