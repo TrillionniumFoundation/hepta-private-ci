@@ -2,10 +2,14 @@
 //! No non-Send Root context, original writer, or serialized grant is retained.
 
 use codex_hepta_agent_protocol::OriginalQ24CompletedHistoryDataV1;
+use codex_hepta_agent_protocol::OriginalQ24TerminalAcceptanceDataV1;
 
 use super::*;
 use crate::AgentdIdentity;
 pub(crate) use crate::root_historical_task_read_protocol::CompletedHistoryModeV1;
+
+#[path = "root_completed_learning_acknowledgement.rs"]
+mod acknowledgement;
 
 pub(crate) struct OriginalCompletedLearningHistoryV1 {
     client: Arc<RootHistoricalTaskReadClientV1>,
@@ -19,6 +23,14 @@ pub(crate) struct OriginalCompletedLearningHistoryV1 {
 pub(crate) struct OriginalCompletedLearningAcceptanceV1 {
     client: Arc<RootHistoricalTaskReadClientV1>,
     identity: AgentdIdentity,
+}
+
+/// Only consuming the original one-shot request after a validated reply can
+/// produce this acknowledgement. It carries no C Finalized read authority.
+pub(crate) struct OriginalCompletedLearningAcknowledgementV1 {
+    client: Arc<RootHistoricalTaskReadClientV1>,
+    identity: AgentdIdentity,
+    data: OriginalQ24TerminalAcceptanceDataV1,
 }
 
 impl RootHistoricalTaskReadClientV1 {
@@ -192,15 +204,33 @@ impl RootHistoricalTaskReadClientV1 {
 }
 
 impl OriginalCompletedLearningAcceptanceV1 {
-    pub(crate) fn accept(self) -> Result<CompletedLearningAcceptanceResponseV1, AgentdError> {
+    pub(crate) fn accept(self) -> Result<OriginalCompletedLearningAcknowledgementV1, AgentdError> {
         let mut fence = FenceReadOnDrop {
             client: &self.client,
             armed: true,
         };
         let response =
             RootHistoricalTaskReadClientV1::accept_completed_once(&self.client, &self.identity)?;
+        let data = OriginalQ24TerminalAcceptanceDataV1 {
+            schema: 1,
+            identity_digest: crate::neuron_generation_process_identity_digest_v1(&self.identity)?
+                .to_string(),
+            root_profile: response.profile,
+            initial: response.initial,
+            frozen_scope: response.frozen_scope,
+            terminal_head: response.terminal_head,
+            acceptance: response.acceptance,
+            data_cut: response.data_cut,
+        };
+        data.validate_data().map_err(AgentdError::Protocol)?;
+        self.client.require_completed_identity(&self.identity)?;
+        let acknowledged = OriginalCompletedLearningAcknowledgementV1 {
+            client: Arc::clone(&self.client),
+            identity: self.identity.clone(),
+            data,
+        };
         fence.armed = false;
-        Ok(response)
+        Ok(acknowledged)
     }
 }
 

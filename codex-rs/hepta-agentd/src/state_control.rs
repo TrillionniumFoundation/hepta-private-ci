@@ -84,6 +84,20 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::OriginalQ24TerminalAcceptance {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::OriginalQ24TerminalAcceptance {
+                        data: AgentdState::read_original_q24_terminal_acceptance(self)?,
+                    }
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original terminal acceptance unavailable on this platform".into(),
+                    ));
+                }
+            }
             crate::AgentdMethod::OriginalQ24CompletedHistory {} => {
                 #[cfg(target_os = "linux")]
                 {

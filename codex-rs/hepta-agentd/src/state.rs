@@ -74,6 +74,10 @@ pub(crate) struct AgentdState {
     original_q24_completed_history: std::sync::OnceLock<
         Arc<crate::root_completed_learning_history::OriginalCompletedLearningHistoryV1>,
     >,
+    #[cfg(target_os = "linux")]
+    original_q24_terminal_acceptance: std::sync::OnceLock<
+        crate::root_completed_learning_history::OriginalCompletedLearningAcknowledgementV1,
+    >,
     pub(crate) circuit_task_invocation:
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
     circuit_learning_source:
@@ -188,6 +192,8 @@ impl AgentdState {
             original_q24_outcome_control: std::sync::OnceLock::new(),
             #[cfg(target_os = "linux")]
             original_q24_completed_history: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            original_q24_terminal_acceptance: std::sync::OnceLock::new(),
             circuit_task_invocation: std::sync::OnceLock::new(),
             circuit_learning_source: std::sync::OnceLock::new(),
             circuit_task_admissions: Arc::new(std::sync::atomic::AtomicUsize::new(0)),

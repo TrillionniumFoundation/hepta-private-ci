@@ -4,14 +4,70 @@
 use std::sync::Arc;
 
 use codex_hepta_agent_protocol::OriginalQ24CompletedHistoryDataV1;
+use codex_hepta_agent_protocol::OriginalQ24TerminalAcceptanceDataV1;
 use codex_hepta_fleet::AgentLifecycle;
 
 use super::AgentdState;
 use super::poisoned_state;
 use crate::AgentdError;
+use crate::root_completed_learning_history::OriginalCompletedLearningAcknowledgementV1;
 use crate::root_completed_learning_history::OriginalCompletedLearningHistoryV1;
 
 impl AgentdState {
+    pub(crate) fn attach_original_q24_terminal_acceptance(
+        &self,
+        acknowledged: OriginalCompletedLearningAcknowledgementV1,
+    ) -> Result<(), AgentdError> {
+        self.require_original_completed_history_current()?;
+        OriginalCompletedLearningAcknowledgementV1::require_original_current(
+            &acknowledged,
+            &self.identity,
+        )?;
+        let result = OriginalCompletedLearningAcknowledgementV1::data(&acknowledged)
+            .validate_data()
+            .map_err(AgentdError::Protocol);
+        let root_after = OriginalCompletedLearningAcknowledgementV1::require_original_current(
+            &acknowledged,
+            &self.identity,
+        );
+        let generation_after = self.require_original_completed_history_current();
+        root_after?;
+        generation_after?;
+        result?;
+        // The caller has completed its own terminal checks. Nothing fallible
+        // follows a successful set before it can enter its shutdown wait.
+        self.original_q24_terminal_acceptance
+            .set(acknowledged)
+            .map_err(|_| {
+                AgentdError::Invalid("original terminal acceptance already attached".into())
+            })
+    }
+
+    pub(crate) fn read_original_q24_terminal_acceptance(
+        &self,
+    ) -> Result<Option<OriginalQ24TerminalAcceptanceDataV1>, AgentdError> {
+        self.require_original_completed_history_current()?;
+        let Some(acknowledged) = self.original_q24_terminal_acceptance.get() else {
+            self.require_original_completed_history_current()?;
+            return Ok(None);
+        };
+        OriginalCompletedLearningAcknowledgementV1::require_original_current(
+            acknowledged,
+            &self.identity,
+        )?;
+        let data = OriginalCompletedLearningAcknowledgementV1::data(acknowledged).clone();
+        let result = data.validate_data().map_err(AgentdError::Protocol);
+        let root_after = OriginalCompletedLearningAcknowledgementV1::require_original_current(
+            acknowledged,
+            &self.identity,
+        );
+        let generation_after = self.require_original_completed_history_current();
+        root_after?;
+        generation_after?;
+        result?;
+        Ok(Some(data))
+    }
+
     pub(crate) fn attach_original_q24_completed_history(
         &self,
         completed: Arc<OriginalCompletedLearningHistoryV1>,
