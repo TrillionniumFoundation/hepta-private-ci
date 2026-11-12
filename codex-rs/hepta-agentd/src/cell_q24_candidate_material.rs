@@ -83,10 +83,17 @@ impl OriginalCellQ24CandidateMaterialV1 {
         if candidate.bundle != *signed
             || candidate.model.components() != &signed.components
             || candidate.metrics.optimizer_steps != steps
-            || candidate.metrics.elapsed_microseconds.div_ceil(1_000).max(1) != milliseconds
+            || candidate
+                .metrics
+                .elapsed_microseconds
+                .div_ceil(1_000)
+                .max(1)
+                != milliseconds
             || candidate.heads.len() != length
         {
-            return Err(Error::Binding("same native Candidate and original Training receipt"));
+            return Err(Error::Binding(
+                "same native Candidate and original Training receipt",
+            ));
         }
         require_rebuilt_bundle(dataset, signed, &candidate.heads)?;
         Ok(Self {
@@ -113,18 +120,24 @@ impl OriginalCellQ24CandidateMaterialV1 {
         if baseline.components() != &dataset.request.selected_bundle.components
             || heads.len() != length
         {
-            return Err(Error::Binding("same complete baseline and signed Candidate length"));
+            return Err(Error::Binding(
+                "same complete baseline and signed Candidate length",
+            ));
         }
         require_rebuilt_bundle(dataset, signed, &heads)?;
         let matrix = Matrix::decode(&heads)?;
         if matrix.rows != baseline.heads.rows || matrix.cols != baseline.heads.cols {
             return Err(Error::Binding("same original head shape"));
         }
-        let mut changed = matrix.values.chunks_exact(matrix.cols)
+        let mut changed = matrix
+            .values
+            .chunks_exact(matrix.cols)
             .zip(baseline.heads.values.chunks_exact(baseline.heads.cols))
             .enumerate()
             .filter_map(|(row, (candidate, original))| (candidate != original).then_some(row));
-        let row = changed.next().ok_or(Error::Binding("retained Candidate changes one head"))?;
+        let row = changed
+            .next()
+            .ok_or(Error::Binding("retained Candidate changes one head"))?;
         if changed.next().is_some() {
             return Err(Error::Binding("retained Candidate changes only one head"));
         }
@@ -132,7 +145,9 @@ impl OriginalCellQ24CandidateMaterialV1 {
         let head = if row < half {
             CellQ24PrivateHeadV1::Drive { index: row as u16 }
         } else {
-            CellQ24PrivateHeadV1::Prediction { index: (row - half) as u16 }
+            CellQ24PrivateHeadV1::Prediction {
+                index: (row - half) as u16,
+            }
         };
         let candidate = LoadedCellQ24ModelV1 {
             components: signed.components.clone(),
@@ -159,8 +174,12 @@ fn candidate_fields<'a>(
     receipt: &'a LearningIterationReceiptV1,
 ) -> Result<(&'a CellCompatibilityBundleV1, u64, u64, usize), Error> {
     let LearningIterationObservationV1::Training {
-        candidate, steps, milliseconds, artifact_bytes,
-    } = &receipt.observation else {
+        candidate,
+        steps,
+        milliseconds,
+        artifact_bytes,
+    } = &receipt.observation
+    else {
         return Err(Error::NoCandidate);
     };
     let length = usize::try_from(*artifact_bytes)
@@ -182,11 +201,16 @@ fn require_rebuilt_bundle(
     heads: &[u8],
 ) -> Result<(), Error> {
     let baseline = &dataset.request.selected_bundle;
-    let source_bundle = baseline.digest().map_err(|_| Error::Binding("original baseline bundle"))?;
-    let lineage = signed.training_lineage.as_ref()
+    let source_bundle = baseline
+        .digest()
+        .map_err(|_| Error::Binding("original baseline bundle"))?;
+    let lineage = signed
+        .training_lineage
+        .as_ref()
         .ok_or(Error::Binding("original Candidate lineage"))?;
-    let Some(LearningIterationObservationV1::Dataset { snapshot_digest, .. }) =
-        dataset.receipts.last().map(|receipt| &receipt.observation)
+    let Some(LearningIterationObservationV1::Dataset {
+        snapshot_digest, ..
+    }) = dataset.receipts.last().map(|receipt| &receipt.observation)
     else {
         return Err(Error::Binding("original Dataset cut"));
     };
@@ -202,8 +226,11 @@ fn require_rebuilt_bundle(
                 lineage.update_rule.as_array(),
                 head_digest.as_array(),
             ])
-        )).map_err(|_| Error::Binding("original Candidate identity"))?,
-        generation: baseline.generation.next()
+        ))
+        .map_err(|_| Error::Binding("original Candidate identity"))?,
+        generation: baseline
+            .generation
+            .next()
             .map_err(|_| Error::Binding("original Candidate generation"))?,
         components,
         rollback_predecessor: Some(source_bundle),
@@ -215,7 +242,9 @@ fn require_rebuilt_bundle(
         }),
     };
     if signed != &expected {
-        return Err(Error::Binding("complete signed Candidate bundle and original heads"));
+        return Err(Error::Binding(
+            "complete signed Candidate bundle and original heads",
+        ));
     }
     Ok(())
 }

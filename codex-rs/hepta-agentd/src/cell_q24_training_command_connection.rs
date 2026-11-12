@@ -148,12 +148,17 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
     ) -> Result<super::OriginalCellQ24CandidateReadbackClientV1, Error> {
         let material = self.material.clone();
         let retained_dataset = dataset.clone();
-        let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(
-            self, dataset,
-        )?;
-        Ok(super::OriginalCellQ24CandidateReadbackClientV1::from_original_connection(
-            original, material, retained_dataset, training, baseline,
-        )?)
+        let original =
+            OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(self, dataset)?;
+        Ok(
+            super::OriginalCellQ24CandidateReadbackClientV1::from_original_connection(
+                original,
+                material,
+                retained_dataset,
+                training,
+                baseline,
+            )?,
+        )
     }
 
     /// Consume the original connection after actual Material completion.
