@@ -19,6 +19,10 @@ use super::frames::ReplayedRunStartFrames;
 use super::frames::replay_reader;
 use super::*;
 
+#[cfg(test)]
+#[path = "run_start_read_only_tests.rs"]
+mod tests;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RunStartReadOnlyPublicationV1 {
     pub record: RunStartRecordV1,
