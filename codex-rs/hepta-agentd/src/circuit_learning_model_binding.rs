@@ -16,7 +16,7 @@ pub(super) fn require_inputs<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
     context: &OriginalCircuitModelPublicationContextV1,
     inputs: &OriginalCircuitModelPublicationInputsV1<Old, New>,
 ) -> Result<(), Error> {
-    let coordinator = context.authenticate(now()?, true)?;
+    let coordinator = context.authenticate(now()?, /*new_work*/ true)?;
     require_previous(context, &inputs.completed)?;
     let expected = CellGenerationOwnerBindingV1::new(
         &inputs.predecessor.config,

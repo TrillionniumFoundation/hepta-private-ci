@@ -151,21 +151,21 @@ where
         return Err(Error::Binding("same actual Model before original preparation"));
     }
     observation.require_current(started)?;
-    let original_expiry = context.authenticate_material(observation.material(), started, true)?;
+    let original_expiry = context.authenticate_material(observation.material(), started, /*new_work*/ true)?;
     binding::require_inputs(&context, &inputs)?;
     let queued = QueuedPublicationFence::new();
     let cancelled = Arc::clone(&queued.cancelled);
     let (context, prepared, definition, source, completed) = tokio::task::spawn_blocking(move || {
-        context.authenticate(started, true)?;
+        context.authenticate(started, /*new_work*/ true)?;
         require_not_cancelled(&cancelled)?;
         binding::require_inputs(&context, &inputs)?;
-        let coordinator = context.authenticate(now()?, true)?;
+        let coordinator = context.authenticate(now()?, /*new_work*/ true)?;
         let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
         let selected = load_original_selection(&inputs.authorities, inputs.selection)?;
         if selected.manifest() != &inputs.target.config.manifest {
             return Err(Error::Binding("selected Artifact differs from original candidate manifest"));
         }
-        context.authenticate(started, true)?;
+        context.authenticate(started, /*new_work*/ true)?;
         require_predecessor_window(started, original_expiry)?;
         require_not_cancelled(&cancelled)?;
         let prepared = crate::prepare_agentd_generation_cold_drained_update_v1(
@@ -176,14 +176,14 @@ where
             inputs.target,
             AgentdGenerationUpdateRequestV1 { operation_id: operation.to_string() },
         ).map_err(uncertain)?;
-        context.authenticate(started, true).map_err(uncertain)?;
+        context.authenticate(started, /*new_work*/ true).map_err(uncertain)?;
         Ok::<_, Error>((context, prepared, inputs.definition, inputs.source, inputs.completed))
     }).await.map_err(uncertain)??;
     drop(queued);
     // Provisional material stays private in this same unfinished operation.
     // Returning a Prepared binding cannot release CURRENT or reset its peer.
     observation.require_current(started).map_err(uncertain)?;
-    context.authenticate_material(observation.material(), started, true).map_err(uncertain)?;
+    context.authenticate_material(observation.material(), started, /*new_work*/ true).map_err(uncertain)?;
     Ok(PreparedOriginalCircuitModelPublicationV1 {
         context, observation, prepared, definition, source, completed, started_at: started,
     })
@@ -211,19 +211,19 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         } = self;
         observation.require_current(started_at)?;
         let original_expiry = context.authenticate_material(
-            observation.material(), started_at, true,
+            observation.material(), started_at, /*new_work*/ true,
         )?;
         let queued = QueuedPublicationFence::new();
         let cancelled = Arc::clone(&queued.cancelled);
         let (context, task) = tokio::task::spawn_blocking(move || {
-            context.authenticate(started_at, true)?;
+            context.authenticate(started_at, /*new_work*/ true)?;
             require_predecessor_window(started_at, original_expiry)?;
             require_not_cancelled(&cancelled)?;
             let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)
                 .map_err(uncertain)?;
             let task = ready.into_circuit_feature_task(definition, source, completed)
                 .map_err(uncertain)?;
-            binding::require_published(&context, &task, true).map_err(uncertain)?;
+            binding::require_published(&context, &task, /*new_work*/ true).map_err(uncertain)?;
             Ok::<_, Error>((context, task))
         }).await.map_err(uncertain)??;
         drop(queued);
@@ -235,10 +235,10 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         }
         let (context, task) = tokio::task::spawn_blocking(move || {
             // Re-read physical version CURRENT after the last Model I/O.
-            binding::require_published(&context, &task, true).map_err(uncertain)?;
+            binding::require_published(&context, &task, /*new_work*/ true).map_err(uncertain)?;
             Ok::<_, Error>((context, task))
         }).await.map_err(uncertain)??;
-        context.authenticate_material(completed.material(), started_at, true).map_err(uncertain)?;
+        context.authenticate_material(completed.material(), started_at, /*new_work*/ true).map_err(uncertain)?;
         Ok(OriginalCircuitModelPublicationV1 { context, task })
     }
 }
@@ -263,12 +263,12 @@ struct QueuedPublicationFence {
 }
 impl QueuedPublicationFence {
     fn new() -> Self {
-        Self { cancelled: Arc::new(AtomicBool::new(false)) }
+        Self { cancelled: Arc::new(AtomicBool::new(/*v*/ false)) }
     }
 }
 impl Drop for QueuedPublicationFence {
     fn drop(&mut self) {
-        self.cancelled.store(true, Ordering::Release);
+        self.cancelled.store(/*val*/ true, Ordering::Release);
     }
 }
 fn require_not_cancelled(cancelled: &AtomicBool) -> Result<(), Error> {

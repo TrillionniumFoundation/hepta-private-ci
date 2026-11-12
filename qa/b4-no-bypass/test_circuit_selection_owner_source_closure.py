@@ -59,7 +59,7 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
                 row.identifier,
                 self.manifest["privileged_inventory"]["required_boundary_ids"],
             )
-            self.assertEqual(row.product_callers, ())
+            self.assertEqual(row.product_callers, ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",))
             PROOF._verify_boundary(ROOT, row, sources, ())
             method = row.symbol.rsplit("::", 1)[1]
             changed = dict(sources)

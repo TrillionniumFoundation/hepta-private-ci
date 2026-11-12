@@ -54,7 +54,7 @@ impl<'a> Session<'a> {
 
 struct Queued(Arc<AtomicBool>);
 impl Drop for Queued {
-    fn drop(&mut self) { self.0.store(true, Ordering::Release); }
+    fn drop(&mut self) { self.0.store(/*val*/ true, Ordering::Release); }
 }
 fn require_not_cancelled(cancelled: &AtomicBool) -> Result<(), Error> {
     if cancelled.load(Ordering::Acquire) { return Err(Error::CommitUncertain); }
@@ -78,7 +78,7 @@ impl OriginalCellEvaluationHostV1 {
         let mut channel = original_owner_command_channel_v1(
             stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
         )?;
-        let queued = Queued(Arc::new(AtomicBool::new(false)));
+        let queued = Queued(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&queued.0);
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;

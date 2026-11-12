@@ -578,6 +578,49 @@ required_boundary_ids = [
     "learning_original_evaluation_publication_expiry",
     "learning_original_evaluation_selector_material",
     "learning_original_evaluation_material_serve",
+    "learning_positive_model_original_context",
+    "learning_positive_model_original_predecessors",
+    "learning_positive_publication_context_model",
+    "learning_positive_publication_context_receipt",
+    "learning_positive_publication_context_authenticate",
+    "learning_positive_publication_context_material",
+    "learning_positive_publication_context_version_pin",
+    "learning_positive_publication_prepare",
+    "learning_positive_publication_publish",
+    "learning_positive_publication_task",
+    "learning_positive_publication_recover",
+    "learning_positive_selection_owner_consume",
+    "learning_positive_selection_owner_profile",
+    "learning_positive_selection_owner_factory",
+    "learning_positive_selection_remote_attest",
+    "learning_positive_selection_remote_readback",
+    "learning_positive_selection_client_create",
+    "learning_positive_selection_client_recover",
+    "learning_positive_selection_client_bind",
+    "learning_positive_selection_client_attest",
+    "learning_positive_selection_client_readback",
+    "learning_positive_selection_client_evidence",
+    "learning_positive_selection_receipt_context",
+    "learning_positive_selection_owner_serve",
+    "learning_positive_selection_owner_evidence",
+    "learning_positive_version_client_bind",
+    "learning_positive_version_client_recover",
+    "learning_positive_version_client_publish",
+    "learning_positive_version_client_readback",
+    "learning_positive_version_owner_create",
+    "learning_positive_version_owner_recover",
+    "learning_positive_version_owner_publish",
+    "learning_positive_version_owner_readback",
+    "learning_positive_version_owner_serve",
+    "learning_positive_version_owner_ordinary",
+    "learning_positive_version_owner_run_c",
+    "learning_positive_version_owner_selection_read",
+    "learning_positive_version_owner_next_use_read",
+    "learning_positive_version_owner_readiness",
+    "learning_positive_version_original_issuer_attenuation",
+    "learning_positive_version_original_issuer_request",
+    "learning_positive_published_next_use_version_serve",
+    "learning_positive_published_readiness_version_serve",
 ]
 
 
@@ -3205,9 +3248,8 @@ symbol = "PublishedCircuitCellOwnerV1::read_learning_selection"
 receiver_type = "PublishedCircuitCellOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs"
 definition_markers = ["pub fn read_learning_selection(", "self.task.require_current()?", "Publication::Update"]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs","codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs","codex-rs/hepta-agentd/src/circuit_learning_read_service.rs","codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs","codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_task.rs"]
 caller_markers = ["read_learning_selection(", "&coordinator"]
-
 
 [[boundary]]
 id = "learning_original_material_create"
@@ -3761,7 +3803,7 @@ id = "learning_original_owner_command_channel"
 symbol = "original_owner_command_channel_v1"
 definition_path = "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
 definition_markers = ["pub(crate) fn original_owner_command_channel_v1("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs","codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_material_command.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs","codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs","codex-rs/hepta-agentd/src/circuit_learning_read_service.rs","codex-rs/hepta-agentd/src/circuit_selection_command.rs","codex-rs/hepta-agentd/src/circuit_selection_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs","codex-rs/hepta-agentd/src/circuit_next_use_command.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs","codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs","codex-rs/hepta-agentd/src/circuit_retained_version_service.rs","codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs","codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs","codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs","codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -4134,9 +4176,8 @@ symbol = "CircuitTaskSourceReadbackV1::require_original_input"
 receiver_type = "CircuitTaskSourceReadbackV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
 definition_markers = ["pub(crate) fn require_original_input("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_learning_read_service.rs","codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_task.rs"]
 caller_markers = []
-
 
 [[boundary]]
 id = "learning_original_circuit_selection_remote_attest"
@@ -4459,7 +4500,7 @@ symbol = "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initi
 receiver_type = "OriginalCellQ24MaterialReceiptConfigV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
 definition_markers = ["pub(crate) fn require_original_command_initial("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs", "codex-rs/hepta-agentd/src/circuit_model_version_host.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -4468,7 +4509,7 @@ symbol = "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_cont
 receiver_type = "OriginalCellQ24MaterialCommandReceiptV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
 definition_markers = ["pub(crate) fn require_original_dataset_context("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs","codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs","codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs","codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs","codex-rs/hepta-agentd/src/circuit_retained_version_context.rs","codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs","codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_stage_binding.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -7664,18 +7705,18 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs"
-required = ["pub struct OriginalCircuitModelSelectionReceiptOwnerV1","pub execution_evidence: OriginalProductEvaluationExecutionEvidenceV1","runtime: Handle","fenced: bool"]
-forbidden = ["SigningKey::generate","SigningKey::from_bytes","LearningEvidenceVerifierV1::new","LearningEvidenceTrustV1","File::open","UnixStream::connect","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","fit_or_readback(","evaluate_or_readback(","qualify_and_persist(","commit_model_or_readback(","claim_final_use(","publish(","unwrap_or","permit_all","if false","pub journal:","pub key:","pub runtime:"]
+required = ["pub struct OriginalCircuitModelSelectionReceiptOwnerV1", "pub execution_evidence: OriginalProductEvaluationExecutionEvidenceV1", "runtime: Handle", "fenced: bool", "readback_only: bool,", "pub fn into_command_owner(", "pub(crate) fn original_command_profile("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", "commit_model_or_readback(", "claim_final_use(", "publish(", "unwrap_or", "permit_all", "if false", "pub journal:", "pub key:", "pub runtime:", "pub readback_only:", "pub fn original_command_profile", "readback_only = false"]
 required_function_order = [
-  { function = "fn create(", sequence = ["binding::validate_config(&config, &key)?","Handle::try_current()","LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?","Ok(Self"], top_level = ["let (saved, training) = binding::validate_config(&config, &key)?"] },
-  { function = "fn recover(", sequence = ["binding::validate_config(&config, &key)?","Handle::try_current()","LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?","Ok(Self"], top_level = ["let (saved, training) = binding::validate_config(&config, &key)?"] },
-  { function = "fn attest_original_selection(", sequence = ["let started_at = binding::now()?","if self.fenced","source.snapshot.receipts.len() > self.config.decision.receipts.len()","self.read_original(&mut source, started_at)","match self.journal.read(&self.saved)","ProductEvaluationExecutionStoreErrorV1::Missing","Err(error) => return Err(error.into())","binding::new_work_time(&self.config, started_at, binding::now()?)?","source.prepare(&self.config, &self.training, &mut self.fenced)?","source.predecessors(&self.config, &self.runtime)?","if source.prepare(&self.config, &self.training, &mut self.fenced)? != prepared","let claim_at = binding::now()?","binding::new_work_time(&self.config, started_at, claim_at)?","binding::authenticate(","self.journal.commit_once(&self.saved, ||","let issued_at = binding::now()?","binding::new_work_time(config, started_at, issued_at)?","binding::authenticate(","binding::receipt(","learning_iteration_receipt_signing_bytes_v1(&receipt)","binding::sign_original(","verify_signed_actor_separation(&training, &verified, issued_at)?","verify_signed_actor_separation(&evaluation, &verified, issued_at)?","learning_owner_evidence::encode(&payload, &signed)","self.authenticate_completed("], top_level = ["let started_at = binding::now()?","if self.fenced","match self.journal.read(&self.saved)","let claim_at = binding::now()?","binding::new_work_time(&self.config, started_at, claim_at)?"] },
-  { function = "fn readback(", sequence = ["let started_at = binding::now()?","if self.fenced","self.read_original(&mut source, started_at)"], top_level = ["let started_at = binding::now()?","if self.fenced"] },
-  { function = "fn read_original(", sequence = ["self.journal.read(&self.saved)?","source.prepare(&self.config, &self.training, &mut self.fenced)?","self.authenticate_completed(","Use::Readback)"], top_level = ["let bytes = self.journal.read(&self.saved)?"] },
-  { function = "fn authenticate_completed(", sequence = ["learning_owner_evidence::decode(bytes)?","binding::receipt(","signed.issued_at","payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?","source.predecessors(&self.config, &self.runtime)?","source.prepare(&self.config, &self.training, &mut self.fenced)? != *prepared","self.journal.read(&self.saved)? != bytes","let current = binding::now()?","if current < started_at","Use::NewAttestation","binding::new_work_time(","binding::authenticate(","LearningEvidenceRoleV1::Selector","verified.principal() != &self.config.signer.principal","verified.controller_id() != &self.config.signer.controller_id","signed.evidence_id != binding::evidence_id(self.saved.binding_digest)?","signed.expires_at != binding::signature_expiry(&self.config, signed.issued_at)?","verify_signed_actor_separation(&training, &verified, current)?","verify_signed_actor_separation(&evaluation, &verified, current)?","Ok((receipt, signed))"], top_level = ["let current = binding::now()?","if current < started_at","let (training, evaluation) = binding::authenticate("] },
+  { function = "fn create(", sequence = ["binding::validate_config(&config, &key)?", "Handle::try_current()", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self", "readback_only: false"], top_level = ["let (saved, training) = binding::validate_config(&config, &key)?"] },
+  { function = "fn recover(", sequence = ["binding::validate_config(&config, &key)?", "Handle::try_current()", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self", "readback_only: true"], top_level = ["let (saved, training) = binding::validate_config(&config, &key)?"] },
+  { function = "fn attest_original_selection(", sequence = ["let started_at = binding::now()?", "if self.fenced", "source.snapshot.receipts.len() > self.config.decision.receipts.len()", "self.read_original(&mut source, started_at)", "match self.journal.read(&self.saved)", "ProductEvaluationExecutionStoreErrorV1::Missing", "Err(error) => return Err(error.into())", "binding::new_work_time(&self.config, started_at, binding::now()?)?", "source.prepare(&self.config, &self.training, &mut self.fenced)?", "source.predecessors(&self.config, &self.runtime)?", "if source.prepare(&self.config, &self.training, &mut self.fenced)? != prepared", "let claim_at = binding::now()?", "binding::new_work_time(&self.config, started_at, claim_at)?", "binding::authenticate(", "self.journal.commit_once(&self.saved, ||", "let issued_at = binding::now()?", "binding::new_work_time(config, started_at, issued_at)?", "binding::authenticate(", "binding::receipt(", "learning_iteration_receipt_signing_bytes_v1(&receipt)", "binding::sign_original(", "verify_signed_actor_separation(&training, &verified, issued_at)?", "verify_signed_actor_separation(&evaluation, &verified, issued_at)?", "learning_owner_evidence::encode(&payload, &signed)", "self.authenticate_completed("], top_level = ["let started_at = binding::now()?", "if self.fenced", "match self.journal.read(&self.saved)", "let claim_at = binding::now()?", "binding::new_work_time(&self.config, started_at, claim_at)?"] },
+  { function = "fn readback(", sequence = ["let started_at = binding::now()?", "if self.fenced", "self.read_original(&mut source, started_at)"], top_level = ["let started_at = binding::now()?", "if self.fenced"] },
+  { function = "fn read_original(", sequence = ["self.journal.read(&self.saved)?", "source.prepare(&self.config, &self.training, &mut self.fenced)?", "self.authenticate_completed(", "Use::Readback)"], top_level = ["let bytes = self.journal.read(&self.saved)?"] },
+  { function = "fn authenticate_completed(", sequence = ["learning_owner_evidence::decode(bytes)?", "binding::receipt(", "signed.issued_at", "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "source.predecessors(&self.config, &self.runtime)?", "source.prepare(&self.config, &self.training, &mut self.fenced)? != *prepared", "self.journal.read(&self.saved)? != bytes", "let current = binding::now()?", "if current < started_at", "Use::NewAttestation", "binding::new_work_time(", "binding::authenticate(", "LearningEvidenceRoleV1::Selector", "verified.principal() != &self.config.signer.principal", "verified.controller_id() != &self.config.signer.controller_id", "signed.evidence_id != binding::evidence_id(self.saved.binding_digest)?", "signed.expires_at != binding::signature_expiry(&self.config, signed.issued_at)?", "verify_signed_actor_separation(&training, &verified, current)?", "verify_signed_actor_separation(&evaluation, &verified, current)?", "Ok((receipt, signed))"], top_level = ["let current = binding::now()?", "if current < started_at", "let (training, evaluation) = binding::authenticate("] },
+  { function = "fn into_command_owner(", sequence = ["fn into_command_owner(", "OriginalCircuitModelSelectionCommandOwnerV1::from_original_receipt_owner(", "self, context, model, live"], top_level = [] },
+  { function = "fn original_command_profile(", sequence = ["fn original_command_profile(", "(&self.config, self.readback_only)"], top_level = [] },
 ]
-
-
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs"
@@ -7691,20 +7732,19 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs"
-required = ["OriginalProductEvaluationExecutionEvidenceV1::revalidate(","config.execution_evidence.record_digest().as_array()"]
-forbidden = ["SigningKey::generate","SigningKey::from_bytes","LearningEvidenceVerifierV1::new","LearningEvidenceTrustV1","File::open","UnixStream::connect","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","fit_or_readback(","evaluate_or_readback(","qualify_and_persist(","commit_model_or_readback(","claim_final_use(","publish(","unwrap_or","permit_all","if false","pub fn sign_original","pub(crate) fn sign_original","pub fn receipt(","pub(crate) fn receipt("]
+required = ["OriginalProductEvaluationExecutionEvidenceV1::revalidate(", "config.execution_evidence.record_digest().as_array()", "pub(super) fn sign_original_until("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", "commit_model_or_readback(", "claim_final_use(", "publish(", "unwrap_or", "permit_all", "if false", "pub fn sign_original", "pub(crate) fn sign_original", "pub fn receipt(", "pub(crate) fn receipt(", "pub fn sign_original_until", "pub(crate) fn sign_original_until"]
 required_function_order = [
-  { function = "fn validate_config(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?","config.scope.validate_snapshot(&config.decision)?","config.decision.receipts.len() != 5","coordinator.next_stage() != Some(LearningIterationStageV1::Selection)","key.verifying_key().to_bytes() != config.signer.verifying_key","LearningIterationObservationV1::Training","LearningEvaluationDispositionV1::Qualified","LearningProposalDispositionV1::UpdateCandidates","candidate\n        == config\n            .decision\n            .request\n            .selected_bundle\n            .digest()","product.validate_integrity()?","require_original_signed_execution(&product.evaluator)?","config.qualification.comparison() != config.evaluation.plan().record()","product.evidence_digest != evaluation_receipt(config)?.evidence_digest","authenticate_roles(config, &evidence, current)?","OriginalProductEvaluationExecutionEvidenceV1::revalidate(","execution.principal() != &product.evaluator","&config.training_evidence","&config.evaluation_evidence","&config.product_evidence.generator_plan","&config.product_evidence.evaluator_bundle","config.execution_evidence.attestation()","original.signing_bytes()","signatures.extend_from_slice(&original.signature)","config.decision.head_digest.as_array()","config.scope.binding().as_array()","config.execution_evidence.key().binding_digest.as_array()","config.execution_evidence.record_digest().as_array()","&signatures"], top_level = ["let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?","config.scope.validate_snapshot(&config.decision)?","let current = now()?","authenticate_roles(config, &evidence, current)?"] },
-  { function = "fn authenticate_roles(", sequence = ["evidence.0 != config.training_evidence || evidence.1 != config.evaluation_evidence","config.verifier.require_signer_binding(","LearningEvidenceRoleV1::Selector","LearningEvidenceRoleV1::Generator","learning_iteration_receipt_signing_bytes_v1(training_receipt(config)?)?","LearningEvidenceRoleV1::Evaluator","learning_iteration_receipt_signing_bytes_v1(evaluation_receipt(config)?)?","training.principal().principal_id != config.decision.owners.trainer","evaluation.principal().principal_id != config.decision.owners.evaluator","verify_signed_actor_separation(&training, &evaluation, current)?","verify_independent_roles(","original.controller_id() == &config.signer.controller_id","SignedEvidenceError::ControllerCollision","Ok((training, evaluation))"] },
-  { function = "fn authenticate(", sequence = ["authenticate_roles(config, evidence, current)?","OriginalProductEvaluationExecutionEvidenceV1::revalidate(","original.principal() != evaluation.principal()","original.controller_id() != evaluation.controller_id()","prepared.bundle.generator != *training.principal()","prepared.bundle.evaluator != *evaluation.principal()","revalidate_product_qualification_v1(","&config.product_evidence,\n        timing,\n        &config.verifier,\n        current","IndependentEvaluationDispositionV1::EligibleForIndependentSelection","Ok((training, evaluation))"] },
-  { function = "fn receipt(", sequence = ["LearningIterationObservationV1::Selection","LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?","*candidate_bundle != candidate || selection_digest.is_zero()","config.execution_evidence.record_digest().as_array()","coordinator.record(receipt.clone(), observed_unix_seconds)?","config.scope.validate_snapshot(coordinator.snapshot())?","Ok(receipt)"] },
-  { function = "fn sign_original(", sequence = ["LearningEvidenceRoleV1::Selector","expires_at: signature_expiry(config, issued_at)?","signature: [0; 64]","key.sign(&signed.signing_bytes()).to_bytes()","Ok(signed)"] },
-  { function = "fn signature_expiry(", sequence = ["issued_at\n        .checked_add(config.maximum_signature_lifetime_seconds)","config.signer.principal.expires_at","config.training_evidence.expires_at","config.evaluation_evidence.expires_at","config.product_evidence.generator_plan.expires_at","config.product_evidence.evaluator_bundle.expires_at","config.execution_evidence.attestation().expires_at"] },
-  { function = "fn new_work_time(", sequence = ["current < started_at || current >= config.decision.request.envelope.expiry_unix_seconds","return Err(OwnerError::Binding(","Ok(())"] },
-  { function = "fn now(", sequence = ["SystemTime::now()",".duration_since(UNIX_EPOCH)","value.as_secs()"] },
+  { function = "fn validate_config(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?", "config.scope.validate_snapshot(&config.decision)?", "config.decision.receipts.len() != 5", "coordinator.next_stage() != Some(LearningIterationStageV1::Selection)", "key.verifying_key().to_bytes() != config.signer.verifying_key", "LearningIterationObservationV1::Training", "LearningEvaluationDispositionV1::Qualified", "LearningProposalDispositionV1::UpdateCandidates", "candidate\n        == config\n            .decision\n            .request\n            .selected_bundle\n            .digest()", "product.validate_integrity()?", "require_original_signed_execution(&product.evaluator)?", "config.qualification.comparison() != config.evaluation.plan().record()", "product.evidence_digest != evaluation_receipt(config)?.evidence_digest", "authenticate_roles(config, &evidence, current)?", "OriginalProductEvaluationExecutionEvidenceV1::revalidate(", "execution.principal() != &product.evaluator", "&config.training_evidence", "&config.evaluation_evidence", "&config.product_evidence.generator_plan", "&config.product_evidence.evaluator_bundle", "config.execution_evidence.attestation()", "original.signing_bytes()", "signatures.extend_from_slice(&original.signature)", "config.decision.head_digest.as_array()", "config.scope.binding().as_array()", "config.execution_evidence.key().binding_digest.as_array()", "config.execution_evidence.record_digest().as_array()", "&signatures"], top_level = ["let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?", "config.scope.validate_snapshot(&config.decision)?", "let current = now()?", "authenticate_roles(config, &evidence, current)?"] },
+  { function = "fn authenticate_roles(", sequence = ["evidence.0 != config.training_evidence || evidence.1 != config.evaluation_evidence", "config.verifier.require_signer_binding(", "LearningEvidenceRoleV1::Selector", "LearningEvidenceRoleV1::Generator", "learning_iteration_receipt_signing_bytes_v1(training_receipt(config)?)?", "LearningEvidenceRoleV1::Evaluator", "learning_iteration_receipt_signing_bytes_v1(evaluation_receipt(config)?)?", "training.principal().principal_id != config.decision.owners.trainer", "evaluation.principal().principal_id != config.decision.owners.evaluator", "verify_signed_actor_separation(&training, &evaluation, current)?", "verify_independent_roles(", "original.controller_id() == &config.signer.controller_id", "SignedEvidenceError::ControllerCollision", "Ok((training, evaluation))"] },
+  { function = "fn authenticate(", sequence = ["authenticate_roles(config, evidence, current)?", "OriginalProductEvaluationExecutionEvidenceV1::revalidate(", "original.principal() != evaluation.principal()", "original.controller_id() != evaluation.controller_id()", "prepared.bundle.generator != *training.principal()", "prepared.bundle.evaluator != *evaluation.principal()", "revalidate_product_qualification_v1(", "&config.product_evidence,\n        timing,\n        &config.verifier,\n        current", "IndependentEvaluationDispositionV1::EligibleForIndependentSelection", "Ok((training, evaluation))"] },
+  { function = "fn receipt(", sequence = ["LearningIterationObservationV1::Selection", "LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?", "*candidate_bundle != candidate || selection_digest.is_zero()", "config.execution_evidence.record_digest().as_array()", "coordinator.record(receipt.clone(), observed_unix_seconds)?", "config.scope.validate_snapshot(coordinator.snapshot())?", "Ok(receipt)"] },
+  { function = "fn sign_original(", sequence = ["fn sign_original(", "sign_original_until(config, key, payload, identity, issued_at, signature_expiry(config, issued_at)?)"] },
+  { function = "fn signature_expiry(", sequence = ["issued_at\n        .checked_add(config.maximum_signature_lifetime_seconds)", "config.signer.principal.expires_at", "config.training_evidence.expires_at", "config.evaluation_evidence.expires_at", "config.product_evidence.generator_plan.expires_at", "config.product_evidence.evaluator_bundle.expires_at", "config.execution_evidence.attestation().expires_at"] },
+  { function = "fn new_work_time(", sequence = ["current < started_at || current >= config.decision.request.envelope.expiry_unix_seconds", "return Err(OwnerError::Binding(", "Ok(())"] },
+  { function = "fn now(", sequence = ["SystemTime::now()", ".duration_since(UNIX_EPOCH)", "value.as_secs()"] },
+  { function = "fn sign_original_until(", sequence = ["expires_at <= issued_at || expires_at > signature_expiry(config, issued_at)?", "return Err(OwnerError::Binding(", "SignedLearningEvidenceV1", "evidence_id: evidence_id(identity)?", "principal_id: config.signer.principal.principal_id.clone()", "role: LearningEvidenceRoleV1::Selector", "trust_digest: config.verifier.trust_digest()", "scope_digest: config.verifier.scope_digest()", "objective_digest: config.verifier.objective_digest()", "authority_epoch: config.signer.principal.authority_epoch", "issued_at", "expires_at", "payload_digest: Digest32::of_bytes(payload)", "signature: [0; 64]", "key.sign(&signed.signing_bytes()).to_bytes()", "Ok(signed)"], top_level = ["let mut signed = SignedLearningEvidenceV1", "signed.signature = key.sign(&signed.signing_bytes()).to_bytes()"] },
 ]
-
-
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs"
@@ -9851,10 +9891,9 @@ id = "learning_artifact_original_publication_service_readback"
 symbol = "LearningArtifactOwnerService::read_original_publication_current"
 definition_path = "codex-rs/hepta-learning-artifacts/src/owner_service_readback.rs"
 definition_markers = ["pub fn read_original_publication_current("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs", "codex-rs/hepta-agentd/src/circuit_model_version_artifact.rs"]
 caller_markers = []
 receiver_type = "LearningArtifactOwnerService"
-
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs"
@@ -10336,7 +10375,7 @@ symbol = "OriginalCellQ24ModelCommandReceiptV1::original_record_for_root"
 receiver_type = "OriginalCellQ24ModelCommandReceiptV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_command.rs"
 definition_markers = ["pub(crate) fn original_record_for_root("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs","codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -10774,18 +10813,18 @@ id = "learning_positive_published_context_model"
 symbol = "OriginalCircuitCandidateLearningReadContextV1::from_original_model"
 receiver_type = "OriginalCircuitCandidateLearningReadContextV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"
-definition_markers = [ "pub fn from_original_model(" ]
-product_callers = [  ]
-caller_markers = [  ]
+definition_markers = ["pub fn from_original_model("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
 
 [[boundary]]
 id = "learning_positive_published_context_selection"
 symbol = "OriginalCircuitCandidateLearningReadContextV1::from_original_selection"
 receiver_type = "OriginalCircuitCandidateLearningReadContextV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"
-definition_markers = [ "pub fn from_original_selection(" ]
-product_callers = [ "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs" ]
-caller_markers = [  ]
+definition_markers = ["pub fn from_original_selection("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
 
 [[boundary]]
 id = "learning_positive_published_client_bind"
@@ -10810,27 +10849,27 @@ id = "learning_positive_published_client_current"
 symbol = "OriginalCircuitCandidateLearningReadClientV1::read_current"
 receiver_type = "OriginalCircuitCandidateLearningReadClientV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"
-definition_markers = [ "pub async fn read_current(" ]
-product_callers = [ "codex-rs/hepta-agentd/src/circuit_candidate_next_use_receipt_sources.rs" ]
-caller_markers = [  ]
+definition_markers = ["pub async fn read_current("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_candidate_next_use_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs"]
+caller_markers = []
 
 [[boundary]]
 id = "learning_positive_published_client_context"
 symbol = "OriginalCircuitCandidateLearningReadClientV1::require_original_context"
 receiver_type = "OriginalCircuitCandidateLearningReadClientV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"
-definition_markers = [ "pub(crate) fn require_original_context(" ]
-product_callers = [ "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs" ]
-caller_markers = [  ]
+definition_markers = ["pub(crate) fn require_original_context("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs"]
+caller_markers = []
 
 [[boundary]]
 id = "learning_positive_published_owner_create"
 symbol = "OriginalCircuitCandidateLearningReadOwnerV1::from_original_owners"
 receiver_type = "OriginalCircuitCandidateLearningReadOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs"
-definition_markers = [ "pub fn from_original_owners(" ]
-product_callers = [  ]
-caller_markers = [  ]
+definition_markers = ["pub fn from_original_owners("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
 
 [[boundary]]
 id = "learning_positive_published_owner_serve"
@@ -10846,9 +10885,9 @@ id = "learning_positive_published_version_serve"
 symbol = "OriginalCircuitCandidateLearningReadOwnerV1::serve_original_candidate_channel"
 receiver_type = "OriginalCircuitCandidateLearningReadOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs"
-definition_markers = [ "pub(crate) fn serve_original_candidate_channel(" ]
-product_callers = [  ]
-caller_markers = [  ]
+definition_markers = ["pub(crate) fn serve_original_candidate_channel("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
 
 [[boundary]]
 id = "learning_positive_c_readiness_bind"
@@ -11008,9 +11047,19 @@ required_function_order = [ { function = "fn mode(", sequence = [ "context.scope
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs"
-required = [ "cell: PublishedCircuitCellOwnerV1<C>", "source: CircuitTaskSourceReadbackV1<S>", "identity: AgentdIdentity", "context: Context" ]
-forbidden = [ "SigningKey", "LearningEvidenceTrustV1", "LearningEvidenceVerifierV1::new", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", ".compare_and_swap(", ".publish(", ".commit_once(", ".claim(", ".sign(", "execute_circuit_task_record(", "execute_cell_committed(", "into_circuit_feature_task(", "prepare_agentd_generation", "permit_all", "if false", "Deref", "into_inner", "pub cell:", "pub source:", "pub identity:", "pub context:" ]
-required_function_order = [ { function = "fn from_original_owners(", sequence = [ "cell: PublishedCircuitCellOwnerV1<C>", "source: CircuitTaskSourceReadbackV1<S>", "wire::context_binding(&context, started_at)?", "owner.require_task_input_current()?", "cell.read_learning_selection(&coordinator)?", "owner.require_original_selection(&observed)?", "owner.require_task_input_current()?", "let fresh = now()?", "wire::context_binding(&owner.context, fresh)? != binding" ] }, { function = "fn serve_readback(", sequence = [ "require_timing(timeout, lifetime)?", ".try_acquire()", "original_owner_command_channel_v1(", "original_consumer_pidfd", "self.serve_channel(&mut channel)" ] }, { function = "fn serve_original_candidate_channel(", sequence = [ "wire::mode(&self.context)? != wire::Mode::Selection", "return Err(", "self.serve_channel(channel)" ] }, { function = "fn response(", sequence = [ "request.require_context(&self.context, self.binding, request_id)?", "wire::context_binding(&self.context, started_at)? != self.binding", "self.read_original()?", "let fresh = now()?", "fresh < started_at", "wire::context_binding(&self.context, fresh)? != self.binding", "wire::OriginalRead::from_original(read)?", "bytes.len() > 16_384" ] }, { function = "fn require_task_input_current(", sequence = [ "self.cell.task.require_current()?", "input.scope.run_id == request.source_run_id", "Publication::Update { previous, .. }", "input.observation == previous.source.input().observation", "source.require_original_input(&self.identity, input)?", "self.cell.task.require_current()?" ] }, { function = "fn require_original_selection(", sequence = [ "self.context.scope().validate_observation(observed)?", "wire::decision(&self.context)?", "decision.candidate()", "LearningIterationObservationV1::Selection", "*candidate_bundle == candidate", "!selection_digest.is_zero()", "self.context.prefix.receipts[5].observation != *observed" ] }, { function = "fn read_original(", sequence = [ "self.require_task_input_current()?", "wire::decision(&self.context)?", "cell.read_learning_selection(&coordinator)?", "self.require_original_selection(&selection)?", "Publication::Update", "original.publication_digest()?", "circuit_feature_task_digest_v1(", "wire::Mode::NextUse", "cell.read_learning_next_use(&prefix, &self.source, &self.identity)?", "!= before", "self.require_task_input_current()?", "cell.read_learning_selection(&coordinator)? != selection", "self.require_task_input_current()?", "Ok(Readback" ] } ]
+required = ["cell: PublishedCircuitCellOwnerV1<C>", "source: CircuitTaskSourceReadbackV1<S>", "identity: AgentdIdentity", "context: Context", "pub(crate) fn serve_original_next_use_channel(", "pub(crate) fn serve_original_readiness_channel("]
+forbidden = ["SigningKey", "LearningEvidenceTrustV1", "LearningEvidenceVerifierV1::new", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", ".compare_and_swap(", ".publish(", ".commit_once(", ".claim(", ".sign(", "execute_circuit_task_record(", "execute_cell_committed(", "into_circuit_feature_task(", "prepare_agentd_generation", "permit_all", "if false", "Deref", "into_inner", "pub cell:", "pub source:", "pub identity:", "pub context:"]
+required_function_order = [
+  { function = "fn from_original_owners(", sequence = ["cell: PublishedCircuitCellOwnerV1<C>", "source: CircuitTaskSourceReadbackV1<S>", "wire::context_binding(&context, started_at)?", "owner.require_task_input_current()?", "cell.read_learning_selection(&coordinator)?", "owner.require_original_selection(&observed)?", "owner.require_task_input_current()?", "let fresh = now()?", "wire::context_binding(&owner.context, fresh)? != binding"] },
+  { function = "fn serve_readback(", sequence = ["require_timing(timeout, lifetime)?", ".try_acquire()", "original_owner_command_channel_v1(", "original_consumer_pidfd", "self.serve_channel(&mut channel)"] },
+  { function = "fn serve_original_candidate_channel(", sequence = ["wire::mode(&self.context)? != wire::Mode::Selection", "return Err(", "self.serve_channel(channel)"] },
+  { function = "fn response(", sequence = ["request.require_context(&self.context, self.binding, request_id)?", "wire::context_binding(&self.context, started_at)? != self.binding", "self.read_original()?", "let fresh = now()?", "fresh < started_at", "wire::context_binding(&self.context, fresh)? != self.binding", "wire::OriginalRead::from_original(read)?", "bytes.len() > 16_384"] },
+  { function = "fn require_task_input_current(", sequence = ["self.cell.task.require_current()?", "input.scope.run_id == request.source_run_id", "Publication::Update { previous, .. }", "input.observation == previous.source.input().observation", "source.require_original_input(&self.identity, input)?", "self.cell.task.require_current()?"] },
+  { function = "fn require_original_selection(", sequence = ["self.context.scope().validate_observation(observed)?", "wire::decision(&self.context)?", "decision.candidate()", "LearningIterationObservationV1::Selection", "*candidate_bundle == candidate", "!selection_digest.is_zero()", "self.context.prefix.receipts[5].observation != *observed"] },
+  { function = "fn read_original(", sequence = ["self.require_task_input_current()?", "wire::decision(&self.context)?", "cell.read_learning_selection(&coordinator)?", "self.require_original_selection(&selection)?", "Publication::Update", "original.publication_digest()?", "circuit_feature_task_digest_v1(", "wire::Mode::NextUse", "cell.read_learning_next_use(&prefix, &self.source, &self.identity)?", "!= before", "self.require_task_input_current()?", "cell.read_learning_selection(&coordinator)? != selection", "self.require_task_input_current()?", "Ok(Readback"] },
+  { function = "fn serve_original_next_use_channel(", sequence = ["wire::mode(&self.context)? != wire::Mode::NextUse", "return Err(Error::Binding(", "self.serve_channel(channel)"], top_level = ["if wire::mode(&self.context)? != wire::Mode::NextUse"] },
+  { function = "fn serve_original_readiness_channel(", sequence = ["wire::mode(&self.context)? != wire::Mode::NextUse", "return Err(Error::Binding(", "self.serve_readiness_channel(channel)"], top_level = ["if wire::mode(&self.context)? != wire::Mode::NextUse"] },
+]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs"
@@ -11150,5 +11199,622 @@ required_function_order = [
   { function = "fn require_original_selector_material(", sequence = ["self.authenticate_current(current)?", "codec::Body::decode(&self.bytes)?", "body.members.first()", "decode(&primary.generator)?", "decode(&primary.evaluator)?", "decode(&primary.execution)?", "config.scope != self.context.scope", "config.verifier.trust_digest() != self.context.verifier.trust_digest()", "config.verifier.scope_digest() != self.context.verifier.scope_digest()", "config.verifier.objective_digest() != self.context.verifier.objective_digest()", "config.training_evidence != self.context.training_evidence", "&config.evaluation_evidence != self.evaluation.attestation()", "config.decision.request != self.evaluation.snapshot().request", "config.decision.owners != self.evaluation.snapshot().owners", "config.decision.receipts.len() != 5", "config.decision.receipts[..4] != self.evaluation.snapshot().receipts", "primary.record != serde_json::to_vec(config.qualification.comparison())?", "config.qualification.comparison() != config.evaluation.plan().record()", "Digest32::of_bytes(&primary.qualification) != config.qualification.product().evidence_digest", "generator != config.product_evidence.generator_plan", "evaluator != config.product_evidence.evaluator_bundle", "&execution != config.execution_evidence.attestation()", "OriginalProductEvaluationExecutionEvidenceV1::signing_payload(&config.execution_evidence)", "OriginalProductEvaluationExecutionEvidenceV1::original_record(&config.execution_evidence)", "return Err(Error::Binding(", "Ok(())"], top_level = ["self.authenticate_current(current)?", "let body = codec::Body::decode(&self.bytes)?"] },
   { function = "fn original_publication_expiry(", sequence = ["self.authenticate_current(current)?", "codec::Body::decode(&self.bytes)?", "self.context.training_evidence.expires_at", ".min(self.evaluation.attestation().expires_at)", "for member in &body.members", "&member.generator", "&member.evaluator", "&member.execution", "&member.freeze", "decode(encoded)?", "self.context.verifier.verify(role, &signed, &payload, current)?", "expiry.min(signed.expires_at).min(verified.principal().expires_at)", "if expiry <= current", "return Err(Error::Binding(", "Ok(expiry)"], top_level = ["self.authenticate_current(current)?", "for member in &body.members", "if expiry <= current"] },
   { function = "fn require_original_model_input(", sequence = ["training != &self.context.training", "training_evidence != &self.context.training_evidence", "current < self.observed_at", "return Err(Error::Binding(", "verify::material(&self.context, &self.evaluation, &self.bytes, current)?", "if !checked.qualified", "return Err(Error::Binding(", "evaluation: self.evaluation.receipt().clone()", "candidate: checked.candidate", "material: checked.material"], top_level = ["if !checked.qualified"] },
+]
+
+
+[[boundary]]
+id = "learning_positive_model_original_context"
+symbol = "OriginalCellQ24ModelCommandReceiptV1::require_original_context"
+receiver_type = "OriginalCellQ24ModelCommandReceiptV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_command.rs"
+definition_markers = ["fn require_original_context("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_model_original_predecessors"
+symbol = "OriginalCellQ24ModelCommandReceiptV1::original_predecessors_for_publication"
+receiver_type = "OriginalCellQ24ModelCommandReceiptV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_command.rs"
+definition_markers = ["fn original_predecessors_for_publication("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_context_model"
+symbol = "OriginalCircuitModelPublicationContextV1::from_original_model"
+receiver_type = "OriginalCircuitModelPublicationContextV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+definition_markers = ["fn from_original_model("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_context_receipt"
+symbol = "OriginalCircuitModelPublicationContextV1::from_original_receipt"
+receiver_type = "OriginalCircuitModelPublicationContextV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+definition_markers = ["fn from_original_receipt("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_context_authenticate"
+symbol = "OriginalCircuitModelPublicationContextV1::authenticate"
+receiver_type = "OriginalCircuitModelPublicationContextV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+definition_markers = ["fn authenticate("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs", "codex-rs/hepta-agentd/src/circuit_model_version_client.rs", "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs", "codex-rs/hepta-agentd/src/circuit_model_version_state.rs", "codex-rs/hepta-agentd/src/circuit_model_version_task.rs", "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_context_material"
+symbol = "OriginalCircuitModelPublicationContextV1::authenticate_material"
+receiver_type = "OriginalCircuitModelPublicationContextV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+definition_markers = ["fn authenticate_material("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs", "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs", "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs", "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_context_version_pin"
+symbol = "OriginalCircuitModelPublicationContextV1::original_version_binding"
+receiver_type = "OriginalCircuitModelPublicationContextV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+definition_markers = ["fn original_version_binding("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_wire.rs", "codex-rs/hepta-agentd/src/circuit_model_version_client.rs", "codex-rs/hepta-agentd/src/circuit_model_version_state.rs", "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_prepare"
+symbol = "prepare_original_circuit_model_publication_v1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs"
+definition_markers = ["fn prepare_original_circuit_model_publication_v1<"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_publish"
+symbol = "PreparedOriginalCircuitModelPublicationV1::publish_original_model_task"
+receiver_type = "PreparedOriginalCircuitModelPublicationV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs"
+definition_markers = ["fn publish_original_model_task("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_task"
+symbol = "OriginalCircuitModelPublicationV1::into_original_task"
+receiver_type = "OriginalCircuitModelPublicationV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs"
+definition_markers = ["fn into_original_task("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_publication_recover"
+symbol = "recover_original_circuit_model_publication_v1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs"
+definition_markers = ["fn recover_original_circuit_model_publication_v1<"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_owner_consume"
+symbol = "OriginalCircuitModelSelectionReceiptOwnerV1::into_command_owner"
+receiver_type = "OriginalCircuitModelSelectionReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs"
+definition_markers = ["fn into_command_owner("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_owner_profile"
+symbol = "OriginalCircuitModelSelectionReceiptOwnerV1::original_command_profile"
+receiver_type = "OriginalCircuitModelSelectionReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs"
+definition_markers = ["fn original_command_profile("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_owner_factory"
+symbol = "OriginalCircuitModelSelectionCommandOwnerV1::from_original_receipt_owner"
+receiver_type = "OriginalCircuitModelSelectionCommandOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs"
+definition_markers = ["fn from_original_receipt_owner("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_remote_attest"
+symbol = "OriginalCircuitModelSelectionReceiptOwnerV1::attest_original_remote_selection"
+receiver_type = "OriginalCircuitModelSelectionReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs"
+definition_markers = ["fn attest_original_remote_selection("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_remote_readback"
+symbol = "OriginalCircuitModelSelectionReceiptOwnerV1::readback_remote"
+receiver_type = "OriginalCircuitModelSelectionReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs"
+definition_markers = ["fn readback_remote("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command_evidence.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_client_create"
+symbol = "OriginalCircuitModelSelectionCommandClientV1::from_original_stream"
+receiver_type = "OriginalCircuitModelSelectionCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn from_original_stream("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_client_recover"
+symbol = "OriginalCircuitModelSelectionCommandClientV1::recover_from_original_stream"
+receiver_type = "OriginalCircuitModelSelectionCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn recover_from_original_stream("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_client_bind"
+symbol = "OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel"
+receiver_type = "OriginalCircuitModelSelectionCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn bind_original_stage_channel("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_client_attest"
+symbol = "OriginalCircuitModelSelectionCommandClientV1::execute_selection"
+receiver_type = "OriginalCircuitModelSelectionCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn execute_selection("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_client_readback"
+symbol = "OriginalCircuitModelSelectionCommandClientV1::readback"
+receiver_type = "OriginalCircuitModelSelectionCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn readback("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_client_evidence"
+symbol = "OriginalCircuitModelSelectionCommandClientV1::receipt_attestation"
+receiver_type = "OriginalCircuitModelSelectionCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn receipt_attestation("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_receipt_context"
+symbol = "OriginalCircuitModelSelectionCommandReceiptV1::original_publication_context"
+receiver_type = "OriginalCircuitModelSelectionCommandReceiptV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+definition_markers = ["fn original_publication_context("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_owner_serve"
+symbol = "OriginalCircuitModelSelectionCommandOwnerV1::serve_commands"
+receiver_type = "OriginalCircuitModelSelectionCommandOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs"
+definition_markers = ["fn serve_commands("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_selection_owner_evidence"
+symbol = "OriginalCircuitModelSelectionCommandOwnerV1::serve_evidence_readback"
+receiver_type = "OriginalCircuitModelSelectionCommandOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs"
+definition_markers = ["fn serve_evidence_readback("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_client_bind"
+symbol = "OriginalCircuitModelVersionClientV1::bind_original_stage_channel"
+receiver_type = "OriginalCircuitModelVersionClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_client.rs"
+definition_markers = ["fn bind_original_stage_channel("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_client_recover"
+symbol = "OriginalCircuitModelVersionClientV1::recover_original_stage_channel"
+receiver_type = "OriginalCircuitModelVersionClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_client.rs"
+definition_markers = ["fn recover_original_stage_channel("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_client_publish"
+symbol = "OriginalCircuitModelVersionClientV1::publish_original_version"
+receiver_type = "OriginalCircuitModelVersionClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_client.rs"
+definition_markers = ["fn publish_original_version("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_client_readback"
+symbol = "OriginalCircuitModelVersionClientV1::readback"
+receiver_type = "OriginalCircuitModelVersionClientV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_client.rs"
+definition_markers = ["fn readback("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_create"
+symbol = "OriginalCircuitModelVersionHostV1::from_original_owners"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_host.rs"
+definition_markers = ["fn from_original_owners("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_recover"
+symbol = "OriginalCircuitModelVersionHostV1::recover_from_original_owners"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_host.rs"
+definition_markers = ["fn recover_from_original_owners("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_publish"
+symbol = "OriginalCircuitModelVersionHostV1::publish_original"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs"
+definition_markers = ["fn publish_original("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_readback"
+symbol = "OriginalCircuitModelVersionHostV1::read_original"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"
+definition_markers = ["fn read_original("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_serve"
+symbol = "OriginalCircuitModelVersionHostV1::serve_commands"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+definition_markers = ["fn serve_commands("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_ordinary"
+symbol = "OriginalCircuitModelVersionHostV1::serve_original_ordinary"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+definition_markers = ["fn serve_original_ordinary("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_run_c"
+symbol = "OriginalCircuitModelVersionHostV1::run_original_c"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+definition_markers = ["fn run_original_c("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_selection_read"
+symbol = "OriginalCircuitModelVersionHostV1::serve_original_selection_readback"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+definition_markers = ["fn serve_original_selection_readback("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_next_use_read"
+symbol = "OriginalCircuitModelVersionHostV1::serve_original_next_use_readback"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+definition_markers = ["fn serve_original_next_use_readback("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_owner_readiness"
+symbol = "OriginalCircuitModelVersionHostV1::serve_original_completion_readiness"
+receiver_type = "OriginalCircuitModelVersionHostV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+definition_markers = ["fn serve_original_completion_readiness("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_original_issuer_attenuation"
+symbol = "AgentdUnixFinalUseGrantProvider::into_original_model_version_issuer"
+receiver_type = "AgentdUnixFinalUseGrantProvider"
+definition_path = "codex-rs/hepta-agentd/src/root_model_version_issuer.rs"
+definition_markers = ["fn into_original_model_version_issuer("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_version_original_issuer_request"
+symbol = "OriginalRootModelVersionIssuerV1::request_for_original_model_version"
+receiver_type = "OriginalRootModelVersionIssuerV1"
+definition_path = "codex-rs/hepta-agentd/src/root_model_version_issuer.rs"
+definition_markers = ["fn request_for_original_model_version("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_effect.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_published_next_use_version_serve"
+symbol = "OriginalCircuitCandidateLearningReadOwnerV1::serve_original_next_use_channel"
+receiver_type = "OriginalCircuitCandidateLearningReadOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs"
+definition_markers = ["fn serve_original_next_use_channel("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_positive_published_readiness_version_serve"
+symbol = "OriginalCircuitCandidateLearningReadOwnerV1::serve_original_readiness_channel"
+receiver_type = "OriginalCircuitCandidateLearningReadOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs"
+definition_markers = ["fn serve_original_readiness_channel("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_model_version_service.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs"
+required = ["pub struct OriginalCircuitModelPublicationContextV1 {", "material: OriginalCellQ24MaterialReceiptConfigV1,", "registration: OriginalCellEvaluationPanelRegistrationV1,", "dataset: OriginalCellQ24MaterialCommandReceiptV1,", "training: OriginalCellQ24TrainingCommandReceiptV1,", "evaluation: OriginalCellEvaluationCommandReceiptV1,", "model: OriginalCellQ24ModelCommandReceiptV1,", "training_cut: LearningIterationSnapshotV1,", "pub(super) fn duplicate_response_pin(", "b\"hepta.agentd.original-model-version.command.v1\\0\""]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "pub model:", "pub training_cut:", "pub fn duplicate_response_pin", "SigningKey", "FinalUseGrant", "AgentdConfig", "CURRENT"]
+required_function_order = [
+  { function = "fn with_original_model(", sequence = ["fn with_original_model(", "OriginalCircuitModelPublicationContextV1::from_original_receipt(", "self.material, self.registration, self.dataset, self.training, self.evaluation, model"], top_level = [] },
+  { function = "fn from_original_model(", sequence = ["OriginalCellQ24ModelCommandClientV1::readback(original).await?", "Self::from_original_receipt(material, registration, dataset, training, evaluation, model)"], top_level = ["let model = OriginalCellQ24ModelCommandClientV1::readback(original).await?"] },
+  { function = "fn from_original_receipt(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?", "cut.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?", "let context = Self", "training_cut: cut.snapshot().clone()", "context.authenticate(now()?,              false)?", "Ok(context)"], top_level = [] },
+  { function = "fn authenticate_at_current(", sequence = ["self.model.require_original_context(", "&self.material", "&self.registration", "&self.dataset", "&self.training", "&self.evaluation", "if current < lower", "let decision = self.decision()", "self.scope().validate_snapshot(decision)?", ".require_verifier(self.verifier())", "LearningIterationCoordinatorV1::from_snapshot(decision.clone())?", "coordinator.candidate()", "LearningIterationStageV1::Experience", "LearningIterationStageV1::Dataset", "LearningIterationStageV1::Training", "LearningIterationStageV1::Evaluation", "LearningIterationStageV1::Proposal", "decision.receipts.len() != stages.len()", "receipt.observation.stage() == stage", "coordinator.next_stage() != Some(LearningIterationStageV1::Selection)", "coordinator.next_task_bundle() != Some(candidate)", "candidate == &decision.request.selected_bundle", "decision.training_no_update_v2().is_some()", "self.model.authority() != AuthorityPosture::DENY_ALL", "decision.receipts.iter().take(4).zip(self.signatures())", "LearningEvidenceRoleV1::Observer", "LearningEvidenceRoleV1::Observer", "LearningEvidenceRoleV1::Generator", "LearningEvidenceRoleV1::Evaluator", "self.verifier().verify(", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "evidence.principal().principal_id != receipt.actor_id", "receipt.actor_id != *decision.owners.owner(receipt.observation.stage())", "receipt.observed_unix_seconds > signed.issued_at", "signed.issued_at > current", "verify_signed_actor_separation(&verified[2], &verified[3], current)?", "new_work && current >= decision.request.envelope.expiry_unix_seconds", "Ok((coordinator, current))"], top_level = ["let current = self.model.require_original_context(", "self.scope().validate_snapshot(decision)?", "verify_signed_actor_separation(&verified[2], &verified[3], current)?"] },
+  { function = "fn duplicate_response_pin(", sequence = ["fn duplicate_response_pin(", "material: self.material.clone()", "registration: self.registration.clone()", "dataset: self.dataset.clone()", "training: self.training.clone()", "evaluation: self.evaluation.clone()", "model: self.model.clone()", "training_cut: self.training_cut.clone()"], top_level = [] },
+  { function = "fn original_version_binding(", sequence = ["self.authenticate_at_current(lower,              false)?", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)", "fresh < current", "self.model.original_record_for_root(self.signatures())?", "for original in self.signatures()", "original.signing_bytes()", "&original.signature", "encode_original_owner_snapshot_v1(", "self.decision()", "initial.as_array()", "self.scope().binding().as_array()", "self.verifier().trust_digest().as_array()", "self.verifier().scope_digest().as_array()", "self.verifier().objective_digest().as_array()", "&snapshot, &signatures", "record, original_context.as_array(), self.model.material_digest().as_array()"], top_level = [] },
+  { function = "fn authenticate_material(", sequence = ["self.authenticate_at_current(lower, new_work)?", "material.authenticate_current(current)?", "material.require_original_model_input(", "&self.training_cut", "self.training.attestation()", "material.original_evaluation() != &self.evaluation", "input.material_digest() != self.model.material_digest()", "input.evaluation() != self.evaluation.receipt()", "input.candidate() != coordinator.candidate()", "material.original_publication_expiry(current)?", "self.decision().receipts.iter().take(4).zip(self.signatures())", "LearningEvidenceRoleV1::Observer", "LearningEvidenceRoleV1::Observer", "LearningEvidenceRoleV1::Generator", "LearningEvidenceRoleV1::Evaluator", "self.verifier().verify(", "expiry.min(signed.expires_at).min(verified.principal().expires_at)", "if expiry <= current", "Ok(expiry)"], top_level = ["let (coordinator, current) = self.authenticate_at_current(lower, new_work)?", "material.authenticate_current(current)?", "if expiry <= current"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs"
+required = ["pub(super) fn require_inputs<", "pub(super) fn require_published("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "SignedFinalUseGrant", "publish(", ".commit_once(", "AgentdConfig"]
+required_function_order = [
+  { function = "fn require_previous(", sequence = ["previous.source.history_digest().as_str() != request.completed_task_receipt.to_string()", "input.scope.run_id != request.source_run_id", "input.scope.agent_id != request.agent_id", "input.scope.cell_id != request.cell_id", "input.scope.principal_digest.to_string() != request.principal_id.as_str()", "previous.source.bundle_digest() != request.selected_bundle.digest()", "previous.receipt.checkpoint_after != previous.source.checkpoint_digest()", "validate_manifest(&request.selected_bundle, &previous.manifest)", "Ok(())"], top_level = [] },
+  { function = "fn require_published(", sequence = ["let started = now()?", "context.authenticate(started, new_work)?", "task.require_current()?", "Publication::Update { original, previous }", "require_previous(context, previous)?", "coordinator.candidate()", "task.source().scope.run_id == previous.source.input().scope.run_id", "task.source().observation == previous.source.input().observation", "task.0.original.lock()", ".selection(original, &coordinator, &previous.manifest)?", "LearningIterationObservationV1::Selection { candidate_bundle, .. }", "task.require_bundle(candidate)?", "context.authenticate(started, new_work)?", "Ok(())"], top_level = ["let started = now()?", "task.require_current()?", "require_previous(context, previous)?", "task.require_bundle(candidate)?"] },
+]
+required_order = [["fn require_inputs<", "context.authenticate(now()?,              true)?", "require_previous(context, &inputs.completed)?", "CellGenerationOwnerBindingV1::new(", "&inputs.predecessor.config", "inputs.predecessor.max_records", "inputs.completed.binding != expected", "inputs.completed.manifest != inputs.predecessor.config.manifest", "next.manifest == inputs.predecessor.config.manifest", "source.scope.run_id == inputs.completed.source.input().scope.run_id", "source.observation == inputs.completed.source.input().observation", "source.scope.agent_id != context.decision().request.agent_id", "source.scope.cell_id != context.decision().request.cell_id", "source.scope.principal_digest.to_string() != context.decision().request.principal_id.as_str()", "next.initial.scope.agent_id != source.scope.agent_id.as_str()", "next.initial.scope.cell_id != source.scope.cell_id.as_str()", "next.initial.scope.run_id != source.scope.run_id.as_str()", "next.initial.scope.principal_digest != source.scope.principal_digest.into_array()", "next.task_digest != crate::circuit_feature_task_digest_v1(definition, source)?.into_array()", "next.source_frontier != source.source_frontier.into_array()", "next.manifest.bundle_digest != definition.bundle_digest.into_array()", "next.manifest.state_schema != definition.state_schema_digest.into_array()", "next.manifest.encoder != Some(definition.runtime.encoder_digest.into_array())", "next.manifest.head != Some(definition.runtime.head_digest.into_array())", "validate_manifest(candidate, &next.manifest)", "Ok(())"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs"
+required = ["pub struct PreparedOriginalCircuitModelPublicationV1<'a,", "observation: OriginalCellQ24ModelReadV1<'a>,", "prepared: PreparedAgentdGenerationUpdateV1<Old, New>,", "started_at: u64,", "pub struct OriginalCircuitModelPublicationV1 {", "context: OriginalCircuitModelPublicationContextV1,", "task: PublishedCircuitFeatureTaskV1,", "pub async fn prepare_original_circuit_model_publication_v1<", "async fn prepare_in_original_model_operation<"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SigningKey", "pub observation:", "pub prepared:", "pub context:", "pub task:", "AgentdUnixFinalUseGrantProvider", "RunStart", "with_root_learning_ordinary"]
+required_function_order = [
+  { function = "fn into_original_task(", sequence = ["fn into_original_task(", "(self.task, self.context)"], top_level = [] },
+  { function = "fn publish_original_model_task(", sequence = ["let Self", "observation.require_current(started_at)?", "context.authenticate_material(", "observation.material(), started_at,              true", "QueuedPublicationFence::new()", "Arc::clone(&queued.cancelled)", "tokio::task::spawn_blocking(move ||", "context.authenticate(started_at,              true)?", "require_predecessor_window(started_at, original_expiry)?", "require_not_cancelled(&cancelled)?", "PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)", ".map_err(uncertain)?", "ready.into_circuit_feature_task(definition, source, completed)", ".map_err(uncertain)?", "binding::require_published(&context, &task,              true).map_err(uncertain)?", "drop(queued)", "observation.finish().await.map_err(uncertain)?", "completed.model() != context.model()", "return Err(uncertain(", "tokio::task::spawn_blocking(move ||", "binding::require_published(&context, &task,              true).map_err(uncertain)?", "context.authenticate_material(completed.material(), started_at,              true).map_err(uncertain)?", "Ok(OriginalCircuitModelPublicationV1 { context, task })"], top_level = ["observation.require_current(started_at)?", "let completed = observation.finish().await.map_err(uncertain)?", "context.authenticate_material(completed.material(), started_at,              true).map_err(uncertain)?"] },
+  { function = "fn load_original_selection(", sequence = ["authorities.artifacts.lock()", "AgentdSelectedGenerationV1::load(", "&artifacts", "selection.verifier", "selection.signed", "selection.files", "authorities.now()?"], top_level = ["let artifacts = authorities.artifacts.lock()"] },
+  { function = "fn drop(", sequence = ["fn drop(", "self.cancelled.store(        true, Ordering::Release)"], top_level = [] },
+  { function = "fn require_not_cancelled(", sequence = ["cancelled.load(Ordering::Acquire)", "return Err(Error::Cancelled)", "Ok(())"], top_level = [] },
+  { function = "fn require_predecessor_window(", sequence = ["let current = now()?", "current < started", "Err(Error::Clock)", "current >= expiry", "Err(Error::DeadlineExceeded)", "Ok(())"], top_level = [] },
+]
+required_order = [["fn prepare_original_circuit_model_publication_v1<", "let started = now()?", "model.begin_original_model_read().await?", "predecessors.with_original_model(observation.model().clone())?", "prepare_in_original_model_operation(context, observation, inputs, started).await", "fn prepare_in_original_model_operation<"], ["fn prepare_in_original_model_operation<", "observation.model() != context.model()", "observation.require_current(started)?", "context.authenticate_material(observation.material(), started,              true)?", "binding::require_inputs(&context, &inputs)?", "QueuedPublicationFence::new()", "Arc::clone(&queued.cancelled)", "tokio::task::spawn_blocking(move ||", "context.authenticate(started,              true)?", "require_not_cancelled(&cancelled)?", "binding::require_inputs(&context, &inputs)?", "context.authenticate(now()?,              true)?", "learning_updated_task_operation_id_v1(&coordinator)?", "load_original_selection(&inputs.authorities, inputs.selection)?", "selected.manifest() != &inputs.target.config.manifest", "context.authenticate(started,              true)?", "require_predecessor_window(started, original_expiry)?", "require_not_cancelled(&cancelled)?", "prepare_agentd_generation_cold_drained_update_v1(", "inputs.current", "inputs.authorities", "inputs.predecessor", "selected", "inputs.target", "AgentdGenerationUpdateRequestV1 { operation_id: operation.to_string() }", ".map_err(uncertain)?", "context.authenticate(started,              true).map_err(uncertain)?", "drop(queued)", "observation.require_current(started).map_err(uncertain)?", "context.authenticate_material(observation.material(), started,              true).map_err(uncertain)?", "Ok(PreparedOriginalCircuitModelPublicationV1", "context, observation, prepared, definition, source, completed, started_at: started"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs"
+required = ["pub struct OriginalCircuitModelPublicationRecoveryV1<", "pub intent_digest: Digest32,", "pub original_source: Arc<CircuitTaskSourceReadbackV1<Source>>,", "pub original_identity: AgentdIdentity,", "pub async fn recover_original_circuit_model_publication_v1<"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "SignedFinalUseGrant", "prepare_agentd_generation", "PreparedAgentdGenerationUpdateV1::publish", "into_circuit_feature_task(", ".commit_once(", "request_grant(", "repair(", "Clone", "Deserialize"]
+required_order = [["fn recover_original_circuit_model_publication_v1<", "original.intent_digest.is_zero()", "let started = now()?", "model.begin_original_model_read().await?", "predecessors.with_original_model(observation.model().clone())?", "observation.require_current(started)?", "context.authenticate_material(observation.material(), started,              false)?", "tokio::task::spawn_blocking(move ||", "context.authenticate(started,              false)?", "learning_updated_task_operation_id_v1(&coordinator)?", "load_original_selection(&original.authorities, original.selection)?", "recover_agentd_generation_update_v1(", "original.current", "original.authorities", "selected", "original.target", "AgentdGenerationUpdateRecoveryV1", "operation_id: operation.to_string()", "intent_digest: original.intent_digest", "ready.recover_circuit_feature_task(", "original.definition", "original.source", "original.predecessor", "original.original_source.as_ref()", "&original.original_identity", "binding::require_published(&context, &task,              false)?", "observation.finish().await?", "completed.model() != context.model()", "tokio::task::spawn_blocking(move ||", "binding::require_published(&context, &task,              false)?", "context.authenticate_material(completed.material(), started,              false)?", "Ok(OriginalCircuitModelPublicationV1 { context, task })"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_model_version_issuer.rs"
+required = ["const DESTINATION: &str = \"agentd.cell-generation.replace-drained\";", "pub(crate) struct OriginalRootModelVersionIssuerV1 {", "provider: AgentdUnixFinalUseGrantProvider,", "requested: bool,", "prepared: &PreparedOriginalCircuitModelPublicationV1<'_, FileAnchorWitnessStore, FileAnchorWitnessStore>"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SigningKey", "FinalUseAuthority::", "SignedFinalUseGrant {", "pub provider:", "pub requested:", "requested = false", "from_protected_root", "replace_policy", "new_policy", "FinalUseBinding {"]
+required_function_order = [
+  { function = "fn into_original_model_version_issuer(", sequence = ["self.protected_root.as_ref()", "AgentdFinalUseIssuerError::InvalidConfiguration", "root.original_uid != 0", "AgentdFinalUseIssuerError::PeerDenied", "self.check_root()?", "super::super::remaining(root.end)?", "self.stream.try_lock()", "slot.is_none()", "AgentdFinalUseIssuerError::ChannelClosed", "Ok(OriginalRootModelVersionIssuerV1 { provider: self, requested: false })"], top_level = ["self.check_root()?", "super::super::remaining(root.end)?"] },
+  { function = "fn request_for_original_model_version(", sequence = ["prepared.final_use_binding()", "binding.destination_id != DESTINATION", "binding.subject_id.is_empty()", "binding.request_sha256 == [0; 32]", "binding.scope_sha256 == [0; 32]", "binding.payload_sha256 == [0; 32]", "AgentdFinalUseIssuerError::BindingMismatch", "if self.requested", "AgentdFinalUseIssuerError::ChannelClosed", "self.requested = true", "AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)"], top_level = ["let binding = prepared.final_use_binding()", "self.requested = true"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs"
+required = ["pub(super) const PURPOSE: &str = \"runtime.learning.original-circuit-model-version.command.v1\";", "pub(super) enum Action { Publish, Readback }", "#[serde(deny_unknown_fields)]", "pub initial_binding: String,", "pub binding: String,", "pub operation_id: String,", "pub model_head: String,", "pub request: Request,", "Busy, ReadbackRequired, Uncertain, Unavailable, FinalUseDenied,"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "SignedFinalUseGrant", "RunStart", "FinalUseBinding", "OriginalCellQ24ModelCommandReceiptV1", "pub snapshot:", "pub evidence:", "pub grant:", "pub config:", "pub candidate:"]
+required_function_order = [
+  { function = "fn new(", sequence = ["context.original_version_binding(super::now()?)?", "schema: 1, purpose: PURPOSE.into(), request_id", "initial_binding: initial.to_string(), binding: binding.to_string()", "context.decision().request.operation_id.to_string()", "context.decision().head_digest.to_string()"], top_level = [] },
+  { function = "fn require_initial(", sequence = ["self.schema != 1 || self.purpose != PURPOSE", "self.request_id != request_id || !(1..=128).contains(&request_id)", "self.initial_binding != initial.to_string()", "self.operation_id != operation.as_str()", "return Err(Error::Binding(", "digest(&self.binding)?", "digest(&self.model_head)?", "Ok(())"], top_level = [] },
+  { function = "fn require_context(", sequence = ["Self::new(context, self.request_id, self.action)?", "self != &expected", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+  { function = "fn decode(", sequence = ["context.authenticate(super::now()?,              false)?", "match self", "Self::Prepared { intent }", "publication: None", "Self::Published", "LearningIterationCoordinatorV1::from_snapshot(context.decision().clone())?", "coordinator.candidate()", "StableId::new(run)", "run == context.decision().request.source_run_id || digest(&bundle)? != expected", "digest(&intent)?", "digest(&publication)?", "digest(&task)?", "digest(&selection)?", "bundle: expected, run", "Self::Busy => Err(Error::Busy)", "Self::ReadbackRequired => Err(Error::ReadbackRequired)", "Self::Uncertain => Err(Error::CommitUncertain)", "Self::Unavailable => Err(Error::Unavailable)", "Self::FinalUseDenied => Err(Error::FinalUseDenied)"], top_level = [] },
+  { function = "fn digest(", sequence = ["value.parse()", "digest.is_zero() || digest.to_string() != value", "return Err(Error::Binding(", "Ok(digest)"], top_level = [] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_client.rs"
+required = ["struct Channel {", "peer: HostAuthorityPeerChannel,", "requested: bool,", "pub struct OriginalCircuitModelVersionClientV1 {", "channel: Mutex<Option<Channel>>,", "context: Context,", "retained: Mutex<Option<Readback>>,", "struct Cancelled(Arc<AtomicBool>);"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SigningKey", "FinalUseGrant", "RunStart", "Channel::new", "pub peer:", "pub channel:", "pub retained:", "pub context:", "original.requested = false"]
+required_function_order = [
+  { function = "fn drop(", sequence = ["fn drop(", "self.0.store(        true, Ordering::Release)"], top_level = [] },
+  { function = "fn bind_original_stage_channel(", sequence = ["fn bind_original_stage_channel(", "Self::bind(peer, context, Origin::Fresh)"], top_level = [] },
+  { function = "fn recover_original_stage_channel(", sequence = ["fn recover_original_stage_channel(", "Self::bind(peer, context, Origin::Recovered)"], top_level = [] },
+  { function = "fn bind(", sequence = ["context.prefix() != context.decision() || context.decision().receipts.len() != 5", "context.model_publication_context().authenticate(started,              false)?", "context.model_publication_context().original_version_binding(started)?", "peer.check_peer_lifetime()?", "let fresh = now()?", "require_clock(started, fresh)?", "context.model_publication_context().original_version_binding(fresh)? != expected", "Channel { peer, next: 1, requested: origin == Origin::Recovered }", "retained: Mutex::new(None)"], top_level = ["peer.check_peer_lifetime()?", "let fresh = now()?"] },
+  { function = "fn exchange(", sequence = ["let started = now()?", "wire::Action::Publish", "wire::Action::Readback", "self.context.model_publication_context().authenticate(", "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))", "self.channel.try_lock()", "slot.as_mut().ok_or(Error::Unavailable)?", "action == wire::Action::Publish && original.requested", "Err(Error::ReadbackRequired)", "original.requested = true", "slot.take().ok_or(Error::Unavailable)?", "!(1..=128).contains(&channel.next)", "wire::Request::new(", "serde_json::to_vec(&request)?", "bytes.is_empty() || bytes.len() > 16_384", "channel.next += 1", "Cancelled(Arc::new(AtomicBool::new(      false)))", "Arc::clone(&cancellation.0)", "tokio::task::spawn_blocking(move ||", "channel.peer.check_peer_lifetime()?", "queued.load(Ordering::Acquire)", "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))", "channel.peer.request(&bytes).map_err(|_| Error::CommitUncertain)?", "channel.peer.check_peer_lifetime()?", "queued.load(Ordering::Acquire)", "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))", "response.is_empty() || response.len() > 16_384", "serde_json::from_slice(&response)?", "response.request != request", "let fresh = now()?", "require_clock(started, fresh).map_err(|_| Error::CommitUncertain)?", "self.context.model_publication_context().authenticate(fresh,              false)", "let structured = matches!", "wire::Outcome::Uncertain", "response.result.decode(self.context.model_publication_context())", "match &decoded", "self.retained.try_lock()", "prior.intent != actual.intent", "prior.publication.is_some() && prior.publication != actual.publication", "*retained = Some(actual.clone())", "Err(_) if structured => {}", "Err(_) => return decoded", "self.channel.try_lock()", "if slot.is_some()", "*slot = Some(channel)", "drop(slot)", "drop(cancellation)", "decoded"], top_level = ["let started = now()?", "let mut channel = {", "channel.next += 1", "let fresh = now()?", "match &decoded", "*slot = Some(channel)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_host.rs"
+required = ["pub struct OriginalCircuitModelVersionHostV1 {", "predecessors: Predecessors,", "model: OriginalCellQ24ModelCommandClientV1,", "control: Arc<NeuronGenerationCurrentOwnerV1>,", "artifacts: ModelVersionArtifactOwner,", "origin: Origin,", "state: Mutex<State>,", "requested: AtomicBool,", "runtime_started: AtomicBool,", "end: Instant,", "issuer: OriginalRootModelVersionIssuerV1,", "awaiting: Option<Awaiting>,", "context: Option<Arc<Context>>,", "installed: Option<ModelVersionInstalledTaskV1>,", "config: Option<AgentdConfig>,"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SigningKey", "RunStart", "pub state:", "pub requested:", "pub model:", "pub issuer:", "pub end:", "pub connections:", "bool, origin", "new_issuer"]
+required_function_order = [
+  { function = "fn from_original_owners(", sequence = ["predecessors.material.require_original_command_initial()?", "task.require_completed_a(&inputs.completed)?", "ModelVersionArtifactOwner::new(", "Arc::clone(&inputs.authorities.artifacts)", "inputs.selection.signed.clone(), inputs.selection.verifier.clone()", "Arc::clone(&inputs.current)", "issuer.into_original_model_version_issuer()?", "Self::new(", "Origin::Fresh", "awaiting: Some(Awaiting", "context: None, intent: None, installed: None, config: None"], top_level = ["let (initial_binding, _) = predecessors.material.require_original_command_initial()?", "task.require_completed_a(&inputs.completed)?"] },
+  { function = "fn recover_from_original_owners(", sequence = ["original.intent_digest.is_zero()", "predecessors.material.require_original_command_initial()?", "ModelVersionArtifactOwner::new(", "original.artifacts, original.artifact_checkpoint", "original.artifact_selection, original.artifact_verifier", "ModelVersionInstalledTaskV1", "cell: original.cell, source: original.source, identity: original.identity", "intent: original.intent_digest", "installed.observe(&original.context)?", "Self::new(", "Origin::Recovered", "awaiting: None", "context: Some(Arc::new(original.context))", "intent: Some(original.intent_digest), installed: Some(installed), config: None"], top_level = [] },
+  { function = "fn new(", sequence = ["lifetime.is_zero() || lifetime > Duration::from_secs(300)", "return Err(Error::Binding(", "state: Mutex::new(state)", "requested: AtomicBool::new(origin == Origin::Recovered)", "runtime_started: AtomicBool::new(origin == Origin::Recovered)", "AtomicU8::new(if origin == Origin::Recovered { 4 } else { 0 })", "Instant::now().checked_add(lifetime)", "Handle::try_current()", "Arc::new(Semaphore::new(4))"], top_level = [] },
+  { function = "fn require_lifetime(", sequence = ["Instant::now() >= self.end", "Err(Error::Unavailable)", "Ok(())"], top_level = [] },
+  { function = "fn original_predecessors(", sequence = ["fn original_predecessors(", "material: self.predecessors.material.clone()", "registration: self.predecessors.registration.clone()", "dataset: self.predecessors.dataset.clone()", "training: self.predecessors.training.clone()", "evaluation: self.predecessors.evaluation.clone()"], top_level = [] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version.rs"
+required = ["pub struct OriginalCircuitModelVersionPublicationV1 {", "intent: Digest32,", "publication: Digest32,", "task: Digest32,", "selection: Digest32,", "bundle: Digest32,", "run: StableId,", "pub struct OriginalCircuitModelVersionReadbackV1 {", "publication: Option<OriginalCircuitModelVersionPublicationV1>,", "enum Origin { Fresh, Recovered }"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Deserialize", "SigningKey", "pub intent:", "pub publication:", "pub task:", "pub selection:", "pub bundle:", "pub run:", "pub enum Origin", "pub(crate) enum Origin"]
+required_function_order = [
+  { function = "fn require_clock(", sequence = ["current < started", "Err(Error::Clock)", "Ok(())"], top_level = [] },
+]
+required_order = [["impl OriginalCircuitModelVersionPublicationV1", "fn authority(", "AuthorityPosture::DENY_ALL", "impl OriginalCircuitModelVersionReadbackV1", "fn authority(", "AuthorityPosture::DENY_ALL"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs"
+required = ["struct EffectFence<'a> { host: &'a Host, completed: bool }", "pub(super) async fn publish_original(", "cancelled: &AtomicBool", "state.awaiting.take().ok_or(Error::CommitUncertain)?\n        };\n        let operation", "let signed = OriginalRootModelVersionIssuerV1::request_for_original_model_version("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SigningKey", "SignedFinalUseGrant {", "FinalUseBinding {", ".state.lock(", "requested.store(false", "requested.swap(false", "state.config.clone(", "runtime_started.store(false", "RunStart"]
+required_function_order = [
+  { function = "fn drop(", sequence = ["if !self.completed", "self.host.outcome.store(3, Ordering::Release)", "self.host.installed.notify_waiters()"], top_level = [] },
+  { function = "fn publish_original(", sequence = ["require_not_cancelled(cancelled)?", "self.require_lifetime()?", "self.origin != Origin::Fresh || self.requested.swap(        true, Ordering::AcqRel)", "Error::ReadbackRequired", "self.outcome.store(1, Ordering::Release)", "EffectFence { host: self, completed: false }", "let started = super::super::now()?", "let awaiting = {", "self.state.try_lock()", "state.awaiting.take().ok_or(Error::CommitUncertain)?", "self.model.begin_original_model_read().await?", "require_not_cancelled(cancelled)?", "self.original_predecessors().with_original_model(operation.model().clone())?", "request.require_context(&context)?", "operation.require_current(started)?", "context.authenticate_material(operation.material(), started,              true)?", "self.artifacts.read_current()?", "awaiting.task.require_completed_a(&awaiting.inputs.completed)?", "Arc::new(context.duplicate_response_pin())", "prepare_in_original_model_operation(", "context, operation, *awaiting.inputs, started", ".await.map_err(|_| Error::CommitUncertain)?", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "prepared.intent_digest()", "self.state.try_lock()", "state.context.is_some() || state.intent.is_some() || state.installed.is_some()", "state.context = Some(Arc::clone(&pin))", "state.intent = Some(intent)", "self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))?", "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?", "prepared.observation.require_current(started)?", "prepared.context.authenticate_material(prepared.observation.material(), started,              true)?", "self.require_lifetime()?", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "let mut issuer = awaiting.issuer", "OriginalRootModelVersionIssuerV1::request_for_original_model_version(", "&mut issuer, &prepared", "let signed = match signed", "AgentdFinalUseIssuerError::Denied", "let PreparedOriginalCircuitModelPublicationV1 { context, observation, .. } = prepared", "observation.finish().await.map_err(|_| Error::CommitUncertain)?", "self.require_prepared_control(&context, intent, None)?", "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?", "completed.model() != context.model()", "context.authenticate_material(completed.material(), started,              false)?", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "self.outcome.store(2, Ordering::Release)", "fence.completed = true", "return Err(Error::FinalUseDenied)", "Err(_) => return Err(Error::CommitUncertain)", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "&signed.grant.binding != prepared.final_use_binding()", "prepared.observation.require_current(started).map_err(|_| Error::CommitUncertain)?", "prepared.context.authenticate_material(prepared.observation.material(), started,              true)", "self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))", "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)", "self.require_lifetime().map_err(|_| Error::CommitUncertain)?", "let PreparedOriginalCircuitModelPublicationV1", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)", "ready.into_circuit_feature_task(definition, source, completed)", "binding::require_published(&context, &published,              true)", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "awaiting.task.install_original(published, &context, intent)", "let before = installed.observe(&context)", "let closed = observation.finish().await", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "closed.model() != context.model()", "let current = installed.observe(&context)", "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)", "current != before", "self.require_lifetime().map_err(|_| Error::CommitUncertain)?", "context.authenticate_material(closed.material(), started_at,              true)", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "self.state.try_lock()", "state.installed.is_some() || state.config.is_some()", "state.intent != Some(intent)", "!Arc::ptr_eq(original, &pin)", "state.installed = Some(installed)", "state.config = Some(config)", "self.outcome.store(4, Ordering::Release)", "fence.completed = true", "Ok(current)"], top_level = ["let awaiting = {", "let operation = self.model.begin_original_model_read().await?", "let signed = OriginalRootModelVersionIssuerV1::request_for_original_model_version(", "let signed = match signed", "let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)", "let closed = observation.finish().await", "let current = installed.observe(&context)", "context.authenticate_material(closed.material(), started_at,              true)", "self.outcome.store(4, Ordering::Release)"] },
+  { function = "fn require_not_cancelled(", sequence = ["cancelled.load(Ordering::Acquire)", "Err(Error::Cancelled)", "Ok(())"], top_level = [] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_state.rs"
+required = ["pub(super) fn require_prepared_control(", "pub(super) async fn read_original(", "state.intent.ok_or(Error::CommitUncertain)?, state.installed.clone())\n        };\n        let started"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "Deserialize", "SignedFinalUseGrant", "publish(", "prepare_agentd_generation", "install_original(", ".config.take(", "state.config =", "repair(", ".state.lock("]
+required_function_order = [
+  { function = "fn require_prepared_control(", sequence = ["context.authenticate(super::super::now()?,              false)?", "learning_updated_task_operation_id_v1(&coordinator)?", "NeuronGenerationCurrentOwnerV1::recover_operation(", "&self.control, operation.as_str(), intent", "original.intent_digest() != intent", "expected.is_some_and(|binding| original.final_use_binding() != binding)", "NeuronGenerationCurrentOwnerV1::read_operation(&self.control, &original)?", "NeuronGenerationUpdateReadbackV1::Prepared", "return Err(Error::CommitUncertain)", "Ok(())"], top_level = [] },
+  { function = "fn read_original(", sequence = ["self.require_lifetime()?", "self.outcome.load(Ordering::Acquire) == 1", "Error::Busy", "let (expected, intent, installed) = {", "self.state.try_lock()", "Arc::clone(state.context.as_ref().ok_or(Error::ReadbackRequired)?)", "state.intent.ok_or(Error::CommitUncertain)?", "state.installed.clone()", "let started = super::super::now()?", "self.model.begin_original_model_read().await?", "self.original_predecessors().with_original_model(operation.model().clone())?", "request.require_context(&actual)?", "actual.model() != expected.model()", "actual.original_version_binding(started)? != expected.original_version_binding(started)?", "operation.require_current(started)?", "actual.authenticate_material(operation.material(), started,              false)?", "let artifact_before = self.artifacts.read_current()?", "let observe = ||", "Some(original) => original.observe(&actual)", "self.require_prepared_control(&actual, intent, None)?", "publication: None", "let before = observe()?", "let completed = operation.finish().await?", "completed.model() != actual.model()", "let after = observe()?", "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?", "before != after", "self.require_lifetime()?", "actual.authenticate_material(completed.material(), started,              false)?", "Ok(after)"], top_level = ["let (expected, intent, installed) = {", "let operation = self.model.begin_original_model_read().await?", "let before = observe()?", "let completed = operation.finish().await?", "let after = observe()?", "actual.authenticate_material(completed.material(), started,              false)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_artifact.rs"
+required = ["impl ModelVersionArtifactOwner {", "pub(super) fn read_current(", "pub(super) fn require_same("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "SignedFinalUseGrant", "publish(", "resume(", "repair(", "admission(", "writer(", ".commit_once(", "OriginalArtifactPublicationReadbackV1 {"]
+required_function_order = [
+  { function = "fn new(", sequence = ["checkpoint.intent_digest.is_zero()", "owner.try_lock()", "original.withdrawal_registry()", "scope_digest()", "withdrawal.head_digest()", "let value = Self", "withdrawal_scope", "withdrawal_head", "value.read_current()?", "Ok(value)"], top_level = [] },
+  { function = "fn read_current(", sequence = ["self.owner.try_lock()", "original.recovery_required().is_some()", "original.withdrawal_registry().scope_digest() != Some(self.withdrawal_scope)", "original.withdrawal_registry().head_digest() != self.withdrawal_head", "self.selection.withdrawal_scope_digest != self.withdrawal_scope", "LearningArtifactOwnerService::read_original_publication_current(", "&original", "&self.checkpoint.operation_id", "self.checkpoint.intent_digest", "self.verifier", ".verify(&self.selection, read.current(), read.observed_unix_millis())", "original.withdrawal_registry().head_digest() != self.withdrawal_head", "Ok(read)"], top_level = ["let original = self.owner.try_lock()", "let read = LearningArtifactOwnerService::read_original_publication_current("] },
+  { function = "fn require_same(", sequence = ["before.checkpoint() != after.checkpoint()", "before.current().receipt() != after.current().receipt()", "before.current().witness_digest() != after.current().witness_digest()", "before.current().trust_digest() != after.current().trust_digest()", "after.observed_unix_millis() < before.observed_unix_millis()", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_task.rs"
+required = ["pub struct OriginalCircuitModelTaskInputsV1 {", "pub original_a: CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,", "pub original_a_identity: AgentdIdentity,", "pub(super) struct ModelVersionInstalledTaskV1 {", "pub(super) cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,", "pub(super) source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,", "pub(super) intent: Digest32,"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "Deserialize", "SignedFinalUseGrant", "RunStart", "execute_circuit_task_record(", "execute_cell_committed(", "crate::run(", "publish(", "LearningIterationEvidenceClientV1", "unsafe"]
+required_function_order = [
+  { function = "fn require_completed_a(", sequence = ["completed.source_publication()", "&expected.input().scope.run_id", ".original_a", ".read_run_publication(&self.original_a_identity, run)?", "self.config.identity()", "&self.original_a_identity", "&before != expected", "c.agent_id != a.agent_id", "c.spawn_generation == 0", "c.fleet_root == a.fleet_root && c.spawn_generation <= a.spawn_generation", "c.fleet_root != a.fleet_root", "c.run_root == a.run_root || c.home_root == a.home_root", "self.original_a.read_run_publication(a, run)? != before", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+  { function = "fn install_original(", sequence = ["context.authenticate(super::now()?,              true)?", "coordinator.candidate()", "self.model.components() != &candidate.components", "task.require_bundle(&candidate)?", "Publication::Update { previous, .. }", "&task.0.publication", "self.require_completed_a(previous)?", "previous.source_publication().clone()", "self.original_a", "self.original_a_identity", "self.config.identity().clone()", "AgentdConfig::with_q24_circuit_task_profile(", "self.config", "CircuitQ24TaskProfileV1", "files: self.files", "source_mode: CircuitQ24TaskOpenModeV1::Create", "published_task: task", "fence: self.fence", "circuit: self.circuit", "routes: self.routes", "bundle: candidate.clone()", "model: self.model", "worker_generation: self.worker_generation", "maximum_cell_records: self.maximum_cell_records", "queue_capacity: self.queue_capacity", "clock: self.clock", "ModelVersionInstalledTaskV1", "cell: actual.cell", "source: actual.source", "identity", "intent", "installed.observe(context)?", "original_a.read_run_publication(", "&original_a_identity", "&original_a_publication.input().scope.run_id", ")? != original_a_publication", "context.authenticate(super::now()?,              true)?", "Ok((installed, actual.config))"], top_level = ["task.require_bundle(&candidate)?", "self.require_completed_a(previous)?", "let actual = AgentdConfig::with_q24_circuit_task_profile(", "installed.observe(context)?"] },
+  { function = "fn observe(", sequence = ["context.authenticate(super::now()?,              false)?", "coordinator.candidate()", "let task = &self.cell.task", "binding::require_published(context, task,              false)?", "task.require_current()?", "CircuitTaskSourceReadbackV1::require_original_input(", "self.source.as_ref()", "&self.identity", "task.source()", "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?", "Publication::Update { original, previous }", "&task.0.publication", "learning_updated_task_operation_id_v1(&coordinator)?", "original.operation_id() != operation.as_str()", "original.intent_digest() != self.intent", "original.completion()", "NeuronGenerationPredecessorCompletionV1::OwnerDrained", "LearningIterationObservationV1::Selection", "candidate_bundle", "selection_digest", "candidate.digest()", "candidate_bundle != selected_bundle", "task.source().scope.run_id == context.decision().request.source_run_id", "task.source().observation == previous.source.input().observation", "original.publication_digest()?", "circuit_feature_task_digest_v1(task.definition(), task.source())?", "CircuitTaskSourceReadbackV1::require_original_input(", "self.source.as_ref()", "&self.identity", "task.source()", "task.require_bundle(&candidate)?", "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?", "LearningIterationObservationV1::Selection", "candidate_bundle", "selection_digest", "Ok(OriginalCircuitModelVersionReadbackV1", "intent: self.intent", "publication: Some(OriginalCircuitModelVersionPublicationV1"], top_level = ["let task = &self.cell.task", "task.require_current()?", "task.require_bundle(&candidate)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_version_service.rs"
+required = ["struct QueuedService(Arc<AtomicBool>);", "pub async fn serve_original_ordinary(", "pub async fn run_original_c("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "Deserialize", "SignedFinalUseGrant", "RunStart", "state.config.clone(", "requested.store(false", "runtime_started.store(false", ".state.lock(", "serve_readback(", "serve_completion_readiness("]
+required_function_order = [
+  { function = "fn serve_commands(", sequence = ["Arc::clone(&self.connections).try_acquire_owned()", "self.remaining_lifetime(lifetime)?", "original_owner_command_channel_v1(", "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime", "QueuedService(Arc::new(AtomicBool::new(      false)))", "tokio::task::spawn_blocking(move ||", "for request_id in 1..=128_u64", "cancelled.load(Ordering::Acquire)", "self.require_lifetime()?", "channel.exchange(|bytes| self.command_response(bytes, request_id, &cancelled)", "HostIssuerTransportError::InvalidRequest", "return Ok(request_id - 1)", "Err(Error::Unavailable)", "drop(queued)"], top_level = ["let lifetime = self.remaining_lifetime(lifetime)?", "let mut channel = original_owner_command_channel_v1("] },
+  { function = "fn command_response(", sequence = ["require_not_cancelled(cancelled)?", "self.require_lifetime()?", "bytes.is_empty() || bytes.len() > 16_384", "serde_json::from_slice(bytes)?", "request.require_initial(self.initial_binding", "&self.predecessors.material.initial.request.operation_id, request_id", "match request.action", "wire::Action::Publish => self.runtime.block_on(self.publish_original(&request, cancelled))", "wire::Action::Readback", "self.requested.store(        true, Ordering::Release)", "self.runtime.block_on(self.read_original(Some(&request)))", "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?", "let result = match actual", "state.context.as_ref().ok_or(Error::CommitUncertain)?", "request.require_context(&context)?", "wire::Outcome::from_original(read)", "Err(Error::Busy) => wire::Outcome::Busy", "Err(Error::ReadbackRequired) => wire::Outcome::ReadbackRequired", "Err(Error::FinalUseDenied) => wire::Outcome::FinalUseDenied", "Err(Error::Unavailable) => wire::Outcome::Unavailable", "Err(_) => wire::Outcome::Uncertain", "self.require_lifetime()?", "serde_json::to_vec(&wire::Response { request, result })?", "encoded.is_empty() || encoded.len() > 16_384", "Ok(encoded)"], top_level = ["let actual = match request.action", "let result = match actual"] },
+  { function = "fn serve_original_ordinary(", sequence = ["tokio::try_join!(", "Arc::clone(&self).serve_commands(", "Arc::clone(&self).run_original_c(arg0_paths)", "Ok(served)"], top_level = [] },
+  { function = "fn run_original_c(", sequence = ["self.origin != Origin::Fresh || self.runtime_started.swap(        true, Ordering::AcqRel)", "Error::ReadbackRequired", "self.wait_installed().await?", "Arc::clone(&self)", "QueuedService(Arc::new(AtomicBool::new(      false)))", "tokio::task::spawn_blocking(move ||", "require_not_cancelled(&cancelled)?", "owner.runtime.block_on(owner.read_original(None))?", "current.publication().is_none()", "require_not_cancelled(&cancelled).map_err(|_| Error::CommitUncertain)?", "owner.state.try_lock()", "state.context.as_ref().ok_or(Error::CommitUncertain)?", "context.authenticate(super::super::now()?,              true)?", "state.intent != Some(current.intent_digest())", "state.config.take().ok_or(Error::ReadbackRequired)", "drop(queued)", "crate::run(config, arg0_paths).await.map_err(Error::Owner)"], top_level = ["self.wait_installed().await?", "let config = tokio::task::spawn_blocking(move ||", "crate::run(config, arg0_paths).await.map_err(Error::Owner)"] },
+  { function = "fn wait_installed(", sequence = ["loop", "self.installed.notified()", "self.require_lifetime()?", "self.outcome.load(Ordering::Acquire)", "4 => return Ok(())", "2 => return Err(Error::FinalUseDenied)", "3 => return Err(Error::CommitUncertain)", "tokio::select!", "tokio::time::sleep(Duration::from_millis(100))", "tokio::time::sleep_until(tokio::time::Instant::from_std(self.end))", "Error::Unavailable"], top_level = [] },
+  { function = "fn serve_original_selection_readback(", sequence = ["timeout.is_zero() || timeout > Duration::from_millis(500)", "Arc::clone(&self.connections).try_acquire_owned()", "self.remaining_lifetime(lifetime)?", "original_owner_command_channel_v1(", "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime", "self.wait_installed().await?", "QueuedService(Arc::new(AtomicBool::new(      false)))", "tokio::task::spawn_blocking(move ||", "require_not_cancelled(&cancelled)?", "channel.check_peer_lifetime()?", "self.state.try_lock()", "state.installed.clone().ok_or(Error::CommitUncertain)?", "Arc::clone(state.context.as_ref().ok_or(Error::CommitUncertain)?)", "ReadContext::from_original_model(context.duplicate_response_pin())?", "ReadOwner::from_original_owners(installed.cell", "installed.source.as_ref().clone(), installed.identity, context", "reader.serve_original_candidate_channel(&mut channel)", "drop(queued)"], top_level = ["let mut channel = original_owner_command_channel_v1(", "self.wait_installed().await?"] },
+  { function = "fn original_next_use_reader(", sequence = ["self.require_lifetime()?", "self.outcome.load(Ordering::Acquire) != 4", "Err(Error::ReadbackRequired)", "self.state.try_lock()", "state.installed.clone().ok_or(Error::CommitUncertain)?", "Arc::clone(state.context.as_ref().ok_or(Error::CommitUncertain)?)", "ReadContext::from_original_selection(selection)?", "super::super::now()?", "context.model() != original.model()", "context.model_publication_context().original_version_binding(current)?", "!= original.original_version_binding(current)?", "ReadOwner::from_original_owners(installed.cell, installed.source.as_ref().clone()", "installed.identity, context)"], top_level = [] },
+  { function = "fn remaining_lifetime(", sequence = ["requested.is_zero() || requested > Duration::from_secs(300)", "return Err(Error::Binding(", "requested.min(self.end.checked_duration_since(Instant::now()).ok_or(Error::Unavailable)?)"], top_level = [] },
+  { function = "fn drop(", sequence = ["fn drop(", "self.0.store(        true, Ordering::Release)"], top_level = [] },
+  { function = "fn require_not_cancelled(", sequence = ["cancelled.load(Ordering::Acquire)", "Err(Error::Cancelled)", "Ok(())"], top_level = [] },
+  { function = "fn serve_original_next_use_readback(", sequence = ["timeout.is_zero() || timeout > Duration::from_millis(500)", "Arc::clone(&self.connections).try_acquire_owned()", "self.remaining_lifetime(lifetime)?", "original_owner_command_channel_v1(", "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime", "QueuedService(Arc::new(AtomicBool::new(      false)))", "tokio::task::spawn_blocking(move ||", "cancelled.load(Ordering::Acquire)", "channel.check_peer_lifetime()?", "self.original_next_use_reader(&selection)?", "reader.serve_original_next_use_channel(&mut channel)", "drop(queued)"], top_level = ["let mut channel = original_owner_command_channel_v1("] },
+  { function = "fn serve_original_completion_readiness(", sequence = ["timeout.is_zero() || timeout > Duration::from_millis(500)", "Arc::clone(&self.connections).try_acquire_owned()", "self.remaining_lifetime(lifetime)?", "original_owner_command_channel_v1(", "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime", "QueuedService(Arc::new(AtomicBool::new(      false)))", "tokio::task::spawn_blocking(move ||", "cancelled.load(Ordering::Acquire)", "channel.check_peer_lifetime()?", "self.original_next_use_reader(&selection)?", "reader.serve_original_readiness_channel(&mut channel)", "drop(queued)"], top_level = ["let mut channel = original_owner_command_channel_v1("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs"
+required = ["pub(crate) struct OriginalCircuitModelSelectionRemoteSourcesV1<'a> {", "pub(crate) context: &'a OriginalCircuitCandidateLearningReadContextV1,", "pub(crate) model: &'a OriginalCellQ24ModelCommandClientV1,", "pub(crate) live: &'a OriginalCircuitCandidateLearningReadClientV1,", "async fn remote_result(", "async fn remote_operation("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SignedFinalUseGrant", "publish(", "fit_or_readback(", "qualify_and_persist(", "commit_model_or_readback(", "OriginalCellEvaluationModelMaterialV1 {", "pub async fn remote_", "pub fn remote_", "unwrap_or", "snapshot().clone()"]
+required_function_order = [
+  { function = "fn attest_original_remote_selection(", sequence = ["if self.readback_only", "return Err(OwnerError::Binding(", "self.remote_result(source,             true).await"], top_level = [] },
+  { function = "fn readback_remote(", sequence = ["fn readback_remote(", "self.remote_result(source,             false).await"], top_level = [] },
+  { function = "fn remote_result(", sequence = ["if self.fenced", "return Err(OwnerError::CommitUncertain.into())", "self.journal.read(&self.saved)", "Ok(bytes) => Some(bytes)", "ProductEvaluationExecutionStoreErrorV1::Missing", "if execute => None", "Err(error) => return Err(error.into())", "self.fenced = true", "self.remote_operation(source, existing, execute).await", "if result.is_ok()", "self.fenced = false", "result"], top_level = ["if self.fenced", "let existing = match self.journal.read(&self.saved)", "self.fenced = true", "if result.is_ok()"] },
+  { function = "fn remote_operation(", sequence = ["let started = binding::now()?", "source.context.model_publication_context()", "source.context.authenticate(started).map_err(unavailable)?", "source.live.require_original_context(source.context).map_err(unavailable)?", "source.context.prefix() != source.context.decision()", "context.decision() != &self.config.decision", "context.scope() != &self.config.scope", "context.verifier().trust_digest() != self.config.verifier.trust_digest()", "context.verifier().scope_digest() != self.config.verifier.scope_digest()", "context.verifier().objective_digest() != self.config.verifier.objective_digest()", "context.signatures()[2] != self.config.training_evidence", "context.signatures()[3] != self.config.evaluation_evidence", "source.model.begin_original_model_read().await.map_err(unavailable)?", "operation.model() != context.model()", "operation.require_current(started).map_err(unavailable)?", "context.authenticate_material(operation.material(), started, execute).map_err(unavailable)?", "operation.material().require_original_selector_material(&self.config, binding::now()?)", "let before = source.live.read_current().await.map_err(unavailable)?", "context.signatures()[2].clone()", "context.signatures()[3].clone()", "let config = &self.config", "let key = &self.key", "self.saved.binding_digest", "let bytes = match existing", "Some(bytes) => bytes", "None => self.journal.commit_once(&self.saved, ||", "let issued_at = binding::now()?", "binding::new_work_time(config, started, issued_at)?", "operation.require_current(started)", "context.authenticate_material(operation.material(), issued_at,              true)", ".min(config.decision.request.envelope.expiry_unix_seconds)", ".min(binding::signature_expiry(config, issued_at)?)", "operation.material().require_original_selector_material(config, issued_at)", "binding::authenticate_roles(config, &original, issued_at)", "binding::receipt(config, before.observation(), issued_at)", "learning_iteration_receipt_signing_bytes_v1(&receipt)", "binding::sign_original_until(config, key, &payload, identity, issued_at, expiry)?", "learning_owner_evidence::encode(&payload, &signed)", "learning_owner_evidence::decode(&bytes)?", "binding::receipt(config, before.observation(), signed.issued_at)?", "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "let after = source.live.read_current().await.map_err(unavailable)?", "after != before", "let completed = operation.finish().await.map_err(unavailable)?", "completed.model() != context.model() || self.journal.read(&self.saved)? != bytes", "let current = binding::now()?", "current < started", "context.authenticate_material(completed.material(), current, execute)", ".min(config.decision.request.envelope.expiry_unix_seconds)", ".min(binding::signature_expiry(config, signed.issued_at)?)", "completed.material().require_original_selector_material(config, current).map_err(unavailable)?", "binding::authenticate_roles(config, &original, current)?", "config.verifier.verify(", "LearningEvidenceRoleV1::Selector, &signed, &payload, current", "signed.expires_at != expiry", "signed.evidence_id != binding::evidence_id(identity)?", "selector.principal() != &config.signer.principal", "selector.controller_id() != &config.signer.controller_id", "verify_signed_actor_separation(&training, &selector, current)?", "verify_signed_actor_separation(&evaluation, &selector, current)?", "Ok((receipt, signed))"], top_level = ["let operation = source.model.begin_original_model_read().await.map_err(unavailable)?", "let before = source.live.read_current().await.map_err(unavailable)?", "let bytes = match existing", "let after = source.live.read_current().await.map_err(unavailable)?", "let completed = operation.finish().await.map_err(unavailable)?", "let current = binding::now()?", "verify_signed_actor_separation(&training, &selector, current)?", "verify_signed_actor_separation(&evaluation, &selector, current)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_selection_command_wire.rs"
+required = ["pub(super) const OPERATION: &str = \"runtime.learning.original-circuit-model-selection.command.v1\";", "#[serde(deny_unknown_fields)]", "pub(super) enum Action {", "    Execute,\n    Readback,\n}", "pub scope_binding: String,", "pub model_head: String,", "pub actor_id: String,", "pub(super) enum CommandResult {"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "SignedFinalUseGrant", "FinalUseBinding", "CellEvaluationQualificationV1", "OriginalCellQ24ModelCommandReceiptV1", "pub snapshot:", "pub evidence:", "pub grant:", "pub key:", "pub payload:", "TrainingNoUpdateV2", "RetainedModelNextUse"]
+required_function_order = [
+  { function = "fn require_context(", sequence = ["self.schema != 1", "self.operation != OPERATION", "self.request_id != next_request_id", "!(1..=128).contains(&self.request_id)", "self.binding != binding.to_string()", "self.operation_id != context.decision().request.operation_id.as_str()", "self.model_head != context.decision().head_digest.to_string()", "self.scope_binding != context.scope().binding().to_string()", "self.actor_id != context.decision().owners.selector.as_str()", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+  { function = "fn require_request(", sequence = ["self.schema != request.schema", "self.operation != request.operation", "self.request_id != request.request_id", "self.binding != request.binding", "self.operation_id != request.operation_id", "self.model_head != request.model_head", "self.scope_binding != request.scope_binding", "self.actor_id != request.actor_id", "self.action != request.action", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+  { function = "fn encode_completed(", sequence = ["authenticate_receipt(context, receipt, signed, current)?", "encode_original_owner_snapshot_v1(&original.snapshot)?", "STANDARD_NO_PAD.encode(encoded)", "evidence_wire::Evidence::from_original(&original.attestation)"], top_level = [] },
+  { function = "fn decode_completed(", sequence = ["snapshot.len() > 10_924", "STANDARD_NO_PAD", ".decode(&snapshot)", "STANDARD_NO_PAD.encode(&bytes) != snapshot", "decode_original_owner_snapshot_v1(&bytes)?", "let signed = evidence", ".decode()", "authenticate_completed(context, completed, signed, current)"], top_level = [] },
+  { function = "fn authenticate_completed(", sequence = ["snapshot.request != context.decision().request", "snapshot.owners != context.decision().owners", "snapshot.receipts.len() != context.decision().receipts.len() + 1", "snapshot.receipts[..context.decision().receipts.len()] != context.decision().receipts", "snapshot", ".receipts", ".last()", "authenticate_receipt(context, receipt, signed, current)?", "original.snapshot != snapshot", "return Err(Error::Binding(", "Ok(original)"], top_level = [] },
+  { function = "fn require_selection_context(", sequence = ["context.authenticate(current)?", "context.prefix() != context.decision() || context.decision().receipts.len() != 5", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+  { function = "fn authenticate_receipt(", sequence = ["require_selection_context(context, current)?", "let predecessors = context.authenticate(current)?", "LearningIterationCoordinatorV1::from_snapshot(context.decision().clone())?", "coordinator.candidate()", "context.model_publication_context().signatures().iter()", ".map(|original| original.expires_at)", ".fold(context.decision().request.envelope.expiry_unix_seconds, u64::min)", "LearningIterationObservationV1::Selection { candidate_bundle, selection_digest }", "*candidate_bundle == candidate && !selection_digest.is_zero()", "receipt.operation_id != context.decision().request.operation_id", "receipt.actor_id != context.decision().owners.selector", "receipt.predecessor != context.decision().head_digest", "receipt.observed_unix_seconds != signed.issued_at", "receipt.observed_unix_seconds > current", "signed.expires_at > expiry", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?", "context.scope().validate_snapshot(coordinator.snapshot())?", "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "coordinator.snapshot().receipts.len() != 6", "context.verifier().verify(", "LearningEvidenceRoleV1::Selector", "&signed", "learning_iteration_receipt_signing_bytes_v1(&receipt)?", "selector.principal().principal_id != context.decision().owners.selector", "for original in &predecessors", "verify_signed_actor_separation(original, &selector, current)?", "OriginalCircuitModelSelectionCommandReceiptV1", "snapshot: coordinator.snapshot().clone()", "attestation: signed", "context: context.clone()"], top_level = ["require_selection_context(context, current)?", "let predecessors = context.authenticate(current)?", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?", "context.scope().validate_snapshot(coordinator.snapshot())?", "for original in &predecessors"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs"
+required = ["pub struct OriginalCircuitModelSelectionCommandReceiptV1 {", "snapshot: LearningIterationSnapshotV1,", "receipt: LearningIterationReceiptV1,", "attestation: SignedLearningEvidenceV1,", "context: OriginalCircuitCandidateLearningReadContextV1,", "pub struct OriginalCircuitModelSelectionCommandClientV1 {", "channel: Mutex<Option<Channel>>,", "retained: Mutex<Option<OriginalCircuitModelSelectionCommandReceiptV1>>,", "peer: HostAuthorityPeerChannel,", "execution_requested: bool,", "struct QueuedExecuteFence {"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Deserialize", "SigningKey", "SignedFinalUseGrant", "RunStart", "pub snapshot:", "pub receipt:", "pub attestation:", "pub context:", "pub channel:", "pub retained:", "impl Clone for OriginalCircuitModelSelectionCommandClientV1", "execution_requested = false"]
+required_function_order = [
+  { function = "fn original_publication_context(", sequence = ["fn original_publication_context(", "&self.context"], top_level = [] },
+  { function = "fn drop(", sequence = ["self.abandoned.store(", "true, Ordering::Release)"], top_level = [] },
+  { function = "fn from_original_stream(", sequence = ["Self::bind_original_stream(", "stream", "peer", "original_owner_pidfd", "context", "timeout", "lifetime", "false", "None"], top_level = [] },
+  { function = "fn recover_from_original_stream(", sequence = ["Self::bind_original_stream(", "stream, peer, original_owner_pidfd, context, timeout, lifetime,                         true, expected"], top_level = [] },
+  { function = "fn bind_original_stage_channel(", sequence = ["let started = now()?", "wire::require_selection_context(&context, started)?", "context.binding(started)?", "peer.check_peer_lifetime()?", "let fresh = now()?", "require_clock(started, fresh)?", "context.binding(fresh)? != binding", "if let Some(original) = &expected", "wire::authenticate_completed(&context, original.snapshot.clone(), original.attestation.clone(), fresh)? != *original", "peer, next_request_id: 1, execution_requested: readback_only", "context, binding, retained: Mutex::new(expected)"], top_level = [] },
+  { function = "fn bind_original_stream(", sequence = ["let started_at = now()?", "wire::require_selection_context(&context, started_at)?", "context.binding(started_at)?", "peer.actor_id != context.decision().owners.selector", "original_owner_command_channel_v1(", "stream", "AgentdRootAuthorityPeer", "pid: peer.pid", "boot_id: peer.boot_id", "process_start_ticks: peer.process_start_ticks", "peer.uid", "original_owner_pidfd", "timeout", "lifetime", "let current = now()?", "require_clock(started_at, current)?", "context.authenticate(current)?", "if let Some(expected) = &retained", "wire::authenticate_completed(", "expected.snapshot.clone()", "expected.attestation.clone()", "current", ")? != *expected", "peer: channel", "next_request_id: 1", "execution_requested", "retained: Mutex::new(retained)"], top_level = [] },
+  { function = "fn execute_selection(", sequence = ["now()? >= self.context.decision().request.envelope.expiry_unix_seconds", "Err(Error::DeadlineExceeded)", "self.exchange(wire::Action::Execute).await"], top_level = [] },
+  { function = "fn readback(", sequence = ["fn readback(", "self.exchange(wire::Action::Readback).await"], top_level = [] },
+  { function = "fn receipt_attestation(", sequence = ["OriginalCircuitModelSelectionCommandClientV1::readback(self).await?", "&original.receipt != expected", "return Err(Error::Binding(", "Ok(original.attestation)"], top_level = [] },
+  { function = "fn exchange(", sequence = ["let started_at = now()?", "self.channel.try_lock()", "action == wire::Action::Execute", "channel.execution_requested", "Error::ReadbackRequired", "slot.take().ok_or(Error::Unavailable)?", "action == wire::Action::Execute", "channel.execution_requested = true", "self.context.authenticate(started_at)?", "channel.next_request_id", "!(1..=128).contains(&request_id)", "channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?", "wire::Request::new(&self.context, self.binding, request_id, action)", "serde_json::to_vec(&request)?", "encoded.len() > 16_384", "Arc::new(AtomicBool::new(", "false", "QueuedExecuteFence", "Arc::clone(&abandoned)", "tokio::task::spawn_blocking(move ||", "action == wire::Action::Execute && abandoned.load(Ordering::Acquire)", "let bytes = channel", ".peer", ".request(&encoded)", ".map_err(|_| Error::CommitUncertain)?", "drop(queued_execute_fence)", "bytes.len() > 16_384", "serde_json::from_slice(&bytes)?", "response.require_request(&request)?", "channel.peer.check_peer_lifetime()?", "let current = now()?", "require_clock(started_at, current)?", "self.context.authenticate(current)?", "match response.result", "wire::CommandResult::Completed", "wire::decode_completed(&self.context, snapshot, evidence, current)?", "self.retained.try_lock()", "previous != &original", "*retained = Some(original.clone())", "wire::CommandResult::Missing | wire::CommandResult::Pending", "self.retained.try_lock().map_err(|_| Error::Unavailable)?.is_some()", "return Err(Error::CommitUncertain)", "wire::CommandResult::ReadbackRequired => Err(Error::ReadbackRequired)", "wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)", "wire::CommandResult::Unavailable => return Err(Error::Unavailable)", "*self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel)", "result"], top_level = ["let mut channel = {", "self.context.authenticate(started_at)?", "response.require_request(&request)?", "channel.peer.check_peer_lifetime()?", "let current = now()?", "*self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel)"] },
+  { function = "fn require_clock(", sequence = ["current < started_at", "return Err(Error::Binding(", "Ok(())"], top_level = [] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs"
+required = ["pub struct OriginalCircuitModelSelectionCommandOwnerV1<W: AnchorWitnessStore> {", "owner: Mutex<OriginalCircuitModelSelectionReceiptOwnerV1<W>>,", "live: OriginalCircuitCandidateLearningReadClientV1,", "model: OriginalCellQ24ModelCommandClientV1,", "context: OriginalCircuitCandidateLearningReadContextV1,", "execution_requested: AtomicBool,", "runtime: Handle,", "connections: Arc<Semaphore>,", "pub(crate) fn from_original_receipt_owner("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "Clone", "Deserialize", "SigningKey", "SignedFinalUseGrant", "LearningOwnerJournalV1", "CellEvaluationQualificationV1", "pub owner:", "pub context:", "pub model:", "pub live:", "execution_requested.store(false", "AtomicBool::new(false)", "RootStageOwner", "publish(", ".commit_once(", "TrainingNoUpdateV2"]
+required_function_order = [
+  { function = "fn from_original_receipt_owner(", sequence = ["let started_at = now()?", "wire::require_selection_context(&context, started_at)?", "OriginalCircuitModelSelectionReceiptOwnerV1::original_command_profile(&owner)", "context.model_publication_context()", "&config.decision != context.decision()", "&config.scope != context.scope()", "config.verifier.trust_digest() != context.verifier().trust_digest()", "config.verifier.scope_digest() != context.verifier().scope_digest()", "config.verifier.objective_digest() != context.verifier().objective_digest()", "config.training_evidence != publication.signatures()[2]", "config.evaluation_evidence != publication.signatures()[3]", "live.require_original_context(&context)?", "LearningIterationCoordinatorV1::new(", "context.decision().request.clone(), context.decision().owners.clone()", "context.binding(started_at)?", "Handle::try_current()", "owner: Mutex::new(owner)", "initial_head: initial.snapshot().head_digest", "execution_requested: AtomicBool::new(readback_only)", "Arc::new(Semaphore::new(4))"], top_level = ["wire::require_selection_context(&context, started_at)?", "live.require_original_context(&context)?"] },
+  { function = "fn serve_command_channel(", sequence = ["for request_id in 1..=128_u64", "channel.exchange(|bytes|", "self.command_response(bytes, request_id)", "HostIssuerTransportError::InvalidRequest", "Ok(request_id - 1)", "Err(Error::Unavailable)"], top_level = [] },
+  { function = "fn command_response(", sequence = ["bytes.is_empty() || bytes.len() > 16_384", "serde_json::from_slice(bytes)?", "request.require_context(&self.context, self.binding, request_id)?", "self.context.authenticate(now()?)?", "match request.action", "wire::Action::Execute", "self.execution_requested.swap(        true, Ordering::AcqRel)", "wire::CommandResult::ReadbackRequired", "now()? >= self.context.decision().request.envelope.expiry_unix_seconds", "wire::CommandResult::Expired", "self.original_response(            true)?", "wire::Action::Readback => self.original_response(            false)?", "self.context.authenticate(now()?)?", "serde_json::to_vec(&wire::Response::from_request(&request, result))?", "encoded.is_empty() || encoded.len() > 16_384", "Ok(encoded)"], top_level = ["request.require_context(&self.context, self.binding, request_id)?", "let result = match request.action"] },
+  { function = "fn original_response(", sequence = ["let completed = {", "self.owner.try_lock()", "Err(_) => return Ok(wire::CommandResult::Busy)", "&mut OriginalCircuitModelSelectionReceiptOwnerV1<W> = &mut owner", "OriginalCircuitModelSelectionRemoteSourcesV1", "context: &self.context", "model: &self.model", "live: &self.live", "if execute", "OriginalCircuitModelSelectionReceiptOwnerV1::attest_original_remote_selection(", "original, source", "OriginalCircuitModelSelectionReceiptOwnerV1::readback_remote(", "original, source", "match completed", "wire::encode_completed(&self.context, receipt, signed, now()?)", "Err(error) => Ok(original_state(error))"], top_level = ["let completed = {", "match completed"] },
+  { function = "fn original_state(", sequence = ["match error", "Selection::Owner(Owner::Pending) => wire::CommandResult::Pending", "Selection::Owner(Owner::Store(Store::Missing)) => wire::CommandResult::Missing", "_ => wire::CommandResult::Uncertain"], top_level = [] },
+  { function = "fn serve_commands(", sequence = ["Arc::clone(&self.connections)", ".try_acquire_owned()", "tokio::task::spawn_blocking(move ||", "let _permit = permit", "original_owner_command_channel_v1(", "stream", "consumer", "consumer_uid", "original_consumer_pidfd", "timeout", "lifetime", "self.serve_command_channel(&mut channel)", ".map_err(|_| Error::CommitUncertain)"], top_level = [] },
+  { function = "fn serve_evidence_readback(", sequence = ["timeout.is_zero() || timeout > Duration::from_millis(500)", "Arc::clone(&self.connections)", ".try_acquire_owned()", "tokio::task::spawn_blocking(move ||", "let _permit = permit", "original_owner_command_channel_v1(", "stream", "consumer", "consumer_uid", "original_consumer_pidfd", "timeout", "lifetime", "self.serve_evidence_channel(&mut channel)", ".map_err(|_| Error::CommitUncertain)"], top_level = [] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_model_selection_command_evidence.rs"
+required = ["pub(super) fn serve_evidence_channel(", "fn evidence_response("]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "UnixStream::connect", "File::open", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "SigningKey", "Clone", "Deserialize", "attest_original_remote_selection", "sign_original", "execute_selection", "original_response(true)", ".commit_once(", "publish(", "TrainingNoUpdateV2"]
+required_function_order = [
+  { function = "fn serve_evidence_channel(", sequence = ["for request_id in 1..=128_u64", "channel.exchange(|bytes|", "self.evidence_response(bytes, request_id)", "HostIssuerTransportError::InvalidRequest", "return Ok(request_id - 1)", "Err(Error::Unavailable)"], top_level = [] },
+  { function = "fn evidence_response(", sequence = ["bytes.is_empty() || bytes.len() > 16_384", "serde_json::from_slice(bytes)?", "let snapshot_head: Digest32 = request", ".snapshot_head", ".parse()", "request.schema != 1", "request.operation != evidence_wire::OPERATION", "request.request_id != request_id", "!(1..=128).contains(&request_id)", "request.binding != self.initial_head.to_string()", "request.operation_id != self.context.decision().request.operation_id.as_str()", "request.actor_id != self.context.decision().owners.selector.as_str()", "request.predecessor != self.context.decision().head_digest.to_string()", "snapshot_head.is_zero()", "request.snapshot_head != snapshot_head.to_string()", "self.context.authenticate(now()?)?", "let (receipt, signed) = {", "self.owner.try_lock()", "&mut OriginalCircuitModelSelectionReceiptOwnerV1<W> = &mut owner", "OriginalCircuitModelSelectionReceiptOwnerV1::readback_remote(", "original", "OriginalCircuitModelSelectionRemoteSourcesV1", "context: &self.context", "model: &self.model", "live: &self.live", "wire::authenticate_receipt(&self.context, receipt, signed, now()?)?", "request.receipt_digest != original.attestation.payload_digest.to_string()", "evidence_wire::Response", "schema: 1", "operation: request.operation", "request_id: request.request_id", "binding: request.binding", "snapshot_head: request.snapshot_head", "receipt_digest: request.receipt_digest", "evidence_wire::Evidence::from_original(&original.attestation)", "serde_json::to_vec(&response)?", "encoded.is_empty() || encoded.len() > 16_384", "Ok(encoded)"], top_level = ["self.context.authenticate(now()?)?", "let (receipt, signed) = {", "let original = wire::authenticate_receipt(&self.context, receipt, signed, now()?)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_model_command.rs"
+required = ["pub(crate) fn require_original_context(", "pub(crate) fn original_predecessors_for_publication(", "record: [u8; 80],", "predecessors: [SignedLearningEvidenceV1; 4],"]
+forbidden = ["pub fn require_original_context", "pub fn original_predecessors_for_publication", "pub record:", "pub predecessors:", "pub snapshot:", "SigningKey::generate", "SigningKey::from_bytes", "UnixStream::connect", "OriginalCellQ24ModelCommandReceiptV1::new"]
+required_function_order = [
+  { function = "fn require_original_context(", sequence = ["context::Context::from_original(", "material.clone()", "registration.clone()", "dataset.clone()", "training.clone()", "evaluation.clone()", "context.authenticate(now()?)?", "context.require_qualified()?", "wire::decode_completed(", "&context", "&STANDARD_NO_PAD.encode(self.record)", "current", "&expected != self", "return Err(Error::Binding(", "context.authenticate(current)"], top_level = ["let context = context::Context::from_original(", "let current = context.authenticate(now()?)?", "context.require_qualified()?", "let expected = wire::decode_completed("] },
+  { function = "fn original_predecessors_for_publication(", sequence = ["fn original_predecessors_for_publication(", "&self.predecessors"], top_level = [] },
 ]
 
