@@ -11,9 +11,14 @@ mod files;
 pub(crate) use files::OriginalLedgerFiles;
 use files::OriginalLedgerObservation;
 use files::OriginalLedgerReadGuard;
+use files::OriginalLedgerReadModeV1;
 
+#[path = "authority_host_historical_ledger_history.rs"]
+mod history;
 #[path = "authority_host_historical_ledger_registration.rs"]
 mod registration;
+pub(crate) use history::PendingOriginalLedgerHistoryV1;
+pub(crate) use history::RootOriginalHistoricalLedgerObservationV1;
 
 const LEDGER_PURPOSE: &str = "runtime.circuit.original-ledger-retention.v1";
 
@@ -39,6 +44,7 @@ struct LedgerRecord {
     target: CellGenerationOwnerBindingV1,
     files: [FilePin; 4],
     metadata: String,
+    registered_at: u64,
     trust: LearningTrustPinV1,
     phase: LedgerPhase,
 }
@@ -211,15 +217,21 @@ impl PendingOriginalLedgerCaptureV1<'_> {
             ledger_binding: Digest32::from_array(original.files.deployment.ledger.binding),
             verifier: activated.verifier(),
         };
-        let mut held = original.files.open_original_terminal(&context)?;
+        let mut held = original
+            .files
+            .open_original_terminal(&context, OriginalLedgerReadModeV1::Capture)?;
         let observed = held.observe_original_terminal(
             &context,
             source.publication(),
             cell,
             now_millis / 1_000,
         )?;
+        let source_pin = Digest32::of_parts(&[
+            b"hepta.root.historical-source-pin.v1\0",
+            &serde_json::to_vec(&retained.expected).map_err(io::Error::other)?,
+        ]);
         let cut =
-            CapturedLedgerCut::from_original(&observed, source.publication(), cell, retained)?;
+            CapturedLedgerCut::from_original(&observed, source.publication(), cell, source_pin)?;
         let mut next = baseline.clone();
         next.phase = LedgerPhase::Captured { cut: Box::new(cut) };
         original
@@ -248,14 +260,10 @@ impl CapturedLedgerCut {
         observed: &OriginalLedgerObservation,
         publication: &crate::CircuitTaskSourcePublicationV1,
         cell: &codex_hepta_neuron::CellDecisionReceiptV1,
-        retained: &RetainedSourcePinRecordV1,
+        source_pin: Digest32,
     ) -> io::Result<Self> {
         Ok(Self {
-            source_pin: Digest32::of_parts(&[
-                b"hepta.root.historical-source-pin.v1\0",
-                &serde_json::to_vec(&retained.expected).map_err(io::Error::other)?,
-            ])
-            .to_string(),
+            source_pin: source_pin.to_string(),
             source_publication: publication.publication_digest().to_string(),
             cell_decision: Digest32::of_parts(&[
                 b"hepta.root.original-ledger-cell-decision.v1\0",

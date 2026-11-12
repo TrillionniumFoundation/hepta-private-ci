@@ -33,6 +33,14 @@ pub(super) struct OriginalLedgerObservation {
     pub(super) facts: OriginalTaskLedgerHistoryDataV1,
 }
 
+pub(super) enum OriginalLedgerReadModeV1 {
+    Capture,
+    Retained {
+        ledger: LedgerReadOnlyCutV1,
+        signatures: JournalAnchor,
+    },
+}
+
 /// These four independent open descriptions survive the entire original Root
 /// context. The HEPTEX reader has a fifth descriptor, so its local unlock never
 /// releases Root's actual signature-journal lock.
@@ -114,17 +122,37 @@ impl OriginalLedgerFiles {
     pub(super) fn open_original_terminal(
         &self,
         context: &OriginalTaskLedgerHistoryContextV1<'_>,
+        mode: OriginalLedgerReadModeV1,
     ) -> io::Result<OriginalLedgerReadGuard> {
         self.require_original_files()?;
         let [ledger, witness, signatures, signature_witness] = self.open_original_descriptors()?;
         let data = &self.deployment.ledger;
-        let ledger = ReadOnlyLedgerViewV1::observe_closed(
-            ledger,
-            witness,
-            context.ledger_binding,
-            data.maximum_records,
-        )
-        .map_err(io::Error::other)?;
+        let (ledger, expected_signatures) = match mode {
+            OriginalLedgerReadModeV1::Capture => (
+                ReadOnlyLedgerViewV1::observe_closed(
+                    ledger,
+                    witness,
+                    context.ledger_binding,
+                    data.maximum_records,
+                )
+                .map_err(io::Error::other)?,
+                None,
+            ),
+            OriginalLedgerReadModeV1::Retained {
+                ledger: expected,
+                signatures,
+            } => (
+                ReadOnlyLedgerViewV1::open_at_retained_cut(
+                    ledger,
+                    witness,
+                    context.ledger_binding,
+                    data.maximum_records,
+                    expected,
+                )
+                .map_err(io::Error::other)?,
+                Some(signatures),
+            ),
+        };
         signatures.try_lock_shared().map_err(io::Error::other)?;
         signature_witness
             .try_lock_shared()
@@ -140,7 +168,7 @@ impl OriginalLedgerFiles {
             observe_original_file_anchor_v1(&signature_witness, scope, generation, records)
                 .map_err(io::Error::other)?
                 .ok_or_else(|| io::Error::other("original signature witness missing"))?;
-        if anchor.sequence != 5 {
+        if anchor.sequence != 5 || expected_signatures.is_some_and(|expected| expected != anchor) {
             return Err(io::Error::other(
                 "exact original Decision/Outcome signature cut required",
             ));
