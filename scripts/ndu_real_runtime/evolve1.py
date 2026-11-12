@@ -264,6 +264,8 @@ def summarize_transfer(
     missing record leaves evidence unresolved. An authenticated malformed or
     misbound record is rejected. NoUpdate, failed/cancelled selections, and
     retained baseline bundles never qualify, regardless of reported utility.
+    A retained declaration becomes observed NoUpdate only after registry closure,
+    resolved attempts and a bound authenticated final; otherwise it stays unknown.
     """
     _require(
         _number(minimum_gain, minimum=0) and minimum_gain > 0, "EVOLVE_MINIMUM_GAIN"
@@ -330,6 +332,18 @@ def summarize_transfer(
                 else None
             )
             chosen = rows_by_id.get(final["attempt_id"]) if final is not None else None
+            attempts_resolved = (
+                report["attempted"] > 0
+                and not any(
+                    report[key]
+                    for key in (
+                        "unknown_validity",
+                        "unresolved_evaluation",
+                        "unknown_rollback",
+                    )
+                )
+                and not report["terminal_counts"]["UNKNOWN"]
+            )
             retention_loss, effect, violated, reason = (
                 None,
                 None,
@@ -346,7 +360,12 @@ def summarize_transfer(
                 final["attempt_id"] is None
                 or final["candidate_bundle"] == run["common_start"]["initial_bundle"]
             ):
-                effect, reason = False, "NO_UPDATE"
+                if (
+                    record is not None
+                    and comparison["registry_closed"]
+                    and attempts_resolved
+                ):
+                    effect, reason = False, "NO_UPDATE"
             elif chosen is not None and chosen["terminal_status"] in {
                 "FAILED",
                 "CANCELLED",
@@ -369,15 +388,7 @@ def summarize_transfer(
             if effect is True and (
                 comparison["registry_closed"]
                 and report["reported_cost_coverage_complete"]
-                and not any(
-                    report[key]
-                    for key in (
-                        "unknown_validity",
-                        "unresolved_evaluation",
-                        "unknown_rollback",
-                    )
-                )
-                and not report["terminal_counts"]["UNKNOWN"]
+                and attempts_resolved
             ):
                 qualified, reason = True, "QUALIFIED_DESCRIPTIVE_OBSERVATION"
             result = {
