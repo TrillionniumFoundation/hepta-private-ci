@@ -1,0 +1,7 @@
+# Actual late-candidate native B source, unqualified
+
+This bundle continues the exact 7aa Trainer data source. It includes the original preregistered data FD, a separate unpublished physical Cell observer, actual native candidate and fixed-baseline execution, thread-CPU and monotonic-wall measurements, real output acknowledgement and drain, and complete physical Cell cuts. Prepared Cell recovery is readonly; readback cannot execute missing work.
+
+The actual Root purpose now prepares the native frozen plan before heldout access and returns an opaque session-bound challenge. The same original Trainer operation persists a claim and uses its existing Generator key to sign that exact plan. Root verifies this statement against its fixed Generator identity and current Training checkpoint before evaluation may consume heldout data. No Evaluator key is used as a Generator, and no wire decoder constructs native evaluation capability. Response data contains a bounded comparison digest rather than an unbounded full comparison.
+
+Every commit is preserved with its exact tree and line count. Formatting and whitespace checks ran; this new source has not compiled or run native tests. It must be combined with the independent Model actual-context borrow additions when integrated. The first and second scoped 223948 diagnostic failures are separately preserved; neither qualifies this source. Complete positive, NoUpdate and daemon-plus-Root cold restart counts remain zero.

@@ -1,0 +1,86 @@
+{
+  "source": "dc7d58d3ffc83cf3b5a6367237c723592a58fb1d",
+  "tree": "b571b0964c31458cbfbe32954cc86989546ba9b7",
+  "prerequisite": "7aa88b30c62a9909502811bf6cebce57b825a1d7",
+  "source_clean": true,
+  "commits": [
+    {
+      "commit": "aba8869f15f00e600abc7195bd2704ae17d76a98",
+      "tree": "3b0b9914ab2ef31e413356d4ae1d97ad303b4033",
+      "subject": "Transfer only the original Root candidate data input to the actual Trainer client",
+      "changed_lines": 144
+    },
+    {
+      "commit": "6e3b298b065e814ff9c8ee06777f0fdd7ce200d0",
+      "tree": "f743f9c29f150af99ade152e1bc321e0f467817a",
+      "subject": "Read unpublished Cell component costs through a distinct physical observer type",
+      "changed_lines": 59
+    },
+    {
+      "commit": "213071fa6d84a284666d4a4c8c477c66d83b9fb1",
+      "tree": "00a6ece1fc0538b1c7010d03826f2ddad7ebc43d",
+      "subject": "Derive B candidate input from actual Training instead of a future deployment manifest",
+      "changed_lines": 236
+    },
+    {
+      "commit": "b38fb04613edf97f93c60de51a4501a2e8a5428f",
+      "tree": "cc4777c3cd54a4f8d258beba1f97ddaba7e24be1",
+      "subject": "Measure actual native Q24 benchmark phases with monotonic wall and thread CPU clocks",
+      "changed_lines": 211
+    },
+    {
+      "commit": "13044236e2688bd92025cacf066d1ef800663c5c",
+      "tree": "0fcad13018fe49c9ff1ed416abc11c9c96172f87",
+      "subject": "Produce native candidate and baseline Cell costs under the original bounded Root attempt",
+      "changed_lines": 383
+    },
+    {
+      "commit": "b584845c952a3f38023bc2f33366b167864109b1",
+      "tree": "a5fa8d93a586972c7c079a870d2703047af315ac",
+      "subject": "Keep prepared B Cell recovery readonly and retain original plan bytes",
+      "changed_lines": 122
+    },
+    {
+      "commit": "dc7d58d3ffc83cf3b5a6367237c723592a58fb1d",
+      "tree": "b571b0964c31458cbfbe32954cc86989546ba9b7",
+      "subject": "Prepare native B then sign its frozen plan in the original Trainer operation",
+      "changed_lines": 657
+    }
+  ],
+  "bundle": {
+    "bytes": 25094,
+    "sha256": "6effe9df42d3cd2e76446a5cb9c0d3ec0fd597805ce4c69b3d357413e2d2e1a1"
+  },
+  "validation": {
+    "just_fmt_base_13044236": 0,
+    "diff_check": 0,
+    "rust_compilation": false,
+    "native_tests": 0,
+    "full_chain_positive": 0,
+    "full_chain_no_update": 0,
+    "full_chain_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 26266,
+    "sha256": "138011034c78fd0c68226d37b621668a04025ed4e418d76931bbfb8561a5aa96",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "b-native-producer.bundle",
+      "bytes": 25094,
+      "sha256": "6effe9df42d3cd2e76446a5cb9c0d3ec0fd597805ce4c69b3d357413e2d2e1a1"
+    },
+    {
+      "path": "bundle-verify.txt",
+      "bytes": 299,
+      "sha256": "1ea727a079d452b9903cde8d58afb1f34694edc8963a2081e2880d82d8b8db7f"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 2377,
+      "sha256": "3664bf471e78941b783ec784c1a826e272718f3c45ee95c30729aa383d49a7b8"
+    }
+  ]
+}
