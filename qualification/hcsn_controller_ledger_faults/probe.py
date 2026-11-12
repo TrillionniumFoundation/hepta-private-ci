@@ -331,7 +331,7 @@ def worker(args):
     assert_stdlib_only()
 
 
-def inspect_case(source, args, scenario, code, output):
+def inspect_case(source, args, scenario, code, output, worker_pid):
     actors = json.loads((output / "ACTORS.json").read_text())
     namespace, selected = extract(source, output, args.source, actors=actors)
     unknown, exact = namespace["aggregate"](actors, dict(ZERO))
@@ -340,6 +340,29 @@ def inspect_case(source, args, scenario, code, output):
         if (output / "FIXTURE-EVENTS.json").exists()
         else []
     )
+    kinds = [e["kind"] for e in events]
+    if scenario in KILLED:
+        point = {
+            "pre_popen_kill": "after_STARTING_persist_before_real_Popen",
+            "post_spawn_pre_pid_kill": "after_real_spawn_before_PID_return",
+            "post_pid_kill": "after_PID_persist_before_wait_return",
+        }[scenario]
+        wanted_events = ["target_Popen_adapter_entered"]
+        if scenario != "pre_popen_kill":
+            wanted_events += ["actual_stdlib_toy_spawned", "toy_reaped"]
+        wanted_events += ["intentional_controller_SIGKILL"]
+        assert kinds == wanted_events
+        assert events[-1] == dict(
+            kind="intentional_controller_SIGKILL", point=point, pid=worker_pid
+        )
+    else:
+        assert "intentional_controller_SIGKILL" not in kinds
+        wanted_events = (
+            [] if scenario == "starting_no_pid" else ["target_Popen_adapter_entered"]
+        )
+        if scenario not in {"starting_no_pid", "no_child"}:
+            wanted_events += ["actual_stdlib_toy_spawned", "toy_reaped"]
+        assert kinds == wanted_events
     expected_unknown = scenario not in {"known_zero", "no_child"}
     assert bool(unknown) == expected_unknown
     assert exact is None if expected_unknown else exact == ZERO
@@ -445,7 +468,9 @@ def inspect_case(source, args, scenario, code, output):
         )
     return dict(
         scenario=scenario,
+        controller_pid=worker_pid,
         controller_exit=code,
+        planned_kill_hook_verified=scenario in KILLED,
         selected_AST_sha256=selected,
         ledger_unknown=unknown,
         actual_calls_under_test=exact,
@@ -463,6 +488,7 @@ def supervisor(args):
     source = source_binding(args.source)
     args.output.mkdir(parents=True, exist_ok=False)
     started = time.perf_counter()
+    cpu_started = time.process_time()
     usage_before = resource.getrusage(resource.RUSAGE_CHILDREN)
     admissions, results = [], []
     error = None
@@ -508,7 +534,9 @@ def supervisor(args):
                     raise
             admission.update(state="TERMINAL", exit_code=code)
             write(args.output / "SUPERVISOR-ADMISSIONS.json", admissions)
-            results.append(inspect_case(source, args, scenario, code, output))
+            results.append(
+                inspect_case(source, args, scenario, code, output, process.pid)
+            )
         assert (
             len(results) == 13 and sum(r["toy_children_spawned"] for r in results) == 10
         )
@@ -560,6 +588,8 @@ def supervisor(args):
         ],
         payload_bytes_before_report=payload,
         wall_seconds=time.perf_counter() - started,
+        supervisor_body_cpu_seconds=time.process_time() - cpu_started,
+        supervisor_startup_imports_included_in_cpu=False,
         child_cpu_seconds=(usage_after.ru_utime + usage_after.ru_stime)
         - (usage_before.ru_utime + usage_before.ru_stime),
         child_reported_max_rss_kib=usage_after.ru_maxrss,

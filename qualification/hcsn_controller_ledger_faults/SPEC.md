@@ -59,6 +59,10 @@ The supervisor independently rereads the last durable ACTORS file and evaluates
 the lifted original aggregate expressions. It does not pretend that a dead
 controller emitted a terminal report. All intentional kills are confined to the
 fixture worker's own PID; authoritative supervisor wait must return -SIGKILL.
+The inspector also requires exactly one intent event with the predeclared hook
+point and authoritative worker PID, in exact adapter/spawn/reap/kill order. An
+external kill at a different point cannot substitute for the planned control.
+Nonkill scenarios must contain no kill intent.
 
 The two post-spawn kill controls deliberately reap the zero-work toy first.
 They test controller ledger persistence after an exited child, not cleanup of
@@ -83,8 +87,10 @@ protocol reports exact process totals as null, keeping only separately labeled
 observed PIDs/completed-case toys. The planned three SIGKILL cases are
 separate from the observed authoritative SIGKILL exits; unadmitted cases are
 never counted as actual kills. It never labels an unreported actor as zero.
-RUSAGE_CHILDREN CPU/max-RSS and wall time are measured for the fixture process
-tree; reported max RSS is not simultaneous aggregate RSS. Source bytes are
+Child-subtree RUSAGE_CHILDREN CPU/max-RSS, supervisor body CPU and supervisor
+body wall time are reported separately. The supervisor startup imports are
+outside that CPU timer; child CPU includes child startup. Reported maximum
+child RSS is not simultaneous aggregate RSS. Source bytes are
 checked before/after, all raw stdout/stderr/events/ACTORS/admissions are retained,
 and any RED or incomplete result is preserved without replacing this identity.
 
