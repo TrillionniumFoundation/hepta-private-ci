@@ -1,0 +1,1044 @@
+{
+  "coded_error_count": 85,
+  "codes": {
+    "E0277": 2,
+    "E0433": 5,
+    "E0603": 1,
+    "E0624": 1,
+    "E0659": 76,
+    "summary": 2
+  },
+  "command": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "diagnostics": [
+    {
+      "code": "E0433",
+      "message": "cannot find module or crate `rustix` in this scope",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:25:22",
+      "raw_end_line": 2252,
+      "raw_start_line": 2245,
+      "related_locations": []
+    },
+    {
+      "code": "E0433",
+      "message": "cannot find module or crate `rustix` in this scope",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:33:9",
+      "raw_end_line": 2260,
+      "raw_start_line": 2253,
+      "related_locations": []
+    },
+    {
+      "code": "E0433",
+      "message": "cannot find module or crate `rustix` in this scope",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:34:13",
+      "raw_end_line": 2268,
+      "raw_start_line": 2261,
+      "related_locations": []
+    },
+    {
+      "code": "E0433",
+      "message": "cannot find module or crate `rustix` in this scope",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:35:13",
+      "raw_end_line": 2276,
+      "raw_start_line": 2269,
+      "related_locations": []
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:37:9",
+      "raw_end_line": 2296,
+      "raw_start_line": 2277,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:111:9",
+      "raw_end_line": 2316,
+      "raw_start_line": 2297,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:112:9",
+      "raw_end_line": 2336,
+      "raw_start_line": 2317,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:176:9",
+      "raw_end_line": 2356,
+      "raw_start_line": 2337,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:177:9",
+      "raw_end_line": 2376,
+      "raw_start_line": 2357,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:226:9",
+      "raw_end_line": 2396,
+      "raw_start_line": 2377,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:246:9",
+      "raw_end_line": 2416,
+      "raw_start_line": 2397,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:259:9",
+      "raw_end_line": 2436,
+      "raw_start_line": 2417,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:260:9",
+      "raw_end_line": 2456,
+      "raw_start_line": 2437,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:268:9",
+      "raw_end_line": 2476,
+      "raw_start_line": 2457,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:269:9",
+      "raw_end_line": 2496,
+      "raw_start_line": 2477,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:270:9",
+      "raw_end_line": 2516,
+      "raw_start_line": 2497,
+      "related_locations": [
+        "hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:97:9",
+      "raw_end_line": 2536,
+      "raw_start_line": 2517,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:98:9",
+      "raw_end_line": 2556,
+      "raw_start_line": 2537,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:103:9",
+      "raw_end_line": 2576,
+      "raw_start_line": 2557,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:109:9",
+      "raw_end_line": 2596,
+      "raw_start_line": 2577,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:117:9",
+      "raw_end_line": 2616,
+      "raw_start_line": 2597,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:124:9",
+      "raw_end_line": 2636,
+      "raw_start_line": 2617,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:128:9",
+      "raw_end_line": 2656,
+      "raw_start_line": 2637,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:129:9",
+      "raw_end_line": 2676,
+      "raw_start_line": 2657,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:151:9",
+      "raw_end_line": 2696,
+      "raw_start_line": 2677,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:152:9",
+      "raw_end_line": 2716,
+      "raw_start_line": 2697,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:21:5",
+      "raw_end_line": 2736,
+      "raw_start_line": 2717,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:22:5",
+      "raw_end_line": 2756,
+      "raw_start_line": 2737,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:33:5",
+      "raw_end_line": 2776,
+      "raw_start_line": 2757,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:39:5",
+      "raw_end_line": 2796,
+      "raw_start_line": 2777,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:40:5",
+      "raw_end_line": 2816,
+      "raw_start_line": 2797,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:44:5",
+      "raw_end_line": 2836,
+      "raw_start_line": 2817,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:48:5",
+      "raw_end_line": 2856,
+      "raw_start_line": 2837,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:49:5",
+      "raw_end_line": 2876,
+      "raw_start_line": 2857,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:50:5",
+      "raw_end_line": 2896,
+      "raw_start_line": 2877,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:51:5",
+      "raw_end_line": 2916,
+      "raw_start_line": 2897,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:52:5",
+      "raw_end_line": 2936,
+      "raw_start_line": 2917,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:54:5",
+      "raw_end_line": 2956,
+      "raw_start_line": 2937,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:62:5",
+      "raw_end_line": 2976,
+      "raw_start_line": 2957,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:63:5",
+      "raw_end_line": 2996,
+      "raw_start_line": 2977,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:64:5",
+      "raw_end_line": 3016,
+      "raw_start_line": 2997,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:65:5",
+      "raw_end_line": 3036,
+      "raw_start_line": 3017,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:96:5",
+      "raw_end_line": 3056,
+      "raw_start_line": 3037,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:97:5",
+      "raw_end_line": 3076,
+      "raw_start_line": 3057,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:98:5",
+      "raw_end_line": 3096,
+      "raw_start_line": 3077,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:111:5",
+      "raw_end_line": 3116,
+      "raw_start_line": 3097,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:112:5",
+      "raw_end_line": 3136,
+      "raw_start_line": 3117,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:113:5",
+      "raw_end_line": 3156,
+      "raw_start_line": 3137,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:152:9",
+      "raw_end_line": 3176,
+      "raw_start_line": 3157,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:153:9",
+      "raw_end_line": 3196,
+      "raw_start_line": 3177,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:154:9",
+      "raw_end_line": 3216,
+      "raw_start_line": 3197,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:155:9",
+      "raw_end_line": 3236,
+      "raw_start_line": 3217,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:183:9",
+      "raw_end_line": 3256,
+      "raw_start_line": 3237,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:187:9",
+      "raw_end_line": 3276,
+      "raw_start_line": 3257,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:188:9",
+      "raw_end_line": 3296,
+      "raw_start_line": 3277,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:217:5",
+      "raw_end_line": 3316,
+      "raw_start_line": 3297,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:218:5",
+      "raw_end_line": 3336,
+      "raw_start_line": 3317,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:219:5",
+      "raw_end_line": 3356,
+      "raw_start_line": 3337,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:251:5",
+      "raw_end_line": 3376,
+      "raw_start_line": 3357,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:252:5",
+      "raw_end_line": 3396,
+      "raw_start_line": 3377,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:262:5",
+      "raw_end_line": 3416,
+      "raw_start_line": 3397,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:263:5",
+      "raw_end_line": 3436,
+      "raw_start_line": 3417,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:264:5",
+      "raw_end_line": 3456,
+      "raw_start_line": 3437,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:268:5",
+      "raw_end_line": 3476,
+      "raw_start_line": 3457,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:269:5",
+      "raw_end_line": 3496,
+      "raw_start_line": 3477,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:271:5",
+      "raw_end_line": 3516,
+      "raw_start_line": 3497,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:274:5",
+      "raw_end_line": 3536,
+      "raw_start_line": 3517,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:275:5",
+      "raw_end_line": 3556,
+      "raw_start_line": 3537,
+      "related_locations": [
+        "hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:33:9",
+      "raw_end_line": 3576,
+      "raw_start_line": 3557,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:34:9",
+      "raw_end_line": 3596,
+      "raw_start_line": 3577,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:45:9",
+      "raw_end_line": 3616,
+      "raw_start_line": 3597,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:90:9",
+      "raw_end_line": 3636,
+      "raw_start_line": 3617,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:94:9",
+      "raw_end_line": 3656,
+      "raw_start_line": 3637,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:95:9",
+      "raw_end_line": 3676,
+      "raw_start_line": 3657,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:103:5",
+      "raw_end_line": 3696,
+      "raw_start_line": 3677,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:111:5",
+      "raw_end_line": 3716,
+      "raw_start_line": 3697,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:112:5",
+      "raw_end_line": 3736,
+      "raw_start_line": 3717,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_eq` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:113:5",
+      "raw_end_line": 3756,
+      "raw_start_line": 3737,
+      "related_locations": [
+        "hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs:5:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:309:9",
+      "raw_end_line": 3776,
+      "raw_start_line": 3757,
+      "related_locations": [
+        "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:4:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0659",
+      "message": "`assert_ne` is ambiguous",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:310:9",
+      "raw_end_line": 3796,
+      "raw_start_line": 3777,
+      "related_locations": [
+        "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:4:5",
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13"
+      ]
+    },
+    {
+      "code": "E0603",
+      "message": "module `material` is private",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:31:48",
+      "raw_end_line": 3810,
+      "raw_start_line": 3797,
+      "related_locations": [
+        "hepta-agentd/src/learning_iteration_evidence_client.rs:83:1"
+      ]
+    },
+    {
+      "code": "E0624",
+      "message": "method `command_response` is private",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs:35:33",
+      "raw_end_line": 3882,
+      "raw_start_line": 3872,
+      "related_locations": [
+        "hepta-agentd/src/circuit_retained_version_service.rs:166:5"
+      ]
+    },
+    {
+      "code": "E0277",
+      "message": "the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:245:13",
+      "raw_end_line": 3910,
+      "raw_start_line": 3883,
+      "related_locations": [
+        "/home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8"
+      ]
+    },
+    {
+      "code": "E0277",
+      "message": "the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:247:13",
+      "raw_end_line": 3938,
+      "raw_start_line": 3911,
+      "related_locations": [
+        "/home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8"
+      ]
+    },
+    {
+      "code": "E0433",
+      "message": "cannot find type `AuthorityPosture` in this scope",
+      "occurrences": 1,
+      "primary_location": "hepta-agentd/src/circuit_retained_version_issuer_tests.rs:41:41",
+      "raw_end_line": 3944,
+      "raw_start_line": 3939,
+      "related_locations": []
+    },
+    {
+      "code": null,
+      "message": "could not compile `codex-hepta-agentd` (lib test) due to 85 previous errors; 13 warnings emitted",
+      "occurrences": 1,
+      "primary_location": null,
+      "raw_end_line": 3974,
+      "raw_start_line": 3974,
+      "related_locations": []
+    },
+    {
+      "code": null,
+      "message": "recipe `fix` failed on line 58 with exit code 101",
+      "occurrences": 1,
+      "primary_location": null,
+      "raw_end_line": 3976,
+      "raw_start_line": 3976,
+      "related_locations": []
+    }
+  ],
+  "error_blocks": 87,
+  "exit_code": 101,
+  "raw_log_bytes": 184921,
+  "raw_log_sha256": "a09caf225e9edf5d493f6db98c9f2c451bbc554726df607f1512ce2deae3073e",
+  "source": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+  "unique_diagnostics": 87
+}

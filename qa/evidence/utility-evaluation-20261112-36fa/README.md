@@ -86,3 +86,13 @@ The repository test fixtures establish software mechanisms within their stated s
 - [Ordinary integration map](ORDINARY_INTEGRATION_MAP.md) identifies the real reusable owners and the complete proposed Version/live-read/Selector/C/Root changes. It explicitly describes unimplemented work. Adding a Version purpose alone cannot close the ordinary chain.
 
 Raw log/JUnit files from the original local 163-test run and the four-test old-code control remain unavailable. Their observed outcomes are kept as historical observations; no reconstructed summary is presented as their original byte record.
+
+## Complete retained desktop maintenance evidence
+
+The [6d execution record](native/SOURCE_MAINTENANCE_RESULT.json), [complete compressed raw log](native/agentd-6d-fix.log.gz), [all diagnostics](native/ALL_ERROR_BLOCKS.json.gz), [diagnostic index](native/ERRORS_INDEX.json), and [all ten original postimages](native/postimages.tar.gz) are now included. [ARCHIVE_INTEGRITY.json](native/ARCHIVE_INTEGRITY.json) records independent decoded-byte/hash checks, including every tar member. Each binary archive also has a `.b64` text companion for exact recovery through UTF-8-only clients. These are the original failed 6d maintenance bytes, not a successful candidate result.
+
+The [conditional 19aa result](native/NATIVE_19AA_RESULT.json) and [complete original stdout](native/19aa-conditional-pipeline.stdout.log) show that no target checkout or behavior test occurred. The [isolated preparation result](native/PREP_RESULT.json) preserves the original dirty 6d worktree and establishes a separate clean 19aa review copy.
+
+[Explicit import repairs](repairs/EXPLICIT_IMPORT_POSTIMAGES.json) and [fixture compilation repairs](repairs/FIXTURE_COMPILE_POSTIMAGES.json) were reviewed without changing assertions, deadlines or production visibility. [Applying and formatting the 22-file preparation](native/REVIEW_19AA_APPLY_FMT_RESULT.json) succeeded and produced candidate tree `74c4313c45a53e3573ff23960482c1e4fd47688d`. That result is an uncommitted preparation on HEAD 19aa, not an exact-head behavior qualification. A separate original scoped maintenance step is running before publication; its terminal result is not inferred here.
+
+A [new old-production control patch](controls/COUNTEREXAMPLE_PRECEDENCE_CONTROL.patch) and [strict application manifest](controls/COUNTEREXAMPLE_PREPARATION.json) are prepared for a later independent execution. They are **not executed** and do not recover the unavailable original 814bf logs. Their preconditions reject a changed eval crate rather than forcing the old patch onto different source.

@@ -1,0 +1,63 @@
+{
+  "base": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "base_tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
+  "candidate_tree": "74c4313c45a53e3573ff23960482c1e4fd47688d",
+  "changed_files": 22,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/home/qian-qi/hepta-utility-36fa-evidence/agentd-6d-maintenance.patch"
+      ],
+      "exit_code": 0,
+      "name": "check_mechanical_patch",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/home/qian-qi/hepta-utility-36fa-evidence/agentd-6d-maintenance.patch"
+      ],
+      "exit_code": 0,
+      "name": "apply_mechanical_patch",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "compile_or_behavioral_tests_started": false,
+  "diff": {
+    "bytes": 22179,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-19aa-apply-fmt-v1/formatted.patch",
+    "sha256": "6273fa41346cfc468f17ccb8e9bacf9f3d72a1b4fba632a392ac435da5739472"
+  },
+  "finished_at": "2026-11-12T08:30:45.660609+00:00",
+  "format": {
+    "log_bytes": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "timed_out": false
+  },
+  "manifest": "/home/qian-qi/hepta-utility-36fa-evidence/review-19aa-apply-fmt-v1/FORMATTED_MANIFEST.json",
+  "packet": {
+    "bytes": 63511,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-19aa-apply-fmt-v1/FORMATTED_POSTIMAGES.json.gz",
+    "sha256": "49426557523e916114d47623617a78f847296a0df3436c4e5b90e2dfee5edb70",
+    "uncompressed_bytes": 355831,
+    "uncompressed_sha256": "a1235b51696b7749203315988962bf227ead089d8e18e0d92ed8fa46e2bb2761"
+  },
+  "source_after": {
+    "head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "status": " M codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n",
+    "tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500"
+  },
+  "stage": "format_reviewed_changes",
+  "started_at": "2026-11-12T08:30:41.490999+00:00",
+  "status": "formatted_candidate_ready"
+}

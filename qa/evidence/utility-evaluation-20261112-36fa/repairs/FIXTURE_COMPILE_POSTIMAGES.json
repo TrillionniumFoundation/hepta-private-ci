@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.utility.fixture-compile-repair.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": {
+    "commit": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500"
+  },
+  "original_diagnostic": {
+    "commit": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "exit_code": 101,
+    "raw_bytes": 184921,
+    "raw_sha256": "a09caf225e9edf5d493f6db98c9f2c451bbc554726df607f1512ce2deae3073e",
+    "error_index_blob": "1c5a316b2a3afcdeaa3136862696d2eba2abd515",
+    "representative_context_blob": "efe00df873ff0462b2aecbf0b655431dca9f5caf",
+    "handled_diagnostics": {
+      "E0433_rustix": 4,
+      "E0659_assert_ne": 2,
+      "E0603_material": 1,
+      "E0624_command_response": 1,
+      "E0277_digest32_deserialize": 2
+    }
+  },
+  "status": "PREPARED_POSTIMAGES_NOT_COMPILED_OR_FORMATTED",
+  "verification": {
+    "baseline_git_blob_sha_recomputed": true,
+    "postimage_git_blob_sha_recomputed": true,
+    "postimage_sha256_computed": true,
+    "all_github_blob_readbacks_exact": true,
+    "rust_format": "pending native review worktree",
+    "rust_compile_and_behavior": "pending native review worktree",
+    "source_closure_and_full_callers": "not run on these postimages"
+  },
+  "scope": {
+    "files": 7,
+    "production_visibility_widened": false,
+    "new_dependencies": false,
+    "new_unsafe_blocks": false,
+    "removed_tests": 0,
+    "new_test_cases": 0,
+    "assertions_and_deadlines_preserved": true,
+    "actual_user_task_A_or_independent_B_or_consumer_C_qualification": false
+  },
+  "module_movement": {
+    "file": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+    "old_parent": "host::issuer_fixture",
+    "new_parent": "host::service::issuer_fixture",
+    "contains_test_cases": false,
+    "selected_test_case_paths_changed": false,
+    "reason": "Reuse the same private original command_response without broadening production method visibility."
+  },
+  "transport_equivalence": {
+    "caller_timeout_seconds": 30,
+    "existing_helper_lifetime_seconds": 300,
+    "request_bound_bytes": 16384,
+    "response_bound_bytes": 16384,
+    "identity": "actual same-process libc::geteuid() and std::process::id()",
+    "lifetime_pin": "existing original cfg(test) pidfd() helper",
+    "production_command_admission": "unchanged"
+  },
+  "digest_wire_evidence": {
+    "source": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs:252-255",
+    "wire": "JSON array of exactly 32 u8 values",
+    "construction": "existing Digest32::from_array",
+    "global_serde_traits_changed": false
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "baseline_blob_sha": "a998ae96bb4669e6d1fc51bb84d744f327b8c37d",
+      "postimage_blob_sha": "4223b3fc47afd5c72ed42b62bd1a7129d1c0747e",
+      "bytes": 19222,
+      "sha256": "e9586933feb4476d3a7d22aef249fde1491650814dd0225907473a654aee5abc",
+      "diff": "--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs\n+++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs\n@@ -1,7 +1,5 @@\n //! Explicit same-process transport and future B clock for mechanisms only.\n //! All successful material bytes originate in the actual consumed Panel host.\n-use codex_hepta_contracts::HostAuthorityPeerPolicy;\n-use codex_hepta_contracts::HostIssuerPeer;\n use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;\n use codex_hepta_neuron::CellBackendManifestV2;\n use codex_hepta_neuron::CellRuntimeSnapshotV2;\n@@ -13,28 +11,13 @@\n use super::super::codec::Body;\n use super::*;\n use crate::OriginalCellEvaluationHostV1;\n+use crate::learning_iteration_evidence_client::command_test_support;\n \n type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;\n type Pause = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);\n \n fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {\n-    Ok(HostAuthorityPeerChannel::from_stream(\n-        stream,\n-        HostAuthorityPeerPolicy {\n-            peer: HostIssuerPeer {\n-                uid: rustix::process::geteuid().as_raw(),\n-                pid: std::process::id(),\n-            },\n-            timeout: Duration::from_secs(/*secs*/ 30),\n-            lifetime: Duration::from_secs(/*secs*/ 300),\n-            request_bound: 16_384,\n-            response_bound: 16_384,\n-        },\n-        rustix::process::pidfd_open(\n-            rustix::process::getpid(),\n-            rustix::process::PidfdFlags::empty(),\n-        )?,\n-    )?)\n+    command_test_support::channel(stream, Duration::from_secs(/*secs*/ 30))\n }\n \n impl OriginalCellEvaluationHostV1 {\n@@ -241,10 +224,12 @@\n             serde_json::from_value(record[\"candidate\"][\"manifest\"].clone())?;\n         let baseline: CellBackendManifestV2 =\n             serde_json::from_value(record[\"fixed_expert\"][\"manifest\"].clone())?;\n-        let candidate_cut: Digest32 =\n-            serde_json::from_value(record[\"candidate\"][\"journal_cut\"].clone())?;\n-        let baseline_cut: Digest32 =\n-            serde_json::from_value(record[\"fixed_expert\"][\"journal_cut\"].clone())?;\n+        let candidate_cut = Digest32::from_array(serde_json::from_value(\n+            record[\"candidate\"][\"journal_cut\"].clone(),\n+        )?);\n+        let baseline_cut = Digest32::from_array(serde_json::from_value(\n+            record[\"fixed_expert\"][\"journal_cut\"].clone(),\n+        )?);\n         let generator = self.context.authenticate(current)?;\n         let original = super::super::member::verify(\n             raw,\n",
+      "reason": "Reuse the existing cfg(test) command transport channel with exactly 30s timeout, 300s lifetime, 16384-byte request/response bounds, real same-process UID/PID and pidfd; remove four unresolved rustix uses. Decode the existing journal_cut JSON [u8;32] representation and wrap with Digest32::from_array for two original-preimage comparisons."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "baseline_blob_sha": "050f149f948bf42fa4d66167b1a7461cda58280c",
+      "postimage_blob_sha": "212bdf2a13005c2f9281e1772b225e508bc39d9b",
+      "bytes": 21859,
+      "sha256": "5a5aa9e1f793f187f6bc2b88b764a7f14efc82df29ea91c4bcb7859ae1cac625",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs\n@@ -28,12 +28,13 @@\n use crate::OriginalCircuitSelectionReceiptConfigV1;\n use crate::OriginalCircuitSelectionReceiptOwnerV1;\n use crate::circuit_feature_current::original_learning_read_fixture as publication;\n-use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;\n+use crate::learning_iteration_evidence_client::material_bootstrap_test_ports as material_ports;\n use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as trainer_ports;\n use crate::learning_iteration_evidence_client::original_readback_test_ports as selector_ports;\n use codex_hepta_contracts::HostAuthorityPeerChannel;\n use codex_hepta_types::FixedQ32;\n use pretty_assertions::assert_eq;\n+use pretty_assertions::assert_ne;\n \n pub(super) type Trainer =\n     OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;\n",
+      "reason": "Import pretty_assertions::assert_ne explicitly for the two actual ambiguity diagnostics; use the exact cfg(test) Material bootstrap export without exposing the private production material module."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "baseline_blob_sha": "af2a90caddcc4ef972d9af8434e963e503123a06",
+      "postimage_blob_sha": "2db768378a7fca74daf64367e32756452cc9e894",
+      "bytes": 1947,
+      "sha256": "52e31683fa2bc12944ce54076abb04a68228554b6e9dde7305aab395f7004270",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs\n@@ -1,19 +1,19 @@\n //! Private fixture access to the actual command and one issuer worker.\n //! No fixture constructs a host phase or bypasses its original current reads.\n-use super::super::wire;\n+use super::wire;\n use super::*;\n \n impl OriginalCircuitRetainedVersionHostV1 {\n     pub(crate) async fn prepare_original_version_fixture(\n         self: Arc<Self>,\n-    ) -> Result<super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {\n+    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {\n         self.original_version_fixture_request(wire::Action::Prepare)\n             .await\n     }\n \n     pub(crate) async fn read_original_version_fixture(\n         self: Arc<Self>,\n-    ) -> Result<super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {\n+    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {\n         self.original_version_fixture_request(wire::Action::Readback)\n             .await\n     }\n@@ -21,7 +21,7 @@\n     async fn original_version_fixture_request(\n         self: Arc<Self>,\n         action: wire::Action,\n-    ) -> Result<super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {\n+    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {\n         tokio::task::spawn_blocking(move || {\n             let (request, pin) = {\n                 let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;\n",
+      "reason": "Adjust relative paths after moving this existing helper-only fixture into the service module where the unchanged private command_response method is defined."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "baseline_blob_sha": "48eabb640773531545f71845697c6a6513870716",
+      "postimage_blob_sha": "7cc094eca0b5f2a9593d9d0b47f5e1dda1709b4e",
+      "bytes": 13744,
+      "sha256": "99c7e7390e78cb1a146b681fc86db36e9d6afd2898d279fcca7af930dd2b1889",
+      "diff": "--- a/codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n+++ b/codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n@@ -295,6 +295,8 @@\n pub(crate) use tests::fixture_original_receipt_client;\n \n #[cfg(test)]\n+pub(crate) use material::bootstrap_ports as material_bootstrap_test_ports;\n+#[cfg(test)]\n pub(crate) use material::retained_version_dataset_fixture;\n #[cfg(test)]\n pub(crate) use selection_command::original_readback_test_ports;\n",
+      "reason": "Add only a cfg(test) pub(crate) re-export of material::bootstrap_ports as material_bootstrap_test_ports; retain private mod material."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "baseline_blob_sha": "97f0ca35bfad5e2603469dfe294ad2ebcae402bc",
+      "postimage_blob_sha": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8",
+      "bytes": 12501,
+      "sha256": "39f34e333e232813a78adde76c5eafe102b0b3053f19453077f2816507c4b5ae",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n@@ -50,10 +50,6 @@\n mod service;\n #[path = \"circuit_retained_version_state.rs\"]\n mod state;\n-\n-#[cfg(test)]\n-#[path = \"circuit_retained_version_issuer_host_tests.rs\"]\n-mod issuer_fixture;\n \n type RetainedVersionPreparedV1 =\n     PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;\n",
+      "reason": "Remove the helper-only issuer_fixture cfg(test) module declaration from this parent host; no production declarations or methods change."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "baseline_blob_sha": "78e0f8f1a74be2c0496840b0f1b4444b637fcf66",
+      "postimage_blob_sha": "771a33453238653a587632c04bf62b988421fb1b",
+      "bytes": 11680,
+      "sha256": "fb91e9d5ab09b5dc2ab2d28b3e0880f20d795ea35ea2a8c4b71a9b35c8a8ce56",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n@@ -279,3 +279,7 @@\n         Ok(bytes)\n     }\n }\n+\n+#[cfg(test)]\n+#[path = \"circuit_retained_version_issuer_host_tests.rs\"]\n+mod issuer_fixture;\n",
+      "reason": "Declare the same helper-only issuer_fixture cfg(test) child under the service module. The entire preexisting file, including private command_response, is otherwise byte-identical."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "baseline_blob_sha": "2a55f1171c4e23f7f995a8d4f54ec015df1ecbcc",
+      "postimage_blob_sha": "84bbe749cd4d64a1d03b8f91c1bcf139f7cf047f",
+      "bytes": 13569,
+      "sha256": "3558c843071351f184cc6f1eb9fd15499bc19bc89a07d5ed728928ec3cf9eb1f",
+      "diff": "--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n+++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n@@ -54,7 +54,7 @@\n     })\n }\n \n-fn channel(stream: UnixStream, timeout: Duration) -> anyhow::Result<HostAuthorityPeerChannel> {\n+pub(crate) fn channel(stream: UnixStream, timeout: Duration) -> anyhow::Result<HostAuthorityPeerChannel> {\n     Ok(HostAuthorityPeerChannel::from_stream(\n         stream,\n         HostAuthorityPeerPolicy {\n",
+      "reason": "Change existing test-helper channel visibility from private to pub(crate) only. The entire module is already included solely under cfg(test) by cell_q24_training_command_service.rs:338-340; channel implementation and policy remain byte-identical."
+    }
+  ]
+}

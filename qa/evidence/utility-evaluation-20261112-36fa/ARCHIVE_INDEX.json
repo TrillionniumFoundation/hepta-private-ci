@@ -1,14 +1,9 @@
 {
-  "schema": "hepta.utility-evidence-index.v1",
-  "created_utc": "2026-11-12 08:19:38 UTC",
+  "schema": "hepta.utility-evidence-index.v2",
+  "created_utc": "2026-11-12 08:37:08 UTC",
   "production_source": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
-  "production_tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
-  "evidence_parent": "cede817051cb4399684afe7cf770c27d767e64cf",
+  "evidence_parent": "1af4b263e2fda2fd4daf713dd30e4638f96a965f",
   "files": [
-    {
-      "path": "README.md",
-      "git_blob": "ff8f475df82e763cde7a72dea249c27e1cf3b427"
-    },
     {
       "path": "SOURCE_AUDIT.md",
       "git_blob": "80c52f200634e6bb0738e5071e24252d0d237cd0"
@@ -36,10 +31,92 @@
     {
       "path": "native/agentd-6d-maintenance.patch",
       "git_blob": "9d91cc3d0ee72cf655aac45fe1f165c48fb3d907"
+    },
+    {
+      "path": "README.md",
+      "git_blob": "b00137875fb9a557079b47f847b808189494cd90"
+    },
+    {
+      "path": "native/ERRORS_INDEX.json",
+      "git_blob": "1c5a316b2a3afcdeaa3136862696d2eba2abd515"
+    },
+    {
+      "path": "native/ERROR_CONTEXTS.json",
+      "git_blob": "efe00df873ff0462b2aecbf0b655431dca9f5caf"
+    },
+    {
+      "path": "native/POSTIMAGE_MANIFEST.json",
+      "git_blob": "9fb514718fe78a2042d1e07fc6af49e7c9becdff"
+    },
+    {
+      "path": "native/SOURCE_MAINTENANCE_RESULT.json",
+      "git_blob": "b28a877a8ea0b0bcc9f583a5fa811dd721d1dfa3"
+    },
+    {
+      "path": "native/NATIVE_19AA_RESULT.json",
+      "git_blob": "5f59dae284aa094c7addfbd08706b4484fe13a98"
+    },
+    {
+      "path": "native/PREP_RESULT.json",
+      "git_blob": "07e3b2b3dfcee15ba9511ff72ec407139cd21758"
+    },
+    {
+      "path": "native/REVIEW_19AA_APPLY_FMT_RESULT.json",
+      "git_blob": "77552117920e8e829797401ded9ee2ac85680990"
+    },
+    {
+      "path": "repairs/EXPLICIT_IMPORT_POSTIMAGES.json",
+      "git_blob": "f12f1f7426e08f744001aab71f79b3e1076b7085"
+    },
+    {
+      "path": "repairs/FIXTURE_COMPILE_POSTIMAGES.json",
+      "git_blob": "d37c77872b64166d04501abf9743f9b11fef9ba8"
+    },
+    {
+      "path": "controls/COUNTEREXAMPLE_PRECEDENCE_CONTROL.patch",
+      "git_blob": "7bad2fbdf7a4552fd84640413247576294c8be15"
+    },
+    {
+      "path": "controls/COUNTEREXAMPLE_PREPARATION.json",
+      "git_blob": "fd87dfb31105259cb2e0add9d85dc66f0a21a729"
+    },
+    {
+      "path": "native/agentd-6d-fix.log.gz",
+      "git_blob": "224ef36f89183d9bfcdf86b395620d91fd73714c"
+    },
+    {
+      "path": "native/agentd-6d-fix.log.gz.b64",
+      "git_blob": "7be637949910a9a50e570596bafea77422720a69"
+    },
+    {
+      "path": "native/ALL_ERROR_BLOCKS.json.gz",
+      "git_blob": "6a766e801417a05b026058bb7a4c7b81d322e52d"
+    },
+    {
+      "path": "native/ALL_ERROR_BLOCKS.json.gz.b64",
+      "git_blob": "d201acd78eade3c7b6feb0593e749f13dcdc2ab4"
+    },
+    {
+      "path": "native/postimages.tar.gz",
+      "git_blob": "fc9143c289b9e91ee46596c4617d1696eb1c00d8"
+    },
+    {
+      "path": "native/postimages.tar.gz.b64",
+      "git_blob": "b8240edf613f33fdf2423f6f1e8e6718fd97ac1d"
+    },
+    {
+      "path": "native/19aa-conditional-pipeline.stdout.log",
+      "git_blob": "4852722db40ff94b980a4d4d157d1be6dfeccda0"
+    },
+    {
+      "path": "native/ARCHIVE_INTEGRITY.json",
+      "git_blob": "8058a295e3422a2323da0de6f1efeb3202e88a2b"
     }
   ],
   "original_local_packages_restored": false,
   "original_final_local_gate_terminal_status": "Unknown",
-  "native_behavior_tests_started": false,
-  "notes": "This new index covers only the included blobs. Original local raw logs/JUnit/inventories not present here are not represented as recovered. Git source equivalence is static, not execution."
+  "original_6d_maintenance_status": "failed",
+  "conditional_19aa_behavior_tests_started": false,
+  "preparation_tree": "74c4313c45a53e3573ff23960482c1e4fd47688d",
+  "preparation_qualification": "Unpublished dirty candidate; no behavior execution claimed"
 }

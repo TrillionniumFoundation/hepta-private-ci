@@ -1,0 +1,73 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qian-qi/hepta-utility-20261112-36fa",
+        "/home/qian-qi/hepta-utility-36fa-review-19aa"
+      ],
+      "cwd": "/home/qian-qi/hepta-utility-36fa-evidence",
+      "exit_code": 0,
+      "name": "clone_shared",
+      "stderr": "\u6b63\u514b\u9686\u5230 '/home/qian-qi/hepta-utility-36fa-review-19aa'...\n\u5b8c\u6210\u3002\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "bundle",
+        "verify",
+        "/home/qian-qi/hepta-utility-36fa-evidence/utility-19aa.bundle"
+      ],
+      "cwd": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+      "exit_code": 0,
+      "name": "verify_bundle",
+      "stderr": "/home/qian-qi/hepta-utility-36fa-evidence/utility-19aa.bundle \u6ca1\u95ee\u9898\n",
+      "stdout": "\u8fd9\u4e2a\u6346\u7ed1\u5305\u4e2d\u542b\u6709\u8fd9\u4e2a\u5f15\u7528\uff1a\n19aa601fa09321f1b6d1b3ff3b4d422908004e48 refs/heads/utility-api-19aa-readback\n\u8fd9\u4e2a\u6346\u7ed1\u5305\u9700\u8981\u8fd9\u4e2a\u5f15\u7528\uff1a\n6d0da9fe0cae414975288f23a3779d7bf86e3638 \nThe bundle uses this hash algorithm: sha1\n"
+    },
+    {
+      "argv": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "/home/qian-qi/hepta-utility-36fa-evidence/utility-19aa.bundle",
+        "refs/heads/utility-api-19aa-readback"
+      ],
+      "cwd": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+      "exit_code": 0,
+      "name": "fetch_bundle",
+      "stderr": "\u6765\u81ea /home/qian-qi/hepta-utility-36fa-evidence/utility-19aa.bundle\n * branch                utility-api-19aa-readback -> FETCH_HEAD\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "19aa601fa09321f1b6d1b3ff3b4d422908004e48"
+      ],
+      "cwd": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+      "exit_code": 0,
+      "name": "review_checkout",
+      "stderr": "\u4e4b\u524d\u7684 HEAD \u4f4d\u7f6e\u662f 6d0da9fe0 test(learn): align exact caller expectations with original Model owners\nHEAD \u76ee\u524d\u4f4d\u4e8e 19aa601fa fix(learn): name original journal readback for strict caller proof\n",
+      "stdout": ""
+    }
+  ],
+  "diagnostics": "/home/qian-qi/hepta-utility-36fa-evidence/maintenance-6d-archive-v1/ERRORS_INDEX.json",
+  "finished_at": "2026-11-12T08:18:32.425084+00:00",
+  "first_diagnostic": "error[E0433]: cannot find module or crate `rustix` in this scope\n  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:25:22\n   |\n25 |                 uid: rustix::process::geteuid().as_raw(),\n   |                      ^^^^^^ use of unresolved module or unlinked crate `rustix`\n   |\n   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`\n",
+  "manifest": "/home/qian-qi/hepta-utility-36fa-evidence/maintenance-6d-archive-v1/POSTIMAGE_MANIFEST.json",
+  "review": {
+    "path": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "source": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "status": "clean",
+    "tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500"
+  },
+  "source": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+  "started_at": "2026-11-12T08:18:29.056018+00:00",
+  "status": "archived_and_review_ready",
+  "target": "19aa601fa09321f1b6d1b3ff3b4d422908004e48"
+}
