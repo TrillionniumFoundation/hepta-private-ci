@@ -83,6 +83,8 @@ pub use training_plan::OriginalCellQ24DatasetFreezeErrorV1;
 pub use training_plan::OriginalCellQ24DatasetFreezeOwnerV1;
 #[cfg(target_os = "linux")]
 pub use training_plan::OriginalCellQ24DatasetFreezeSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub(crate) use training_plan::OriginalPreparedReadV1;
 
 pub struct CellQ24ModelFilesV1 {
     pub base: File,

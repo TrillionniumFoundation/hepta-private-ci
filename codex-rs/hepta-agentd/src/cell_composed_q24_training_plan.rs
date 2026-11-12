@@ -58,6 +58,8 @@ pub use training::OriginalCellQ24DatasetFreezeErrorV1;
 pub use training::OriginalCellQ24DatasetFreezeOwnerV1;
 #[cfg(target_os = "linux")]
 pub use training::OriginalCellQ24DatasetFreezeSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub(crate) use training::OriginalPreparedReadV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24TrainingPlanErrorV1 {
