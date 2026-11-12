@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-neuron/**"
       - "CALLERS.toml"
       - "qa/b4-no-bypass/**"
       - "scripts/verify_hepta_callers.py"
@@ -80,9 +81,18 @@ jobs:
               "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+              "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+              "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+              "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+              "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+              "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+              "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+              "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+              "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
-                      "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval"]
+                      "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",
+                      "-p", "codex-hepta-neuron"]
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
           root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]
@@ -193,7 +203,8 @@ jobs:
                   path = os.fsdecode(raw)
                   if not path.endswith(".rs") or not path.startswith(
                       ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-ledger/",
-                           "codex-rs/hepta-learning-artifacts/", "codex-rs/hepta-intelligence-eval/")):
+                           "codex-rs/hepta-learning-artifacts/", "codex-rs/hepta-intelligence-eval/",
+                           "codex-rs/hepta-neuron/")):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -339,5 +350,72 @@ jobs:
           path: |
             ${{ runner.temp }}/daemon-learning-records
             !${{ runner.temp }}/daemon-learning-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14
+
+  caller-proof:
+    runs-on: ubuntu-24.04
+    # The complete uncached proof previously took 25 minutes locally and
+    # longer under contention. Keep a separate budget from native compilation.
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the full caller inventory and retain original execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          repo = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          records = Path(os.environ["RUNNER_TEMP"]) / "daemon-learning-caller-proof"
+          records.mkdir(parents=True, exist_ok=True)
+          os.chdir(repo)
+          sys.path.insert(0, str(repo / "scripts"))
+          from hepta_ci_exec import execute_logged
+
+          def identity():
+              def git(*args):
+                  return subprocess.check_output(["git", *args], cwd=repo).decode().strip()
+              return {"head": git("rev-parse", "HEAD"),
+                      "tree": git("rev-parse", "HEAD^{tree}"),
+                      "status": git("status", "--porcelain=v1", "--untracked-files=all")}
+
+          def save(name, value):
+              (records / name).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+          before = identity()
+          save("source-before.json", before)
+          if before["head"] != os.environ["SOURCE_SHA"] or before["status"]:
+              raise RuntimeError("caller proof requires the exact clean source")
+          try:
+              for phase, timeout in (("self-test", 300), ("verify", 4800)):
+                  command = ["python3", "scripts/verify_hepta_callers.py", phase]
+                  result = execute_logged(command, records / (phase + ".log"),
+                                          timeout_seconds=timeout)
+                  save(phase + ".json", {"source_sha": before["head"],
+                                        "command": command, **result})
+                  if result["returncode"] or result["timed_out"] or result["output_limit_exceeded"]:
+                      raise RuntimeError(phase + " failed; original log and exit status retained")
+          finally:
+              after = identity()
+              save("source-after.json", after)
+              if after != before:
+                  raise RuntimeError("caller proof changed the fixed source")
+          PY
+      - name: Retain complete caller proof evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: daemon-learning-caller-proof-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/daemon-learning-caller-proof
           if-no-files-found: error
           retention-days: 14

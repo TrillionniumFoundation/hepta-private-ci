@@ -267,3 +267,42 @@ pub(crate) fn reject_cancelled_queued_dispatch(
     .join()
     .expect("queued cancellation runtime")
 }
+
+/// Fixed, explicitly synthetic signed Training metadata over the actual
+/// command codec. Only readback is accepted; no optimizer or signer is served.
+pub(crate) fn retained_publication_training_peer(
+    context: OriginalCellQ24TrainingCommandContextV1,
+    receipt: codex_hepta_learning_artifacts::LearningIterationReceiptV1,
+    signature: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingCommandClientV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    let (client, mut channel) = client(context.clone(), /*readback_only*/ true, None)?;
+    let binding = context.binding()?;
+    let server = std::thread::spawn(move || -> anyhow::Result<usize> {
+        let mut next = 1;
+        loop {
+            let observed = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                request.require_context(&context, binding, next)
+                    .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                if request.action != wire::Action::Readback || next > 64 {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                }
+                let result = wire::encode_completed(
+                    &context, receipt.clone(), signature.clone(),
+                    super::super::now().map_err(|_| HostIssuerTransportError::InvalidRequest)?,
+                ).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                let response = wire::Response::from_request(&request, result);
+                next += 1;
+                serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)
+            })?;
+            if !observed {
+                return Ok((next - 1) as usize);
+            }
+        }
+    });
+    Ok((client, server))
+}

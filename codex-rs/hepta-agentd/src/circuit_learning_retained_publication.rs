@@ -175,7 +175,7 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
     /// Only the separately supplied exact original FinalUse grant may publish.
     /// A cancelled queued closure sends no local publication. Once the owner
     /// call began, loss/cancellation remains uncertain even if C was installed.
-    pub async fn publish(
+    pub async fn publish_original_retained_task(
         self,
         signed: SignedFinalUseGrant,
     ) -> Result<PublishedCircuitFeatureTaskV1, OriginalCircuitRetainedPublicationErrorV1> {
@@ -187,10 +187,10 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
             let started = now()?;
             context.authenticate(started, PublicationAccess::NewWork)?;
             require_not_cancelled(&cancelled)?;
-            let ready = prepared.publish(&signed).map_err(uncertain)?;
+            let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed).map_err(uncertain)?;
             let task = ready.into_circuit_feature_task(definition, source, completed).map_err(uncertain)?;
             binding::require_published(&context, &task, PublicationAccess::NewWork).map_err(uncertain)?;
-            if now()? < started {
+            if now().map_err(uncertain)? < started {
                 return Err(uncertain(OriginalCircuitRetainedPublicationErrorV1::Clock));
             }
             Ok::<_, OriginalCircuitRetainedPublicationErrorV1>((context, task))
@@ -199,7 +199,7 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         context.require_training_current(&trainer, PublicationAccess::NewWork).await.map_err(uncertain)?;
         tokio::task::spawn_blocking(move || {
             binding::require_published(&context, &task, PublicationAccess::NewWork).map_err(uncertain)?;
-            Ok(task)
+            Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)
         }).await.map_err(uncertain)?
     }
 }

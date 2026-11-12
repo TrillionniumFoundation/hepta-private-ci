@@ -336,6 +336,12 @@ impl Fixture {
         })
     }
 
+    pub(crate) fn retained_publication_selection(
+        &self,
+    ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {
+        self.artifact_files.retained_publication_selection(self.live_clock.now_unix_ms()?)
+    }
+
     pub(crate) fn selection(&self) -> anyhow::Result<AgentdSelectedGenerationV1> {
         self.artifact_files
             .selection(self.live_clock.now_unix_ms()?)

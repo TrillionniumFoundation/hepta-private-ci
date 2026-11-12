@@ -105,6 +105,6 @@ where
     context.require_training_current(&trainer, PublicationAccess::Readback).await?;
     tokio::task::spawn_blocking(move || {
         binding::require_published(&context, &task, PublicationAccess::Readback)?;
-        Ok(task)
+        Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)
     }).await.map_err(uncertain)?
 }
