@@ -24,7 +24,7 @@ class PostAOwnerFilesSourceTests(unittest.TestCase):
                      "q24_historical_freeze_signing_config"):
             self.assertIn(FILES, rows[name]["product_callers"])
         for name in ("post_a_original_freeze_files", "post_a_original_stage_authorities", "post_a_original_stage_files"):
-            self.assertEqual(rows[name]["product_callers"], [])
+            self.assertEqual(rows[name]["product_callers"], [AGENT + "production_post_a_q24.rs"])
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
 
     def test_roles_are_from_original_request_not_descriptor_fields(self):

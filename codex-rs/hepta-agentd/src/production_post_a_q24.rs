@@ -8,6 +8,7 @@ use crate::CellQ24DatasetTaskV1;
 use crate::learning_iteration::historical_source::RegisteredHistoricalLearningSourceV1;
 use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;
 use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1;
+use crate::root_historical_task_read_client::OriginalPostAFrozenLearningAckV1;
 use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 
 #[path = "production_post_a_q24_deployment.rs"]
@@ -96,12 +97,13 @@ impl AgentdProductionLaunch {
         // freeze_original has dropped its concrete writer. Root independently
         // takes both original shared locks and verifies the retained signature.
         self.require_original_post_a_context(&identity)?;
-        let ack = OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning(
-            &receipt,
-            &client,
-            &self.root.session,
-        )?;
-        ack.require_prepared_scope(prepared.scope())?;
+        let ack: OriginalPostAFrozenLearningAckV1 =
+            OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning(
+                &receipt,
+                &client,
+                &self.root.session,
+            )?;
+        OriginalPostAFrozenLearningAckV1::require_prepared_scope(&ack, prepared.scope())?;
         let pending: PendingHandoffs = self
             .post_a_handoffs
             .take()

@@ -19,10 +19,12 @@ class PostALearningClientSourceTests(unittest.TestCase):
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers
 
-    def test_install_has_no_invented_main_caller(self):
+    def test_install_has_only_the_actual_post_a_product_callers(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        for key in ("root_post_a_learning_install_original", "root_post_a_learning_scope_ack"):
-            self.assertEqual(rows[key]["product_callers"], [])
+        self.assertEqual(rows["root_post_a_learning_install_original"]["product_callers"],
+                         [AGENT + "production_post_a_q24.rs"])
+        self.assertEqual(rows["root_post_a_learning_scope_ack"]["product_callers"],
+                         [AGENT + "production_post_a_q24.rs", AGENT + "production_post_a_q24_handoff.rs"])
         self.assertIn(CLIENT, rows["root_historical_fixed_client_exchange"]["product_callers"])
 
     def test_exact_session_and_complete_cut_surround_only_the_fixed_install(self):
