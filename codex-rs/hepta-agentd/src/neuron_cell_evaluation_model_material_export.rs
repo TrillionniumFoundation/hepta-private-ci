@@ -11,6 +11,9 @@ use super::super::TrainingRead;
 use super::super::contract::Context;
 use super::super::require_clock;
 use super::Error;
+use super::OriginalCellEvaluationModelMaterialV1;
+use super::Receipt;
+use crate::OriginalCellEvaluationPanelReadbackV1;
 use super::codec::Body;
 use super::codec::Member;
 use crate::CellEvaluationQualificationRequestV1;
@@ -22,22 +25,28 @@ use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_evidence;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 
-impl Owners {
-    pub(super) async fn original_model_material(
-        &mut self,
-        context: &Context,
-    ) -> Result<Vec<u8>, Error> {
-        if self.fenced {
-            return Err(Error::CommitUncertain);
-        }
-        let result = self.read_original_model_material(context).await;
-        self.fence_result(result)
-    }
+struct PendingExport {
+    bytes: Vec<u8>,
+    evaluation: Receipt,
+    panel: OriginalCellEvaluationPanelReadbackV1,
+    started_at: u64,
+}
+struct Exported {
+    bytes: Vec<u8>,
+    evaluation: Receipt,
+    observed_at: u64,
+}
 
-    async fn read_original_model_material(
+impl Owners {
+    /// A private single-channel transfer owns this real observation until its
+    /// Finish. The original Owners remain fenced across all network/effects;
+    /// no Owners mutex or native Trainer lane is held between frames.
+    pub(super) async fn begin_model_material_transfer(
         &mut self,
         context: &Context,
-    ) -> Result<Vec<u8>, Error> {
+    ) -> Result<(Vec<u8>, Option<TrainingOperation>), Error> {
+        if self.fenced { return Err(Error::CommitUncertain); }
+        self.fenced = true;
         let started_at = self.current_time()?;
         context.authenticate(started_at)?;
         let operation = self.begin_training_operation(context).await?;
@@ -45,6 +54,58 @@ impl Owners {
             Some(original) => TrainingRead::Operation(original),
             None => TrainingRead::Independent,
         };
+        let pending = self.read_model_material_export(context, training).await?;
+        // First export still has the complete physical Panel and both E
+        // journal observations. Its bytes are provisional until actual Finish.
+        let exported = self.finish_model_material_export(context, pending)?;
+        Ok((exported.bytes, operation))
+    }
+
+    pub(super) async fn finish_model_material_transfer(
+        &mut self,
+        context: &Context,
+        operation: Option<TrainingOperation>,
+        expected: &[u8],
+    ) -> Result<OriginalCellEvaluationModelMaterialV1, Error> {
+        if !self.fenced { return Err(Error::CommitUncertain); }
+        match (&operation, &self.shared_training) {
+            (Some(original), Some(trainer)) => TrainingOperation::require_member(
+                original, trainer, &self.panel.primary.qualification.config,
+            )?,
+            (None, None) => {},
+            _ => return Err(Error::Binding("same original transfer Training profile")),
+        }
+        let training = match operation.as_ref() {
+            Some(original) => TrainingRead::Operation(original),
+            None => TrainingRead::Independent,
+        };
+        // Every original Cell/Product/Qualification/cohort journal is really
+        // read again. The earlier body is never used as a CURRENT observation.
+        let pending = self.read_model_material_export(context, training).await?;
+        if let Some(original) = operation {
+            TrainingOperation::finish(original).await?;
+        }
+        // The final physical E journal read and full nested fresh validation
+        // follow the last actual T I/O, before any completion can be encoded.
+        let exported = self.finish_model_material_export(context, pending)?;
+        if exported.bytes.as_slice() != expected { return Err(Error::CommitUncertain); }
+        let binding = Digest32::of_bytes(&exported.bytes);
+        Ok(OriginalCellEvaluationModelMaterialV1 {
+            context: context.clone(),
+            evaluation: exported.evaluation,
+            bytes: exported.bytes,
+            binding,
+            observed_at: exported.observed_at,
+        })
+    }
+
+    async fn read_model_material_export(
+        &mut self,
+        context: &Context,
+        training: TrainingRead<'_>,
+    ) -> Result<PendingExport, Error> {
+        let started_at = self.current_time()?;
+        context.authenticate(started_at)?;
         let (evaluation, observed) = self
             .read_original_completion(context, super::super::wire::Action::Readback, training)
             .await?;
@@ -75,30 +136,33 @@ impl Owners {
             members,
         };
         let bytes = body.encode()?;
-        // The complete original snapshots were read between two actual Panel
-        // CURRENT observations. Neither a cached scope nor its unsigned digest
-        // can substitute for the snapshot committed by the signed arm record.
+        // Full original snapshots remain bracketed by actual complete Panel
+        // observations, with independent B and every nonempty retention member.
         let after = self.read_panel(training).await?;
-        if after != observed {
-            return Err(Error::CommitUncertain);
-        }
-        if let Some(original) = operation {
-            TrainingOperation::finish(original).await?;
-        }
+        if after != observed { return Err(Error::CommitUncertain); }
+        Ok(PendingExport {
+            bytes, evaluation, panel: after, started_at,
+        })
+    }
+
+    fn finish_model_material_export(
+        &mut self,
+        context: &Context,
+        pending: PendingExport,
+    ) -> Result<Exported, Error> {
+        let PendingExport { bytes, evaluation, panel, started_at } = pending;
         let evaluation = self.finish_original_completion(
             context,
             super::super::wire::Action::Readback,
             evaluation,
-            &after,
+            &panel,
             started_at,
         )?;
         let current = self.current_time()?;
         require_clock(started_at, current)?;
-        self.authenticate_panel(&after, current)?;
-        // Revalidate every complete original payload after all actual I/O and
-        // projection work. These checks do not construct or deserialize seals.
+        self.authenticate_panel(&panel, current)?;
         super::verify::material(context, &evaluation, &bytes, current)?;
-        Ok(bytes)
+        Ok(Exported { bytes, evaluation, observed_at: current })
     }
 }
 

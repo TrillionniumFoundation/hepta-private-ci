@@ -68,11 +68,11 @@ async fn original_evaluation_operation_reads_two_trainers_per_call_and_whole_exp
     assert!(client.readback().await.is_err());
     assert_eq!(finish(client, peer)?, 1);
     assert_eq!(fixture.original_files()?, completed);
-    // Two independent successful commands: 2 + 2. Begin and Finish cover the
-    // complete export separately: 2 + 2 for both the complete and staged read.
-    // Withdrawal fails after its T-before. No overlap obtains a second channel.
+    // Two independent successful E commands: 2 + 2. Each complete or staged
+    // material transfer is one actual T-before/T-after operation: 2 + 2.
+    // Withdrawal fails after its T-before. No overlap obtains another channel.
     assert_eq!(fixture.finish().await?, [2, 2]);
-    assert_eq!(trainer.join().expect("original shared Trainer")?, 13);
+    assert_eq!(trainer.join().expect("original shared Trainer")?, 9);
     Ok(())
 }
 
@@ -128,10 +128,15 @@ async fn original_evaluation_operation_changed_tail_preserves_effect_and_fences_
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel()
 -> anyhow::Result<()> {
-    for fault in ["drop", "withdraw"] {
+    for fault in ["drop", "withdraw", "changed-tail"] {
         let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
         let signature = fixture.original.config.training_evidence.clone();
-        let trainer = install(&mut fixture, vec![signature])?;
+        let signatures = if fault == "changed-tail" {
+            let renewed = fixture.original.evaluation.renewed_qualification_training()?;
+            assert_ne!(signature, renewed);
+            vec![signature.clone(), signature.clone(), signature, renewed]
+        } else { vec![signature] };
+        let trainer = install(&mut fixture, signatures)?;
         let (client, peer) = fixture.commands(
             /*readback_only*/ false, /*expected*/ None, "original",
         )?;
@@ -148,20 +153,22 @@ async fn original_evaluation_staged_material_drop_and_withdrawal_never_restore_c
         if fault == "drop" {
             drop(operation);
         } else {
-            fixture.retention_b.withdraw_target()?;
+            if fault == "withdraw" { fixture.retention_b.withdraw_target()?; }
             assert!(operation.fixture_finish_at(fixture.at).await.is_err());
         }
         assert!(matches!(material.read_current().await, Err(CommandError::Unavailable)));
         drop(material);
         let served = peer.join().expect("original staged material peer");
-        if fault == "drop" {
-            assert_eq!(served?, pages);
-        } else {
-            assert!(served.is_err());
-        }
+        assert!(pages > 0);
+        assert!(served.is_err(), "unfinished/failed transfer keeps the original owner fenced");
+        let (probe, peer) = fixture.commands(
+            /*readback_only*/ true, /*expected*/ None, "original",
+        )?;
+        assert!(matches!(probe.readback().await, Err(CommandError::CommitUncertain)));
+        assert_eq!(finish(probe, peer)?, 1);
         assert_eq!(fixture.original_files()?, completed);
         assert_eq!(fixture.finish().await?, [2, 2]);
-        assert_eq!(trainer.join().expect("original staged Trainer")?, if fault == "drop" { 4 } else { 5 });
+        assert_eq!(trainer.join().expect("original staged Trainer")?, if fault == "changed-tail" { 4 } else { 3 });
     }
     Ok(())
 }
