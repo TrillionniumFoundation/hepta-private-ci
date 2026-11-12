@@ -24,7 +24,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
         self.assertEqual(rows["root_historical_current_trust_capsule"]["product_callers"], [])
         for key in ("root_historical_current_trust_read", "root_historical_current_trust_receipt"):
             self.assertEqual(rows[key]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs"])
-        self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST])
+        self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST, AGENT + "root_post_a_learning_client.rs"])
         self.assertEqual(rows["root_historical_recipient_trust_reply"]["product_callers"], [CLIENT])
 
     def test_capsule_uses_original_receipt_session_clock_cut_and_pin(self):
@@ -33,7 +33,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
                                 "OriginalHistoricalTaskReadReceiptV1::require_original_client(self, client, session)", occurrence)
         self.check_markers(TRUST, "fn activate_current_learning_trust(", (
             "let clock = session.clock()", "RootHistoricalTaskReadClientV1::exchange(",
-            "HistoricalReadOperationV1::LearningTrust", "Reply::Task(_) => return Err(refused())",
+            "HistoricalReadOperationV1::LearningTrust", "Reply::Task(_) | Reply::PostAFrozenLearning(_) => return Err(refused())",
             "response.data_cut != self.data.data_cut.to_string()",
             "OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |_|",
             "clock.now_unix_ms()", "activate_for_recipient(&self.client.initial, now)?",

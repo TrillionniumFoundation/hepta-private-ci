@@ -21,7 +21,9 @@ use crate::root_historical_task_read_protocol::HistoricalTaskReadDataV1;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadRequestV1;
 use crate::root_historical_task_read_protocol::MAX_READS;
 use crate::root_historical_task_read_protocol::PURPOSE;
+use crate::root_historical_task_read_protocol::PostAFrozenLearningResponseV1;
 use crate::root_historical_task_read_protocol::require_complete_reply;
+use crate::root_historical_task_read_protocol::require_post_a_learning_reply;
 use crate::root_production_inputs::RootHistoricalTaskReadConnectionV1;
 
 #[path = "root_historical_task_read_inputs.rs"]
@@ -29,6 +31,10 @@ mod inputs;
 #[path = "root_historical_learning_trust_client.rs"]
 mod learning_trust;
 pub(crate) use learning_trust::OriginalHistoricalLearningTrustV1;
+
+#[path = "root_post_a_learning_client.rs"]
+mod post_a;
+pub(crate) use post_a::OriginalPostAFrozenLearningAckV1;
 
 struct Lane {
     stream: OriginalPublicationStream,
@@ -38,6 +44,7 @@ struct Lane {
 enum Reply {
     Task(Box<HistoricalTaskReadDataV1>),
     LearningTrust(Box<HistoricalLearningTrustResponseV1>),
+    PostAFrozenLearning(PostAFrozenLearningResponseV1),
 }
 
 pub(crate) struct RootHistoricalTaskReadClientV1 {
@@ -109,7 +116,7 @@ impl RootHistoricalTaskReadClientV1 {
     fn observe(&self) -> io::Result<HistoricalTaskReadDataV1> {
         match self.exchange(HistoricalReadOperationV1::Task)? {
             Reply::Task(data) => Ok(*data),
-            Reply::LearningTrust(_) => {
+            Reply::LearningTrust(_) | Reply::PostAFrozenLearning(_) => {
                 self.fence();
                 Err(refused())
             }
@@ -155,6 +162,9 @@ impl RootHistoricalTaskReadClientV1 {
                             &self.initial,
                         )?))
                     }
+                    HistoricalReadOperationV1::PostAFrozenLearning => Reply::PostAFrozenLearning(
+                        require_post_a_learning_reply(&bytes, request_id, &self.profile)?,
+                    ),
                 };
             self.connection
                 .require_original_session()

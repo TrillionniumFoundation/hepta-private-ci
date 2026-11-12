@@ -24,10 +24,17 @@ pub(crate) const SOCKET: &str = "historical-task-read-v1.sock";
 pub(crate) const MAX_READS: u64 = 64;
 pub(crate) const WIRE_BOUND: usize = 16_384;
 
+#[path = "root_post_a_learning_protocol.rs"]
+mod post_a;
+pub(crate) use post_a::POST_A_PURPOSE;
+pub(crate) use post_a::PostAFrozenLearningResponseV1;
+pub(crate) use post_a::require_post_a_learning_reply;
+
 #[derive(Clone, Copy)]
 pub(crate) enum HistoricalReadOperationV1 {
     Task,
     LearningTrust,
+    PostAFrozenLearning,
 }
 
 impl HistoricalReadOperationV1 {
@@ -35,6 +42,7 @@ impl HistoricalReadOperationV1 {
         match purpose {
             PURPOSE => Ok(Self::Task),
             TRUST_PURPOSE => Ok(Self::LearningTrust),
+            POST_A_PURPOSE => Ok(Self::PostAFrozenLearning),
             _ => Err(io::Error::other("unknown original historical operation")),
         }
     }
@@ -43,6 +51,7 @@ impl HistoricalReadOperationV1 {
         match self {
             Self::Task => PURPOSE,
             Self::LearningTrust => TRUST_PURPOSE,
+            Self::PostAFrozenLearning => POST_A_PURPOSE,
         }
     }
 }
