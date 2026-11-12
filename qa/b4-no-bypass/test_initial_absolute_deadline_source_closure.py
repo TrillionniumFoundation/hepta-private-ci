@@ -84,7 +84,8 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
 
     def test_new_constructors_have_exact_actual_callers(self):
         boundaries = {r["id"]: r for r in self.manifest["boundary"]}
-        self.assertEqual(boundaries["root_initial_original_connection_until"]["product_callers"], [])
+        self.assertEqual(boundaries["root_initial_original_connection_until"]["product_callers"],
+                         [AGENT + "production_initial_q24.rs"])
         self.assertEqual(boundaries["root_original_publication_stream_until"]["product_callers"],
                          [AGENT + "root_generation_initial_inputs.rs"])
 
