@@ -164,7 +164,7 @@ impl HistoricalTaskReadRuntime {
                 acceptance: acceptance.to_string(),
                 current_head: checked.publication.current_head.to_string(),
                 successor_record: successor.record_digest.clone(),
-                successor_cut: successor.original_cut_digest()?.to_string(),
+                successor_cut: crate::authority_host_service::generation_publication::RootCompletedSuccessorDataV1::original_cut_digest(successor)?.to_string(),
             };
             completion.validate_data().map_err(io::Error::other)?;
             serde_json::to_vec(&CompletedLearningHistoryResponseV1 {

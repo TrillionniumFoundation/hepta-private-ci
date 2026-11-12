@@ -79,8 +79,8 @@ impl<'a> OriginalCompletedPublicationReadV1<'a> {
                 "completed target manifest differs from original selection",
             ));
         }
-        let previous = inputs.previous.observe(config.peer_uid)?;
-        let target = inputs.target.observe(config.peer_uid)?;
+        let previous = RootGenerationJournalInputsV1::observe(inputs.previous, config.peer_uid)?;
+        let target = RootGenerationJournalInputsV1::observe(inputs.target, config.peer_uid)?;
         let slots = config
             .consumers
             .as_ref()
