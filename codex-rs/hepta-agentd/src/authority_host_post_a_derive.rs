@@ -26,7 +26,7 @@ use crate::original_q24_dataset_preparation_identity_v1;
 use crate::project_original_q24_dataset_v1;
 
 impl PostALearningRuntime {
-    pub(super) fn with_original_derived_profile<T>(
+    pub(in super::super) fn with_original_derived_profile<T>(
         &self,
         service: &HostAuthorityService,
         identity: &AgentdIdentity,
