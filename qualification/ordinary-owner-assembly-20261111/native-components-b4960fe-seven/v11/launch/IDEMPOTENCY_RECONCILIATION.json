@@ -1,0 +1,32 @@
+{
+  "reason": "Original pty_start returned MCP timeout. pty_list only exposes session IDs and cannot identify this key. Reuse the exact same advertised idempotency key and byte-identical start request to reconcile one launch; no new attempt, retry gate, work path or deadline.",
+  "request_prepared_at": "2026-11-12 13:56:14 UTC",
+  "reconciled_at": "2026-11-12 13:59:59 UTC",
+  "idempotency_key": "af52-ordinary-b4960fe-seven-final-v11",
+  "byte_identical_request": true,
+  "native_gate_retries": 0,
+  "acknowledged_start": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "host": "ai395",
+    "persistent_across_runtime_restart": true,
+    "reused": false,
+    "session_id": "dpty-c41d20f51973b2e3a488fe532721b2bad65cdc99ac9145367a664eac2f6cec73",
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 0,
+      "bytes_stored": 0,
+      "capture_error": null,
+      "created_unix_ms": 1794492009578,
+      "output_complete": false,
+      "owner_pid": 422927,
+      "pid": 422928,
+      "state": "running"
+    }
+  },
+  "list_inspection": {
+    "sha256": "90cef74bf97f6fc62f9d85adc6b0a85546edb3a7b27ff1b60ba3861730d30ee9",
+    "raw_retained_in_session_only": true,
+    "limited_result": "IDs only, has_more true; could not map the requested idempotency key. Unrelated session IDs were not inspected or published."
+  }
+}

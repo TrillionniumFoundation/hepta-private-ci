@@ -1,0 +1,881 @@
+{
+  "schema": 1,
+  "kind": "Independent JS lexical/source comparison for actual V36 native formatting, batch 1",
+  "inventory": "50bfd2fd2bb5d06cd20f45328eb8ee50427f2c2a",
+  "source": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+  "limits": "Navigation/lexical comparison only, not Rust compiler, original checker, formatter or native execution. Full original native patch not yet available to this reviewer.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "preTokens": 1379,
+      "postTokens": 1379,
+      "literalCount": 8,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "preTokens": 1765,
+      "postTokens": 1773,
+      "literalCount": 20,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": " return Err(io::Error::other(\n                        \"original same-session A registration differs\",\n                    ));\n                }\n                original.require_profile()?;\n            "
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "return Err(io::Error::other(\n                        \"actual same-actor A drain and source required\",\n                    ));\n                }\n                let current: std::sync::MutexGuard<'_, Op"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "eturn Err(io::Error::other(\n                        \"original A publication or retained use differs\",\n                    ));\n                }\n                let claim = PhaseClaim {\n                "
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "r: original.profile.local_consumer.clone(),\n                });\n                Ok(())\n            },\n        )?;\n        captured.ok_or_else(|| io::Error::other(\"original A phase claim capture missing"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "   return Err(io::Error::other(\n                \"original Initial slot differs from its phase claim\",\n            ));\n        }\n        self.require_profile()?;\n        let observed = self.target.obser"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "       return Err(io::Error::other(\n                \"original Initial cut changed before retirement\",\n            ));\n        }\n        {\n            let held = self\n                .current\n          "
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "eturn Err(io::Error::other(\n                    \"original Initial CURRENT changed before retirement\",\n                ));\n            }\n        }\n        let RegisteredGenerationInitial {\n            c"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "          return Err(io::Error::other(\n                \"retained original A journal/witness changed\",\n            ));\n        }\n        Ok(())\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "preTokens": 1879,
+      "postTokens": 1882,
+      "literalCount": 25,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "return Err(io::Error::other(\n                        \"original phase Initial capability was dropped\",\n                    ));\n                }\n            }\n        };\n        if submission.inputs.mod"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "       return Err(io::Error::other(\n                \"same-actor phase requires the original fresh A\",\n            ));\n        }\n        let slot = service.enroll_generation_initial_in_phase(\n          "
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "r: HostIssuerPeer {\n                uid: config.peer_uid,\n                pid: registration.peer_pid,\n            },\n            timeout: Duration::from_millis(config.timeout_ms),\n            lifetime:"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "preTokens": 1205,
+      "postTokens": 1205,
+      "literalCount": 24,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "preTokens": 2528,
+      "postTokens": 2531,
+      "literalCount": 28,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "          registration,\n            pin,\n            channel,\n            sequence,\n            None,\n        )\n    }\n\n    pub(crate) fn serve_generation_initial_until(\n        &self,\n        slot: &Re"
+        },
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": ")?;\n                if let Some(gate) = phase {\n                    gate.require_open().map_err(|_| {\n                        codex_hepta_contracts::HostIssuerTransportError::Unavailable\n              "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "                   codex_hepta_contracts::HostIssuerTransportError::Unavailable\n                    })?;\n                }\n                Ok(encoded)\n            })\n            .map_err(io::Error::oth"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "preTokens": 3663,
+      "postTokens": 3667,
+      "literalCount": 42,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [
+            ","
+          ],
+          "plus": [],
+          "beforeContext": "lf.enroll_original_publication_body(\n            config, registration, owner, learning, inputs, None,\n        )\n    }\n\n    pub(crate) fn enroll_original_publication_body(\n        &self,\n        config:",
+          "afterContext": ""
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": " Err(io::Error::other(\n                \"same-actor phase requires its original CURRENT and consumer\",\n            ));\n        }\n        // These duplicate only the original read descriptors. The origin"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "eturn Err(io::Error::other(\n                \"same-actor phase predecessor changed before enrollment\",\n            ));\n        }\n        phase.gate.require_open()?;\n        let slot = self.enroll_origin"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": ":Error::other(\n                        \"same-actor phase CURRENT changed after the original A claim\",\n                    ));\n                }\n                if previous.observe().map_err(io::Error::"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "r(io::Error::other(\n                        \"same-actor phase predecessor changed during enrollment\",\n                    ));\n                }\n                phase.require_original(&slot)\n           "
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "                   ));\n                }\n                phase.require_original(&slot)\n            },\n        )?;\n        Ok(slot)\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "preTokens": 1918,
+      "postTokens": 1922,
+      "literalCount": 24,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "rn Err(io::Error::other(\n                        \"original phase publication capability was dropped\",\n                    ));\n                }\n            }\n        };\n        let slot = service.enrol"
+        },
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": "nt\n                    .try_send(Ok(slot.profile.binding.clone()))\n                    .map_err(|_| {\n                        io::Error::other(\"original phase publication acknowledgement lost\")\n       "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "            io::Error::other(\"original phase publication acknowledgement lost\")\n                    })?;\n                phase.gate.notify_original_waiters();\n                phase.require_original(&sl"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "ssuerPeer {\n                    uid: config.peer_uid,\n                    pid: registration.peer_pid,\n                },\n                timeout: Duration::from_millis(config.timeout_ms),\n             "
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "preTokens": 1331,
+      "postTokens": 1331,
+      "literalCount": 25,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "preTokens": 2179,
+      "postTokens": 2184,
+      "literalCount": 28,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "      )?;\n        Err(io::Error::other(\n            \"required original phase publication lane ended\",\n        ))\n    }\n\n    fn serve_original_publication_channel(\n        &self,\n        slot: &Register"
+        },
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": "      if let Some(context) = phase {\n                    context.require_original(slot).map_err(|_| {\n                        codex_hepta_contracts::HostIssuerTransportError::Unavailable\n              "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "                   codex_hepta_contracts::HostIssuerTransportError::Unavailable\n                    })?;\n                }\n                let response = self.with_learning_profile(\n                   "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": "      if let Some(context) = phase {\n                    context.require_original(slot).map_err(|_| {\n                        codex_hepta_contracts::HostIssuerTransportError::Unavailable\n              "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "                   codex_hepta_contracts::HostIssuerTransportError::Unavailable\n                    })?;\n                }\n                Ok(response)\n            })\n            .map_err(io::Error::ot"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "preTokens": 527,
+      "postTokens": 527,
+      "literalCount": 10,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "preTokens": 2386,
+      "postTokens": 2392,
+      "literalCount": 28,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [
+            ">>"
+          ],
+          "plus": [],
+          "beforeContext": "hase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,\n    ) -> io::Result<HostAuthorityLearningRegistrationV1> {\n        self.with_learning_profile(\n   ",
+          "afterContext": ""
+        },
+        {
+          "minus": [],
+          "plus": [
+            ">",
+            ",",
+            ">",
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\n                '_,\n            >,\n        >,\n    ) -> io::Result<HostAuthorityLearningRegistrationV1> {\n        self.with_learning_profile(\n    "
+        },
+        {
+          "minus": [
+            ">>"
+          ],
+          "plus": [],
+          "beforeContext": "hase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,\n    ) -> io::Result<RegisteredHostLearningCheckpointV1> {\n        let backend = self.with_learning",
+          "afterContext": ""
+        },
+        {
+          "minus": [],
+          "plus": [
+            ">",
+            ",",
+            ">",
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\n                '_,\n            >,\n        >,\n    ) -> io::Result<RegisteredHostLearningCheckpointV1> {\n        let backend = self.with_learning_"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "preTokens": 1886,
+      "postTokens": 1893,
+      "literalCount": 22,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": [
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": "iginal Model factory missing\"))?;\n        let publication = self.publication.as_ref().ok_or_else(|| {\n            io::Error::other(\"same-actor phase original publication route missing\")\n        })?;\n  "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "se(|| {\n            io::Error::other(\"same-actor phase original publication route missing\")\n        })?;\n        publication.activate_same_actor_phase()?;\n        std::thread::scope(|scope| {\n         "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": "_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);\n            let model = scope.spawn(|| {\n                factory.serve_same_actor_phase_factory(\n                    service,\n              "
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "istration,\n                    owner,\n                    phase.gate,\n                )\n            });\n            let published = scope.spawn(|| {\n                publication.serve_same_actor_phase_p"
+        },
+        {
+          "minus": [],
+          "plus": [
+            "{"
+          ],
+          "beforeContext": "",
+          "afterContext": "           phase.gate,\n                )\n            });\n            let published = scope.spawn(|| {\n                publication.serve_same_actor_phase_publication(\n                    &self.learning,"
+        },
+        {
+          "minus": [],
+          "plus": [
+            "}"
+          ],
+          "beforeContext": "",
+          "afterContext": "  registration,\n                    owner,\n                    phase,\n                )\n            });\n            let learned = (|| {\n                phase.gate.require_open()?;\n                phase"
+        },
+        {
+          "minus": [],
+          "plus": [
+            ","
+          ],
+          "beforeContext": "",
+          "afterContext": "                    uid: config.peer_uid,\n                                pid: registration.peer_pid,\n                            },\n                            timeout: Duration::from_millis(config.ti"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "preTokens": 1793,
+      "postTokens": 1793,
+      "literalCount": 26,
+      "literalSequenceEqual": true,
+      "commentsEqual": true,
+      "changes": []
+    }
+  ],
+  "semantic": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 8,
+      "oldTokens": 1379,
+      "newTokens": 1379,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [
+        "drop ( held ) ; if let Some"
+      ],
+      "dropSitesAfter": [
+        "drop ( held ) ; if let Some"
+      ],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 20,
+      "oldTokens": 1765,
+      "newTokens": 1773,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [
+        {
+          "token": 361,
+          "next": ")",
+          "previous": "\"original same-session A registration differs\"",
+          "context": "( io :: Error :: other ( \"original same-session A registration differs\" , ) ) ;"
+        },
+        {
+          "token": 618,
+          "next": ")",
+          "previous": "\"actual same-actor A drain and source required\"",
+          "context": "( io :: Error :: other ( \"actual same-actor A drain and source required\" , ) ) ;"
+        },
+        {
+          "token": 796,
+          "next": ")",
+          "previous": "\"original A publication or retained use differs\"",
+          "context": "( io :: Error :: other ( \"original A publication or retained use differs\" , ) ) ;"
+        },
+        {
+          "token": 1234,
+          "next": ")",
+          "previous": "}",
+          "context": ") ; Ok ( ( ) ) } , ) ? ;"
+        },
+        {
+          "token": 1365,
+          "next": ")",
+          "previous": "\"original Initial slot differs from its phase claim\"",
+          "context": "( io :: Error :: other ( \"original Initial slot differs from its phase claim\" , ) ) ;"
+        },
+        {
+          "token": 1458,
+          "next": ")",
+          "previous": "\"original Initial cut changed before retirement\"",
+          "context": "( io :: Error :: other ( \"original Initial cut changed before retirement\" , ) ) ;"
+        },
+        {
+          "token": 1540,
+          "next": ")",
+          "previous": "\"original Initial CURRENT changed before retirement\"",
+          "context": "( io :: Error :: other ( \"original Initial CURRENT changed before retirement\" , ) ) ;"
+        },
+        {
+          "token": 1761,
+          "next": ")",
+          "previous": "\"retained original A journal/witness changed\"",
+          "context": "( io :: Error :: other ( \"retained original A journal/witness changed\" , ) ) ;"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [
+        "drop ( current ) ; Ok ( OriginalSameActorPhaseA"
+      ],
+      "dropSitesAfter": [
+        "drop ( current ) ; Ok ( OriginalSameActorPhaseA"
+      ],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 25,
+      "oldTokens": 1879,
+      "newTokens": 1882,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [
+        {
+          "token": 1503,
+          "next": ")",
+          "previous": "\"original phase Initial capability was dropped\"",
+          "context": "( io :: Error :: other ( \"original phase Initial capability was dropped\" , ) ) ;"
+        },
+        {
+          "token": 1534,
+          "next": ")",
+          "previous": "\"same-actor phase requires the original fresh A\"",
+          "context": "( io :: Error :: other ( \"same-actor phase requires the original fresh A\" , ) ) ;"
+        },
+        {
+          "token": 1796,
+          "next": "}",
+          "previous": "peer_pid",
+          "context": ". peer_uid , pid : registration . peer_pid , } , timeout"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [
+        "drop ( & mut self ) { self"
+      ],
+      "dropSitesAfter": [
+        "drop ( & mut self ) { self"
+      ],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 24,
+      "oldTokens": 1205,
+      "newTokens": 1205,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 28,
+      "oldTokens": 2528,
+      "newTokens": 2531,
+      "closureExpressionBlocks": [
+        {
+          "openToken": 2046,
+          "closeToken": 2052,
+          "precededBy": "|",
+          "body": "codex_hepta_contracts :: HostIssuerTransportError :: Unavailable",
+          "tailSemicolon": false
+        }
+      ],
+      "addedTrailingCommas": [
+        {
+          "token": 337,
+          "next": ")",
+          "previous": "None",
+          "context": ", pin , channel , sequence , None , ) } pub"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 42,
+      "oldTokens": 3663,
+      "newTokens": 3667,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [
+        {
+          "token": 3336,
+          "next": ")",
+          "previous": "\"same-actor phase requires its original CURRENT and consumer\"",
+          "context": "( io :: Error :: other ( \"same-actor phase requires its original CURRENT and consumer\" , ) ) ;"
+        },
+        {
+          "token": 3506,
+          "next": ")",
+          "previous": "\"same-actor phase predecessor changed before enrollment\"",
+          "context": "( io :: Error :: other ( \"same-actor phase predecessor changed before enrollment\" , ) ) ;"
+        },
+        {
+          "token": 3610,
+          "next": ")",
+          "previous": "\"same-actor phase CURRENT changed after the original A claim\"",
+          "context": "( io :: Error :: other ( \"same-actor phase CURRENT changed after the original A claim\" , ) ) ;"
+        },
+        {
+          "token": 3644,
+          "next": ")",
+          "previous": "\"same-actor phase predecessor changed during enrollment\"",
+          "context": "( io :: Error :: other ( \"same-actor phase predecessor changed during enrollment\" , ) ) ;"
+        },
+        {
+          "token": 3657,
+          "next": ")",
+          "previous": "}",
+          "context": "phase . require_original ( & slot ) } , ) ? ;"
+        }
+      ],
+      "removedTrailingCommas": [
+        {
+          "token": 445,
+          "next": ")",
+          "context": ", owner , learning , inputs , None , ) } pub"
+        }
+      ],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 24,
+      "oldTokens": 1918,
+      "newTokens": 1922,
+      "closureExpressionBlocks": [
+        {
+          "openToken": 1649,
+          "closeToken": 1658,
+          "precededBy": "|",
+          "body": "io :: Error :: other ( \"original phase publication acknowledgement lost\" )",
+          "tailSemicolon": false
+        }
+      ],
+      "addedTrailingCommas": [
+        {
+          "token": 1572,
+          "next": ")",
+          "previous": "\"original phase publication capability was dropped\"",
+          "context": "( io :: Error :: other ( \"original phase publication capability was dropped\" , ) ) ;"
+        },
+        {
+          "token": 1871,
+          "next": "}",
+          "previous": "peer_pid",
+          "context": ". peer_uid , pid : registration . peer_pid , } , timeout"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [
+        "drop ( & mut self ) { self"
+      ],
+      "dropSitesAfter": [
+        "drop ( & mut self ) { self"
+      ],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 25,
+      "oldTokens": 1331,
+      "newTokens": 1331,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 28,
+      "oldTokens": 2179,
+      "newTokens": 2184,
+      "closureExpressionBlocks": [
+        {
+          "openToken": 665,
+          "closeToken": 671,
+          "precededBy": "|",
+          "body": "codex_hepta_contracts :: HostIssuerTransportError :: Unavailable",
+          "tailSemicolon": false
+        },
+        {
+          "openToken": 2049,
+          "closeToken": 2055,
+          "precededBy": "|",
+          "body": "codex_hepta_contracts :: HostIssuerTransportError :: Unavailable",
+          "tailSemicolon": false
+        }
+      ],
+      "addedTrailingCommas": [
+        {
+          "token": 530,
+          "next": ")",
+          "previous": "\"required original phase publication lane ended\"",
+          "context": "( io :: Error :: other ( \"required original phase publication lane ended\" , ) ) }"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 10,
+      "oldTokens": 527,
+      "newTokens": 527,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 28,
+      "oldTokens": 2386,
+      "newTokens": 2392,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [
+        {
+          "token": 411,
+          "next": ">",
+          "previous": ">",
+          "context": "authority_host_same_actor_q24_phase_namespace :: OriginalPhaseNamespaceContext < ' _ , > , > , )"
+        },
+        {
+          "token": 413,
+          "next": ")",
+          "previous": ">",
+          "context": "OriginalPhaseNamespaceContext < ' _ , > , > , ) -> io"
+        },
+        {
+          "token": 752,
+          "next": ">",
+          "previous": ">",
+          "context": "authority_host_same_actor_q24_phase_namespace :: OriginalPhaseNamespaceContext < ' _ , > , > , )"
+        },
+        {
+          "token": 754,
+          "next": ")",
+          "previous": ">",
+          "context": "OriginalPhaseNamespaceContext < ' _ , > , > , ) -> io"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [],
+      "dropSitesAfter": [],
+      "genericClosers": [
+        {
+          "oldContext": ": Option < & crate :: authority_host_same_actor_q24_phase_namespace :: OriginalPhaseNamespaceContext < ' _ >> , ) -> io"
+        },
+        {
+          "oldContext": ": Option < & crate :: authority_host_same_actor_q24_phase_namespace :: OriginalPhaseNamespaceContext < ' _ >> , ) -> io"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 22,
+      "oldTokens": 1886,
+      "newTokens": 1893,
+      "closureExpressionBlocks": [
+        {
+          "openToken": 1452,
+          "closeToken": 1461,
+          "precededBy": "||",
+          "body": "io :: Error :: other ( \"same-actor phase original publication route missing\" )",
+          "tailSemicolon": false
+        },
+        {
+          "openToken": 1506,
+          "closeToken": 1524,
+          "precededBy": "||",
+          "body": "factory . serve_same_actor_phase_factory ( service , config , registration , owner , phase . gate , )",
+          "tailSemicolon": false
+        },
+        {
+          "openToken": 1535,
+          "closeToken": 1556,
+          "precededBy": "||",
+          "body": "publication . serve_same_actor_phase_publication ( & self . learning , service , config , registration , owner , phase , )",
+          "tailSemicolon": false
+        }
+      ],
+      "addedTrailingCommas": [
+        {
+          "token": 1758,
+          "next": "}",
+          "previous": "peer_pid",
+          "context": ". peer_uid , pid : registration . peer_pid , } , timeout"
+        }
+      ],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [
+        "drop ( & mut self ) { if",
+        "drop ( closing ) ; let model ="
+      ],
+      "dropSitesAfter": [
+        "drop ( & mut self ) { if",
+        "drop ( closing ) ; let model ="
+      ],
+      "genericClosers": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "namedAtomSequenceExact": true,
+      "literals": 26,
+      "oldTokens": 1793,
+      "newTokens": 1793,
+      "closureExpressionBlocks": [],
+      "addedTrailingCommas": [],
+      "removedTrailingCommas": [],
+      "dropSitesBefore": [
+        "drop ( & mut self ) { for"
+      ],
+      "dropSitesAfter": [
+        "drop ( & mut self ) { for"
+      ],
+      "genericClosers": []
+    }
+  ]
+}

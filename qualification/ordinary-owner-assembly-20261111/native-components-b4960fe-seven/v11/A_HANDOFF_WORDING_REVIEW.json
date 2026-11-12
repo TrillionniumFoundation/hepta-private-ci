@@ -1,0 +1,184 @@
+{
+  "schema": 1,
+  "kind": "Independent wording and source-bound review: A durable drain, actual loop completion, and physical thread join",
+  "status": "Static evidence clarification only; no source, metadata, ref or native action",
+  "scope": {
+    "candidate_declared_by_parent": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "source_basis": "Exact frozen source objects already verified in final inventory plus original d973 retirement implementation; this report does not claim a newly executed candidate or a runtime join observation.",
+    "final_inventory": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+    "completion_design": "68312097dd32f0aae6b81c4ac04d35dd08cfa5a2",
+    "phrase_under_review": "physical A generation drain",
+    "phrase_origin": "Parent reports this wording in candidate README / Root review; this report reviews its technical meaning against source rather than asserting a particular document line."
+  },
+  "conclusion": "The unqualified phrase is too broad if it implies termination or joining of a generation worker thread, the outer blocking task, the daemon, or Root. Source establishes a real task-local persistent journal drain, then successful return of the actual A Direct-owner future and release of its known active owner custody before the second phase ACK. Those are separate facts. The same outer blocking task and Root service intentionally continue into Learning/C.",
+  "facts": [
+    {
+      "fact": "A admission and outstanding queue work are drained",
+      "source": "circuit_task_same_actor_phase.rs",
+      "actual": "begin_closing_original_a changes the existing route under its mutex. wait_original_a_quiescent requires ClosingA, no tickets and original Direct handle pending == 0; the original gate is rechecked. release_original_a repeats these facts then changes the route to AwaitingC and drops its prior A route custody.",
+      "proves": "No newly admitted A ticket; no counted A queue/active/ticket work remains on this route at the cut.",
+      "does_not_prove": "A process or thread exited; Root worker join; all unrelated work in the daemon stopped."
+    },
+    {
+      "fact": "Accepted A and its persistent journal drain are authenticated",
+      "source": "same_actor_q24_phase_a.rs + circuit_feature_current_retirement.rs",
+      "actual": "After real terminal Outcome Complete, prepare_learning and retained_learning_source, prepare_original_a calls drain_completed_task on the original PublishedTask, same Cell and source. That method checks Arc owner identity, source before/after, cell committed receipt, original current, original.drain()/is_drained(), then source/current again and returns the historical PublishedCircuitFeatureCompletionV1.",
+      "proves": "The task-local source/Cell completion and durable journal drained state under the original ownership/current checks.",
+      "does_not_prove": "Any JoinHandle completion, worker-thread exit, OS process death or model STOP. The returned Completion type explicitly carries a historical fact and cannot itself authorize current use."
+    },
+    {
+      "fact": "The actual A Direct-owner loop is awaited rather than merely dropped",
+      "source": "same_actor_q24_phase_a.rs + circuit_task_successor_runtime.rs",
+      "actual": "run_original_a drives Box::pin(run_in_original_successor_lane(...)) in the existing required blocking lane. After the first ACK, it releases the original route, cancels the child stop token, awaits work.as_mut(), drops the finished future and readback owners, propagates a failed join result, and only then calls join_after_original_a_drop. The inner function directly awaits (self.owner)(...) after the existing identity/store/Direct checks and does not spawn another thread.",
+      "proves": "On this successful A handoff path, the actual Direct-owner future has returned, its loop-owned driver has been released, and controller-held active A source/Cell/ledger/task custody is dropped before ACK2. It is not an abort-only or future-drop-only claim.",
+      "does_not_prove": "Physical join of the outer Circuit spawn_blocking task. This is one inner future in that still-running task, which then executes run_original_scoped. A loop return and a thread JoinHandle join must not share the same unqualified label."
+    },
+    {
+      "fact": "Retained A does not retain the Active A Cell/GenV2 task owner",
+      "source": "cell_q24_retained_learning_source.rs",
+      "actual": "The retained source creates a separate producer view sharing the original state, ledger and source read side, but sets task: OriginalTaskCustodyV1::Retained. It keeps Prepared, captured facts and the real database/trace for later authenticated readback.",
+      "proves": "The retained producer Arc is not simply an extra Arc to the Active original producer/task ownership. Releasing readback/route does not throw away the legitimate retained source.",
+      "does_not_prove": "That all shared read-side state is destroyed, nor that the daemon or Root should terminate at the A-to-Learning transition."
+    },
+    {
+      "fact": "The two phase ACKs and Initial EOF are authenticated handoff facts",
+      "source": "same_actor_q24_phase_join_client.rs + authority_host_same_actor_q24_phase_join.rs",
+      "actual": "The first exchange permits intentional Initial disconnection only after same-context/retained-source checks. The actual caller sends exchange 2 only after the above Direct-loop return and release. Root validates the exact same phase/profile/retirement/gate and sequence and retains the original lease/deadline checks.",
+      "proves": "A one-shot live-phase handoff using the actual local ownership discipline and original authenticated peer contract.",
+      "does_not_prove": "A remote physical-thread join by receipt alone. The Root type OriginalPhaseJoined is a completed protocol exchange, not an OS join receipt or process-exit proof."
+    },
+    {
+      "fact": "Root relinquishes the actual Initial CURRENT owner before opening successor namespaces",
+      "source": "authority_host_same_actor_q24_phase_worker.rs + authority_host_generation_initial_runtime.rs + authority_host_generation_initial_phase.rs",
+      "actual": "After completed phase exchange, Root obtains the actual Initial slot transferred following specifically authorized EOF. It checks Joined/profile, performs the original physical journal/CURRENT observations and durable Claim, rechecks Joined, consumes retire_original_phase_slot, explicitly drops current, retains the same read-only target observer, then enters the Learning/Model namespace path.",
+      "proves": "Actual Initial slot/current custody is consumed and relinquished, with original journal/owner facts retained and checked; arbitrary EOF is not enough.",
+      "does_not_prove": "The Initial serving thread has already been joined at namespace entry. The slot send can precede thread return, and its JoinHandle is joined later during overall service shutdown."
+    },
+    {
+      "fact": "Actual Root joins exist, but at overall service return",
+      "source": "authority_host_same_actor_q24_phase_worker.rs",
+      "actual": "serve_original_phase holds scoped first/scoped/watcher thread handles; after the original five-lane serve returns and shared closing guards are dropped it joins first, scoped and watcher, then combines all results. The A transition occurs inside the scoped worker while the service remains live.",
+      "proves": "The scoped service cannot leave its enclosing thread scope without those threads ending; explicit normal-path joins collect their errors.",
+      "does_not_prove": "Those joins already happened before the A-to-Learning transition, nor that a successful final phase-completion protocol exists. No new normal completion path was added by this review."
+    }
+  ],
+  "recommended_replacement": {
+    "zh_short": "真实 A 的任务级持久 journal drain；第二次 phase ACK 前，等待原 Direct owner 循环退出并释放其 active owners。",
+    "zh_full": "A 先关闭并排空原任务入场，在同一实际 source/Cell 下完成认证的任务级持久 journal drain。第一次退役 ACK 成功后，控制器释放原 route，等待原 Direct owner 循环返回并释放其 active owners，再发送第二次 phase ACK；Root 随后校验并消费原 Initial CURRENT owner，才进入 Learning/Model。这里没有声称 outer blocking worker、Root 所有线程或 daemon 已物理退出或 join，整个服务的正常完成协议仍未实现。",
+    "en_short": "Authenticated task-local durable A journal drain, followed by completion of the original A Direct-owner loop and release of its active owner custody before the second phase ACK.",
+    "en_full": "The A handoff authenticates the task-local durable journal drain, then waits for the original A Direct-owner future to return and releases its active owner custody before the second phase ACK. Root subsequently validates and consumes the original Initial CURRENT owner before opening Learning/Model. This is not a claim that the outer blocking task, all Root workers, or the daemon have terminated or been physically joined.",
+    "avoid": [
+      "physical A generation drain (without an explicit journal-state qualification)",
+      "A generation worker/thread has been joined solely because drain_completed_task returned",
+      "Root owner workers are joined solely because OriginalPhaseJoined or Initial EOF was observed",
+      "all phase resources are physically joined on generic Launch.run Ok"
+    ]
+  },
+  "qualification": {
+    "source_read_only": true,
+    "source_or_metadata_changes": 0,
+    "new_tests": 0,
+    "native_executions": 0,
+    "original_checker_executions": 0,
+    "ordinary_business_loops": 0,
+    "independently_controlled_C": 0,
+    "real_daemon_and_Root_cold_restart": 0,
+    "existing_candidate_result": "No result inferred. Parent owns current native execution and evidence."
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "blob": "f4cf8a01bc778eb02d8bf9c2d3d1b96895cfc863",
+      "bytes": 9037,
+      "sha256": "7808bc2acb2b3a4b460d0c9275833c6945af0fd965630bdea1d9ff66e310dc7a",
+      "symbols": "prepare_original_a / run_original_a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "blob": "0dd1deba7fcc402269c73c1ee7480f6c12320552",
+      "bytes": 3587,
+      "sha256": "2f7a008f9d12d6b050126c2af289cffcbc81bd1b6e7fd364d9328da8c454a5c8",
+      "symbols": "OriginalSameActorTaskWorker::run"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "blob": "c2171f53fb293ff134723cfbc91cbc0d8030475b",
+      "bytes": 13130,
+      "sha256": "7c5d3adaf46c810c1efed3ce636969df7b4d8b70249bd3bcf00211f5bb85f82a",
+      "symbols": "CircuitTaskRuntimeBootstrapV1::run / original channel owner loop"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "blob": "2738b74658fb953e21e73d99faa14eee35a62b26",
+      "bytes": 18106,
+      "sha256": "80e77fa7cacf680911807f0c9ec49dbd0e5bd734c060e90c04a685068497604f",
+      "symbols": "begin_closing_original_a / wait_original_a_quiescent / release_original_a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+      "blob": "e0d98a18c451e17530b3f1b5a5ed6bf4c98dd6ef",
+      "bytes": 13189,
+      "sha256": "53e80b57b0233da434709d3b483d2718006919d09e3a5bdc2f8e9d243c7d5daf",
+      "symbols": "retained_learning_source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "blob": "b0d5cf6559cdc8d8622a63e5e67550753ca520f2",
+      "bytes": 9811,
+      "sha256": "f7fdb9dd15adc8f3f5977b4880b15fcf99f8bfaa115a466df0c570994f95ddd5",
+      "symbols": "begin_original_retirement / join_after_original_a_drop"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "blob": "15379b5fd88dfef1e63fe4e317fc6bb2caf56d09",
+      "bytes": 6987,
+      "sha256": "c9526eb5a734aed23c71b70531f1b76a57ed04c4389ff3b6fad56232af875fdc",
+      "symbols": "accept_original_phase_join"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "blob": "a92be943237ff7ec597979c93f3284ebbfedef73",
+      "bytes": 13606,
+      "sha256": "4b8c9de8c699a360ca9a2cf233ab11c88ef83ba34185dfceb7f5368129ecfbe7",
+      "symbols": "serve_original_phase / run_original_scoped_phase"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "blob": "cb0cec6b10b9f44bbff1e3a3f67cd6998f441f83",
+      "bytes": 10815,
+      "sha256": "52a6000a7f022c44628631cf2cc0c343e14821118e2bdead0992a0d6d02e6bf5",
+      "symbols": "serve_same_actor_phase_initial"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "blob": "793bc2510e97fe5ed07336e6d823561aa0e8c58f",
+      "bytes": 10685,
+      "sha256": "9375e499f973ad2149462590347a791d2aed3f55936648a311df3cfcfe06eaab",
+      "symbols": "claim_same_actor_phase_after_original_a / retire_original_phase_slot"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "blob": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5",
+      "bytes": 1822,
+      "sha256": "acf269b1e1e92d3f4528aad78d1f061cd40c4454bdf18b6999268f1b5d148c78",
+      "symbols": "CircuitTaskRuntimeBootstrapV1::run_in_original_successor_lane",
+      "read": "Actual immutable d973 GET during this review"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "bytes": 2003,
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577",
+      "symbols": "PublishedCircuitFeatureTaskV1::drain_completed_task",
+      "read": "Previously actual immutable d973 GET, re-read exact retained bytes"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "blob": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "bytes": 14061,
+      "sha256": "a2c552421260e73979c3faa0628b31ddb1e38d4a9cae786bebe8f986a9a88163",
+      "symbols": "OriginalVersion / CellGenerationJournalV2 implementation / PublishedCircuitFeatureCompletionV1",
+      "read": "Previously actual immutable d973 GET, re-read exact retained bytes"
+    }
+  ]
+}

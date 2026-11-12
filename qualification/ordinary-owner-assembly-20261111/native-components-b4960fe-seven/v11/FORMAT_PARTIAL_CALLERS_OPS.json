@@ -1,0 +1,435 @@
+{
+  "schema": "hepta.native-format-callers-partial-review.v1",
+  "status": "PARTIAL: 13 actual native postimages only; do not treat as final union or checker PASS",
+  "source": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+  "native_source_inventory": "50bfd2fd2bb5d06cd20f45328eb8ee50427f2c2a",
+  "base_callers": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+  "result_hash_only": {
+    "blob": "ad6268df2c8ce2b9c33644bbd1bff0f950f459e8",
+    "bytes": 886028,
+    "sha256": "84a8ba4ccc23071ff465c0af7b4be1daad41dd132653e539b5a751ea1f07192f",
+    "uploaded": false
+  },
+  "scope": {
+    "received_sources": 13,
+    "field_changes": 16,
+    "row_operations": 10,
+    "boundary_rows": 638,
+    "protected_rows": 440,
+    "receiver_or_caller_changes": 0,
+    "source_edits": 0
+  },
+  "operations": [
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[boundary]]\nid = \"root_same_actor_learning_reserve\"\nsymbol = \"HostAuthorityService::reserve_original_learning_profile_in_phase\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)reserve_original_learning_profile_in_phase\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_learning_registration.rs\"\ndefinition_markers = [\"pub(crate) fn reserve_original_learning_profile_in_phase(\",\"phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>\",\"phase.require_claimed()?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs\"]\ncaller_markers = []\n\n",
+      "new_text": "[[boundary]]\nid = \"root_same_actor_learning_reserve\"\nsymbol = \"HostAuthorityService::reserve_original_learning_profile_in_phase\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)reserve_original_learning_profile_in_phase\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_learning_registration.rs\"\ndefinition_markers = [\"pub(crate) fn reserve_original_learning_profile_in_phase(\",\"phase: Option<\\n            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\\n                '_,\\n            >,\\n        >\",\"phase.require_claimed()?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs\"]\ncaller_markers = []\n\n",
+      "scope": "boundary:root_same_actor_learning_reserve",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "field": "definition_markers",
+          "index": 1,
+          "old": "phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>",
+          "new": "phase: Option<\n            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\n                '_,\n            >,\n        >",
+          "native_post": "706bb67f3471b0c4681f16343878c7cf7310415f",
+          "kind_of_change": "native trailing generic commas plus whitespace"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_learning_registration.rs\"\nrequired = [\"root-learning-checkpoint-v1\", \"learning-checkpoint-v1.sock\", \"learning-checkpoint\", \"production_ready: false\", \"self.with_learning_profile(\", \"frozen_scope_binding: Option<String>\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"create_protected\", \"put_lease\"]\nrequired_function_order = [\n  { function = \"fn register_learning_checkpoint(\", sequence = [\"read_root_json(profile_file)?\",\"HostAuthorityService::reserve_original_learning_profile(\",\"self, config, registration, owner_pidfd, &profile,\"] },\n  { function = \"fn open_registered_learning_checkpoint(\", sequence = [\"read_root_json(profile_file)?\",\"HostAuthorityService::open_original_learning_profile(\",\"self, config, registration, owner_pidfd, profile,\"] },\n  { function = \"fn seal_learning_checkpoint(\", sequence = [\"self.with_learning_profile(\",\"learning.profile.frozen_scope(&initial)?\",\"learning.backend.frozen_scope_binding()\",\"scope.as_ref().map(FrozenLearningScopeV2::binding)\",\"let before = learning\\n                    .backend\\n                    .restore(&initial.request)\",\"HostAuthorityLearningBootstrapV1 {\",\"crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2\",\"crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1\",\"writer_proof_digest: proof\",\"learning.profile.encoded_initial()\",\"learning.profile.update_scope.clone()\",\"serde_json::to_vec(&bundle)\",\"seal_bytes(&bytes)?\",\"learning\\n                    .backend\\n                    .restore(&initial.request)\",\"!= before\",\"Ok(sealed)\"] },\n  { function = \"fn learning_store(\", sequence = [\"scope.validate_snapshot(initial)\",\"RootAuthorityDirectory::open(state_dir)\",\"let path = state_dir.join(\",\"let store = match mode\",\"StoreMode::Register =>\",\"create(&path)?\",\"File::open(state_dir)?.sync_all()?\",\"match &scope\",\"LearningIterationCheckpointRecordV1::vacant_scoped_v2(\",\"LearningIterationCheckpointRecordV1::vacant(\",\"HostAuthorityFrontierStore::initialize(\",\"StoreMode::Reopen => HostAuthorityFrontierStore::open(\",\"match scope\",\"LearningIterationCheckpointOwnerV1::from_registered_scoped_v2(\",\"LearningIterationCheckpointOwnerV1::from_registered(\"] },\n  { function = \"fn reserve_original_learning_profile(\", sequence = [\"self.reserve_original_learning_profile_in_phase(\",\"config, registration, owner_pidfd, profile, None,\"] },\n  { function = \"fn reserve_original_learning_profile_in_phase(\", sequence = [\"self.with_learning_profile(\",\"profile.frozen_scope(&initial)?\",\"learning_store(\",\"StoreMode::Register\",\"HostAuthorityLearningRegistrationV1\"] },\n  { function = \"fn open_original_learning_profile(\", sequence = [\"self.open_original_learning_profile_in_phase(\",\"config, registration, owner_pidfd, profile, None,\"] },\n  { function = \"fn open_original_learning_profile_in_phase(\", sequence = [\"self.with_learning_profile(\",\"learning_store(\",\"StoreMode::Reopen\",\"profile.frozen_scope(&initial)?\",\"validate_runtime_lanes(config)?\",\"paths.push(&socket_path)\",\"validate_lane_paths(&paths, config.peer_gid)?\",\"RegisteredHostLearningCheckpointV1\"] },\n]\nrequired_order = [[\"fn with_learning_profile<T>(\", \"config.required_bind.verify()?\", \"RootAuthorityDirectory::open(&config.state_dir)\", \"config.schema_version != 1\", \"registration.schema_version != 1\", \"config.peer_uid == 0\\n            || config.peer_gid == 0\", \"!(1..=500).contains(&config.timeout_ms)\", \"!(1..=300_000).contains(&config.lifetime_ms)\", \"!config\\n                .state_dir\\n                .starts_with(&config.required_bind.mountpoint)\", \"registration.registered_identity.identity()? != self.identity\", \"verify_pinned_process(\", \"self.check_logind_lifetime()?\", \"config.writer.as_ref() != Some(&writer.registration)\", \".with_live(&writer.leases\", \"retained_writer_authorization(&writer.registration)?\\n                != writer.proof\", \"profile.require_binding(&self.identity, &proof)?\", \"let before = self.issuer.revocations()?\", \"validate_observation_lease(\", \"let result = action(initial, proof)?\", \"self.issuer.revocations()? != before\", \"retained_writer_authorization(&writer.registration)?\\n                    != writer.proof\", \"validate_observation_lease(\", \"self.check_logind_lifetime()?\", \"verify_pinned_process(\", \"Ok(result)\"]]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_learning_registration.rs\"\nrequired = [\"root-learning-checkpoint-v1\", \"learning-checkpoint-v1.sock\", \"learning-checkpoint\", \"production_ready: false\", \"self.with_learning_profile(\", \"frozen_scope_binding: Option<String>\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"create_protected\", \"put_lease\"]\nrequired_function_order = [\n  { function = \"fn register_learning_checkpoint(\", sequence = [\"read_root_json(profile_file)?\",\"HostAuthorityService::reserve_original_learning_profile(\",\"self,\\n            config,\\n            registration,\\n            owner_pidfd,\\n            &profile,\"] },\n  { function = \"fn open_registered_learning_checkpoint(\", sequence = [\"read_root_json(profile_file)?\",\"HostAuthorityService::open_original_learning_profile(\",\"self,\\n            config,\\n            registration,\\n            owner_pidfd,\\n            profile,\"] },\n  { function = \"fn seal_learning_checkpoint(\", sequence = [\"self.with_learning_profile(\",\"learning.profile.frozen_scope(&initial)?\",\"learning.backend.frozen_scope_binding()\",\"scope.as_ref().map(FrozenLearningScopeV2::binding)\",\"let before = learning\\n                    .backend\\n                    .restore(&initial.request)\",\"HostAuthorityLearningBootstrapV1 {\",\"crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2\",\"crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1\",\"writer_proof_digest: proof\",\"learning.profile.encoded_initial()\",\"learning.profile.update_scope.clone()\",\"serde_json::to_vec(&bundle)\",\"seal_bytes(&bytes)?\",\"learning\\n                    .backend\\n                    .restore(&initial.request)\",\"!= before\",\"Ok(sealed)\"] },\n  { function = \"fn learning_store(\", sequence = [\"scope.validate_snapshot(initial)\",\"RootAuthorityDirectory::open(state_dir)\",\"let path = state_dir.join(\",\"let store = match mode\",\"StoreMode::Register =>\",\"create(&path)?\",\"File::open(state_dir)?.sync_all()?\",\"match &scope\",\"LearningIterationCheckpointRecordV1::vacant_scoped_v2(\",\"LearningIterationCheckpointRecordV1::vacant(\",\"HostAuthorityFrontierStore::initialize(\",\"StoreMode::Reopen => HostAuthorityFrontierStore::open(\",\"match scope\",\"LearningIterationCheckpointOwnerV1::from_registered_scoped_v2(\",\"LearningIterationCheckpointOwnerV1::from_registered(\"] },\n  { function = \"fn reserve_original_learning_profile(\", sequence = [\"self.reserve_original_learning_profile_in_phase(\",\"config,\\n            registration,\\n            owner_pidfd,\\n            profile,\\n            None,\"] },\n  { function = \"fn reserve_original_learning_profile_in_phase(\", sequence = [\"self.with_learning_profile(\",\"profile.frozen_scope(&initial)?\",\"learning_store(\",\"StoreMode::Register\",\"HostAuthorityLearningRegistrationV1\"] },\n  { function = \"fn open_original_learning_profile(\", sequence = [\"self.open_original_learning_profile_in_phase(\",\"config,\\n            registration,\\n            owner_pidfd,\\n            profile,\\n            None,\"] },\n  { function = \"fn open_original_learning_profile_in_phase(\", sequence = [\"self.with_learning_profile(\",\"learning_store(\",\"StoreMode::Reopen\",\"profile.frozen_scope(&initial)?\",\"validate_runtime_lanes(config)?\",\"paths.push(&socket_path)\",\"validate_lane_paths(&paths, config.peer_gid)?\",\"RegisteredHostLearningCheckpointV1\"] },\n]\nrequired_order = [[\"fn with_learning_profile<T>(\", \"config.required_bind.verify()?\", \"RootAuthorityDirectory::open(&config.state_dir)\", \"config.schema_version != 1\", \"registration.schema_version != 1\", \"config.peer_uid == 0\\n            || config.peer_gid == 0\", \"!(1..=500).contains(&config.timeout_ms)\", \"!(1..=300_000).contains(&config.lifetime_ms)\", \"!config\\n                .state_dir\\n                .starts_with(&config.required_bind.mountpoint)\", \"registration.registered_identity.identity()? != self.identity\", \"verify_pinned_process(\", \"self.check_logind_lifetime()?\", \"config.writer.as_ref() != Some(&writer.registration)\", \".with_live(&writer.leases\", \"retained_writer_authorization(&writer.registration)?\\n                != writer.proof\", \"profile.require_binding(&self.identity, &proof)?\", \"let before = self.issuer.revocations()?\", \"validate_observation_lease(\", \"let result = action(initial, proof)?\", \"self.issuer.revocations()? != before\", \"retained_writer_authorization(&writer.registration)?\\n                    != writer.proof\", \"validate_observation_lease(\", \"self.check_logind_lifetime()?\", \"verify_pinned_process(\", \"Ok(result)\"]]\n\n",
+      "scope": "protected:152",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "field": "required_function_order",
+          "index": 0,
+          "subfield": "sequence",
+          "element": 2,
+          "function": "fn register_learning_checkpoint(",
+          "old": "self, config, registration, owner_pidfd, &profile,",
+          "new": "self,\n            config,\n            registration,\n            owner_pidfd,\n            &profile,",
+          "native_post": "706bb67f3471b0c4681f16343878c7cf7310415f",
+          "kind_of_change": "whitespace only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "field": "required_function_order",
+          "index": 1,
+          "subfield": "sequence",
+          "element": 2,
+          "function": "fn open_registered_learning_checkpoint(",
+          "old": "self, config, registration, owner_pidfd, profile,",
+          "new": "self,\n            config,\n            registration,\n            owner_pidfd,\n            profile,",
+          "native_post": "706bb67f3471b0c4681f16343878c7cf7310415f",
+          "kind_of_change": "whitespace only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "field": "required_function_order",
+          "index": 4,
+          "subfield": "sequence",
+          "element": 1,
+          "function": "fn reserve_original_learning_profile(",
+          "old": "config, registration, owner_pidfd, profile, None,",
+          "new": "config,\n            registration,\n            owner_pidfd,\n            profile,\n            None,",
+          "native_post": "706bb67f3471b0c4681f16343878c7cf7310415f",
+          "kind_of_change": "whitespace only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "field": "required_function_order",
+          "index": 6,
+          "subfield": "sequence",
+          "element": 1,
+          "function": "fn open_original_learning_profile(",
+          "old": "config, registration, owner_pidfd, profile, None,",
+          "new": "config,\n            registration,\n            owner_pidfd,\n            profile,\n            None,",
+          "native_post": "706bb67f3471b0c4681f16343878c7cf7310415f",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\"\nrequired = [\"original_root()?\", \"self.with_learning_profile(\", \"scope.validate_snapshot(&actual)\", \"decision\\n                    .require_root_publication()\\n                    .map_err(\", \"RootGenerationPublicationModeV1::Recover\", \"record.fenced\", \"inputs.issuer_keys.contains(&key)\", \"consumer.issuer_trust_digest()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"AuthorityPosture::ALLOW_ALL\", \"SigningKey\"]\nrequired_function_order = [\n  { function = \"fn enroll_generation_publication(\", sequence = [\"self.enroll_original_publication_body(\",\"config, registration, owner, learning, inputs, None,\"] },\n  { function = \"fn enroll_original_publication_body(\", sequence = [\"original_root()?\",\"self.with_learning_profile(\",\"learning\\n                    .backend\\n                    .restore(\",\"scope.validate_snapshot(&actual)\",\"decision\\n                    .require_root_publication()\\n                    .map_err(\",\"HostAuthorityFrontierStore::<PublicationRecord>::open(\",\"let artifact_pin =\",\"LearningArtifactReadViewV1::open_original(\",\"AgentdSelectedGenerationV1::load_from_original_artifacts(\",\"NeuronGenerationCurrentOwnerV1::open(\",\"RootFinalUseObserverV1::open_original(\",\"let mut profile = PublicationProfile\",\"let profile_store = match recovered\",\"enrolled.require_profile()?\",\"enrolled.require_history(\",\"enrolled.require_selection(\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\"\nrequired = [\"original_root()?\", \"self.with_learning_profile(\", \"scope.validate_snapshot(&actual)\", \"decision\\n                    .require_root_publication()\\n                    .map_err(\", \"RootGenerationPublicationModeV1::Recover\", \"record.fenced\", \"inputs.issuer_keys.contains(&key)\", \"consumer.issuer_trust_digest()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"AuthorityPosture::ALLOW_ALL\", \"SigningKey\"]\nrequired_function_order = [\n  { function = \"fn enroll_generation_publication(\", sequence = [\"self.enroll_original_publication_body(\",\"config, registration, owner, learning, inputs, None)\"] },\n  { function = \"fn enroll_original_publication_body(\", sequence = [\"original_root()?\",\"self.with_learning_profile(\",\"learning\\n                    .backend\\n                    .restore(\",\"scope.validate_snapshot(&actual)\",\"decision\\n                    .require_root_publication()\\n                    .map_err(\",\"HostAuthorityFrontierStore::<PublicationRecord>::open(\",\"let artifact_pin =\",\"LearningArtifactReadViewV1::open_original(\",\"AgentdSelectedGenerationV1::load_from_original_artifacts(\",\"NeuronGenerationCurrentOwnerV1::open(\",\"RootFinalUseObserverV1::open_original(\",\"let mut profile = PublicationProfile\",\"let profile_store = match recovered\",\"enrolled.require_profile()?\",\"enrolled.require_history(\",\"enrolled.require_selection(\"] },\n]\n\n",
+      "scope": "protected:265",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "field": "required_function_order",
+          "index": 0,
+          "subfield": "sequence",
+          "element": 1,
+          "function": "fn enroll_generation_publication(",
+          "old": "config, registration, owner, learning, inputs, None,",
+          "new": "config, registration, owner, learning, inputs, None)",
+          "native_post": "855a49620f2aebd982d3fe7132c9225ede35e682",
+          "kind_of_change": "native removed trailing call comma; exact close paren retained in marker"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs\"\nrequired = [\"#[serde(tag = \\\"kind\\\"\", \"HostAuthorityPeerChannel::from_stream(\", \"request.request_id != sequence\", \"require_fresh_window(\", \"slot.verify_retained(\", \"slot.target.observe()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"AuthorityPosture::ALLOW_ALL\", \"SigningKey\", \"Command::CompareAndSet\", \"HostAuthorityFrontierStore::initialize\"]\nrequired_function_order = [\n  { function = \"fn serve_generation_publication(\", sequence = [\"let sequence = 1;\",\"let pin = owner.try_clone()?\",\"HostAuthorityPeerChannel::from_stream(stream, policy, owner)\",\".map_err(io::Error::other)?\",\"self.serve_original_publication_channel(\",\"slot, learning, config, registration, pin, channel, sequence, None,\"] },\n  { function = \"fn require_fresh_window(\", sequence = [\"now < signed.grant.not_before_unix_ms\",\"now >= signed.grant.expires_at_unix_ms\",\"now / 1000 >= work_expiry\",\"witness.verified_at_unix_ms > now\"] },\n  { function = \"fn serve_original_publication_channel(\", sequence = [\"self.with_learning_profile(\",\"slot.require_profile()?\",\"slot.require_history(\",\"slot.require_previous()?\",\"slot.require_selection(now)?\",\"slot\\n                            .current\\n                            .original_broker_head()\",\"self.issuer.revocations()?\",\"require_fresh_window(\",\"slot.require_genesis()?\",\"serde_json::to_vec(&response)\",\"slot.current\\n                                    .original_broker_prepare(\",\"slot.current\\n                                    .original_broker_publish(\",\"slot.require_profile()?\",\"slot.require_history(\",\"slot.require_previous()?\",\"slot.require_selection(after_time)?\",\"require_fresh_window(\\n                                after_time\",\"slot.verify_retained(\",\"slot.target.observe()\",\"self.issuer.revocations()?\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs\"\nrequired = [\"#[serde(tag = \\\"kind\\\"\", \"HostAuthorityPeerChannel::from_stream(\", \"request.request_id != sequence\", \"require_fresh_window(\", \"slot.verify_retained(\", \"slot.target.observe()\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"AuthorityPosture::ALLOW_ALL\", \"SigningKey\", \"Command::CompareAndSet\", \"HostAuthorityFrontierStore::initialize\"]\nrequired_function_order = [\n  { function = \"fn serve_generation_publication(\", sequence = [\"let sequence = 1;\",\"let pin = owner.try_clone()?\",\"HostAuthorityPeerChannel::from_stream(stream, policy, owner)\",\".map_err(io::Error::other)?\",\"self.serve_original_publication_channel(\",\"slot,\\n            learning,\\n            config,\\n            registration,\\n            pin,\\n            channel,\\n            sequence,\\n            None,\"] },\n  { function = \"fn require_fresh_window(\", sequence = [\"now < signed.grant.not_before_unix_ms\",\"now >= signed.grant.expires_at_unix_ms\",\"now / 1000 >= work_expiry\",\"witness.verified_at_unix_ms > now\"] },\n  { function = \"fn serve_original_publication_channel(\", sequence = [\"self.with_learning_profile(\",\"slot.require_profile()?\",\"slot.require_history(\",\"slot.require_previous()?\",\"slot.require_selection(now)?\",\"slot\\n                            .current\\n                            .original_broker_head()\",\"self.issuer.revocations()?\",\"require_fresh_window(\",\"slot.require_genesis()?\",\"serde_json::to_vec(&response)\",\"slot.current\\n                                    .original_broker_prepare(\",\"slot.current\\n                                    .original_broker_publish(\",\"slot.require_profile()?\",\"slot.require_history(\",\"slot.require_previous()?\",\"slot.require_selection(after_time)?\",\"require_fresh_window(\\n                                after_time\",\"slot.verify_retained(\",\"slot.target.observe()\",\"self.issuer.revocations()?\"] },\n]\n\n",
+      "scope": "protected:266",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+          "field": "required_function_order",
+          "index": 0,
+          "subfield": "sequence",
+          "element": 5,
+          "function": "fn serve_generation_publication(",
+          "old": "slot, learning, config, registration, pin, channel, sequence, None,",
+          "new": "slot,\n            learning,\n            config,\n            registration,\n            pin,\n            channel,\n            sequence,\n            None,",
+          "native_post": "f39516fdca8cc9b9e0c015858c7a718e79b3a4e6",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs\"\nrequired = [\"self.publication.is_some()\",\"service.with_learning_profile(\",\"frozen_scope_binding()\",\"root_start()?\",\"compare_exchange(ACTIVE, CONSUMED\",\"receiver\\n            .recv_timeout(\",\"learning\\n                    .backend\\n                    .restore(&initial.request)\",\"consumer_uid: config.peer_uid\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"AuthorityPosture::ALLOW_ALL\", \"SigningKey\", \"NeuronGenerationCurrentOwnerV1::initialize\"]\nrequired_function_order = [\n  { function = \"fn register(\", sequence = [\"original_root()?\",\"std::process::id() != self.root_pid\",\"compare_exchange(ACTIVE, CONSUMED\",\"self.sender\\n            .try_send(\",\"receiver\\n            .recv_timeout(\",\"self.phase.load(Ordering::Acquire) != CONSUMED\"] },\n  { function = \"fn enable_generation_publication(\", sequence = [\"original_root()?\",\"self.publication.is_some()\",\"self\\n            .learning\\n            .as_ref()\",\"original_publication_route(\",\"&self.service, &self.config, &self.registration, &self.owner_pidfd, learning,\",\"self.publication = Some(runtime)\"] },\n  { function = \"fn original_publication_route(\", sequence = [\"service.with_learning_profile(\",\"frozen_scope_binding()\",\"let before = learning\\n                    .backend\\n                    .restore(\",\"seal_bytes(\",\"learning\\n                    .backend\\n                    .restore(&initial.request)\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs\"\nrequired = [\"self.publication.is_some()\",\"service.with_learning_profile(\",\"frozen_scope_binding()\",\"root_start()?\",\"compare_exchange(ACTIVE, CONSUMED\",\"receiver\\n            .recv_timeout(\",\"learning\\n                .backend\\n                .restore(&initial.request)\",\"consumer_uid: config.peer_uid\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"AuthorityPosture::ALLOW_ALL\", \"SigningKey\", \"NeuronGenerationCurrentOwnerV1::initialize\"]\nrequired_function_order = [\n  { function = \"fn register(\", sequence = [\"original_root()?\",\"std::process::id() != self.root_pid\",\"compare_exchange(ACTIVE, CONSUMED\",\"self.sender\\n            .try_send(\",\"receiver\\n            .recv_timeout(\",\"self.phase.load(Ordering::Acquire) != CONSUMED\"] },\n  { function = \"fn enable_generation_publication(\", sequence = [\"original_root()?\",\"self.publication.is_some()\",\"self\\n            .learning\\n            .as_ref()\",\"original_publication_route(\",\"&self.service,\\n            &self.config,\\n            &self.registration,\\n            &self.owner_pidfd,\\n            learning,\",\"self.publication = Some(runtime)\"] },\n  { function = \"fn original_publication_route(\", sequence = [\"service.with_learning_profile(\",\"frozen_scope_binding()\",\"let before = learning\\n                .backend\\n                .restore(\",\"seal_bytes(\",\"learning\\n                .backend\\n                .restore(&initial.request)\"] },\n]\n\n",
+      "scope": "protected:267",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "field": "required",
+          "index": 6,
+          "old": "learning\n                    .backend\n                    .restore(&initial.request)",
+          "new": "learning\n                .backend\n                .restore(&initial.request)",
+          "native_post": "b0464294366b3811bdca069bfa66935670f46b5b",
+          "kind_of_change": "whitespace only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "field": "required_function_order",
+          "index": 1,
+          "subfield": "sequence",
+          "element": 4,
+          "function": "fn enable_generation_publication(",
+          "old": "&self.service, &self.config, &self.registration, &self.owner_pidfd, learning,",
+          "new": "&self.service,\n            &self.config,\n            &self.registration,\n            &self.owner_pidfd,\n            learning,",
+          "native_post": "b0464294366b3811bdca069bfa66935670f46b5b",
+          "kind_of_change": "whitespace only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "field": "required_function_order",
+          "index": 2,
+          "subfield": "sequence",
+          "element": 2,
+          "function": "fn original_publication_route(",
+          "old": "let before = learning\n                    .backend\n                    .restore(",
+          "new": "let before = learning\n                .backend\n                .restore(",
+          "native_post": "b0464294366b3811bdca069bfa66935670f46b5b",
+          "kind_of_change": "whitespace only"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+          "field": "required_function_order",
+          "index": 2,
+          "subfield": "sequence",
+          "element": 4,
+          "function": "fn original_publication_route(",
+          "old": "learning\n                    .backend\n                    .restore(&initial.request)",
+          "new": "learning\n                .backend\n                .restore(&initial.request)",
+          "native_post": "b0464294366b3811bdca069bfa66935670f46b5b",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs\"\nrequired = [\"RootGenerationInitialModeV1::Reserve\",\"RootGenerationInitialModeV1::Recover\",\"record.fenced\",\"record.profile != profile\",\"fence_initial_record(store, &profile_owner)?\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"from_test_store\",\"claim_final_use\",\"dispatch_final_use\",\"LearningIterationSnapshotV1\",\"NeuronGenerationCurrentOwnerV1::prepare_initial\"]\nrequired_function_order = [\n  { function = \"fn enroll_generation_initial(\", sequence = [\"self.enroll_generation_initial_in_phase(\",\"config, registration, owner, deployment, inputs, None,\"] },\n  { function = \"fn enroll_generation_initial_in_phase(\", sequence = [\"original_root()?\",\"self.with_initial_publication_context(\",\"HostAuthorityFrontierStore::<InitialRecord>::open(\",\"if record.fenced\",\"let retained_result =\",\"inputs::open_artifacts(\",\"validate_initial_configuration(\",\"inputs::open_target(\",\"self.open_initial_consumer(\",\"profile.binding = profile.digest()?\",\"record.profile != profile\",\"enrolled.require_profile()?\",\"enrolled.require_selection(\",\"fence_initial_record(store, &profile_owner)?\",\"enrolled_result = Some(enrolled)\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs\"\nrequired = [\"RootGenerationInitialModeV1::Reserve\",\"RootGenerationInitialModeV1::Recover\",\"record.fenced\",\"record.profile != profile\",\"fence_initial_record(store, &profile_owner)?\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"from_test_store\",\"claim_final_use\",\"dispatch_final_use\",\"LearningIterationSnapshotV1\",\"NeuronGenerationCurrentOwnerV1::prepare_initial\"]\nrequired_function_order = [\n  { function = \"fn enroll_generation_initial(\", sequence = [\"self.enroll_generation_initial_in_phase(\",\"config,\\n            registration,\\n            owner,\\n            deployment,\\n            inputs,\\n            None,\"] },\n  { function = \"fn enroll_generation_initial_in_phase(\", sequence = [\"original_root()?\",\"self.with_initial_publication_context(\",\"HostAuthorityFrontierStore::<InitialRecord>::open(\",\"if record.fenced\",\"let retained_result =\",\"inputs::open_artifacts(\",\"validate_initial_configuration(\",\"inputs::open_target(\",\"self.open_initial_consumer(\",\"profile.binding = profile.digest()?\",\"record.profile != profile\",\"enrolled.require_profile()?\",\"enrolled.require_selection(\",\"fence_initial_record(store, &profile_owner)?\",\"enrolled_result = Some(enrolled)\"] },\n]\n\n",
+      "scope": "protected:319",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+          "field": "required_function_order",
+          "index": 0,
+          "subfield": "sequence",
+          "element": 1,
+          "function": "fn enroll_generation_initial(",
+          "old": "config, registration, owner, deployment, inputs, None,",
+          "new": "config,\n            registration,\n            owner,\n            deployment,\n            inputs,\n            None,",
+          "native_post": "55dd2a18609a6794be7009516d6a82a72658c466",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs\"\nrequired = [\"slot.require_target(/*fresh*/ true)?\",\"request.purpose != PURPOSE\",\"request.request_id != sequence\",\"Command::Prepare\",\"Command::Publish\",\"RootGenerationInitialModeV1::Reserve\",\"read_current(slot, current.as_ref())?\",\"slot.require_genesis()?\",\"original_broker_initial_publish(\",\"slot.fence()?\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"from_test_store\",\"SigningKey\",\"claim_final_use\",\"dispatch_final_use\",\"prepare_forward_recovery\"]\nrequired_function_order = [\n  { function = \"fn serve_generation_initial(\", sequence = [\"let sequence = 1_u64;\",\"let pin = owner.try_clone()?\",\"HostAuthorityPeerChannel::from_stream(stream, policy, owner)\",\".map_err(io::Error::other)?\",\"self.serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)\"] },\n  { function = \"fn read_current(\", sequence = [\"original_broker_head()\",\"Err(error)\",\"slot.fence()?\"] },\n  { function = \"fn require_observation(\", sequence = [\"original_initial_record(\",\"slot.fence()?\",\"slot.verify_recorded_use(\",\"slot.observe_published_target()?\"] },\n  { function = \"fn serve_initial_original_channel(\", sequence = [\"channel\\n            .exchange(\",\"self.with_initial_publication_context(\",\"request.purpose != PURPOSE\",\"slot.require_profile()?\",\"slot.require_selection(now)?\",\"read_current(slot, current.as_ref())?\",\"slot.require_target(          true)?\",\"require_fresh_window(now, signed, witness)?\",\"slot.verify_retained(signed, witness)?\",\"slot.require_genesis()?\",\"let raw = serde_json::to_vec(\",\"NeuronGenerationCurrentOwnerV1::prepare_initial(\",\"read_current(slot, Some(&owner))?\",\"original_broker_initial_publish(\",\"slot.require_selection(after_time)?\",\"read_current(slot, current.as_ref())? != after\",\"encoded_response = Some(raw)\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs\"\nrequired = [\"slot.require_target(/*fresh*/ true)?\",\"request.purpose != PURPOSE\",\"request.request_id != sequence\",\"Command::Prepare\",\"Command::Publish\",\"RootGenerationInitialModeV1::Reserve\",\"read_current(slot, current.as_ref())?\",\"slot.require_genesis()?\",\"original_broker_initial_publish(\",\"slot.fence()?\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"from_test_store\",\"SigningKey\",\"claim_final_use\",\"dispatch_final_use\",\"prepare_forward_recovery\"]\nrequired_function_order = [\n  { function = \"fn serve_generation_initial(\", sequence = [\"let sequence = 1_u64;\",\"let pin = owner.try_clone()?\",\"HostAuthorityPeerChannel::from_stream(stream, policy, owner)\",\".map_err(io::Error::other)?\",\"self.serve_initial_original_channel(\\n            slot,\\n            config,\\n            registration,\\n            pin,\\n            channel,\\n            sequence,\\n            None,\\n        )\"] },\n  { function = \"fn read_current(\", sequence = [\"original_broker_head()\",\"Err(error)\",\"slot.fence()?\"] },\n  { function = \"fn require_observation(\", sequence = [\"original_initial_record(\",\"slot.fence()?\",\"slot.verify_recorded_use(\",\"slot.observe_published_target()?\"] },\n  { function = \"fn serve_initial_original_channel(\", sequence = [\"channel\\n            .exchange(\",\"self.with_initial_publication_context(\",\"request.purpose != PURPOSE\",\"slot.require_profile()?\",\"slot.require_selection(now)?\",\"read_current(slot, current.as_ref())?\",\"slot.require_target(          true)?\",\"require_fresh_window(now, signed, witness)?\",\"slot.verify_retained(signed, witness)?\",\"slot.require_genesis()?\",\"let raw = serde_json::to_vec(\",\"NeuronGenerationCurrentOwnerV1::prepare_initial(\",\"read_current(slot, Some(&owner))?\",\"original_broker_initial_publish(\",\"slot.require_selection(after_time)?\",\"read_current(slot, current.as_ref())? != after\",\"encoded_response = Some(raw)\"] },\n]\n\n",
+      "scope": "protected:320",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+          "field": "required_function_order",
+          "index": 0,
+          "subfield": "sequence",
+          "element": 4,
+          "function": "fn serve_generation_initial(",
+          "old": "self.serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)",
+          "new": "self.serve_initial_original_channel(\n            slot,\n            config,\n            registration,\n            pin,\n            channel,\n            sequence,\n            None,\n        )",
+          "native_post": "bdd3bc5b41eb536c99576f0e35186951908ee389",
+          "kind_of_change": "native trailing call comma plus whitespace"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs\"\nrequired = []\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn claim_same_actor_phase_after_original_a(\", sequence = [\"self.with_learning_profile(\",\"gate.enter_original_lane()?\",\"profile.require_cell_scope(&initial)?\",\"original.mode != RootGenerationInitialModeV1::Reserve\",\"original.require_profile()?\",\"original.require_selection(now)?\",\"original.target.observe()\",\"!observed.is_drained()\",\"crate::neuron_generation_current::initial_root::original_initial_record(\",\"gate.require_open()?\",\"record.claim_before_namespaces(claim)?\",\"gate.require_open()?\",\"original.target.observe()\",\"!= observed\",\"original.require_profile()?\",\"original.require_selection(\",\"gate.require_open()?\"] },\n  { function = \"fn retire_original_phase_slot(\", sequence = [\"Arc::ptr_eq(&self.root, &claim.root)\",\"self.require_profile()?\",\"self.target.observe()\",\"!observed.is_drained()\",\"self.current.try_lock()\",\"drop(current)\",\"previous: target\"] },\n  { function = \"fn require_retained_predecessor(\", sequence = [\"self.previous.observe()\",\"self.previous.files_binding().to_string() != self.files\",\"return Err(\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs\"\nrequired = []\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn claim_same_actor_phase_after_original_a(\", sequence = [\"self.with_learning_profile(\",\"gate.enter_original_lane()?\",\"profile.require_cell_scope(&initial)?\",\"original.mode != RootGenerationInitialModeV1::Reserve\",\"original.require_profile()?\",\"original.require_selection(now)?\",\"original.target.observe()\",\"!observed.is_drained()\",\"crate::neuron_generation_current::initial_root::original_initial_record(\",\"gate.require_open()?\",\"record.claim_before_namespaces(claim)?\",\"gate.require_open()?\",\"original.target.observe()\",\"!= observed\",\"original.require_profile()?\",\"original.require_selection(\",\"gate.require_open()?\"] },\n  { function = \"fn retire_original_phase_slot(\", sequence = [\"Arc::ptr_eq(&self.root, &claim.root)\",\"self.require_profile()?\",\"self.target.observe()\",\"!observed.is_drained()\",\"self\\n                .current\\n                .try_lock()\",\"drop(current)\",\"previous: target\"] },\n  { function = \"fn require_retained_predecessor(\", sequence = [\"self.previous.observe()\",\"self.previous.files_binding().to_string() != self.files\",\"return Err(\"] },\n]\n\n",
+      "scope": "protected:399",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+          "field": "required_function_order",
+          "index": 1,
+          "subfield": "sequence",
+          "element": 4,
+          "function": "fn retire_original_phase_slot(",
+          "old": "self.current.try_lock()",
+          "new": "self\n                .current\n                .try_lock()",
+          "native_post": "40ce2c177f25ea37c5974171d6950ce5ad9a0f2a",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\"\nrequired = []\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn enroll_original_publication_body(\", sequence = [\"original_root()?\",\"self.with_learning_profile(\",\"context.gate.enter_original_lane()?\",\"context.require_before_enrollment()?\",\"scope.validate_snapshot(&actual)\",\"context.require_before_enrollment()?\",\"let control = current.original_broker_head()\",\"context.require_before_enrollment()?\",\"let profile_store = match recovered\",\"HostAuthorityFrontierStore::initialize(\",\"enrolled.require_profile()?\",\"enrolled.require_history(\",\"enrolled.require_previous()?\",\"enrolled.require_selection(\",\"context.require_original(&enrolled)?\"] },\n  { function = \"fn enroll_generation_publication_for_phase(\", sequence = [\"phase.gate.require_open()?\",\"phase.record.require_scoped()?\",\"!Arc::ptr_eq(&inputs.current_directory, &phase.original.root)\",\"inputs.consumer != phase.original.consumer_slot\",\"previous.files_binding().to_string() != phase.original.files\",\"previous.owner_binding() != &phase.original.owner\",\"observed.observation().owner_checkpoint().into_array() != phase.original.checkpoint\",\"phase.gate.require_open()?\",\"self.enroll_original_publication_body(\",\"Some(phase)\",\"self.with_learning_profile(\",\"phase.require_original(&slot)?\",\"slot.current.original_broker_head()\",\"phase.require_original(&slot)\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\"\nrequired = []\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn enroll_original_publication_body(\", sequence = [\"original_root()?\",\"self.with_learning_profile(\",\"context.gate.enter_original_lane()?\",\"context.require_before_enrollment()?\",\"scope.validate_snapshot(&actual)\",\"context.require_before_enrollment()?\",\"let control = current.original_broker_head()\",\"context.require_before_enrollment()?\",\"let profile_store = match recovered\",\"HostAuthorityFrontierStore::initialize(\",\"enrolled.require_profile()?\",\"enrolled.require_history(\",\"enrolled.require_previous()?\",\"enrolled.require_selection(\",\"context.require_original(&enrolled)?\"] },\n  { function = \"fn enroll_generation_publication_for_phase(\", sequence = [\"phase.gate.require_open()?\",\"phase.record.require_scoped()?\",\"!Arc::ptr_eq(&inputs.current_directory, &phase.original.root)\",\"inputs.consumer != phase.original.consumer_slot\",\"previous.files_binding().to_string() != phase.original.files\",\"previous.owner_binding() != &phase.original.owner\",\"observed.observation().owner_checkpoint().into_array() != phase.original.checkpoint\",\"phase.gate.require_open()?\",\"self.enroll_original_publication_body(\",\"Some(phase)\",\"self.with_learning_profile(\",\"phase.require_original(&slot)?\",\"slot\\n                    .current\\n                    .original_broker_head()\",\"phase.require_original(&slot)\"] },\n]\n\n",
+      "scope": "protected:428",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "field": "required_function_order",
+          "index": 1,
+          "subfield": "sequence",
+          "element": 12,
+          "function": "fn enroll_generation_publication_for_phase(",
+          "old": "slot.current.original_broker_head()",
+          "new": "slot\n                    .current\n                    .original_broker_head()",
+          "native_post": "855a49620f2aebd982d3fe7132c9225ede35e682",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "path": "CALLERS.toml",
+      "match_count": 1,
+      "old_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs\"\nrequired = []\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn serve_generation_publication_until(\", sequence = [\"CloseSameActorPhaseOnDrop::new(phase.gate)\",\"phase.require_original(slot)?\",\"phase.gate.retain_original_stream(&stream)?\",\"HostAuthorityPeerChannel::from_stream_until(\",\"phase.gate.deadline().instant()\",\"self.serve_original_publication_channel(\",\"Some(phase)\",\"Err(io::Error::other(\"] },\n  { function = \"fn serve_original_publication_channel(\", sequence = [\"phase.map(|context| context.gate.enter_original_lane()).transpose()\",\"context.require_original(slot)\",\"self.with_learning_profile(\",\"let raw = serde_json::to_vec(&response)\",\"context.require_original(slot)?\",\"match &request.command\",\"original_broker_prepare(intent)\",\"original_broker_publish(intent, signed, witness)\",\"slot.require_profile()?\",\"slot.require_history(\",\"slot.require_previous()?\",\"context.require_original(slot)\",\"Ok(response)\",\"context.require_original(slot)?\"] },\n]\n\n",
+      "new_text": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs\"\nrequired = []\nforbidden = []\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn serve_generation_publication_until(\", sequence = [\"CloseSameActorPhaseOnDrop::new(phase.gate)\",\"phase.require_original(slot)?\",\"phase.gate.retain_original_stream(&stream)?\",\"HostAuthorityPeerChannel::from_stream_until(\",\"phase.gate.deadline().instant()\",\"self.serve_original_publication_channel(\",\"Some(phase)\",\"Err(io::Error::other(\"] },\n  { function = \"fn serve_original_publication_channel(\", sequence = [\"phase\\n                    .map(|context| context.gate.enter_original_lane())\\n                    .transpose()\",\"context.require_original(slot)\",\"self.with_learning_profile(\",\"let raw = serde_json::to_vec(&response)\",\"context.require_original(slot)?\",\"match &request.command\",\"original_broker_prepare(intent)\",\"original_broker_publish(intent, signed, witness)\",\"slot.require_profile()?\",\"slot.require_history(\",\"slot.require_previous()?\",\"context.require_original(slot)\",\"Ok(response)\",\"context.require_original(slot)?\"] },\n]\n\n",
+      "scope": "protected:430",
+      "field_changes": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+          "field": "required_function_order",
+          "index": 1,
+          "subfield": "sequence",
+          "element": 0,
+          "function": "fn serve_original_publication_channel(",
+          "old": "phase.map(|context| context.gate.enter_original_lane()).transpose()",
+          "new": "phase\n                    .map(|context| context.gate.enter_original_lane())\n                    .transpose()",
+          "native_post": "f39516fdca8cc9b9e0c015858c7a718e79b3a4e6",
+          "kind_of_change": "whitespace only"
+        }
+      ]
+    }
+  ],
+  "static_projection": {
+    "failures": [],
+    "results": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+        "rawCount": 3,
+        "orderCount": 11,
+        "fnCount": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "rawCount": 23,
+        "orderCount": 25,
+        "fnCount": 5
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "rawCount": 6,
+        "orderCount": 79,
+        "fnCount": 8
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+        "rawCount": 4,
+        "orderCount": 28,
+        "fnCount": 4
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "rawCount": 8,
+        "orderCount": 18,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "rawCount": 6,
+        "orderCount": 30,
+        "fnCount": 3
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+        "rawCount": 8,
+        "orderCount": 17,
+        "fnCount": 3
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+        "rawCount": 4,
+        "orderCount": 18,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "rawCount": 5,
+        "orderCount": 17,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "rawCount": 10,
+        "orderCount": 29,
+        "fnCount": 4
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+        "rawCount": 6,
+        "orderCount": 13,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+        "rawCount": 4,
+        "orderCount": 12,
+        "fnCount": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+        "rawCount": 0,
+        "orderCount": 27,
+        "fnCount": 3
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "rawCount": 0,
+        "orderCount": 16,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "rawCount": 0,
+        "orderCount": 8,
+        "fnCount": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "rawCount": 0,
+        "orderCount": 29,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "rawCount": 0,
+        "orderCount": 23,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "rawCount": 0,
+        "orderCount": 22,
+        "fnCount": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+        "rawCount": 0,
+        "orderCount": 14,
+        "fnCount": 1
+      }
+    ]
+  },
+  "limits": [
+    "No original checker/helper/native execution.",
+    "Complete 407063-byte native patch and remaining postimages are pending.",
+    "Original Boolean-comment mask marker remains unchanged.",
+    "Three native trailing comma cases are explicitly recorded; no substantive expression or guard removed."
+  ]
+}

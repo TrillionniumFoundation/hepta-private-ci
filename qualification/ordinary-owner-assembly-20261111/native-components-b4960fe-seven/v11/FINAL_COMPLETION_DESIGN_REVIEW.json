@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "kind": "Same-session final completion and physical-owner-join protocol: source-bound minimal design",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "Design only. No product source, CALLERS, tests, ref, h, native, compiler or checker change. This is outside the frozen121-path/474-operation candidate.",
+  "current_inventory": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+  "current_independent_union_review": "f649d45c0c5dd9c859c8220e5133810ad9957df6",
+  "conclusion": "现有实码已经有真实C业务Complete、原task-local durable drain、Work实际阻塞句柄保管以及Root scoped线程join构件；缺少把这些事实组合成正常终止的协议。最小合法后继需要一个phase-only终止控制面和真实外层JoinHandle保管，不能只删除Startup末尾Err，也不能把现有cancel/EOF结果改成Ok。",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "bytes": 31648,
+      "sha256": "90ef4ed86913dfea27cc1d8d0d7d80b44e5c4ceae97af5f44a6ce9a67be3448c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+      "blob": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "bytes": 17929,
+      "sha256": "456a21ce0b186dc664b2af3877a9c6fa0a376b1dceb445d50e0d721f9de1b655"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "blob": "c2171f53fb293ff134723cfbc91cbc0d8030475b",
+      "bytes": 13130,
+      "sha256": "7c5d3adaf46c810c1efed3ce636969df7b4d8b70249bd3bcf00211f5bb85f82a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "blob": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+      "bytes": 27445,
+      "sha256": "6b09e46a1e8e97616d25e03671852cd87976ce557dc52aecc2dcb80bf70229ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "blob": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7",
+      "bytes": 11110,
+      "sha256": "c2a1a01228813216593cde42f0aa985581f694de377c0d52a82b9d0dc348705c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "blob": "7c69d94b92859ce593076052e39edbcf53ebbedf",
+      "bytes": 13029,
+      "sha256": "4798705fc526dcc18f69511d8c1420625398fd5250f6e1dab4d3d20d4d63f061"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "blob": "dc08d2d342a9eac0fad3a999aa64150b513793f0",
+      "bytes": 9373,
+      "sha256": "e1ead28196e856b5db608952cc0f50b886cc78b62ce9aa5fcfa8ebfa747b84f9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "blob": "0dd1deba7fcc402269c73c1ee7480f6c12320552",
+      "bytes": 3587,
+      "sha256": "2f7a008f9d12d6b050126c2af289cffcbc81bd1b6e7fd364d9328da8c454a5c8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "blob": "f4cf8a01bc778eb02d8bf9c2d3d1b96895cfc863",
+      "bytes": 9037,
+      "sha256": "7808bc2acb2b3a4b460d0c9275833c6945af0fd965630bdea1d9ff66e310dc7a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "blob": "fad2523ec6e5d9ccfc64c24605cbb7a1343e0fd9",
+      "bytes": 6074,
+      "sha256": "8bc4e4fd8b6af3a2d3626423e7d0506652ea588b10570a1529452842291ae143"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "blob": "42120c9640836c780860060d226c98d6c665455c",
+      "bytes": 14004,
+      "sha256": "ad82d224dc5ef2652a5e5ba489201bfd4f7ac6c379b29a455260db7a11cc9f19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "blob": "94b5901cd98f06403a84a8a07687490a4db6dce5",
+      "bytes": 6785,
+      "sha256": "97106b4cdff2452fee0f397ff7786070dbcda03d2949a6413136036cf3e90af5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "blob": "2cd7b91b2f21680256cedc0ecfe1ee0bf1cc7447",
+      "bytes": 16768,
+      "sha256": "19385e73e31af6bf2ffbaaab326f689189de049c44e335d07ec90faccd38cb4e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "blob": "1f5bd882580fe6efe0402e5ad5ce13fd5ff99f88",
+      "bytes": 29722,
+      "sha256": "6f4863365cdc11a60c4b61ca8fba1dfc27ff09597127e2dcaadbccd096b925ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "blob": "a92be943237ff7ec597979c93f3284ebbfedef73",
+      "bytes": 13606,
+      "sha256": "4b8c9de8c699a360ca9a2cf233ab11c88ef83ba34185dfceb7f5368129ecfbe7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "blob": "d8fd1e8542983e9658553dde61a5b6adab36d41f",
+      "bytes": 8624,
+      "sha256": "78d2015459f50c893319900a65b8c17061ae00c964ea8ba2f6140e61c40e8ce3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "blob": "bd395196c5138b5472a54c772abd40181f50a696",
+      "bytes": 11160,
+      "sha256": "288638c8c57992e4b0354202128c091451be3cad9ecbbaa9d8c32e5d4a468a3e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "blob": "452879cf5d45a7fb4b719d748f3faccf1b928275",
+      "bytes": 9895,
+      "sha256": "a782ce5c17269d1a8a5891c6f9e528fec4c843d06d80727e8bc0cdf6a5175c4f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "blob": "221c6be56043103af62bcf7f37dcf083861acc0c",
+      "bytes": 7384,
+      "sha256": "38c5364dfa74e2d19b7b0d8ebb019b9668a2e9018a77cbba0466e3be36c3d1e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "bytes": 2003,
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "blob": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "bytes": 14061,
+      "sha256": "a2c552421260e73979c3faa0628b31ddb1e38d4a9cae786bebe8f986a9a88163"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "blob": "5cdf48c74a3dd725dfda4bee97a6f2c1126927a2",
+      "bytes": 8089,
+      "sha256": "8cfcb459ad925217c3c1cd3f08f65c5ae2870641f7e294a7ae04e75dc7c2253f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "blob": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+      "bytes": 8346,
+      "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5"
+    }
+  ],
+  "observed_exact_breaks": [
+    {
+      "path": "same_actor_q24_phase_publish.rs",
+      "function": "publish_and_observe_original_c",
+      "blob": "7c69d94b92859ce593076052e39edbcf53ebbedf",
+      "fact": "真实Ledger.submit_original_terminal_outcome返回Complete后发送OriginalCOutcomeAccepted并返回Ok；installed/source/cell/task仍是此函数的局部实物，未把C retirement事实交给终止控制者。这是已认证业务事实，不是owner结束证明。"
+    },
+    {
+      "path": "same_actor_q24_phase_c.rs",
+      "function": "run_original_activated",
+      "blob": "dc08d2d342a9eac0fad3a999aa64150b513793f0",
+      "fact": "progress返回Ok后仍等待实际required worker/cancellation/gate期限；关闭后先drop progress、再实际await worker、再Work cleanup。当前没有正常C完成分支。"
+    },
+    {
+      "path": "same_actor_q24_phase_learning_worker.rs",
+      "function": "run_original_lanes",
+      "blob": "fad2523ec6e5d9ccfc64c24605cbb7a1343e0fd9",
+      "fact": "任何Learning/Delivery/Successor停止或cancel均关同Gate，join其余真实lane并保所有错误；即使三个lane结果均Ok，也返回required learning lanes stopped错误。不能把某次cancel事后重命名正常完成。"
+    },
+    {
+      "path": "circuit_task_runtime.rs",
+      "function": "CircuitTaskRuntimeBootstrapV1::run",
+      "blob": "c2171f53fb293ff134723cfbc91cbc0d8030475b",
+      "fact": "真实spawn_blocking句柄只在该async wrapper里直接await。Drop guard会发child cancellation；若wrapper被abort，已经运行的blocking closure仍可继续实际清理，而这段源码没有外部可消费的真实JoinHandle保管凭据。"
+    },
+    {
+      "path": "runtime_tasks.rs",
+      "function": "run_until / shutdown / observe_shutdown_completion",
+      "blob": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "fact": "required任务在shutdown前Ok退出会被拒绝；shutdown先合作cancel，3秒后abort并join async wrappers。非retiring wrapper在abort_requested下的Cancelled可视为通用host停止成功。这不是外层blocking closure已join证明；不能改变这个原通用合同来替新phase伪造证明。"
+    },
+    {
+      "path": "runtime.rs",
+      "function": "run_with_shutdown / drain_runtime",
+      "blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "fact": "已有合法embedded shutdown future，仍走原启动/Fleet/mark_draining/active-run及GenV2/Circuit blockers路径。原drain的5秒+2秒及Task shutdown3秒是旧host清理预算；不是新phase authority续期，也不是所有外部worker句柄物理终止证明。"
+    },
+    {
+      "path": "production_launcher.rs",
+      "function": "AgentdProductionLaunch::run",
+      "blob": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+      "fact": "crate::run返回后即drop Root attachments，随后invalidate Android与await MCP shutdown。新phase若要证明物理结束，必须在这次attachment释放之前保管并等待真实phase blocking/owner结束；不能在外面等Launch返回后再补一个并非原句柄的通知。"
+    },
+    {
+      "path": "circuit_feature_current_retirement.rs",
+      "function": "PublishedCircuitFeatureTaskV1::drain_completed_task",
+      "blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "fact": "实际同Task Arc/Source/Cell复核→原Generation journal drain/is_drained→Source/current后验→历史Completion。没有线程/进程/JoinHandle；它不把模型改成STOP，也不证明GenV2执行宿主物理退出。"
+    },
+    {
+      "path": "root_authority_session.rs",
+      "function": "Session Drop / RootWorker / ConsumerSyncJob",
+      "blob": "1f5bd882580fe6efe0402e5ad5ce13fd5ff99f88",
+      "fact": "Drop fence→phase.close→worker.abort→clear consumers；RootWorker保future先于writer file，ConsumerSyncJob保真实consumer先于file。abort和清除Arc不构成实际后台/已开始blocking消费者作业join。phase-only正常停止必须取得并await这些实际句柄，保持原Drop保管顺序。"
+    },
+    {
+      "path": "authority_host_same_actor_q24_phase_worker.rs",
+      "function": "serve_original_phase / run_original_scoped_phase",
+      "blob": "a92be943237ff7ec597979c93f3284ebbfedef73",
+      "fact": "五lane服务、Initial/scoped/watcher都真实join，BoundLearning再join Model/Publication；但现mandatory EOF/closed仍是错误，没有C完成授权的Root正常退役分支。"
+    },
+    {
+      "path": "production_launcher_same_actor_phase.rs",
+      "function": "run_original_phase",
+      "blob": "9af2d6fa8e27e08bfbb26f6804ede6fae6eefce7",
+      "fact": "保留Launch原Err；Launch Ok也明确拒绝unacknowledged phase completion/physical owner join。该拒绝是当前正确的边界，应保持到后继完整协议通过原资格门。"
+    }
+  ],
+  "success_predicate": {
+    "required_conjunction": [
+      "同原Root/actor/PID/start ticks/lease/full phase binding；没有跨spawn继承。",
+      "真实A与C认证Outcome及各自原业务状态，实际Learning最终checkpoint/NextUse delivery ACK；NoUpdate必须来自原真实协议结果。",
+      "C入口已原子切断，实际build tickets、queue/pending、inflight provider与只读/输出保管全部静止。",
+      "同installed实物执行原C task-local durable drain，并保留真实Source/Cell/current对应证据。",
+      "每个实际phase blocking/GenV2执行owner、Learning/Delivery/Pending工作和消费者后台工作的真实句柄已正常结束或明确失败并join；失败不能构成成功。",
+      "Root持有的实际业务服务线程及nested Model/Publication/five-lane/registration/watcher均已join；最终receipt来自其外部实际supervisor。",
+      "最终Root join receipt在同原已预留completion purpose、同真实peer/phase和未延长的最早绝对end内收到并核实；任何先前错误/lostACK/取消/撤回均不被覆盖。"
+    ],
+    "not_equivalent": [
+      "Ledger Complete",
+      "drain_completed_task历史Completion",
+      "Gate closed",
+      "counter==0但实际句柄丢失",
+      "Future Drop",
+      "async abort/is_finished",
+      "generic Launch Ok",
+      "Root同一函数即将return但没有外部join"
+    ],
+    "process_scope": "此方案证明命名的实际业务owner/workers结束，不证明daemon/Root宿主OS进程退出，更不证明cold restart；负责发送最后receipt的外部宿主监督线程不能被算作已经join的业务worker。"
+  },
+  "proposed_minimal_protocol": {
+    "all_names_new": "下列CompletionIntent/RetirePermit/JoinedReceipt/ClosingC是建议的新私有状态或能力名，当前源码没有这些API。不得在当前文档中标为已实现。",
+    "records_and_capabilities": [
+      {
+        "new": "C terminal facts",
+        "custodian": "真实C controller",
+        "payload": "实际installed Source/Cell/Task/Ledger实物及原terminal/checkpoint事实；不从digest重建owner。只允许在真实Outcome检查后取得。"
+      },
+      {
+        "new": "ClosingC admission cut",
+        "custodian": "同SameActorTaskRoute/Gate",
+        "payload": "复制当前A已论证的先cut→等待真实票据/queue/pending静止语义，禁止build后才拒绝；无rearm或第二C。"
+      },
+      {
+        "new": "CompletionIntent and per-purpose RetirePermit",
+        "custodian": "同Root service+同phase record与daemon原controller",
+        "payload": "固定C identity/current/实际drain/checkpoint/原Root及绝对end；一次消费；只允许已空闲目的lane结束，不授新task、grant、namespace或model effect。"
+      },
+      {
+        "new": "ActualOwnerJoinReceipt",
+        "custodian": "真实JoinHandle的唯一私有保管者",
+        "payload": "只有真实handle await返回后产生；保原结果/错误因果与同phase指针。不能由worker在自身return前发done消息替代。"
+      },
+      {
+        "new": "RootJoinedReceipt",
+        "custodian": "Root外部实际supervisor",
+        "payload": "只在其拥有的实际服务工作线程全部join、原错误锁存为空且record/peer/end相符后发送。完成控制sender本身与被join业务worker分开列账。"
+      }
+    ],
+    "order": [
+      {
+        "step": 1,
+        "action": "在C Outcome检查成功后转入终止准备，实际installed实物交给private controller；切断C admission，等真实pending/build/job输出交付；保Root observation/lease仍活以完成最后合法读写。"
+      },
+      {
+        "step": 2,
+        "action": "等待原Learning终态与真实retained-delivery ACK，不取消正在写checkpoint的process来制造NoUpdate。调用原drain_completed_task于同C task/cell/source；另外核实际GenV2执行owner已无工作。"
+      },
+      {
+        "step": 3,
+        "action": "用原同phase control及实际Root writer/lease检查申请一次CompletionIntent。Root持久化一次已进入终止的记录或等强已保管事实，再返回只覆盖指定purpose的RetirePermit。ACK丢失或未知CAS均Closed/unknown且不能重开。"
+      },
+      {
+        "step": 4,
+        "action": "由private completion signal触发已有run_with_shutdown路径；controller在收到原runtime合作停止前仍保持required任务存活，不能提前Ok退出。新phase-only正常停止分支要求RetirePermit+真实idle，原fault/cancel/expiry分支仍错误。"
+      },
+      {
+        "step": 5,
+        "action": "真实C/learning controller先drop进度future以释放其输出保管，再等待实际Learning/Delivery/Pending三个lane与Work close_and_join；原owner/Cell/control/相关FD和Arc按实际持有图释放。保所有次级错误，不能all-stopped即Ok。"
+      },
+      {
+        "step": 6,
+        "action": "外部phase-only保管cap await原Circuit spawn_blocking JoinHandle，再取得非伪造OwnerJoined。generic RuntimeTasks wrapper被abort时也不能丢该handle或把Cancelled当OwnerJoined；成功仅在实际join与原end核验后成立。"
+      },
+      {
+        "step": 7,
+        "action": "在已无新effect/flush任务后，显式停止并实际join Session refresh与在途consumer工作；先等待原serial内I/O退出，不能持serial/owner/issuer锁等待需同锁的worker。保future/consumer早于writer File释放。所有普通purpose FD/alias实际关闭后Root才可完成该目的退役。"
+      },
+      {
+        "step": 8,
+        "action": "Root按已承认的一次purpose retirement接收清洁退出，继续严格保之前和并发发生的所有真实错误；实际join five-lane、Initial/scoped、nested Learning/Model/Publication、registration与watcher。不能把任意EOF/Unavailable按全局完成bool吞掉。"
+      },
+      {
+        "step": 9,
+        "action": "Root外部监督者在业务worker全部join后发送RootJoinedReceipt；daemon只在自身所有实际join凭据+该receipt+原deadline/peer检查全部成立时返回成功。随后finalization-only通道关闭，旧Gate/cache保持fenced，不能再执行任何业务调用。"
+      }
+    ],
+    "deadlock_and_authority_rules": [
+      "完成控制通道必须是原startup期间预先绑定、固定end、一次消费的finalization-only purpose；它不能被普通data-lane关闭机制提前销毁到收不到最后receipt，也不能成为closed Gate的业务复活后门。",
+      "Root不能一边等待同client EOF一边由该client等Root final ACK；先退役所有data/purpose实际aliases，再由独立completion purpose传最后join结果。",
+      "原common Gate只有closed，没有正常Completing协议。新增终止状态必须区分authorized drain和fault，首失败不可被稍后intent覆盖；不得简单令require_open在closed后返回Ok。",
+      "如果需要在admission cut后继续在途receipt收尾，必须按实际已入场工作持有permit允许其既有收尾；新的first-effect必须拒绝。不可对10CAS式全路径blind guard，也不可丢已执行effect的原结果。",
+      "Root supervisor发送receipt之前必须join其声明的业务worker。一个worker在自身退出前发送的done只能是准备通知；它不能证明自己的thread/closure已经结束。"
+    ]
+  },
+  "exact_change_sites": [
+    {
+      "paths": [
+        "same_actor_q24_phase_publish.rs",
+        "same_actor_q24_phase_c.rs",
+        "same_actor_q24_phase_worker.rs"
+      ],
+      "change": "保管C实际installed和terminal事实，增加一次completion分支及typed RetirePermit；保原progressDrop→workerawait→Workjoin次序。"
+    },
+    {
+      "paths": [
+        "circuit_task_same_actor_phase.rs",
+        "circuit_task_same_actor_admission.rs"
+      ],
+      "change": "新增不可重开的ClosingC admission cut及实际quiescence，而非只检查pending计数。"
+    },
+    {
+      "paths": [
+        "same_actor_q24_phase_learning_worker.rs",
+        "learning_iteration_same_actor.rs"
+      ],
+      "change": "只对真正已完成命令且持有terminal许可的phase-only分支允许合作退休；原None、未知ACK、Fault、超时和中途process取消仍原样拒绝。"
+    },
+    {
+      "paths": [
+        "circuit_task_runtime.rs"
+      ],
+      "change": "同phase私有factory建立真实spawn_blocking JoinHandle与完整结果的外部保管；等待者被取消后仍可由同cap继续join。需要明确原Err保管/交付，不能只clone一个字符串done。"
+    },
+    {
+      "paths": [
+        "production_launcher.rs",
+        "production_launcher_same_actor_phase.rs"
+      ],
+      "change": "提取保原默认路径的phase-only运行入口，使用已有run_with_shutdown；真实blocking/owner join必须在原Rootattachments drop之前完成。最终只有完整终止凭据可替代当前强制Err。"
+    },
+    {
+      "paths": [
+        "root_authority_session.rs"
+      ],
+      "change": "增加phase-only明确停止/实际join路径，覆盖正在执行和排队的ConsumerSyncJob；单worker.abort及原Drop不够。具体queued blocking句柄必须纳保管，不能只等serial释放。"
+    },
+    {
+      "paths": [
+        "same_actor_q24_phase_protocol.rs",
+        "same_actor_q24_phase_gate.rs",
+        "authority_host_same_actor_q24_phase_record.rs",
+        "authority_host_same_actor_q24_phase_worker.rs",
+        "authority_host_same_actor_q24_host.rs"
+      ],
+      "change": "一次intent、同源purpose retirement、sticky fault和外部Root join receipt；所有新消息沿原peer/end/identity约束，不mint新issuer/key。"
+    },
+    {
+      "paths": [
+        "authority_host_listeners.rs",
+        "authority_host_learning_session.rs",
+        "authority_host_q24_model_session.rs",
+        "authority_host_generation_initial_runtime.rs",
+        "authority_host_generation_publication_runtime.rs"
+      ],
+      "change": "仅新phase模式将exact authorized retirement作为独立typed正常返回；其余EOF/错误保原拒绝。Root总supervisor聚合全部join结果。"
+    }
+  ],
+  "unresolved_before_implementation": [
+    "当前PublishedTask持有Journal，不持所有外部GenV2执行宿主句柄。实施前必须沿真实C control/worker factory逐一库存实际thread/process handles；若某原factory没有join/retirement能力，必须补该原owner的私有接口，不能以Journal drain顶替。",
+    "Session queued ConsumerSyncJob的当前Drop保留文件安全，但不证明其完成。实际句柄需要外部保管并有只读终态证据；避免新stop API在worker等serial时持serial await造成死锁。",
+    "完成cap的双等待者与原错误交付需要明确所有权：实际JoinHandle只能被同保管cell消费一次，其结果必须保原错误因果；不能因genericRuntime先消费结果而把后继completion waiter置为假成功。",
+    "Root服务holder/registration线程的最终join发送者需要实际拥有原句柄；不应让被join的服务线程证明自己已退出。宿主监督线程仍活着不等于cold restart。",
+    "原run_with_shutdown的drain/abort回路仍可能超过phase最早end。清理可以继续，但不能续期授权或在迟到之后返回phase成功；超时仍明确错误/unknown，并如实保留尚未实际join的owner。",
+    "新的terminal状态和normal-EOF接受本身是有限新协议，必须独立审查/完整qualification；它不属于当前已冻候选的非阻断小修。"
+  ],
+  "necessary_behavioral_acceptance_cases": [
+    "真实C source/cell/current、原认证Outcome与原Learning最终ACK全部完成后，严格cut/drain/实际join/Root final ACK一路正向；使用合法部署材料，不能造成功业务receipt。",
+    "在实际spawn_blocking closure内用barrier和持有FD阻塞；abort原async wrapper后，completion不得成功，FD与pending仍在；解除barrier并真实join后才允许生成OwnerJoined。",
+    "cleanup waiter被取消后重新由同保管cap等待，不能丢实际handle/输出或在pending尚非零时报告完成。",
+    "原task-local drain成功但实际GenV2/owner线程仍持资源：不得产生最终成功ACK。",
+    "Root一个真实purpose线程尚阻塞或有FD alias未释放：最终RootJoined不得发；清洁关闭必须解除，而不是测试缩短timeout掩盖。",
+    "CompletionIntent首ACK丢失、最终JoinACK丢失、durable write未知、重复intent：错误/unknown且不能rearm/再次执行A/B/C或补发新权限。",
+    "正常关闭意图与真实worker错误/peer失效/revoke/BOOTTIME倒退/原end竞态：fatal事实始终保留，不能因计划关闭而变Ok。",
+    "真实NoUpdate且其checkpoint/ACK已完成可以进入终止；同时间位置的Fault、missing、timeout、cancel绝不变NoUpdate。",
+    "原None/default runtime与Root mandatory EOF负例不变；正常retirement只能走匹配同gate/phase的私有许可。",
+    "在学习/Root/GenV2实际join前最后一次消费者Arc、当前task、writer file的释放顺序用真实资源验证；不以镜像布尔或is_finished断言代替。",
+    "deadline内全部join但最后ACK在原end之后到达仍失败；不通过now+remaining或更大500ms窗口接受。",
+    "业务workers均结束但宿主Root/daemon进程仍活，报告只称业务owner完成；真实双进程冷重启仍是独立未验目标。"
+  ],
+  "frozen_scope_and_counts": {
+    "source_changes": 0,
+    "metadata_changes": 0,
+    "new_tests_implemented": 0,
+    "native_executions": 0,
+    "ordinary_business_acceptances": 0,
+    "independent_C_acceptances": 0,
+    "cold_restart_acceptances": 0
+  },
+  "recommendation": "把此方案作为后继独立垂直切片。在当前candidate通过其原门之前，不混入这些新终止语义；当前Startup末尾Err必须继续保留。"
+}

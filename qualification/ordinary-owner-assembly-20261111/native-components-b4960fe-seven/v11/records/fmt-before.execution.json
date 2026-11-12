@@ -1,0 +1,49 @@
+{
+  "after": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "dirty": true,
+    "parents": [
+      "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8"
+    ],
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "dirty": false,
+    "parents": [
+      "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8"
+    ],
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152"
+  },
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 3.5021254979074,
+  "error": "source identity or bytes changed during execution",
+  "exit_code": 1,
+  "finished_at": "2026-11-12T14:00:51.264533+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 0,
+  "log_file": "fmt-before.execution.json.6b2af53809e64521a713bba5fd3995af.log",
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+  "started_at": "2026-11-12T14:00:47.761001+00:00",
+  "status": "failed",
+  "tested_sha": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+  "timed_out": false,
+  "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b4960fe-seven-final-v11/source"
+}

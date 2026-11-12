@@ -1,0 +1,14 @@
+{
+  "source": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+  "source_tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+  "files": 76,
+  "hunks": 327,
+  "exact_native_status_path_set": true,
+  "native_status_representation": "JSON inside Python RuntimeError repr; status contains literal backslash-n separators, shape verified before split.",
+  "full_patch_sha256": "983ab97735ee06d4bff21a22660c443133720bda5ce93daad9ea7f527351d040",
+  "every_native_old_new_full_git_and_reverse": true,
+  "post_bytes": 947234,
+  "native_source_rerun": false,
+  "context_disambiguation": "Each hunk is applied at its native line positions, verifies all context and line counts, and is bound to full old/new Git hashes and exact reverse reconstruction. Two hunks in final_use_retained.rs have repeated context text; no claim that every context string occurs only once.",
+  "inspection_note": "First local inspection compared a Python RuntimeError repr's nested literal \\\\n status string as newline-delimited and correctly stopped at path-set mismatch. No external mutation or native rerun occurred. Corrected inspection explicitly verifies that repr shape and splits only the declared literal backslash-n separators; all76 native paths equal patch paths exactly."
+}

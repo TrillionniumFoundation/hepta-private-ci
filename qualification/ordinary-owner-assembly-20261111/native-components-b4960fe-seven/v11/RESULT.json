@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.fixed-source-v36-failure-evidence.v1",
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "status": "FAILED_FORMAT_SOURCE_CHANGED",
+  "attempt": "ordinary-b4960fe-seven-final-v11",
+  "source": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+    "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+    "parent": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+    "source_inventory": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+    "candidate_docs": "qualification/ordinary-owner-assembly-20261111/same-actor-component-v36"
+  },
+  "native_exit_code": 1,
+  "formatter": {
+    "child_exit_code": 0,
+    "executor_exit_code": 1,
+    "elapsed_seconds": 3.5021254979074,
+    "source_before_clean": true,
+    "source_after_clean": false,
+    "error": "source identity or bytes changed during execution",
+    "modified_files": 76,
+    "patch_bytes": 407063,
+    "patch_sha256": "983ab97735ee06d4bff21a22660c443133720bda5ce93daad9ea7f527351d040"
+  },
+  "reached_steps": [
+    {
+      "name": "original-rust-idle-preflight",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.03239534795284271
+    },
+    {
+      "name": "isolated-clone",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.8156244328711182
+    },
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 34.779859198024496
+    },
+    {
+      "name": "checkout-exact-source",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.5786410470027477
+    },
+    {
+      "name": "format-base-ancestry",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.0047770398668944836
+    },
+    {
+      "name": "operator-toolchain",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.517073567956686
+    },
+    {
+      "name": "fmt-before",
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 3.5695822981651872
+    }
+  ],
+  "not_reached": [
+    "scoped fix seven packages",
+    "test binary build",
+    "full original caller checker",
+    "four QA entrances",
+    "operator native tests",
+    "exact UID0 Root17 native tests",
+    "Root setup/helper gates"
+  ],
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "failed",
+      "error": "Expected retained actual formatter drift; exact native failure retained in NATIVE_PROGRESS.json."
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "reference_unchanged": true,
+  "external_tools_unchanged": true,
+  "native_harness": {
+    "git": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 50167,
+    "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+  },
+  "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "original_limits": {
+    "freshness_ms_from_original_request_started_ns": 500,
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "exact_root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "retries": 0,
+    "overall_seconds": 27000,
+    "full_caller_seconds": 3600
+  },
+  "business_acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_C": false,
+    "physical_daemon_and_Root_restart": false,
+    "fault_is_no_update": false
+  },
+  "predecessor_results_used": false,
+  "waivers": false,
+  "main_merged": false,
+  "format_reconstruction": {
+    "files": 76,
+    "hunks": 327,
+    "full_native_patch_verified": true,
+    "every_postimage_create_get_verified": true,
+    "manifest": "705a75d848290e994d95c75c27de8fd549fdf2d4",
+    "review_status": "First13 source+metadata independently reviewed; remaining source semantics and complete metadata repair pending. Reconstruction is not compiler/checker/native PASS."
+  },
+  "a_wording_erratum": "The A handoff authenticates the task-local durable journal drain, then waits for the original A Direct-owner future to return and releases its active owner custody before the second phase ACK. Root subsequently validates and consumes the original Initial CURRENT owner before opening Learning/Model. This is not a claim that the outer blocking task, all Root workers, or the daemon have terminated or been physically joined.",
+  "physical_owner_completion": "Still a design, not implemented or accepted. No outer blocking-worker/all Root-worker/OS-process join claim.",
+  "source_unchanged_by_evidence": true
+}
