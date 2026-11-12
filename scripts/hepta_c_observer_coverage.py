@@ -309,7 +309,17 @@ RETAINED_PUBLICATION_CASES = tuple(
     )
 )
 
+ARTIFACT_PUBLICATION_READBACK_CASES = (
+    "owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing",
+    "owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged",
+    "owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion",
+    "owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation",
+    "owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage",
+    "owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp",
+)
+
 OWNER_GROUPS = (
+    ("original_artifact_publication_readback", "codex-hepta-learning-artifacts", ARTIFACT_PUBLICATION_READBACK_CASES),
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
     ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
