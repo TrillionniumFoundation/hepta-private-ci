@@ -1,0 +1,16 @@
+function tarFiles(raw, decode){
+ function textAt(header,begin,length){const b=header.subarray(begin,begin+length);const z=b.indexOf(0);return decode(z<0?b:b.subarray(0,z))}
+ function octal(header,begin,length){const t=textAt(header,begin,length).trim();if(!/^[0-7]+$/.test(t))throw Error("invalid tar number");const n=parseInt(t,8);if(!Number.isSafeInteger(n)||n<0)throw Error("tar number bound");return n}
+ function paxFields(data){let p=0;const fields={};while(p<data.length){let space=p;while(space<data.length&&data[space]!==32)space++;const token=decode(data.subarray(p,space));if(!/^[1-9][0-9]*$/.test(token))throw Error("PAX length");const len=Number(token);if(!Number.isSafeInteger(len)||p+len>data.length||space+1>=p+len||data[p+len-1]!==10)throw Error("PAX bound");const item=decode(data.subarray(space+1,p+len-1)),eq=item.indexOf("=");if(eq<=0||Object.hasOwn(fields,item.slice(0,eq)))throw Error("PAX key");fields[item.slice(0,eq)]=item.slice(eq+1);p+=len;}return fields}
+ const files={},metadata=[];let p=0,local={},global={};
+ while(p+512<=raw.length){const h=raw.subarray(p,p+512);if(h.every(x=>x===0)){if(p+1024>raw.length||!raw.subarray(p).every(x=>x===0))throw Error("tar end padding");return {files,metadata,padding_bytes:raw.length-p};}
+ const expected=octal(h,148,8);let sum=0;for(let i=0;i<512;i++)sum+=(i>=148&&i<156)?32:h[i];if(sum!==expected)throw Error("tar checksum");
+ let size=octal(h,124,12);const type=String.fromCharCode(h[156]);const fields={...global,...local};if(type!=="x"&&type!=="g"&&fields.size!==undefined){if(!/^[0-9]+$/.test(fields.size))throw Error("PAX size");size=Number(fields.size);}
+ if(!Number.isSafeInteger(size)||size<0||size>64*1024*1024||p+512+size>raw.length)throw Error("tar payload bound");const data=raw.subarray(p+512,p+512+size);p+=512+Math.ceil(size/512)*512;
+ if(type==="x"){local=paxFields(data);continue;}if(type==="g"){global={...global,...paxFields(data)};continue;}
+ const prefix=textAt(h,345,155),plain=textAt(h,0,100);const name=fields.path??(prefix?prefix+"/"+plain:plain);local={};
+ if(!name||name.startsWith("/")||name.includes("\\")||name.includes("\0")||name.split("/").some(s=>s==="."||s===".."))throw Error("unsafe tar path");
+ if(type==="5"){if(size!==0)throw Error("directory data");metadata.push({name,type});continue;}
+ if(type!=="0"&&type!=="\0")throw Error("unsupported tar entry "+type);if(!name.startsWith("evidence/")||Object.hasOwn(files,name))throw Error("file path/duplicate");files[name]=Array.from(data);metadata.push({name,type,bytes:size});
+ }throw Error("missing tar end");
+}
