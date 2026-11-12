@@ -7,6 +7,9 @@ use crate::CellGenerationObserverConfigV1;
 use pretty_assertions::assert_eq;
 use std::io::Write;
 
+#[path = "cell_generation_unpublished_observer_tests.rs"]
+mod unpublished;
+
 fn observer_config() -> CellGenerationObserverConfigV1 {
     CellGenerationObserverConfigV1 {
         generation: config(),
