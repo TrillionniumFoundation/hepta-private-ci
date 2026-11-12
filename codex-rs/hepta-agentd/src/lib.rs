@@ -463,6 +463,10 @@ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandRecei
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionReadbackConnectionV1;
 
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitEvaluatedSelectionReadbackErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitEvaluatedSelectionReadbackOwnerV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandContextV1;
