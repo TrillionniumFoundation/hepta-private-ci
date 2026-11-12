@@ -110,6 +110,22 @@ pub(in super::super) fn serve_optional(
             );
             let slot = match slot {
                 Ok(slot) => {
+                    if let Some(source) = initial.runtime.source_capture.as_ref()
+                        && let Err(error) = source.register_original_source_cell(
+                            source_capture::SourceCaptureContext {
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                slot: &slot,
+                                stopping: &stopping,
+                                end,
+                            },
+                        )
+                    {
+                        let _ = submission.acknowledgement.try_send(Err(error.to_string()));
+                        return Err(error);
+                    }
                     if stopping.load(Ordering::Acquire)
                         || submission
                             .acknowledgement
