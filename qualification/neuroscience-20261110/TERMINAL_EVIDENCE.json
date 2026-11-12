@@ -1,8 +1,8 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 15:18:14 UTC",
+  "observed_at_utc": "2026-11-12 16:06:39 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "publication_parent": "ba20e12044cbf9d90a8823f6e3e68878b638210f",
+  "publication_parent": "07a36154f002429da878aa1a4ee60b052553840b",
   "scope": "Evidence and documentation only. Original ACT bb8 hosted success is independently complete; EBE failures and the published 1631 follow-up are separately pinned. Four pre-frozen B/C development effects remain unchanged. No new research actors, promotion or deployment.",
   "status": "HOLD",
   "owner_decision": null,
@@ -395,29 +395,24 @@
       "original_source_log_sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
       "full_inventory_payload_archive": "COMPLETE: three original gzip parts reassembled from GitHub, CRC32/ISIZE and full SHA256 independently verified by root; 14,753 original tracked-file records parsed.",
       "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
-      "current_head": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
-      "current_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
-      "current_native_status": "HOSTED_ORDINARY_ROOT_SUITE_IN_PROGRESS; CLIPPY_FAILED_15_DISTINCT_LOCATIONS",
-      "current_source_gate_status": "SOURCE_AND_PARSER_STEPS_PASSED_FULL_CALLER_IN_PROGRESS",
+      "current_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+      "current_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+      "current_native_status": "HOSTED_IN_PROGRESS_EXACT_9FAC",
+      "current_source_gate_status": "AWAITING_ORIGINAL_SOURCE_RESULT",
       "previous_source_results_transferred": false,
       "full_inventory_original_gzip_bytes": 762747,
       "full_inventory_original_gzip_sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
       "full_inventory_root_verification": "../evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json",
       "current_validation": {
-        "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
-        "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
-        "run": 43243479903,
-        "status": "IN_PROGRESS",
-        "source_closure_step": "success",
-        "parser_step": "success",
-        "source_method_count": null,
-        "parser_method_count": null,
-        "counts_wait_for_original_execution_record": true,
-        "caller_job": 131269839839,
-        "caller_status": "in_progress",
-        "ordinary_root_job": 131269839345,
-        "ordinary_root_status": "in_progress",
-        "observed_stage": "Run ordinary and Root suites then scoped maintenance",
+        "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+        "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+        "run": 43254705812,
+        "native_job": 131309678676,
+        "caller_job": 131309678429,
+        "status": "in_progress",
+        "source_test_count": null,
+        "parser_test_count": null,
+        "native_test_count": null,
         "previous_results_transferred": false
       },
       "previous_0e_validation": {
@@ -489,63 +484,26 @@
         "hold": "Not dispatched. Original hosted 1026 native compile failure is now known; next candidate must include the minimal import fix and the fixed a96 upstream integration, then receive new exact-source validation."
       },
       "current_native_validation": {
-        "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
-        "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
-        "run": 43243479903,
-        "job": 131269839345,
+        "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+        "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+        "run": 43254705812,
+        "native_job": 131309678676,
+        "caller_job": 131309678429,
         "status": "in_progress",
-        "conclusion": null,
-        "original_exact_tests_passed": null,
-        "scope": "No completed native result yet.",
-        "clippy": {
-          "job": 131270677503,
-          "conclusion": "failure",
-          "distinct_locations": 15,
-          "await_holding_invalid_type": 11,
-          "expect_used": 4,
-          "evidence": "../evaluated-current-read-20261112/1631e01-clippy-and-fence/ROOT_REVIEW.json"
-        },
-        "blob_policy": {
-          "job": 131270335481,
-          "conclusion": "failed_before_checkout_and_checker",
-          "error": "local_control_inventory_unavailable",
-          "checker_result": null
-        },
-        "original_job_metadata": "../evaluated-current-read-20261112/1631e01-clippy-and-fence/native-caller.jobs.original.json",
-        "blocking_successes": {
-          "rustfmt": {
-            "job": 131270892690,
-            "conclusion": "success"
-          },
-          "release_linux": {
-            "job": 131270677427,
-            "conclusion": "success"
-          },
-          "actual_execution_commit": "9c122c9b32eedfb7a8d177534035d705cad0e0dc",
-          "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
-          "root_original_metadata_verified": true
-        },
-        "bazel_qualification_failure": {
-          "jobs": [
-            131270677652,
-            131270677456
-          ],
-          "method": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
-          "selected_target_passed": 2,
-          "selected_target_failed": 1,
-          "full_unit_target": "Aborted",
-          "remaining_ms_at_mint": 16,
-          "root_actual_full_logs_retrieved": true,
-          "fix": "Test-only full preparation window and bounded observed expiry wait under review",
-          "evidence": "../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json",
-          "full_logs_reassembled_from_git": true
-        }
+        "source_test_count": null,
+        "parser_test_count": null,
+        "native_test_count": null,
+        "previous_results_transferred": false,
+        "expected_ordinary_methods_static_not_measured": 1738,
+        "old_methods_removed": 0,
+        "new_methods": 5,
+        "conclusion": null
       },
       "pending_integration": {
         "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
         "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
         "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-        "status": "PUBLISHED_EBE; EXACT_FAILURES_RETAINED_AND_MINIMAL_CORRECTIONS_PUBLISHED_AS_1631",
+        "status": "A96_INTEGRATION_PUBLISHED; 1631_NATIVE_FAILURE_RETAINED; 0869_LINT_FIXED_AND_SOURCE_FAILURE_RETAINED; 320533_MARKER_FORMAT_FIX_PUBLISHED",
         "canonical_upstream": "Opaque Evaluated read profile for original 4-cut Selection / 5-cut NextUse; independent wire operation/domain; read profiles actively attenuate to Readback.",
         "retain": "Actual T/E and 2x2 CURRENT positive observations, original bytes unchanged, equivalent original refusal conditions, exact source-bound caller registration.",
         "minimal_compile_fix_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
@@ -705,18 +663,15 @@
         "core_originals_root_verification": "../evaluated-current-read-20261112/hosted-1026-original-artifacts/ROOT_CORE_VERIFICATION.json"
       },
       "latest_published_correction": {
-        "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
-        "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
-        "parent": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
-        "paths": 7,
-        "each_diff_additions": 1,
-        "each_diff_deletions": 1,
-        "existing_encoder_callers": 17,
-        "boundary_ids": 541,
-        "protected_records": 389,
-        "active_unique_allowlist_paths": 61,
-        "production_or_checker_changed": false,
-        "root_review": "../evaluated-current-read-20261112/1631e01-caller-readiness-review/ROOT_REVIEW.json"
+        "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+        "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+        "parent": "320533a257a257bbb8c43c3c1cdb6a645e841b53",
+        "paths": 3,
+        "product_source_changed": false,
+        "checker_changed": false,
+        "protected_sequences_removed": 0,
+        "changes": "Prepend existing exact function marker to retained state accessor guard; sole CALLERS pin; existing pinned Fence step ACTIONS_STEP_DEBUG=true only.",
+        "root_review": "../evaluated-current-read-20261112/9fac-guard-diagnostics-review/ROOT_REVIEW.json"
       },
       "original_ebe_hosted": {
         "source": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
@@ -744,6 +699,223 @@
         "tree_equal": true,
         "root_full_original_log_and_commit_verified": true,
         "evidence": "../evaluated-current-read-20261112/841fb9-rustfmt-pass/MANIFEST.json"
+      },
+      "previous_exact_1631_checkpoint_observation": {
+        "current_validation": {
+          "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+          "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+          "run": 43243479903,
+          "status": "IN_PROGRESS",
+          "source_closure_step": "success",
+          "parser_step": "success",
+          "source_method_count": null,
+          "parser_method_count": null,
+          "counts_wait_for_original_execution_record": true,
+          "caller_job": 131269839839,
+          "caller_status": "in_progress",
+          "ordinary_root_job": 131269839345,
+          "ordinary_root_status": "in_progress",
+          "observed_stage": "Run ordinary and Root suites then scoped maintenance",
+          "previous_results_transferred": false
+        },
+        "current_native_validation": {
+          "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+          "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+          "run": 43243479903,
+          "job": 131269839345,
+          "status": "in_progress",
+          "conclusion": null,
+          "original_exact_tests_passed": null,
+          "scope": "No completed native result yet.",
+          "clippy": {
+            "job": 131270677503,
+            "conclusion": "failure",
+            "distinct_locations": 15,
+            "await_holding_invalid_type": 11,
+            "expect_used": 4,
+            "evidence": "../evaluated-current-read-20261112/1631e01-clippy-and-fence/ROOT_REVIEW.json"
+          },
+          "blob_policy": {
+            "job": 131270335481,
+            "conclusion": "failed_before_checkout_and_checker",
+            "error": "local_control_inventory_unavailable",
+            "checker_result": null
+          },
+          "original_job_metadata": "../evaluated-current-read-20261112/1631e01-clippy-and-fence/native-caller.jobs.original.json",
+          "blocking_successes": {
+            "rustfmt": {
+              "job": 131270892690,
+              "conclusion": "success"
+            },
+            "release_linux": {
+              "job": 131270677427,
+              "conclusion": "success"
+            },
+            "actual_execution_commit": "9c122c9b32eedfb7a8d177534035d705cad0e0dc",
+            "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+            "root_original_metadata_verified": true
+          },
+          "bazel_qualification_failure": {
+            "jobs": [
+              131270677652,
+              131270677456
+            ],
+            "method": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+            "selected_target_passed": 2,
+            "selected_target_failed": 1,
+            "full_unit_target": "Aborted",
+            "remaining_ms_at_mint": 16,
+            "root_actual_full_logs_retrieved": true,
+            "fix": "Test-only full preparation window and bounded observed expiry wait under review",
+            "evidence": "../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json",
+            "full_logs_reassembled_from_git": true
+          }
+        },
+        "latest_published_correction": {
+          "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+          "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+          "parent": "841fb932deb95cf4368ef01e28f0c8081a1c48fa",
+          "paths": 7,
+          "each_diff_additions": 1,
+          "each_diff_deletions": 1,
+          "existing_encoder_callers": 17,
+          "boundary_ids": 541,
+          "protected_records": 389,
+          "active_unique_allowlist_paths": 61,
+          "production_or_checker_changed": false,
+          "root_review": "../evaluated-current-read-20261112/1631e01-caller-readiness-review/ROOT_REVIEW.json"
+        }
+      },
+      "original_1631_terminal": {
+        "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+        "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+        "run": 43243479903,
+        "native_job": 131269839345,
+        "status": "FAILED",
+        "source_tests": 414,
+        "source_passed": 414,
+        "parser_passed": 16,
+        "helper_complete": true,
+        "native_tests": 1733,
+        "native_unique_methods": 1733,
+        "native_passed": 1697,
+        "native_failures": 36,
+        "native_skipped": 0,
+        "native_retries": 0,
+        "sigabrt_stack_overflows": 31,
+        "ordinary_failures": 5,
+        "native_execution_exit": 100,
+        "root_suites_started": false,
+        "maintenance_started": false,
+        "full_job_bytes": 3729153,
+        "full_job_sha256": "8a4a6593e70fb2f2104e37ec44d91e70bcfa419f30e3c99d3fe5ab97a37a48bb",
+        "full_job_git_parts_verified": true,
+        "original_junit": {
+          "bytes": 443996,
+          "sha256": "1ff4d6e623e62f03e88233c9f007348b1db70591698952aa7fc6c6b25aea9d2f",
+          "git_blob": "5eaaad428185f63c6086825e862d30a70355364f",
+          "root_counted": true,
+          "status": "retained-failed"
+        },
+        "source_before_final_identical": true,
+        "inventory_entries_recorded": 15217,
+        "full_inventory_payload_archived": false,
+        "complete_zip_archived": false,
+        "caller": {
+          "job": 131269839839,
+          "status": "success",
+          "rust_files_scanned": 6601,
+          "full_job_bytes": 2142662,
+          "full_job_sha256": "2f55384b7af3b01633ccd932c1ebade829f4c417d8bdc9bbdc9692b67bb4d212",
+          "full_job_git_parts_verified": true,
+          "caller_zip_archived": false
+        },
+        "artifact_transfer": {
+          "status": "ORIGINAL_ARTIFACT_BYTES_VERIFIED",
+          "new_native_or_actor_execution": false,
+          "launch_registry_ack": "UNKNOWN",
+          "original_driver_record_preserved": true
+        },
+        "evidence": [
+          "../evaluated-current-read-20261112/1631-native-failure/",
+          "../evaluated-current-read-20261112/1631-native-artifact-core/",
+          "../evaluated-current-read-20261112/1631-caller-pass/"
+        ]
+      },
+      "original_0869_terminal": {
+        "source": "0869be2655922d9d71ba83bafdaccd85f99f6a77",
+        "tree": "040bc4af554e4ffb659bf49eb062b94c3f1898f6",
+        "run": 43251473816,
+        "native_job": 131298114560,
+        "native_status": "FAILED_AT_SOURCE_CLOSURE",
+        "source_tests": 414,
+        "source_passed": 403,
+        "source_errors": 11,
+        "cause": "new helper function selector does not match existing verifier grammar",
+        "rust_tests_started": false,
+        "parser_started": false,
+        "full_job_bytes": 1859714,
+        "full_job_sha256": "1d102ba23854504e1a80fbcc6bb2399bcc799e8d3e35923ba3e05710f7d4132f",
+        "blocking_run": 43251474257,
+        "clippy_linux": {
+          "job": 131298362585,
+          "conclusion": "success",
+          "full_log_sha256": "17eb435947c5fe34faea3fb3f13f7408dcefcdc1c94cda2c0c8f58bcd6b045cd"
+        },
+        "release_linux": {
+          "job": 131298362602,
+          "conclusion": "success",
+          "full_log_sha256": "e8a880ec9f99e341900de705422574e43a34c0d0340c5b648bcdb1a75c7e6fed"
+        },
+        "actual_execution": "4f19396c9e45920c982b4aba795605684eabe7a2",
+        "actual_execution_tree_equals_source": true,
+        "format": {
+          "job": 131298536550,
+          "conclusion": "failure",
+          "exact_hunks": 5,
+          "files": 2
+        },
+        "blob_policy": {
+          "job": 131298120336,
+          "conclusion": "failure_before_checkout_and_checker",
+          "error": "local_control_inventory_unavailable",
+          "checker_result": null
+        },
+        "bazel_tests": "cancelled during the next source follow-up; no success inferred",
+        "caller_status": "last observed in_progress; do not infer success",
+        "repair": "320533a retains all sequences and checker, fixes fn selector plus unique constructor top-level marker, and applies five actual formatter hunks",
+        "evidence": [
+          "../evaluated-current-read-20261112/0869-native-repair-review/",
+          "../evaluated-current-read-20261112/0869-source-closure-failure/",
+          "../evaluated-current-read-20261112/0869-clippy-release-pass/"
+        ]
+      },
+      "original_320533_terminal": {
+        "source": "320533a257a257bbb8c43c3c1cdb6a645e841b53",
+        "tree": "0e7a020ab5cee9d14c2aab0a2ce682dfb440cfbc",
+        "run": 43253106048,
+        "native_job": 131303996403,
+        "status": "FAILED_AT_SOURCE_CLOSURE",
+        "source_methods": 414,
+        "source_passed": 403,
+        "source_errors": 11,
+        "reason": "new helper state_mut sequence has one marker; original verifier requires at least two",
+        "rust_started": false,
+        "parser_started": false,
+        "full_log_bytes": 1861422,
+        "full_log_sha256": "57bdbab38e146b08979bb8b6c8042566296705d156c43d95e0c846f42531f36a",
+        "format": {
+          "job": 131304879145,
+          "status": "success"
+        },
+        "fence": {
+          "job": 131304431939,
+          "error": "local_control_inventory_unavailable",
+          "checker_result": null
+        },
+        "static_prior_review_limit": "Marker/order/depth review omitted minimum sequence length; its record remains static and is not represented as a checker PASS.",
+        "followup": "9fac prepends exact fn state_mut( marker, retains original body expression and top-level check, and enables only original Fence diagnostic logging.",
+        "evidence": "../evaluated-current-read-20261112/320533-source-closure-failure/"
       }
     }
   ],
@@ -1043,11 +1215,11 @@
     }
   },
   "moving_bases": {
-    "observed_at_utc": "2026-11-12 15:18:14 UTC",
-    "owner_current_head": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
-    "owner_current_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+    "observed_at_utc": "2026-11-12 16:06:39 UTC",
+    "owner_current_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "owner_current_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
     "fixed_upstream_integration_target": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-    "status": "FIXED_A96_INTEGRATED_AND_CURRENT_1631_PUBLISHED",
+    "status": "FIXED_A96_INTEGRATED_AND_CURRENT_9FAC_PUBLISHED",
     "pr_api_base_sha_is_stale": true,
     "actual_branch_ref_used": true,
     "previous_completed_integration": "620235b + 639f894 -> 1026bd09",
@@ -1055,7 +1227,7 @@
     "cumulative_ours_vs_639_caller_edges": 22,
     "cumulative_count_explanation": "21 actual edges fixed after the 620 diagnostic plus one earlier readback_owner edge; do not rewrite the historical 21-edge fix count.",
     "source_results_do_not_transfer": true,
-    "candidate_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976"
+    "candidate_commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca"
   },
   "remaining_gates": [
     "Original source/exposure custody",
@@ -1220,7 +1392,7 @@
     "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 15:31:32 UTC",
+  "latest_followup_observed_at_utc": "2026-11-12 16:06:39 UTC",
   "wrapper_completed_macro_executions": 4,
   "latest_binary_readback": {
     "staged_commits": [
@@ -1246,11 +1418,14 @@
     "scope": "Concrete source/custody/data requirements. Engineering gaps actively implemented; scientific outcome, original custody and new independent data are not fabricated."
   },
   "active_engineering_work": {
-    "current_lint": "Private unique owning-slot lease to preserve one-shot/cancellation semantics without guards across awaits; original expect error propagation.",
+    "current_lint": "0869 original Linux Clippy passed after boxed original-state lease and explicit test error propagation. Current 320533 source checks must validate separately.",
     "evaluated_selection": "Initial original S command and resident continuation; client and server permanently attenuate after Readback; single original owner shared with purpose-fixed readonly evidence.",
     "evaluated_version_c": "Real evaluated preparation -> original task factory -> exact Root FinalUse issuer transport -> fresh opaque five-cut S -> original C; explicit initial streams under implementation.",
-    "candidate_tests_and_format": "NOT_RUN_ON_UNPUBLISHED_ADAPTER_CANDIDATES",
+    "candidate_tests_and_format": "320533 original Rustfmt passed. 9fac completes minimum sequence schema and preserves formatted Rust; S/Version/C drafts still not compiled/executed.",
     "qualified_adoption": "DENIED",
-    "no_owner_or_socket_from_report_fields": true
+    "no_owner_or_socket_from_report_fields": true,
+    "current_native": "1631 original 1733/1697/36 preserved; all original methods plus five regressions retained. 0869 and 320533 each stopped on newly registered helper guard schema; exact 9fac follow-up pending.",
+    "fence": "Pinned v0.10 local-control inventory fails before checker; official bounded debug logging enabled only on the existing step. No change to protection, mode, pins, permissions, allowlist or resident child environment. Exact missing input still unknown.",
+    "observer_initialization": "Fresh S delivery to independent Observer is a separate actual initial-channel handoff under Root five-cut gate; being implemented, never derived by elevating readback."
   }
 }

@@ -1,0 +1,153 @@
+{
+  "schema": "hepta.exact-constructor-and-format-followup.v1",
+  "observed_at_utc": "2026-11-12 16:00:24 UTC",
+  "source": "320533a257a257bbb8c43c3c1cdb6a645e841b53",
+  "tree": "0e7a020ab5cee9d14c2aab0a2ce682dfb440cfbc",
+  "parent": "0869be2655922d9d71ba83bafdaccd85f99f6a77",
+  "pushed_and_ref_readback": true,
+  "source_failure_original_record": "../0869-source-closure-failure/source-closure.record-from-original-log.json",
+  "caller_fix": {
+    "path": "CALLERS.toml",
+    "base": "4b3bc5bf7ed524c9adba8abd7f148bfeae820b0b",
+    "post_blob": "8e3f621d4c1a67abd574ddeab9decd5188d34a7b",
+    "sha256": "d4bdc4ff2de50fcc7888c81f533bd2b1ee4da5fd66ef17df1accb76e138e534b",
+    "bytes": 1129152,
+    "old_line": "  { function = \"fn new(value: T)\", sequence = [\"Self {\", \"slot: Mutex::new(Slot {\", \"value: Some(Box::new(value))\", \"fenced: false\"], top_level = [\"Self {\"] },",
+    "new_line": "  { function = \"fn new(\", sequence = [\"Self {\", \"slot: Mutex::new(Slot {\", \"value: Some(Box::new(value))\", \"fenced: false\"], top_level = [\"Self {\\n            slot:\"] },",
+    "required_signature": "pub(super) fn new(value: T)",
+    "checker_unchanged": true,
+    "sequences_unchanged": true,
+    "allowlist": {
+      "path": ".github/blob-size-allowlist.txt",
+      "base": "414f0f6e49906facf38de32b404f725736d19da9",
+      "post_blob": "a8f69041bbca28c43f5e9c16093f1c08268172b8",
+      "sha256": "c7d0e98faf22448cc6154d6828cdfc11a08a00a5382a3912d5b6910e8feeddc7",
+      "bytes": 11699,
+      "from": "sha256:dfdc54c21a209e88521f9409c92b26e27611b2594d4ca1ab5203d08d59b2dbfc CALLERS.toml",
+      "to": "sha256:d4bdc4ff2de50fcc7888c81f533bd2b1ee4da5fd66ef17df1accb76e138e534b CALLERS.toml"
+    }
+  },
+  "static_checks": {
+    "kind": "Static reproduction of existing function-selector/order/top-level requirements; not execution of the Python verifier.",
+    "checks": [
+      {
+        "function": "fn new(",
+        "grammar": true,
+        "unique_function": true,
+        "ordered_markers": 4,
+        "top_level": [
+          {
+            "marker": "Self {\n            slot:",
+            "unique": true,
+            "depth": 1
+          }
+        ]
+      },
+      {
+        "function": "fn try_take(",
+        "grammar": true,
+        "unique_function": true,
+        "ordered_markers": 8,
+        "top_level": [
+          {
+            "marker": "let value = {",
+            "unique": true,
+            "depth": 1
+          },
+          {
+            "marker": "Ok(ResidentLaneLease {",
+            "unique": true,
+            "depth": 1
+          }
+        ]
+      },
+      {
+        "function": "fn state_mut(",
+        "grammar": true,
+        "unique_function": true,
+        "ordered_markers": 1,
+        "top_level": [
+          {
+            "marker": "self.value.as_deref_mut().ok_or(Error::CommitUncertain)",
+            "unique": true,
+            "depth": 1
+          }
+        ]
+      },
+      {
+        "function": "fn drop(",
+        "grammar": true,
+        "unique_function": true,
+        "ordered_markers": 6,
+        "top_level": [
+          {
+            "marker": "let value = self.value.take()",
+            "unique": true,
+            "depth": 1
+          },
+          {
+            "marker": "let Ok(mut slot) = self.owner.slot.lock()",
+            "unique": true,
+            "depth": 1
+          },
+          {
+            "marker": "if slot.fenced || slot.value.is_some() || value.is_none()",
+            "unique": true,
+            "depth": 1
+          },
+          {
+            "marker": "slot.value = value",
+            "unique": true,
+            "depth": 1
+          }
+        ]
+      }
+    ]
+  },
+  "format_source_job": 131298536550,
+  "format_fixes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "base": "261f400a6a1dadbd79dffb58005851553ab5b294",
+      "edits": [
+        [
+          "async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt()\n-> anyhow::Result<()> {",
+          "async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt() -> anyhow::Result<()>\n{"
+        ],
+        [
+          "        owner.readback(fixture.receipt_owner_sources(&trainer)).await,",
+          "        owner\n            .readback(fixture.receipt_owner_sources(&trainer))\n            .await,"
+        ],
+        [
+          "        recovered.readback(fixture.receipt_owner_sources(&trainer)).await,",
+          "        recovered\n            .readback(fixture.receipt_owner_sources(&trainer))\n            .await,"
+        ]
+      ],
+      "post_blob": "afe877be224778bf73d97d35fc553f3189910dde",
+      "bytes": 5145,
+      "sha256": "6be0bbba6b953198786a414cd2612354645905b19475b3e62751c04153dc3ba1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "base": "467bba30b2cd77a322b714b9c0655a5823336214",
+      "edits": [
+        [
+          "            let observed_at = SystemTime::now()\n                .duration_since(UNIX_EPOCH)\n                .unwrap_or_else(|error| {\n                    panic!(\"{}: {error:?}\", expiry_stage(\"observe seeded lease expiry\"))\n                });",
+          "            let observed_at =\n                SystemTime::now()\n                    .duration_since(UNIX_EPOCH)\n                    .unwrap_or_else(|error| {\n                        panic!(\"{}: {error:?}\", expiry_stage(\"observe seeded lease expiry\"))\n                    });"
+        ],
+        [
+          "        panic!(\"{}: {error:?}\", expiry_stage(\"wait for seeded lease expiry\"))",
+          "        panic!(\n            \"{}: {error:?}\",\n            expiry_stage(\"wait for seeded lease expiry\")\n        )"
+        ]
+      ],
+      "post_blob": "ac225abdf5676ece3413ce3754af5a85c1896c8a",
+      "bytes": 39176,
+      "sha256": "75c7d13ff2ce28cf169daa7853f4ca63e2f5f0c7cfbad2fb7629856208f366bb"
+    }
+  ],
+  "checker_changed": false,
+  "assertions_changed": false,
+  "runtime_gate_status": "IN_PROGRESS",
+  "owner_decision": null,
+  "source_results_transfer": false
+}

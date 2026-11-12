@@ -1,9 +1,9 @@
-# Blocker 闭合清单与当前证据（2026-11-12 15:18:14 UTC）
+# Blocker 闭合清单与当前证据（2026-11-12 16:06:39 UTC）
 
 **整体仍为 RESEARCH_ONLY / SHADOW_ONLY / HOLD；owner_decision=null，adoption=NOT_REQUESTED。**
 本页以原始证据区分“子项已闭合”和“完整资格尚未通过”。缺件、失败、未启动和 UNKNOWN 都不是原 owner 的 NoUpdate。原始报告中的研究标签保持原样。
 
-本次发布前的完整 [ba20 状态快照](evidence/history-20261112/BLOCKER_CLOSURE_NEXT-ba20.md) 已保留；1b44，a7b38、39ff 等更早快照仍保留。当前机器可读索引：[TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json)。[08:37 历史清单](evidence/history-20261112/BLOCKER_CLOSURE_NEXT-0837.md) 与 [NEXT_STEP_EVIDENCE.json](NEXT_STEP_EVIDENCE.json) 保留旧观察；其中 STARTED、原日志未取回及旧 PR head 不代表本页当前状态。
+本次发布前的完整 [07a 状态快照](evidence/history-20261112/BLOCKER_CLOSURE_NEXT-07a.md) 与 [ba20 状态快照](evidence/history-20261112/BLOCKER_CLOSURE_NEXT-ba20.md) 已保留；1b44，a7b38、39ff 等更早快照仍保留。当前机器可读索引：[TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json)。[08:37 历史清单](evidence/history-20261112/BLOCKER_CLOSURE_NEXT-0837.md) 与 [NEXT_STEP_EVIDENCE.json](NEXT_STEP_EVIDENCE.json) 保留旧观察；其中 STARTED、原日志未取回及旧 PR head 不代表本页当前状态。
 
 ## 1. 本轮已经闭合的具体缺口
 
@@ -18,7 +18,7 @@
 | 原真实 fit 与模型 cold-load | frozen/adapted 各 126 pairs、UNKNOWN0，fit72/cal54；两个 checkpoint 的完整字节、pin 和独立子进程 cold-load 一致。 | 两份 calibration.complete=false；不是已选模型在普通 C／Root 重启后使用。 |
 | 实际公开输入回归 | [#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) exact 2d1f610f...：新的 ai395 原入口实际 19 policy＋7 checkpoint 全通过，原日志与 source-before/after 已归档。 | source inventory SHA256 ea34e33b...，执行环境与 hosted 不同。生产归一化修复来自上游 3c94，不冒充本 PR 新修复。 |
 | 开发输出 HOLD 语义及完整合同回归 | [#6240](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6240) exact 24112612...：28 套件 **200/200 实际通过、0 失败、0 跳过**；format/lint exit0。root 从 GitHub 回读完整 96,284 B gzip，独立解压并校验全部 149 原文件、28 组原日志、原记录和源码前后384项。 | Python3.12.14、NumPy2.3.5、Pillow11.3.0；普通UID1000，不计 hosted CI。v1 199/200失败、v2/v3零套件的外部driver失败原件保留，产品与断言未改。原3c94的NoUpdate标签仍是历史原文。 |
-| evaluated CURRENT 源码与历史证据 | [#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 当前 1631；已修复 EBE 的真实调用漏登记和 readiness 类型错误。新 source/parser 步骤通过，ordinary/Root 与完整 caller 在运行。 | 原失败完整保留；新的 15 处 Clippy 问题正在修。旧 1026 与父 841 结果不转移。 |
+| evaluated CURRENT 源码与历史证据 | [#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 当前 9fac；原 1631 source414/parser16/完整 caller 已过，实际 native1697/1733，36失败原件已完整保留。0869 Linux Clippy 与发布构建已过；其源码标记与格式错误已精确修正。 | 新 head 自己的完整检查在运行；原 31 个栈溢出和 5 个普通失败的修复必须由新执行确认，旧结果不转移。 |
 | MEM v3 原生成终态 | [#6201](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6201) 的7个原文件已独立核验；原execution fa3b624...返回exit0、1次model call。 | 原process registry仍UNKNOWN/job_id=null。新只读分页仅128/63578条，字段无key/digest，不能据此判断未登记或猜job。记忆效益0。 |
 
 完整原件入口：[终态与 root 核验](evidence/terminal-20261112/README.md)、[无损 REPORT](evidence/report-lossless-archive-20261112/)、[content receipt](evidence/content-receipt-lossless-archive-20261112/)、[原只读分析](evidence/report-readonly-analysis-20261112/)、[19/26 实际验证清单](../runtime-validation-20261112/PR6240_PR6221_EVIDENCE_MANIFEST.json)、[MEM 原件](evidence/mem11-v3-reconciliation-20261112/)。
@@ -46,13 +46,19 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 
 ## 3. 当前正在处理的工程阻塞
 
-### CURRENT：两项已知失败已修复，继续关闭原生与 Clippy 门
+### CURRENT：原完整失败已归档，修复后的源码继续验证
 
-[#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 当前已发布 head **1631e01fd086f79bef8bf19bd6fe5859565b7976**，tree **55f93e74a4f5e3c570e1cd837cb9998998d1dadc**，parent 841fb932...。原 EBE 完整调用审计拒绝了一条实际存在却漏登记的 snapshot encoder 调用；真实 Linux 编译又在测试辅助代码处报 E0308，旧 DTO 与新 ReadProfile 类型不匹配。新提交只改 7 行对应的 7 个文件：补第 17 个真实调用方及四个精确 QA tuple，更新唯一 CALLERS hash，并在测试辅助构造中取出原 legacy DTO。root 已独立核对前后完整字节、7 组 +1/−1 差异和同一候选 tree；生产 readiness 仍仅接受 legacy。见[最小修复独立审查](../evaluated-current-read-20261112/1631e01-caller-readiness-review/ROOT_REVIEW.json)。
+[#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 当前已发布 head **9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca**，tree **bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f**，parent 320533a。其自身 daemon run43254705812 正在运行，不把父版本检查结果填入新版本。
 
-截至本页时刻，exact 1631 的原 source/parser 两个步骤已 success，同源 helper 构建已越过，ordinary 与 Root suites 正在运行，完整 caller 审计仍在运行；尚不填原生通过数。发布构建和格式检查已有成功观察。Clippy 原日志则真实报告 15 个不同位置：11 个禁止跨 await 持有的 Tokio MutexGuard、4 个 expect。当前正在用保持唯一原状态所有权的私有 lease 修复，保留取消、竞争、failed 位及原 I/O 顺序；不加 allow、不关闭检查。另一个 blob-size job 在 Fence 初始化时因 local_control_inventory_unavailable 失败，未 checkout、未运行检查器，因此 checker_result=null。见[原 Clippy 与环境失败](../evaluated-current-read-20261112/1631e01-clippy-and-fence/ROOT_REVIEW.json)。
+原 exact1631 的 native job131269839345 实际执行 **1,733 个唯一方法：1,697通过、36失败、0跳过、0重试**。36项包括共享 Panel/member/Host 夹具链的31次SIGABRT栈溢出，及5项证据、截止边界和路由顺序失败。原测试总命令退出100，Root及maintenance未到达。root独立取回3,729,153 B完整日志，读回11个Git分片后逐字一致；443,996 B原JUnit也已完整读取，逐方法统计与原summary和日志一致。真实source-before/final两个原237 B文件完全相同，source1631/tree55f93、worktree clean。原helper manifest证明同源构建成功。[原完整失败日志](../evaluated-current-read-20261112/1631-native-failure/MANIFEST.json)、[原XML及核心记录](../evaluated-current-read-20261112/1631-native-artifact-core/MANIFEST.json)、[root逐方法核验](../evaluated-current-read-20261112/1631-native-artifact-core/ROOT_XML_REVIEW.json)均保留FAILED。三份完整inventory压缩载荷及整个原ZIP尚未另行归档，不把核心记录等同全ZIP。
 
-补充原 GNU/musl 两个 Bazel test job 的已知失败：同一过期租约测试在 H7 准备写入时到期，mint 后只剩 16 ms；该选择目标 2 PASS／1 FAIL，随后完整 unit target Aborted。root 已取回两个完整原日志。测试夹具正在改为完整准备窗口与有界的真实到期轮询，原隔离、不可返回可写输入、ExpiredActive 断言和产品到期逻辑保持。见[原失败与精确测试修复候选](../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json)。
+同一1631的完整caller job131269839839实际success，扫描6,601个Rust文件。root独立读取2,142,662 B原日志及7个Git分片，全字节一致；caller原ZIP尚未单独读取。[原完整caller](../evaluated-current-read-20261112/1631-caller-pass/MANIFEST.json)。artifact转运的原driver结果已验证同一已完成ZIP，未启动测试或actor；启动registry ACK仍为UNKNOWN，实际文件读取不改写该身份状态。
+
+0869合并了27路径修复：私有boxed lease保留原状态与连接并把MutexGuard移出await；三个归还／取消／中毒回归；截止秒按原闭区间规则验证；证据不足保持精确InsufficientEvidence错误，新增两个零查询／原journal／cold拒绝回归；完整route对象按同candidate顺序移动；同原Panel/member/Host对象改为堆上持有；真实过期夹具先有完整准备窗口，再有界观察实际到期。原1,733方法名与所有旧断言保留，静态预期新增5方法；最终分母须由真实执行观察。541个产品boundary记录逐字不变，8个protected记录只做精确lease／borrow替换，新增1个私有helper保护，总数390；61项活动asset pin唯一。[27路径独立审查](../evaluated-current-read-20261112/0869-native-repair-review/ROOT_REVIEW.json)。
+
+0869的原Linux Clippy job131298362585和发布构建131298362602已成功；执行merge4f19396c的tree与0869严格相同。原15处lint失败得到该版本实际检查；不能转给其他源码。其daemon source gate实际403/414通过、11个ERROR，全部停在新helper函数marker的同一语法失配，Rust测试未启动。root与独立审查者还在后续提交前捕到返回类型Self与构造表达式Self的唯一顶层标记冲突；两处清单写法已精确修正，原checker、完整签名和每个sequence保持。该版本Rustfmt另指出两测试文件共5hunks，全部按实际输出修正。这四路径后续形成320533a。320533a的原格式门实际success，但其源码门仍403/414通过、11个ERROR，明确指出state_mut顺序规则只有1项而原schema要求至少2项。先前静态审查遗漏了该schema条件，原失败与审查范围均保留。当前9fac只为该规则补首项函数marker、更新唯一pin，并在原Fence步骤启用官方有限debug输出；原expression、顶层检查及checker不变。原GNU/musl等Bazel测试在源码后续提交期间取消，不填PASS。[原Clippy／构建与完整日志映射](../evaluated-current-read-20261112/0869-clippy-release-pass/FULL_LOG_MAPPING.json)、[源码失败原记录](../evaluated-current-read-20261112/0869-source-closure-failure/source-closure.record-from-original-log.json)、[最新精确修复](../evaluated-current-read-20261112/320533-marker-format-review/ROOT_REVIEW.json)。
+
+1631与0869的blob-size job均在原Fence v0.10初始化时因local_control_inventory_unavailable失败，未checkout、未运行检查器，因此checker_result=null。固定action来源已核到本地进程／FD／cgroup／socket采集完整性门，原日志不能唯一指出缺项；当前仅启用官方已有服务journal的20行有限输出，具体缺项仍待实际观察。网络allowlist不会修复此本地错误，保护未关闭。原GNU/musl中H7准备时只剩16ms的真实expiry失败及原负向断言保留，当前夹具修复仍待新完整测试确认。[原expiry失败](../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json)。
 
 原 EBE 的 source 414/414、parser 16/16 成功仍属于 EBE；caller 1,705,860 B 与 native 2,018,235 B 的完整原日志已从 Git 分片读回并核全 SHA。其 native 编译退出 101，0 个 Rust 测试，原 JUnit 缺失被拒绝，Root/fix/fmt 均未运行。Windows 在 LEARN 36 门前取消。父 841 修复两处原 rustfmt hunk 并清除相互冲突的历史活动 hash；原格式 job 已实际通过，执行 synthetic merge 的 tree 与 841 完全相同，不能转给别的源码。历史失败与[完整日志独立核验](../evaluated-current-read-20261112/ebe6723-caller-native-failures/ROOT_FULL_LOG_VERIFICATION.json)、[841 格式原件](../evaluated-current-read-20261112/841fb9-rustfmt-pass/MANIFEST.json)分别保留。
 
@@ -70,7 +76,9 @@ root 独立从 Git 读回 58,747 B 原 ZIP，逐一验证 18 个成员的 centra
 
 ### 新的 S／Version／C 初始连接正在实现
 
-已经形成可审源码草案：初始持有真实连接与 pidfd，实际 T/B 到达后绑定；S Execute 只允许一次，Readback 后客户端及服务端永久降权；原 S owner 与只读 evidence handler 共享同一份 custody。C 使用实际 evaluated-retention preparation、独立 FinalUse grant、实际任务工厂及 T/B/CURRENT 读回。Root 持有首个真实 Fresh S 后，通过专用初始通道一次性交付执行上下文，C 私有 decoder 核对同一 cut、operation、C、nonce、peer 与时钟；通用证据读取不产生执行权。
+已经形成可审源码草案，并发现一个需实际补齐的接缝：独立Observer不能从普通S readback取得Fresh S。当前在其原初始通道实现purpose固定、Root peer/pidfd/nonce绑定的单次初始化；预持原配置／signer／journal／witness，在实际T/B/S校验后才消费配置调用原factory，且需已验证ACK后才允许C runtime交付。UNKNOWN/HOLD及cold恢复不重发或创建。以下各项仍待整合与执行。
+
+其余已有草案：初始持有真实连接与 pidfd，实际 T/B 到达后绑定；S Execute 只允许一次，Readback 后客户端及服务端永久降权；原 S owner 与只读 evidence handler 共享同一份 custody。C 使用实际 evaluated-retention preparation、独立 FinalUse grant、实际任务工厂及 T/B/CURRENT 读回。Root 持有首个真实 Fresh S 后，通过专用初始通道一次性交付执行上下文，C 私有 decoder 核对同一 cut、operation、C、nonce、peer 与时钟；通用证据读取不产生执行权。
 
 这些新增源码仍在修订，尚未执行格式、编译或新原生测试。四 cut Evaluation::NoUpdate retention 是当前工程范围；Qualified adoption 的原拒绝保持。完整资格审计已定位 12 门与 42 个实际 source/evidence pin，见[后续动作及原始阻塞](evidence/qualification-gate-audit-20261112/QUALIFICATION_NEXT_ACTIONS.md)。接口草案、fixture 与原 capability 的真实外部交付分别记账。
 
@@ -87,7 +95,7 @@ MEM原生成七文件已闭合，原监督器身份仍UNKNOWN。两次只读页�
 | 来源／暴露认证 | OPEN；字节／split／source ID 一致性已核对，REPORT 的24 fit、18 cal、16 eval来源名互斥。 | 原来源 owner 的 acquisition/receipt/exposure 链、历史隔离／quarantine；名字互斥不能证明真实来源独立。 |
 | 真实时钟 | OPEN；四个时间量与 Q24 已分开。 | 真实动作、信息可用、结果与更新时刻的原 owner 记录；clock domain／boot、跨恢复锚点和误差界。 |
 | 持久 cadence／CAS | OPEN；当前时间 gate 仍无状态／参考。 | 原 LearningOwnerJournal/CURRENT 权限上的跨进程、并发、崩溃和回滚验证；机会只消费一次，pending不重派发。 |
-| 原 owner bridge | OPEN；current 1631 的 source/parser 步骤成功，原生与 caller 在运行，Clippy 15 处待修。真实 S/Version/C 初始线性连接正在实现。 | 同一精确 tree 的原 StageOwner→verifier→S→FinalUse→CURRENT 执行，以及真实独立 custody、C 与恢复；不能用源码草案或历史 CI 替代。 |
+| 原 owner bridge | OPEN；1631原native1697/1733与完整caller已取回；0869 Linux Clippy通过，当前9fac正运行自身源码与原生门。真实S/Version/C初始连接与Root交接在集成。 | 同一精确tree的原StageOwner→verifier→S→FinalUse→CURRENT执行，以及真实独立custody、C与恢复；不能用草案或历史CI替代。 |
 | T 时间教学效益 | OPEN；数值／路由机制已验。 | 同完整向量、可用时刻与预算下正确／打乱路由及 eligibility，真实训练、强普通基线、独立效益与旧能力门。 |
 | R 独立情景／技能回放 | OPEN；ACT bb8 的 1＋5 方法、格式与完整原产物已过门；MEM 仍仅 1 次未评分生成。 | 同一真实任务 E/S 2×2 与另一个等总预算面板；统一池／普通基线、MEM 禁用后 ACT 独立路径、真实效果与成本。 |
 | V 感知／检查效益 | OPEN；上游576次完整开发面板，conditional未READ；wrapper B/C四个固定宏执行均COMPLETED、均STOP、质量0。 | 校准覆盖问题解决后的独立冻结试验、强基线、同信息循环／付费观察／独立checker分别比较、真实净效益。 |
