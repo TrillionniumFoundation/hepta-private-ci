@@ -6662,7 +6662,7 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-neuron/src/witness.rs"
-required = ["const HEADER: usize = 112","const RECORD: usize = 112","const MAX_RECORDS: usize = 4096","file: Mutex<WitnessLockedFile>","header: [u8; HEADER]","history_digest: Digest32","poisoned: AtomicBool","let _ = self.0.unlock()"]
+required = ["const HEADER: usize = 112","const RECORD: usize = 112","const MAX_RECORDS: usize = 4096","file: Mutex<WitnessLockedFile>","header: [u8; HEADER]","history_digest: Digest32","poisoned: AtomicBool,","let _ = self.0.unlock()"]
 forbidden = ["Ok(self.current)","File::open","OpenOptions","std::fs::read","try_clone(","SigningKey","LearningEvidenceVerifierV1::new","pub file:","pub current:","pub history_digest:"]
 required_function_order = [
   { function = "fn acquire(", sequence = ["file.metadata()?.is_file()","return Err(WitnessStoreError::NotRegular)","match file.try_lock()","Ok(()) => Ok(Self(file))","Err(TryLockError::WouldBlock) => Err(WitnessStoreError::Busy)","Err(TryLockError::Error(error)) => Err(error.into())"] },
