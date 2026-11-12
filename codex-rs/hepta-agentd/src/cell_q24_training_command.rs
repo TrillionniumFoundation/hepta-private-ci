@@ -397,3 +397,6 @@ fn now() -> Result<u64, Error> {
 
 #[cfg(test)]
 pub(crate) use serving::command_test_support;
+
+#[cfg(test)]
+pub(crate) use bootstrap::original_ports as original_bootstrap_test_ports;

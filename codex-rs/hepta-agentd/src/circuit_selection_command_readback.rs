@@ -34,6 +34,10 @@ pub struct OriginalCircuitSelectionReadbackConnectionV1 {
     initial_binding: Digest32,
 }
 
+#[cfg(test)]
+#[path = "circuit_selection_readback_support_tests.rs"]
+pub(crate) mod test_support;
+
 impl OriginalCircuitSelectionReadbackConnectionV1 {
     pub fn from_original_stream(
         stream: UnixStream,

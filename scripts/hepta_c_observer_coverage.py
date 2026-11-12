@@ -246,6 +246,17 @@ ORIGINAL_TRAINING_READBACK_CASES = tuple(
         "original_training_readback_changed_evidence_and_withdrawal_consume_channel",
     )
 )
+DEEP_ORIGINAL_READBACK_PREFIX = (
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+    "original::deep_readonly::"
+)
+DEEP_ORIGINAL_READBACK_CASES = tuple(
+    DEEP_ORIGINAL_READBACK_PREFIX + name
+    for name in (
+        "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+    )
+)
 
 NEXT_USE_COMMAND_PREFIX = "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::"
 NEXT_USE_COMMAND_CASES = tuple(
@@ -401,6 +412,7 @@ OWNER_GROUPS = (
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
     ("original_training_readback", PACKAGE, ORIGINAL_TRAINING_READBACK_CASES),
+    ("deep_original_readback", PACKAGE, DEEP_ORIGINAL_READBACK_CASES),
     (
         "original_initial_training_connection",
         PACKAGE,

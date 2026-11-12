@@ -479,3 +479,6 @@ fn now() -> Result<u64, Error> {
 
 #[cfg(test)]
 pub(crate) use serving::command_test_support;
+
+#[cfg(test)]
+pub(crate) use readonly::test_support as original_readback_test_ports;

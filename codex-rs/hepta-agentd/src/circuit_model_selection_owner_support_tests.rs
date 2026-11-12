@@ -596,3 +596,6 @@ impl PositiveFixture {
 
 #[path = "circuit_original_evaluation_provider_tests.rs"]
 mod evaluation_provider;
+
+#[path = "circuit_deep_training_readback_tests.rs"]
+mod deep_readonly;

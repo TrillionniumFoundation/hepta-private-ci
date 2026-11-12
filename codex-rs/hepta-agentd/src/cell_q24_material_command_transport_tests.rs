@@ -2,6 +2,8 @@
 //! framing, original pidfds, claims, witnesses and signed results still run.
 
 use codex_hepta_contracts::HostIssuerPeer;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use crate::OriginalCellQ24MaterialCommandOwnerV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
@@ -58,8 +60,20 @@ pub(super) fn connected(
     OriginalCellQ24MaterialCommandClientV1,
     JoinHandle<anyhow::Result<u64>>,
 )> {
-    let owner = Arc::clone(f.host.as_ref().expect("original command host"));
-    let config = f.config.clone();
+    connected_original(
+        Arc::clone(f.host.as_ref().expect("original command host")),
+        f.config.clone(), role, mode, expected, effect,
+    )
+}
+
+pub(super) fn connected_original(
+    owner: Arc<OriginalCellQ24MaterialCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore>>,
+    config: OriginalCellQ24MaterialReceiptConfigV1,
+    role: Role,
+    mode: Mode,
+    expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+    effect: Effect,
+) -> anyhow::Result<(OriginalCellQ24MaterialCommandClientV1, JoinHandle<anyhow::Result<u64>>)> {
     let binding = wire::context_binding(&config, now()?)?;
     let (stream, server) = UnixStream::pair()?;
     let client = OriginalCellQ24MaterialCommandClientV1 {
