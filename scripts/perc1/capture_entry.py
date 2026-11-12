@@ -37,14 +37,17 @@ def model_sha256(weights_sha256, projection):
 MAX_NATIVE_WIRE_BYTES = 1024 * 1024
 
 
-def decode_native_wire(result):
+def decode_native_wire(result, *, source_root=None):
     """Verify and recover exact retained wire without re-serializing observations.
 
     JSON semantic equality is checked separately from original wire identity.
     These hashes establish local integrity, not source or execution attestation.
     """
-    exact(result, "schema producer native_wire")
-    require(result["schema"] == "perc1.owned-encoding.v1", "unknown owned encoding")
+    schema = result.get("schema") if type(result) is dict else None
+    require(schema in ("perc1.owned-encoding.v1", "perc1.owned-encoding.v2"),
+            "unknown owned encoding")
+    exact(result, "schema producer native_wire"
+          + (" source_evidence" if schema == "perc1.owned-encoding.v2" else ""))
     producer = result["producer"]
     require(
         type(producer) is dict
@@ -99,6 +102,19 @@ def decode_native_wire(result):
         canonical(observation) == canonical(producer["observation"]),
         "retained native wire/observation semantic mismatch",
     )
+    if schema == "perc1.owned-encoding.v2":
+        from .source_capture import verify_source_evidence
+
+        metadata = result["source_evidence"]
+        verify_source_evidence(metadata, source_root)
+        require(metadata["capture_sha256"] == producer["transform"]["capture_sha256"],
+                "source evidence/producer capture mismatch")
+        sources = [item["source"] for item in observation.get("evidence", [])]
+        require(sources and all(
+            source["source_id"] == metadata["source_id"]
+            and source["origin_digest"] == list(bytes.fromhex(metadata["capture_sha256"]))
+            for source in sources
+        ), "source evidence/native observation mismatch")
     return raw
 
 
@@ -202,7 +218,8 @@ class OwnedProducer:
         acquired = capture(json.loads(canonical(request)))
         if type(acquired) is bytes:
             acquired = {"image_bytes": acquired, "exact_text": None}
-        exact(acquired, "image_bytes exact_text")
+        exact(acquired, "image_bytes exact_text"
+              + (" source_evidence" if type(acquired) is dict and "source_evidence" in acquired else ""))
         raw, text = acquired["image_bytes"], acquired["exact_text"]
         require(
             type(raw) is bytes and 0 < len(raw) <= 4 * 1024 * 1024,
@@ -242,6 +259,13 @@ class OwnedProducer:
                 "capture_sha256": sha(raw),
                 "engine": text["engine"],
             }
+        source_evidence = None
+        if "source_evidence" in acquired:
+            from .source_capture import retain_source_evidence
+
+            source_evidence = retain_source_evidence(
+                self.owner.root, stem, acquired["source_evidence"], sha(raw), request["source_id"]
+            )
         descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
         try:
             os.fsync(descriptor)
@@ -288,5 +312,8 @@ class OwnedProducer:
                 "byte_length": len(wire),
             },
         }
+        if source_evidence is not None:
+            result["schema"] = "perc1.owned-encoding.v2"
+            result["source_evidence"] = source_evidence
         decode_native_wire(result)
         return result
