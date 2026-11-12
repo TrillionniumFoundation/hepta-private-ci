@@ -1,0 +1,21 @@
+{
+  "schema": "retirement-barrier-source.v1",
+  "base": "f07963e408ea14cc00f803acc1c710b40f742d58",
+  "head": "269afa554452a467dc5f76eec0c52e4efcc5b8bb",
+  "tree": "3b9fdbc9570f6526e774e6c2c7e45666024467d2",
+  "scope": "Test-only. Real retained task precondition finishes before the unchanged 500ms serial-barrier/Drop/worker-completion timer. All original product frame/session limits, live-worker checks, claims checks and post-retirement refusal remain. Added elapsed diagnostic is an observation, not a passing qualification.",
+  "source_checks": "just fmt --base f079, git diff --check, narrow static invariant assertions all exit 0",
+  "native_executed": false,
+  "cause_limit": "Original stderr identifies the phase of the first awaited barrier, not how much time was consumed by preceding synchronous task I/O. A new exact-source native attempt must confirm whether this correction resolves the observed failures.",
+  "bundle": {
+    "bytes": 2031,
+    "sha256": "2779a928ada9e8d4ec04d7aa2589286f563f3223e709a8e689d20a9934b27d68"
+  },
+  "source_clean": true,
+  "commits": [
+    "55e934222295a7a36626ce9f624832b569b103ee",
+    "269afa554452a467dc5f76eec0c52e4efcc5b8bb"
+  ],
+  "diagnostics": "Actual precheck elapsed, serial-wait elapsed, actual Drop/join elapsed, total retirement elapsed. No passing result is inferred from these diagnostic additions.",
+  "parent_wait": "control(&self.offer,b\"STABLE\") calls control(), which sets read timeout to the unchanged 15s LIFETIME. The separate retirement and product TIMEOUT constant remains 500ms."
+}
