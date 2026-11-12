@@ -188,6 +188,7 @@ pub(in super::super) fn serve_optional(
                         policy,
                         owner.try_clone()?,
                         Some(&initial.runtime.peer_source_capture),
+                        end,
                     );
                     // The terminal client keeps its lifetime until Root closes.
                     // Releasing this cancellation clone lets it observe EOF.

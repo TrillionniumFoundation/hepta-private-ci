@@ -363,3 +363,7 @@ fn source_input(source: &CircuitTaskSourceInputV1, operation_id: StableId) -> Ce
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_feature_learning_trust.rs"]
+mod learning_trust;

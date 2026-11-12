@@ -324,3 +324,6 @@ fn fence_initial_record(
     }
     Ok(())
 }
+
+pub(crate) use transport::LEARNING_TRUST_PURPOSE;
+pub(crate) use transport::LearningTrustResponseV1;
