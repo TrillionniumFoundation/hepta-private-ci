@@ -428,9 +428,9 @@
       "tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
       "baseline_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
       "purpose": "same seven diagnostic cases with only pinned crypto dev-profile optimization",
-      "outer_terminal": false,
-      "outer_terminal_observed": false,
-      "job_id": null,
+      "outer_terminal": "failed",
+      "outer_terminal_observed": true,
+      "job_id": "1a1cd126931-2564-1178",
       "control_plane_note": "Original mutation admission/reconciliation timed out; original application preparation and wrapper files establish the child precheck failure but are not controller terminal evidence.",
       "preparation_state": "diagnostic-completed",
       "wrapper_exit_code": 1,
@@ -448,7 +448,81 @@
       "lockfile_unchanged": true,
       "performance_gain_established": false,
       "exact_request_blob": "dd22c4fb9d63c05413d83ecf4cb1f0aa468737f4",
-      "exact_request_sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf"
+      "exact_request_sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf",
+      "original_v10_reconciled_terminal": {
+        "job_id": "1a1cd126931-2564-1178",
+        "request_digest": "3ea6fa4bbbf9471a110806c4ef189e1c10d8e99a9a36f28d50eacdbacf6a05dd",
+        "reused": true,
+        "retried_launch": false,
+        "status": {
+          "at_unix_ms": 1794441921696,
+          "automatic_retry": false,
+          "cancelled": false,
+          "exit_code": 1,
+          "job_id": "1a1cd126931-2564-1178",
+          "launch_nonce": "33f6db18df09c5d42ddec30641cdbc1a",
+          "log_bytes": {
+            "stderr": {
+              "seen": 0,
+              "stored": 0
+            },
+            "stdout": {
+              "seen": 10081,
+              "stored": 10081
+            }
+          },
+          "log_errors": {
+            "stderr": null,
+            "stdout": null
+          },
+          "log_synced": {
+            "stderr": true,
+            "stdout": true
+          },
+          "log_truncated": {
+            "stderr": false,
+            "stdout": false
+          },
+          "output_complete": true,
+          "output_durable": true,
+          "state": "failed",
+          "terminal_publication_confirmed": true,
+          "terminal_publication_protocol": 1,
+          "timed_out": false
+        }
+      },
+      "v11_after_exact_restore": {
+        "job_id": "1a1cdd1805d-2564-13c7",
+        "request_digest": "d7061fb1977ea6e9fd840e4e64a4e17dcc5c3650172d9d8323f581caf389f792",
+        "terminal": "failed",
+        "exit_code": 1,
+        "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+        "source_status_after": "",
+        "native_tests_executed": 0,
+        "failure": "unexpected qualification repository",
+        "cause": "Frozen runner retained 20261111 prefix while the dedicated after-restoration worktree was 20261112; wrapper refused before native output creation.",
+        "performance_gain_established": false
+      },
+      "v12_exact_repository": {
+        "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
+        "args_bytes": 18468,
+        "args_sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
+        "script_sha256": "6a3ba7e88b494c9eeb14e26813ab6e5ce729a66d2d4175a3957f51fa02bd6409",
+        "native_runner_sha256": "0872c39c54be44b40c227c02c2a07e1cf5f7ef30d503aa502d66d19102870ac9",
+        "source": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+        "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+        "previous_request_job": "1a1cdd1805d-2564-13c7",
+        "previous_request_terminal": "failed",
+        "previous_actual_pre_native_failure": "unexpected qualification repository",
+        "native_runner_delta": "Replace a stale 20261111 repository prefix with the exact dedicated 20261112-v12 path; no test case, binding, timeout, Rust, lockfile or native command change",
+        "ordinary_acceptance": 0,
+        "submission_response": {
+          "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+          "isError": true
+        },
+        "native_tests_executed": "unknown",
+        "performance_gain_established": false
+      }
     },
     {
       "sha": "f8ea08942b68c84ccc105d17371f95ddd372d355",
@@ -464,7 +538,56 @@
         "source_after": "f8ea08942b68c84ccc105d17371f95ddd372d355",
         "source_status_after": "M codex-rs/hepta-agentd/src/authority_host_learning_resident.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_metadata_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs\n M codex-rs/hepta-agentd/src/authority_host_resident_registration.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_command_transport_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_material_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_support_tests.rs\n M codex-rs/hepta-agentd/src/config.rs\n M codex-rs/hepta-agentd/src/deployment_issuer.rs\n M codex-rs/hepta-agentd/src/deployment_learning_resident.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/objective_learning_source.rs\n M codex-rs/hepta-agentd/src/resident_learning_delivery.rs\n M codex-rs/hepta-agentd/src/runtime.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current_tests.rs\n M codex-rs/hepta-neuron/src/witness.rs\n M scripts/verify_hepta_callers.py",
         "original_result": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/result.json",
-        "note": "just fmt changed 53 reviewed Rust files and the reviewed Python verifier; the qualification's Rust-only allowlist rejected before tests. No formatted child committed."
+        "note": "just fmt changed 53 reviewed Rust files and the reviewed Python verifier; the qualification's Rust-only allowlist rejected before tests. No formatted child committed.",
+        "original_reconciled_terminal": {
+          "job_id": "1a1cd58b57f-2564-126d",
+          "request_digest": "d191616438139e24a06c08146a3d773c0de752f53b97cc18f7ae1bf7a5728a1c",
+          "reused": true,
+          "retried_launch": false,
+          "status": {
+            "at_unix_ms": 1794446525914,
+            "automatic_retry": false,
+            "cancelled": false,
+            "exit_code": 1,
+            "job_id": "1a1cd58b57f-2564-126d",
+            "launch_nonce": "79d264856656eacfa1fd25ae6c281953",
+            "log_bytes": {
+              "stderr": {
+                "seen": 145,
+                "stored": 145
+              },
+              "stdout": {
+                "seen": 9043,
+                "stored": 9043
+              }
+            },
+            "log_errors": {
+              "stderr": null,
+              "stdout": null
+            },
+            "log_synced": {
+              "stderr": true,
+              "stdout": true
+            },
+            "log_truncated": {
+              "stderr": false,
+              "stdout": false
+            },
+            "output_complete": true,
+            "output_durable": true,
+            "state": "failed",
+            "terminal_publication_confirmed": true,
+            "terminal_publication_protocol": 1,
+            "timed_out": false
+          }
+        },
+        "original_python_postimage": {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/verify_hepta_callers.py",
+          "bytes": 38402,
+          "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+          "ast_equal_to_f254": true,
+          "note": "The original failed allowlist admitted only Rust files; the actual Python formatter postimage is now read and semantically reviewed. Original failure is not replaced by a pass."
+        }
       },
       "local_source_qualification": {
         "fixed_source": "f8ea08942b68c84ccc105d17371f95ddd372d355",
@@ -492,7 +615,88 @@
         "no_update": 0,
         "daemon_root_cold_restart": 0
       },
-      "known_equivalent_toml_repair": "77bfe71c6021e8da78ff917db3347f7e7a503d65"
+      "known_equivalent_toml_repair": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+      "github_ci": {
+        "workflow_run": 43132700180,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43132700180",
+        "conclusion": "failure",
+        "native_job": 130900448342,
+        "source_tests_reported": 11,
+        "source_errors": 47,
+        "source_passes": 0,
+        "parser_job_step": "skipped",
+        "native_tests_executed": 0,
+        "caller_job": 130900448699,
+        "caller_self_test_exit_code": 0,
+        "full_caller_proof": "failed parsing original TOML before caller verification",
+        "reason": "Cannot mutate immutable namespace ('protected_file', 'required_function_order') at 11205:41",
+        "raw_log_parts": [
+          {
+            "job": "native",
+            "whole_bytes": 1741583,
+            "whole_sha256": "85edf835dc075d61433b0126f808edfdd5d5ad55315bdd45a6d7907d8a2493af",
+            "parts": [
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part001",
+                "bytes": 400002,
+                "sha256": "8695b50c25e0798244b0b7d7391b867cbb8df6c975116094d46461d003d90dae"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part002",
+                "bytes": 400000,
+                "sha256": "c5414c4e25aebda02dd9cadb7c0ece326c1bc24c099d9ddb32262dcceb2905c8"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part003",
+                "bytes": 400000,
+                "sha256": "9f3374bc6e1d13efb873b0015d8409cd0f04c547d3fdfb60e246ca6d17962de5"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part004",
+                "bytes": 400000,
+                "sha256": "72cde0d24d9dd7d63c5824e80668ed01511ab8e34591f5e0c8f0253cd923177f"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part005",
+                "bytes": 141581,
+                "sha256": "9699807ca915daaa4e63d30679817f765712d88a77f37e4436b650362a60fe41"
+              }
+            ]
+          },
+          {
+            "job": "caller-proof",
+            "whole_bytes": 1642379,
+            "whole_sha256": "710a852debea8ad9e2ce9ee8f0d9258bc260f7a003ea8847022fae71c744a24a",
+            "parts": [
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part001",
+                "bytes": 400002,
+                "sha256": "5db39235f4cfaac2d2df39f520ebebe513d14aee9c9e6cf4cbd75f4e60dfb348"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part002",
+                "bytes": 400000,
+                "sha256": "b0251432e296ccfa55c62bdf7d49e7cbeb9f3629047e4bcd40ecdeda083e8312"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part003",
+                "bytes": 400000,
+                "sha256": "941a927e55cf44f8a1359ae7e6968fa14f6bb1de9a5773ea39fe0ca38a2361dc"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part004",
+                "bytes": 400000,
+                "sha256": "73c2ef29f522802e4f73e3bf8db7dbf6097acdb32c0698f6b5583fef4ebc084f"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part005",
+                "bytes": 42377,
+                "sha256": "e400c4c6d5f0d0e7944aa2f2d6976102e5881fd0ae22893fbcb2d696eaec718d"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "sha": "f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7",
@@ -525,15 +729,27 @@
         "physical_witness_cases_separate": 3
       },
       "qualification": {
-        "source_suite_request_issued_by_root": false,
-        "source_tests_executed_by_root": 0,
-        "parser_suite_executed_on_this_sha": false,
+        "original_environment_loss": "Prior planned 292-case qualification was not issued; old relocation session remains unknown.",
+        "restored_executor_actual": {
+          "source_status_before": "",
+          "source_status_after": "",
+          "tracked_rust_files_present": 6601,
+          "source_tests_executed": 292,
+          "source_passes": 290,
+          "source_failures": 2,
+          "parser_tests_executed": 16,
+          "parser_passes": 16,
+          "caller_self_test_exit_code": 0,
+          "source_log_sha256": "3821484524c9a41928d542d205657a06367adcd0baa477f2a2cac79c3f447dc2",
+          "failures": [
+            "Physical witness poison-field removal was masked by the same prefix in its initializer.",
+            "NoUpdate expected caller tuple omitted the real retained-context readback caller."
+          ]
+        },
         "full_caller_proof_executed": false,
         "native_tests_executed": 0,
-        "formatted": false,
-        "final_scoped_fix_performed": false,
-        "cloud_execution_environment": "reported unavailable by environment context",
-        "local_checkout_relocation_result": "unobserved after execution environment became unavailable"
+        "fmt_executed": false,
+        "fix_executed": false
       },
       "not_yet_assembled_at_this_sha": [
         "Candidate Evaluation still refuses missing original B/Evaluator host; later independent source branches must be merged and tested.",
@@ -546,6 +762,24 @@
         "daemon_root_cold_restart": 0
       },
       "source_status_record": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/f254-fixed-source-status.json"
+    },
+    {
+      "sha": "a368fd4b1381e823c9fa69e7f2ed16ae223a4e60",
+      "tree": "b6cdcde8ab7d0d3bd6ec57a790d3b405c2aab180",
+      "parents": [
+        "f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7"
+      ],
+      "change": "Require the exact poison field declaration including comma so an initializer cannot satisfy a removed-field negative control.",
+      "source_tests_executed": 9,
+      "source_passes": 9,
+      "source_status_after": "",
+      "full_caller_proof_executed": false,
+      "native_tests_executed": 0,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
     }
   ],
   "full_chain_acceptance": {
@@ -854,6 +1088,160 @@
       "bytes": 60150,
       "sha256": "52c604ea613ba259c5ade09141e7ebdaf80e0dee47da96d6ce345f9de43506e2",
       "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "72691b8d348268fe350f90704cd1f1e332b302c35b613f633b9a1067ba59749f",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/result.json",
+      "bytes": 3048,
+      "sha256": "19a9de1e8ccf4b34ea5d57a1a0eb3f71cd0c3e20bbcccd3b9bd21e9b02b22479",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/source-closure.log",
+      "bytes": 68930,
+      "sha256": "3821484524c9a41928d542d205657a06367adcd0baa477f2a2cac79c3f447dc2",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/qualify_f254_source_v2.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_f254_source_v2.py",
+      "bytes": 3892,
+      "sha256": "ebb05276cbfa22981f8f412b9fc0cd89c38dcf8279e6f4bf9bd3f8f1e29374c2",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/a368fd4b1381-witness-field-guard/driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-witness-a368-v1/driver.log",
+      "bytes": 2205,
+      "sha256": "5899e099ef56f0155f9a446fb3736491c7c0db0a61953144b9e6825115ce8e6e",
+      "observation": "Exact original targeted Python qualification on the fixed guard commit, no native or ordinary execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/a368fd4b1381-witness-field-guard/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-witness-a368-v1/result.json",
+      "bytes": 451,
+      "sha256": "c7e2a6358b2645f24b81ee25e60c461e4c1a87e5deb5459a26fb7643b7d68a24",
+      "observation": "Exact original targeted Python qualification on the fixed guard commit, no native or ordinary execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/a368fd4b1381-witness-field-guard/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-witness-a368-v1/source-closure.log",
+      "bytes": 2205,
+      "sha256": "5899e099ef56f0155f9a446fb3736491c7c0db0a61953144b9e6825115ce8e6e",
+      "observation": "Exact original targeted Python qualification on the fixed guard commit, no native or ordinary execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part001",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400002,
+      "sha256": "8695b50c25e0798244b0b7d7391b867cbb8df6c975116094d46461d003d90dae",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part002",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400000,
+      "sha256": "c5414c4e25aebda02dd9cadb7c0ece326c1bc24c099d9ddb32262dcceb2905c8",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part003",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400000,
+      "sha256": "9f3374bc6e1d13efb873b0015d8409cd0f04c547d3fdfb60e246ca6d17962de5",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part004",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400000,
+      "sha256": "72cde0d24d9dd7d63c5824e80668ed01511ab8e34591f5e0c8f0253cd923177f",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part005",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 141581,
+      "sha256": "9699807ca915daaa4e63d30679817f765712d88a77f37e4436b650362a60fe41",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part001",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400002,
+      "sha256": "5db39235f4cfaac2d2df39f520ebebe513d14aee9c9e6cf4cbd75f4e60dfb348",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part002",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400000,
+      "sha256": "b0251432e296ccfa55c62bdf7d49e7cbeb9f3629047e4bcd40ecdeda083e8312",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part003",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400000,
+      "sha256": "941a927e55cf44f8a1359ae7e6968fa14f6bb1de9a5773ea39fe0ca38a2361dc",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part004",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400000,
+      "sha256": "73c2ef29f522802e4f73e3bf8db7dbf6097acdb32c0698f6b5583fef4ebc084f",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part005",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 42377,
+      "sha256": "e400c4c6d5f0d0e7944aa2f2d6976102e5881fd0ae22893fbcb2d696eaec718d",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/exact-v8-restoration-20261112/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-restoration-ce434-20261112-v1/result.json",
+      "bytes": 1261,
+      "sha256": "275fdd19ce2756691f22a56f8b9e002d5e2606bbbda1b793d2d9829bed789506",
+      "observation": "Original exact V8 restore result, complete SDK and full file SHA verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/verify_hepta_callers.py",
+      "original_path": "/home/qian-qi/hepta-learn-resident-owners-ce434-20261112-source-v1/scripts/verify_hepta_callers.py",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "observation": "Complete original formatter postimage; exact original size/hash and whole SDK payload verified. AST equals current f254 pre-format source; no semantic widening."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v11-crypto-diagnostic-after-restore-v1/result.json",
+      "bytes": 2329,
+      "sha256": "75242639d11163a57df4a29e68fa5320a9be8ef67d24d8a717aa9746837adc34",
+      "observation": "Original v11 preparation result; no native tests executed."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/native-wrapper.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v11-crypto-diagnostic-after-restore-v1/native-wrapper.log",
+      "bytes": 36,
+      "sha256": "9d1fbdc56dd103742d822041ee6d803226590dc41eac52fa5d1222fc3ddc835f",
+      "observation": "Complete original wrapper error: stale repository-prefix guard rejected before native setup or tests."
     }
   ],
   "normalized_observations": [
@@ -918,6 +1306,26 @@
     {
       "path": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/f254-fixed-source-status.json",
       "note": "Source graph and static inventory audit. No same-source test or ordinary acceptance pass is inferred."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/log-parts.json",
+      "note": "Chunk map for complete original CI logs, not a substitute for their bytes."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/exact-v8-restoration-20261112/reconciled-terminal.json",
+      "note": "Normalized selected original durable job fields after same-key reconciliation; no restart or replay."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/reconciled-terminal.json",
+      "note": "Normalized original terminal observation after exact same-key reconciliation."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v10-reconciled-terminal.json",
+      "note": "Normalized original v10 terminal observation after same-key reconciliation; actual old dependency failure remains retained."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/terminal.json",
+      "note": "Original process-status fields, kept separately from preparation/application outcome."
     }
   ],
   "retained_typed_requests": [
@@ -944,6 +1352,20 @@
       "bytes": 5214,
       "sha256": "ed1be5e9a1f8d752e9156459383ae7ddefa6dc4492c3dae37252fa2734252a66",
       "note": "Exact create-only restoration request. Transport closed without a job id or request digest; execution/effect remains unknown. Reconcile only this same frozen key and arguments."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/v11-crypto-after-exact-restore.json",
+      "bytes": 18449,
+      "sha256": "8acaa7b6b191b0ce739c81e38e58477bf5d2018b3b7262f1203205d3fd18bf81",
+      "idempotency_key": "learn-ce434-fixed-dcf7-v11-seven-crypto-after-exact-restore-v1",
+      "observation": "Exact frozen typed request, Git blob readback verified before original submission; unknown response never authorizes a new-key replay."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/v12-crypto-exact-repository.json",
+      "bytes": 18468,
+      "sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
+      "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
+      "observation": "Exact frozen typed request, Git blob readback verified before original submission; unknown response never authorizes a new-key replay."
     }
   ]
 }

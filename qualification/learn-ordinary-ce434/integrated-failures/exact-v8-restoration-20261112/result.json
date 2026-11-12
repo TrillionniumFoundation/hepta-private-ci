@@ -1,0 +1,34 @@
+{
+  "state": "completed",
+  "purpose": "Restore only the exact previously pinned V8 pair; no qualification or ordinary effect is replayed",
+  "steps": [
+    {
+      "key": "RUSTY_V8_ARCHIVE",
+      "state": "restored-exact-create-only",
+      "artifact": {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+        "inode": 12781894
+      },
+      "elapsed_seconds": 16.69222404016182
+    },
+    {
+      "key": "RUSTY_V8_SRC_BINDING_PATH",
+      "state": "already-exact",
+      "artifact": {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+        "inode": 53403298
+      }
+    }
+  ],
+  "native_tests_executed": 0,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5"
+}

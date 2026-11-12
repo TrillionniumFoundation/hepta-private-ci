@@ -1,3 +1,16 @@
+# Restored-executor reconciliation and fixed-source controls
+
+This append records actual follow-up outcomes without erasing the original unavailable/unknown observations below. Full-chain positive adoption, NoUpdate/fallback, and daemon+Root cold-restart acceptance remain **0 / 0 / 0**.
+
+- Fixed `f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7`: all 6601 tracked Rust files and protected files present, clean tree before/after; actual 292 source tests = 290 pass / 2 fail, parser 16/16 pass, caller self-test exit 0. No native/full caller proof/fmt/fix. Raw failures retained under `f254a014e7f5-fixed-source/local-source-v2/`.
+- Exact poison-field guard repair `a368fd4b1381e823c9fa69e7f2ed16ae223a4e60` has 9/9 targeted source controls passing. The repair pins the field declaration separately from its initializer; no rule or negative control was removed. This is not a full-suite pass for that commit.
+- Actual f8 GitHub workflow `43132700180` completed failure: source 11 reported methods / 47 errors from the original TOML namespace error; native and parser steps skipped. Caller self-test passed but full caller proof stopped at that same TOML error. Ordered complete job-log parts and whole hashes are retained.
+- Original exact V8 restoration reconciled with the same key as succeeded/exit 0; archive and binding match their original byte counts and SHA-256 values. Restoration executed no native or ordinary task.
+- Original f8 host formatter request and v10 diagnostic are now authoritative failed terminals, reconciled with their original keys. Their old observed errors remain intact. The complete f8 Python formatter postimage is now SHA-verified and AST-equivalent to the f254 file; the Rust-only allowlist failure stays a failure.
+- v11 diagnostic after exact restoration was rejected by its stale 20261111 worktree-prefix guard before native setup; full 36-byte original wrapper error is retained. v12 tightens that guard to its exact dedicated path, retaining the same seven cases, source, locks and deadlines. Its transport response is not a native result or a replay authorization.
+
+---
+
 # Original integrated qualification failures
 
 This pack preserves original host file bytes returned by complete, versioned reads. `manifest.json` records their original absolute paths, byte lengths, SHA256 digests, source identities and qualification boundaries. The normalized process-observation JSON files are clearly separate from original file bytes.
