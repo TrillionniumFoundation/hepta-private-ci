@@ -17,12 +17,7 @@ fn child(
         .split_once("::")
         .ok_or_else(|| io::Error::other("original child test path missing"))?;
     let output = std::process::Command::new(std::env::current_exe()?)
-        .args([
-            "--exact",
-            child_name,
-            "--ignored",
-            "--nocapture",
-        ])
+        .args(["--exact", child_name, "--ignored", "--nocapture"])
         .env("HEPTA_SOURCE_PIN_TEST_ROOT", directory)
         .env(
             "HEPTA_SOURCE_PIN_TEST_TARGET",
