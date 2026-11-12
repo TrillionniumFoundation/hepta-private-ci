@@ -39,6 +39,7 @@ pub(crate) use initial_q24::ledger_data::LedgerDeploymentData;
 
 #[path = "production_post_a_q24.rs"]
 mod post_a_q24;
+pub(crate) use post_a_q24::OriginalPostAContinuationV1;
 
 #[path = "production_launcher_late_writer.rs"]
 mod late_writer;
@@ -93,7 +94,6 @@ pub struct AgentdProductionLaunch {
     original_run_start_retention: Option<run_start_retention::OriginalInitialRunStartRetainerV1>,
     post_a_handoffs: Option<post_a_q24::PendingHandoffs>,
     session_end: Instant,
-    post_a_continuation: Option<post_a_q24::OriginalPostAContinuationV1>,
 }
 
 struct RuntimeInputs {
@@ -350,7 +350,6 @@ impl AgentdProductionStartup {
                         original_run_start_retention: None,
                         post_a_handoffs,
                         session_end,
-                        post_a_continuation: None,
                     }),
                 ))
             }
@@ -475,7 +474,6 @@ impl AgentdProductionLaunch {
         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
         let result = async {
-            let post_a_continuation = self.post_a_continuation;
             if matches!(&primary, PrimaryInputs::Desktop { .. })
                 && (notes.is_some() || notes_ui.is_some())
             {
@@ -704,9 +702,6 @@ impl AgentdProductionLaunch {
                 remaining(deadline)?;
             }
             let result = crate::run(config, arg0_paths).await;
-            // Release pending C and the learning handles only after all
-            // supervised workers stop, while their original Root is still held.
-            drop(post_a_continuation);
             // Keep the authenticated Root feed and original checkpoint/grant
             // handles alive until all original runtime workers have stopped.
             drop((attachment, desktop_attachment, initial_attachment));

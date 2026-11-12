@@ -83,6 +83,7 @@ pub(crate) struct OriginalHistoricalLearningDeliveryV1 {
     source: Arc<RegisteredHistoricalLearningSourceV1>,
     journal: LearningOwnerJournalV1<FileAnchorWitnessStore>,
     key: ProductEvaluationExecutionKeyV1,
+    continuation: Option<crate::production_launcher::OriginalPostAContinuationV1>,
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
@@ -146,7 +147,30 @@ impl LearningIterationRuntimeBootstrapV1 {
             source,
             journal,
             key,
+            continuation: None,
         });
+        Ok(self)
+    }
+
+    pub(crate) fn with_original_post_a_continuation(
+        mut self,
+        continuation: crate::production_launcher::OriginalPostAContinuationV1,
+        identity: &AgentdIdentity,
+    ) -> Result<Self, AgentdError> {
+        self.require_identity(identity)?;
+        let owners = self
+            .original_q24
+            .as_ref()
+            .ok_or_else(|| refused("original Q24 aggregate absent"))?;
+        let delivery = self
+            .historical_delivery
+            .as_mut()
+            .ok_or_else(|| refused("original historical delivery absent"))?;
+        if delivery.continuation.is_some() {
+            return Err(refused("original post-A continuation already installed"));
+        }
+        continuation.require_original_delivery(&delivery.source, owners, identity)?;
+        delivery.continuation = Some(continuation);
         Ok(self)
     }
 }
@@ -160,6 +184,42 @@ impl OriginalHistoricalLearningDeliveryV1 {
     }
 
     pub(super) async fn run(
+        mut self,
+        handle: LearningIterationHandleV1,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+    ) -> Result<(), AgentdError> {
+        let Some(continuation) = self.continuation.take() else {
+            return self.run_delivery(handle, state, cancellation).await;
+        };
+        let joined = cancellation.child_token();
+        let delivery_cancelled = joined.clone();
+        let continuation_cancelled = joined.clone();
+        let delivery = self.run_delivery(handle, Arc::clone(&state), joined.clone());
+        let continuation = continuation.run(state, joined);
+        // Both owned futures remain joined after an error or shutdown. An
+        // original publisher or issuer already in progress is never detached.
+        let (delivery, continuation) = tokio::join!(
+            async {
+                let result = delivery.await;
+                if result.is_err() {
+                    delivery_cancelled.cancel();
+                }
+                result
+            },
+            async {
+                let result = continuation.await;
+                if result.is_err() {
+                    continuation_cancelled.cancel();
+                }
+                result
+            },
+        );
+        delivery?;
+        continuation
+    }
+
+    async fn run_delivery(
         mut self,
         handle: LearningIterationHandleV1,
         state: Arc<AgentdState>,

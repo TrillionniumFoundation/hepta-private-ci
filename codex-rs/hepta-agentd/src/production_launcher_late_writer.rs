@@ -180,7 +180,6 @@ impl AgentdProductionLaunch {
                 original_run_start_retention: None,
                 post_a_handoffs,
                 session_end,
-                post_a_continuation: None,
             },
             ordinary,
         ))
