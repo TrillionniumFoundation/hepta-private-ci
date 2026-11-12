@@ -78,9 +78,9 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
         for path, marker in (
             ("codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
                 "outcome.update_rule != self.update_rule"),
-            (AGENT + "learning_iteration_auth.rs",
+            (AGENT + "learning_iteration_receipt_validation.rs",
                 "LearningIterationStageV1::Selection if snapshot.training_no_update_v2().is_some()"),
-            (AGENT + "learning_iteration_auth.rs",
+            (AGENT + "learning_iteration_receipt_validation.rs",
                 "LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator"),
             (AGENT + "learning_iteration_auth.rs",
                 "verify_signed_actor_separation(&prior, &current, clock()?)"),
