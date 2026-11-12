@@ -1,0 +1,268 @@
+name: HCSN visit-897 N128 parent-clear VJP successor
+on:
+  push:
+    branches:
+      - research/hcsn-visit897-n128-parentclear-vjp-20261112-c06d
+permissions:
+  contents: read
+concurrency:
+  group: hcsn-visit897-n128-parentclear-vjp-20261112-c06d-001
+  cancel-in-progress: false
+jobs:
+  one-law-n128-inventory-successor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      CANDIDATE_COMMIT: ${{ github.sha }}
+      GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+      EXPECTED_BRANCH: research/hcsn-visit897-n128-parentclear-vjp-20261112-c06d
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: ./.github/actions/setup-ci-tools
+      - name: Bind exact frozen source before candidate import
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_COMMIT"
+          git merge-base --is-ancestor 49dea3d96dae34241d7610437031d4d1d5cbba03 HEAD
+          root="$RUNNER_TEMP/visit897-n128-parentclear-vjp"
+          mkdir "$root"
+          python -B qualification/hcsn_source_migration_vjp_n128_parentclear_attempt/admission_inspector.py \
+            --root . \
+            --output "$root/PREIMPORT-REVIEW.json"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          package = Path(
+              'qualification/hcsn_source_migration_vjp_n128_parentclear_attempt'
+          )
+          request = json.loads((package / 'REQUEST.json').read_text())
+          source = json.loads((package / 'SOURCE.json').read_text())
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          hashes = {
+              name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              for name in source['source_sha256']
+          }
+          if hashes != source['source_sha256']:
+              raise ValueError('remote-frozen numerical source bytes differ')
+          if request['identity'] != source['identity']:
+              raise ValueError('request/source identity differs')
+          if request['unique_execution_key'] != source['unique_execution_key']:
+              raise ValueError('request/source key differs')
+          if source['parent_head'] != '49dea3d96dae34241d7610437031d4d1d5cbba03':
+              raise ValueError('the exact #6273 RED parent differs')
+          bind = {
+              'source_commit': head,
+              'request_identity': request['identity'],
+              'unique_execution_key': request['unique_execution_key'],
+              'source_sha256': hashes,
+              'parent_static_clear': source['parent_static_clear'],
+              'candidate_imports': 0,
+              'candidate_forwards': 0,
+              'adjoints': 0,
+              'optimizer_updates': 0,
+          }
+          output = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-parentclear-vjp'
+          (output / 'SOURCE-BIND.json').write_text(
+              json.dumps(bind, indent=2, sort_keys=True) + '\n'
+          )
+          (output / 'FROZEN-SOURCE.json').write_text(
+              json.dumps(bind, indent=2, sort_keys=True) + '\n'
+          )
+          print(json.dumps(bind, sort_keys=True))
+          PY
+      - name: Apply exact repository format gate
+        run: |
+          cd codex-rs
+          just fmt --base 49dea3d96dae34241d7610437031d4d1d5cbba03
+          cd ..
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Install exact numerical runtime
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0
+          python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: Bind immediate host resource headroom
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import shutil
+          from pathlib import Path
+
+          values = {}
+          for line in Path('/proc/meminfo').read_text().splitlines():
+              name, value = line.split(':', 1)
+              values[name] = int(value.strip().split()[0]) * 1024
+          available = values['MemAvailable']
+          if available < 4294967296:
+              raise RuntimeError('host MemAvailable is below the frozen 4 GiB gate')
+          prlimit = shutil.which('prlimit')
+          if not prlimit:
+              raise RuntimeError('prlimit is unavailable')
+          result = {
+              'mem_available_bytes': available,
+              'minimum_mem_available_bytes': 4294967296,
+              'prlimit': prlimit,
+              'address_space_limit_bytes': 3221225472,
+              'cpu_limit_seconds': 900,
+              'wall_limit_seconds': 1000,
+              'candidate_imports': 0,
+              'candidate_forwards': 0,
+              'adjoints': 0,
+              'optimizer_updates': 0,
+          }
+          output = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-parentclear-vjp'
+          (output / 'RESOURCE-PREFLIGHT.json').write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n'
+          )
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Execute the sole bounded numerical admission
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import resource
+          import subprocess
+          import sys
+          import time
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-parentclear-vjp'
+          output = root / 'admission'
+          source = root / 'FROZEN-SOURCE.json'
+          key = (
+              'hcsn-visit897-n128-parentclear-vjp-'
+              '20261112-c06d-001'
+          )
+          command = [
+              'prlimit',
+              '--as=3221225472',
+              '--cpu=900',
+              '--',
+              sys.executable,
+              '-B',
+              '-m',
+              'qualification.hcsn_source_migration_vjp_n128_parentclear_attempt.native_probe',
+              '--source',
+              str(source),
+              '--output',
+              str(output),
+          ]
+          pre = {
+              'source_commit': os.environ['CANDIDATE_COMMIT'],
+              'unique_execution_key': key,
+              'github_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'maximum_forwards': 42,
+              'maximum_adjoints': 2,
+              'maximum_optimizer_updates': 0,
+              'address_space_limit_bytes': 3221225472,
+              'cpu_limit_seconds': 900,
+              'wall_limit_seconds': 1000,
+              'status': 'STARTING_UNIQUE_ATTEMPT',
+          }
+          (root / 'PRE-EXECUTION.json').write_text(
+              json.dumps(pre, indent=2, sort_keys=True) + '\n'
+          )
+          wall = time.perf_counter()
+          wrapper_cpu = time.process_time()
+          before = resource.getrusage(resource.RUSAGE_CHILDREN)
+          code = None
+          status = 'UNKNOWN_STARTING_NO_READMISSION'
+          with (root / 'controller.stdout').open('wb') as stdout, (
+              root / 'controller.stderr'
+          ).open('wb') as stderr:
+              try:
+                  completed = subprocess.run(
+                      command,
+                      stdout=stdout,
+                      stderr=stderr,
+                      check=False,
+                      timeout=1000,
+                  )
+                  code = completed.returncode
+                  status = (
+                      'TERMINAL_RESULT_REPORTED'
+                      if (output / 'RESULT.json').is_file()
+                      else 'UNKNOWN_TERMINAL_NO_RESULT_NO_READMISSION'
+                  )
+              except subprocess.TimeoutExpired:
+                  status = 'UNKNOWN_WALL_TIMEOUT_NO_READMISSION'
+          after = resource.getrusage(resource.RUSAGE_CHILDREN)
+          cost = {
+              'source_commit': os.environ['CANDIDATE_COMMIT'],
+              'unique_execution_key': key,
+              'exit_code': code,
+              'status': status,
+              'full_child_tree_wall_seconds': time.perf_counter() - wall,
+              'full_child_tree_cpu_seconds': (
+                  after.ru_utime + after.ru_stime - before.ru_utime - before.ru_stime
+              ),
+              'wrapper_cpu_seconds': time.process_time() - wrapper_cpu,
+              'reported_child_tree_max_rss_kib': after.ru_maxrss,
+              'maximum_forwards': 42,
+              'maximum_adjoints': 2,
+              'maximum_optimizer_updates': 0,
+              'address_space_limit_bytes': 3221225472,
+              'cpu_limit_seconds': 900,
+              'wall_limit_seconds': 1000,
+              'includes_python_torch_import_and_all_numerical_work': True,
+          }
+          (root / 'WRAPPER-COST.json').write_text(
+              json.dumps(cost, indent=2, sort_keys=True) + '\n'
+          )
+          print((root / 'controller.stdout').read_text())
+          print((root / 'controller.stderr').read_text(), file=sys.stderr)
+          print(json.dumps(cost, sort_keys=True))
+          if status != 'TERMINAL_RESULT_REPORTED' or code != 0:
+              raise SystemExit(1)
+          result = json.loads((output / 'RESULT.json').read_text())
+          expected_calls = {
+              'forwards': 42,
+              'adjoints': 2,
+              'backward_attempts': 2,
+              'optimizer_updates': 0,
+          }
+          actual_calls = {name: result['calls'][name] for name in expected_calls}
+          if (
+              result['status'] != 'PASS_LIMITED_N128_ONE_LAW'
+              or result['identity'] != key.removesuffix('-001')
+              or result['unique_execution_key'] != key
+              or actual_calls != expected_calls
+              or len(result['directional_checks']) != 10
+              or len(result['transpose_coordinate_absolute_errors']) != 125
+              or len(result['negative_guards']) != 12
+          ):
+              raise SystemExit(1)
+          PY
+      - name: Confirm checkout remained immutable
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: visit897-n128-parentclear-vjp-originals
+          path: ${{ runner.temp }}/visit897-n128-parentclear-vjp
+          if-no-files-found: error
+
