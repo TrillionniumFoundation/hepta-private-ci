@@ -1,6 +1,7 @@
 //! Bounded one-operation registry CAS under the actual retained Root writer.
 
 use std::os::unix::net::UnixStream;
+use std::time::Instant;
 
 use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
@@ -67,10 +68,55 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
     ) -> io::Result<()> {
+        self.serve_q24_model_factory_with_end(
+            factory,
+            config,
+            registration,
+            stream,
+            policy,
+            owner_pidfd,
+            /*original_end*/ None,
+        )
+    }
+
+    pub(crate) fn serve_q24_model_factory_until(
+        &self,
+        factory: &RegisteredQ24ModelFactory,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        end: Instant,
+    ) -> io::Result<()> {
+        self.serve_q24_model_factory_with_end(
+            factory,
+            config,
+            registration,
+            stream,
+            policy,
+            owner_pidfd,
+            Some(end),
+        )
+    }
+
+    fn serve_q24_model_factory_with_end(
+        &self,
+        factory: &RegisteredQ24ModelFactory,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+        original_end: Option<Instant>,
+    ) -> io::Result<()> {
         let mut next_request_id = 1;
         let pin = owner_pidfd.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
             .map_err(io::Error::other)?;
+        if let Some(end) = original_end {
+            channel.limit_original_end(end).map_err(io::Error::other)?;
+        }
         while channel
             .exchange(|bytes| {
                 self.with_learning_profile(

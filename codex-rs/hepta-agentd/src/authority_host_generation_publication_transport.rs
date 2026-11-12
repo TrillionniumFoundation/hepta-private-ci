@@ -2,6 +2,7 @@
 //! original one-operation publication may mutate CURRENT. Readback never does.
 
 use std::os::unix::net::UnixStream;
+use std::time::Instant;
 
 use crate::neuron_generation_current::types::Published;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
@@ -56,10 +57,59 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner: OwnedFd,
     ) -> io::Result<()> {
+        self.serve_generation_publication_with_end(
+            slot,
+            learning,
+            config,
+            registration,
+            stream,
+            policy,
+            owner,
+            /*original_end*/ None,
+        )
+    }
+
+    pub(crate) fn serve_generation_publication_until(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        end: Instant,
+    ) -> io::Result<()> {
+        self.serve_generation_publication_with_end(
+            slot,
+            learning,
+            config,
+            registration,
+            stream,
+            policy,
+            owner,
+            Some(end),
+        )
+    }
+
+    fn serve_generation_publication_with_end(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        original_end: Option<Instant>,
+    ) -> io::Result<()> {
         let mut sequence = 1;
         let pin = owner.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
             .map_err(io::Error::other)?;
+        if let Some(end) = original_end {
+            channel.limit_original_end(end).map_err(io::Error::other)?;
+        }
         while channel
             .exchange(|bytes| {
                 self.with_learning_profile(
