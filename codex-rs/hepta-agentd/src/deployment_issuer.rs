@@ -56,6 +56,9 @@ pub use writer::HostAuthorityWriterRegistration;
 mod desktop;
 pub use desktop::RootDesktopPolicy;
 
+#[path = "deployment_publication.rs"]
+mod publication;
+
 #[path = "deployment_calculator.rs"]
 mod calculator;
 pub(crate) use calculator::RootCalculatorGrantAdmission;

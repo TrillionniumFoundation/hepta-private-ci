@@ -26,6 +26,10 @@ pub(crate) enum Command {
     Observe,
     CaptureRetiredTask {},
     ReadFinalizedTask {},
+    IssueFinalUse {
+        expected: String,
+        intent: String,
+    },
     Prepare {
         expected: String,
         intent: String,
@@ -48,6 +52,8 @@ pub(crate) struct Response {
     pub(crate) head: CurrentHead,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) successor: Option<RootCompletedSuccessorDataV1>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) grant: Option<SignedFinalUseGrant>,
 }
 
 impl HostAuthorityService {
@@ -119,6 +125,12 @@ impl HostAuthorityService {
         while channel
             .exchange_with_original_deadline(|bytes, end| {
                 PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {
+                    let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
+                    if matches!(&request.command, Command::IssueFinalUse { .. }) {
+                        return Self::issue_generation_publication_grant(
+                            self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
+                        );
+                    }
                     let mut successor_observed = None;
                     let (raw, expected) = self.with_learning_profile(
                     config,
@@ -176,6 +188,9 @@ impl HostAuthorityService {
                         let mut after = before.clone();
                         let mut fresh_grant = None;
                         match &request.command {
+                            Command::IssueFinalUse { .. } => {
+                                return Err(io::Error::other("C grant requires its joint original context"));
+                            }
                             Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {
                                 if version != PublicationVersion::DurableV2 || before.current != intent.target {
                                     return Err(io::Error::other("original published V2 successor required"));
@@ -289,6 +304,7 @@ impl HostAuthorityService {
                             profile: slot.profile.clone(),
                             head: after.clone(),
                             successor: successor_observed.clone(),
+                            grant: None,
                         };
                         // Check the exact success frame before crossing any CURRENT effect.
                         let raw = serde_json::to_vec(&response).map_err(io::Error::other)?;
@@ -296,6 +312,9 @@ impl HostAuthorityService {
                             return Err(io::Error::other("publication reply bound"));
                         }
                         match &request.command {
+                            Command::IssueFinalUse { .. } => {
+                                return Err(io::Error::other("C grant cannot mutate CURRENT"));
+                            }
                             Command::Observe => {}
                             Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {}
                             Command::Prepare { .. } => {
@@ -412,7 +431,10 @@ impl HostAuthorityService {
                 })
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
             })
-            .map_err(io::Error::other)?
+            .map_err(|error| {
+                let _ = slot.refuse();
+                io::Error::other(error)
+            })?
         {}
         Ok(())
     }
