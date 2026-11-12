@@ -1,0 +1,47 @@
+{
+  "after": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "dirty": false,
+    "parents": [
+      "80871cc70dbde29e61aa655b18957bfcc36056d3"
+    ],
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "dirty": false,
+    "parents": [
+      "80871cc70dbde29e61aa655b18957bfcc36056d3"
+    ],
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "command_exit_code": 1,
+  "elapsed_seconds": 1163.66759224399,
+  "exit_code": 1,
+  "finished_at": "2026-11-12T06:06:02.027257+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 203,
+  "log_file": "caller-full-verify.execution.json.6e5116d842294ffd82202206f7dfbdb7.log",
+  "log_sha256": "d6f0e425e083cec0836e26fc27a852c326a0c0a851e0d81792fd8396d4ed076e",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 1,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+  "started_at": "2026-11-12T05:46:38.358662+00:00",
+  "status": "failed",
+  "tested_sha": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+  "timed_out": false,
+  "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-seven-final-v5/source"
+}

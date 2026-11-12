@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.ordinary-owner-fixed-source-native-result.v31",
+  "source": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+  "tree": "3c7e0963f8c32701066071f354c626aa5283687d",
+  "request": "176ddf60ccf8e863e722f6339457665b25e71514",
+  "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "status": "FAILED_FULL_CALLER_TYPED_RECEIVER",
+  "maintenance": "fmt-before, scoped locked/offline fix-seven-crates, fmt-after and seven-package bins all passed without source drift",
+  "qa": {
+    "b4": 221,
+    "fault_matrix": 5,
+    "performance": 5,
+    "vertical_slice": 5,
+    "total_passed": 236,
+    "failed": 0,
+    "source_specific": true
+  },
+  "caller_self_test": "passed",
+  "caller_full": {
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "started_at": "2026-11-12T05:46:38.358662+00:00",
+    "finished_at": "2026-11-12T06:06:02.027257+00:00",
+    "elapsed_seconds": 1163.66759224399,
+    "exit_code": 1,
+    "command_exit_code": 1,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "raw_error": "FAIL_HEPTA_CALLER_PROOF: q24_task_original_ready_observe: codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs: unresolved possible OriginalCellQ24TaskLedgerProducerV1::observe_learning receiver\n",
+    "log_bytes": 203,
+    "log_sha256": "d6f0e425e083cec0836e26fc27a852c326a0c0a851e0d81792fd8396d4ed076e"
+  },
+  "not_reached": [
+    "same-source helper build and preverify",
+    "ordinary seven-package tests",
+    "Root metadata/list and seventeen parent tests",
+    "post-test helper verification"
+  ],
+  "final_identity": {
+    "head": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "status": "",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "maintenance_patch": {
+    "bytes": 0,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-894138f-seven-final-v5/records/maintenance.patch",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "pty": {
+    "session": "dpty-7e0cb3ee560f53ffa65290d93ec1d5341c0e304c118581cafe3fa07bc9e2c7e2",
+    "exit_code": 1,
+    "bytes": 6987,
+    "complete": true,
+    "capture_error": null
+  },
+  "prior_results_inherited": false,
+  "ordinary": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_c": false,
+    "physical_daemon_root_restart": false
+  },
+  "static_diagnosis": "The original fail-closed typed helper cannot resolve self.source.observe_learning in the None fallback while scanning the separate OriginalCellQ24TaskLedgerProducerV1 authority. The actual Some producer already has an explicit original type. A minimal explicit original source borrow is being reviewed; no checker or authority exception is introduced."
+}

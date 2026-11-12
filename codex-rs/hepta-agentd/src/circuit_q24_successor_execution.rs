@@ -95,7 +95,10 @@ impl AgentdCircuitTaskInvocationProviderV1 for OriginalQ24SuccessorInvocationV1 
                 let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> = producer;
                 producer.observe_learning(identity, record, trace)
             }
-            None => self.source.observe_learning(identity, record, trace),
+            None => {
+                let source: &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> = &self.source;
+                source.observe_learning(identity, record, trace)
+            }
         }
     }
 }

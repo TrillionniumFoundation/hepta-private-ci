@@ -1,0 +1,235 @@
+{
+  "schema": "hepta.independent-successor-observe-receiver-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "conclusion": "No confirmed static blocker in the exact two-operation candidate. The source annotation removes the identified non-authority receiver ambiguity while preserving the actual owner, call, return value and protected order. This is not compiler, original typed-helper execution, or full verifier PASS.",
+  "source": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "original_failure": {
+    "provenance": "Root-reported original V31 full-gate outcome; Root retains its original execution records.",
+    "boundary": "q24_task_original_ready_observe",
+    "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+    "error": "unresolved possible OriginalCellQ24TaskLedgerProducerV1::observe_learning receiver",
+    "duration_seconds": 1163.668,
+    "exit_code": 1,
+    "timed_out": false,
+    "source_clean": true,
+    "preceding_scope": "236 QA tests and caller self-test passed on the original source. Helpers, seven-package behavior suites and Root tests were not reached."
+  },
+  "candidate": {
+    "operations": {
+      "name": "candidate_ops",
+      "git_blob": "87cf6c044ea8a98a8ad53961a971ce7a818da122",
+      "bytes": 1787,
+      "sha256": "8c1f3d55d8d0c3ce1c49a988f2769c4f37dea36b03a3453372a49db738c48166"
+    },
+    "source": {
+      "name": "candidate_source",
+      "git_blob": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+      "bytes": 8346,
+      "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5"
+    },
+    "callers": {
+      "name": "candidate_callers",
+      "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "bytes": 669225,
+      "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+    },
+    "author_manifest": {
+      "git_blob": "4ac6124013a82e77e8e66b3286cdb0acf79abbaa",
+      "bytes": 14116,
+      "sha256": "30f8eae50046b062bddf13968c239921e5197289daa64bffbeee3648cbf4eaa2"
+    }
+  },
+  "exact_verification": {
+    "source": {
+      "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+      "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+    },
+    "operations": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+        "forward_unique": true,
+        "reverse_unique": true,
+        "full_forward_bytes_equal": true,
+        "full_reverse_bytes_equal": true,
+        "preimage": {
+          "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+          "bytes": 8224,
+          "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+        },
+        "postimage": {
+          "git_blob": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+          "bytes": 8346,
+          "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5"
+        }
+      },
+      {
+        "path": "CALLERS.toml",
+        "forward_unique": true,
+        "reverse_unique": true,
+        "full_forward_bytes_equal": true,
+        "full_reverse_bytes_equal": true,
+        "preimage": {
+          "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+          "bytes": 669144,
+          "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+        },
+        "postimage": {
+          "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+          "bytes": 669225,
+          "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+        }
+      }
+    ],
+    "boundary_blocks": {
+      "before": 504,
+      "after": 504,
+      "all_byte_identical": true
+    },
+    "protected_blocks": {
+      "before": 366,
+      "after": 366,
+      "changed": [
+        {
+          "index": 351,
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+        }
+      ]
+    },
+    "checker_run": false,
+    "typed_helper_run": false,
+    "native_run": false
+  },
+  "diagnosis": {
+    "location": "Original source line 98, the None arm's self.source.observe_learning call, not line 96's actual Producer call.",
+    "original_some": "The existing let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> annotation names the target explicitly. Original _type returns the target and this call remains the real authority match.",
+    "original_none": "authority_fields records only fields whose type resolves to the selected authority. OriginalQ24SuccessorInvocationV1.ledger is indexed for Producer; its unrelated Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> source field is not. _receiver_type(self.source) therefore returns None, and original has_authority_call raises UnresolvedTypedReceiver.",
+    "candidate_none": "A local immutable &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> borrow is taken from the same self.source Arc, then the same observe_learning(identity, record, trace) call is returned.",
+    "helper_effect": "For the Producer boundary, the original helper sees an explicit non-target source annotation (its _type representation is FileAnchorWitnessStore, the last identifier). This is enough to classify the local receiver as unrelated rather than unresolved. It is not a claim that the helper implements Rust's full type system. The unchanged Some call still records the existing product caller.",
+    "checker_behavior_preserved": "Original _verify_boundary still uses the original global field index, rejects unresolved receivers, skips its definition/ignored paths, and compares the exact observed caller set. No parser, alias rule, exemption, caller set, receiver_type, method list, or ignore rule changes."
+  },
+  "source_semantics": {
+    "owner_identity": "The field remains the same private Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>. The new let borrows its dereferenced target; it does not clone, replace, reopen, reconstruct, mutate, or expose an owner.",
+    "imports_and_visibility": "DurableCircuitTaskSourceV1 and Arc already enter through the unchanged parent profile imports; FileAnchorWitnessStore already has its explicit import and appears in the existing field. No new import, visibility, feature or constructor is required by the annotation.",
+    "signatures": "The actual Durable source's AgentdCircuitTaskInvocationProviderV1 implementation takes &self and its observe_learning returns NonLearning. The actual Producer method takes self: &Arc<Self>, so its existing Some annotation is correctly preserved.",
+    "unchanged": "Full exact replay confirms all source bytes outside the one None arm are unchanged, including the Some branch, actual open_original UFCS, original channel construction, source/Cell/Task/full identity inputs, failure propagation, and both trait methods build/publish_result.",
+    "no_new_authority": "No Ready, Outcome, signature, new role, fallback owner, new task dispatch, CURRENT operation, deadline adjustment, cancellation change, or scope enrollment is added."
+  },
+  "metadata": {
+    "boundaries_before": 504,
+    "boundaries_after": 504,
+    "all_boundary_blocks_byte_identical": true,
+    "protected_before": 366,
+    "protected_after": 366,
+    "only_changed_protected_path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+    "changed_item": "The former single None-call marker becomes three ordered actual markers: None arm, exact immutable typed borrow from &self.source, and source.observe_learning(identity, record, trace).",
+    "preceding_some_markers_all_preserved": true,
+    "other_365_protected_blocks_byte_identical": true,
+    "required_forbidden_and_other_function_sequences_unchanged": true,
+    "exact_old_sequence": "\"match &self.ledger\",\"Some(producer)\",\"let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> = producer;\",\"producer.observe_learning(identity, record, trace)\",\"None => self.source.observe_learning(identity, record, trace)\"",
+    "exact_new_sequence": "\"match &self.ledger\",\"Some(producer)\",\"let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> = producer;\",\"producer.observe_learning(identity, record, trace)\",\"None => {\",\"let source: &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> = &self.source;\",\"source.observe_learning(identity, record, trace)\""
+  },
+  "bounded_same_file_receiver_check": {
+    "scope": "Read the complete old/new execution file and all current receiver_type/method declarations. Conservative raw member-method inventory was used only to bound inspection, not as a replacement checker.",
+    "total_boundary_tables": 504,
+    "typed_receiver_tables": 219,
+    "receiver_type_declarations_accounted_for": 219,
+    "unrecognized_receiver_type_fields": 0,
+    "receiver_methods_arrays_accounted_for": 4,
+    "typed_method_intersection": [
+      {
+        "id": "q24_task_original_ready_observe",
+        "symbol": "OriginalCellQ24TaskLedgerProducerV1::observe_learning",
+        "receiver_type": "OriginalCellQ24TaskLedgerProducerV1",
+        "methods": [
+          "observe_learning"
+        ],
+        "target_name_in_source": true,
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs",
+        "product_callers_line": "product_callers = [\"codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs\",\"codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs\"]"
+      }
+    ],
+    "observe_learning_dot_calls": 2,
+    "producer_open_original_qualified_calls": 1,
+    "findings": "observe_learning is the only current typed boundary method intersecting this file's member calls. Both occurrences are covered by the explicit Producer/Source annotations. open_original already uses actual Producer UFCS and is unchanged. No second same-file typed-receiver ambiguity was identified.",
+    "limit": "This does not scan every file in the full source index or prove that later full-verifier boundaries cannot fail elsewhere."
+  },
+  "immutable_inputs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+      "bytes": 8224,
+      "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/894138f/codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+    },
+    {
+      "name": "callers",
+      "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+      "bytes": 669144,
+      "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+    },
+    {
+      "name": "typed_helper",
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    {
+      "name": "checker",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "git_blob": "cc92df568f1438eebe4eee8f3660b3439ef5bd22",
+      "bytes": 15923,
+      "sha256": "46267e23a4e60456d3bf666f5b6e68ab50fee4cacc24e3f912b2063bd95b81f9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs",
+      "git_blob": "823485ded1966dd9f8a65d3b5197e9889c7eca71",
+      "bytes": 6874,
+      "sha256": "4836c7bb54730c576d2d54a1635455a3a411b4a2637201754acb4707ce71d981"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "git_blob": "0ef46c3138832f28ec0f1ef4269c5d4c8677798e",
+      "bytes": 10344,
+      "sha256": "bb0f49696a98e6c545fe061a1dabfc6b7093fb8f1bb7e59cc0ce804643b8bab9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "bytes": 63786,
+      "sha256": "c24981b60e7ec928e75e9634929d5829327bb9251f8f7eab72b2e228e67a2600"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "git_blob": "813d8f2d9ddc5b075695d88d5b86217d0ef0a444",
+      "bytes": 37607,
+      "sha256": "2b5fc5472f33d252a82a079fe3cc16b2cf918c62844fe65364b0ee2a9e699965"
+    }
+  ],
+  "operations_performed": {
+    "fixed_git_reads": true,
+    "pure_javascript_exact_text_and_hash_checks": true,
+    "product_source_or_ref_mutation": false,
+    "checker_execution": false,
+    "typed_helper_execution": false,
+    "h_calls": 0,
+    "native_or_cargo": 0,
+    "new_tests": 0
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "ordinary_positive_adoption": 0,
+    "ordinary_no_update_rollback": 0,
+    "independent_c": false,
+    "physical_daemon_root_restart": false,
+    "original_failure_preserved": true,
+    "subsequent_fixed_source_full_qualification_required": true
+  }
+}
