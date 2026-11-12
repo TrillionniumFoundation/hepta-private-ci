@@ -27,6 +27,7 @@ pub use owner::CellQ24TrainingOwnerErrorV1;
 pub use owner::CellQ24TrainingOwnerV1;
 pub(crate) use owner::OriginalQ24TrainingWorkDataV1;
 pub(crate) use owner::OriginalQ24TrainingWorkObservedV1;
+#[cfg(test)]
 pub(crate) use owner::original_q24_work_contract;
 pub use training::CellQ24DatasetErrorV1;
 pub use training::CellQ24DatasetProjectionV1;
