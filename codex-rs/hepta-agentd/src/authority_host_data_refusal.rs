@@ -26,6 +26,7 @@ const PURPOSE: &str = "runtime.initial-data-refusal.v1";
 pub(super) enum RootDataKind {
     SourcePin,
     SourceHandoff,
+    RunStart,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -239,6 +240,7 @@ fn binding(
     let name = match kind {
         RootDataKind::SourcePin => "source-pin",
         RootDataKind::SourceHandoff => "source-handoff",
+        RootDataKind::RunStart => "run-start",
     };
     // Match the primary slot's scope namespace. The complete target remains
     // inside the record, so a different target cannot create another gate.
