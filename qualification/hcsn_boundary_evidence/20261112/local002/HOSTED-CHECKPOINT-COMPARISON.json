@@ -1,0 +1,2067 @@
+{
+  "schema": "hcsn-factorial-cross-execution-comparison-v1",
+  "source_summary_sha256": {
+    "/dev/shm/hepta-hcsn-full-002": "3ea5dc8f1f9e7d0f9e9a8d684f25efd6563b3cc4e88fdc750e9b13e13db91881",
+    "/dev/shm/hcsn-hosted-43127560720/experiment": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715"
+  },
+  "same_data": true,
+  "same_profile": true,
+  "runs": [
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "tensor_differences": [],
+      "raw_boundary_local": 0.0,
+      "raw_boundary_hosted": 0.0,
+      "log_boundary_local": 0.0,
+      "log_boundary_hosted": 0.0,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 1.3877787807814457e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.physics.raw_log_boundary",
+          "different_elements": 1,
+          "max_absolute_difference": 1.3877787807814457e-17
+        }
+      ],
+      "raw_boundary_local": -0.06823858158528724,
+      "raw_boundary_hosted": -0.06823858158528723,
+      "log_boundary_local": -0.008175943290435493,
+      "log_boundary_hosted": -0.008175943290435491,
+      "boundary_absolute_difference": 1.734723475976807e-18,
+      "max_logit_absolute_difference": 1.6653345369377348e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.state_embedding",
+          "different_elements": 47,
+          "max_absolute_difference": 5.551115123125783e-17
+        },
+        {
+          "name": "network.layers.0.write_gate.weight",
+          "different_elements": 98,
+          "max_absolute_difference": 1.942890293094024e-16
+        },
+        {
+          "name": "network.layers.0.write_gate.bias",
+          "different_elements": 1,
+          "max_absolute_difference": 2.220446049250313e-16
+        },
+        {
+          "name": "network.layers.0.content_proposal.weight",
+          "different_elements": 15,
+          "max_absolute_difference": 5.551115123125783e-17
+        },
+        {
+          "name": "network.layers.0.content_proposal.bias",
+          "different_elements": 1,
+          "max_absolute_difference": 5.551115123125783e-17
+        }
+      ],
+      "raw_boundary_local": 0.0,
+      "raw_boundary_hosted": 0.0,
+      "log_boundary_local": 0.0,
+      "log_boundary_hosted": 0.0,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 1.3877787807814457e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.state_embedding",
+          "different_elements": 57,
+          "max_absolute_difference": 5.551115123125783e-17
+        },
+        {
+          "name": "network.layers.0.write_gate.weight",
+          "different_elements": 93,
+          "max_absolute_difference": 1.6653345369377348e-16
+        },
+        {
+          "name": "network.layers.0.write_gate.bias",
+          "different_elements": 2,
+          "max_absolute_difference": 2.220446049250313e-16
+        },
+        {
+          "name": "network.layers.0.content_proposal.weight",
+          "different_elements": 18,
+          "max_absolute_difference": 1.1102230246251565e-16
+        }
+      ],
+      "raw_boundary_local": -0.06563631246730973,
+      "raw_boundary_hosted": -0.06563631246730973,
+      "log_boundary_local": -0.007865066174553993,
+      "log_boundary_hosted": -0.007865066174553993,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 1.6653345369377348e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.physics.raw_log_boundary",
+          "different_elements": 1,
+          "max_absolute_difference": 3.469446951953614e-18
+        }
+      ],
+      "raw_boundary_local": -0.027372569321413954,
+      "raw_boundary_hosted": -0.027372569321413957,
+      "log_boundary_local": -0.0032838882001902997,
+      "log_boundary_hosted": -0.0032838882001903,
+      "boundary_absolute_difference": 4.336808689942018e-19,
+      "max_logit_absolute_difference": 1.6653345369377348e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.state_embedding",
+          "different_elements": 47,
+          "max_absolute_difference": 8.326672684688674e-17
+        },
+        {
+          "name": "network.layers.0.write_gate.weight",
+          "different_elements": 103,
+          "max_absolute_difference": 1.6653345369377348e-16
+        },
+        {
+          "name": "network.layers.0.write_gate.bias",
+          "different_elements": 3,
+          "max_absolute_difference": 2.220446049250313e-16
+        },
+        {
+          "name": "network.layers.0.content_proposal.weight",
+          "different_elements": 9,
+          "max_absolute_difference": 2.7755575615628914e-17
+        },
+        {
+          "name": "network.layers.0.content_proposal.bias",
+          "different_elements": 1,
+          "max_absolute_difference": 3.469446951953614e-18
+        }
+      ],
+      "raw_boundary_local": 0.0,
+      "raw_boundary_hosted": 0.0,
+      "log_boundary_local": 0.0,
+      "log_boundary_hosted": 0.0,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 2.220446049250313e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.state_embedding",
+          "different_elements": 42,
+          "max_absolute_difference": 5.551115123125783e-17
+        },
+        {
+          "name": "network.layers.0.physics.raw_log_boundary",
+          "different_elements": 1,
+          "max_absolute_difference": 3.469446951953614e-18
+        },
+        {
+          "name": "network.layers.0.write_gate.weight",
+          "different_elements": 89,
+          "max_absolute_difference": 1.1102230246251565e-16
+        },
+        {
+          "name": "network.layers.0.write_gate.bias",
+          "different_elements": 6,
+          "max_absolute_difference": 2.220446049250313e-16
+        },
+        {
+          "name": "network.layers.0.content_proposal.weight",
+          "different_elements": 10,
+          "max_absolute_difference": 5.551115123125783e-17
+        }
+      ],
+      "raw_boundary_local": -0.027784213391111045,
+      "raw_boundary_hosted": -0.02778421339111104,
+      "log_boundary_local": -0.0033332479369194987,
+      "log_boundary_hosted": -0.0033332479369194983,
+      "boundary_absolute_difference": 4.336808689942018e-19,
+      "max_logit_absolute_difference": 2.220446049250313e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "tensor_differences": [],
+      "raw_boundary_local": 0.0,
+      "raw_boundary_hosted": 0.0,
+      "log_boundary_local": 0.0,
+      "log_boundary_hosted": 0.0,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 2.220446049250313e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.state_embedding",
+          "different_elements": 38,
+          "max_absolute_difference": 5.551115123125783e-17
+        },
+        {
+          "name": "network.layers.0.write_gate.weight",
+          "different_elements": 91,
+          "max_absolute_difference": 2.7755575615628914e-16
+        },
+        {
+          "name": "network.layers.0.write_gate.bias",
+          "different_elements": 2,
+          "max_absolute_difference": 2.220446049250313e-16
+        },
+        {
+          "name": "network.layers.0.content_proposal.weight",
+          "different_elements": 12,
+          "max_absolute_difference": 2.7755575615628914e-17
+        },
+        {
+          "name": "network.layers.0.content_proposal.bias",
+          "different_elements": 2,
+          "max_absolute_difference": 1.3877787807814457e-17
+        }
+      ],
+      "raw_boundary_local": 0.0,
+      "raw_boundary_hosted": 0.0,
+      "log_boundary_local": 0.0,
+      "log_boundary_hosted": 0.0,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 1.6653345369377348e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.state_embedding",
+          "different_elements": 38,
+          "max_absolute_difference": 4.163336342344337e-17
+        },
+        {
+          "name": "network.layers.0.physics.raw_log_boundary",
+          "different_elements": 1,
+          "max_absolute_difference": 1.3877787807814457e-17
+        },
+        {
+          "name": "network.layers.0.write_gate.weight",
+          "different_elements": 78,
+          "max_absolute_difference": 1.1102230246251565e-16
+        },
+        {
+          "name": "network.layers.0.write_gate.bias",
+          "different_elements": 1,
+          "max_absolute_difference": 2.220446049250313e-16
+        },
+        {
+          "name": "network.layers.0.content_proposal.weight",
+          "different_elements": 12,
+          "max_absolute_difference": 2.7755575615628914e-17
+        },
+        {
+          "name": "network.layers.0.content_proposal.bias",
+          "different_elements": 2,
+          "max_absolute_difference": 1.3877787807814457e-17
+        }
+      ],
+      "raw_boundary_local": 0.07374995276331178,
+      "raw_boundary_hosted": 0.0737499527633118,
+      "log_boundary_local": 0.008833983959672036,
+      "log_boundary_hosted": 0.008833983959672038,
+      "boundary_absolute_difference": 1.734723475976807e-18,
+      "max_logit_absolute_difference": 1.249000902703301e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "tensor_differences": [],
+      "raw_boundary_local": 0.0,
+      "raw_boundary_hosted": 0.0,
+      "log_boundary_local": 0.0,
+      "log_boundary_hosted": 0.0,
+      "boundary_absolute_difference": 0.0,
+      "max_logit_absolute_difference": 1.1102230246251565e-16,
+      "logits_exact": false
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "tensor_differences": [
+        {
+          "name": "network.layers.0.physics.raw_log_boundary",
+          "different_elements": 1,
+          "max_absolute_difference": 1.3877787807814457e-17
+        }
+      ],
+      "raw_boundary_local": 0.07491459207566784,
+      "raw_boundary_hosted": 0.07491459207566785,
+      "log_boundary_local": 0.008972971301291013,
+      "log_boundary_hosted": 0.008972971301291014,
+      "boundary_absolute_difference": 1.734723475976807e-18,
+      "max_logit_absolute_difference": 1.3877787807814457e-16,
+      "logits_exact": false
+    }
+  ],
+  "metrics": [
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.0775697839877414,
+      "hosted": 2.0775697839877414,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.17708333333333334,
+      "hosted": 0.17708333333333334,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.06495678840256482,
+      "hosted": 0.06495678840256482,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.10931077358329867,
+      "hosted": 0.1093107735832987,
+      "absolute_difference": 2.7755575615628914e-17
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.0849930780332717,
+      "hosted": 2.0849930780332717,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.10954498574747995,
+      "hosted": 0.10954498574747992,
+      "absolute_difference": 2.7755575615628914e-17
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.0660160910950713,
+      "hosted": 2.0660160910950713,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.234375,
+      "hosted": 0.234375,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.05067567567567568,
+      "hosted": 0.05067567567567568,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.10894668975666907,
+      "hosted": 0.10894668975666907,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0817001828348825,
+      "hosted": 2.0817001828348825,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.171875,
+      "hosted": 0.171875,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.08942307692307692,
+      "hosted": 0.08942307692307692,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10944064524574705,
+      "hosted": 0.10944064524574705,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.0775705387615906,
+      "hosted": 2.0775705387615906,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.18229166666666666,
+      "hosted": 0.18229166666666666,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.07142857142857142,
+      "hosted": 0.07142857142857142,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.10931080457395555,
+      "hosted": 0.10931080457395555,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.0850444061306868,
+      "hosted": 2.0850444061306868,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.10954661970884863,
+      "hosted": 0.10954661970884863,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.065986303637554,
+      "hosted": 2.065986303637554,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.234375,
+      "hosted": 0.234375,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.05067567567567568,
+      "hosted": 0.05067567567567568,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.1089457683590086,
+      "hosted": 0.1089457683590086,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0816809065165316,
+      "hosted": 2.0816809065165316,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.1875,
+      "hosted": 0.1875,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.10087316176470588,
+      "hosted": 0.10087316176470588,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.1094400256540094,
+      "hosted": 0.1094400256540094,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.0765792562486403,
+      "hosted": 2.0765792562486403,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.16145833333333334,
+      "hosted": 0.16145833333333334,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.034753363228699555,
+      "hosted": 0.034753363228699555,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.10928036456973178,
+      "hosted": 0.10928036456973178,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.0945376443259733,
+      "hosted": 2.0945376443259733,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.10986840539603707,
+      "hosted": 0.10986840539603707,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.0519458808419744,
+      "hosted": 2.0519458808419744,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.25,
+      "hosted": 0.25,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.05,
+      "hosted": 0.05,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.1084785583342777,
+      "hosted": 0.1084785583342777,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0832542435779753,
+      "hosted": 2.0832542435779753,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.109375,
+      "hosted": 0.109375,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.02464788732394366,
+      "hosted": 0.02464788732394366,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10949412997888057,
+      "hosted": 0.10949412997888057,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.0765901444297628,
+      "hosted": 2.0765901444297628,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.16145833333333334,
+      "hosted": 0.16145833333333334,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.034753363228699555,
+      "hosted": 0.034753363228699555,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.10928071825487311,
+      "hosted": 0.10928071825487311,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.094595376797131,
+      "hosted": 2.094595376797131,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.10987025372407691,
+      "hosted": 0.10987025372407691,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.0519308590889067,
+      "hosted": 2.0519308590889067,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.25,
+      "hosted": 0.25,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.05,
+      "hosted": 0.05,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.10847809620163999,
+      "hosted": 0.10847809620163999,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0832441974032507,
+      "hosted": 2.0832441974032507,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.109375,
+      "hosted": 0.109375,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.02464788732394366,
+      "hosted": 0.02464788732394366,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 11,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10949380483890242,
+      "hosted": 0.10949380483890242,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.098644444310486,
+      "hosted": 2.098644444310486,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.11001282287308528,
+      "hosted": 0.11001282287308528,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.1031027545984338,
+      "hosted": 2.1031027545984333,
+      "absolute_difference": 4.440892098500626e-16
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11032906134666261,
+      "hosted": 0.11032906134666261,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1030787734870726,
+      "hosted": 2.1030787734870726,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.171875,
+      "hosted": 0.171875,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.03666666666666667,
+      "hosted": 0.03666666666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11004611209595459,
+      "hosted": 0.11004611209595459,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.089751804845952,
+      "hosted": 2.089751804845952,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.140625,
+      "hosted": 0.140625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.030821917808219176,
+      "hosted": 0.030821917808219176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10966329517663864,
+      "hosted": 0.10966329517663864,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.1012802100380017,
+      "hosted": 2.1012802100380017,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.11008230323980313,
+      "hosted": 0.11008230323980313,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.105910929955839,
+      "hosted": 2.105910929955839,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11040529997043463,
+      "hosted": 0.11040529997043463,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1073298406281356,
+      "hosted": 2.1073298406281356,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.171875,
+      "hosted": 0.171875,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.03666666666666667,
+      "hosted": 0.03666666666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11016448331364018,
+      "hosted": 0.11016448331364018,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.090599859530031,
+      "hosted": 2.090599859530031,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.140625,
+      "hosted": 0.140625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.030821917808219176,
+      "hosted": 0.030821917808219176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.1096771264353346,
+      "hosted": 0.10967712643533459,
+      "absolute_difference": 1.3877787807814457e-17
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.1013000467777374,
+      "hosted": 2.1013000467777374,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.11008308855466897,
+      "hosted": 0.11008308855466897,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.1059481155141873,
+      "hosted": 2.1059481155141873,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.1104068082907294,
+      "hosted": 0.1104068082907294,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1073469967235794,
+      "hosted": 2.1073469967235794,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.171875,
+      "hosted": 0.171875,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.03666666666666667,
+      "hosted": 0.03666666666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11016519846215027,
+      "hosted": 0.11016519846215027,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0906050280954442,
+      "hosted": 2.0906050280954442,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.140625,
+      "hosted": 0.140625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.030821917808219176,
+      "hosted": 0.030821917808219176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10967725891112727,
+      "hosted": 0.10967725891112727,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.098624690012474,
+      "hosted": 2.098624690012474,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.11001204625227823,
+      "hosted": 0.11001204625227823,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.103065364798044,
+      "hosted": 2.103065364798044,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11032755288637716,
+      "hosted": 0.11032755288637716,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1030627041223955,
+      "hosted": 2.1030627041223955,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.171875,
+      "hosted": 0.171875,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.03666666666666667,
+      "hosted": 0.03666666666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11004544838798835,
+      "hosted": 0.11004544838798835,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0897460011169806,
+      "hosted": 2.0897460011169806,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.140625,
+      "hosted": 0.140625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.030821917808219176,
+      "hosted": 0.030821917808219176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 23,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10966313748246914,
+      "hosted": 0.10966313748246914,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.0990293045933663,
+      "hosted": 2.0990293045933663,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.08854166666666667,
+      "hosted": 0.08854166666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.02033492822966507,
+      "hosted": 0.02033492822966507,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.1100066669736463,
+      "hosted": 0.1100066669736463,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.102116772540311,
+      "hosted": 2.102116772540311,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.078125,
+      "hosted": 0.078125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.018115942028985508,
+      "hosted": 0.018115942028985508,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11007597802864814,
+      "hosted": 0.11007597802864814,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1140505033412076,
+      "hosted": 2.1140505033412076,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11050518060375755,
+      "hosted": 0.11050518060375755,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0809206378985796,
+      "hosted": 2.0809206378985796,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b0",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10943884228853325,
+      "hosted": 0.10943884228853325,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.0990200808027972,
+      "hosted": 2.0990200808027972,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.08854166666666667,
+      "hosted": 0.08854166666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.02033492822966507,
+      "hosted": 0.02033492822966507,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.11000641242106607,
+      "hosted": 0.11000641242106607,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.102145704557552,
+      "hosted": 2.102145704557552,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.078125,
+      "hosted": 0.078125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.018115942028985508,
+      "hosted": 0.018115942028985508,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11007699692820211,
+      "hosted": 0.11007699692820211,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1140240095905707,
+      "hosted": 2.1140240095905707,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11050434706017011,
+      "hosted": 0.11050434706017011,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0808905282602694,
+      "hosted": 2.0808905282602694,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c1_b1",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.109437893274826,
+      "hosted": 0.10943789327482599,
+      "absolute_difference": 1.3877787807814457e-17
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.108146685459505,
+      "hosted": 2.108146685459505,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.08854166666666667,
+      "hosted": 0.08854166666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.02033492822966507,
+      "hosted": 0.02033492822966507,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.11032363655981692,
+      "hosted": 0.11032363655981692,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.1057537548672483,
+      "hosted": 2.105753754867248,
+      "absolute_difference": 4.440892098500626e-16
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.078125,
+      "hosted": 0.078125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.018115942028985508,
+      "hosted": 0.018115942028985508,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11025737227317839,
+      "hosted": 0.11025737227317839,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.1288398209166233,
+      "hosted": 2.1288398209166233,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.1109739208526343,
+      "hosted": 0.1109739208526343,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.0898464805946424,
+      "hosted": 2.0898464805946424,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b0",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10973961655363806,
+      "hosted": 0.10973961655363806,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "cross_entropy",
+      "local": 2.1081271169639666,
+      "hosted": 2.1081271169639666,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "accuracy",
+      "local": 0.08854166666666667,
+      "hosted": 0.08854166666666667,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "macro_f1_8_classes",
+      "local": 0.02033492822966507,
+      "hosted": 0.02033492822966507,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "all",
+      "metric": "brier_mean_classes",
+      "local": 0.1103230259062928,
+      "hosted": 0.1103230259062928,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "cross_entropy",
+      "local": 2.1057742404487776,
+      "hosted": 2.1057742404487776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "accuracy",
+      "local": 0.078125,
+      "hosted": 0.078125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "macro_f1_8_classes",
+      "local": 0.018115942028985508,
+      "hosted": 0.018115942028985508,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "delayed_copy",
+      "metric": "brier_mean_classes",
+      "local": 0.11025801613869249,
+      "hosted": 0.11025801613869249,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "cross_entropy",
+      "local": 2.12880119712228,
+      "hosted": 2.12880119712228,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "accuracy",
+      "local": 0.0625,
+      "hosted": 0.0625,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "macro_f1_8_classes",
+      "local": 0.014705882352941176,
+      "hosted": 0.014705882352941176,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "overwrite_retrieval",
+      "metric": "brier_mean_classes",
+      "local": 0.11097272479559966,
+      "hosted": 0.11097272479559965,
+      "absolute_difference": 1.3877787807814457e-17
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "cross_entropy",
+      "local": 2.089805913320842,
+      "hosted": 2.089805913320842,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "accuracy",
+      "local": 0.125,
+      "hosted": 0.125,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "macro_f1_8_classes",
+      "local": 0.027777777777777776,
+      "hosted": 0.027777777777777776,
+      "absolute_difference": 0.0
+    },
+    {
+      "seed": 37,
+      "arm": "c0_b1",
+      "task": "pair_composition",
+      "metric": "brier_mean_classes",
+      "local": 0.10973833678458622,
+      "hosted": 0.10973833678458622,
+      "absolute_difference": 0.0
+    }
+  ],
+  "max_model_tensor_absolute_difference": 2.7755575615628914e-16,
+  "max_logit_absolute_difference": 2.220446049250313e-16,
+  "max_log_boundary_absolute_difference": 1.734723475976807e-18,
+  "max_metric_absolute_difference": 4.440892098500626e-16,
+  "metric_pairs": 192,
+  "exact_metric_pairs": 185,
+  "wall_seconds": 0.1106366940002772,
+  "scope": "Artifact comparison only; no new model forwards, no retraining, no independent real-data source credit, no numerical-admission threshold."
+}
