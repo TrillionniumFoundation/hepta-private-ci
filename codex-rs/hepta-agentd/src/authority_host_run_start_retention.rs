@@ -22,6 +22,7 @@ use inputs::OriginalInputPin;
 mod context;
 #[path = "authority_host_run_start_historical.rs"]
 mod historical;
+pub(crate) use historical::RootOriginalRunStartReadV1;
 #[path = "authority_host_run_start_store.rs"]
 mod store;
 #[path = "authority_host_run_start_transport.rs"]
