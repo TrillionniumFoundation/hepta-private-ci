@@ -111,8 +111,8 @@ pub(in super::super) fn serve_optional(
             let slot = match slot {
                 Ok(slot) => {
                     if let Some(source) = initial.runtime.source_capture.as_ref()
-                        && let Err(error) = source.register_original_source_cell(
-                            source_capture::SourceCaptureContext {
+                        && let Err(error) = {
+                            let context = source_capture::SourceCaptureContext {
                                 service,
                                 config,
                                 registration,
@@ -120,8 +120,11 @@ pub(in super::super) fn serve_optional(
                                 slot: &slot,
                                 stopping: &stopping,
                                 end,
-                            },
-                        )
+                            };
+                            source
+                                .register_original_source_cell(context)
+                                .and_then(|()| source.register_original_source_ledger(context))
+                        }
                     {
                         let _ = submission.acknowledgement.try_send(Err(error.to_string()));
                         return Err(error);

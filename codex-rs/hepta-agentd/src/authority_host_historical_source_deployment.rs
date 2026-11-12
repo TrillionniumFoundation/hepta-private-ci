@@ -32,6 +32,13 @@ impl PreparedHostAuthoritySession {
             .as_ref()
             .map(data::RootCellFilesData::open_original_cell_inputs)
             .transpose()?;
+        let ledger = data
+            .ledger_deployment
+            .as_ref()
+            .map(|path| {
+                crate::authority_host_runtime::RootHistoricalLedgerDeploymentV1::open_original(path)
+            })
+            .transpose()?;
         let inputs = data.into_inputs(
             &self.registration.registered_identity.identity()?,
             journal.original_descriptor()?,
@@ -43,6 +50,9 @@ impl PreparedHostAuthoritySession {
         let capability = self.enable_initial_source_capture(inputs)?;
         if let Some(cell) = cell {
             self.install_initial_source_cell(cell)?;
+        }
+        if let Some(ledger) = ledger {
+            self.install_initial_source_ledger(ledger)?;
         }
         let initial = self
             .initial_publication

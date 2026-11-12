@@ -24,10 +24,13 @@ const PIN_PURPOSE: &str = "runtime.circuit.historical-source-pin.v1";
 #[path = "authority_host_historical_source_inputs.rs"]
 mod inputs;
 pub(crate) use inputs::RetainedRootHistoricalSourceInputsV1;
+#[path = "authority_host_historical_source_data.rs"]
+mod captured_data;
 #[path = "authority_host_historical_cell_pin.rs"]
 pub(crate) mod cell;
 #[path = "authority_host_historical_ledger_pin.rs"]
 pub(crate) mod ledger;
+pub(crate) use captured_data::OriginalSourceDataCaptureV1;
 
 /// Original single-published-task Q24 configuration and Root-held descriptors.
 /// There is no serialized observation, generic witness or caller-authored pin.
@@ -148,193 +151,188 @@ impl HostAuthorityService {
         registration: &HostAuthorityRegistration,
         publisher_pidfd: &OwnedFd,
         inputs: RetainedRootHistoricalSourceInputsV1,
-        cell: Option<cell::RegisteredOriginalCellCaptureV1>,
+        data: OriginalSourceDataCaptureV1,
     ) -> io::Result<RootHistoricalSourcePinV1> {
         original_root()?;
         RootHistoricalSourcePinV1::capture(
             Arc::clone(&slot.root),
             &slot.profile.deployment.target,
             |access| {
-                cell::RegisteredOriginalCellCaptureV1::with_original_cell_capture(
-                    cell,
-                    |mut cell| {
-                        let mut retained = None;
-                        self.with_initial_publication_context(
-                            config,
-                            registration,
-                            publisher_pidfd,
-                            |proof| {
-                                let inputs = inputs.into_registered(
-                                    &self.identity,
-                                    &slot.profile.deployment.target,
-                                    config.peer_uid,
-                                    config.peer_gid,
-                                )?;
-                                if slot.mode != RootGenerationInitialModeV1::Reserve
-                                    || slot.profile.writer != proof
-                                    || slot.profile.identity
-                                        != crate::neuron_generation_process_identity_digest_v1(
-                                            &self.identity,
-                                        )
-                                        .map_err(io::Error::other)?
-                                        .to_string()
-                                    || self.identity.spawn_generation.checked_add(1)
-                                        != Some(inputs.fence.generation)
-                                    || inputs.fence.owner_agent_id != self.identity.agent_id
-                                    || registration.checkpoint_owner_agent_id
-                                        != self.identity.agent_id
-                                    || registration.publisher_epoch == 0
-                                {
-                                    return Err(io::Error::other(
-                                        "original source publisher differs",
-                                    ));
-                                }
-                                self.checkpoint
-                                    .as_ref()
-                                    .ok_or_else(|| {
-                                        io::Error::other("original checkpoint peer missing")
-                                    })?
-                                    .validate_peer(codex_hepta_contracts::HostIssuerPeer {
-                                        uid: config.peer_uid,
-                                        pid: registration.peer_pid,
-                                    })?;
-                                require_target(
-                                    &slot.profile.deployment.target,
-                                    &inputs.definition,
-                                    &inputs.source,
-                                )?;
-                                slot.require_profile()?;
-                                slot.require_selection(
-                                    self.clock
-                                        .refresh_projection()
-                                        .map_err(io::Error::other)?
-                                        .observed_unix_ms,
-                                )?;
-                                let current = slot
-                                    .current
-                                    .try_lock()
-                                    .map_err(|_| io::Error::other("initial CURRENT busy"))?;
-                                let current = current.as_ref().ok_or_else(|| {
-                                    io::Error::other("original Initial CURRENT missing")
+                OriginalSourceDataCaptureV1::with_original_capture(data, |mut cell, mut ledger| {
+                    let mut retained = None;
+                    self.with_initial_publication_context(
+                        config,
+                        registration,
+                        publisher_pidfd,
+                        |proof| {
+                            let inputs = inputs.into_registered(
+                                &self.identity,
+                                &slot.profile.deployment.target,
+                                config.peer_uid,
+                                config.peer_gid,
+                            )?;
+                            if slot.mode != RootGenerationInitialModeV1::Reserve
+                                || slot.profile.writer != proof
+                                || slot.profile.identity
+                                    != crate::neuron_generation_process_identity_digest_v1(
+                                        &self.identity,
+                                    )
+                                    .map_err(io::Error::other)?
+                                    .to_string()
+                                || self.identity.spawn_generation.checked_add(1)
+                                    != Some(inputs.fence.generation)
+                                || inputs.fence.owner_agent_id != self.identity.agent_id
+                                || registration.checkpoint_owner_agent_id != self.identity.agent_id
+                                || registration.publisher_epoch == 0
+                            {
+                                return Err(io::Error::other("original source publisher differs"));
+                            }
+                            self.checkpoint
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    io::Error::other("original checkpoint peer missing")
+                                })?
+                                .validate_peer(codex_hepta_contracts::HostIssuerPeer {
+                                    uid: config.peer_uid,
+                                    pid: registration.peer_pid,
                                 })?;
-                                let head =
-                                    current.original_broker_head().map_err(io::Error::other)?;
-                                let (signed, witness) =
+                            require_target(
+                                &slot.profile.deployment.target,
+                                &inputs.definition,
+                                &inputs.source,
+                            )?;
+                            slot.require_profile()?;
+                            slot.require_selection(
+                                self.clock
+                                    .refresh_projection()
+                                    .map_err(io::Error::other)?
+                                    .observed_unix_ms,
+                            )?;
+                            let current = slot
+                                .current
+                                .try_lock()
+                                .map_err(|_| io::Error::other("initial CURRENT busy"))?;
+                            let current = current.as_ref().ok_or_else(|| {
+                                io::Error::other("original Initial CURRENT missing")
+                            })?;
+                            let head = current.original_broker_head().map_err(io::Error::other)?;
+                            let (signed, witness) =
                     crate::neuron_generation_current::initial_root::original_initial_record(
                         &slot.profile.prepared,
                         &head,
                     )
                     .map_err(io::Error::other)?
                     .ok_or_else(|| io::Error::other("original Initial publication required"))?;
-                                let revocations = self.issuer.revocations()?;
-                                if slot.verify_recorded_use(&signed, &witness)? != revocations {
-                                    return Err(io::Error::other("original Initial use differs"));
-                                }
-                                let target = slot.target.observe().map_err(io::Error::other)?;
-                                let (journal, journal_pin) = FilePin::readonly(
-                                    &inputs.journal,
-                                    config.peer_uid,
-                                    config.peer_gid,
-                                )?;
-                                let (witness_file, witness_pin) = FilePin::readonly(
-                                    &inputs.witness,
-                                    config.peer_uid,
-                                    config.peer_gid,
-                                )?;
-                                if witness_file.metadata()?.len() == 0
-                                    || (journal_pin.device, journal_pin.inode)
-                                        == (witness_pin.device, witness_pin.inode)
-                                {
-                                    return Err(io::Error::other(
-                                        "independent source witness required",
-                                    ));
-                                }
-                                let physical_witness = FileAnchorWitnessStore::open(
-                                    witness_file,
-                                    inputs.witness_scope,
-                                    inputs.witness_generation,
-                                    inputs.witness_records,
-                                )
+                            let revocations = self.issuer.revocations()?;
+                            if slot.verify_recorded_use(&signed, &witness)? != revocations {
+                                return Err(io::Error::other("original Initial use differs"));
+                            }
+                            let target = slot.target.observe().map_err(io::Error::other)?;
+                            let (journal, journal_pin) = FilePin::readonly(
+                                &inputs.journal,
+                                config.peer_uid,
+                                config.peer_gid,
+                            )?;
+                            let (witness_file, witness_pin) = FilePin::readonly(
+                                &inputs.witness,
+                                config.peer_uid,
+                                config.peer_gid,
+                            )?;
+                            if witness_file.metadata()?.len() == 0
+                                || (journal_pin.device, journal_pin.inode)
+                                    == (witness_pin.device, witness_pin.inode)
+                            {
+                                return Err(io::Error::other(
+                                    "independent source witness required",
+                                ));
+                            }
+                            let physical_witness = FileAnchorWitnessStore::open(
+                                witness_file,
+                                inputs.witness_scope,
+                                inputs.witness_generation,
+                                inputs.witness_records,
+                            )
+                            .map_err(io::Error::other)?;
+                            let mut source = HistoricalCircuitTaskSourceV1::open(
+                                journal,
+                                physical_witness,
+                                &self.identity,
+                                &inputs.fence,
+                                &inputs.registry,
+                                vec![inputs.source.clone()],
+                            )
+                            .map_err(io::Error::other)?;
+                            let observed = source
+                                .observe_run_publication(&inputs.source.scope.run_id)
                                 .map_err(io::Error::other)?;
-                                let mut source = HistoricalCircuitTaskSourceV1::open(
-                                    journal,
-                                    physical_witness,
-                                    &self.identity,
-                                    &inputs.fence,
-                                    &inputs.registry,
-                                    vec![inputs.source.clone()],
-                                )
-                                .map_err(io::Error::other)?;
-                                let observed = source
-                                    .observe_run_publication(&inputs.source.scope.run_id)
-                                    .map_err(io::Error::other)?;
-                                if observed.original_identity() != &self.identity
-                                    || observed.original_fence() != &inputs.fence
-                                    || observed.original_source() != &inputs.source
-                                    || observed.publication().bundle_digest()
-                                        != inputs.definition.bundle_digest
-                                    || slot
-                                        .selected
-                                        .try_lock()
-                                        .map_err(|_| io::Error::other("original selection busy"))?
-                                        .manifest()
-                                        .bundle_digest
-                                        != inputs.definition.bundle_digest.into_array()
-                                {
-                                    return Err(io::Error::other(
-                                        "original source publication differs",
-                                    ));
-                                }
-                                let anchor = observed.journal_anchor();
-                                let pin = SourcePin {
-                                    schema: 1,
-                                    purpose: PIN_PURPOSE.into(),
-                                    initial_profile: slot.profile.binding.clone(),
-                                    identity: slot.profile.identity.clone(),
-                                    spawn_generation: self.identity.spawn_generation,
-                                    publisher_epoch: registration.publisher_epoch,
-                                    publisher: CognitiveCheckpointPeerLifetime {
-                                        uid: config.peer_uid,
-                                        pid: registration.peer_pid,
-                                        boot_id: registration.boot_id.clone(),
-                                        process_start_ticks: registration.process_start_ticks,
-                                    },
-                                    writer: proof,
-                                    target: slot.profile.deployment.target.clone(),
-                                    target_files: slot.profile.target_files.clone(),
-                                    source_files: [journal_pin, witness_pin],
-                                    source_configuration: observed.binding_digest().to_string(),
-                                    witness_context: Digest32::of_parts(&[
-                                        inputs.witness_scope.scope_digest.as_array(),
-                                        inputs.witness_scope.objective_digest.as_array(),
-                                        &inputs.witness_generation.get().to_be_bytes(),
-                                        &(inputs.witness_records as u64).to_be_bytes(),
-                                    ])
+                            if observed.original_identity() != &self.identity
+                                || observed.original_fence() != &inputs.fence
+                                || observed.original_source() != &inputs.source
+                                || observed.publication().bundle_digest()
+                                    != inputs.definition.bundle_digest
+                                || slot
+                                    .selected
+                                    .try_lock()
+                                    .map_err(|_| io::Error::other("original selection busy"))?
+                                    .manifest()
+                                    .bundle_digest
+                                    != inputs.definition.bundle_digest.into_array()
+                            {
+                                return Err(io::Error::other(
+                                    "original source publication differs",
+                                ));
+                            }
+                            let anchor = observed.journal_anchor();
+                            let pin = SourcePin {
+                                schema: 1,
+                                purpose: PIN_PURPOSE.into(),
+                                initial_profile: slot.profile.binding.clone(),
+                                identity: slot.profile.identity.clone(),
+                                spawn_generation: self.identity.spawn_generation,
+                                publisher_epoch: registration.publisher_epoch,
+                                publisher: CognitiveCheckpointPeerLifetime {
+                                    uid: config.peer_uid,
+                                    pid: registration.peer_pid,
+                                    boot_id: registration.boot_id.clone(),
+                                    process_start_ticks: registration.process_start_ticks,
+                                },
+                                writer: proof,
+                                target: slot.profile.deployment.target.clone(),
+                                target_files: slot.profile.target_files.clone(),
+                                source_files: [journal_pin, witness_pin],
+                                source_configuration: observed.binding_digest().to_string(),
+                                witness_context: Digest32::of_parts(&[
+                                    inputs.witness_scope.scope_digest.as_array(),
+                                    inputs.witness_scope.objective_digest.as_array(),
+                                    &inputs.witness_generation.get().to_be_bytes(),
+                                    &(inputs.witness_records as u64).to_be_bytes(),
+                                ])
+                                .to_string(),
+                                source_sequence: anchor.sequence,
+                                source_checkpoint: anchor.checkpoint_digest.to_string(),
+                                publication: observed
+                                    .publication()
+                                    .publication_digest()
                                     .to_string(),
-                                    source_sequence: anchor.sequence,
-                                    source_checkpoint: anchor.checkpoint_digest.to_string(),
-                                    publication: observed
-                                        .publication()
-                                        .publication_digest()
-                                        .to_string(),
-                                    completed_task: observed
-                                        .publication()
-                                        .history_digest()
-                                        .as_str()
-                                        .into(),
-                                    fence_digest: Digest32::of_parts(&[
-                                        b"hepta.root.historical-source-fence.v1\0",
-                                        &serde_json::to_vec(&inputs.fence)
-                                            .map_err(io::Error::other)?,
-                                    ])
-                                    .to_string(),
-                                };
-                                retained = Some(RootHistoricalSourcePinV1::retain_unchecked(
-                                    Arc::clone(&slot.root),
-                                    pin,
-                                    access,
-                                )?);
-                                if let Some(cell) = cell.as_deref_mut() {
+                                completed_task: observed
+                                    .publication()
+                                    .history_digest()
+                                    .as_str()
+                                    .into(),
+                                fence_digest: Digest32::of_parts(&[
+                                    b"hepta.root.historical-source-fence.v1\0",
+                                    &serde_json::to_vec(&inputs.fence).map_err(io::Error::other)?,
+                                ])
+                                .to_string(),
+                            };
+                            retained = Some(RootHistoricalSourcePinV1::retain_unchecked(
+                                Arc::clone(&slot.root),
+                                pin,
+                                access,
+                            )?);
+                            let decision = cell
+                                .as_deref_mut()
+                                .map(|cell| {
                                     cell.observe_and_retain_original_cell(
                                         slot,
                                         &inputs,
@@ -342,61 +340,81 @@ impl HostAuthorityService {
                                         retained.as_ref().ok_or_else(|| {
                                             io::Error::other("source pin missing")
                                         })?,
-                                    )?;
-                                }
-                                if source
-                                    .observe_run_publication(&inputs.source.scope.run_id)
-                                    .map_err(io::Error::other)?
-                                    != observed
-                                    || slot.target.observe().map_err(io::Error::other)? != target
-                                    || current.original_broker_head().map_err(io::Error::other)?
-                                        != head
-                                    || slot.verify_recorded_use(&signed, &witness)? != revocations
-                                    || [
-                                        FilePin::read(
-                                            &inputs.journal,
-                                            config.peer_uid,
-                                            config.peer_gid,
-                                        )?,
-                                        FilePin::read(
-                                            &inputs.witness,
-                                            config.peer_uid,
-                                            config.peer_gid,
-                                        )?,
-                                    ] != retained
-                                        .as_ref()
-                                        .ok_or_else(|| io::Error::other("source pin missing"))?
-                                        .expected
-                                        .pin
-                                        .source_files
-                                {
-                                    return Err(io::Error::other(
-                                        "source capture changed during registration",
-                                    ));
-                                }
-                                slot.require_profile()?;
-                                self.checkpoint
-                                    .as_ref()
-                                    .ok_or_else(|| {
-                                        io::Error::other("original checkpoint peer missing")
-                                    })?
-                                    .validate_peer(codex_hepta_contracts::HostIssuerPeer {
-                                        uid: config.peer_uid,
-                                        pid: registration.peer_pid,
-                                    })?;
-                                slot.require_selection(
+                                    )
+                                })
+                                .transpose()?;
+                            if let Some(ledger) = ledger.as_deref_mut() {
+                                ledger.observe_and_retain_original_ledger(
+                                    slot,
+                                    ledger::OriginalLedgerCaptureDataV1 {
+                                        identity: &self.identity,
+                                        inputs: &inputs,
+                                        source: &observed,
+                                        cell: decision.as_ref().ok_or_else(|| {
+                                            io::Error::other(
+                                                "actual original Cell decision missing",
+                                            )
+                                        })?,
+                                        retained: retained.as_ref().ok_or_else(|| {
+                                            io::Error::other("source pin missing")
+                                        })?,
+                                    },
                                     self.clock
                                         .refresh_projection()
                                         .map_err(io::Error::other)?
                                         .observed_unix_ms,
-                                )
-                            },
-                        )?;
+                                )?;
+                            }
+                            if source
+                                .observe_run_publication(&inputs.source.scope.run_id)
+                                .map_err(io::Error::other)?
+                                != observed
+                                || slot.target.observe().map_err(io::Error::other)? != target
+                                || current.original_broker_head().map_err(io::Error::other)? != head
+                                || slot.verify_recorded_use(&signed, &witness)? != revocations
+                                || [
+                                    FilePin::read(
+                                        &inputs.journal,
+                                        config.peer_uid,
+                                        config.peer_gid,
+                                    )?,
+                                    FilePin::read(
+                                        &inputs.witness,
+                                        config.peer_uid,
+                                        config.peer_gid,
+                                    )?,
+                                ] != retained
+                                    .as_ref()
+                                    .ok_or_else(|| io::Error::other("source pin missing"))?
+                                    .expected
+                                    .pin
+                                    .source_files
+                            {
+                                return Err(io::Error::other(
+                                    "source capture changed during registration",
+                                ));
+                            }
+                            slot.require_profile()?;
+                            self.checkpoint
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    io::Error::other("original checkpoint peer missing")
+                                })?
+                                .validate_peer(codex_hepta_contracts::HostIssuerPeer {
+                                    uid: config.peer_uid,
+                                    pid: registration.peer_pid,
+                                })?;
+                            slot.require_selection(
+                                self.clock
+                                    .refresh_projection()
+                                    .map_err(io::Error::other)?
+                                    .observed_unix_ms,
+                            )
+                        },
+                    )?;
 
-                        retained
-                            .ok_or_else(|| io::Error::other("original source pin capture missing"))
-                    },
-                )
+                    retained.ok_or_else(|| io::Error::other("original source pin capture missing"))
+                })
             },
         )
     }
