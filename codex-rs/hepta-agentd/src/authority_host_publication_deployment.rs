@@ -170,9 +170,7 @@ impl RootGenerationPublicationDeploymentV1 {
         self,
         stopping: &AtomicBool,
     ) -> io::Result<RootGenerationPublicationRegistrationV1> {
-        let end = Instant::now()
-            .checked_add(self.capability.lifetime)
-            .ok_or_else(|| io::Error::other("Root deployment deadline overflow"))?;
+        let end = self.capability.operation_end()?;
         let (trigger_file, trigger) = loop {
             self.require_deployment_files()?;
             self.require_waiting_session(stopping, end)?;
