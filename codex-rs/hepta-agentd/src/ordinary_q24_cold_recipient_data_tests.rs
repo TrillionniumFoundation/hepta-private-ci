@@ -62,6 +62,7 @@ impl OriginalColdRecipientData {
         let mapping: TrustMapping = serde_json::from_slice(&mapping_bytes)?;
         let files = vec![
             plan.historical.clone(),
+            plan.completed_deployment.clone(),
             mapping_path.clone(),
             mapping.signed_payload.clone(),
         ];
