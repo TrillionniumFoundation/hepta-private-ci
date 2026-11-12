@@ -50,12 +50,7 @@ fn root_source_handoff_physical_corruption_then_restore_stays_refused_across_pro
             .split_once("::")
             .ok_or_else(|| io::Error::other("original child test path missing"))?;
         let output = std::process::Command::new(std::env::current_exe()?)
-            .args([
-                "--exact",
-                child_name,
-                "--ignored",
-                "--nocapture",
-            ])
+            .args(["--exact", child_name, "--ignored", "--nocapture"])
             .env("HEPTA_SOURCE_HANDOFF_TEST_ROOT", directory.path())
             .env(
                 "HEPTA_SOURCE_HANDOFF_TEST_TARGET",
