@@ -1,0 +1,106 @@
+{
+  "archive": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+  "bytes": 93436,
+  "sha256": "3d2938dbf2b19c524b47922e16b22bb8008279e7508495757313a6d22f5bbb05",
+  "git_blob": "3e2637bf93706cbd486fe3b897c7a62653f7c160",
+  "manifest_sha256": "575a52b553f8d3609b1bea81664665570a0aaf01b5768cefb18eb88171031f86",
+  "file_count": 41,
+  "input_bytes": 2325456,
+  "all_member_sizes_sha256_git_blobs_verified": true,
+  "collector_job_id": "1a1d1eed2c7-2564-1c89",
+  "collector_exit_code": 0,
+  "collector_idempotency_key": "ci-evidence-collect-af2ec8ea-20261112-v1-ff41",
+  "transport": [
+    {
+      "chunk_sha256": "acb4d43f59eece6cf41acc85d5026bff09e5492a0b567d004f001b830e41865f",
+      "eof": false,
+      "next_offset": 16384,
+      "offset": 0,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+      "size": 93436,
+      "version": "66306:63749906:93436:1794523453944727315:1794523453946972592"
+    },
+    {
+      "chunk_sha256": "7e1ed87553f2cb218a44566bd783b1bccc8f3fbd25114e40fcb81bae48b22561",
+      "eof": false,
+      "next_offset": 32768,
+      "offset": 16384,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+      "size": 93436,
+      "version": "66306:63749906:93436:1794523453944727315:1794523453946972592"
+    },
+    {
+      "chunk_sha256": "ee0d47f59586d6404fe045d10afd096928edc0331f416042c7cdc2e873333f79",
+      "eof": false,
+      "next_offset": 49152,
+      "offset": 32768,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+      "size": 93436,
+      "version": "66306:63749906:93436:1794523453944727315:1794523453946972592"
+    },
+    {
+      "chunk_sha256": "28e9a02d223d183ab622a380dedee6a4df228a55ed3e99c75542239b606a1c50",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 49152,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+      "size": 93436,
+      "version": "66306:63749906:93436:1794523453944727315:1794523453946972592"
+    },
+    {
+      "chunk_sha256": "254e06114e06fae26020374dfc35718e9f24659eeb145bd2ce8c2bc5007846ba",
+      "eof": false,
+      "next_offset": 81920,
+      "offset": 65536,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+      "size": 93436,
+      "version": "66306:63749906:93436:1794523453944727315:1794523453946972592"
+    },
+    {
+      "chunk_sha256": "91675c6f5ecb8c22b9d959c5d9d5ca922309c8973417862bad909c82c9d44703",
+      "eof": true,
+      "next_offset": 93436,
+      "offset": 81920,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-af2ec8ea-v1/originals.tar.xz",
+      "size": 93436,
+      "version": "66306:63749906:93436:1794523453944727315:1794523453946972592"
+    }
+  ],
+  "source_head": "af2ec8ea6d66864cef1222138f4d5e193f9bcfe3",
+  "source_tree": "05e43c6b12cc5db5b93835dce4901f6e6eb4ed5b",
+  "scoped_compile_exit": 0,
+  "ordinary_a": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "testcase_time": "1.408",
+    "junit_bytes": 2010,
+    "junit_sha256": "ee93280f9183a32553fc76514daa86866ca8809147858d4319e31552a9d95f27"
+  },
+  "source_unchanged": true,
+  "child_logs": [
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-IBcFNu/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-IBcFNu/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-ry2acq/stderr.log",
+      "bytes": 93,
+      "sha256": "6f6e6398e3b790aa21da3e8396788c24f712ac397a792e81840b5e6a6390c389"
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-ry2acq/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "observed_utc": "2026-11-12T22:47:01.118122+00:00",
+  "native_tests_executed_by_collector": false
+}
