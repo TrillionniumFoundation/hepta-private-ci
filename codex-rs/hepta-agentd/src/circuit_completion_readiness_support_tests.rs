@@ -28,6 +28,14 @@ pub(crate) fn client(
         channel,
         retained,
     } = original;
+    // The legacy readiness wire requires the original TrainingNoUpdate
+    // context. A future evaluated profile cannot be silently reinterpreted.
+    let context = match context {
+        super::super::ReadProfile::TrainingNoUpdate(context) => context,
+        super::super::ReadProfile::Evaluated(_) => {
+            anyhow::bail!("legacy completion readiness requires TrainingNoUpdate profile");
+        }
+    };
     Ok((
         OriginalCircuitCompletionReadinessClientV1 {
             context,
