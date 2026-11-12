@@ -161,6 +161,23 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                     PROOF._verify_boundary(ROOT, row, sources, ())
 
+    def test_cold_physical_read_guards_the_real_root_receiver(self):
+        row = self.boundaries["root_initial_run_start_cold_physical"]
+        self.assertEqual(row.receiver_type, "RootRetainedRunStartDataV1")
+        self.assertIsNone(row.call_pattern)
+        self.assertEqual(row.product_callers, ())
+        path = A + "unregistered_retained_data.rs"
+        sources = dict(self.sources)
+        sources[path] = (
+            "fn read(owner: &UnrelatedArtifactReadView) { owner.read_original_publication(); }"
+        )
+        PROOF._verify_boundary(ROOT, row, sources, ())
+        sources[path] = (
+            "fn read(owner: &RootRetainedRunStartDataV1) { owner.read_original_publication(); }"
+        )
+        with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+            PROOF._verify_boundary(ROOT, row, sources, ())
+
     def verify_path(self, root, path):
         rows = [r for r in self.manifest["protected_file"] if r["path"] == path]
         self.assertTrue(rows)
