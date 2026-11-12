@@ -22,6 +22,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         frame_end: Instant,
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
+        training_work: &crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1,
         action: impl FnOnce(PreparedPlanData) -> io::Result<T>,
     ) -> io::Result<(T, CandidateNotice)> {
         let end = self.end.min(frame_end);
@@ -82,6 +83,14 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         {
                             return Err(io::Error::other("original B Training signature changed"));
                         }
+                        if enrollment
+                            .original_training_work
+                            .as_ref()
+                            .is_some_and(|old| old != training_work)
+                        {
+                            return Err(io::Error::other("original native Training work changed"));
+                        }
+                        enrollment.original_training_work = Some(training_work.clone());
                         benchmark::prepare_original_cells(
                             files, enrollment, &training, &protocol, end,
                         )?;
@@ -96,8 +105,10 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                             files.fixed_expert.manifest().clone(),
                         )
                         .map_err(io::Error::other)?;
+                        let actual_work =
+                            benchmark::original_training_work(files, enrollment, &training)?;
                         let (comparison, candidate_temporal, baseline_temporal) =
-                            protocol.plans(&training)?;
+                            protocol.plans(&training, &actual_work)?;
                         let plan = observers
                             .freeze_original_learning_plan(
                                 comparison,
@@ -128,6 +139,10 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                             )
                             .to_string(),
                             expires_at_seconds: enrollment.expires_at_seconds,
+                            training_work_digest: training_work
+                                .digest()
+                                .map_err(io::Error::other)?
+                                .to_string(),
                         };
                         let notice = CandidateNotice::from_original_training(
                             self.original_binding(),

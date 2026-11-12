@@ -67,6 +67,32 @@ impl ModelData {
 }
 
 impl OriginalBModelFiles {
+    pub(super) fn observe_original_training_work(
+        &self,
+        work: &crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1,
+        training: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        heads: &[u8],
+    ) -> io::Result<crate::cell_composed_q24::OriginalQ24TrainingWorkObservedV1> {
+        let coordinator =
+            codex_hepta_learning_artifacts::LearningIterationCoordinatorV1::from_snapshot(
+                training.clone(),
+            )
+            .map_err(io::Error::other)?;
+        let candidate = coordinator
+            .candidate()
+            .ok_or_else(|| io::Error::other("original Training candidate absent"))?;
+        let baseline = &training.request.selected_bundle;
+        let original_baseline = self.load_baseline(baseline)?;
+        let model = original_baseline
+            .read_single_head_candidate_data(baseline, candidate, self.head, heads)
+            .map_err(io::Error::other)?;
+        let observed = work
+            .verify_original_training(training, &original_baseline, &model, self.head, heads)
+            .map_err(io::Error::other)?;
+        self.require_baseline(baseline)?;
+        Ok(observed)
+    }
+
     pub(super) fn all_files(&self) -> Vec<&OriginalBFile> {
         let mut files = vec![&self.base, &self.encoder, &self.heads, &self.input];
         files.extend(self.organ.iter());

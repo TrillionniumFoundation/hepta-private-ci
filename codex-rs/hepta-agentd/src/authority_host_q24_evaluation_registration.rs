@@ -75,6 +75,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         output_images: Vec::new(),
                         realized_plan_statement: None,
                         original_training_attestation: None,
+                        original_training_work: None,
                         admitted_source: None,
                     };
                     require_files(

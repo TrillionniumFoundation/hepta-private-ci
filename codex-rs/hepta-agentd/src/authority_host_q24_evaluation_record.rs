@@ -53,6 +53,8 @@ pub(super) struct OriginalBEnrollment {
     pub(super) output_images: Vec<[u8; 32]>,
     pub(super) realized_plan_statement: Option<[u8; 32]>,
     pub(super) original_training_attestation: Option<Vec<u8>>,
+    pub(super) original_training_work:
+        Option<crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1>,
     pub(super) admitted_source: Option<super::provider::OriginalBReleasedSource>,
 }
 
@@ -127,6 +129,7 @@ impl OriginalBRecord {
             || !enrollment.output_images.is_empty()
             || enrollment.realized_plan_statement.is_some()
             || enrollment.original_training_attestation.is_some()
+            || enrollment.original_training_work.is_some()
             || enrollment.admitted_source.is_some()
             || enrollment.files.is_empty()
             || enrollment.files.len() > 64
@@ -215,7 +218,12 @@ impl OriginalBRecord {
             immutable.original_training_attestation =
                 original.original_training_attestation.clone();
             immutable.admitted_source = original.admitted_source.clone();
+            immutable.original_training_work = original.original_training_work.clone();
             if &immutable != original
+                || original
+                    .original_training_work
+                    .as_ref()
+                    .is_some_and(|old| enrollment.original_training_work.as_ref() != Some(old))
                 || original
                     .admitted_source
                     .as_ref()
