@@ -563,11 +563,6 @@ fn signed_decisions_map_to_original_iteration_without_new_authority() {
             LearningEvaluationDispositionV1::NoUpdate,
             LearningIterationStageV1::Selection,
         ),
-        (
-            IndependentEvaluationDispositionV1::InsufficientEvidence,
-            LearningEvaluationDispositionV1::NoUpdate,
-            LearningIterationStageV1::Selection,
-        ),
     ] {
         let fixture = LearningFixture::new_at(disposition, /*now*/ 50);
         let prepared = checked(fixture.prepare(/*now*/ 50));
@@ -604,6 +599,43 @@ fn signed_decisions_map_to_original_iteration_without_new_authority() {
             (1, 1)
         );
     }
+}
+
+#[test]
+fn insufficient_evidence_keeps_the_original_training_cut() {
+    let mut fixture = LearningFixture::new_at(
+        IndependentEvaluationDispositionV1::InsufficientEvidence,
+        /*now*/ 50,
+    );
+    let original = fixture.snapshot.clone();
+    for now in [50, 60, 351] {
+        assert!(matches!(
+            fixture.prepare(now),
+            Err(CellLearningEvaluationErrorV1::InsufficientEvidence)
+        ));
+        assert_eq!(fixture.snapshot, original);
+        let coordinator = checked(LearningIterationCoordinatorV1::from_snapshot(
+            fixture.snapshot.clone(),
+        ));
+        assert_eq!(
+            coordinator.next_stage(),
+            Some(LearningIterationStageV1::Evaluation)
+        );
+    }
+    // The insufficient result still requires original signature verification.
+    fixture.evidence.evaluator_bundle.signature[0] ^= 1;
+    assert!(matches!(
+        fixture.prepare(/*now*/ 50),
+        Err(CellLearningEvaluationErrorV1::Product(_))
+    ));
+    assert_eq!(fixture.snapshot, original);
+    assert_eq!(
+        (
+            fixture.fixture.provider.calls,
+            fixture.fixture.provider.releases
+        ),
+        (1, 1)
+    );
 }
 
 #[test]
