@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.act-cancelled-ci-root-readback.v1",
+  "records": [
+    {
+      "name": "act-cancelled-manifest",
+      "bytes": 635,
+      "sha256": "0d47515a2f2135f283fd574381741c1119557f5c17bc89ae955683ce36ad95f1",
+      "blob": "109c086ae4f6d041172a9df573b86dcfd4caff86",
+      "expected": "109c086ae4f6d041172a9df573b86dcfd4caff86"
+    },
+    {
+      "name": "act-cancelled-log",
+      "bytes": 394524,
+      "sha256": "a381718b3b0030e43a58f3497682540c11b168c70dab9eacbd8d6032b0a0c0e7",
+      "blob": "8d7396d8490e5aadb10c15601a59978ab13dd4c1",
+      "expected": "8d7396d8490e5aadb10c15601a59978ab13dd4c1"
+    },
+    {
+      "name": "act-cancelled-jobs",
+      "bytes": 14108,
+      "sha256": "b68d3ca79c1cc2db6b1d9f169bec910396e0754218d808a1f6fb7787678c3bb4",
+      "blob": "0f0601e9239f789af9b59b457beeebfe3efc2f9b",
+      "expected": "0f0601e9239f789af9b59b457beeebfe3efc2f9b"
+    }
+  ],
+  "source": "7e6affec5ffa987f561f431988cfdb3e2c25ba83",
+  "tree": "31535af9bb14ec0e8fb389400495fe506d37b4f2",
+  "run": 43198310744,
+  "job": 131114867114,
+  "result": "cancelled",
+  "six_method_seed_qualification": false,
+  "original_source_final_check": "skipped",
+  "root_requested_cancel_or_rerun": false,
+  "owner_decision": null
+}

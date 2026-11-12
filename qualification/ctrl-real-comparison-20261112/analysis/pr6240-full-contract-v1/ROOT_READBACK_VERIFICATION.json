@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.ctrl6240-full-v1-root-readback.v1",
+  "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+  "original_job": "1a1cf50d48a-2564-19ea",
+  "original_request_key": "neuro-ctrl6240-full-2411261-862531d11598-v1",
+  "observed_methods": 200,
+  "observed_passed": 199,
+  "observed_failed": 1,
+  "suites": 28,
+  "source_before_after_unchanged": true,
+  "original_driver_retained": true,
+  "cause": "External PYTHONVERBOSE=1 made the CLI subprocess's stderr nonempty; actual CLI exit was zero.",
+  "source_or_test_assertion_changed": false,
+  "checked_files": [
+    {
+      "path": "driver.py",
+      "bytes": 18763,
+      "sha256": "b9b82d2ac4cc87145123368119ea6d8c76f3140b1fc8c4b63ff17e76f6e56a1b",
+      "blob": "c58dd54c201da4c3a340c3437a6bcafd7e2ce431"
+    },
+    {
+      "path": "failed-candidate-coverage.json",
+      "bytes": 1591,
+      "sha256": "d740c712dae8cd84cd129ef7d97302a5df4cbeb9095d5fbebd1af3eca7362ff6",
+      "blob": "719a9b397da7ff6a594bf495ebe5b48bac33c4f7"
+    },
+    {
+      "path": "original-process-status.json",
+      "bytes": 730,
+      "sha256": "ac3228c37b3dbbc5177a9faca5c3eec79253cab2ca12a2b6c87ad2ff81663fac",
+      "blob": "d90efb7a0b0359d02f32066ed5203475b322e16e"
+    },
+    {
+      "path": "original-process-stdout.jsonl",
+      "bytes": 16461,
+      "sha256": "dd688276eb68b13c0bbe062ca5d5be6164dc2c340c0398df3e0819024ee3d45e",
+      "blob": "f3946ce9ebb4418f6636ae334a8aea5195603770"
+    },
+    {
+      "path": "prepare-exact-runtime.log",
+      "bytes": 226,
+      "sha256": "95006a0fbd2e110a427bad4b83e86b204494f67237aeb788baaaab8bde6f74cc",
+      "blob": "d3433cc863425cc585d61fb33a0ad82db18b078d"
+    },
+    {
+      "path": "request.json",
+      "bytes": 20554,
+      "sha256": "a0a7ec83af626cb80f60f0d81df49b48c97dc8d53d0c13201f880d38c2efa3f2",
+      "blob": "9d19a0bca3a103cb74589343a790ff8e42084e96"
+    },
+    {
+      "path": "runtime-ordinary.json",
+      "bytes": 461,
+      "sha256": "70b962253f2e16e28ae18649db3119e922aa1765110c4695f3f709b9a28f65eb",
+      "blob": "7ae6aeed2b6a9b8828d5a3d877b892fb9a96cb5a"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 61807,
+      "sha256": "ab62c30db8cc710cbc818e3747b3ac9fac89d34b69bbabfb28b4c4d0c8cf5f57",
+      "blob": "dd65bfd0db2eb270a88a31850281381de0286d1d"
+    },
+    {
+      "name": "manifest.json",
+      "bytes": 3027,
+      "sha256": "544927bd7eea66a1c837ef35e982735d882e953b29e021a105faf0d0beed6379",
+      "blob": "fb2b0f2207103b20205c4ca0fba83dd01f1794ae",
+      "expected": "fb2b0f2207103b20205c4ca0fba83dd01f1794ae"
+    },
+    {
+      "name": "failed-candidate-coverage.log",
+      "bytes": 82815,
+      "sha256": "bc14ee4c99750d13095d437e07968e24f4657170b3d1a5207fcd57eb85fce1ab",
+      "blob": "795ebc1d68ee46d8164e422a696d270ef06389b4",
+      "expected": "795ebc1d68ee46d8164e422a696d270ef06389b4"
+    },
+    {
+      "name": "diagnosis.json",
+      "bytes": 3552,
+      "sha256": "224b2ad43cbb7d997c9f227a336f44fa3482f89c918179e1c86dcbd5f7ece4ad",
+      "blob": "fc1ccfbbf525b6c263f1925c924862eef1b063b7",
+      "expected": "fc1ccfbbf525b6c263f1925c924862eef1b063b7"
+    }
+  ],
+  "verdict": "failed attempt preserved; corrected attempt is separate",
+  "owner_decision": null,
+  "path_mapping": [
+    {
+      "source_archive_name": "diagnosis.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/diagnosis.json",
+      "bytes_unchanged": true,
+      "blob": "fc1ccfbbf525b6c263f1925c924862eef1b063b7"
+    },
+    {
+      "source_archive_name": "driver.py",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/driver.py.txt",
+      "bytes_unchanged": true,
+      "blob": "c58dd54c201da4c3a340c3437a6bcafd7e2ce431"
+    },
+    {
+      "source_archive_name": "failed-candidate-coverage.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/failed-candidate-coverage.json",
+      "bytes_unchanged": true,
+      "blob": "719a9b397da7ff6a594bf495ebe5b48bac33c4f7"
+    },
+    {
+      "source_archive_name": "failed-candidate-coverage.log",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/failed-candidate-coverage.log",
+      "bytes_unchanged": true,
+      "blob": "795ebc1d68ee46d8164e422a696d270ef06389b4"
+    },
+    {
+      "source_archive_name": "manifest.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/manifest.json",
+      "bytes_unchanged": true,
+      "blob": "fb2b0f2207103b20205c4ca0fba83dd01f1794ae"
+    },
+    {
+      "source_archive_name": "original-process-status.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/original-process-status.json",
+      "bytes_unchanged": true,
+      "blob": "d90efb7a0b0359d02f32066ed5203475b322e16e"
+    },
+    {
+      "source_archive_name": "original-process-stdout.jsonl",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/original-process-stdout.jsonl",
+      "bytes_unchanged": true,
+      "blob": "f3946ce9ebb4418f6636ae334a8aea5195603770"
+    },
+    {
+      "source_archive_name": "prepare-exact-runtime.log",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/prepare-exact-runtime.log",
+      "bytes_unchanged": true,
+      "blob": "d3433cc863425cc585d61fb33a0ad82db18b078d"
+    },
+    {
+      "source_archive_name": "request.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/request.json",
+      "bytes_unchanged": true,
+      "blob": "9d19a0bca3a103cb74589343a790ff8e42084e96"
+    },
+    {
+      "source_archive_name": "runtime-ordinary.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/runtime-ordinary.json",
+      "bytes_unchanged": true,
+      "blob": "7ae6aeed2b6a9b8828d5a3d877b892fb9a96cb5a"
+    },
+    {
+      "source_archive_name": "summary.json",
+      "published_path": "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v1/summary.json",
+      "bytes_unchanged": true,
+      "blob": "dd65bfd0db2eb270a88a31850281381de0286d1d"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "ctrl6240.harness-interference-diagnosis.v1",
+  "source_sha": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+  "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80",
+  "job_id": "1a1cf50d48a-2564-19ea",
+  "request_key": "neuro-ctrl6240-full-2411261-862531d11598-v1",
+  "observed": {
+    "suites": 28,
+    "passed": 199,
+    "failed": 1,
+    "skipped": 0,
+    "timeout": 0,
+    "format_and_critical_lint_exit": 0
+  },
+  "failed_test": "ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_pinned_cli_and_create_only_redacted_report",
+  "assertion": {
+    "file": "scripts/ndu_real_runtime/test_candidate_coverage.py",
+    "line": 247,
+    "expected": [
+      0,
+      ""
+    ],
+    "actual_returncode": 0,
+    "actual_stderr": "Inherited PYTHONVERBOSE import diagnostics, 27,594+ characters; exact original unittest traceback retained."
+  },
+  "cause": "The external driver set PYTHONVERBOSE=1 for the test process. The test passed the inherited environment to a fresh CLI subprocess, so Python emitted import diagnostics to stderr. The actual CLI exit was zero; the unchanged test correctly rejected nonempty stderr.",
+  "source_review": {
+    "test_blob": "ee84ad3ca30bc7e5223167ff94eb86599d2a8048",
+    "callee_blob": "81e78bbe827b88ba24e2309a259946af3475e79d",
+    "callee": "candidate_coverage.py::main/audit/summarize",
+    "hold_or_owner_report_dependency": false,
+    "production_or_test_change_required": false
+  },
+  "correction": {
+    "remove_only": "external driver's PYTHONVERBOSE instrumentation",
+    "preserve": "original unittest command, CI wrapper, per-suite minima, timeout, assertions and exact source",
+    "add_interpreter_verbose_flag": false,
+    "new_key_required": true,
+    "old_request_immutable": true
+  },
+  "runtime": {
+    "hosted_run": false,
+    "numpy": "1.26.4",
+    "numpy_file": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/numpy/__init__.py",
+    "pid": 303573,
+    "pillow": "12.0.0",
+    "pillow_file": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py",
+    "probe_scope": "independent_runtime_preflight",
+    "python": "3.12.16",
+    "python_executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "uid": 1000
+  },
+  "exact_runtime_unavailable": {
+    "uv": "0.11.3",
+    "python": "3.12.14",
+    "exit_code": 2,
+    "stderr_sha256": "95006a0fbd2e110a427bad4b83e86b204494f67237aeb788baaaab8bde6f74cc",
+    "reason": "No interpreter found in this uv embedded managed downloads or search path"
+  },
+  "full_original_archive": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v1/ctrl6240-full-contract-evidence.tar.gz",
+    "sha256": "873e00c927e28bbe9a1691cc118e449e51fdfd2fc82bb91981fbde7deabe91a2",
+    "size": 684258,
+    "version": "66306:76714543:684258:1794479563508924999:1794479563508924999"
+  },
+  "limits": [
+    "This failed attempt is retained and is not a passing workflow run.",
+    "Ordinary runtime is not hosted equivalent.",
+    "The initial import instrumentation changed subprocess-observable stderr and is removed for the corrected attempt.",
+    "No research actors, policy efficacy, native owner decision, or frozen campaign updates are included."
+  ]
+}

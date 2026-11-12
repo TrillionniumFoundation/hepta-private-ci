@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.owner-cc22-exact-merge-root-review.v1",
+  "first_parent": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+  "second_parent": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "upstream_base": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "upstream_commits": 2,
+  "upstream_changed_paths": 8,
+  "inherited_upstream_rust": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "sha": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "sha": "23e8989ebd2644947b15c80ab9c641a70767de99"
+    }
+  ],
+  "inherited_upstream_QA": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "sha": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "sha": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9"
+    }
+  ],
+  "production_change": "Reuse exact upstream typed Trainer + UFCS. One original optional Trainer lookup, same missing-source error, snapshot/prior arguments and await; Evaluated branch unchanged. Upstream support-test nested if becomes an equivalent let-chain.",
+  "caller_proof_implementation_changed": false,
+  "owner_authority_changed": false,
+  "boundary_ids": 537,
+  "boundary_order_and_ids_preserved": true,
+  "manifest_changes": [
+    "Use upstream's exact whole predecessor sequence; other protected entries unchanged.",
+    "Append actual evaluated readback host to Selector profile's exact caller list; keep existing command-service caller."
+  ],
+  "no_update_QA": "Exact ours retained; byte-equal upstream plus already registered command-channel's 25th caller.",
+  "published_QA": {
+    "ours_mutation_calls": 22,
+    "merged_mutation_calls": 23,
+    "change": "Keep complete ours including evaluated CURRENT checks; add exact upstream loop rejecting either one-origin downgrade."
+  },
+  "allowlist": "Preserve every exact entry from both parents; add only current merged CALLERS exact SHA256.",
+  "earlier_trainer_proposal": {
+    "blob": "467831627aaf7833f035804b3c94629739b3a981",
+    "status": "not committed or tested; superseded by exact upstream UFCS"
+  },
+  "postimages": {
+    "CALLERS.toml": {
+      "bytes": 1106922,
+      "sha256": "eccea285d05d2229fa631d98524ef926f82db380f6ee5b3e10d04ae338bc1ed8",
+      "blob": "2b57993741b847107b6fce0a92f7f79f35adb34e"
+    },
+    ".github/blob-size-allowlist.txt": {
+      "bytes": 12479,
+      "sha256": "efde05a37c4bb09a4df9318496b9f330c584aca7723247393c7589e61be4e36f",
+      "blob": "4ead70ee6a475688a4e566ca4eee3a104711ba00"
+    },
+    "qa/b4-no-bypass/test_original_published_read_source_closure.py": {
+      "bytes": 16417,
+      "sha256": "5de94e6e8be8748e107f154fdde2ea81a32f4ead6717c49fed0aedd341d5c73b",
+      "blob": "4c3adc2a01d80e75aa10f89a40c3caa416fccccf"
+    }
+  },
+  "validation_status": "NEW_COMBINATION_NOT_EXECUTED",
+  "owner_decision": null,
+  "observed_at_utc": "2026-11-12 11:09:11 UTC",
+  "six_QA_tuple_checks": [
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "blob": "066ad1db3399276a98635b71374681e1346b7c8e",
+      "bytes": 24790,
+      "sha256": "22839770451d7c4512e077a0b978142232e2d9ce13fde3d5886eecb400b26f4f",
+      "only_concrete_caller_additions": 1,
+      "original_rest_byte_identical": true,
+      "mutation_calls_before": 17,
+      "mutation_calls_after": 17
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "blob": "f2cddfb22c2bb30685420477bde5e4f08f5898b9",
+      "bytes": 16794,
+      "sha256": "8501ab4031e33190c0ae24babef1104461bfce4d4e50f7090eda338db5e580f8",
+      "only_concrete_caller_additions": 1,
+      "original_rest_byte_identical": true,
+      "mutation_calls_before": 25,
+      "mutation_calls_after": 25
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "blob": "98857deb7567193c4d5209810348623f73bb28e1",
+      "bytes": 15652,
+      "sha256": "fdeb0156884acfe9e7cedc41d3210d92f11ce504b8ec724db322ea1b50f26f62",
+      "only_concrete_caller_additions": 2,
+      "original_rest_byte_identical": true,
+      "mutation_calls_before": 21,
+      "mutation_calls_after": 21
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "blob": "b931e9f40e66371ae796030bb9c3f478d9c51a98",
+      "bytes": 18241,
+      "sha256": "500decac600bda0a0ded58d720372263007114abb866f615f00b5d0894577fc8",
+      "only_concrete_caller_additions": 1,
+      "original_rest_byte_identical": true,
+      "mutation_calls_before": 15,
+      "mutation_calls_after": 15
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "blob": "355b8eac5640b28de975e3544a161cf0bcda2ca9",
+      "bytes": 14367,
+      "sha256": "23088dfe8904641f3f2fbd41fb2935598d272e28956ad1090d3e32b7c43535d2",
+      "only_concrete_caller_additions": 1,
+      "original_rest_byte_identical": true,
+      "mutation_calls_before": 23,
+      "mutation_calls_after": 23
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "blob": "95914d7922b732486cb2f885a4071b763a32879d",
+      "bytes": 13377,
+      "sha256": "4292dfbed6dca7c8429bcea281d7c4bfdce6c17796ec0b0a98bd050067bddb17",
+      "only_concrete_caller_additions": 1,
+      "original_rest_byte_identical": true,
+      "mutation_calls_before": 15,
+      "mutation_calls_after": 15
+    }
+  ],
+  "actual_previous_failed_source": {
+    "bytes": 121288,
+    "sha256": "c05032f7022d7a63a3ad936d0df5d10dfb985f457f104b888015c1c3cb9174e6",
+    "git_blob": "eb56c3f7fa7d9d51cf6b757c3d9ff3d59bf3a228",
+    "tail_exact": true,
+    "unittest_run_methods": 398,
+    "failures": 16,
+    "errors": 5,
+    "distinct_qualified_affected_methods": 13,
+    "literal_success_method_lines": 385,
+    "wrapper_reported_passed": 377,
+    "wrapper_reported_failed": 21,
+    "note": "Unittest subTest records are not independent test methods; preserve original wrapper counters without relabelling21 records as21 distinct methods."
+  },
+  "previous_source_native_guard": {
+    "job": "1a1cf610a94-2564-1a0a",
+    "exit_code": 1,
+    "helper_build_started": false,
+    "ordinary_native_started": false,
+    "reason": "source prerequisite is not the exact completed passing gate: source-closure"
+  }
+}
