@@ -18,6 +18,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
+        frame_end: Instant,
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
@@ -27,6 +28,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             config,
             registration,
             owner,
+            frame_end,
             training_head,
             Operation::Complete(attestation),
             action,
@@ -39,6 +41,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
+        frame_end: Instant,
         training_head: Digest32,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
@@ -47,6 +50,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             config,
             registration,
             owner,
+            frame_end,
             training_head,
             Operation::Readback,
             action,
@@ -59,11 +63,13 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         owner: &OwnedFd,
+        frame_end: Instant,
         training_head: Digest32,
         operation: Operation<'_>,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
-        self.record.inspect(self.end, |enrollment| {
+        let end = self.end.min(frame_end);
+        self.record.inspect(end, |enrollment| {
             let mut state = self.state.try_lock().map_err(|_| io::Error::other("original B native owners are busy"))?;
             let OriginalBState { files, execution } = &mut *state;
             // Retained outside the callback, through the Root postchecks and
@@ -71,7 +77,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             let mut cell_locks = None;
             let (value, completed, before, authorities) = service.with_learning_profile(
                 config, registration, owner, &self.profile, |actual, _proof| {
-                    owner_alive(owner, self.end)?;
+                    owner_alive(owner, end)?;
                     if actual != self.initial || self.backend.frozen_scope_binding()
                         != Some(self.profile.require_cell_scope(&actual)?.binding())
                     { return Err(io::Error::other("original B learning capability changed")); }
@@ -128,7 +134,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 },
             )?;
             // These are deliberately after with_learning_profile has returned.
-            owner_alive(owner, self.end)?;
+            owner_alive(owner, end)?;
             let now = service.original_learning_unix_seconds()?;
             require_files(files, enrollment, now)?;
             if self.backend.restore(&self.initial.request).map_err(io::Error::other)?.as_ref() != Some(&before) {
@@ -150,7 +156,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     .map_err(io::Error::other)?;
             }
             if cell_locks.is_none() { return Err(io::Error::other("original B Cell locks were never acquired")); }
-            owner_alive(owner, self.end)?;
+            owner_alive(owner, end)?;
             Ok(value)
         })
     }
