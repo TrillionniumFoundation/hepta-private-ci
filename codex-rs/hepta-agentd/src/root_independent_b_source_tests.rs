@@ -46,7 +46,7 @@ fn bootstrap(mode: SourceMode, file: Option<&File>) -> io::Result<SourceBootstra
     let initial = Digest32::of_bytes(b"source wire component Initial only");
     let meta = file.map(File::metadata).transpose()?;
     Ok(SourceBootstrap {
-        schema: 2,
+        schema: 3,
         purpose: PURPOSE.into(),
         mode,
         root: root.clone(),
@@ -74,6 +74,10 @@ fn bootstrap(mode: SourceMode, file: Option<&File>) -> io::Result<SourceBootstra
         source_inode: meta.as_ref().map_or(1, MetadataExt::ino),
         candidate_data_device: 1,
         candidate_data_inode: 1,
+        candidate_notice_device: 0,
+        candidate_notice_inode: 0,
+        source_finalized_device: 0,
+        source_finalized_inode: 0,
         registered_at_seconds: 1,
         absolute_end_monotonic_ns: seal_original_end(Instant::now() + Duration::from_secs(5))?,
         frame_timeout_ms: 500,
@@ -93,6 +97,7 @@ fn handoff(
             source,
             candidate_data: None,
             candidate_notice: None,
+            source_finalized: None,
         },
         &pin()?,
         Duration::from_millis(500),

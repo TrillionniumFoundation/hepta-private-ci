@@ -34,6 +34,7 @@ pub struct RootIndependentBSourceOfferV1 {
     pub(crate) source: Option<File>,
     pub(crate) candidate_data: Option<File>,
     pub(crate) candidate_notice: Option<File>,
+    pub(crate) source_finalized: Option<File>,
 }
 
 pub(crate) struct PreparedRootIndependentBEvaluationV1 {

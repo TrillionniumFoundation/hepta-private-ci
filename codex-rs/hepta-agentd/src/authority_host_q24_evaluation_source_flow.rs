@@ -22,6 +22,13 @@ struct State {
     admitted: Option<SourceReadyData>,
     candidate_writer: Option<OriginalBNoticeWriter>,
     admitted_writer: Option<OriginalBNoticeWriter>,
+    finalized_writer: Option<OriginalBNoticeWriter>,
+}
+
+pub(super) struct OriginalBSourceNotices {
+    pub(super) candidate: Option<File>,
+    pub(super) finalized: Option<File>,
+    pub(super) admitted: File,
 }
 
 pub(super) struct OriginalBSourceFlow {
@@ -34,13 +41,19 @@ impl OriginalBSourceFlow {
     pub(super) fn prepare(
         mode: SourceMode,
         retained: Option<SourceAcknowledgement>,
-    ) -> io::Result<(Self, Option<File>, File)> {
+    ) -> io::Result<(Self, OriginalBSourceNotices)> {
         if (mode == SourceMode::Retained) != retained.is_some() {
             return Err(io::Error::other(
                 "original B retained source identity differs",
             ));
         }
         let (candidate_writer, candidate_reader) = if mode == SourceMode::FreshInput {
+            let (writer, reader) = OriginalBNoticeWriter::pair()?;
+            (Some(writer), Some(reader))
+        } else {
+            (None, None)
+        };
+        let (finalized_writer, finalized_reader) = if mode == SourceMode::FreshInput {
             let (writer, reader) = OriginalBNoticeWriter::pair()?;
             (Some(writer), Some(reader))
         } else {
@@ -55,12 +68,16 @@ impl OriginalBSourceFlow {
                     admitted: None,
                     candidate_writer,
                     admitted_writer: Some(admitted_writer),
+                    finalized_writer,
                 }),
                 mode,
                 retained,
             },
-            candidate_reader,
-            admitted_reader,
+            OriginalBSourceNotices {
+                candidate: candidate_reader,
+                finalized: finalized_reader,
+                admitted: admitted_reader,
+            },
         ))
     }
 
@@ -139,7 +156,7 @@ impl OriginalBSourceFlow {
                 return Err(io::Error::other("retained B source notification differs"));
             }
             let ready = SourceReadyData::from_original_source(&candidate, source)?;
-            let writer = {
+            let (writer, finalized) = {
                 let mut state = self
                     .state
                     .lock()
@@ -147,10 +164,20 @@ impl OriginalBSourceFlow {
                 if state.phase != Phase::Prepared {
                     return Err(io::Error::other("original B source opportunity ended"));
                 }
-                state.admitted_writer.take().ok_or_else(|| {
+                let writer = state.admitted_writer.take().ok_or_else(|| {
                     io::Error::other("original B source readiness already consumed")
-                })?
+                })?;
+                (writer, state.finalized_writer.take())
             };
+            if let Some(finalized) = finalized {
+                // The source remains alive until this EOF. Every source-pidfd
+                // check in its original frame has already returned successfully.
+                let bytes =
+                    crate::root_independent_b_source_finalized::encode_original_source_finalized(
+                        &ready,
+                    )?;
+                finalized.send(&bytes, end, &mut require_original)?;
+            }
             writer.send(&ready.encode()?, end, &mut require_original)?;
             require_original()?;
             if Instant::now() >= end {
@@ -217,6 +244,7 @@ impl OriginalBSourceFlow {
             state.phase = Phase::Refused;
             state.candidate_writer.take();
             state.admitted_writer.take();
+            state.finalized_writer.take();
         }
     }
 }
