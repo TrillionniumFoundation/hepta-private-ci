@@ -7,7 +7,7 @@ use codex_hepta_types::StableId;
 use super::Error;
 use super::OriginalCircuitModelVersionPublicationV1 as Publication;
 use super::OriginalCircuitModelVersionReadbackV1 as Readback;
-use crate::OriginalCircuitModelPublicationContextV1 as Context;
+use crate::OriginalCircuitModelPublicationContextV1 as OriginalModelPublicationContext;
 
 pub(super) const PURPOSE: &str = "runtime.learning.original-circuit-model-version.command.v1";
 
@@ -28,7 +28,7 @@ pub(super) struct Request {
     pub action: Action,
 }
 impl Request {
-    pub(super) fn new(context: &Context, request_id: u64, action: Action) -> Result<Self, Error> {
+    pub(super) fn new(context: &OriginalModelPublicationContext, request_id: u64, action: Action) -> Result<Self, Error> {
         let (initial, binding) = context.original_version_binding(super::now()?)?;
         Ok(Self {
             schema: 1, purpose: PURPOSE.into(), request_id,
@@ -51,7 +51,7 @@ impl Request {
         digest(&self.model_head)?;
         Ok(())
     }
-    pub(super) fn require_context(&self, context: &Context) -> Result<(), Error> {
+    pub(super) fn require_context(&self, context: &OriginalModelPublicationContext) -> Result<(), Error> {
         let expected = Self::new(context, self.request_id, self.action)?;
         if self != &expected {
             return Err(Error::Binding("same full original positive Model Version pin"));
@@ -85,7 +85,7 @@ impl Outcome {
             },
         }
     }
-    pub(super) fn decode(self, context: &Context) -> Result<Readback, Error> {
+    pub(super) fn decode(self, context: &OriginalModelPublicationContext) -> Result<Readback, Error> {
         context.authenticate(super::now()?, /*new_work*/ false)?;
         match self {
             Self::Prepared { intent } => Ok(Readback { intent: digest(&intent)?, publication: None }),

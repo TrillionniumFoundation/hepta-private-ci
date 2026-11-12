@@ -10,7 +10,7 @@ use super::super::OriginalCircuitModelVersionReadbackV1 as Readback;
 use super::super::wire;
 use super::OriginalCircuitModelVersionHostV1 as Host;
 use super::artifact;
-use crate::OriginalCircuitModelPublicationContextV1 as Context;
+use crate::OriginalCircuitModelPublicationContextV1 as OriginalModelPublicationContext;
 use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24ModelReadV1;
 use crate::OriginalCellQ24ModelReadCompletionV1;
@@ -42,10 +42,10 @@ impl Host {
         };
         let operation = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?;
         require_not_cancelled(cancelled)?;
-        let context: Context = self.original_predecessors().with_original_model(OriginalCellQ24ModelReadV1::model(&operation).clone())?;
+        let context: OriginalModelPublicationContext = self.original_predecessors().with_original_model(OriginalCellQ24ModelReadV1::model(&operation).clone())?;
         request.require_context(&context)?;
         OriginalCellQ24ModelReadV1::require_current(&operation, started)?;
-        Context::authenticate_material(&context, OriginalCellQ24ModelReadV1::material(&operation), started, /*new_work*/ true)?;
+        OriginalModelPublicationContext::authenticate_material(&context, OriginalCellQ24ModelReadV1::material(&operation), started, /*new_work*/ true)?;
         let artifact_before = self.artifacts.read_current()?;
         awaiting.task.require_completed_a(&awaiting.inputs.completed)?;
         let pin = Arc::new(context.duplicate_response_pin());
@@ -65,7 +65,7 @@ impl Host {
         self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))?;
         artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?;
         OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started)?;
-        Context::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started, /*new_work*/ true)?;
+        OriginalModelPublicationContext::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started, /*new_work*/ true)?;
         self.require_lifetime()?;
         require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?;
         let mut issuer = awaiting.issuer;
@@ -82,7 +82,7 @@ impl Host {
                 self.require_prepared_control(&context, intent, None)?;
                 artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?;
                 if OriginalCellQ24ModelReadCompletionV1::model(&completed) != context.model() { return Err(Error::CommitUncertain); }
-                Context::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&completed), started, /*new_work*/ false)?;
+                OriginalModelPublicationContext::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&completed), started, /*new_work*/ false)?;
                 require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?;
                 self.outcome.store(2, Ordering::Release);
                 fence.completed = true;
@@ -95,7 +95,7 @@ impl Host {
             return Err(Error::CommitUncertain);
         }
         OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started).map_err(|_| Error::CommitUncertain)?;
-        Context::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started, /*new_work*/ true)
+        OriginalModelPublicationContext::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started, /*new_work*/ true)
             .map_err(|_| Error::CommitUncertain)?;
         self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))
             .map_err(|_| Error::CommitUncertain)?;
@@ -129,7 +129,7 @@ impl Host {
             .map_err(|_| Error::CommitUncertain)?;
         if current != before { return Err(Error::CommitUncertain); }
         self.require_lifetime().map_err(|_| Error::CommitUncertain)?;
-        Context::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&closed), started_at, /*new_work*/ true)
+        OriginalModelPublicationContext::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&closed), started_at, /*new_work*/ true)
             .map_err(|_| Error::CommitUncertain)?;
         require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?;
         {

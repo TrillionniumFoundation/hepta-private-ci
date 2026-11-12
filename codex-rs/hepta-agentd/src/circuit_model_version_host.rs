@@ -27,7 +27,7 @@ use crate::CircuitTaskSourceReadbackV1;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
-use crate::OriginalCircuitModelPublicationContextV1 as Context;
+use crate::OriginalCircuitModelPublicationContextV1 as OriginalModelPublicationContext;
 use crate::OriginalCircuitModelPublicationInputsV1;
 use crate::OriginalCircuitModelPublicationPredecessorsV1 as Predecessors;
 use crate::OriginalRootModelVersionIssuerV1;
@@ -50,7 +50,7 @@ pub struct OriginalCircuitModelArtifactCheckpointV1 {
     pub intent_digest: Digest32,
 }
 pub struct OriginalCircuitModelVersionRecoveryV1 {
-    pub context: Context,
+    pub context: OriginalModelPublicationContext,
     pub intent_digest: Digest32,
     pub cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
     pub source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,
@@ -77,7 +77,7 @@ struct Awaiting {
 struct State {
     awaiting: Option<Awaiting>,
     // Pins do not assert CURRENT. Every read uses a new actual Model operation.
-    context: Option<Arc<Context>>,
+    context: Option<Arc<OriginalModelPublicationContext>>,
     intent: Option<Digest32>,
     installed: Option<ModelVersionInstalledTaskV1>,
     config: Option<AgentdConfig>,

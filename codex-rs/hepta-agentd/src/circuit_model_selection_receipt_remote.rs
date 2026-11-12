@@ -72,7 +72,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started = binding::now()?;
         let context: &OriginalCircuitModelPublicationContextV1 = source.context.model_publication_context();
-        source.context.authenticate(started).map_err(unavailable)?;
+        OriginalCircuitCandidateLearningReadContextV1::authenticate(source.context, started).map_err(unavailable)?;
         OriginalCircuitCandidateLearningReadClientV1::require_original_context(source.live, source.context).map_err(unavailable)?;
         if source.context.prefix() != source.context.decision()
             || context.decision() != &self.config.decision

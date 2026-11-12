@@ -11,7 +11,7 @@ use codex_hepta_types::Digest32;
 use super::Error;
 use super::OriginalCircuitModelVersionPublicationV1;
 use super::OriginalCircuitModelVersionReadbackV1;
-use crate::OriginalCircuitModelPublicationContextV1 as Context;
+use crate::OriginalCircuitModelPublicationContextV1 as OriginalModelPublicationContext;
 use crate::AgentdConfig;
 use crate::AgentdIdentity;
 use crate::CircuitCellRouteV1;
@@ -80,7 +80,7 @@ impl OriginalCircuitModelTaskInputsV1 {
     pub(super) fn install_original(
         self,
         task: PublishedCircuitFeatureTaskV1,
-        context: &Context,
+        context: &OriginalModelPublicationContext,
         intent: Digest32,
     ) -> Result<(ModelVersionInstalledTaskV1, AgentdConfig), Error> {
         let coordinator = context.authenticate(super::now()?, /*new_work*/ true)?;
@@ -143,7 +143,7 @@ impl OriginalCircuitModelTaskInputsV1 {
 impl ModelVersionInstalledTaskV1 {
     pub(super) fn observe(
         &self,
-        context: &Context,
+        context: &OriginalModelPublicationContext,
     ) -> Result<OriginalCircuitModelVersionReadbackV1, Error> {
         let coordinator = context.authenticate(super::now()?, /*new_work*/ false)?;
         let candidate = coordinator.candidate().ok_or(Error::Binding("original changed Model"))?;
