@@ -1,0 +1,567 @@
+{
+  "schema": "hepta.utility.artifact-original-channel-source-audit.v1",
+  "status": "completed_readonly_source_audit_no_behavioral_execution",
+  "source": {
+    "e8_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "e8_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "fixed_b298": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "projection_sha256": "f6335dbb2100f15a6758654d60aed526b09a5ffe403d462dfb290d8dfa818222",
+    "all_three_target_blobs_identical_e8_b298": true
+  },
+  "runtime_evidence": {
+    "four_boundary_diagnostic_report_blob": "5a4653eba97c47ef8eef931db2b5bb5850a9ba84",
+    "original_raw_blob": "248da39cdda1043874adcbb30a00bbefd0d5e358",
+    "result": "1 boundary passed / 3 failed; 5 protected passed; source before/after a307 unchanged",
+    "full_gate_status": "not_run",
+    "actual_A_B_C_qualification": false
+  },
+  "conclusion": "All three target files are real, purpose-bound uses of the original process-pinned channel. Their existing production call sites should be registered after preserving the audited local and dependency guards. Do not delete them or treat them as typed-parser false positives. HEAD client/service include an explicitly authorized signing effect; only Registry-source and HEAD Readback branches are read-only.",
+  "registration": {
+    "boundary": "learning_original_owner_command_channel",
+    "callers": [
+      "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+    ],
+    "concrete_call_sites": 4,
+    "target_protected_rows_in_current_v2": 0,
+    "broader_guard_coverage_observation": "No protected_file row in current v2 matched artifact_original_*, owner_head_source* or owner_host_registry_durable. Local call-site fences alone cannot promise the continued presence of key.take/commit_once or wire purpose checks in separate dependency files.",
+    "mutations_performed": [],
+    "callers_writer": "evaluation_audit only"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "git_blob_sha": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+      "receiver": "OriginalArtifactHeadConnectionV1::bind; one actual original_owner_command_channel_v1 call",
+      "custody": "Consumes a natively supplied UnixStream, original Head pidfd and fixed enrolled config. The connection has private channel/config/binding/initial_at/origin. It never holds or generates a private signing key.",
+      "ordered_obligations": [
+        {
+          "function": "bind",
+          "order": [
+            "sample now",
+            "require_peer(peer, config.signer_id)",
+            "config.authenticate_current(started)",
+            "derive fixed binding",
+            "original_owner_command_channel_v1 using original_head_pidfd",
+            "channel.check_peer_lifetime",
+            "fresh(started)",
+            "config.authenticate_current(initial_at)",
+            "construct private connection"
+          ]
+        },
+        {
+          "function": "from_original_stream / recover_original_stream",
+          "order": [
+            "fresh factory selects Origin::Fresh",
+            "recover factory selects Origin::Readonly(expected)",
+            "both go through the same bind checks"
+          ],
+          "distinction": "These are client stream handoffs, not signing-host create/recover or an enrollment request."
+        },
+        {
+          "function": "sign_original_registry(self, prepared, cancelled)",
+          "order": [
+            "reject any non-Fresh origin with ReadbackRequired",
+            "encode actual opaque prepared.registry_durable()",
+            "decode untrusted claims",
+            "claims.require_unsigned_phase()",
+            "exchange Action::Sign",
+            "return the same consumed prepared capability only on complete verified success"
+          ],
+          "must_preserve": [
+            "self and non-Clone opaque prepared are consumed",
+            "cancellation, error or lost acknowledgement drops the continuation",
+            "no conversion from decoded claims back into original prepared capability"
+          ]
+        },
+        {
+          "function": "read_original_head(self, observed)",
+          "order": [
+            "encode original observed registry durable",
+            "decode claims",
+            "exchange exactly Action::Readback"
+          ],
+          "must_preserve": [
+            "never route Readback through Sign",
+            "never return a fresh writer continuation"
+          ]
+        },
+        {
+          "function": "exchange",
+          "order": [
+            "monotonic started >= initial_at",
+            "authenticate source against fixed config",
+            "Purpose::Head/action/nonce=1/fixed binding",
+            "queue cancellation fence",
+            "check peer lifetime",
+            "request fixed encoded header",
+            "authenticate exact response correlation",
+            "decode saved signed HEAD",
+            "check peer lifetime again",
+            "fresh clock",
+            "verify_original_head(source,signed,current)",
+            "Readonly(Some(expected)) must exactly equal returned signature",
+            "return signature"
+          ],
+          "must_preserve": [
+            "Sign response uncertainty remains CommitUncertain",
+            "no retry or reopen of a possibly delivered request"
+          ]
+        }
+      ],
+      "forbid_in_target": [
+        "private signing-key construction or Signer invocation",
+        "owner journal create/recover/repair",
+        "constructing OriginalArtifactPreparedPublicationV1 from bytes",
+        "public mutable channel/config/origin accessors",
+        "reconnect/retry after unknown acknowledgement",
+        "readonly-to-fresh promotion or renewal of the fixed signature expiry"
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "fn bind(",
+          "lines": [
+            86
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "require_peer(&peer, &config.signer_id)?",
+          "lines": [
+            96
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "Origin::Readonly(expected)",
+          "lines": [
+            82
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "if !matches!(&self.origin, Origin::Fresh)",
+          "lines": [
+            134
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "claims.require_unsigned_phase()?",
+          "lines": [
+            141
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "verify_original_head(&source, &signed, current)?",
+          "lines": [
+            206
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "needle": "Origin::Readonly(Some(expected))",
+          "lines": [
+            207
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_client.rs"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "git_blob_sha": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+      "receiver": "impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W>::serve_commands; one actual channel call",
+      "custody": "Arc points to the original native Head owner retaining its original source, enrolled key (fresh only) and original File/witness-backed journal. Requests cannot supply material, keys or signing bodies.",
+      "ordered_obligations": [
+        {
+          "function": "serve_commands",
+          "order": [
+            "require consumer.actor_id == original source config writer_lease.producer_id",
+            "bounded owner-wide semaphore",
+            "construct exact original process channel before blocking enqueue",
+            "derive config binding",
+            "clone same original Arc and create cancellation fence",
+            "bounded monotonic nonce loop",
+            "decode exact Purpose::Head/nonce/binding",
+            "config.authenticate_current(started)",
+            "explicit Sign versus Readback dispatch",
+            "config.authenticate_current(fresh(started))",
+            "encode Completed/Missing/Pending/ReadbackRequired without inventing material"
+          ]
+        },
+        {
+          "function": "action dispatch",
+          "exact_arms": [
+            "wire::Action::Sign => original.sign_original(&cancelled)",
+            "wire::Action::Readback => original.read_original(&cancelled)"
+          ],
+          "must_preserve": [
+            "Readback never invokes sign_original or native create/recover",
+            "Sign remains a real original-owner effect, not labelled read-only",
+            "cancellation and channel uncertainty consume that connection"
+          ]
+        }
+      ],
+      "forbid_in_target": [
+        "native key enrollment/generation",
+        "original owner create/recover/repair from request",
+        "accepting caller material or a caller-selected sign body",
+        "Readback-to-Sign substitution",
+        "turning Missing/Pending/ReadbackRequired into successful newly signed material",
+        "reconnect or silent retry after transport uncertainty"
+      ],
+      "dependency_obligations": [
+        "OriginalArtifactHeadOwnerV1::create consumes original File, witness, enrolled key and process-pinned Registry source; require_registered_key before and after actual current source rereads.",
+        "recover consumes original File/witness/source without a key, sets original_key=None and admitted=true; it can only read back saved original signatures.",
+        "sign_original first admits once owner-wide, requires current unsigned exact source, takes the original key once, executes the original journal commit_once, then rereads source and saved journal bytes before returning the exact current verified signature.",
+        "read_original only reads source/journal twice and verifies exact current source/subject/signature; it does not create/recover/sign or commit."
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+          "needle": "require_peer(&consumer, &self.source.config.writer_lease.producer_id)?",
+          "lines": [
+            34
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_service.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+          "needle": "wire::Request::decode(bytes, wire::Purpose::Head, nonce, binding)?",
+          "lines": [
+            69
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_service.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+          "needle": "wire::Action::Sign => original.sign_original(&cancelled)",
+          "lines": [
+            72
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_service.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+          "needle": "wire::Action::Readback => original.read_original(&cancelled)",
+          "lines": [
+            73
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_service.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+          "needle": "if self.admitted.swap(true, Ordering::AcqRel)",
+          "lines": [
+            168
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_owner.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+          "needle": ".commit_once(&self.key, ||",
+          "lines": [
+            193
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_owner.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+          "needle": "original_key: Mutex::new(None)",
+          "lines": [
+            157
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_owner.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+          "needle": "pub(super) fn read_original(",
+          "lines": [
+            241
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_owner.rs"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "git_blob_sha": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+      "receiver": "OriginalArtifactRegistrySourceOwnerV1::serve_reads and OriginalArtifactRegistrySourceClientV1::from_original_stream; two actual channel calls",
+      "custody": "Server retains the exact same Arc<Mutex<LearningArtifactOwnerService>>, not a path-based reopened writer. Client is an opaque native Head handoff with a private Mutex<Option<Channel>>; decoded claims alone do not prove provenance.",
+      "ordered_obligations": [
+        {
+          "function": "from_original_writer",
+          "order": [
+            "authenticate config at current time",
+            "derive exact binding",
+            "retain exact original writer Arc"
+          ]
+        },
+        {
+          "function": "serve_reads",
+          "order": [
+            "require original Head consumer.actor_id == config.signer_id",
+            "bounded semaphore",
+            "construct original pidfd/process channel before queue",
+            "cancellation fence",
+            "bounded monotonic nonce",
+            "respond through same retained original owner"
+          ]
+        },
+        {
+          "function": "respond",
+          "order": [
+            "decode exact Registry purpose/nonce/binding",
+            "authenticate config current",
+            "try_lock exact original writer",
+            "LearningArtifactOwnerService::read_original_registry_durable on that writer and fixed publication",
+            "drop writer lock",
+            "pure encode original complete observation",
+            "decode untrusted claims",
+            "authenticate claims at fresh final time",
+            "encode Completed response"
+          ]
+        },
+        {
+          "function": "from_original_stream",
+          "order": [
+            "require peer.actor_id == config.writer_lease.producer_id",
+            "config current authentication",
+            "fixed binding",
+            "original writer pidfd channel",
+            "peer lifetime",
+            "fresh clock",
+            "config current authentication",
+            "store private channel"
+          ]
+        },
+        {
+          "function": "read_current_in_lane",
+          "order": [
+            "try_lock and take channel",
+            "reject backwards clock/cancel",
+            "authenticate config current",
+            "Request::new(Purpose::Registry,Action::Readback,next,binding)",
+            "checked increment nonce",
+            "peer lifetime and cancellation",
+            "exact request/response correlation",
+            "decode claims",
+            "peer lifetime again",
+            "fresh final clock",
+            "authenticate_current complete claims",
+            "same subject, nondecreasing original observed time, cancellation check",
+            "only then put channel back and return untrusted observation"
+          ],
+          "must_preserve": [
+            "any failure leaves channel consumed",
+            "no reconnect, cached replacement or retry",
+            "no material claims become an original writer continuation"
+          ]
+        }
+      ],
+      "forbid_in_target": [
+        "wire::Action::Sign",
+        "SigningKey/Signer or signing-body requests",
+        "writer reopen/construction from a path",
+        "prepare/publish/finish/acknowledge/resume/repair/recover effects",
+        "public channel or writer extraction",
+        "returning cached source rows after current source failure"
+      ],
+      "dependency_obligations": [
+        "wire::Request::new/decode permits Registry only with Readback; no request carries a payload or key.",
+        "Original physical durable read verifies complete ordered checkpoint history, registry and payload bytes, CURRENT, original registration event/predecessor and withdrawal state; it rereads them and rejects any change.",
+        "In-memory transaction reconstruction within that verifier is not a persisted publication effect.",
+        "The original host trust snapshot and signed lease are immutable for that host's lifetime. Fresh-time lease/signature checks are against those original objects; this audit does not claim live control-plane revocation refresh."
+      ],
+      "evidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "needle": "writer: Arc<Mutex<LearningArtifactOwnerService>>",
+          "lines": [
+            31,
+            39
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "needle": "LearningArtifactOwnerService::read_original_registry_durable(",
+          "lines": [
+            115
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "needle": "fn read_current_in_lane(",
+          "lines": [
+            208
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "needle": "wire::Purpose::Registry,",
+          "lines": [
+            112,
+            224
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "needle": "source.authenticate_current(&self.config, current)?",
+          "lines": [
+            240
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "needle": "*self.channel.try_lock().map_err(|_| Error::Busy)? = Some(channel);",
+          "lines": [
+            250
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_registry_source.rs"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/artifact_original_head_wire.rs",
+          "needle": "purpose == Purpose::Registry && action != Action::Readback",
+          "lines": [
+            48
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/artifact_original_head_wire.rs"
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+          "needle": "if before_records != after_records",
+          "lines": [
+            312
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs"
+        }
+      ]
+    }
+  ],
+  "shared_permissions": {
+    "process_identity": "Exact native actor mapping plus real SO_PEERCRED UID/PID, original pre-held pidfd, boot_id and process_start_ticks. The shared constructor rejects same UID or same PID, invalid process identity, zero/excessive bounds; it creates no authority.",
+    "limits": "Original exchange <=30 seconds, absolute owner lifetime <=300 seconds, request/response <=16,384 bytes. No limit or strict refusal was changed by this audit.",
+    "binding": "Original trust digest + storage binding + signed writer lease digest + exact publication intent + signer identity + authority epoch + fixed expiry.",
+    "authentication": "Writer lease signature and current signer context, producer/scope/epoch/window, distinct registered Head signer from writer signers, fixed expiry bounded by original lease/manifest/enrollment. Returned HEAD has exact registry/generation/predecessor/subject/signer/key/epoch/expiry and strict signature verification.",
+    "authority": "Original and untrusted Registry durable material report DENY_ALL. The artifact Head verifier's VerifiedCurrentArtifactHeadV1 has authority DENY_ALL. A SignedCurrentArtifactHeadV1 payload is publication evidence, not a new lifecycle/Selection/FinalUse grant.",
+    "evidence": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "needle": "let same_uid =",
+        "lines": [
+          29
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "needle": "require_original_process(&peer)?",
+        "lines": [
+          42,
+          55
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "needle": "socket_peercred(&stream)",
+        "lines": [
+          55
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-contracts/src/authority_host_peer.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+        "needle": "pub fn authenticate_current(",
+        "lines": [
+          74
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_head_source.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+        "needle": "pub fn require_registered_key(",
+        "lines": [
+          122
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_head_source.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+        "needle": "pub fn verify_original_head(",
+        "lines": [
+          169
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_head_source.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+        "needle": "fn verify_writer_lease(",
+        "lines": [
+          278
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+        "needle": "fn verify_signer_context(",
+        "lines": [
+          1357
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+        "needle": ".verify_strict(message, &Signature::from_bytes(signature))",
+        "lines": [
+          1390
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+        "needle": "authority: AuthorityPosture::DENY_ALL",
+        "lines": [
+          353,
+          922,
+          1144,
+          1243
+        ],
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd/codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+      }
+    ]
+  },
+  "registration_recommendation": "Register exactly the three observed files in the existing channel boundary. Preserve original guards through per-function ordering and branch-specific mutation tests. In particular, a generic global ban on Sign would incorrectly disable legitimate HEAD signing; a generic readback marker is too weak to prevent Readback-to-Sign promotion. Depend on or add coverage for the separate native owner, wire and config contracts if asserting their invariants; do not claim three local fences alone protect all dependencies.",
+  "must_reject": [
+    "wrong actor / UID / PID / pidfd / boot / start identity",
+    "same-process or same-UID fake external owner",
+    "wrong purpose/action/nonce/context or malformed/oversize frames",
+    "missing, expired, revoked or mismatched enrolled authority within the original trust contract",
+    "wrong publication/predecessor/storage/registry/subject or signature",
+    "Readback-to-Sign promotion or recovered-to-fresh promotion",
+    "opaque continuation fabrication / key substitution / second signing admission",
+    "source change, backward time, missing/pending current evidence or lost ACK treated as new authority"
+  ],
+  "limitations": [
+    "No Rust, CALLERS, QA, ref or native deployment was changed.",
+    "No Cargo or artifact behavioral test was run by this audit.",
+    "Mechanism/source proofs do not qualify real task A, independent evaluator B, consumer C, daemon or Root cold recovery.",
+    "Original immutable trust/lease checks do not prove a separate live revocation service was queried.",
+    "Content roots and saved signatures do not independently establish sustained artifact availability, legal authority or actual adoption."
+  ]
+}

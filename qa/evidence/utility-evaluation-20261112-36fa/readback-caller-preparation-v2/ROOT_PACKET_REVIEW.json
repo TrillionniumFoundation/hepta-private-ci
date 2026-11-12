@@ -1,0 +1,124 @@
+{
+  "schema": "hepta-independent-readback-retention-12-path-review-v1",
+  "base_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "files_verified": 12,
+  "original_qa": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "original_functions": 10,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "original_functions": 10,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "original_functions": 9,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "original_functions": 12,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "original_functions": 9,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "original_functions": 16,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "original_functions": 11,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "original_functions": 11,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "original_functions": 7,
+      "all_original_functions_byte_identical": true,
+      "only_expected_assignment_ast_changed": true
+    }
+  ],
+  "total_original_functions_unchanged": 95,
+  "new_sibling_methods": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py",
+      "methods": [
+        "test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected",
+        "test_guard_must_execute_at_the_original_top_level_before_success_mapping",
+        "test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain"
+      ],
+      "count": 3,
+      "matches_original_discovery": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "methods": [
+        "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller",
+        "test_original_handoff_and_complete_dataset_training_binding_cannot_be_detached",
+        "test_request_cannot_change_purpose_context_sequence_or_action",
+        "test_host_admission_precedes_queue_and_connections_keep_bounded_requests",
+        "test_host_request_is_checked_before_actual_same_stage_readback",
+        "test_readback_requires_current_complete_original_evidence_before_restoring_peer",
+        "test_completed_training_cannot_become_missing_pending_or_a_reusable_unknown",
+        "test_bootstrap_readback_only_borrows_ready_and_never_recovers_awaiting",
+        "test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap"
+      ],
+      "count": 9,
+      "matches_original_discovery": true
+    }
+  ],
+  "production_rust_in_this_packet": [],
+  "required_guard_postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "base": {
+        "bytes": 10259,
+        "sha256": "5fea425ed508b38f37fc4ac17a377bb8e2629597a497707ad8ee40794dbd3bdc",
+        "git_blob_sha": "c9b8a264cbf51fbf4c405042e1252e931717524a"
+      },
+      "required_guard_postimage": {
+        "bytes": 10690,
+        "sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+        "git_blob_sha": "aea0027ad5f6e51825469b5d8fb8b14d202da575"
+      },
+      "included_in_this_source_packet": false,
+      "reason": "separately reviewed production guard; source-fence checks require this exact prepared postimage"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "base": {
+        "bytes": 8237,
+        "sha256": "7b4af96b6fbe850496196e54d39d2787796d7bc0cde1a3e1f20bb18c01679b7b",
+        "git_blob_sha": "a3be9f7b415d4783886b346d273296ae8ecb32e5"
+      },
+      "required_guard_postimage": {
+        "bytes": 9008,
+        "sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598",
+        "git_blob_sha": "8a779085dd02536a646415406abcaa471b097c10"
+      },
+      "included_in_this_source_packet": false,
+      "reason": "separately reviewed production guard; source-fence checks require this exact prepared postimage"
+    }
+  ],
+  "scope": "Exact packet byte identities and AST/source preservation review. This review runs no source/native gate and does not claim the new nine readback methods or full signed retention composition execution."
+}

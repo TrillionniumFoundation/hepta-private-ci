@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.selection-readback-scoped-mutation-execution.v1",
+  "started_at": "2026-11-12T11:20:43.672853+00:00",
+  "finished_at": "2026-11-12T11:20:45.127979+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "/tmp/hepta-selection-readback-v3-kd2szwua/run-selection-mutations.py"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 1.4551327139997738,
+  "timeout_seconds": 60,
+  "timed_out": false,
+  "scope": "Eight explicitly selected source-mutation test methods over two exact original Rust files; complete-Rust membership method not run.",
+  "full_gate_status": "not_run",
+  "full_membership_test": "not_run",
+  "cargo_tests": "not_run",
+  "source_inputs_unchanged": true,
+  "inputs_before": [
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1137586,
+      "sha256": "1ce3e783150b606b7a60f573fb1c8c8a6f931faafcac4876c04cbb801d4644d8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "bytes": 10679,
+      "sha256": "3351b2bde358bbf965a683d67e25b19b68fee773dd07bad0be87cfc5c49ee2cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "bytes": 3773,
+      "sha256": "b5f47358eedae703714b8abf8cdbef073ac9e4f4427683900da3a37395d972a4"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "bytes": 22398,
+      "sha256": "58b0d6003e9d85f9dff39ed392b1641ac64c6d264aa58ac690f0861ed20283ba"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    }
+  ],
+  "inputs_after": [
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1137586,
+      "sha256": "1ce3e783150b606b7a60f573fb1c8c8a6f931faafcac4876c04cbb801d4644d8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "bytes": 10679,
+      "sha256": "3351b2bde358bbf965a683d67e25b19b68fee773dd07bad0be87cfc5c49ee2cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "bytes": 3773,
+      "sha256": "b5f47358eedae703714b8abf8cdbef073ac9e4f4427683900da3a37395d972a4"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "bytes": 22398,
+      "sha256": "58b0d6003e9d85f9dff39ed392b1641ac64c6d264aa58ac690f0861ed20283ba"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    }
+  ],
+  "raw": {
+    "bytes": 1932,
+    "sha256": "204261c156a787f13afc44d43e8b25018c0de535dbd2fe851a9fb5662ad681bb"
+  },
+  "status": "passed_scoped_mutation_qa"
+}

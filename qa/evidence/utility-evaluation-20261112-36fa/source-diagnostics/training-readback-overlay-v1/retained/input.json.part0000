@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.utility.training-readback-overlay-input.v1",
+  "state": "READY_FOR_SCOPED_READONLY_DIAGNOSTIC",
+  "run_identity": "hepta-utility-36fa-training-readback-overlay-v1",
+  "source_root": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "full_source_tree": null,
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "source_lock": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/SOURCE_GATES.lock",
+  "baseline_inventory": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/source-baseline.inventory.json",
+  "baseline_inventory_bytes": 5432085,
+  "baseline_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+  "original_driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "hepta_ci_exec_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+  "callers_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+  "timeout_seconds": 4800,
+  "outer_timeout_seconds": 5400,
+  "full_gate_status": "not_run",
+  "cargo_tests": "not_run",
+  "input_sha256": {
+    "wrapper.py": "e45d2e7f476a2e14d19c9efc468e002ebce3719c8a0f8793bb14e38fe11eed1a",
+    "original-driver-v2.py": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "diagnostic.py": "b315b16e75754009b58cd6b0abb7cd64d291dbc9dbb6c09b6c15cd60d3537073",
+    "overlay.json": "f6335dbb2100f15a6758654d60aed526b09a5ffe403d462dfb290d8dfa818222",
+    "CALLERS.toml": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74"
+  }
+}

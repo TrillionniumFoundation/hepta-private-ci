@@ -1,0 +1,385 @@
+{
+  "schema": "hepta.utility.artifact-four-dependency-fence-audit.v1",
+  "scope": "Root-authorized four minimal dependency rows only; read-only evidence and mutation suggestions, no Rust/CALLERS/QA modifications",
+  "base_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "parent_audit_blob": "a36b1e0596a80ebb55aa163fb2719a245fc5f5ee",
+  "dependencies": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+      "blob": "bbab4d10cfe07d9f5709bf61f44c56d49698f1c5",
+      "same_e8_b298": true,
+      "functions": [
+        {
+          "name": "create",
+          "order": [
+            "source.config.require_registered_key(native verifying key, started)",
+            "source.read_current().await",
+            "before.require_unsigned_phase()",
+            "derive fixed binding and original_subject",
+            "read_current_in_lane inside queued native lane",
+            "same_original_observation against before",
+            "fresh clock and require_registered_key + source.authenticate_current",
+            "cancellation check",
+            "LearningOwnerJournalV1::create(file,witness,binding)",
+            "read source after await",
+            "before/after same_original_observation",
+            "fresh final source authentication + require_registered_key",
+            "retain original_key=Some(original_key), admitted=false"
+          ],
+          "reject_mutations": [
+            "remove registered-key equality/current authentication",
+            "substitute caller decoded DTO for process-pinned source",
+            "move journal create before native current source verification",
+            "allow create from an already signed source"
+          ]
+        },
+        {
+          "name": "recover",
+          "order": [
+            "read current original source and derive binding/subject",
+            "queued current source read and same observation comparison",
+            "fresh current source authentication",
+            "cancellation check",
+            "LearningOwnerJournalV1::recover on original File/witness/binding",
+            "actual source read after recovery",
+            "same observation/current authentication",
+            "original_key=Mutex::new(None), admitted=AtomicBool::new(true)"
+          ],
+          "reject_mutations": [
+            "store Some(key) on recovery",
+            "set admitted=false on recovery",
+            "manufacture replacement File/witness/source",
+            "route any readback request into recover"
+          ],
+          "note": "Native recovery itself may reconcile the retained minimum anchor; it is not claimed read-only and is not an RPC action."
+        },
+        {
+          "name": "sign_original",
+          "order": [
+            "admitted.swap(true, Ordering::AcqRel) => ReadbackRequired when already admitted",
+            "cancellation check",
+            "fresh original source read",
+            "require_subject",
+            "require_unsigned_phase",
+            "original_key.try_lock().take() => ReadbackRequired if absent",
+            "cancellation check",
+            "original journal try_lock",
+            "original journal.commit_once(self.key, closure)",
+            "inside closure fresh clock/cancellation",
+            "inside closure require_registered_key of actually held key",
+            "inside closure config.unsigned_head of exact source",
+            "inside closure key.sign then encode original HEAD and subject record",
+            "drop(key)",
+            "reread actual source",
+            "before.same_original_observation(after)",
+            "reread saved journal and bytes equality",
+            "decode fixed subject record",
+            "fresh clock/require_subject(after)/verify_original_head(after,signed,current)",
+            "encode returned signature"
+          ],
+          "reject_mutations": [
+            "delete/negate admitted.swap refusal",
+            "clone/retain/reinsert original key instead of take",
+            "sign outside original commit_once",
+            "retry signing after missing ACK",
+            "return signature before actual source/journal postchecks",
+            "renew fixed expiry or change signed subject"
+          ]
+        },
+        {
+          "name": "read_original",
+          "order": [
+            "actual source read before",
+            "require_subject(before)",
+            "read_record",
+            "decode_record exact original_subject",
+            "actual source read after",
+            "same_original_observation before/after",
+            "read_record again",
+            "saved bytes equality",
+            "fresh clock",
+            "require_subject(after)",
+            "config.verify_original_head(after,signed,current)",
+            "encode saved original HEAD"
+          ],
+          "forbidden_effects": [
+            "sign_original",
+            "commit_once",
+            "original_key.take",
+            "LearningOwnerJournalV1::create",
+            "LearningOwnerJournalV1::recover",
+            "key.sign"
+          ],
+          "reject_mutations": [
+            "replace read_original with sign_original",
+            "remove second source read/equality",
+            "remove second journal read/equality",
+            "return decoded signature before current verification"
+          ]
+        },
+        {
+          "name": "read_record / decode_record",
+          "order": [
+            "read only original journal key",
+            "HARHS001 magic + exact subject + bounded lengths",
+            "exact encoded length",
+            "decode original signed HEAD"
+          ],
+          "reject_mutations": [
+            "select a request-provided historical key/subject",
+            "accept wrong subject, trailing bytes or unbounded length"
+          ]
+        }
+      ],
+      "field_custody": [
+        "source original Arc",
+        "private original journal Mutex",
+        "private Option<SigningKey>",
+        "private original_subject/key",
+        "owner-wide AtomicBool admitted"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_wire.rs",
+      "blob": "1e6cad7a4dbc6f559169471b56d0634a64acb77e",
+      "same_e8_b298": true,
+      "functions": [
+        {
+          "name": "Request::new",
+          "order": [
+            "nonce 1..=128",
+            "nonzero binding",
+            "reject Purpose::Registry unless Action::Readback",
+            "construct fixed request"
+          ],
+          "reject_mutations": [
+            "delete/negate Registry-only-Readback guard",
+            "permit Sign under Registry",
+            "permit zero binding or repeated/zero/out-of-range nonce"
+          ]
+        },
+        {
+          "name": "Request::decode",
+          "order": [
+            "exact HEADER=50 length/MAGIC/expected purpose",
+            "decode only canonical action bytes",
+            "decode nonce and binding",
+            "exact expected nonce and binding equality",
+            "Self::new rechecks purpose/action restrictions"
+          ],
+          "reject_mutations": [
+            "accept extra request body/key/material bytes",
+            "remove fixed purpose/nonce/binding check",
+            "bypass Self::new after parsing"
+          ]
+        },
+        {
+          "name": "Request::response",
+          "order": [
+            "non-Completed status must have empty payload",
+            "bounded MAX_BYTES=16384 arithmetic",
+            "Completed must have nonempty payload",
+            "echo exact request then status/length/payload"
+          ],
+          "reject_mutations": [
+            "include material in unresolved states",
+            "allow empty Completed",
+            "allow oversized frame"
+          ]
+        },
+        {
+          "name": "Request::read_response",
+          "order": [
+            "bounded response length and exact header == self.encode()",
+            "exact payload length with no trailing bytes",
+            "canonical status mapping; Missing/Pending/Unavailable/ReadbackRequired remain errors"
+          ],
+          "reject_mutations": [
+            "drop request correlation",
+            "treat missing/pending as completed",
+            "accept noncanonical status with payload"
+          ]
+        }
+      ],
+      "forbidden_changes": [
+        "new RPC create/recover/enroll action",
+        "caller-chosen sign body or key payload",
+        "Readback-to-Sign coercion"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+      "blob": "52becfc4df30309ea897e3b228a8638c03a39722",
+      "same_e8_b298": true,
+      "identity_evidence": "Entire hepta-learning-artifacts tree equals 6e82cbc3720ee36adf3a4854ad8062b1b20c1394 in e8 and b298.",
+      "functions": [
+        {
+          "name": "ArtifactHeadSigningConfigV1::binding",
+          "order": [
+            "original trust digest",
+            "storage binding",
+            "full signed writer lease digest",
+            "exact original publication intent digest",
+            "fixed signer_id/authority_epoch/signature_expires_at"
+          ],
+          "note": "Binding is correlation only; retain separate current authentication."
+        },
+        {
+          "name": "authenticate_current",
+          "order": [
+            "construct original trust verifier",
+            "verify full original signed writer lease at now",
+            "validate producer/scope/storage/epoch and fixed expiry within now/lease/manifest",
+            "verify original artifact admission",
+            "resolve registered Head signer",
+            "bound fixed expiry by signer enrollment/revocation",
+            "reject shared signer ID or verifying key with writer signers",
+            "verify_signer_context with require_current=true"
+          ],
+          "reject_mutations": [
+            "skip verify_writer_lease/admission",
+            "remove producer/scope checks",
+            "allow head/writer identity or key overlap",
+            "remove expiry upper bounds",
+            "use require_current=false",
+            "use caller-supplied signer/key or renew expiry"
+          ]
+        },
+        {
+          "name": "require_registered_key",
+          "order": [
+            "authenticate_current(now)",
+            "find exact original signer_id",
+            "compare actual held native verifying_key with registered key"
+          ],
+          "reject_mutations": [
+            "accept any key with same actor label",
+            "compare only digest label without native key equality",
+            "skip current authentication"
+          ]
+        },
+        {
+          "name": "verify_original_head",
+          "order": [
+            "source.authenticate_current(self,now)",
+            "reject issued_at > now",
+            "resolve exact original enrolled Head signer",
+            "compare withdrawal/storage/registry/generation/subject/predecessor/epoch/signer/key digest/fixed expiry",
+            "if source CURRENT already equals publication head, require entire current == signed",
+            "original verifier.verify_signed_head with require_current_signer=true"
+          ],
+          "reject_mutations": [
+            "remove a fixed subject or signer/key/expiry equality",
+            "accept a different current signature at same head",
+            "skip strict cryptographic signature verifier",
+            "use require_current_signer=false",
+            "return before final verifier"
+          ]
+        },
+        {
+          "name": "unsigned_head / expected_generation",
+          "order": [
+            "authenticate full source at issued_at",
+            "derive generation only from same current or exact original predecessor/genesis",
+            "reject authority epoch regression",
+            "use exactly fixed signature_expires_at"
+          ],
+          "note": "Unsigned construction is not authority and is only signed by the original owner; protect callers from treating it as an authenticated receipt."
+        }
+      ],
+      "forbidden_changes": [
+        "private key generation/enrollment",
+        "caller-defined trust replacement during a request",
+        "new writer continuation from untrusted source bytes",
+        "expiry renewal"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+      "blob": "26a09f65f0f78e3218f517f07f394573d25db13a",
+      "same_e8_b298": true,
+      "identity_evidence": "Same entire learning-artifacts tree in both fixed sources.",
+      "functions": [
+        {
+          "name": "LearningArtifactOwnerHost::read_original_registry_durable",
+          "order": [
+            "sample original clock and require_current_writer",
+            "snapshot actual withdrawal registry",
+            "validate original artifact admission against actual withdrawals",
+            "read complete ordered original checkpoints",
+            "validate context/digests/original writer lease/authority DENY_ALL and producer for all records",
+            "reconstruct original transaction purely in memory",
+            "Prepared/PayloadDurable remain Pending",
+            "require original registry receipt and storage binding",
+            "read actual bounded CURRENT and predecessor state",
+            "read registry file and exact predecessor/registration event",
+            "read actual payload file and verify digest/length",
+            "purely reconstruct registry/witness/acknowledgement proofs",
+            "require reconstructed checkpoint == original checkpoint",
+            "reread full registry and payload files",
+            "reread CURRENT and full checkpoint sequence",
+            "require equality of complete before/after checkpoints, registry, payload, CURRENT/current registry, and actual withdrawal snapshots",
+            "fresh final clock without rollback",
+            "require_current_writer(fresh) and same original lease digest",
+            "validate artifact admission again at fresh time",
+            "verify signed current HEAD with require_current_signer=true when present",
+            "return OriginalArtifactRegistryDurableV1 with no subsequent I/O"
+          ],
+          "reject_mutations": [
+            "use cached registry/payload/CURRENT",
+            "remove any actual before/after read or equality",
+            "suppress withdrawal change",
+            "accept partial checkpoint history or missing phase",
+            "remove final fresh time/lease/admission/current signer verification",
+            "return original capability before final checks"
+          ]
+        },
+        {
+          "name": "read_original_publication_checkpoints",
+          "order": [
+            "bounded complete ordered phase scan",
+            "no missing-then-present checkpoint gap",
+            "operation_id and phase identity",
+            "stable intent/admission/withdrawal scope/predecessor invariants"
+          ],
+          "reject_mutations": [
+            "skip a missing checkpoint gap",
+            "accept wrong operation/phase",
+            "accept cross-phase invariant change"
+          ]
+        },
+        {
+          "name": "read_preparation_current",
+          "order": [
+            "discover current head",
+            "read bounded current registry view",
+            "require same storage binding/head/witness digest/trust digest",
+            "return original current pair"
+          ],
+          "reject_mutations": [
+            "substitute valid unrelated signed head",
+            "ignore binding/head/witness/trust mismatches"
+          ]
+        }
+      ],
+      "forbidden_effects": [
+        "file create/write",
+        "persist_checkpoint",
+        "resume/repair/recover original owner",
+        "publication completion or signing",
+        "mutation of original registry or withdrawal owner"
+      ],
+      "important_distinction": "ArtifactPublicationTransactionV1::begin/record_payload_durable/record_registry_durable/record_witness_durable/acknowledge are used on a local in-memory reconstruction in this read verifier. Do not forbid these names globally or confuse them with durable writer effects. Fence exact receiver and source reads.",
+      "authority": "OriginalArtifactRegistryDurableV1 fields are private, the only constructor remains the original physical read, authority() returns DENY_ALL."
+    }
+  ],
+  "verification": "All named source bytes were read exactly from immutable Git blobs. Function order is a source-review obligation; no proposed mutation was executed and no full gate PASS is claimed.",
+  "sole_callers_qa_writer": "evaluation_audit",
+  "current_all_scan": {
+    "job_id": "1a1cf796a68-2564-1a3b",
+    "source_inputs": "unchanged existing v2+25 projection",
+    "status": "entrypoint_started; no terminal observed by this report",
+    "not_restarted": true
+  }
+}

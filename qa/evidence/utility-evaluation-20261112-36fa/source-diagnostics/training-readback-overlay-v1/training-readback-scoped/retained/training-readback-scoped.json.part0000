@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/training-readback-scoped/diagnostic-result.json"
+  ],
+  "log_bytes": 7449,
+  "log_sha256": "56958ba25c21302cee1fcf3f27c15984ae9598b620139160fbfb27c5ecfeae09",
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 1,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "timed_out": false
+}

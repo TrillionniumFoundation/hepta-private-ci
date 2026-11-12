@@ -1,0 +1,28 @@
+{
+  "actual_A_B_C_qualification": false,
+  "cargo_tests": "not_run",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/training-readback-scoped/diagnostic-result.json"
+  ],
+  "entrypoint_started": false,
+  "full_gate_status": "not_run",
+  "full_source_tree": null,
+  "run_identity": "hepta-utility-36fa-training-readback-overlay-v1",
+  "schema": "hepta.utility.training-readback-overlay-run.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T11:03:11.579751+00:00",
+  "timeout_seconds": 4800
+}

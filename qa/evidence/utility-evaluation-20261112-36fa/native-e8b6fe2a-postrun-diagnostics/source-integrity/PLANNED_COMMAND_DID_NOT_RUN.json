@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.blocked-new-build-diagnostic-observation.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "actual_result": {
+    "build_started": false,
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-utility-36fa-review-19aa/qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz'",
+    "final_source_error": "[Errno 2] No such file or directory: '/home/qian-qi/hepta-utility-36fa-review-19aa/qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz'",
+    "finished_at": "2026-11-12T11:07:57.077426+00:00",
+    "label": "NEW_BUILD_DIAGNOSTIC",
+    "original_binary_disappearance_cause": "Unknown",
+    "original_run_binary_available": false,
+    "qualification": "Fresh controlled build for diagnosis only; not the original run binary and not a native full gate",
+    "source_before": null,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "started_at": "2026-11-12T11:07:38.737777+00:00",
+    "status": "failed_new_build_diagnostic",
+    "tests_executed": 0
+  },
+  "planned_command": [
+    "cargo",
+    "--color=never",
+    "test",
+    "--manifest-path",
+    "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/Cargo.toml",
+    "--no-run",
+    "--message-format",
+    "json-render-diagnostics",
+    "--package",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked",
+    "--offline"
+  ],
+  "planned_command_executed": false,
+  "gate_qualification": false,
+  "original_focused_package_selection": [
+    "codex-hepta-agentd",
+    "codex-hepta-intelligence-eval"
+  ],
+  "planned_package_selection": [
+    "codex-hepta-agentd"
+  ],
+  "followup_contract": "Restore only verified missing source; use original two-package cargo nextest list for explicit new-build/list diagnosis; all real test gates remain just test. No higher stack or test deadline."
+}

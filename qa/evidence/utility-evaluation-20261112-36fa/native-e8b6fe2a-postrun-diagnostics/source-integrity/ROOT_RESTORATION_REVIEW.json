@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.root-source-restoration-result-crosscheck.v2",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "original_restoration_result_blob": "389fc91dd651ec3268641c1afaadee376c4ab555",
+  "original_restoration_after_blob": "3d683cb21c9738b471b1e148fb498d5f3d5509bd",
+  "all_seven_actual_actions_match_two_prior_inventories": true,
+  "head_raw_unchanged": true,
+  "index_raw_unchanged": true,
+  "reported_restored_full_inventory": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "missing": [],
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "root_expected_inventory_from_two_prior_full_inventories": {
+    "format": "native five-field compact canonical JSON array, path-byte order, sorted keys, no final LF",
+    "files": 14741,
+    "normalized_bytes": 3412321,
+    "normalized_expected_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "old_alignment_original_sha256": "29f600ee486884e17c0b11b1009cf5c8f6b8d4c11a3ec05e59d8378a771b1772",
+    "independent_old_source_gate_rows_equal": true
+  },
+  "normalized_full_inventory_digest_equals_reported_actual": true,
+  "finished_at": "2026-11-12T11:21:26.456743+00:00",
+  "preliminary_review_blob": "d1b21e75ed9c1e71d4cc8fefb65d5052877e181e",
+  "serialization_explanation": "The pretty-printed alignment artifact has SHA256 29f600...; its 14,741 rows, normalized using the actual native compact JSON serialization, exactly yield efdf0a2b..., the reported post-restoration full-inventory hash. No source-byte difference is inferred from JSON-format differences.",
+  "limits": [
+    "Root independently reconstructs the expected complete inventory digest from two prior preserved inventories and compares it with the observed restoration result. This is not a second direct read of all current native source bytes.",
+    "Historical absent-file interval and rejected build/preservation records remain unchanged.",
+    "Restoration is source integrity repair only; new compilation, diagnostic binaries and test qualification retain separate identities."
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "actual_A_B_C_qualification": false,
+  "attempted": true,
+  "cargo_tests": "not_run",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/training-readback-scoped/diagnostic-result.json"
+  ],
+  "entrypoint_started": true,
+  "execution_terminal_observed": true,
+  "finished_at": "2026-11-12T11:06:14.548051+00:00",
+  "frozen_diagnostic_inputs_unchanged": true,
+  "full_gate_status": "not_run",
+  "full_source_tree": null,
+  "gate_package": {
+    "bytes": 8951,
+    "git_blob_sha": "931499569b84bad5705009225e9afa18768a7a71",
+    "original_files": 13,
+    "path": "/home/qian-qi/hepta-utility-36fa-training-readback-overlay-v1/training-readback-scoped/retained-manifest.json",
+    "sha256": "f1b6beeab5e922070b5d0a497843abcb774f83ce86adedabca720fef0e98166b"
+  },
+  "gate_summary": {
+    "actual_A_B_C_qualification": false,
+    "after_inventory_error": null,
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "elapsed_seconds": 181.38352357805707,
+    "execution_error": null,
+    "finished_at": "2026-11-12T11:06:13.116400+00:00",
+    "gate": "training-readback-scoped",
+    "lifecycle": {
+      "attempted": true,
+      "entrypoint_started": true,
+      "package": "completed",
+      "terminal_observed": true
+    },
+    "original_record": {
+      "bytes": 957,
+      "path": "training-readback-scoped.json",
+      "sha256": "08f1d2eba8cd4bbdff823b5b6ddce25036a0db04a20129bd53d6b5bd129acce6"
+    },
+    "original_record_retained_unchanged": true,
+    "record_read_error": null,
+    "run_identity": "hepta-utility-36fa-training-readback-overlay-v1",
+    "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+    "source_changed": false,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "failed"
+  },
+  "not_run": [],
+  "package_state": "pending",
+  "report_read_error": null,
+  "report_status": "failed_scoped_diagnostic",
+  "run_identity": "hepta-utility-36fa-training-readback-overlay-v1",
+  "schema": "hepta.utility.training-readback-overlay-run.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T11:03:11.579751+00:00",
+  "status": "failed_scoped_diagnostic",
+  "timeout_seconds": 4800,
+  "wrapper_error": null
+}

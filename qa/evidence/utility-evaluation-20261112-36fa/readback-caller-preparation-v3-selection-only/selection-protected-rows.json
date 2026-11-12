@@ -1,0 +1,316 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+    "required": [
+      "const OPERATION: &str =\n    \"runtime.learning.original-circuit-selection.readback.v1\";",
+      "pub struct OriginalCircuitSelectionReadbackConnectionV1 {",
+      "pub(in crate::learning_iteration_evidence_client) struct OriginalSelectionReadbackV1 {",
+      "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\""
+    ],
+    "forbidden": [
+      "SigningKey",
+      "SignedLearningEvidenceV1 {",
+      "File::open",
+      "OpenOptions",
+      "UnixStream::connect",
+      "UnixListener",
+      "HostAuthorityPeerChannel::from_stream",
+      ".sign(",
+      "sign_original(",
+      "attest_original_selection(",
+      "attest_original_remote_selection(",
+      "attest_original_evaluated_selection(",
+      "attest_source(",
+      "execute_selection(",
+      ".claim(",
+      ".complete(",
+      ".compare_and_swap(",
+      "commit_once(",
+      "impl Clone",
+      "derive(Clone",
+      "dyn Fn",
+      "impl Fn",
+      "permit_all",
+      "if false",
+      "unwrap_or",
+      "wire::Action::Execute",
+      "std::mem::replace",
+      "original_response(",
+      "command_response(",
+      "recover_from_original_stream(",
+      "recover_evaluated(",
+      "pub peer:",
+      "pub material:",
+      "pub initial_binding:",
+      "pub dataset:",
+      "pub selection:",
+      "pub context:",
+      "pub binding:",
+      "pub next_request_id:"
+    ],
+    "required_order": [
+      [
+        "pub struct OriginalCircuitSelectionReadbackConnectionV1 {\n    peer: HostAuthorityPeerChannel,\n    material: OriginalCellQ24MaterialReceiptConfigV1,\n    initial_binding: Digest32,\n}",
+        "impl OriginalCircuitSelectionReadbackConnectionV1 {"
+      ],
+      [
+        "pub(in crate::learning_iteration_evidence_client) struct OriginalSelectionReadbackV1 {\n    peer: Option<HostAuthorityPeerChannel>,\n    next_request_id: u64,\n    material: OriginalCellQ24MaterialReceiptConfigV1,\n    dataset: OriginalCellQ24MaterialCommandReceiptV1,\n    selection: OriginalCircuitSelectionCommandReceiptV1,\n    context: OriginalCircuitSelectionCommandContextV1,\n    binding: Digest32,\n}",
+        "impl OriginalSelectionReadbackV1 {"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn from_original_stream(",
+        "sequence": [
+          "let (initial_binding, started_at) =",
+          "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)",
+          "if peer.actor_id != material.initial.owners.selector {\n            return Err(Error::Binding(                                  ));\n        }",
+          "let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_owner_pidfd,\n            timeout,\n            lifetime,\n        )?;",
+          "channel.check_peer_lifetime()?;",
+          "let (after, current) =",
+          "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)",
+          "if current < started_at || after != initial_binding {\n            return Err(Error::Binding(\n                                                             ,\n            ));\n        }",
+          "Ok(Self {",
+          "peer: channel",
+          "material,",
+          "initial_binding,"
+        ],
+        "top_level": [
+          "let (initial_binding, started_at) =",
+          "if peer.actor_id != material.initial.owners.selector",
+          "let channel = original_owner_command_channel_v1(",
+          "channel.check_peer_lifetime()?;",
+          "let (after, current) =",
+          "if current < started_at || after != initial_binding",
+          "Ok(Self {"
+        ]
+      },
+      {
+        "function": "fn bind_original_selection(",
+        "sequence": [
+          "self,",
+          "dataset: OriginalCellQ24MaterialCommandReceiptV1",
+          "training: &OriginalCellQ24TrainingCommandReceiptV1",
+          "selection: OriginalCircuitSelectionCommandReceiptV1",
+          "let started_at = now()?;",
+          "let context = OriginalCircuitSelectionCommandContextV1::from_original_training(\n            dataset.snapshot().clone(),\n            self.material.scope.clone(),\n            self.material.verifier.clone(),\n            training,\n        )?;",
+          "if context.initial()? != self.material.initial {\n            return Err(Error::Binding(\n                                                             ,\n            ));\n        }",
+          "let binding = context_binding(&context, started_at)?;",
+          "self.peer.check_peer_lifetime()?;",
+          "let (original, current) =",
+          "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(",
+          "&self.material,",
+          "let verified_at =",
+          "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+          "&dataset,",
+          "&self.material,",
+          "if current < started_at || verified_at < current || original != self.initial_binding {\n            return Err(Error::Binding(\n                                                                       ,\n            ));\n        }",
+          "let verified = wire::authenticate_completed(\n            &context,\n            selection.snapshot.clone(),\n            selection.attestation.clone(),\n            verified_at,\n        )?;",
+          "if verified != selection || context_binding(&context, verified_at)? != binding {\n            return Err(Error::Binding(\n                                                             ,\n            ));\n        }",
+          "let initial = self.material.initial.clone();",
+          "let actor_id = initial.owners.selector.clone();",
+          "let verifier = self.material.verifier.clone();",
+          "let reader = OriginalSelectionReadbackV1 {\n            peer: Some(self.peer),\n            next_request_id: 1,\n            material: self.material,\n            dataset,\n            selection,\n            context,\n            binding,\n        }",
+          "Ok(LearningIterationEvidenceClientV1 {\n            channel: Mutex::new(None),\n            command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Selection(\n                reader,\n            )))),\n            initial,\n            actor_id,\n            verifier,\n        }"
+        ],
+        "top_level": [
+          "let started_at = now()?;",
+          "let context = OriginalCircuitSelectionCommandContextV1::from_original_training(",
+          "if context.initial()? != self.material.initial",
+          "let binding = context_binding(&context, started_at)?;",
+          "self.peer.check_peer_lifetime()?;",
+          "let (original, current) =",
+          "let verified_at =",
+          "if current < started_at || verified_at < current || original != self.initial_binding",
+          "let verified = wire::authenticate_completed(",
+          "if verified != selection || context_binding(&context, verified_at)? != binding",
+          "let initial = self.material.initial.clone();",
+          "let actor_id = initial.owners.selector.clone();",
+          "let verifier = self.material.verifier.clone();",
+          "let reader = OriginalSelectionReadbackV1 {",
+          "Ok(LearningIterationEvidenceClientV1 {"
+        ]
+      },
+      {
+        "function": "fn readback(",
+        "sequence": [
+          "let started_at = now()?;",
+          "let mut peer = self.peer.take().ok_or(Error::Unavailable)?;",
+          "if expected != self.selection.receipt() || !(1..=128).contains(&self.next_request_id) {\n            return Err(Error::Binding(                                            ));\n        }",
+          "let request = request(&self.context, self.binding, self.next_request_id);",
+          "self.next_request_id = self\n            .next_request_id\n            .checked_add(1)\n            .ok_or(Error::Unavailable)?;",
+          "let encoded = serde_json::to_vec(&request)?;",
+          "let (peer, bytes) = tokio::task::spawn_blocking(move || {\n            let bytes = peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;\n            Ok::<_, Error>((peer, bytes))\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)??;",
+          "let response: wire::Response = serde_json::from_slice(&bytes)?;",
+          "response.require_request(&request)?;",
+          "peer.check_peer_lifetime()?;",
+          "let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+          "&self.dataset,",
+          "&self.material,",
+          "if current < started_at || context_binding(&self.context, current)? != self.binding {\n            return Err(Error::Binding(\n                                                               ,\n            ));\n        }",
+          "let completed = match response.result {\n            wire::CommandResult::Completed { snapshot, evidence } => {\n                wire::decode_completed(&self.context, snapshot, evidence, current)?\n            }\n            wire::CommandResult::Missing | wire::CommandResult::Pending => {\n                return Err(Error::CommitUncertain);\n            }\n            wire::CommandResult::Busy => return Err(Error::Busy),\n            wire::CommandResult::Expired => return Err(Error::DeadlineExceeded),\n            wire::CommandResult::ReadbackRequired => return Err(Error::ReadbackRequired),\n            wire::CommandResult::Uncertain => return Err(Error::CommitUncertain),\n            wire::CommandResult::Unavailable => return Err(Error::Unavailable),\n        }",
+          "if completed != self.selection {\n            return Err(Error::Binding(\n                                                                  ,\n            ));\n        }",
+          "self.peer = Some(peer);",
+          "Ok((completed.attestation, current))"
+        ],
+        "top_level": [
+          "let started_at = now()?;",
+          "let mut peer = self.peer.take().ok_or(Error::Unavailable)?;",
+          "if expected != self.selection.receipt() || !(1..=128).contains(&self.next_request_id)",
+          "let request = request(&self.context, self.binding, self.next_request_id);",
+          "self.next_request_id = self",
+          "let encoded = serde_json::to_vec(&request)?;",
+          "let (peer, bytes) = tokio::task::spawn_blocking(move || {",
+          "let response: wire::Response = serde_json::from_slice(&bytes)?;",
+          "response.require_request(&request)?;",
+          "peer.check_peer_lifetime()?;",
+          "let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+          "if current < started_at || context_binding(&self.context, current)? != self.binding",
+          "let completed = match response.result {",
+          "if completed != self.selection",
+          "self.peer = Some(peer);",
+          "Ok((completed.attestation, current))"
+        ]
+      },
+      {
+        "function": "fn context_binding(",
+        "sequence": [
+          "context: &OriginalCircuitSelectionCommandContextV1",
+          "current: u64",
+          "Ok(Digest32::of_parts(&[",
+          "context.binding(current)?.as_array()"
+        ],
+        "top_level": [
+          "Ok(Digest32::of_parts(&["
+        ]
+      },
+      {
+        "function": "fn request(",
+        "sequence": [
+          "context: &OriginalCircuitSelectionCommandContextV1",
+          "binding: Digest32",
+          "request_id: u64",
+          "let mut request = wire::Request::new(context, binding, request_id, wire::Action::Readback);",
+          "request.operation = OPERATION.into();",
+          "request"
+        ],
+        "top_level": [
+          "let mut request = wire::Request::new(context, binding, request_id, wire::Action::Readback);",
+          "request.operation = OPERATION.into();"
+        ]
+      },
+      {
+        "function": "fn require_request(",
+        "sequence": [
+          "let expected = request(context, context_binding(context, current)?, request_id);",
+          "if observed.schema != expected.schema\n        || observed.operation != OPERATION\n        || observed.request_id != request_id\n        || !(1..=128).contains(&request_id)\n        || observed.binding != expected.binding\n        || observed.operation_id != expected.operation_id\n        || observed.training_head != expected.training_head\n        || observed.scope_binding != expected.scope_binding\n        || observed.actor_id != expected.actor_id\n        || observed.action != wire::Action::Readback\n    {\n        return Err(Error::Binding(\n                                                                  ,\n        ));\n    }",
+          "Ok(())"
+        ],
+        "top_level": [
+          "let expected = request(context, context_binding(context, current)?, request_id);",
+          "if observed.schema != expected.schema",
+          "Ok(())"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+    "required": [
+      "OriginalCircuitSelectionCommandOwnerV1<W>",
+      "pub(in crate::learning_iteration_evidence_client::selection_command) fn serve_original_selection_readback_channel("
+    ],
+    "forbidden": [
+      "SigningKey",
+      "SignedLearningEvidenceV1 {",
+      "File::open",
+      "OpenOptions",
+      "UnixStream::connect",
+      "UnixListener",
+      "HostAuthorityPeerChannel::from_stream",
+      ".sign(",
+      "sign_original(",
+      "attest_original_selection(",
+      "attest_original_remote_selection(",
+      "attest_original_evaluated_selection(",
+      "attest_source(",
+      "execute_selection(",
+      ".claim(",
+      ".complete(",
+      ".compare_and_swap(",
+      "commit_once(",
+      "impl Clone",
+      "derive(Clone",
+      "dyn Fn",
+      "impl Fn",
+      "permit_all",
+      "if false",
+      "unwrap_or",
+      "wire::Action::Execute",
+      "std::mem::replace",
+      "original_response(",
+      "command_response(",
+      "recover_from_original_stream(",
+      "recover_evaluated(",
+      "execution_requested",
+      "self.cancellation",
+      "::create(",
+      "::recover(",
+      "RootResidentLearningEffectGateV3",
+      "pub fn original_selection_readback_response(",
+      "pub(crate) fn original_selection_readback_response("
+    ],
+    "required_function_order": [
+      {
+        "function": "fn serve_original_selection_readback(",
+        "sequence": [
+          "let permit = Arc::clone(&self.connections)",
+          ".try_acquire_owned()",
+          ".map_err(|_| Error::Busy)?;",
+          "let mut channel = original_owner_command_channel_v1(\n            stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )?;",
+          "tokio::task::spawn_blocking(move || {",
+          "let _permit = permit;",
+          "self.serve_original_selection_readback_channel(&mut channel)",
+          ".await",
+          ".map_err(|_| Error::CommitUncertain)?"
+        ],
+        "top_level": [
+          "let permit = Arc::clone(&self.connections)",
+          "let mut channel = original_owner_command_channel_v1(",
+          "tokio::task::spawn_blocking(move || {"
+        ]
+      },
+      {
+        "function": "fn serve_original_selection_readback_channel(",
+        "sequence": [
+          "for request_id in 1..=128_u64 {\n            if !channel.exchange(|bytes| {\n                self.original_selection_readback_response(bytes, request_id)\n                    .map_err(|_| HostIssuerTransportError::InvalidRequest)\n            })? {\n                return Ok(request_id - 1);\n            }\n        }",
+          "Err(Error::Unavailable)"
+        ],
+        "top_level": [
+          "for request_id in 1..=128_u64",
+          "Err(Error::Unavailable)"
+        ]
+      },
+      {
+        "function": "fn original_selection_readback_response(",
+        "sequence": [
+          "let request: wire::Request = serde_json::from_slice(bytes)?;",
+          "readonly::require_request(&request, &self.context, request_id, now()?)?;",
+          "let completed = {\n            let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;\n            let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;\n            self.runtime\n                .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(\n                    original,\n                    OriginalCircuitSelectionRemoteSourcesV1 {\n                        snapshot: &self.context.training,\n                        live: &self.live,\n                        trainer: &self.trainer,\n                    },\n                ))\n        }",
+          "let result = match completed {\n            Ok((receipt, signature)) => {\n                wire::encode_completed(&self.context, receipt, signature, now()?)?\n            }\n            Err(error) => original_state(error),\n        }",
+          "self.context.authenticate(now()?)?;",
+          "Ok(serde_json::to_vec(&wire::Response::from_request(",
+          "&request, result,"
+        ],
+        "top_level": [
+          "let request: wire::Request = serde_json::from_slice(bytes)?;",
+          "readonly::require_request(&request, &self.context, request_id, now()?)?;",
+          "let completed = {",
+          "let result = match completed {",
+          "self.context.authenticate(now()?)?;",
+          "Ok(serde_json::to_vec(&wire::Response::from_request("
+        ]
+      }
+    ]
+  }
+]

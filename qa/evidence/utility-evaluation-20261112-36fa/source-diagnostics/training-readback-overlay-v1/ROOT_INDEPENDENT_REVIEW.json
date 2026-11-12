@@ -1,0 +1,86 @@
+{
+  "actual_failures": [
+    {
+      "id": "learning_original_owner_command_channel",
+      "message": "learning_original_owner_command_channel: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/artifact_original_head_client.rs', 'codex-rs/hepta-agentd/src/artifact_original_head_service.rs', 'codex-rs/hepta-agentd/src/artifact_original_registry_source.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "phase": "boundary"
+    },
+    {
+      "id": "learning_original_material_initial_context_check",
+      "message": "learning_original_material_initial_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "phase": "boundary"
+    },
+    {
+      "id": "learning_original_material_dataset_context_check",
+      "message": "learning_original_material_dataset_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "phase": "boundary"
+    }
+  ],
+  "base_rust_files": 6590,
+  "boundary_counts": {
+    "failed": 3,
+    "passed": 1,
+    "unknown": 0
+  },
+  "candidate_rust_files": 6597,
+  "cargo_tests": "not_run",
+  "execution": {
+    "actual_entrypoint_started": true,
+    "classification": "failed_scoped_diagnostic",
+    "diagnostic_elapsed_seconds": 147.85389022994787,
+    "stage_elapsed_seconds": 181.38352357805707,
+    "terminal_observed": true
+  },
+  "full_gate_status": "not_run",
+  "full_original_raw_equals_structured_report": true,
+  "full_physical_source_before_after_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+  "full_source_tree": null,
+  "limits": [
+    "The original collector evaluated the complete 6597-file Rust projection, but only four named boundaries and five protected rows.",
+    "Frozen v2 remains preparation; three failing complete-source boundary comparisons must not be inferred passed from earlier subset checks.",
+    "No source head is published by this projection and no source/native pass transfers from this diagnostic."
+  ],
+  "observed_source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "ordinary_qualification": false,
+  "projection_callers_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+  "projection_rust_sha256": "f6335dbb2100f15a6758654d60aed526b09a5ffe403d462dfb290d8dfa818222",
+  "protected_counts": {
+    "failed": 0,
+    "passed": 5,
+    "unknown": 0
+  },
+  "record_identities": [
+    {
+      "blob_sha": "5a4653eba97c47ef8eef931db2b5bb5850a9ba84",
+      "bytes": 8148,
+      "key": "four_boundary_report",
+      "sha256": "b90fde68d95ce36f40e5638cd1360efaa2f332b4c05357b9e15f7151abc16e72"
+    },
+    {
+      "blob_sha": "248da39cdda1043874adcbb30a00bbefd0d5e358",
+      "bytes": 7449,
+      "key": "four_boundary_raw",
+      "sha256": "56958ba25c21302cee1fcf3f27c15984ae9598b620139160fbfb27c5ecfeae09"
+    },
+    {
+      "blob_sha": "5d25e80077fe8281340125d098770c461e28c2d8",
+      "bytes": 1053,
+      "key": "four_boundary_gate_final",
+      "sha256": "a6fcf036a2424d816b75921eebff746d2f1f175ac19d81bcd40340b999bf9eff"
+    },
+    {
+      "blob_sha": "8b7f0b7b2cbe2ee126c742dbb7adf0a7dc30ef53",
+      "bytes": 3276,
+      "key": "four_boundary_run_result",
+      "sha256": "dbc851c376d350b4a2a74d0a3c7980393aa8f03af26369f55a29212edcd25441"
+    },
+    {
+      "blob_sha": "56870c2bcc904f7aeb172722ea1932c60f3f2d60",
+      "bytes": 59589,
+      "key": "four_boundary_sdk",
+      "sha256": "0f05c7768a0f113251c1381098ee3363e9904e71f60777476148b08dcb62b026"
+    }
+  ],
+  "run_and_gate_summary_equal": true,
+  "schema": "hepta.root-four-boundary-readonly-diagnostic-review.v1"
+}

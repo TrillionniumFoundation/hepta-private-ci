@@ -1,0 +1,699 @@
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -2771,7 +2771,7 @@
+ receiver_type = "SourceBoundCellQ24TrainingStageV1"
+ definition_path = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+ definition_markers = ["pub async fn readback("]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"]
+ caller_markers = []
+ 
+ [[boundary]]
+@@ -3219,7 +3219,7 @@
+ symbol = "original_owner_command_channel_v1"
+ definition_path = "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
+ definition_markers = ["pub(crate) fn original_owner_command_channel_v1("]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs"]
+ caller_markers = []
+ 
+ [[boundary]]
+@@ -3919,7 +3919,7 @@
+ receiver_type = "OriginalCellQ24MaterialReceiptConfigV1"
+ definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+ definition_markers = ["pub(crate) fn require_original_command_initial("]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"]
+ caller_markers = []
+ 
+ [[boundary]]
+@@ -3928,7 +3928,7 @@
+ receiver_type = "OriginalCellQ24MaterialCommandReceiptV1"
+ definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+ definition_markers = ["pub(crate) fn require_original_dataset_context("]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"]
+ caller_markers = []
+ 
+ [[boundary]]
+@@ -8954,7 +8954,7 @@
+ path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs"
+ required = ["pub(super) fn validate_original_members(", "pub(super) fn require_observed_panel(", "pub(super) fn seal_observed_panel("]
+ forbidden = ["SigningKey", "retention_receipt_digests.clear", "retention_receipt_digests.push", "retention_receipt_digests.extend", "unwrap_or", "if false"]
+-required_function_order = [{ function = "fn validate_original_members(", sequence = ["fn validate_original_members(", "retention.is_empty()", "retention.len() != registration.retention().len()", "retention.len() > super::contract::MAX_RETENTION_TASKS", "return Err(Error::Binding(", "first.training.request.evaluation_profile != registration.evaluation_profile()", "first.context.retention_receipt_digests.len() != retention.len()", "first\n                .context\n                .retention_receipt_digests\n                .iter()\n                .any(|digest| digest.is_zero())", "return Err(Error::Binding(", "for (index, (member, task)) in members.zip(tasks).enumerate()", "OriginalCircuitEvaluationCohortReadbackV1::require_original_member(", "&member.cohort,", "registration,", "task,", "&config.training,", "&config.scope,", "&config.plan,", "&config.training_evidence,", "&config.verifier,", "let saved = original::validate_config(config)?", "member.qualification.saved != saved", "config.training != first.training", "config.scope != first.scope", "config.training_evidence != first.training_evidence", "config.context.generator != first.context.generator", "config.context.evaluator != first.context.evaluator", "config.verifier.trust_digest() != first.verifier.trust_digest()", "config.verifier.scope_digest() != first.verifier.scope_digest()", "config.verifier.objective_digest() != first.verifier.objective_digest()", "config.plan.product_plan().frozen_plan.plan_id != task.plan_id", "record.candidate.cost.identity().task_digest != task.task_digest.into_array()", "record.fixed_expert.cost.identity().task_digest != task.task_digest.into_array()", "!namespaces.insert(config.execution_namespace)", "!namespaces.insert(config.qualification_namespace)", "!config.context.unlearning_receipt_digest.is_zero()", "index > 0 && !config.context.retention_receipt_digests.is_empty()", "return Err(Error::Binding(", "bindings.push(saved.binding_digest)", "Ok(bindings)"], top_level = ["let first = &primary.qualification.config", "for (index, (member, task)) in members.zip(tasks).enumerate()"] }, { function = "fn require_observed_panel(", sequence = ["fn require_observed_panel(", "observed.len() != self.registration.retention().len() + 1", "observed.is_empty()", "observed[0].task != *self.registration.primary()", "return Err(Error::Binding(", "for (index, member) in observed.iter().enumerate()", "== IndependentEvaluationDispositionV1::InsufficientEvidence", "return Err(Error::Binding(", "member_runs.iter().any(|run| runs.contains(run))", "return Err(Error::Binding(", "runs.extend(member_runs)", "member.task != self.registration.retention()[index - 1]", "return Err(Error::Binding(", "retained_digests.push(member.qualification.product().evidence_digest)", "retained_digests.sort_unstable()", "retained_digests.is_empty()", "retained_digests.windows(2).any(|pair| pair[0] == pair[1])", "self\n                .primary\n                .qualification\n                .config\n                .context\n                .retention_receipt_digests", "!= retained_digests", "observed[0].prepared.bundle.retention_receipt_digests != retained_digests", "return Err(Error::Binding(", "Ok(())"], top_level = ["for (index, member) in observed.iter().enumerate()", "retained_digests.sort_unstable()"] }, { function = "fn seal_observed_panel(", sequence = ["fn seal_observed_panel(", "observed.len() != self.bindings.len() || observed.is_empty()", "return Err(Error::CommitUncertain)", "self.registration.evaluation_profile().as_array()", "config.training.head_digest.as_array()", "config.scope.binding().as_array()", "for (binding, member) in self.bindings.iter().zip(&observed)", "*binding", "member.cohort.binding()", "member.cells[0]", "member.cells[1]", "product.temporal_execution_digest", "product.publication_digest", "product.evidence_digest", "product.decision.authentication_digest", "let primary = observed.remove(0)", "binding: Digest32::of_bytes(&bytes)", "training_evidence: config.training_evidence.clone()", "retention: observed"], top_level = ["for (binding, member) in self.bindings.iter().zip(&observed)", "let primary = observed.remove(0)"] }]
++required_function_order = [{ function = "fn validate_original_members(", sequence = ["fn validate_original_members(", "retention.is_empty()", "retention.len() != registration.retention().len()", "retention.len() > super::contract::MAX_RETENTION_TASKS", "return Err(Error::Binding(", "first.training.request.evaluation_profile != registration.evaluation_profile()", "first.context.retention_receipt_digests.len() != retention.len()", "first\n                .context\n                .retention_receipt_digests\n                .iter()\n                .any(|digest| digest.is_zero())", "return Err(Error::Binding(", "for (index, (member, task)) in members.zip(tasks).enumerate()", "OriginalCircuitEvaluationCohortReadbackV1::require_original_member(", "&member.cohort,", "registration,", "task,", "&config.training,", "&config.scope,", "&config.plan,", "&config.training_evidence,", "&config.verifier,", "let saved = original::validate_config(config)?", "member.qualification.saved != saved", "config.training != first.training", "config.scope != first.scope", "config.training_evidence != first.training_evidence", "config.context.generator != first.context.generator", "config.context.evaluator != first.context.evaluator", "config.verifier.trust_digest() != first.verifier.trust_digest()", "config.verifier.scope_digest() != first.verifier.scope_digest()", "config.verifier.objective_digest() != first.verifier.objective_digest()", "config.plan.product_plan().frozen_plan.plan_id != task.plan_id", "record.candidate.cost.identity().task_digest != task.task_digest.into_array()", "record.fixed_expert.cost.identity().task_digest != task.task_digest.into_array()", "!namespaces.insert(config.execution_namespace)", "!namespaces.insert(config.qualification_namespace)", "!config.context.unlearning_receipt_digest.is_zero()", "index > 0 && !config.context.retention_receipt_digests.is_empty()", "return Err(Error::Binding(", "bindings.push(saved.binding_digest)", "Ok(bindings)"], top_level = ["let first = &primary.qualification.config", "for (index, (member, task)) in members.zip(tasks).enumerate()"] }, { function = "fn require_observed_panel(", sequence = ["fn require_observed_panel(", "observed.len() != self.registration.retention().len() + 1", "observed.is_empty()", "observed[0].task != *self.registration.primary()", "return Err(Error::Binding(", "for (index, member) in observed.iter().enumerate()", "== IndependentEvaluationDispositionV1::InsufficientEvidence", "return Err(Error::Binding(", "member_runs.iter().any(|run| runs.contains(run))", "return Err(Error::Binding(", "runs.extend(member_runs)", "member.task != self.registration.retention()[index - 1]", "return Err(Error::Binding(", "retained_digests.push(member.qualification.product().evidence_digest)", "retained_digests.sort_unstable()", "retained_digests.is_empty()", "retained_digests.windows(2).any(|pair| pair[0] == pair[1])", "self\n                .primary\n                .qualification\n                .config\n                .context\n                .retention_receipt_digests", "!= retained_digests", "observed[0].prepared.bundle.retention_receipt_digests != retained_digests", "return Err(Error::Binding(", "if observed[0].qualification.product().decision.decision.disposition", "== IndependentEvaluationDispositionV1::EligibleForIndependentSelection", "&& observed.iter().skip(1).any(|member| {", "member.qualification.product().decision.decision.disposition", "!= IndependentEvaluationDispositionV1::EligibleForIndependentSelection", "return Err(Error::Binding(", "Ok(())"], top_level = ["for (index, member) in observed.iter().enumerate()", "retained_digests.sort_unstable()", "if observed[0].qualification.product().decision.decision.disposition"] }, { function = "fn seal_observed_panel(", sequence = ["fn seal_observed_panel(", "observed.len() != self.bindings.len() || observed.is_empty()", "return Err(Error::CommitUncertain)", "self.registration.evaluation_profile().as_array()", "config.training.head_digest.as_array()", "config.scope.binding().as_array()", "for (binding, member) in self.bindings.iter().zip(&observed)", "*binding", "member.cohort.binding()", "member.cells[0]", "member.cells[1]", "product.temporal_execution_digest", "product.publication_digest", "product.evidence_digest", "product.decision.authentication_digest", "let primary = observed.remove(0)", "binding: Digest32::of_bytes(&bytes)", "training_evidence: config.training_evidence.clone()", "retention: observed"], top_level = ["for (binding, member) in self.bindings.iter().zip(&observed)", "let primary = observed.remove(0)"] }]
+ 
+ 
+ 
+@@ -10370,3 +10370,44 @@
+ forbidden = ["pub trait NextUseSources", "pub(crate) trait NextUseSources", "dyn NextUseSources", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all", "if false", "pub fn sign_original", "pub(crate) fn sign_original", "pub fn receipt(", "pub(crate) fn receipt(", "pub journal:", "pub key:", "pub command_origin:", "pub enum CommandOrigin", "pub enum ObservationLocation", "pub(crate) enum ObservationLocation", "pub completion_fenced:", "pub(crate) completion_fenced:", "self.completion_fenced = false", "pub profile:", "pub(crate) profile:", "Profile::Evaluated(())", "pub fn authenticate_predecessors(", "pub fn evidence_id(", "pub fn now(", "pub fn prior(", "pub fn receipt(", "pub fn receipt_with_domain(", "pub fn require_new_attestation(", "pub fn sign_original(", "pub fn validate_config(", "pub(crate) fn authenticate_predecessors(", "pub(crate) fn evidence_id(", "pub(crate) fn now(", "pub(crate) fn prior(", "pub(crate) fn receipt(", "pub(crate) fn receipt_with_domain(", "pub(crate) fn require_new_attestation(", "pub(crate) fn sign_original(", "pub(crate) fn validate_config(", "LearningOwnerJournalV1::create(", "LearningOwnerJournalV1::recover(", "commit_once(", "readback("]
+ required_function_order = [{ function = "fn validate_config(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?", "config.scope.validate_snapshot(&config.selection)?", "if config.selection.receipts.len() == 5\n        && coordinator.candidate().is_some()\n        && matches!(\n            config\n                .selection\n                .receipts\n                .get(3)\n                .map(|receipt| &receipt.observation),\n            Some(LearningIterationObservationV1::Evaluation {\n                disposition: LearningEvaluationDispositionV1::NoUpdate,\n                ..\n            })\n        )\n        && matches!(\n            config\n                .selection\n                .receipts\n                .last()\n                .map(|receipt| &receipt.observation),\n            Some(LearningIterationObservationV1::Selection { .. })\n        )\n    {", "return Err(", "OwnerError::Binding(\"evaluated retention requires original T/B/S readbacks\")", "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "key.verifying_key().to_bytes() != config.signer.verifying_key", "config.signer.principal.principal_id != config.selection.owners.next_use_observer", "config.selection.owners.evidence_trust_digest != config.verifier.trust_digest()", "config.selection.request.envelope.objective_digest != config.verifier.objective_digest()", "!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)", "let current = now()?;", "authenticate_predecessors(", "config.training_evidence.clone()", "config.selection_evidence.clone()", "Ok(ProductEvaluationExecutionKeyV1 {", "config.selection.head_digest.as_array()", "config.scope.binding().as_array()", "config.verifier.trust_digest().as_array()", "&config.signer.verifying_key", "&config.training_evidence.signing_bytes()", "&config.training_evidence.signature", "&config.selection_evidence.signing_bytes()", "&config.selection_evidence.signature", "&config.maximum_signature_lifetime_seconds.to_be_bytes()"], top_level = ["config.scope.validate_snapshot(&config.selection)?", "if config.selection.receipts.len() == 5\n        && coordinator.candidate().is_some()\n        && matches!(\n            config\n                .selection\n                .receipts\n                .get(3)\n                .map(|receipt| &receipt.observation),\n            Some(LearningIterationObservationV1::Evaluation {\n                disposition: LearningEvaluationDispositionV1::NoUpdate,\n                ..\n            })\n        )\n        && matches!(\n            config\n                .selection\n                .receipts\n                .last()\n                .map(|receipt| &receipt.observation),\n            Some(LearningIterationObservationV1::Selection { .. })\n        )\n    {", "let current = now()?;", "authenticate_predecessors("], literal_calls = ["OwnerError::Binding(\"evaluated retention requires original T/B/S readbacks\")"] }, { function = "fn authenticate_predecessors(", sequence = ["evidence[0] != config.training_evidence", "evidence[1] != config.selection_evidence", "return Err(", "require_signer_binding(", "LearningEvidenceRoleV1::Observer", "let verify =", "prior(config, stage)?", "config.verifier.verify(", "&evidence[index]", "learning_iteration_receipt_signing_bytes_v1(original)?", "verified.principal().principal_id != original.actor_id", "verify_independent_roles(verified.principal(), &config.signer.principal, current)", "verified.controller_id() == &config.signer.controller_id", "SignedEvidenceError::ControllerCollision", "LearningIterationStageV1::Training", "LearningEvidenceRoleV1::Generator", "LearningIterationStageV1::Selection", "LearningEvidenceRoleV1::Selector"] }, { function = "fn receipt_with_domain(", sequence = ["LearningIterationObservationV1::NextUse", "LearningIterationObservationV1::RetainedModelNextUse", "if committed.is_zero()", "operation_id: config.selection.request.operation_id.clone()", "predecessor: config.selection.head_digest", "actor_id: config.selection.owners.next_use_observer.clone()", "domain,", "config.selection.head_digest.as_array()", "committed.as_array()", "observed_unix_seconds,", "observation: observation.clone()", "LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?", "coordinator.record(receipt.clone(), observed_unix_seconds)?", "config.scope.validate_snapshot(coordinator.snapshot())?", "Ok(receipt)"], top_level = ["if committed.is_zero()", "coordinator.record(receipt.clone(), observed_unix_seconds)?", "config.scope.validate_snapshot(coordinator.snapshot())?"] }, { function = "fn require_new_attestation(", sequence = ["current < started_at", "current >= config.selection.request.envelope.expiry_unix_seconds", "return Err(", "Ok(())"] }, { function = "fn sign_original(", sequence = [".checked_add(config.maximum_signature_lifetime_seconds)", ".min(config.signer.principal.expires_at)", "let mut signed = SignedLearningEvidenceV1 {", "role: LearningEvidenceRoleV1::Observer", "trust_digest: config.verifier.trust_digest()", "objective_digest: config.verifier.objective_digest()", "issued_at,", "expires_at,", "payload_digest: Digest32::of_bytes(payload)", "key.sign(&signed.signing_bytes()).to_bytes()", "Ok(signed)"] }, { function = "fn now(", sequence = ["SystemTime::now()", ".duration_since(UNIX_EPOCH)", ".map(|duration| duration.as_secs())"] }, { function = "fn receipt(", sequence = ["receipt_with_domain(", "config", "observation", "observed_unix_seconds", "b"], top_level = ["receipt_with_domain("] }, { function = "fn prior(", sequence = ["config\n        .selection\n        .receipts\n        .iter()", ".find(|receipt| receipt.observation.stage() == stage)", ".ok_or_else(|| OwnerError::Binding("], top_level = ["config\n        .selection\n        .receipts\n        .iter()"] }, { function = "fn evidence_id(", sequence = ["StableId::new(format!(", ".map_err(|_| OwnerError::Binding("], top_level = ["StableId::new(format!("] }]
+ 
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"
++required = ["const OPERATION: &str =\n    \"runtime.learning.original-q24-training.readback.v1\";", "pub struct OriginalCellQ24TrainingReadbackConnectionV1 {", "\n    peer: HostAuthorityPeerChannel,", "\n    material: OriginalCellQ24MaterialReceiptConfigV1,", "\n    initial_binding: Digest32,", "pub(in crate::learning_iteration_evidence_client) struct OriginalTrainingReadbackV1 {", "\n    peer: Option<HostAuthorityPeerChannel>,", "\n    dataset: OriginalCellQ24MaterialCommandReceiptV1,", "\n    training: OriginalCellQ24TrainingCommandReceiptV1,", "\n    context: OriginalCellQ24TrainingCommandContextV1,", "\n    binding: Digest32,", "b\"hepta.agentd.original-q24-training-readback.v1\\0\""]
++forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "recover_original", "pub peer:", "pub material:", "pub initial_binding:", "pub dataset:", "pub training:", "pub context:", "pub binding:"]
++required_function_order = [
++  { function = "fn from_original_stream(", sequence = ["let (initial_binding, started_at) =", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "if peer.actor_id != material.initial.owners.trainer", "return Err(Error::Binding(", "let channel = original_owner_command_channel_v1(", "stream", "AgentdRootAuthorityPeer {", "pid: peer.pid", "boot_id: peer.boot_id", "process_start_ticks: peer.process_start_ticks", "peer.uid", "original_owner_pidfd", "timeout", "lifetime", "channel.check_peer_lifetime()?;", "let (after, current) =", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "if current < started_at || after != initial_binding", "return Err(Error::Binding(", "Ok(Self {", "peer: channel", "material", "initial_binding"], top_level = ["let (initial_binding, started_at) =", "if peer.actor_id != material.initial.owners.trainer", "let channel = original_owner_command_channel_v1(", "channel.check_peer_lifetime()?;", "let (after, current) =", "if current < started_at || after != initial_binding", "Ok(Self {"] },
++  { function = "fn bind_original_training(", sequence = ["self,", "dataset: OriginalCellQ24MaterialCommandReceiptV1", "training: OriginalCellQ24TrainingCommandReceiptV1", "let started_at = now()?;", "let context = OriginalCellQ24TrainingCommandContextV1 {", "dataset: dataset.snapshot().clone()", "scope: self.material.scope.clone()", "verifier: self.material.verifier.clone()", "if context.validate()? != self.material.initial", "return Err(Error::Binding(", "let binding = binding(&context)?;", "self.peer.check_peer_lifetime()?;", "let (original, current) =", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(", "&self.material", "let verified_at =", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "&dataset", "&self.material", "if current < started_at || verified_at < current || original != self.initial_binding", "return Err(Error::Binding(", "let verified = wire::authenticate_receipt(", "&context", "training.receipt.clone()", "training.attestation.clone()", "verified_at", "if verified != training", "return Err(Error::Binding(", "let reader = OriginalTrainingReadbackV1 {", "peer: Some(self.peer)", "next_request_id: 1", "material: self.material", "dataset,", "training,", "context,", "binding,", "Ok(LearningIterationEvidenceClientV1 {", "channel: Mutex::new(None)", "command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Training(", "reader"], top_level = ["let started_at = now()?;", "let context = OriginalCellQ24TrainingCommandContextV1 {", "if context.validate()? != self.material.initial", "let binding = binding(&context)?;", "self.peer.check_peer_lifetime()?;", "let (original, current) =", "let verified_at =", "if current < started_at || verified_at < current || original != self.initial_binding", "let verified = wire::authenticate_receipt(", "if verified != training", "let reader = OriginalTrainingReadbackV1 {", "Ok(LearningIterationEvidenceClientV1 {"] },
++  { function = "fn readback(", sequence = ["let started_at = now()?;", "let mut peer = self.peer.take().ok_or(Error::Unavailable)?;", "if expected != self.training.receipt() || !(1..=128).contains(&self.next_request_id)", "return Err(Error::Binding(", "let request = request(&self.context, self.binding, self.next_request_id);", "self.next_request_id = self", ".next_request_id", ".checked_add(1)", ".ok_or(Error::Unavailable)?;", "let encoded = serde_json::to_vec(&request)?;", "tokio::task::spawn_blocking(move || {", "peer.request(&encoded).map_err(|_| Error::CommitUncertain)?", "Ok::<_, Error>((peer, bytes))", ".await", ".map_err(|_| Error::CommitUncertain)??;", "let response: wire::Response = serde_json::from_slice(&bytes)?;", "response.require_request(&request)?;", "peer.check_peer_lifetime()?;", "let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "&self.dataset", "&self.material", "if current < started_at", "return Err(Error::Binding(", "let completed = match response.result {", "wire::CommandResult::Completed { snapshot, evidence }", "wire::decode_completed(&self.context, snapshot, evidence, current)?", "wire::CommandResult::Missing | wire::CommandResult::Pending => {", "return Err(Error::CommitUncertain);", "wire::CommandResult::Busy => return Err(Error::Busy)", "wire::CommandResult::Expired => return Err(Error::DeadlineExceeded)", "wire::CommandResult::ReadbackRequired => return Err(Error::ReadbackRequired)", "wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)", "wire::CommandResult::Unavailable => return Err(Error::Unavailable)", "if completed != self.training", "return Err(Error::Binding(", "self.peer = Some(peer);", "Ok((completed.attestation, current))"], top_level = ["let started_at = now()?;", "let mut peer = self.peer.take().ok_or(Error::Unavailable)?;", "if expected != self.training.receipt() || !(1..=128).contains(&self.next_request_id)", "let request = request(&self.context, self.binding, self.next_request_id);", "let encoded = serde_json::to_vec(&request)?;", "let (peer, bytes) = tokio::task::spawn_blocking(move || {", "let response: wire::Response = serde_json::from_slice(&bytes)?;", "response.require_request(&request)?;", "peer.check_peer_lifetime()?;", "let current = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "if current < started_at", "let completed = match response.result {", "if completed != self.training", "self.peer = Some(peer);", "Ok((completed.attestation, current))"] },
++  { function = "fn binding(", sequence = ["context: &OriginalCellQ24TrainingCommandContextV1", "Ok(Digest32::of_parts(&[", "context.binding()?.as_array()"], top_level = ["Ok(Digest32::of_parts(&["] },
++  { function = "fn request(", sequence = ["context: &OriginalCellQ24TrainingCommandContextV1", "binding: Digest32", "request_id: u64", "let mut request = wire::Request::new(", "context,", "binding,", "request_id,", "wire::Action::Readback,", "false,", "request.operation = OPERATION.into();", "request"], top_level = ["let mut request = wire::Request::new(", "request.operation = OPERATION.into();"] },
++  { function = "fn require_request(", sequence = ["let expected = request(context, binding(context)?, request_id);", "if observed.schema != expected.schema", "|| observed.operation != OPERATION", "|| observed.request_id != request_id", "|| !(1..=128).contains(&request_id)", "|| observed.binding != expected.binding", "|| observed.operation_id != expected.operation_id", "|| observed.dataset_head != expected.dataset_head", "|| observed.scope_binding != expected.scope_binding", "|| observed.actor_id != expected.actor_id", "|| observed.action != wire::Action::Readback", "|| observed.cancelled", "return Err(Error::Binding(", "Ok(())"], top_level = ["let expected = request(context, binding(context)?, request_id);", "if observed.schema != expected.schema", "Ok(())"] },
++]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
++required = ["OriginalCellQ24TrainingCommandOwnerV1<TW, RW>"]
++forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "self.cancellation", "execution_requested", "bootstrap_lane", "OriginalCellQ24DatasetCommandReadbackV1::readback(", "::from_original_", "::recover_", "pub now:"]
++required_function_order = [
++  { function = "fn serve_original_training_readback(", sequence = ["Arc::clone(&self.connections)", ".try_acquire_owned()", ".map_err(|_| Error::Busy)?;", "let mut channel = original_owner_command_channel_v1(", "stream,", "consumer,", "consumer_uid,", "original_consumer_pidfd,", "timeout,", "lifetime,", "tokio::task::spawn_blocking(move || {", "let _permit = permit;", "self.serve_original_training_readback_channel(&mut channel)", ".await", ".map_err(|_| Error::CommitUncertain)?"], top_level = ["let permit =", "let mut channel = original_owner_command_channel_v1(", "tokio::task::spawn_blocking(move || {"] },
++  { function = "fn serve_original_training_readback_channel(", sequence = ["for request_id in 1..=128_u64", "if !channel.exchange(|bytes| {", "self.original_training_readback_response(bytes, request_id)", ".map_err(|_| HostIssuerTransportError::InvalidRequest)", "return Ok(request_id - 1);", "Err(Error::Unavailable)"], top_level = ["for request_id in 1..=128_u64", "Err(Error::Unavailable)"] },
++  { function = "fn original_training_readback_response(", sequence = ["let request: wire::Request = serde_json::from_slice(bytes)?;", "readonly::require_request(&request, &self.context, request_id)?;", "let completed = self", ".runtime", ".block_on(SourceBoundCellQ24TrainingStageV1::readback(", "&self.stage,", "&self.context.dataset,", "let result = self.completed_response(completed)?;", "Ok(serde_json::to_vec(&wire::Response::from_request(", "&request, result"], top_level = ["let request: wire::Request = serde_json::from_slice(bytes)?;", "readonly::require_request(&request, &self.context, request_id)?;", "let completed = self", "let result = self.completed_response(completed)?;", "Ok(serde_json::to_vec(&wire::Response::from_request("] },
++]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs"
++required = ["OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"]
++forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "self.cancellation", "execution_requested", "bootstrap_lane", "OriginalCellQ24DatasetCommandReadbackV1::readback(", "::from_original_", "::recover_", "pub now:"]
++required_function_order = [
++  { function = "fn serve_original_training_readback(", sequence = ["Arc::clone(&self.connections)", ".try_acquire_owned()", ".map_err(|_| Error::Busy)?;", "let mut channel = original_owner_command_channel_v1(", "stream,", "consumer,", "consumer_uid,", "original_consumer_pidfd,", "timeout,", "lifetime,", ".map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;", "tokio::task::spawn_blocking(move || {", "let _permit = permit;", "self.serve_original_training_readback_channel(&mut channel)", ".await", ".map_err(|_| Error::Uncertain)?"], top_level = ["let permit =", "let mut channel = original_owner_command_channel_v1(", "tokio::task::spawn_blocking(move || {"] },
++  { function = "fn serve_original_training_readback_channel(", sequence = ["for request_id in 1..=128_u64", "if !channel", ".exchange(|bytes| {", "self.original_training_readback_response(bytes, request_id)", ".map_err(|_| HostIssuerTransportError::InvalidRequest)", ".map_err(OriginalCellQ24TrainingCommandErrorV1::from)?", "return Ok(request_id - 1);", "Err(Error::Uncertain)"], top_level = ["for request_id in 1..=128_u64", "Err(Error::Uncertain)"] },
++  { function = "fn original_training_readback_response(", sequence = ["let request: wire::Request =", "serde_json::from_slice(bytes).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;", "let initial = &self.config.material.initial;", "let canonical = |value: &str| -> bool {", ".parse::<Digest32>()", ".is_ok_and(|digest| !digest.is_zero() && digest.to_string() == value)", "if request.schema != 1", "|| request.operation != readonly::OPERATION", "|| request.action != wire::Action::Readback", "|| request.cancelled", "|| request.request_id != request_id", "|| !(1..=128).contains(&request_id)", "|| request.operation_id != initial.request.operation_id.as_str()", "|| request.actor_id != initial.owners.trainer.as_str()", "|| request.scope_binding != self.config.material.scope.binding().to_string()", "|| !canonical(&request.binding)", "|| !canonical(&request.dataset_head)", "return Err(Error::Binding(", "let result = match self.ready()? {", "Some(original) => {", "return Ok(", "OriginalCellQ24TrainingCommandOwnerV1::original_training_readback_response(", "&original, bytes, request_id,", "None => wire::CommandResult::ReadbackRequired,", "serde_json::to_vec(&wire::Response::from_request(&request, result))", ".map_err(OriginalCellQ24TrainingCommandErrorV1::from)?"], top_level = ["let request: wire::Request =", "let initial = &self.config.material.initial;", "let canonical = |value: &str| -> bool {", "if request.schema != 1", "let result = match self.ready()? {", "serde_json::to_vec(&wire::Response::from_request(&request, result))"] },
++]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs"
++required = ["pub(super) fn material(", "pub(super) struct Checked {", "\"qualified original B requires eligible retention\""]
++forbidden = ["SigningKey", ".sign(", "SignedLearningEvidenceV1 {", ".claim(", ".complete(", ".compare_and_swap(", "permit_all", "if false", "unwrap_or", "checked_members.clear", "checked_members.remove", "checked_members.retain", "checked_members.swap", "retention.clear", "retention.remove", "retention.retain", "qualified: true", "qualified: false"]
++required_function_order = [
++  { function = "fn material(", sequence = ["let generator = context.authenticate(current)?;", "let body = Body::decode(bytes)?;", "let snapshot = decode_original_owner_snapshot_v1(&body.snapshot)?;", "let (payload, signed) = learning_owner_evidence::decode(&body.evaluation)?;", "if payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?", "return Err(Error::Binding(", "let actual = super::super::wire::authenticate_completed(context, snapshot, signed, current)?;", "if &actual != expected", "|| body.context != super::wire::binding(context, expected, current)?", "|| body.members.len() != context.registration.retention().len() + 1", "return Err(Error::Binding(", "let coordinator = LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?;", "let mut checked_members = Vec::with_capacity(body.members.len());", "for (index, (raw, task)) in body", ".members", ".iter()", ".zip(", "std::iter::once(context.registration.primary()).chain(context.registration.retention())", ".enumerate()", "let checked = member::verify(raw, context, task, &generator, current)?;", "let cohort = member::cohort(raw, &checked, context, task, &generator, current)?;", "if !namespaces.insert(raw.execution_namespace)", "|| !namespaces.insert(raw.qualification_namespace)", "return Err(Error::Binding(", "let record: Value = serde_json::from_slice(&raw.record)?;", "let snapshots: [CellRuntimeSnapshotV2; 2] = serde_json::from_slice(&raw.snapshots)?;", "if serde_json::to_vec(&snapshots)? != raw.snapshots", "return Err(Error::Binding(", "if cuts[0].is_zero() || cuts[1].is_zero() || cuts[0] == cuts[1]", "return Err(Error::Binding(", "for run in member_runs", "if run == context.training.request.source_run_id.as_str()", "|| !runs.insert(run.to_owned())", "return Err(Error::Binding(", "for value in [", "checked.execution,", "checked.publication,", "checked.qualification,", "checked.authentication,", "panel.extend_from_slice(value.as_array());", "else if !checked.retention.is_empty()", "return Err(Error::Binding(", "checked_members.push(checked);", "let primary = &checked_members[0];", "let mut retention = checked_members", ".iter()", ".skip(1)", ".map(|member| member.qualification)", "retention.sort_unstable();", "if retention.is_empty()", "|| retention.windows(2).any(|pair| pair[0] == pair[1])", "|| primary.retention != retention", "|| Digest32::of_bytes(&panel) != body.panel", "|| primary.qualification != expected.receipt().evidence_digest", "|| primary.evaluator_issued_at != expected.receipt().observed_unix_seconds", "return Err(Error::Binding(", "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)", "return Err(Error::Binding(", "let disposition = if primary.qualified {", "LearningEvaluationDispositionV1::Qualified", "} else {", "LearningEvaluationDispositionV1::NoUpdate", "if expected.receipt().observation", "!= (LearningIterationObservationV1::Evaluation {", "candidate_bundle: candidate,", "evaluation_profile: context.registration.evaluation_profile(),", "disposition,", "return Err(Error::Binding(", "Ok(Checked {", "material: model_material.ok_or(Error::CommitUncertain)?", "qualified: primary.qualified"], top_level = ["let generator = context.authenticate(current)?;", "let body = Body::decode(bytes)?;", "if payload != learning_iteration_receipt_signing_bytes_v1(expected.receipt())?", "let actual = super::super::wire::authenticate_completed(context, snapshot, signed, current)?;", "if &actual != expected", "let mut checked_members = Vec::with_capacity(body.members.len());", "for (index, (raw, task)) in body", "let primary = &checked_members[0];", "retention.sort_unstable();", "if retention.is_empty()", "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)", "let disposition = if primary.qualified {", "if expected.receipt().observation", "Ok(Checked {"] },
++]
+--- a/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py
+@@ -29,7 +29,7 @@
+     "learning_original_no_update_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
+     "learning_original_training_initial_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+     "learning_original_training_initial_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+-    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
++    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
+     "learning_original_candidate_initial_binding": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
+     "learning_original_candidate_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
+     "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py
+@@ -0,0 +1,138 @@
++"""Fence the two reviewed retention guards without inventing member evidence.
++
++These are source-mutation checks of the original verifier, not execution of a
++signed positive-primary/negative-retention panel. That behavior fixture remains
++unavailable; no qualification seal, signature, owner or receipt is fabricated.
++"""
++
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "original_evaluation_retention_guard_proof", ROOT / "scripts/verify_hepta_callers.py"
++)
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++PANEL = AGENT + "neuron_cell_evaluation_panel_binding.rs"
++MATERIAL = AGENT + "neuron_cell_evaluation_model_material_verify.rs"
++PANEL_GUARD = (
++    "if observed[0].qualification.product().decision.decision.disposition"
++)
++MATERIAL_GUARD = (
++    "if primary.qualified && checked_members.iter().skip(1).any(|member| !member.qualified)"
++)
++
++
++class OriginalEvaluationRetentionGuardClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++
++    def assert_rejected(self, path, changed):
++        original = (ROOT / path).read_text()
++        self.assertNotEqual(original, changed)
++        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
++        self.assertEqual(len(rows), 1)
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(original)
++            PROOF._verify_protected_files(root, {"protected_file": rows})
++            target.write_text(changed)
++            with self.assertRaises(PROOF.VerificationFailure):
++                PROOF._verify_protected_files(root, {"protected_file": rows})
++
++    def guard(self, path):
++        source = (ROOT / path).read_text()
++        marker, tail = (
++            (PANEL_GUARD, "        Ok(())")
++            if path == PANEL
++            else (MATERIAL_GUARD, "    let disposition = if primary.qualified")
++        )
++        self.assertEqual(source.count(marker), 1)
++        start = source.index(marker)
++        end = source.index(tail, start)
++        return source, start, end, source[start:end]
++
++    def test_guard_deletion_inversion_and_incomplete_retention_iteration_are_rejected(self):
++        for path in (PANEL, MATERIAL):
++            source, start, end, guard = self.guard(path)
++            self.assert_rejected(path, source[:start] + source[end:])
++            replacements = (
++                (
++                    "== IndependentEvaluationDispositionV1::EligibleForIndependentSelection",
++                    "!= IndependentEvaluationDispositionV1::EligibleForIndependentSelection",
++                ),
++                (
++                    "!= IndependentEvaluationDispositionV1::EligibleForIndependentSelection",
++                    "== IndependentEvaluationDispositionV1::EligibleForIndependentSelection",
++                ),
++            ) if path == PANEL else (
++                ("primary.qualified &&", "!primary.qualified &&"),
++                ("|member| !member.qualified", "|member| member.qualified"),
++            )
++            replacements += (
++                (".any(", ".all("),
++                (".skip(1)", ".skip(2)"),
++                ("return Err(Error::Binding(", "return Err(Error::CommitUncertain("),
++            )
++            for old, new in replacements:
++                with self.subTest(path=path, mutation=(old, new)):
++                    self.assertEqual(guard.count(old), 1)
++                    changed = guard.replace(old, new, 1)
++                    self.assert_rejected(path, source[:start] + changed + source[end:])
++
++    def test_guard_must_execute_at_the_original_top_level_before_success_mapping(self):
++        for path in (PANEL, MATERIAL):
++            source, start, end, guard = self.guard(path)
++            for hidden in (
++                "/* " + guard + " */\n",
++                "if false {\n" + guard + "}\n",
++                "if additional_condition {\n" + guard + "}\n",
++            ):
++                with self.subTest(path=path, hidden=hidden[:30]):
++                    self.assert_rejected(path, source[:start] + hidden + source[end:])
++            if path == MATERIAL:
++                tail = "    let disposition = if primary.qualified {\n"
++                source_without = source[:start] + source[end:]
++                changed = source_without.replace(tail, tail + guard, 1)
++                self.assert_rejected(path, changed)
++
++    def test_original_unknown_signed_member_order_and_complete_no_update_mapping_remain(self):
++        panel = (ROOT / PANEL).read_text()
++        unknown = "== IndependentEvaluationDispositionV1::InsufficientEvidence"
++        self.assertEqual(panel.count(unknown), 1)
++        self.assert_rejected(PANEL, panel.replace(unknown, "", 1))
++        material = (ROOT / MATERIAL).read_text()
++        for marker in (
++            "let generator = context.authenticate(current)?;",
++            "let actual = super::super::wire::authenticate_completed(context, snapshot, signed, current)?;",
++            "body.members.len() != context.registration.retention().len() + 1",
++            "let checked = member::verify(raw, context, task, &generator, current)?;",
++            "let cohort = member::cohort(raw, &checked, context, task, &generator, current)?;",
++            "checked_members.push(checked);",
++            "primary.retention != retention",
++            "Digest32::of_bytes(&panel) != body.panel",
++            "primary.qualification != expected.receipt().evidence_digest",
++            "primary.evaluator_issued_at != expected.receipt().observed_unix_seconds",
++            "let disposition = if primary.qualified {",
++            "LearningEvaluationDispositionV1::NoUpdate",
++            "if expected.receipt().observation",
++            "qualified: primary.qualified",
++        ):
++            with self.subTest(marker=marker):
++                self.assertEqual(material.count(marker), 1)
++                self.assert_rejected(MATERIAL, material.replace(marker, "", 1))
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- a/qa/b4-no-bypass/test_original_model_root_source_closure.py
++++ b/qa/b4-no-bypass/test_original_model_root_source_closure.py
+@@ -66,13 +66,13 @@
+     "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
+     "root_resident_gate_training_cancel": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
+     "root_resident_concrete_stages_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",),
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+     "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",),
+     "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",),
+-    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
+-    "learning_original_material_dataset_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",),
++    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
++    "learning_original_material_dataset_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
+     "cell_q24_original_training_observation": ("codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs", "codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs",),
+-    "learning_source_bound_training_stage_readback": ("codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs",),
++    "learning_source_bound_training_stage_readback": ("codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",),
+ }
+ 
+ 
+--- a/qa/b4-no-bypass/test_original_next_use_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_next_use_command_source_closure.py
+@@ -37,7 +37,7 @@
+     "learning_original_next_use_command_client_attestation": (),
+     "learning_original_next_use_command_owner_serve": (),
+     "learning_original_next_use_command_owner_evidence": (),
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+     "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",),
+     "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",),
+     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"),
+--- a/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
+@@ -31,7 +31,7 @@
+ READINESS = AGENT + "circuit_learning_completion_readiness.rs"
+ READINESS_OWNER = AGENT + "circuit_learning_completion_readiness_service.rs"
+ EXPECTED = {
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+     "circuit_feature_original_selection_observation": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),
+     "learning_original_material_command_client_from_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+     "learning_original_material_command_client_from_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+@@ -50,8 +50,8 @@
+     "learning_original_next_use_command_context": ("codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",),
+     "learning_original_next_use_command_client_attest": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+     "learning_original_next_use_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",),
+-    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
+-    "learning_original_material_dataset_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",),
++    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
++    "learning_original_material_dataset_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
+     "learning_original_no_update_stage_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+     "learning_original_no_update_stage_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+     "learning_original_no_update_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
+--- a/qa/b4-no-bypass/test_original_selector_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_selector_command_source_closure.py
+@@ -38,7 +38,7 @@
+     "learning_original_selector_command_client_attestation": (),
+     "learning_original_selector_command_owner_serve": (),
+     "learning_original_selector_command_owner_evidence": (),
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+     "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",),
+     "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",),
+     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
+--- a/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py
++++ b/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py
+@@ -58,7 +58,7 @@
+         AGENT + "cell_q24_material_source.rs",
+         CONNECTION,
+     ),
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+ }
+ 
+ 
+--- a/qa/b4-no-bypass/test_original_training_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_training_command_source_closure.py
+@@ -37,7 +37,7 @@
+     "learning_original_training_command_owner_serve": (),
+     "learning_original_training_command_owner_evidence": (AGENT + "cell_q24_training_bootstrap_service.rs",),
+     "learning_source_bound_training_command_context": ("codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",),
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+     "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",),
+     "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",),
+ }
+--- a/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py
++++ b/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py
+@@ -30,9 +30,9 @@
+     "learning_original_training_initial_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+     "learning_original_training_initial_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+     "learning_original_training_initial_connection_dataset": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+-    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
+-    "learning_original_material_dataset_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",),
+-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
++    "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
++    "learning_original_material_dataset_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",),
++    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",),
+ }
+ 
+ 
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_training_readback_source_closure.py
+@@ -0,0 +1,341 @@
++"""Protect the original Trainer's fixed read-only purpose and exact callers.
++
++These source mutations exercise the existing caller verifier. They do not
++establish a deployed independent role or successful ordinary learning loop.
++Native readback tests separately own the real journals and same-process fixture.
++"""
++
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "original_training_readback_proof", ROOT / "scripts/verify_hepta_callers.py"
++)
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++CLIENT = AGENT + "cell_q24_training_command_readback.rs"
++SERVICE = AGENT + "cell_q24_training_command_readback_service.rs"
++BOOTSTRAP = AGENT + "cell_q24_training_bootstrap_readback.rs"
++EXPECTED = {'learning_source_bound_training_stage_readback': ['codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs',
++                                                   'codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs',
++                                                   'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs'],
++ 'learning_original_owner_command_channel': ['codex-rs/hepta-agentd/src/cell_q24_training_command.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_material_command.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_selection_command.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_selection_command_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_next_use_command.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs',
++                                             'codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs',
++                                             'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs',
++                                             'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs',
++                                             'codex-rs/hepta-agentd/src/circuit_retained_version_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs',
++                                             'codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs',
++                                             'codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs',
++                                             'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs'],
++ 'learning_original_material_initial_context_check': ['codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_retained_version_context.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_retained_version_host.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_retained_version_service.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs'],
++ 'learning_original_material_dataset_context_check': ['codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs',
++                                                      'codex-rs/hepta-agentd/src/circuit_retained_version_context.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs',
++                                                      'codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs']}
++ADMITTED = {
++    "learning_source_bound_training_stage_readback": (SERVICE,),
++    "learning_original_owner_command_channel": (CLIENT, SERVICE, BOOTSTRAP),
++    "learning_original_material_initial_context_check": (CLIENT,),
++    "learning_original_material_dataset_context_check": (CLIENT,),
++}
++
++
++class OriginalTrainingReadbackClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++        cls.boundaries = {
++            row.identifier: row for row in PROOF._boundary_rows(cls.manifest)
++        }
++
++    def assert_protected_rejects(self, path, changed):
++        source = (ROOT / path).read_text()
++        self.assertNotEqual(source, changed)
++        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
++        self.assertEqual(len(rows), 1)
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(source)
++            PROOF._verify_protected_files(root, {"protected_file": rows})
++            target.write_text(changed)
++            with self.assertRaises(PROOF.VerificationFailure):
++                PROOF._verify_protected_files(root, {"protected_file": rows})
++
++    def mutate(self, path, function, marker, replacement=""):
++        source = (ROOT / path).read_text()
++        code = PROOF._strip_rust_non_code(source)
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        body = source[start:end + 1]
++        self.assertEqual(body.count(marker), 1, (path, function, marker))
++        changed = body.replace(marker, replacement, 1)
++        self.assert_protected_rejects(path, source[:start] + changed + source[end + 1:])
++
++    def test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller(self):
++        paths = {
++            path for identifier in EXPECTED
++            for path in (
++                self.boundaries[identifier].definition_path,
++                *self.boundaries[identifier].product_callers,
++            )
++        }
++        sources = {
++            path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
++                (ROOT / path).read_text()
++            )) for path in paths
++        }
++        for identifier, expected in EXPECTED.items():
++            with self.subTest(boundary=identifier):
++                row = self.boundaries[identifier]
++                self.assertEqual(row.product_callers, tuple(expected))
++                self.assertIn(
++                    identifier, self.manifest["privileged_inventory"]["required_boundary_ids"]
++                )
++                PROOF._verify_boundary(ROOT, row, sources, ())
++                method = row.symbol.rsplit("::", 1)[-1]
++                if row.receiver_type:
++                    attempts = (
++                        f"fn bypass(owner: &{row.receiver_type}) {{ owner.{method}(); }}",
++                        f"fn bypass(owner: &{row.receiver_type}) {{ "
++                        f"{row.receiver_type}::{method}(owner); }}",
++                    )
++                else:
++                    attempts = (f"fn bypass() {{ {row.symbol}(); }}",)
++                for attempt in attempts:
++                    extra = dict(sources)
++                    extra[AGENT + "unregistered_training_readback_consumer.rs"] = attempt
++                    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
++                        PROOF._verify_boundary(ROOT, row, extra, ())
++                for admitted in ADMITTED[identifier]:
++                    # The real adapter must remain visible to the original proof.
++                    extra = dict(sources)
++                    extra.pop(admitted)
++                    with self.assertRaisesRegex(PROOF.VerificationFailure, "missing"):
++                        PROOF._verify_boundary(ROOT, row, extra, ())
++        self.assertEqual(
++            self.boundaries["root_learning_original_stage_assembly"].product_callers, ()
++        )
++        self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
++
++    def test_original_handoff_and_complete_dataset_training_binding_cannot_be_detached(self):
++        checks = {
++            "fn from_original_stream(": (
++                "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)",
++                "peer.actor_id != material.initial.owners.trainer",
++                "original_owner_pidfd,",
++                "channel.check_peer_lifetime()?;",
++                "current < started_at || after != initial_binding",
++            ),
++            "fn bind_original_training(": (
++                "self,",
++                "context.validate()? != self.material.initial",
++                "self.peer.check_peer_lifetime()?;",
++                "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
++                "current < started_at || verified_at < current || original != self.initial_binding",
++                "wire::authenticate_receipt(",
++                "if verified != training",
++                "peer: Some(self.peer)",
++                "channel: Mutex::new(None)",
++            ),
++        }
++        for function, markers in checks.items():
++            for marker in markers:
++                with self.subTest(function=function, marker=marker):
++                    # The initial function deliberately checks the same original
++                    # context twice; deleting only its first call must still fail.
++                    if function == "fn from_original_stream(" and marker.startswith(
++                        "OriginalCellQ24MaterialReceiptConfigV1::"
++                    ):
++                        source = (ROOT / CLIENT).read_text()
++                        self.assert_protected_rejects(CLIENT, source.replace(marker, "", 1))
++                    else:
++                        self.mutate(CLIENT, function, marker)
++
++    def test_request_cannot_change_purpose_context_sequence_or_action(self):
++        markers = (
++            "observed.schema != expected.schema",
++            "observed.operation != OPERATION",
++            "observed.request_id != request_id",
++            "!(1..=128).contains(&request_id)",
++            "observed.binding != expected.binding",
++            "observed.operation_id != expected.operation_id",
++            "observed.dataset_head != expected.dataset_head",
++            "observed.scope_binding != expected.scope_binding",
++            "observed.actor_id != expected.actor_id",
++            "observed.action != wire::Action::Readback",
++        )
++        for marker in markers:
++            with self.subTest(marker=marker):
++                changed = marker.replace("!=", "==") if "!=" in marker else marker[1:]
++                self.mutate(CLIENT, "fn require_request(", marker, changed)
++        self.mutate(CLIENT, "fn require_request(", "|| observed.cancelled")
++        self.mutate(
++            CLIENT, "fn request(", "wire::Action::Readback", "wire::Action::Execute"
++        )
++
++    def test_host_admission_precedes_queue_and_connections_keep_bounded_requests(self):
++        for path in (SERVICE, BOOTSTRAP):
++            for marker in (".try_acquire_owned()", "original_consumer_pidfd,"):
++                with self.subTest(path=path, marker=marker):
++                    self.mutate(path, "fn serve_original_training_readback(", marker)
++            self.mutate(
++                path, "fn serve_original_training_readback_channel(",
++                "1..=128_u64", "1..=129_u64",
++            )
++            source = (ROOT / path).read_text()
++            start = source.index("        let mut channel = original_owner_command_channel_v1(")
++            queued = source.index("        tokio::task::spawn_blocking(move || {", start)
++            admission = source[start:queued]
++            changed = source[:start] + source[queued:]
++            changed = changed.replace(
++                "            let _permit = permit;\n",
++                "            let _permit = permit;\n" + admission,
++                1,
++            )
++            self.assert_protected_rejects(path, changed)
++
++    def test_host_request_is_checked_before_actual_same_stage_readback(self):
++        guard = "        readonly::require_request(&request, &self.context, request_id)?;\n"
++        source = (ROOT / SERVICE).read_text()
++        self.assertEqual(source.count(guard), 1)
++        self.assert_protected_rejects(SERVICE, source.replace(guard, "", 1))
++        self.assert_protected_rejects(
++            SERVICE, source.replace(guard, "        // " + guard.strip() + "\n", 1)
++        )
++        late = source.replace(guard, "", 1).replace(
++            "        let result = self.completed_response(completed)?;\n",
++            guard + "        let result = self.completed_response(completed)?;\n",
++            1,
++        )
++        self.assert_protected_rejects(SERVICE, late)
++        self.mutate(
++            SERVICE, "fn original_training_readback_response(",
++            "&self.context.dataset,", "&other_dataset,",
++        )
++
++    def test_readback_requires_current_complete_original_evidence_before_restoring_peer(self):
++        markers = (
++            "self.peer.take().ok_or(Error::Unavailable)?",
++            "expected != self.training.receipt() || !(1..=128).contains(&self.next_request_id)",
++            "response.require_request(&request)?;",
++            "peer.check_peer_lifetime()?;",
++            "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
++            "if current < started_at",
++            "wire::decode_completed(&self.context, snapshot, evidence, current)?",
++            "if completed != self.training",
++        )
++        for marker in markers:
++            with self.subTest(marker=marker):
++                self.mutate(CLIENT, "fn readback(", marker)
++        source = (ROOT / CLIENT).read_text()
++        restore = "        self.peer = Some(peer);\n"
++        self.assertEqual(source.count(restore), 1)
++        early = source.replace(restore, "", 1).replace(
++            "        let response: wire::Response = serde_json::from_slice(&bytes)?;\n",
++            restore + "        let response: wire::Response = serde_json::from_slice(&bytes)?;\n",
++            1,
++        )
++        self.assert_protected_rejects(CLIENT, early)
++
++    def test_completed_training_cannot_become_missing_pending_or_a_reusable_unknown(self):
++        for replacement in (
++            "return Err(Error::Missing);",
++            "return Err(Error::Pending);",
++            "self.peer = Some(peer); return Err(Error::CommitUncertain);",
++        ):
++            with self.subTest(replacement=replacement):
++                self.mutate(
++                    CLIENT, "fn readback(", "return Err(Error::CommitUncertain);", replacement
++                )
++
++    def test_bootstrap_readback_only_borrows_ready_and_never_recovers_awaiting(self):
++        for marker in (
++            "request.operation != readonly::OPERATION",
++            "request.action != wire::Action::Readback",
++            "request.cancelled",
++            "request.request_id != request_id",
++            "!(1..=128).contains(&request_id)",
++            "request.operation_id != initial.request.operation_id.as_str()",
++            "request.actor_id != initial.owners.trainer.as_str()",
++            "request.scope_binding != self.config.material.scope.binding().to_string()",
++            "!canonical(&request.binding)",
++            "!canonical(&request.dataset_head)",
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(BOOTSTRAP, "fn original_training_readback_response(", marker)
++        self.mutate(
++            BOOTSTRAP, "fn original_training_readback_response(",
++            "None => wire::CommandResult::ReadbackRequired,",
++            "None => wire::CommandResult::Missing,",
++        )
++        self.mutate(
++            BOOTSTRAP, "fn original_training_readback_response(",
++            "OriginalCellQ24TrainingCommandOwnerV1::original_training_readback_response(",
++            "OriginalCellQ24TrainingCommandOwnerV1::command_response(",
++        )
++
++    def test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap(self):
++        for path in (CLIENT, SERVICE, BOOTSTRAP):
++            for inserted in (
++                "owner.execute_training();",
++                "owner.attest_original_completion();",
++                "owner.build_original_owner();",
++                "let state = State::Starting;",
++                "let socket = UnixStream::connect(path);",
++                "let evidence = SignedLearningEvidenceV1 {};",
++                "let custody = Host::recover_original_custody();",
++            ):
++                with self.subTest(path=path, inserted=inserted):
++                    source = (ROOT / path).read_text()
++                    self.assert_protected_rejects(
++                        path, source + "\nfn injected_readback_authority() { " + inserted + " }\n"
++                    )
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- a/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py
++++ b/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py
+@@ -40,6 +40,7 @@
+     "learning_source_bound_training_stage_readback": (
+         AGENT + "cell_q24_training_command_service.rs",
+         AGENT + "cell_q24_model_command_lane.rs",
++        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+     ),
+     "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
+     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),

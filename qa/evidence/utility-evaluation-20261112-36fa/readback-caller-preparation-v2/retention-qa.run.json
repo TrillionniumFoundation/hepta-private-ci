@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.prepared-retention-source-mutation-check.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/tmp/hepta-training-readback-retention-v2-eufwhtak/validation-source/qa/b4-no-bypass",
+    "-p",
+    "test_original_evaluation_retention_guard_source_closure.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "timed_out": false,
+  "elapsed_seconds": 0.41055279099964537,
+  "log_bytes": 890,
+  "log_sha256": "a344f994c37886d1f5ad2bdd6dee4d185183e3c884238ef48062e97d1db04ca0",
+  "full_source_closure": "not_run",
+  "full_caller_proof": "not_run",
+  "runtime_signed_positive_primary_negative_retention": "not_run",
+  "source_inputs_unchanged": true,
+  "source_sha256_before": {
+    "CALLERS.toml": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "scripts/hepta_typed_callers.py": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+    "scripts/verify_hepta_callers.py": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+    "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py": "db4b6eec02081970257497d67dafadb584e5fa48ce5b2b3991ded19b1ec73b3f",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598"
+  },
+  "source_sha256_after": {
+    "CALLERS.toml": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "scripts/hepta_typed_callers.py": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+    "scripts/verify_hepta_callers.py": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+    "qa/b4-no-bypass/test_original_evaluation_retention_guard_source_closure.py": "db4b6eec02081970257497d67dafadb584e5fa48ce5b2b3991ded19b1ec73b3f",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598"
+  }
+}

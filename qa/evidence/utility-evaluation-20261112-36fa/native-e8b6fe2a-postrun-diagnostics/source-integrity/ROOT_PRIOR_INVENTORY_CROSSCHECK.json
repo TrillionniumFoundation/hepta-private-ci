@@ -1,0 +1,119 @@
+{
+  "actual_tests_executed": 0,
+  "cargo_started": false,
+  "current_index_logically_matches_HEAD_tree_reported": true,
+  "existing_file_byte_mode_differences_reported": 0,
+  "limits": [
+    "Original native result and its old complete source snapshots remain distinct from this later file absence.",
+    "Index S flags and directory/index times are observed; the actor and reason are Unknown.",
+    "This cross-check validates the reported object identities against two independently preserved prior inventories. It does not claim a second direct read of all 18,176,884 native object bytes.",
+    "Any create-only restoration must receive a new full physical inventory and preserve the pre-restoration records."
+  ],
+  "missing_count": 7,
+  "missing_paths_verified_against_both_prior_inventories": [
+    {
+      "blob_sha": "3a40fd7c802df1a9cc4e7dd284ebd96bcd5e3c62",
+      "bytes": 2896268,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz",
+      "sha256": "11ba543a46a6150bbd89c2ac5513bea56660c69358ddb348122b4bae57533fe7"
+    },
+    {
+      "blob_sha": "807c2dc3c1088f916f11a235378bfdc051eda955",
+      "bytes": 1177531,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/cell-research-stages-20261108/followthrough-20261108/verify1-independent-audit.tar.gz",
+      "sha256": "ac8863c2893869db846801d825e89863cf168e87782571dd009733b921643de0"
+    },
+    {
+      "blob_sha": "cea174270290297bd72c4e2cc126ebddbb2cf741",
+      "bytes": 1766809,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/cell-research-stages-20261108/native-ci-routing-20261108/raw-ci-logs.tar.gz",
+      "sha256": "3d4c805e3008b36d147fa750c36b301f20b82ca9f876f943c63ae24fa01fa02c"
+    },
+    {
+      "blob_sha": "3c427d48aa759a4a4bad8258c951fbb94c0c616d",
+      "bytes": 1843158,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip",
+      "sha256": "27d4f684ba9df1b9dec5c518377c50f80239d2a3f4998045f88939593fa01bcc"
+    },
+    {
+      "blob_sha": "6f312b46ecae7f0d314b55504b0d7a5c75e3524b",
+      "bytes": 1765660,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/memory-cell-mem1/raw-evidence-v1.tar.xz",
+      "sha256": "df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15"
+    },
+    {
+      "blob_sha": "506b81500b5f81d5eb8bee8ad610f3620696bca3",
+      "bytes": 2767574,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/pin-utils-parent-backports-20261108/native-evidence.tar.gz",
+      "sha256": "4c5cfe6d68e48fdc6f065ac7bbd2d0ee852a5b896f8d15b997f5fa8189e63c11"
+    },
+    {
+      "blob_sha": "3f72098ddf57a704aef4d5f325dd7770b6f89694",
+      "bytes": 5959884,
+      "matches_both_prior_exact_source_inventories": true,
+      "mode": "100644",
+      "observed_index_marker": "S",
+      "path": "qualification/pred1/evidence/pred1_evidence.tar.xz",
+      "sha256": "08322f8fe581f84e7e6ea31f705c5c8554610930a5f531e15294de14e331219e"
+    }
+  ],
+  "planned_disallowed_command_did_not_run": true,
+  "prior_canonical_alignment_inventory_sha256": "29f600ee486884e17c0b11b1009cf5c8f6b8d4c11a3ec05e59d8378a771b1772",
+  "prior_source_gate_inventory_bytes": 5432085,
+  "prior_source_gate_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+  "record_identities": [
+    {
+      "blob_sha": "7b28e18a5fd9467a38a4105dbdbea11736acf231",
+      "bytes": 10001,
+      "key": "manifest",
+      "sha256": "33a1d7bb79a0159a67413a046cd1966231cfaffeb196e2b66d812728722a1e9a"
+    },
+    {
+      "blob_sha": "37de7d00ec8558580b2774d76973cd60f0fed6c1",
+      "bytes": 4387,
+      "key": "audit",
+      "sha256": "018f9c8e231361f908d2a4ae7841fb4cbe1df2d2ec050e65f6d63acc5d443edd"
+    },
+    {
+      "blob_sha": "7976526c609f405549133675a2342d93c61e2a5a",
+      "bytes": 975,
+      "key": "blocked",
+      "sha256": "12da5517d6f1dbdc6bde55294e647fc6cf3b93a1a423b82b74918121b586ce53"
+    },
+    {
+      "blob_sha": "2091d3f0e5a860080e1fe44d5db0c7945120f938",
+      "bytes": 521,
+      "key": "preserve",
+      "sha256": "a02a9202ced6aafe094f2eb42a88ec0a3ce2a0545b82593c698c85d0a5da9d88"
+    },
+    {
+      "blob_sha": "551dda9d583f045b995b34d2b780a1c796827b1d",
+      "bytes": 1940,
+      "key": "planned",
+      "sha256": "abaeafaf926dc53bc5abf9010cc973d9006ede8452a07b12a7b22a2dfba91e55"
+    }
+  ],
+  "restoration_status": "not_observed_in_this_review",
+  "schema": "hepta.root-missing-native-source-crosscheck.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "total_missing_bytes": 18176884
+}

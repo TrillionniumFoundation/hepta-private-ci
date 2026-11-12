@@ -1,0 +1,46 @@
+{
+  "schema": "hepta-root-original-target-directory-observation-v1",
+  "source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "observed_at": "2026-11-12T10:56:48.763023+00:00",
+  "original_file_path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-target-directory-readonly-v1.json",
+  "original_file_version": "2050:50004377:6859:1794481008763628579:1794481008763628579",
+  "original_bytes": 6859,
+  "original_sha256": "ad54aa4ae51568c844e5ebd1f198d8b25dea34812b8577ea68c71c4ab5ac8e4c",
+  "original_git_blob_sha": "bef9b694e3708e033b5446ad1470aa549692f2bb",
+  "findings": [
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-target",
+      "resolved": "/home/qian-qi/hepta-utility-36fa-target",
+      "exists": true,
+      "symlink": false,
+      "all_file_count": 409,
+      "agentd_names": [],
+      "rg_exit": 0,
+      "rg_stderr": ""
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/target",
+      "resolved": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/target",
+      "exists": true,
+      "symlink": false,
+      "all_file_count": 1,
+      "agentd_names": [],
+      "rg_exit": 0,
+      "rg_stderr": ""
+    }
+  ],
+  "historical_helper_archive": {
+    "bytes": 566850,
+    "sha256": "09fc24e218be87f7f44cc12ee3ecdbbf5aad09ba3726d3a0a801fb1ddfc64e80",
+    "blob": "72c0a7460a613082a89a3fef3b6b5e82edb2ba52",
+    "independently_decoded_artifact_paths": 2238,
+    "sole_build_root": "/home/qian-qi/hepta-utility-36fa-target",
+    "historical_agentd_rlib": "/home/qian-qi/hepta-utility-36fa-target/debug/deps/libcodex_hepta_agentd-0dd0b30696c7ff09.rlib"
+  },
+  "interpretation": "The original helper build genuinely produced paths under this target. A later complete no-config file listing of both known roots found no agentd artifact. Its disappearance cause is unknown. No original test binary was retrieved or run by the aborted conditional diagnostic. A subsequent exact-source controlled rebuild must be labeled a new-build diagnostic, not the original run binary.",
+  "limits": [
+    "Directory inspection is scoped to the two observed build roots; it is not a whole-host inventory.",
+    "No compilation or test result is inferred from these listings.",
+    "Original raw/JUnit/source identities and all failed qualification conclusions remain unchanged."
+  ]
+}
