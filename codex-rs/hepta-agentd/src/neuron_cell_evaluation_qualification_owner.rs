@@ -49,6 +49,16 @@ mod readback;
 mod sources;
 pub use sources::OriginalCellEvaluationQualificationSourcesV1;
 
+#[path = "neuron_cell_evaluation_panel.rs"]
+mod panel;
+pub use panel::OriginalCellEvaluationPanelErrorV1;
+pub use panel::OriginalCellEvaluationPanelMemberOwnersV1;
+pub use panel::OriginalCellEvaluationPanelMemberReadbackV1;
+pub use panel::OriginalCellEvaluationPanelOwnerV1;
+pub use panel::OriginalCellEvaluationPanelReadbackV1;
+pub use panel::OriginalCellEvaluationPanelRegistrationV1;
+pub use panel::OriginalCellEvaluationPanelTaskV1;
+
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellEvaluationQualificationErrorV1 {
     #[error("original Qualification binding: {0}")]
