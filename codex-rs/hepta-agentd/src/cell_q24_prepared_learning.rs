@@ -3,6 +3,28 @@
 use super::*;
 
 impl CellQ24PreparedLearningV1 {
+    pub(super) fn from_historical(
+        config: CellQ24LearningPreparationConfigV1,
+        ledger: Arc<HistoricalDatasetLedgerV1>,
+        frozen: CellQ24FrozenDatasetV1,
+    ) -> Result<Self, Error> {
+        let publication =
+            historical_preparation::require_historical_configuration(&config, &ledger)?;
+        if frozen.receipt.snapshot.snapshot_id != config.snapshot_id
+            || frozen.receipt.snapshot.objective_digest != config.request.envelope.objective_digest
+        {
+            return Err(Error::Binding("original frozen Dataset identity"));
+        }
+        let batch = CellQ24TrainingBatchV1::from_original_historical_dataset(
+            ledger,
+            frozen.snapshot.clone(),
+            frozen.receipt.clone(),
+            frozen.authorization.clone(),
+            config.projection.clone(),
+        )?;
+        Self::finish_original(config, frozen, batch, publication)
+    }
+
     pub(super) fn from_original(
         config: CellQ24LearningPreparationConfigV1,
         ledger: Arc<Mutex<LedgerWriter>>,

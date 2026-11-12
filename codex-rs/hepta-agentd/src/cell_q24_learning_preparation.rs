@@ -43,6 +43,8 @@ use super::CellQ24TrainingPlanErrorV1;
 use super::LoadedCellQ24ModelV1;
 use super::cell_q24_dataset_run_snapshot_digest_v1;
 use super::cell_q24_single_head_update_rule_v1;
+use super::dataset::HistoricalDatasetLedgerV1;
+use super::dataset::OriginalDatasetLedgerV1;
 use crate::AgentdIdentity;
 use crate::CircuitTaskSourcePublicationV1;
 use crate::HostAuthorityLearningProfileV1;
@@ -51,6 +53,8 @@ use crate::HostAuthorityLearningProfileV1;
 mod capture;
 #[path = "cell_q24_dataset_freeze_owner.rs"]
 mod freeze_owner;
+#[path = "cell_q24_dataset_historical_preparation.rs"]
+mod historical_preparation;
 #[path = "cell_q24_prepared_learning.rs"]
 mod prepared;
 pub use freeze_owner::OriginalCellQ24DatasetFreezeErrorV1;
@@ -101,7 +105,7 @@ pub struct CellQ24FrozenDatasetV1 {
 
 pub struct CellQ24DatasetFreezePreparationV1 {
     config: CellQ24LearningPreparationConfigV1,
-    ledger: Arc<Mutex<LedgerWriter>>,
+    ledger: OriginalDatasetLedgerV1,
     tasks: Vec<CellQ24DatasetTaskV1>,
     snapshot: LedgerSnapshot,
     frontier: LedgerWitnessFrontier,

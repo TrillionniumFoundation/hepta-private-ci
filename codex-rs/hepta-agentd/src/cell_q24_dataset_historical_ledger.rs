@@ -44,6 +44,17 @@ impl HistoricalDatasetLedgerV1 {
         &self.tasks
     }
 
+    /// Immutable data from tasks already checked against this exact receipt.
+    /// Consumers use it only inside, or before, the mandatory current read.
+    pub(crate) fn original_task_data(
+        &self,
+    ) -> Vec<(CircuitTaskSourcePublicationV1, CellDecisionReceiptV1)> {
+        self.tasks
+            .iter()
+            .map(|task| (task.publication.clone(), task.decision.clone()))
+            .collect()
+    }
+
     pub(crate) fn with_current<T>(
         &self,
         action: impl FnOnce(
