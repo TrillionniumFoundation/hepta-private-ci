@@ -4,9 +4,11 @@
 
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 
+use super::historical_operation::OriginalQ24StageOperationV1;
 use super::*;
 use crate::CellQ24TrainingOutcomeV1;
 use crate::OriginalCellQ24TrainingCompletionV1;
+use crate::cell_q24_training_receipt_owner::OriginalQ24TrainingOperationV1;
 
 /// Original completion data, including the actual native model and head bytes.
 /// B still needs its own original execution, holdout, evidence and live Trainer
@@ -100,6 +102,11 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         expected: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellQ24TrainingMaterialV1, Error> {
         self.inner.require_snapshot(expected)?;
+        if self.inner.has_original_root_evaluation()? {
+            return self
+                .read_original_material_in_operation(expected.clone())
+                .await;
+        }
         let expected = expected.clone();
         let inner = Arc::clone(&self.inner);
         self.inner
@@ -132,6 +139,65 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     Ok(material)
                 },
             )
+            .await
+    }
+
+    async fn read_original_material_in_operation(
+        &self,
+        expected: LearningIterationSnapshotV1,
+    ) -> Result<OriginalCellQ24TrainingMaterialV1, Error> {
+        let inner = Arc::clone(&self.inner);
+        self.inner
+            .in_original_prepared_lane(move |owners, runtime, read| {
+                inner.training.with_original_training_operation(
+                    &inner.dataset_cut,
+                    read,
+                    |training| {
+                        {
+                            let mut operation =
+                                OriginalQ24StageOperationV1::from_original_receipt_read(
+                                    &inner, owners, runtime, training, read,
+                                )?;
+                            let result = (|| {
+                                for receipt in &inner.dataset_cut.receipts {
+                                    operation.authenticate_receipt(&expected, receipt)?;
+                                }
+                                Ok(())
+                            })();
+                            operation.finish_original_b_read()?;
+                            result?;
+                        }
+                        let before =
+                            OriginalQ24TrainingOperationV1::read_original_completion_in_operation(
+                                training,
+                            )?;
+                        let after =
+                            OriginalQ24TrainingOperationV1::read_original_completion_in_operation(
+                                training,
+                            )?;
+                        let material = OriginalCellQ24TrainingMaterialV1::from_original_readbacks(
+                            inner.dataset_cut.clone(),
+                            inner.prepared.scope().clone(),
+                            &expected,
+                            before,
+                            after,
+                        );
+                        let mut operation =
+                            OriginalQ24StageOperationV1::from_original_receipt_read(
+                                &inner, owners, runtime, training, read,
+                            )?;
+                        let checked = (|| {
+                            for receipt in &inner.dataset_cut.receipts {
+                                operation.authenticate_receipt(&expected, receipt)?;
+                            }
+                            Ok(())
+                        })();
+                        operation.finish_original_b_read()?;
+                        checked?;
+                        material
+                    },
+                )
+            })
             .await
     }
 }
