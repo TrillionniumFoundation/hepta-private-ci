@@ -31,18 +31,18 @@ ROOT_INPUTS = A + "root_production_inputs.rs"
 SESSION = A + "authority_host_session.rs"
 CALLERS = {
     "connection_capture": (ROOT_INPUTS,), "connection_take": (ROOT_INPUTS,),
-    "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS),
+    "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS, A + "root_historical_learning_trust_client.rs"),
     "same_session": (CLIENT,), "send": (CLI,), "receive": (LAUNCH, LATE),
     "connect": (LAUNCH, LATE), "from_stream": (INPUTS,),
-    "client_session": (LAUNCH, LATE), "observe": (),
-    "receipt_client": (A + "cell_q24_dataset_historical_task.rs",),
-    "receipt_read": (), "enable": (CLI,), "seal": (CLI,), "provider": (PREPARED,),
+    "client_session": (LAUNCH, LATE), "observe": (A + "production_post_a_q24.rs",),
+    "receipt_client": (A + "cell_q24_dataset_historical_task.rs", A + "root_historical_learning_trust_client.rs"),
+    "receipt_read": (A + "root_historical_learning_trust_client.rs", A + "root_historical_learning_operation.rs"), "enable": (CLI,), "seal": (CLI,), "provider": (PREPARED,),
     "exchange": (RUNTIME,), "cold_source": (PROVIDER,), "cold_cell": (PROVIDER,),
     "reply": (CLIENT,), "profile": (PROVIDER, PREPARED, INPUTS),
     "bind": (SESSION,), "serve": (SESSION,),
 }
 CALLERS = {"root_historical_task_read_" + key: value for key, value in CALLERS.items()}
-CALLERS["ordinary_historical_task_read_take"] = ()
+CALLERS["ordinary_historical_task_read_take"] = (A + "production_post_a_q24.rs",)
 CALLERS["root_historical_task_read_cold_source"] = ('codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
 CALLERS["root_historical_task_read_profile"] = ('codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs', 'codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
 
@@ -253,7 +253,7 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
     def test_consumer_stays_between_two_actual_root_observations(self):
         for occurrence in (0, 1):
             self.reject(CLIENT, "with_current_read<T>", "self.client.observe()? != self.data", occurrence)
-        self.check(CLIENT, "with_current_read<T>", ("let value = action(&self.data.ledger)?", "self.client.fence()"))
+        self.check(CLIENT, "with_current_read<T>", ("let value = action(&self.data.ledger)", "self.client.fence()"))
 
     def test_reply_is_complete_strict_and_bound_to_current_original_profile(self):
         self.check(PROTOCOL, "require_complete_reply", (

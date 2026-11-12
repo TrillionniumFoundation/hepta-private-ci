@@ -26,7 +26,7 @@ CALLERS = {
     "root_post_a_prepare_installation": (PROVIDER,),
     "root_post_a_install_provider": (route.PROVIDER,),
     "root_learning_derived_checkpoint": (PLAN,),
-    "root_q24_factory_reserve_same_service": (PLAN,),
+    "root_q24_factory_v2_reserve_same_service": (PLAN,),
 }
 
 
@@ -78,16 +78,16 @@ def require_structure(path, source, rows):
         action = route.original.span(body, "|profile| {")
         install.at_depth(body, "self.with_original_derived_profile(", 1)
         for marker in ("service.prepare_original_derived_learning_checkpoint(",
-                       "service.open_q24_model_factory(", "service.seal_learning_checkpoint(",
+                       "service.open_q24_model_factory_v2(", "service.seal_learning_checkpoint(",
                        "service.seal_q24_model_factory_offer(", "Ok(PostALearningInstallation {"):
             if not action[0] < body.index(marker) < action[1]:
                 raise PROOF.VerificationFailure("original installation escaped the actual derived profile")
             install.at_depth(body, marker, 2)
         register = route.original.span(body, "if self.register")
-        reserve = body.index("service.reserve_q24_model_factory_for_profile(")
+        reserve = body.index("service.reserve_q24_model_factory_v2_for_profile(")
         if not action[0] < register[0] < reserve < register[1] < action[1]:
             raise PROOF.VerificationFailure("reopening cannot reserve a missing factory")
-        install.at_depth(body, "service.reserve_q24_model_factory_for_profile(", 3)
+        install.at_depth(body, "service.reserve_q24_model_factory_v2_for_profile(", 3)
     if path == DERIVE:
         body, _ = body_without_nested_functions(source, "fn with_original_derived_profile<T>(")
         freeze = route.original.span(body,
@@ -191,7 +191,7 @@ class PostAProductSourceTests(unittest.TestCase):
             "runtime.post_a_submitter.get_mut()", "let plan = self.service.with_learning_profile(",
             "HistoricalTaskReadProfileV1::require_original_context(", "expected != initial",
             "post_a::PostALearningRuntime::retain_original_plan(", "self.config.peer_uid",
-            "self.config.peer_gid", "post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd)?",
+            "self.config.peer_gid", "post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd, publication.map(|(_, handoff)| handoff))?",
             "runtime.post_a = Some(plan)", "runtime.post_a_worker = Some(worker)"))
         for marker in ("runtime.metadata.require_metadata_unchanged()?", "RootHistoricalLearningTrustV1::revalidate("):
             for occurrence in (0, 1):
@@ -214,8 +214,8 @@ class PostAProductSourceTests(unittest.TestCase):
             "original_root()?", "registration.registered_identity.identity()?",
             "self.with_original_derived_profile(", "profile.require_cell_scope(initial)?.binding().to_string()",
             "service.prepare_original_derived_learning_checkpoint(", "self.original_mode()",
-            "if self.register", "service.reserve_q24_model_factory_for_profile(",
-            "&self.reservation,", "service.open_q24_model_factory(", "&self.reservation_path,",
+            "if self.register", "service.reserve_q24_model_factory_v2_for_profile(",
+            "&self.reservation,", "service.open_q24_model_factory_v2(", "&self.reservation_path,",
             "service.seal_learning_checkpoint(", "service.seal_q24_model_factory_offer(",
             "learning.q24_model = Some(factory)", "self.require_original_metadata()?",
             "Ok(PostALearningInstallation {", "frozen_scope,"))
