@@ -43,6 +43,7 @@ pub(crate) struct OriginalChild {
     pidfd: Option<OwnedFd>,
     stdout: File,
     stderr: File,
+    original_logs: Option<tempfile::TempDir>,
 }
 
 /// Nonserializable, nonconstructible outside this module. Both actual wait
@@ -70,8 +71,20 @@ impl OriginalChild {
                 && inherited.windows(2).all(|pair| pair[0] != pair[1]),
             "original inherited descriptors must be distinct and nonstandard"
         );
-        let stdout = tempfile::tempfile()?;
-        let stderr = tempfile::tempfile()?;
+        let original_logs = tempfile::Builder::new()
+            .prefix("ordinary-q24-original-process-")
+            .tempdir()?;
+        let open_log = |name| {
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+                .open(original_logs.path().join(name))
+        };
+        let stdout = open_log("stdout.log")?;
+        let stderr = open_log("stderr.log")?;
         command
             .stdout(stdout.try_clone()?)
             .stderr(stderr.try_clone()?);
@@ -110,6 +123,8 @@ impl OriginalChild {
             Err(error) => {
                 let _ = child.kill();
                 let _ = child.wait();
+                let path = original_logs.keep();
+                eprintln!("ORDINARY_Q24_ORIGINAL_CHILD_LOGS={}", path.display());
                 return Err(error);
             }
         };
@@ -119,6 +134,7 @@ impl OriginalChild {
             pidfd: Some(pidfd),
             stdout,
             stderr,
+            original_logs: Some(original_logs),
         })
     }
 
@@ -283,6 +299,15 @@ impl Drop for OriginalChild {
                 self.lifetime,
                 self.output().unwrap_or_else(|error| error.to_string())
             );
+        }
+        if let Some(logs) = self.original_logs.take() {
+            // Keep the actual output inodes after both success and failure.
+            // A short stderr diagnostic is never the only surviving record.
+            // This is log custody, not a successful-exit or completion proof.
+            let _ = self.stdout.sync_all();
+            let _ = self.stderr.sync_all();
+            let path = logs.keep();
+            eprintln!("ORDINARY_Q24_ORIGINAL_CHILD_LOGS={}", path.display());
         }
     }
 }
