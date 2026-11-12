@@ -1,0 +1,31 @@
+{
+  "actual_inventory_argv": [
+    "/home/qian-qi/.cargo/bin/cargo",
+    "nextest",
+    "list",
+    "-p",
+    "codex-hepta-automation",
+    "-E",
+    "test(=provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe)",
+    "--message-format",
+    "json"
+  ],
+  "exec_adapter_sha256": "c6fe21225156a6e1175b191ff6322a43f8071436a5be4e6d34b93df44a9cd974",
+  "inventory_bytes": 31518,
+  "inventory_sha256": "e9fb0c64c37bfec11c2e8c1cc2d2bc16be3ff52eefa31101a1ca37c1b8854b5b",
+  "matches": [
+    {
+      "binary_id": "codex-hepta-automation::authorized_effect",
+      "package": "codex-hepta-automation",
+      "suite_status": "listed",
+      "test_name": "provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe",
+      "ignored": false
+    }
+  ],
+  "profile": "local",
+  "original_default_retries": 1,
+  "max_attempts_per_invocation": 2,
+  "nextest_test_threads": 2,
+  "rust_min_stack": 8388608,
+  "inventory_is_not_test_execution": true
+}

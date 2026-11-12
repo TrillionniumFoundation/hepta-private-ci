@@ -1,0 +1,93 @@
+diff --git a/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs b/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs
+index ccd5f8b09..6f08c6f60 100644
+--- a/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs
++++ b/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs
+@@ -480,3 +480,88 @@ async fn taskflow_provider_receipt_reopen_rejects_canonical_substitution() {
+         Err(codex_hepta_automation::AutomationError::Corrupt)
+     ));
+ }
++
++#[tokio::test]
++async fn taskflow_step_reconcile_waits_for_writer_without_blocking_reads() {
++    let fixture = Fixture::new();
++    let started = start(&fixture, ProviderEffectDispatch::Unknown).await;
++    let before = started
++        .store
++        .read_taskflow_step(
++            &started.effect.run_id,
++            &started.effect.step_id,
++            started.effect.attempt,
++            &started.owner,
++        )
++        .await
++        .expect("original step");
++    let pool = database(&started.store).await;
++    let holder = pool
++        .begin_with("BEGIN IMMEDIATE")
++        .await
++        .expect("competing writer");
++    let readable = tokio::time::timeout(
++        std::time::Duration::from_secs(1),
++        started.store.read_taskflow_step(
++            &started.effect.run_id,
++            &started.effect.step_id,
++            started.effect.attempt,
++            &started.owner,
++        ),
++    )
++    .await
++    .expect("historical reads do not reserve the writer")
++    .expect("read under writer contention");
++    assert_eq!(readable, before);
++    let terminal_digest = Sha256Digest::for_bytes(b"controlled-step-reconciliation");
++    let intent_digest = started.effect.digest().expect("original effect digest");
++    // Exercise the step mutation itself: recover() would first wait at the
++    // separate provider ledger's already-IMMEDIATE transaction.
++    let mutation = started.store.reconcile_taskflow_step(
++        &started.effect.run_id,
++        &started.effect.step_id,
++        started.effect.attempt,
++        &started.owner,
++        &intent_digest,
++        &started.effect.payload_digest,
++        "controlled-step-reconciliation",
++        &terminal_digest,
++        TaskFlowReconcileOutcome::Succeeded,
++        40,
++    );
++    tokio::pin!(mutation);
++    let while_locked =
++        tokio::time::timeout(std::time::Duration::from_millis(250), mutation.as_mut()).await;
++    holder.rollback().await.expect("release competing writer");
++    assert!(
++        while_locked.is_err(),
++        "step write returned before writer admission: {while_locked:?}"
++    );
++    // Continue the same pinned future after the observation deadline; no retry.
++    let applied = tokio::time::timeout(std::time::Duration::from_secs(5), mutation)
++        .await
++        .expect("writer admission after release")
++        .expect("same step mutation succeeds after release");
++    assert_eq!(applied.receipt.state, TaskFlowStepState::Reconciled);
++    assert_eq!(
++        applied.receipt.final_outcome,
++        Some(TaskFlowReconcileOutcome::Succeeded)
++    );
++    assert_eq!(
++        applied.receipt.receipt_digest,
++        Some(terminal_digest.clone())
++    );
++    assert_eq!(
++        applied.receipt.event_seq,
++        before.expect("original step exists").event_seq + 1
++    );
++    assert_eq!(
++        started
++            .driver
++            .adapter()
++            .dispatch_calls
++            .load(Ordering::Relaxed),
++        1
++    );
++    pool.close().await;
++}
