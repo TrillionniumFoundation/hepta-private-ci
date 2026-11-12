@@ -460,8 +460,14 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     report("renewal-fixture-ready", None);
     let context = support::context(&run.fixture, &run.dataset);
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
+    let after_original_expiry = run
+        .training
+        .attestation()
+        .expires_at
+        .checked_add(/*rhs*/ 1)
+        .expect("fixture expiry permits a one-second renewal");
     let mut renewed = run.training.attestation().clone();
-    renewed.expires_at += 1;
+    renewed.expires_at = after_original_expiry;
     // Negative control only: a valid signature from the explicit fixture key,
     // over the same real receipt, must not replace the original saved window.
     renewed.signature = ed25519_dalek::SigningKey::from_bytes(&[1; 32])
@@ -474,23 +480,25 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         command_now()?,
     )?;
     assert_ne!(renewed.attestation(), run.training.attestation());
-    assert!(
+    assert!(matches!(
         wire::authenticate_receipt(
             &context,
             run.training.receipt().clone(),
             run.training.attestation().clone(),
-            run.training.attestation().expires_at,
-        )
-        .is_err()
-    );
-    assert!(
+            after_original_expiry,
+        ),
+        Err(CommandError::Evidence(
+            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+        ))
+    ));
+    assert_eq!(
         wire::authenticate_receipt(
             &context,
             renewed.receipt().clone(),
             renewed.attestation().clone(),
-            run.training.attestation().expires_at,
-        )
-        .is_ok()
+            after_original_expiry,
+        )?,
+        renewed
     );
     let (connection, peer) = page_peer(
         Arc::clone(&run.owner),
