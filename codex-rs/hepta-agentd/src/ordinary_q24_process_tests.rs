@@ -17,6 +17,8 @@ mod post_a_c_inputs;
 mod post_a_deployment;
 #[path = "ordinary_q24_post_a_file_tests.rs"]
 mod post_a_file;
+#[path = "ordinary_q24_post_a_launch_tests.rs"]
+mod post_a_launch;
 #[path = "ordinary_q24_post_a_owner_tests.rs"]
 mod post_a_owner;
 #[path = "ordinary_q24_post_a_plan_tests.rs"]
