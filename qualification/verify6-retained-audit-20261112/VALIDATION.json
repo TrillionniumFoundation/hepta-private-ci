@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.verify6.validation.v1",
+  "code_commits": {
+    "archive_packaging": "4a08232dbf90f4cbfa995dcaa29607cbd097762e",
+    "auditor": "3ace899a1c61bfda1a46074a5dacc655dda22b09",
+    "attribution": "b4717e6db7dbb933abb473752ca8f6223638e8a8"
+  },
+  "local_execution_scope": "working candidate before final formatting; four executed Python files retained and bound byte-for-byte/AST in SOURCE_BINDING.json; no exact-commit whole-suite claim",
+  "tests": [
+    {
+      "command": "python3 -B -m unittest discover -s experiments/verification_cell_verify1 -t . -v",
+      "passed": 259,
+      "scope": "earlier working candidate; later audit edits and fifth attribution test not fully covered; do not transfer as final-head suite"
+    },
+    {
+      "command": "python3 -B -m unittest experiments.verification_cell_verify1.test_observation_audit experiments.verification_cell_verify1.test_observation_attribution -v",
+      "passed": 18,
+      "scope": "final targeted working source before formatter; 13 auditor and 5 attribution tests, overlapping earlier suite"
+    }
+  ],
+  "format": {
+    "repository_just_fmt": "success; experiment paths excluded by repository scope",
+    "scoped_ruff_format": "four files reformatted",
+    "scoped_ruff_check": "success",
+    "changed_python_asts_unchanged": true,
+    "tests_rerun_after_final_format": false
+  },
+  "original_reanalysis": {
+    "input_zip_sha256": "941750dfede43cbf37706191d7c870ba0a9a4c67967eb6a150589ed2366faffb",
+    "member_count": 337,
+    "retained_run": "observation-run",
+    "audited_trajectories": 132,
+    "events": 1033,
+    "costs": 1034,
+    "probe_rows_attributed": 60,
+    "actor_executions": 0,
+    "model_fits": 0,
+    "model_predictions": 0,
+    "sqlite_queries": 0
+  },
+  "attempts": [
+    {
+      "stage": "first auditor test setup",
+      "status": "failed before audit execution",
+      "reason": "original ZIP path replaced concurrently by lossless split; initial test setup stopped before audit execution; raw setup stdout not separately retained; repaired test loader is retained"
+    },
+    {
+      "stage": "force-with-lease push",
+      "status": "automatic approval review rejected; no successful push",
+      "reason": "specific evidence disclosure authorization/trust not established; checked public repository and original-byte identity before proceeding with safer ordinary updates"
+    },
+    {
+      "stage": "ordinary git push",
+      "status": "authentication failed; no remote ref update",
+      "reason": "git transport had no write credential"
+    },
+    {
+      "stage": "GitHub connector publication",
+      "status": "success",
+      "reason": "public original archive byte identity and parent/tree equality checked; ordinary ancestor-preserving ref update only"
+    }
+  ],
+  "new_independent_real_tasks": 0,
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE",
+  "learning_decision": "NoUpdate"
+}
