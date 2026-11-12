@@ -1,0 +1,79 @@
+{
+  "schema": "hcsn-original-c2-artifact-transfer-progress-v1",
+  "archive": {
+    "bytes": 11397159,
+    "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75"
+  },
+  "source": {
+    "host": "desktop",
+    "path": "/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip",
+    "version": "2050:49963775:11397159:1794465747885470553:1794465747955468536",
+    "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+    "export_job": "1a1ce7e3837-2564-16c9"
+  },
+  "expected_parts": 87,
+  "uploaded_parts": 7,
+  "uploaded_bytes": 917504,
+  "full_archive_verified": false,
+  "canonical_export_manifest_published": false,
+  "new_model_executions": 0,
+  "parts": [
+    {
+      "part": 0,
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "624c66abcf24bacb3af33f65ddf01875fb6a8643a348af59d7a9394e57f5d8e1",
+      "git_blob_sha1": "e3778a190fcf658a85542e0b880919bce6625ab4",
+      "path": "parts/part-000.bin"
+    },
+    {
+      "part": 1,
+      "offset": 131072,
+      "bytes": 131072,
+      "sha256": "b5d6f953cbe6ce9cb9625a5f08ed7b333104e32ef9bb72cd490af209caca39ac",
+      "git_blob_sha1": "e757a7bf241cabdc6b2aaab72d71f9c445e27ecd",
+      "path": "parts/part-001.bin"
+    },
+    {
+      "part": 4,
+      "offset": 524288,
+      "bytes": 131072,
+      "sha256": "7f7148217f470f65a3fe997a955d41e0b19fe16c1d42f8026538f6d24bbbc8a5",
+      "git_blob_sha1": "decae204e7cc436655cf2d8adbe341d47874cc72",
+      "path": "parts/part-004.bin"
+    },
+    {
+      "part": 44,
+      "offset": 5767168,
+      "bytes": 131072,
+      "sha256": "b9b031debdb64b23317a3d9611e7750cc03dc624594a21b414e7078906abe392",
+      "git_blob_sha1": "01398a8683e97da64ef3b37cf332ce54b9f9461a",
+      "path": "parts/part-044.bin"
+    },
+    {
+      "part": 45,
+      "offset": 5898240,
+      "bytes": 131072,
+      "sha256": "077924ecd78f264719aa2dfc86b876e4c4e32544bb603667087793050f0ace58",
+      "git_blob_sha1": "a97ac0891248066c219ed51ee3db102f28470e31",
+      "path": "parts/part-045.bin"
+    },
+    {
+      "part": 46,
+      "offset": 6029312,
+      "bytes": 131072,
+      "sha256": "8311a434d03af330644aed00d1edbd2b5ffb64138bce351eabf3b431ca055d72",
+      "git_blob_sha1": "228ab1cde822f8aad448ae8577f78354d2466935",
+      "path": "parts/part-046.bin"
+    },
+    {
+      "part": 47,
+      "offset": 6160384,
+      "bytes": 131072,
+      "sha256": "d7721e85733b6b938dd3019c4b1020efd3b7116fd77984cc62f14bf725008bea",
+      "git_blob_sha1": "f91190db36bb0ccf05dac2244ac7a39b177bc42a",
+      "path": "parts/part-047.bin"
+    }
+  ],
+  "scientific_admission": "INCOMPLETE_TRANSFER_HOLD_NO_GO"
+}
