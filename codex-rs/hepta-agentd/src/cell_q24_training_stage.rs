@@ -19,7 +19,17 @@ use super::OriginalCellQ24TrainingReceiptOwnerV1;
 use crate::CellQ24TrainingOutcomeV1;
 use crate::CellQ24TrainingOwnerErrorV1;
 use crate::CellQ24TrainingOwnerV1;
+use crate::cell_composed_q24::OriginalQ24DatasetReadV1;
+use crate::cell_composed_q24::OriginalQ24OwnerReadV1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_stage_operation.rs"]
+mod operation;
+#[cfg(target_os = "linux")]
+pub(crate) use operation::OriginalQ24TrainingOperationEvidenceV1;
+#[cfg(target_os = "linux")]
+pub(crate) use operation::OriginalQ24TrainingOperationV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24TrainingStageErrorV1 {
@@ -113,51 +123,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         cancellation: Arc<AtomicBool>,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         self.require_dataset(dataset)?;
-        self.in_lane(
-            move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
-                Ok(_) => owners.read_original_completion(),
-                Err(LearningOriginalOwnerErrorV1::Store(
-                    ProductEvaluationExecutionStoreErrorV1::Missing,
-                )) => {
-                    let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
-                    let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
-                        &mut owners.receipts;
-                    let retained_outcome = match training.readback() {
-                        Ok(outcome) => Some(outcome),
-                        Err(CellQ24TrainingOwnerErrorV1::Store(
-                            ProductEvaluationExecutionStoreErrorV1::Missing,
-                        )) => None,
-                        Err(error) => return Err(error.into()),
-                    };
-                    // Readback can block on the original witness. Check time
-                    // after that I/O, before any new training or receipt claim.
-                    let now = super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    receipts
-                        .config
-                        .verifier
-                        .require_signer_binding(
-                            LearningEvidenceRoleV1::Generator,
-                            &receipts.config.signer,
-                            now,
-                        )
-                        .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds {
-                        return Err(Error::DeadlineExceeded);
-                    }
-                    let outcome = match retained_outcome {
-                        Some(outcome) => outcome,
-                        None => training.fit_or_readback(&cancellation)?,
-                    };
-                    let (receipt, attestation) = receipts.attest_original_completion(training)?;
-                    Ok(OriginalCellQ24TrainingCompletionV1 {
-                        outcome,
-                        receipt,
-                        attestation,
-                    })
-                }
-                Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
-            },
-        )
+        self.in_lane(move |owners| {
+            owners.execute_original_training_with_source(&cancellation, &OriginalQ24OwnerReadV1)
+        })
         .await
     }
 
@@ -274,10 +242,67 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 }
 
 impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
+    fn execute_original_training_with_source(
+        &mut self,
+        cancellation: &AtomicBool,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
+        match self.receipts.journal.read(&self.receipts.saved) {
+            Ok(_) => self.read_original_completion_with_source(source),
+            Err(LearningOriginalOwnerErrorV1::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing,
+            )) => {
+                let training: &mut CellQ24TrainingOwnerV1<TW> = &mut self.training;
+                let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> = &mut self.receipts;
+                let retained_outcome = match training.readback_with_source(source) {
+                    Ok(outcome) => Some(outcome),
+                    Err(CellQ24TrainingOwnerErrorV1::Store(
+                        ProductEvaluationExecutionStoreErrorV1::Missing,
+                    )) => None,
+                    Err(error) => return Err(error.into()),
+                };
+                // Readback can block on the original witness. Check time
+                // after that I/O, before any new training or receipt claim.
+                let now = super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                receipts
+                    .config
+                    .verifier
+                    .require_signer_binding(
+                        LearningEvidenceRoleV1::Generator,
+                        &receipts.config.signer,
+                        now,
+                    )
+                    .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds {
+                    return Err(Error::DeadlineExceeded);
+                }
+                let outcome = match retained_outcome {
+                    Some(outcome) => outcome,
+                    None => training.fit_or_readback_with_source(cancellation, source)?,
+                };
+                let (receipt, attestation) =
+                    receipts.attest_completion_with_source(training, source)?;
+                Ok(OriginalCellQ24TrainingCompletionV1 {
+                    outcome,
+                    receipt,
+                    attestation,
+                })
+            }
+            Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
+        }
+    }
+
     fn read_original_completion(&mut self) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
+        self.read_original_completion_with_source(&OriginalQ24OwnerReadV1)
+    }
+
+    fn read_original_completion_with_source(
+        &mut self,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         let training: &mut CellQ24TrainingOwnerV1<TW> = &mut self.training;
-        let (receipt, attestation) = self.receipts.readback(training)?;
-        let outcome = training.readback()?;
+        let (receipt, attestation) = self.receipts.readback_with_source(training, source)?;
+        let outcome = training.readback_with_source(source)?;
         Ok(OriginalCellQ24TrainingCompletionV1 {
             outcome,
             receipt,

@@ -28,6 +28,8 @@ use super::CellQ24TrainingBatchV1;
 use super::CellQ24TrainingErrorV1;
 use super::CellQ24TrainingMetricsV1;
 use super::CellQ24TrainingOutcomeV1;
+use super::OriginalQ24DatasetReadV1;
+use super::OriginalQ24OwnerReadV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24TrainingOwnerErrorV1 {
@@ -71,8 +73,16 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     /// capability. Legacy HQ24T001 trainers keep their existing behavior.
     #[cfg(target_os = "linux")]
     pub(crate) fn require_original_dataset_provenance(&self) -> Result<(), Error> {
-        self.batch.require_original_dataset_provenance()?;
-        self.require_current()
+        self.require_original_dataset_source(&OriginalQ24OwnerReadV1)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_original_dataset_source(
+        &self,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<(), Error> {
+        OriginalQ24DatasetReadV1::require_original_batch(source, &self.batch)?;
+        self.require_current_with_source(source)
     }
 
     /// Read-only preflight for the original typed training/signature pair.
@@ -81,10 +91,19 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         dataset: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<(), Error> {
+        self.require_dataset_scope_with_source(dataset, scope, &OriginalQ24OwnerReadV1)
+    }
+
+    pub(crate) fn require_dataset_scope_with_source(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<(), Error> {
         if dataset != &self.plan.prefix || scope != &self.plan.scope {
             return Err(Error::Binding("original training Dataset and scope"));
         }
-        self.require_current()
+        self.require_current_with_source(source)
     }
 
     /// Explicit genesis only. An existing file or witness is never reset.
@@ -166,37 +185,60 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         &mut self,
         cancellation: &AtomicBool,
     ) -> Result<CellQ24TrainingOutcomeV1, Error> {
-        self.require_current()?;
+        self.fit_or_readback_with_source(cancellation, &OriginalQ24OwnerReadV1)
+    }
+
+    pub(crate) fn fit_or_readback_with_source(
+        &mut self,
+        cancellation: &AtomicBool,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<CellQ24TrainingOutcomeV1, Error> {
+        self.require_current_with_source(source)?;
         let before = anchor(self.journal.anchor());
         match self.journal.claim(&self.key)? {
             ProductEvaluationExecutionClaimV1::Existing(state) => return self.decode_state(state),
             ProductEvaluationExecutionClaimV1::Claimed => self.anchor_append(before)?,
         }
-        let outcome = self.plan.fit(self.batch.clone(), self.rule, cancellation)?;
+        let outcome = self.plan.fit_with_original_source(
+            self.batch.clone(),
+            self.rule,
+            cancellation,
+            source,
+        )?;
         let payload = encode(&outcome, self.key.binding_digest)?;
         // Validate exactly the bytes that will be persisted, using the same
         // reconstruction as cold readback, before committing a terminal result.
         self.decode(&payload)?;
-        self.require_current()?;
+        self.require_current_with_source(source)?;
         let before = anchor(self.journal.anchor());
         self.journal.complete(&self.key, &payload)?;
         self.anchor_append(before)?;
-        self.readback()
+        self.readback_with_source(source)
     }
 
     /// Inspect only this original operation. Missing storage remains Missing;
     /// no request is claimed and no deadline, weight or metric is regenerated.
     pub fn readback(&mut self) -> Result<CellQ24TrainingOutcomeV1, Error> {
-        self.require_current()?;
+        self.readback_with_source(&OriginalQ24OwnerReadV1)
+    }
+
+    pub(crate) fn readback_with_source(
+        &mut self,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<CellQ24TrainingOutcomeV1, Error> {
+        self.require_current_with_source(source)?;
         let state = self.journal.readback(&self.key)?;
         self.decode_state(state)
     }
 
-    fn require_current(&self) -> Result<(), Error> {
+    fn require_current_with_source(
+        &self,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<(), Error> {
         if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())) {
             return Err(Error::CommitUncertain);
         }
-        self.batch.revalidate_source()?;
+        OriginalQ24DatasetReadV1::require_current_batch(source, &self.batch)?;
         Ok(())
     }
 

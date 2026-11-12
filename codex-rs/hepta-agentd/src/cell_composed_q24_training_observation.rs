@@ -13,6 +13,8 @@ use codex_hepta_types::Digest32;
 use super::CellQ24TrainingOutcomeV1;
 use super::CellQ24TrainingOwnerV1;
 use super::Error;
+use super::OriginalQ24DatasetReadV1;
+use super::OriginalQ24OwnerReadV1;
 
 /// Exact unsigned material read from an anchored original training completion.
 /// The original evidence owner must retain its own observation time and sign
@@ -48,7 +50,15 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         &mut self,
         original_dataset_cut: &LearningIterationSnapshotV1,
     ) -> Result<CellQ24TrainingObservationV2, Error> {
-        self.require_current()?;
+        self.read_learning_observation_with_source(original_dataset_cut, &OriginalQ24OwnerReadV1)
+    }
+
+    pub(crate) fn read_learning_observation_with_source(
+        &mut self,
+        original_dataset_cut: &LearningIterationSnapshotV1,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<CellQ24TrainingObservationV2, Error> {
+        self.require_current_with_source(source)?;
         if original_dataset_cut != &self.plan.prefix {
             return Err(Error::Binding("original training Dataset cut"));
         }
@@ -98,7 +108,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             .scope
             .validate_observation(&observation)
             .map_err(|_| Error::Binding("original frozen training scope"))?;
-        self.require_current()?;
+        self.require_current_with_source(source)?;
         Ok(CellQ24TrainingObservationV2 {
             iteration_head: self.plan.prefix.head_digest,
             scope_binding: self.plan.scope.binding(),
