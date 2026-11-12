@@ -55,10 +55,8 @@ EXPECTED = {
     "root_resident_final_observation": [
         "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
     ],
-    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"],
-    "root_resident_gate_training_cancel": [
-        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
-    ],
+    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"],
+    "root_resident_gate_training_cancel": ["codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"],
     "root_resident_original_intent_fence": [
         "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
     ],
@@ -102,6 +100,12 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
     "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
     "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
 ]
 ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
@@ -263,7 +267,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn admit(", "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?"),
             ("fn admit(", "slot.take().ok_or(Error::CommitUncertain)?"),
             ("fn admit(", "ResidentOriginalStageOwnersV3::install_fresh_resident_gate("),
-            ("fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?"),
+            ("fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(\n            stages.as_ref(),\n            coordinator.snapshot(),\n            stage,\n        )?"),
             ("fn continue_original(", "gate.begin(&predecessor, stage).await?"),
             ("fn continue_original(", "watchdog.tick()"),
             ("fn continue_original(", "authentication::original_attestations("),
@@ -286,7 +290,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             "channel\n                .peer\n                .check_peer_lifetime()",
             "fresh < observed_at",
             "wire::require_original_prefix(",
-            "authentication::verify_attestations(",
+            "authentication::verify_original_evidence(",
         ):
             with self.subTest(marker=marker):
                 self.rejects(filename, "fn exchange(", marker)
@@ -364,15 +368,15 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn original_attestations(", "stages.validate_recovery(snapshot).await?"),
             ("fn original_attestations(", "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?"),
             ("fn original_attestations(", "let (_, fresh) = owner.read(cancellation).await?"),
-            ("fn verify_attestations(", "signatures.len() != snapshot.receipts.len()"),
-            ("fn verify_attestations(", "verifier\n            .verify(role, signature, &payload, now)"),
-            ("fn verify_attestations(", "snapshot.training_no_update_v2().is_none()"),
-            ("fn verify_attestations(", "verify_signed_actor_separation(&previous.1, current, now)"),
+            ("fn verify_non_model_attestations(", "signatures.len() + proposal_count != snapshot.receipts.len()"),
+            ("fn verify_non_model_attestations(", "verifier\n            .verify(role, signature, &payload, now)"),
+            ("fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_none()"),
+            ("fn verify_non_model_attestations(", "verify_signed_actor_separation(&previous.1, current, now)"),
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(filename, function, marker)
         self.rejects("authority_host_learning_resident_wire.rs", "fn require_original_prefix(",
-                     "!current.attestations.starts_with(evidence)")
+                     "!current.attestations.starts_with(&previous.attestations)")
 
     def test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof(self):
         workflow = (ROOT / ".github/workflows/hepta-daemon-learning-native.yml").read_text()
@@ -389,12 +393,18 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             '#[path = "authority_host_learning_resident_evaluation_tests.rs"]\nmod evaluation;',
             roots,
         )
+        model = (ROOT / (AGENT + "authority_host_learning_resident_model_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_model_tests.rs"]\nmod original_model;',
+            roots,
+        )
         for name in ROOT_CASES:
-            source = evaluation if "::evaluation::" in name else roots
+            source = model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
         self.assertEqual(
             roots.count('#[ignore = "explicit actual Root')
-            + evaluation.count('#[ignore = "explicit actual Root'),
+            + evaluation.count('#[ignore = "explicit actual Root')
+            + model.count('#[ignore = "explicit actual Root'),
             len(ROOT_CASES),
         )
         for marker in (

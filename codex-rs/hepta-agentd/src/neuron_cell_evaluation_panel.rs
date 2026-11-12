@@ -162,3 +162,8 @@ pub use host::OriginalCellEvaluationCommandConnectionV1;
 pub use host::OriginalCellEvaluationCommandErrorV1;
 pub use host::OriginalCellEvaluationCommandReceiptV1;
 pub use host::OriginalCellEvaluationHostV1;
+
+pub(crate) use host::OriginalCellEvaluationModelInputV1;
+pub use host::OriginalCellEvaluationModelMaterialClientV1;
+pub use host::OriginalCellEvaluationModelMaterialConnectionV1;
+pub use host::OriginalCellEvaluationModelMaterialV1;

@@ -44,8 +44,15 @@ pub use bootstrap::OriginalCellQ24TrainingBootstrapCustodyV1;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapErrorV1;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1;
 
+#[path = "cell_q24_model_command.rs"]
+mod model_command;
 #[path = "cell_q24_training_command_service.rs"]
 mod serving;
+pub use model_command::OriginalCellQ24ModelCommandClientV1;
+pub use model_command::OriginalCellQ24ModelCommandConnectionV1;
+pub use model_command::OriginalCellQ24ModelCommandErrorV1;
+pub use model_command::OriginalCellQ24ModelCommandHostV1;
+pub use model_command::OriginalCellQ24ModelCommandReceiptV1;
 #[path = "cell_q24_training_command_wire.rs"]
 mod wire;
 pub use serving::OriginalCellQ24TrainingCommandOwnerV1;

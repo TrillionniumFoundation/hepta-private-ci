@@ -41,6 +41,10 @@ use crate::CellQ24TrainingOwnerV1;
 mod admission;
 use admission::Admission;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_current_owner.rs"]
+mod current;
+
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24ModelProposalErrorV1 {
     #[error("Q24 model proposal binding: {0}")]
@@ -57,6 +61,9 @@ pub enum CellQ24ModelProposalErrorV1 {
     Iteration(#[from] LearningIterationError),
     #[error("evidence: {0}")]
     Evidence(#[from] SignedEvidenceError),
+    #[cfg(target_os = "linux")]
+    #[error("original current Evaluation material: {0}")]
+    OriginalEvaluationMaterial(Box<crate::OriginalCellEvaluationCommandErrorV1>),
     #[error("proposal file: {0}")]
     File(#[from] LockedFileProductEvaluationExecutionErrorV1),
     #[error("proposal store: {0}")]
@@ -120,6 +127,16 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         if witness.current()?.is_some() {
             return Err(Error::Binding("proposal witness already initialized"));
         }
+        Self::create_empty_original(file, witness, dataset_cut, scope, binding)
+    }
+
+    fn create_empty_original(
+        file: File,
+        mut witness: W,
+        dataset_cut: LearningIterationSnapshotV1,
+        scope: Digest32,
+        binding: Digest32,
+    ) -> Result<Self, Error> {
         let journal = LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;
         witness
             .compare_and_swap(None, anchor(journal.anchor())?)
@@ -148,6 +165,17 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         let minimum = witness
             .current()?
             .ok_or(Error::Binding("original proposal witness"))?;
+        Self::recover_existing_original(file, witness, dataset_cut, scope, binding, minimum)
+    }
+
+    fn recover_existing_original(
+        file: File,
+        mut witness: W,
+        dataset_cut: LearningIterationSnapshotV1,
+        scope: Digest32,
+        binding: Digest32,
+        minimum: JournalAnchor,
+    ) -> Result<Self, Error> {
         let journal = LockedFileProductEvaluationExecutionStoreV1::recover(
             file,
             binding,
@@ -184,19 +212,38 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let now = self.now()?;
         let admission = self.admit(trainer, inputs, now)?;
+        self.commit_admitted(&admission, now)
+    }
+
+    fn commit_admitted(
+        &mut self,
+        admission: &Admission,
+        now: u64,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let key = admission.key(self.binding);
         match self.journal.readback(&key) {
-            Ok(state) => return self.decode_current(&admission, state),
+            Ok(state) => return self.decode_current(admission, state),
             Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {}
             Err(error) => return Err(error.into()),
         }
         let payload = admission.encode(now)?;
         self.require_current()?;
+        self.complete_admitted(admission, &key, &payload)
+    }
+
+    // One original claim/completion algorithm shared by local and sealed remote
+    // admission. Each caller checks CURRENT and its pure authorization first.
+    fn complete_admitted(
+        &mut self,
+        admission: &Admission,
+        key: &ProductEvaluationExecutionKeyV1,
+        payload: &[u8],
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let before = anchor(self.journal.anchor())?;
-        match self.journal.claim(&key) {
+        match self.journal.claim(key) {
             Ok(ProductEvaluationExecutionClaimV1::Claimed) => self.anchor_append(before)?,
             Ok(ProductEvaluationExecutionClaimV1::Existing(state)) => {
-                return self.decode_current(&admission, state);
+                return self.decode_current(admission, state);
             }
             Err(_) => {
                 self.fenced = true;
@@ -204,13 +251,13 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
             }
         }
         let before = anchor(self.journal.anchor())?;
-        if self.journal.complete(&key, &payload).is_err() {
+        if self.journal.complete(key, payload).is_err() {
             self.fenced = true;
             return Err(Error::CommitUncertain);
         }
         self.anchor_append(before)?;
-        let state = self.journal.readback(&key)?;
-        self.decode_current(&admission, state)
+        let state = self.journal.readback(key)?;
+        self.decode_current(admission, state)
     }
 
     /// Read-only: Missing and Pending remain errors, including after expiry.

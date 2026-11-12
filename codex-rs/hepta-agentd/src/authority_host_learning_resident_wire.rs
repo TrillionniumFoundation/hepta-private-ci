@@ -3,17 +3,17 @@
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
-use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
 use super::RootResidentLearningObservationV3;
 use super::authentication;
+use super::model::ResidentOriginalModelProofV3;
 use super::profile::RootResidentLearningProfileV3;
 use super::runtime::ResidentRuntimeObservationV3;
+use super::transport::ResidentReadbackPinV3;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::learning_iteration_checkpoint::decode_original_owner_snapshot_v1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
@@ -58,6 +58,8 @@ pub(super) enum Reply {
         snapshot: Option<String>,
         evidence: Vec<String>,
         dispatch_pending: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        model: Option<String>,
     },
     Uncertain,
     Unavailable,
@@ -86,6 +88,10 @@ pub(super) fn encode_current(observation: ResidentRuntimeObservationV3) -> Resul
         snapshot,
         evidence,
         dispatch_pending: observation.dispatch_pending,
+        model: observation
+            .model
+            .as_ref()
+            .map(|proof| STANDARD_NO_PAD.encode(proof.encode())),
     })
 }
 
@@ -99,6 +105,7 @@ pub(super) fn decode_current(
         snapshot,
         evidence,
         dispatch_pending,
+        model,
     } = reply
     else {
         return Err(match reply {
@@ -143,30 +150,65 @@ pub(super) fn decode_current(
             Ok(evidence)
         })
         .collect::<Result<Vec<_>, _>>()?;
+    let model = model
+        .map(|encoded| {
+            if encoded.len() != 203 {
+                return Err(Error::WrongScope);
+            }
+            let bytes = STANDARD_NO_PAD
+                .decode(&encoded)
+                .map_err(|_| Error::WrongScope)?;
+            if STANDARD_NO_PAD.encode(&bytes) != encoded {
+                return Err(Error::WrongScope);
+            }
+            ResidentOriginalModelProofV3::decode_root_reply(
+                &bytes,
+                profile,
+                verifier,
+                snapshot.as_ref().ok_or(Error::WrongScope)?,
+                &attestations,
+                now,
+            )
+        })
+        .transpose()?;
     match &snapshot {
-        Some(snapshot) => {
-            authentication::verify_attestations(profile, verifier, snapshot, &attestations, now)?
+        Some(snapshot) => authentication::verify_original_evidence(
+            profile,
+            verifier,
+            snapshot,
+            &attestations,
+            model.as_ref(),
+            now,
+        )?,
+        None if !attestations.is_empty() || dispatch_pending || model.is_some() => {
+            return Err(Error::WrongScope);
         }
-        None if !attestations.is_empty() || dispatch_pending => return Err(Error::WrongScope),
         None => {}
     }
     Ok(RootResidentLearningObservationV3 {
         snapshot,
         attestations,
         dispatch_pending,
+        model,
     })
 }
 
 pub(super) fn require_original_prefix(
-    previous: &Option<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)>,
+    previous: &Option<ResidentReadbackPinV3>,
     current: &RootResidentLearningObservationV3,
 ) -> Result<(), Error> {
-    if let Some((previous, evidence)) = previous {
+    if let Some(previous) = previous {
         let snapshot = current.snapshot.as_ref().ok_or(Error::CommitUncertain)?;
-        if snapshot.request != previous.request
-            || snapshot.owners != previous.owners
-            || !snapshot.receipts.starts_with(&previous.receipts)
-            || !current.attestations.starts_with(evidence)
+        if snapshot.request != previous.snapshot.request
+            || snapshot.owners != previous.snapshot.owners
+            || !snapshot.receipts.starts_with(&previous.snapshot.receipts)
+            || !current.attestations.starts_with(&previous.attestations)
+            || previous.model.as_ref().is_some_and(|saved| {
+                current
+                    .model
+                    .as_ref()
+                    .is_none_or(|model| model.encode() != *saved)
+            })
         {
             return Err(Error::CommitUncertain);
         }

@@ -32,6 +32,8 @@ use crate::OriginalCellQ24TrainingStageErrorV1;
 
 #[path = "cell_q24_training_bootstrap_build.rs"]
 mod build;
+#[path = "cell_q24_model_command_host.rs"]
+pub(super) mod model_host;
 #[path = "cell_q24_training_bootstrap_service.rs"]
 mod serving;
 
@@ -106,6 +108,7 @@ pub struct OriginalCellQ24TrainingBootstrapOwnerV1<TW: AnchorWitnessStore, RW: A
     cancellation: Arc<AtomicBool>,
     runtime: Handle,
     bootstrap_lane: Semaphore,
+    model_host_bound: AtomicBool,
     connections: Arc<Semaphore>,
     #[cfg(test)]
     writer_gate: Mutex<Option<tests::support::WriterGate>>,
@@ -176,6 +179,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             cancellation,
             runtime: Handle::current(),
             bootstrap_lane: Semaphore::new(1),
+            model_host_bound: AtomicBool::default(),
             connections: Arc::new(Semaphore::new(4)),
             #[cfg(test)]
             writer_gate: Mutex::new(None),

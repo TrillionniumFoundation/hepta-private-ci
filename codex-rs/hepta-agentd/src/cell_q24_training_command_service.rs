@@ -31,6 +31,8 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
 #[path = "cell_q24_training_candidate_service.rs"]
 mod candidate;
+#[path = "cell_q24_model_command_lane.rs"]
+mod model_lane;
 
 enum Admission {
     OriginalExecution,

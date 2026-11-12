@@ -3,7 +3,8 @@
 //! Evaluation uses its initially delivered original host connection. That host
 //! must retain the actual independent B/retention owners and original Evaluator
 //! receipt capability. Candidate bytes remain readonly material; neither this
-//! route nor an Evaluation receipt supplies Model, adoption or FinalUse rights.
+//! route nor an Evaluation receipt supplies adoption or FinalUse rights. The
+//! separately delivered original Model connection is the only Proposal path.
 
 use std::sync::Arc;
 use std::time::Instant;
@@ -39,6 +40,9 @@ use readback::CandidateRead;
 #[path = "cell_q24_candidate_stage_evaluation.rs"]
 mod evaluation;
 use evaluation::EvaluationLane;
+#[path = "cell_q24_candidate_stage_model.rs"]
+mod model;
+use model::ModelLane;
 
 /// All endpoints are original connected streams delivered at the same initial
 /// handoff. There is no future Training receipt, B result, panel or model DTO.
@@ -46,6 +50,7 @@ pub struct OriginalCellQ24CandidateStageStreamsV1 {
     pub common: OriginalCellQ24NoUpdateStageStreamsV1,
     pub candidate_material: OriginalCellQ24NoUpdatePeerStreamV1,
     pub evaluator: OriginalCellQ24NoUpdatePeerStreamV1,
+    pub model: OriginalCellQ24NoUpdatePeerStreamV1,
 }
 
 /// Root consumes this value. No Clone, owner getter, callback, key or mutable
@@ -56,6 +61,7 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     baseline: Arc<LoadedCellQ24ModelV1>,
     candidate: Mutex<CandidateLane>,
     evaluation: Mutex<EvaluationLane>,
+    model: Mutex<ModelLane>,
     end: Instant,
 }
 
@@ -123,7 +129,10 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
+                if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
+                    OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?;
+                    Ok(())
+                } else if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
                     // This is original readback, including while the fresh
                     // Root future still has the three-cut Evaluation intent.
                     // It never asks that gate to accept the future fourth cut.
@@ -163,6 +172,9 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
                         return Err(Error::WrongScope);
                     }
                     return self.execute_original_evaluation(snapshot).await;
+                }
+                if stage == Stage::Proposal {
+                    return self.execute_original_model(snapshot).await;
                 }
                 // A real NoUpdate follows the same existing Selector/C route.
                 // Candidate must not reach those retained-baseline commands.
@@ -241,6 +253,7 @@ pub(crate) fn fixture_from_original_clients(
         baseline,
         candidate: Mutex::new(CandidateLane::new(initial)),
         evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
+        model: Mutex::new(ModelLane::fixture_unavailable()),
         end,
     };
     owners.require_initial(
