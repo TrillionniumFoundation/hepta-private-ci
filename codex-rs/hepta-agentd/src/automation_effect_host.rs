@@ -1337,7 +1337,10 @@ pub(crate) mod tests {
             );
             server.verify().await;
             assert!(
-                !fixture.identity.layout.automation_root()
+                !fixture
+                    .identity
+                    .layout
+                    .automation_root()
                     .join(crate::automation_predispatch_export::DIRECTORY)
                     .exists(),
                 "{name}: rejected skill envelope must not create a predispatch shadow fact"

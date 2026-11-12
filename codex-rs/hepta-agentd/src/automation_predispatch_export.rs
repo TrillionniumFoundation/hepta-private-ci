@@ -51,7 +51,9 @@ pub(crate) async fn observe(
         Ok(status) => status,
         Err(()) => "unavailable",
     };
-    eprintln!("{{\"event\":\"predispatch_shadow_retention\",\"status\":\"{status}\",\"authority\":false}}");
+    eprintln!(
+        "{{\"event\":\"predispatch_shadow_retention\",\"status\":\"{status}\",\"authority\":false}}"
+    );
 }
 
 async fn capture(
@@ -112,7 +114,9 @@ async fn capture(
 fn semantic_digest(fact: &Value) -> Result<Sha256Digest, ()> {
     let mut semantic = fact.clone();
     semantic.as_object_mut().ok_or(())?.remove("caller_time_ms");
-    Ok(Sha256Digest::for_bytes(&serde_json::to_vec(&semantic).map_err(|_| ())?))
+    Ok(Sha256Digest::for_bytes(
+        &serde_json::to_vec(&semantic).map_err(|_| ())?,
+    ))
 }
 
 #[cfg(not(unix))]
@@ -137,18 +141,28 @@ impl SlotRoot {
         use std::os::unix::fs::MetadataExt;
         use std::os::unix::fs::OpenOptionsExt;
 
-        let owner = OpenOptions::new().read(true)
+        let owner = OpenOptions::new()
+            .read(true)
             .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
-            .open(owner_root).map_err(|_| ())?;
+            .open(owner_root)
+            .map_err(|_| ())?;
         let name = std::ffi::CString::new(DIRECTORY).map_err(|_| ())?;
         // SAFETY: owner is an open directory and name is a live NUL-terminated
         // single-component path. All child IO remains relative to owned FDs.
         let created = unsafe { libc::mkdirat(owner.as_raw_fd(), name.as_ptr(), 0o700) };
-        if created < 0 && std::io::Error::last_os_error().kind() != std::io::ErrorKind::AlreadyExists {
+        if created < 0
+            && std::io::Error::last_os_error().kind() != std::io::ErrorKind::AlreadyExists
+        {
             return Err(());
         }
         // SAFETY: same valid directory FD and owned C string as above.
-        let raw = unsafe { libc::openat(owner.as_raw_fd(), name.as_ptr(), libc::O_RDONLY | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC) };
+        let raw = unsafe {
+            libc::openat(
+                owner.as_raw_fd(),
+                name.as_ptr(),
+                libc::O_RDONLY | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC,
+            )
+        };
         if raw < 0 {
             return Err(());
         }
@@ -171,7 +185,14 @@ impl SlotRoot {
         let name = std::ffi::CString::new(format!("slot-{index:02}.json"))?;
         // SAFETY: self owns the directory FD, name is one validated component,
         // and mode is used only with O_CREAT. The returned FD is owned below.
-        let raw = unsafe { libc::openat(self.0.as_raw_fd(), name.as_ptr(), flags | libc::O_NOFOLLOW | libc::O_CLOEXEC, 0o600) };
+        let raw = unsafe {
+            libc::openat(
+                self.0.as_raw_fd(),
+                name.as_ptr(),
+                flags | libc::O_NOFOLLOW | libc::O_CLOEXEC,
+                0o600,
+            )
+        };
         if raw < 0 {
             return Err(std::io::Error::last_os_error());
         }
@@ -180,66 +201,79 @@ impl SlotRoot {
     }
 
     fn retain(&self, fact: Value) -> Result<&'static str, ()> {
-    use std::io::Read;
-    use std::io::Write;
-    use std::os::unix::fs::MetadataExt;
-    let semantic_sha256 = semantic_digest(&fact)?;
-    let fact_sha256 = Sha256Digest::for_bytes(&serde_json::to_vec(&fact).map_err(|_| ())?);
-    let encoded = serde_json::to_vec(&StoredFact {
-        schema_version: 1, semantic_sha256: semantic_sha256.clone(), fact_sha256, fact,
-    }).map_err(|_| ())?;
-    if encoded.len() > MAX_FACT_BYTES {
-        return Err(());
-    }
-    // Scan all fixed slots before using a vacancy, so draining a lower slot
-    // cannot duplicate an already-retained immutable source identity.
-    let mut vacant = Vec::new();
-    let mut existing = false;
-    for slot in 0..SLOT_COUNT {
-        let mut file = match self.slot(slot, libc::O_RDONLY | libc::O_NONBLOCK) {
-            Ok(file) => file,
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-                vacant.push(slot);
-                continue;
-            }
-            Err(_) => return Err(()),
-        };
-        let metadata = file.metadata().map_err(|_| ())?;
-        if !metadata.is_file() || metadata.nlink() != 1 || metadata.len() > MAX_FACT_BYTES as u64
-            || metadata.mode() & 0o077 != 0
-        {
+        use std::io::Read;
+        use std::io::Write;
+        use std::os::unix::fs::MetadataExt;
+        let semantic_sha256 = semantic_digest(&fact)?;
+        let fact_sha256 = Sha256Digest::for_bytes(&serde_json::to_vec(&fact).map_err(|_| ())?);
+        let encoded = serde_json::to_vec(&StoredFact {
+            schema_version: 1,
+            semantic_sha256: semantic_sha256.clone(),
+            fact_sha256,
+            fact,
+        })
+        .map_err(|_| ())?;
+        if encoded.len() > MAX_FACT_BYTES {
             return Err(());
         }
-        let mut bytes = Vec::new();
-        Read::by_ref(&mut file).take((MAX_FACT_BYTES + 1) as u64).read_to_end(&mut bytes).map_err(|_| ())?;
-        let retained: StoredFact = serde_json::from_slice(&bytes).map_err(|_| ())?;
-        if bytes.len() > MAX_FACT_BYTES || retained.schema_version != 1
-            || serde_json::to_vec(&retained).map_err(|_| ())? != bytes
-            || semantic_digest(&retained.fact)? != retained.semantic_sha256
-            || Sha256Digest::for_bytes(&serde_json::to_vec(&retained.fact).map_err(|_| ())?) != retained.fact_sha256
-        {
-            return Err(());
-        }
-        if retained.semantic_sha256 == semantic_sha256 {
-            existing = true;
-        }
-    }
-    if existing {
-        return Ok("retained_existing");
-    }
-    if let Some(slot) = vacant.first().copied() {
-        match self.slot(slot, libc::O_WRONLY | libc::O_CREAT | libc::O_EXCL) {
-            Ok(mut file) => {
-                file.write_all(&encoded).map_err(|_| ())?;
-                file.sync_all().map_err(|_| ())?;
-                self.0.sync_all().map_err(|_| ())?;
-                return Ok("retained_new");
+        // Scan all fixed slots before using a vacancy, so draining a lower slot
+        // cannot duplicate an already-retained immutable source identity.
+        let mut vacant = Vec::new();
+        let mut existing = false;
+        for slot in 0..SLOT_COUNT {
+            let mut file = match self.slot(slot, libc::O_RDONLY | libc::O_NONBLOCK) {
+                Ok(file) => file,
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                    vacant.push(slot);
+                    continue;
+                }
+                Err(_) => return Err(()),
+            };
+            let metadata = file.metadata().map_err(|_| ())?;
+            if !metadata.is_file()
+                || metadata.nlink() != 1
+                || metadata.len() > MAX_FACT_BYTES as u64
+                || metadata.mode() & 0o077 != 0
+            {
+                return Err(());
             }
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => return Ok("concurrent_writer_not_retained"),
-            Err(_) => return Err(()),
+            let mut bytes = Vec::new();
+            Read::by_ref(&mut file)
+                .take((MAX_FACT_BYTES + 1) as u64)
+                .read_to_end(&mut bytes)
+                .map_err(|_| ())?;
+            let retained: StoredFact = serde_json::from_slice(&bytes).map_err(|_| ())?;
+            if bytes.len() > MAX_FACT_BYTES
+                || retained.schema_version != 1
+                || serde_json::to_vec(&retained).map_err(|_| ())? != bytes
+                || semantic_digest(&retained.fact)? != retained.semantic_sha256
+                || Sha256Digest::for_bytes(&serde_json::to_vec(&retained.fact).map_err(|_| ())?)
+                    != retained.fact_sha256
+            {
+                return Err(());
+            }
+            if retained.semantic_sha256 == semantic_sha256 {
+                existing = true;
+            }
         }
-    }
-    Ok("capacity_full")
+        if existing {
+            return Ok("retained_existing");
+        }
+        if let Some(slot) = vacant.first().copied() {
+            match self.slot(slot, libc::O_WRONLY | libc::O_CREAT | libc::O_EXCL) {
+                Ok(mut file) => {
+                    file.write_all(&encoded).map_err(|_| ())?;
+                    file.sync_all().map_err(|_| ())?;
+                    self.0.sync_all().map_err(|_| ())?;
+                    return Ok("retained_new");
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                    return Ok("concurrent_writer_not_retained");
+                }
+                Err(_) => return Err(()),
+            }
+        }
+        Ok("capacity_full")
     }
 }
 
