@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="2ce294c2-9c36-4306-8340-056ca7c3bef4" timestamp="2026-11-13T07:10:48.907+08:00" time="1.416">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes" classname="codex-hepta-agentd" timestamp="2026-11-13T07:10:48.914+08:00" time="1.409">
+            <failure message="Error: original child lifetime is no longer live" type="test failure with exit code 101">Error: original child lifetime is no longer live</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1293 filtered out; finished in 1.40s
+
+</system-out>
+            <system-err>ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1988041, start_ticks: 155081070, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=Error: original Initial readiness frame exchange: original Root publication frame read response length: original Root publication poll rejected: ready=0; requested_events=0x1; root_revents=0x0; stream_revents=0x0; deadline_elapsed=true; os_error=None; io_kind=Other; os_error=None
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-AnQaza
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1988040, start_ticks: 155081070, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout= stderr=original Initial phase=worker.accept-before; elapsed_micros=1; remaining_micros=299999436
+original Initial phase=worker.accept-returned; elapsed_micros=252963; remaining_micros=299746474
+original Initial phase=ready.channel-before; elapsed_micros=0; remaining_micros=299746450
+original Initial phase=ready.channel-returned; elapsed_micros=73; remaining_micros=299746376
+original Initial phase=ready.frame-received; elapsed_micros=94; remaining_micros=499989
+original Initial phase=ready.context-returned; elapsed_micros=13093; remaining_micros=486991
+original Initial phase=enrollment.context-before; elapsed_micros=0; remaining_micros=347774
+original Initial phase=enrollment.profile-before; elapsed_micros=12151; remaining_micros=335622
+original Initial phase=enrollment.profile-returned; elapsed_micros=155060; remaining_micros=192714
+original Initial phase=enrollment.profile-context-returned; elapsed_micros=173900; remaining_micros=173874
+original Initial phase=enrollment.run-start-before; elapsed_micros=173905; remaining_micros=173869
+original Initial phase=enrollment.run-start-returned; elapsed_micros=272145; remaining_micros=75629
+original Initial phase=enrollment.cell-before; elapsed_micros=272148; remaining_micros=75626
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-yi14k1
+Error: original child lifetime is no longer live
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>
