@@ -865,6 +865,8 @@ pub use circuit_feature_current::PublishedCircuitFeatureTaskV1;
 pub use circuit_feature_current::circuit_feature_task_digest_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_learning_handoff::OriginalCircuitFeatureLearningHandoffV1;
+#[cfg(target_os = "linux")]
+pub(crate) use circuit_feature_learning_handoff::OriginalHistoricalCircuitFeatureLearningHandoffV1;
 pub use circuit_learning_delivery::deliver_circuit_learning_v1;
 pub use circuit_learning_delivery::reconcile_circuit_learning_v1;
 pub use circuit_task::CircuitTaskErrorV1;
