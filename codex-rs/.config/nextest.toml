@@ -138,3 +138,15 @@ filter = 'package(codex-hepta-supervisor) & (test(=five_real_pairs_adopt_all_ten
 test-group = "hepta_durable_capacity"
 slow-timeout = { period = "30s", terminate-after = 12 }
 retries = 0
+
+# These two opt-in ordinary-main qualifications first wait for A's original
+# 60-second writer lease to retire, then execute the separately bounded post-A
+# learning and C lifecycles. The complete harness needs more than the default
+# 60-second watchdog; original product deadlines, evidence windows and request
+# limits remain unchanged. Serialize actual children and never retry a killed
+# lifecycle. This budget declares workload, not a qualification result.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & (test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_adopts_after_independent_b_and_executes_original_c) | test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c))'
+test-group = "hepta_durable_capacity"
+slow-timeout = { period = "30s", terminate-after = 12 }
+retries = 0
