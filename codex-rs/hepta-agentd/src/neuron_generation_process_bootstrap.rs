@@ -207,8 +207,17 @@ pub(crate) mod linux {
         // Admission rejects it and the native process refuses zero before spawn.
         let clock: Arc<dyn Fn() -> u64 + Send + Sync> = Arc::new(|| boottime_micros().unwrap_or(0));
         let assets = files::open_assets(&d)?;
+        // The pinned manifest explicitly selects transport. Asset descriptors
+        // still follow the same no-follow opening and inode validation policy.
+        let open_worker = match d.config.manifest.profile.as_str() {
+            JointGenerationProcessWorkerV1::RESIDENT_PROFILE
+            | JointGenerationProcessWorkerV1::RESIDENT_OBSERVED_PROFILE => {
+                JointGenerationProcessWorkerV1::open_resident_files
+            }
+            _ => JointGenerationProcessWorkerV1::open_files,
+        };
         let worker = Arc::new(
-            JointGenerationProcessWorkerV1::open_files(
+            open_worker(
                 JointGenerationProcessConfigV1 {
                     executable: d.executable.path.clone(),
                     executable_digest: parse_digest(&d.executable.digest)?.into_array(),
