@@ -32,7 +32,7 @@ CALLERS = {
     "root_learning_scoped_profile_constructor": (PREPARED, AGENT + "authority_host_post_a_derive.rs"),
     "root_learning_scoped_checkpoint_record": (REGISTRATION,),
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),
-    "root_learning_scoped_client_constructor": (INPUTS,),
+    "root_learning_scoped_client_constructor": (),
     "root_learning_scoped_runtime_constructor": (INPUTS,),
 }
 
@@ -207,7 +207,7 @@ class RootLearningScopeSourceClosureTests(unittest.TestCase):
             (REGISTRATION, "fn learning_store(", "scope.validate_snapshot(initial)"),
             (REGISTRATION, "fn learning_store(", "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2("),
             (INPUTS, "fn validate_binding(", "bundle.frozen_scope(&initial)?"),
-            (INPUTS, "fn connect(", "AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2("),
+            (INPUTS, "fn connect_until(", "AgentdLearningCheckpointClientV1::from_original_stream_until("),
             (INPUTS, "fn into_learning_runtime(", "match self.scope"),
             (INPUTS, "fn into_learning_runtime(", "crate::learning_iteration_channel_scoped_v2("),
         ):

@@ -45,8 +45,8 @@ CALLERS = {
     "root_learning_same_service_serve": (SESSION,),
     "root_learning_registered_checkpoint_constructor": (REGISTRATION,),
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),
-    "root_learning_original_client_constructor": (INPUTS,),
-    "root_learning_scoped_client_constructor": (INPUTS,),
+    "root_learning_original_client_constructor": (),
+    "root_learning_scoped_client_constructor": (),
     "root_learning_original_purpose_send": (CLI, AGENT + "authority_host_post_a_worker.rs"),
     "root_learning_original_purpose_receive": (
         LAUNCHER, AGENT + "production_launcher_late_writer.rs",
@@ -224,7 +224,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.rejects(INPUTS, "fn validate_binding(", marker)
-        self.rejects(INPUTS, "fn connect(", "client\n            .restore(&initial.request)\n            .await")
+        self.rejects(INPUTS, "fn connect_until(", "client\n            .restore(&initial.request)\n            .await")
         for marker in (
             "timeout.is_zero()", "timeout > Duration::from_millis(500)",
             "lifetime.is_zero()", "lifetime > Duration::from_secs(300)",
@@ -232,7 +232,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(INPUTS, "fn connect(", marker)
         for occurrence in range(2):
-            self.rejects(INPUTS, "fn connect(", "validate_sealed(&self.bootstrap, length)?", occurrence)
+            self.rejects(INPUTS, "fn connect_until(", "validate_sealed(&self.bootstrap, length)?", occurrence)
 
     def test_unassembled_stage_owners_are_refused_before_runtime_side_effects(self):
         self.rejects(CONFIG, "fn require_root_learning_assembled(", "self.root_learning_inputs.is_some()")
@@ -343,9 +343,9 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
                 "2 => HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2", "self.operation != expected",
                 "decode_scope(self.schema_version, self.update_scope.as_ref(), initial)",
             )),
-            (INPUTS, "fn connect(", (
+            (INPUTS, "fn connect_until(", (
                 "bundle.frozen_scope(&initial)?",
-                "Some(scope) => AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(",
+                "AgentdLearningCheckpointClientV1::from_original_stream_until(",
             )),
             (INPUTS, "fn into_learning_runtime(", (
                 "match self.scope", "Some(scope) => crate::learning_iteration_channel_scoped_v2(",
