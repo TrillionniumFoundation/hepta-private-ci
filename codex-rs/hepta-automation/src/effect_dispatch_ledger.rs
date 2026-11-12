@@ -104,6 +104,7 @@ pub(crate) struct EffectDispatchAttempt {
     /// Exact provider occurrence key frozen before physical contact. Legacy
     /// pre-v20 rows retain `None` and remain recovery-only.
     pub(crate) provider_effect_key: Option<ProviderEffectKey>,
+    pub(crate) provider_context_digest: Option<Sha256Digest>,
     /// Exact immutable provider bytes frozen with the attempt. Legacy pre-v20
     /// rows retain `None`; their digest-only recovery semantics are unchanged.
     pub(crate) wire_payload: Option<Vec<u8>>,
@@ -138,6 +139,7 @@ impl AutomationStore {
         intent_digest: &Sha256Digest,
         payload_digest: &Sha256Digest,
         provider_effect_key: &ProviderEffectKey,
+        provider_context_digest: Option<&Sha256Digest>,
         wire_payload: &[u8],
         binding_digest: &Sha256Digest,
         destination_id: &str,
@@ -151,6 +153,8 @@ impl AutomationStore {
             || wire_payload.len() > MAX_EFFECT_DISPATCH_WIRE_BYTES
             || Sha256Digest::for_bytes(wire_payload) != *payload_digest
             || ProviderEffectKey::parse(provider_effect_key.as_str().to_owned()).is_err()
+            || provider_context_digest
+                .is_some_and(|digest| digest.as_str().bytes().all(|byte| byte == b'0'))
         {
             return Err(TaskFlowError::Invalid(
                 "effect dispatch recovery material".to_string(),
@@ -168,6 +172,7 @@ impl AutomationStore {
             if existing.intent_digest != *intent_digest
                 || existing.payload_digest != *payload_digest
                 || existing.provider_effect_key.as_ref() != Some(provider_effect_key)
+                || existing.provider_context_digest.as_ref() != provider_context_digest
                 || existing.wire_payload.as_deref() != Some(wire_payload)
                 || existing.binding_digest != *binding_digest
                 || existing.destination_id != destination_id
@@ -240,6 +245,7 @@ impl AutomationStore {
                 &mut transaction,
                 previous,
                 provider_effect_key,
+                provider_context_digest,
                 payload_digest,
                 wire_payload,
                 destination_id,
@@ -272,8 +278,9 @@ impl AutomationStore {
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, provider_effect_key, wire_payload, binding_digest,
                 destination_id, authority_epoch, grant_id, grant_nonce_digest,
-                record_command_id, started_at_ms, append_profile_version
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)",
+                record_command_id, started_at_ms, append_profile_version,
+                provider_context_sha256, provider_context_profile
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1)",
         )
         .bind(owner)
         .bind(run_id)
@@ -290,6 +297,7 @@ impl AutomationStore {
         .bind(grant_nonce_digest.as_str())
         .bind(record_command_id)
         .bind(to_i64(started_at_ms)?)
+        .bind(provider_context_digest.map(Sha256Digest::as_str))
         .execute(&mut *transaction)
         .await
         .map_err(|error| {
@@ -467,13 +475,15 @@ impl AutomationStore {
             }
             "INSERT INTO taskflow_effect_dispatch_reconciliations
              (owner_agent_id, run_id, step_id, attempt, observation,
-              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
+              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version,
+              provider_context_profile)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1)"
         } else {
             "INSERT INTO taskflow_effect_dispatch_observations
              (owner_agent_id, run_id, step_id, attempt, observation,
-              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
+              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version,
+              provider_context_profile)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1)"
         };
         sqlx::query(statement)
             .bind(owner)
@@ -609,6 +619,19 @@ pub(crate) fn effect_attempt_from_row(
         .map_err(|_| TaskFlowError::Corrupt("effect intent digest".to_string()))?,
         payload_digest,
         provider_effect_key,
+        provider_context_digest: row
+            .try_get::<Option<String>, _>("provider_context_sha256")
+            .map_err(|_| TaskFlowError::Corrupt("effect provider context column".to_string()))?
+            .map(|value| {
+                if value.bytes().all(|byte| byte == b'0') {
+                    return Err(TaskFlowError::Corrupt(
+                        "effect provider context".to_string(),
+                    ));
+                }
+                Sha256Digest::parse(value)
+                    .map_err(|_| TaskFlowError::Corrupt("effect provider context".to_string()))
+            })
+            .transpose()?,
         wire_payload,
         binding_digest: Sha256Digest::parse(
             row.try_get::<String, _>("binding_digest")
@@ -656,6 +679,16 @@ pub(crate) fn effect_attempt_from_row(
             })
             .transpose()?,
     };
+    let context_profile: i64 = row
+        .try_get("provider_context_profile")
+        .map_err(|_| TaskFlowError::Corrupt("effect provider context profile".to_string()))?;
+    if !matches!(context_profile, 0 | 1)
+        || (context_profile == 0 && attempt.provider_context_digest.is_some())
+    {
+        return Err(TaskFlowError::Corrupt(
+            "effect provider context profile".to_string(),
+        ));
+    }
     attempt.provider_binding = validate_provider_projection(&row, &attempt)?;
     Ok(attempt)
 }
@@ -824,6 +857,7 @@ mod tests {
                 &intent,
                 &payload,
                 &provider_effect_key,
+                /*provider_context_digest*/ None,
                 wire_payload,
                 &binding,
                 "provider:test",
@@ -993,6 +1027,7 @@ mod tests {
                 &intent,
                 &payload,
                 &key,
+                /*provider_context_digest*/ None,
                 wire,
                 &binding,
                 "provider:test",
@@ -1027,6 +1062,7 @@ mod tests {
                     &intent,
                     &payload,
                     &key,
+                    /*provider_context_digest*/ None,
                     wire,
                     &binding,
                     "provider:test",

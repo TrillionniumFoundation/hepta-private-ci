@@ -216,6 +216,9 @@ pub struct AuthorizedEffectPending {
     /// Exact provider occurrence key durably frozen before external contact.
     /// Legacy pre-v20 attempts may not have this field.
     pub provider_effect_key: Option<ProviderEffectKey>,
+    /// Original transport/contract identity. Missing historical context does
+    /// not authorize lookup through a newly configured provider.
+    pub provider_context_digest: Option<Sha256Digest>,
     /// Exact immutable provider bytes for recovery/audit. Legacy pre-v20
     /// attempts retain digest-only recovery and expose `None` here.
     pub wire_payload: Option<Vec<u8>>,
@@ -239,6 +242,7 @@ impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
             intent_digest: value.intent_digest,
             payload_digest: value.payload_digest,
             provider_effect_key: value.provider_effect_key,
+            provider_context_digest: value.provider_context_digest,
             wire_payload: value.wire_payload,
             provider_ack: value.provider_binding.map(|binding| binding.ack),
             binding_digest: value.binding_digest,
@@ -344,6 +348,12 @@ pub struct AuthorizedEffectRequest<'a> {
 /// their own bounded I/O deadline and return `Indeterminate` after ambiguous
 /// provider contact.
 pub trait AuthorizedEffectDriver {
+    /// Freeze the registered provider's exact transport and contract identity.
+    /// None means this driver has no transport-context recovery qualification.
+    fn recovery_context_digest(&self) -> Option<Sha256Digest> {
+        None
+    }
+
     /// Return the exact provider occurrence key used by physical dispatch.
     /// This pure local step runs before the final-use nonce and durable attempt
     /// are consumed, so recovery never reconstructs provider identity from
@@ -390,6 +400,11 @@ pub type AuthorizedEffectFuture<'a> = Pin<
 /// boundary synchronously. The caller supplies no provider key: automation
 /// derives the key and payload binding from the durable TaskFlow intent.
 pub trait AsyncAuthorizedEffectDriver {
+    /// Same durable transport binding as the synchronous provider seam.
+    fn recovery_context_digest(&self) -> Option<Sha256Digest> {
+        None
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
@@ -825,6 +840,7 @@ impl AutomationStore {
         }
 
         let proposed_key = driver.recovery_key(self.taskflow_owner_agent_id(), intent)?;
+        let provider_context_digest = driver.recovery_context_digest();
         let provider_effect_key = self
             .select_effect_dispatch_key(intent, wire_payload, proposed_key)
             .await?;
@@ -841,6 +857,7 @@ impl AutomationStore {
                 &intent_digest,
                 payload_digest,
                 &provider_effect_key,
+                provider_context_digest.as_ref(),
                 wire_payload,
                 &binding_digest,
                 &expected_binding.destination_id,
@@ -1066,6 +1083,7 @@ impl AutomationStore {
         provider_intent.key = self
             .select_effect_dispatch_key(intent, wire_payload, provider_intent.key)
             .await?;
+        let provider_context_digest = driver.recovery_context_digest();
         let token = authority
             .claim(signed_grant, expected_binding)
             .map_err(AuthorizedEffectError::FinalUse)?;
@@ -1079,6 +1097,7 @@ impl AutomationStore {
                 &intent_digest,
                 payload_digest,
                 &provider_intent.key,
+                provider_context_digest.as_ref(),
                 wire_payload,
                 &binding_digest,
                 &expected_binding.destination_id,

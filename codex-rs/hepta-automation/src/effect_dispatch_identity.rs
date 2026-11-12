@@ -96,7 +96,8 @@ pub(crate) async fn validate_effect_dispatch_history(
             SELECT 1 FROM taskflow_effect_dispatch_attempts
             WHERE owner_agent_id=? AND run_id=? AND step_id=?
               AND (provider_effect_key IS NOT ? OR wire_payload IS NOT ?
-                   OR payload_digest IS NOT ? OR destination_id IS NOT ?)
+                   OR payload_digest IS NOT ? OR destination_id IS NOT ?
+                   OR provider_context_sha256 IS NOT ?)
          )",
     )
     .bind(reference.owner_agent_id.as_str())
@@ -111,6 +112,12 @@ pub(crate) async fn validate_effect_dispatch_history(
     .bind(reference.wire_payload.as_deref())
     .bind(reference.payload_digest.as_str())
     .bind(&reference.destination_id)
+    .bind(
+        reference
+            .provider_context_digest
+            .as_ref()
+            .map(Sha256Digest::as_str),
+    )
     .fetch_one(connection)
     .await
     .map_err(|_| TaskFlowError::Unavailable)?;
@@ -129,6 +136,7 @@ pub(crate) async fn validate_effect_dispatch_identity_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     previous: &EffectDispatchAttempt,
     key: &ProviderEffectKey,
+    provider_context_digest: Option<&Sha256Digest>,
     payload_digest: &Sha256Digest,
     wire_payload: &[u8],
     destination_id: &str,
@@ -139,7 +147,8 @@ pub(crate) async fn validate_effect_dispatch_identity_tx(
             WHERE owner_agent_id=? AND run_id=? AND step_id=?
               AND (provider_effect_key IS NULL OR provider_effect_key != ?
                    OR wire_payload IS NULL OR wire_payload != ?
-                   OR payload_digest != ? OR destination_id != ?)
+                   OR payload_digest != ? OR destination_id != ?
+                   OR provider_context_sha256 IS NOT ?)
          )",
     )
     .bind(previous.owner_agent_id.as_str())
@@ -149,6 +158,7 @@ pub(crate) async fn validate_effect_dispatch_identity_tx(
     .bind(wire_payload)
     .bind(payload_digest.as_str())
     .bind(destination_id)
+    .bind(provider_context_digest.map(Sha256Digest::as_str))
     .fetch_one(&mut **transaction)
     .await
     .map_err(|_| TaskFlowError::Unavailable)?;
