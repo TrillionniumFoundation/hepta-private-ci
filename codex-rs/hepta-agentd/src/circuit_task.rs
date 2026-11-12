@@ -31,6 +31,7 @@ pub(crate) use source::tests as source_test_support;
 pub use runtime::CircuitTaskHandleV1;
 pub use runtime::CircuitTaskRuntimeBootstrapV1;
 pub use runtime::circuit_task_channel_v1;
+pub(crate) use source::CircuitTaskPolicyProjectionV1;
 pub use source::CircuitTaskSourceInputV1;
 pub use source::CircuitTaskSourcePublicationV1;
 pub use source::CircuitTaskSourceReadbackV1;

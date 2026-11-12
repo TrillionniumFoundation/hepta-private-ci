@@ -322,6 +322,8 @@ mod circuit_feature_current;
 mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
 mod circuit_q24_task_profile;
+#[cfg(target_os = "linux")]
+mod circuit_original_evaluation_provider;
 mod circuit_task;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
@@ -1378,3 +1380,22 @@ pub use terminal_learning_types::TerminalLearningSourceLineageV1;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "authority_host_learning_service_root_tests.rs"]
 mod authority_host_learning_service_root_tests;
+
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortRuleV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationCohortV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationEpisodeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationProviderErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationSourceOwnersV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationSourceV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitEvaluationTargetV1;
+#[cfg(target_os = "linux")]
+pub use circuit_original_evaluation_provider::OriginalCircuitFinalHoldoutProviderV1;
