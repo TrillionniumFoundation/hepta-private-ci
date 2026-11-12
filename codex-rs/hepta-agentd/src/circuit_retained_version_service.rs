@@ -9,10 +9,11 @@ use std::time::Instant;
 
 use codex_hepta_contracts::HostIssuerTransportError;
 
-use super::super::super::context::PublicationAccess;
+use super::OriginalCircuitRetainedVersionHostV1;
+use super::RetainedVersionFinalUseOutcomeV1;
 use super::super::Error;
 use super::super::wire;
-use super::OriginalCircuitRetainedVersionHostV1;
+use super::super::super::context::PublicationAccess;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCircuitLearningReadOwnerV1;
@@ -29,29 +30,21 @@ impl OriginalCircuitRetainedVersionHostV1 {
         lifetime: Duration,
     ) -> Result<u64, Error> {
         self.require_lifetime()?;
-        let permit = Arc::clone(&self.connections)
-            .try_acquire_owned()
-            .map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
         let lifetime = self.remaining_lifetime(lifetime)?;
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream,
-                consumer,
-                consumer_uid,
-                original_consumer_pidfd,
-                timeout,
-                lifetime,
+                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
             )?;
             for request_id in 1..=128_u64 {
                 self.require_lifetime()?;
                 let mut failure = None;
-                let exchanged = channel.exchange(|bytes| {
-                    self.command_response(bytes, request_id).map_err(|error| {
+                let exchanged = channel.exchange(|bytes| self.command_response(bytes, request_id)
+                    .map_err(|error| {
                         failure = Some(error);
                         HostIssuerTransportError::InvalidRequest
-                    })
-                });
+                    }));
                 match exchanged {
                     Ok(true) => {}
                     Ok(false) => return Ok(request_id - 1),
@@ -59,9 +52,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 }
             }
             Err(Error::Unavailable)
-        })
-        .await
-        .map_err(|_| Error::CommitUncertain)?
+        }).await.map_err(|_| Error::CommitUncertain)?
     }
 
     /// Original deployment entry: serve this purpose and, only after separate
@@ -77,16 +68,12 @@ impl OriginalCircuitRetainedVersionHostV1 {
         lifetime: Duration,
         arg0_paths: codex_arg0::Arg0DispatchPaths,
     ) -> Result<u64, Error> {
-        let (served, ()) = tokio::try_join!(
+        let (served, (), ()) = tokio::try_join!(
             Arc::clone(&self).serve_commands(
-                stream,
-                consumer,
-                consumer_uid,
-                original_consumer_pidfd,
-                timeout,
-                lifetime,
+                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
             ),
             OriginalCircuitRetainedVersionHostV1::run_original_c(Arc::clone(&self), arg0_paths),
+            OriginalCircuitRetainedVersionHostV1::serve_original_final_use(Arc::clone(&self)),
         )?;
         Ok(served)
     }
@@ -106,17 +93,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
         if timeout.is_zero() || timeout > Duration::from_millis(500) {
             return Err(Error::Binding("same original published read bound"));
         }
-        let permit = Arc::clone(&self.connections)
-            .try_acquire_owned()
-            .map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
         let lifetime = self.remaining_lifetime(lifetime)?;
         let mut channel = original_owner_command_channel_v1(
-            stream,
-            consumer,
-            consumer_uid,
-            original_consumer_pidfd,
-            timeout,
-            lifetime,
+            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
         )?;
         loop {
             let changed = self.installed.notified();
@@ -133,13 +113,9 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 return tokio::task::spawn_blocking(move || {
                     let _permit = permit;
                     OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
-                        reader.as_ref(),
-                        &mut channel,
-                    )
-                    .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
-                })
-                .await
-                .map_err(|_| Error::CommitUncertain)?;
+                        reader.as_ref(), &mut channel,
+                    ).map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
+                }).await.map_err(|_| Error::CommitUncertain)?;
             }
             tokio::select! {
                 _ = changed => {},
@@ -154,10 +130,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         if requested.is_zero() || requested > Duration::from_secs(300) {
             return Err(Error::Binding("original fixed Version session bound"));
         }
-        let remaining = self
-            .end
-            .checked_duration_since(Instant::now())
-            .ok_or(Error::Unavailable)?;
+        let remaining = self.end.checked_duration_since(Instant::now()).ok_or(Error::Unavailable)?;
         Ok(requested.min(remaining))
     }
 
@@ -165,32 +138,25 @@ impl OriginalCircuitRetainedVersionHostV1 {
         let started = super::super::now()?;
         self.require_lifetime()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
-        if request.schema != 1
-            || request.purpose != wire::OPERATION
-            || request.request_id != request_id
-            || !(1..=128).contains(&request_id)
+        if request.schema != 1 || request.purpose != wire::OPERATION
+            || request.request_id != request_id || !(1..=128).contains(&request_id)
             || request.initial_binding != self.initial_binding.to_string()
             || request.operation_id != self.material.initial.request.operation_id.to_string()
         {
-            return Err(Error::Binding(
-                "same original Version initial purpose and operation",
-            ));
+            return Err(Error::Binding("same original Version initial purpose and operation"));
         }
         wire::digest(&request.binding)?;
         wire::digest(&request.training_head)?;
         let (current, fresh) =
-            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
-                &self.material,
-            )?;
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;
         if current != self.initial_binding || fresh < started {
             return Err(Error::Binding("same original Version material clock"));
         }
         let (result, pin) = {
             let mut state = match self.state.try_lock() {
                 Ok(state) => state,
-                Err(std::sync::TryLockError::WouldBlock) => {
-                    return self.encode_response(request, wire::OriginalResult::Busy, started, None);
-                }
+                Err(std::sync::TryLockError::WouldBlock) =>
+                    return self.encode_response(request, wire::OriginalResult::Busy, started, None),
                 Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
             };
             if self.bind_original_predecessor(&mut state).is_err() {
@@ -208,10 +174,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                         self.read_original(&state)
                     }
                 };
-                state
-                    .cut
-                    .as_ref()
-                    .ok_or(Error::Unavailable)?
+                state.cut.as_ref().ok_or(Error::Unavailable)?
                     .require_fresh(started, PublicationAccess::Readback)?;
                 let result = match original {
                     Ok(value) => wire::OriginalResult::from_original(value),
@@ -219,16 +182,14 @@ impl OriginalCircuitRetainedVersionHostV1 {
                     Err(Error::ReadbackRequired) => wire::OriginalResult::ReadbackRequired,
                     Err(_) => wire::OriginalResult::Uncertain,
                 };
-                (
-                    result,
-                    Some(
-                        state
-                            .cut
-                            .as_ref()
-                            .ok_or(Error::Unavailable)?
-                            .duplicate_response_pin(),
-                    ),
-                )
+                let result = match (&result, self.original_final_use_outcome()) {
+                    (wire::OriginalResult::Prepared { .. }, RetainedVersionFinalUseOutcomeV1::Denied) =>
+                        wire::OriginalResult::FinalUseDenied,
+                    (wire::OriginalResult::Prepared { .. }, RetainedVersionFinalUseOutcomeV1::Requested
+                        | RetainedVersionFinalUseOutcomeV1::Uncertain) => wire::OriginalResult::Uncertain,
+                    _ => result,
+                };
+                (result, Some(state.cut.as_ref().ok_or(Error::Unavailable)?.duplicate_response_pin()))
             }
         };
         // The original host state guard is released before encoding/writing.
@@ -236,16 +197,11 @@ impl OriginalCircuitRetainedVersionHostV1 {
     }
 
     fn encode_response(
-        &self,
-        request: wire::Request,
-        result: wire::OriginalResult,
-        started: u64,
+        &self, request: wire::Request, result: wire::OriginalResult, started: u64,
         pin: Option<super::super::context::OriginalVersionCut>,
     ) -> Result<Vec<u8>, Error> {
         let (binding, fresh) =
-            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
-                &self.material,
-            )?;
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;
         if binding != self.initial_binding || fresh < started {
             return Err(Error::Binding("original Version final clock"));
         }

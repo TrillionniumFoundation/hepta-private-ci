@@ -103,6 +103,14 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
     "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
 ]
+ROOT_ISSUER_CASES = [
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+]
 
 class ResidentRootSourceClosureTests(unittest.TestCase):
     @classmethod
@@ -371,7 +379,8 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         parents = ast.literal_eval(match.group(1))
         self.assertEqual(len(parents), len(set(parents)))
         self.assertTrue(set(ROOT_CASES).issubset(parents))
-        self.assertEqual(len(parents), 7 + len(ROOT_CASES))
+        self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))
+        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES))
         roots = (ROOT / (AGENT + "authority_host_learning_resident_root_tests.rs")).read_text()
         evaluation = (ROOT / (AGENT + "authority_host_learning_resident_evaluation_tests.rs")).read_text()
         self.assertIn(

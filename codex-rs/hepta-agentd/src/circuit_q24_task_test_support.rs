@@ -39,6 +39,10 @@ pub(super) struct Admission {
     pub request: AuthBusObjectiveIngress,
 }
 
+#[path = "circuit_retained_version_task_support_tests.rs"]
+mod retained_version_task;
+pub(super) use retained_version_task::retained_version_task_inputs;
+
 pub(super) struct Session {
     pub runtime: RuntimeFixture,
     config: Option<AgentdConfig>,
