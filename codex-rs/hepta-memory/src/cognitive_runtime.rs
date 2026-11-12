@@ -562,6 +562,9 @@ async fn retrieve_federated_product(
     };
     let mut candidates = Vec::new();
 
+    #[cfg(test)]
+    let discovery_complete_at = Instant::now();
+
     let attempts = join_all(readers.iter().map(|(owner_layout, reader)| async move {
         if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
             return Ok((
@@ -606,6 +609,9 @@ async fn retrieve_federated_product(
         Ok::<_, CognitiveStoreError>((result, captured))
     }))
     .await;
+
+    #[cfg(test)]
+    let attempts_complete_at = Instant::now();
 
     for attempt in attempts {
         let (result, captured) = attempt?;
@@ -676,6 +682,22 @@ async fn retrieve_federated_product(
     coverage.truncated_items = coverage.truncated_items.saturating_add(
         u32::try_from(before_truncation.saturating_sub(candidates.len())).unwrap_or(u32::MAX),
     );
+
+    // Only emit timing on a failed test-only product attempt. Production timing,
+    // deadlines, authority checks, and coverage accounting are unchanged.
+    #[cfg(test)]
+    if coverage.failed_peers != 0 {
+        eprintln!(
+            "MEM_FEDERATION_PHASES discovery_ms={} attempts_ms={} postprocess_ms={} failed_peers={} deadline_or_cancelled={}",
+            discovery_complete_at.duration_since(started_at).as_millis(),
+            attempts_complete_at
+                .duration_since(discovery_complete_at)
+                .as_millis(),
+            attempts_complete_at.elapsed().as_millis(),
+            coverage.failed_peers,
+            coverage.failures.deadline_or_cancelled
+        );
+    }
 
     Ok((
         FederatedRetrievalBatch {
