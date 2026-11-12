@@ -13,6 +13,10 @@ const SIGNED_OBJECTIVE: &str = "runtime.authbus.objective.signed.v1";
 #[path = "root_human_text_client.rs"]
 mod human;
 
+#[path = "root_model_version_issuer.rs"]
+mod model_version;
+pub(crate) use model_version::OriginalRootModelVersionIssuerV1;
+
 #[path = "root_retained_version_issuer.rs"]
 mod retained_version;
 pub(crate) use retained_version::OriginalRootRetainedVersionIssuerV1;

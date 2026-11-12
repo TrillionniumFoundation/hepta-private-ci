@@ -1071,6 +1071,8 @@ pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
 #[cfg(target_os = "linux")]
 pub(crate) use final_use_issuer::OriginalRootRetainedVersionIssuerV1;
 #[cfg(target_os = "linux")]
+pub(crate) use final_use_issuer::OriginalRootModelVersionIssuerV1;
+#[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Usage;
@@ -1526,3 +1528,20 @@ pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommand
 pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommandReceiptV1;
+
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelArtifactCheckpointV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelTaskInputsV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelVersionClientV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelVersionErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelVersionHostV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelVersionPublicationV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelVersionReadbackV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelVersionRecoveryV1;

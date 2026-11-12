@@ -31,6 +31,7 @@ const MAX_TIMEOUT: Duration = Duration::from_secs(30);
 #[path = "root_issuer_client.rs"]
 mod root_client;
 pub(crate) use root_client::OriginalRootRetainedVersionIssuerV1;
+pub(crate) use root_client::OriginalRootModelVersionIssuerV1;
 
 struct ProtectedRootIssuer {
     channel: HostAuthorityPeerChannel,

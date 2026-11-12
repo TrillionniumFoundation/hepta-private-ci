@@ -191,6 +191,47 @@ impl OriginalCircuitModelPublicationContextV1 {
         Ok((coordinator, current))
     }
 
+    /// Immutable comparison data for the original Version host's response pin.
+    /// Every read operation must still perform fresh original Model/E I/O.
+    pub(super) fn duplicate_response_pin(&self) -> Self {
+        Self {
+            material: self.material.clone(),
+            registration: self.registration.clone(),
+            dataset: self.dataset.clone(),
+            training: self.training.clone(),
+            evaluation: self.evaluation.clone(),
+            model: self.model.clone(),
+            training_cut: self.training_cut.clone(),
+        }
+    }
+
+    pub(crate) fn original_version_binding(
+        &self,
+        lower: u64,
+    ) -> Result<(codex_hepta_types::Digest32, codex_hepta_types::Digest32), Error> {
+        let (_, current) = self.authenticate_at_current(lower, false)?;
+        let (initial, fresh) =
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
+                .map_err(|_| Error::Binding("same original Version initial Material"))?;
+        if fresh < current { return Err(Error::Clock); }
+        let (record, original_context) = self.model.original_record_for_root(self.signatures())?;
+        let mut signatures = Vec::new();
+        for original in self.signatures() {
+            signatures.extend_from_slice(&original.signing_bytes());
+            signatures.extend_from_slice(&original.signature);
+        }
+        let snapshot = crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1(
+            self.decision(),
+        ).map_err(|_| Error::Binding("complete original Version Model cut"))?;
+        Ok((initial, codex_hepta_types::Digest32::of_parts(&[
+            b"hepta.agentd.original-model-version.command.v1\0",
+            initial.as_array(), self.scope().binding().as_array(),
+            self.verifier().trust_digest().as_array(), self.verifier().scope_digest().as_array(),
+            self.verifier().objective_digest().as_array(), &snapshot, &signatures,
+            record, original_context.as_array(), self.model.material_digest().as_array(),
+        ])))
+    }
+
     /// Called after the actual final owner I/O. Every primary and retention
     /// signature is checked, including the complete original cohort freezes.
     pub(crate) fn authenticate_material(
