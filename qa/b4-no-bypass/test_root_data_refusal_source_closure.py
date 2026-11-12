@@ -88,7 +88,9 @@ def require_armed_io(path, source):
         positions = [match.start() for match in physical.finditer(code)]
         inside(code, "|proof| {", positions)
         tail = code[proof_end:outer_end]
-        if not re.match(r"^\s*,\s*\)\?\s*;", tail) or "retained.ok_or_else(" not in tail:
+        if not re.match(r"^\s*,\s*\)\?\s*;", tail) or re.search(
+            r"\bretained\s*\.\s*ok_or_else\s*\(", tail
+        ) is None:
             raise PROOF.VerificationFailure("original context postcheck was not propagated")
     if path == TRANSPORT:
         code = component.function_code(source, "exchange")
@@ -259,11 +261,17 @@ class RootDataRefusalClosureTests(unittest.TestCase):
         ))
 
     def test_context_failure_cannot_leave_a_successful_pin_arm(self):
-        self.check_mutation(PIN, lambda source: source.replace(
-            "                    },\n                )?;\n\n                retained.ok_or_else(",
-            "                    },\n                );\n\n                retained.ok_or_else(", 1
-        ))
-
+        def discard_original_context_error(source):
+            code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+            start = code.index("fn capture_initial_source_pin(")
+            end = PROOF._rust_item_end(code, start)
+            body = code[start:end + 1]
+            _, proof_end = closure_span(body, "|proof| {")
+            close = re.match(r"\s*,\s*\)(\?)\s*;", body[proof_end:])
+            self.assertIsNotNone(close)
+            offset = start + proof_end + close.start(1)
+            return source[:offset] + source[offset + 1:]
+        self.check_mutation(PIN, discard_original_context_error)
 
     def test_subprocess_success_requires_an_actual_child_execution_receipt(self):
         for filename in (

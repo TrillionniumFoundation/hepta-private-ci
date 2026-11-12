@@ -39,6 +39,8 @@ CALLERS = {
         AGENT + "authority_host_generation_initial_transport.rs",
         PIN, SESSION, TRANSPORT,
         AGENT + "authority_host_initial_learning_trust_transport.rs",
+        AGENT + "authority_host_historical_cell_registration.rs",
+        AGENT + "authority_host_historical_cell_session.rs",
     ),
     "root_historical_source_fixed_inputs": (SESSION,),
     "root_historical_source_registered_inputs": (PIN,),
@@ -52,9 +54,13 @@ CALLERS = {
     "root_historical_source_handoff_existing": (),
     "root_historical_source_handoff_fence": (TRANSPORT,),
     "root_historical_source_pin_publisher": (HANDOFF,),
-    "root_initial_data_refusal_fresh": (RECORD, HANDOFF),
+    "root_initial_data_refusal_fresh": (
+        RECORD, HANDOFF, AGENT + "authority_host_historical_cell_registration.rs"
+    ),
     "root_initial_data_refusal_existing": (RECORD, HANDOFF),
-    "root_initial_data_refusal_inspect": (RECORD, HANDOFF),
+    "root_initial_data_refusal_inspect": (
+        RECORD, HANDOFF, AGENT + "authority_host_historical_cell_pin.rs"
+    ),
     "root_initial_data_refusal_refuse": (RECORD, HANDOFF),
     "root_historical_source_armed_capture": (PIN,),
     "root_historical_source_armed_record": (PIN,),
@@ -128,13 +134,25 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
         for marker in markers:
             with self.subTest(path=path, function=function, marker=marker):
                 def remove(source):
-                    start = source.index("fn " + function + "(")
-                    end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
+                    code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+                    function_marker = "fn " + function + "("
+                    self.assertEqual(code.count(function_marker), 1)
+                    start = code.index(function_marker)
+                    end = PROOF._rust_item_end(code, start)
                     self.assertIsNotNone(end)
-                    offset = source.index(marker, start, end + 1)
-                    # Keeping the removed spelling in a comment must not supply
-                    # the guard in the original function's executable sequence.
-                    return source[:offset] + "/* " + marker + " */" + source[offset + len(marker):]
+                    if '"' in marker:
+                        offset = source.index(marker, start, end + 1)
+                        stop = offset + len(marker)
+                        self.assertEqual(code[offset:stop], PROOF._strip_rust_non_code(marker))
+                    else:
+                        tokens = re.findall(
+                            r"[A-Za-z_]\w*|\d+|::|->|=>|!=|==|&&|\|\||\.\.|[^\s]", marker)
+                        match = re.search(r"\s*".join(map(re.escape, tokens)), code[start:end + 1])
+                        self.assertIsNotNone(match, marker)
+                        offset, stop = start + match.start(), start + match.end()
+                    # Whitespace may change with nested arms; the exact Rust
+                    # tokens and the executable-only location must still match.
+                    return source[:offset] + "/* " + source[offset:stop] + " */" + source[stop:]
                 self.check_mutation(path, remove)
 
     def test_capture_requires_reserve_original_process_writer_and_target(self):
