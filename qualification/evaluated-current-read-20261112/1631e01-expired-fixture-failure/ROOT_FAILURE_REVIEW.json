@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "logs": [
+    {
+      "name": "gnu",
+      "job": 131270677652,
+      "bytes": 1219547,
+      "sha256": "3d612f1effdd5949a3c70c552d41f0702a787911612384af5426393e582fe15a",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-000.bin",
+          "offset": 0,
+          "bytes": 350000,
+          "sha256": "cea3ba473b2d69a575869f4e8c1831a1063cdbf748c689b80a0a7e9c7be150b2",
+          "git_blob": "50fd47931676c2422b9379deee1cb760b423dd47"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-001.bin",
+          "offset": 350000,
+          "bytes": 350000,
+          "sha256": "0e09b00fa0e08e76009707c6dddae005e8ea264e1e22010cd983d20d6077dc6c",
+          "git_blob": "cc600a4d69de74db1c59ec993d24ff9dff1c7fa2"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-002.bin",
+          "offset": 700000,
+          "bytes": 350000,
+          "sha256": "15cc8e0bb6de037cc3b355d411eaf51be067eb974553c74bc645e575b6ad2c08",
+          "git_blob": "d80c1e70068d38301d58f8e7cbdc9bd01d16326a"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/gnu.job.original.log.part-003.bin",
+          "offset": 1050000,
+          "bytes": 169547,
+          "sha256": "8d8afe8631a5da2abe012518249c1f81273f03ed84fc8fe63fabb95c9805fe64",
+          "git_blob": "64a54d53a4d18faf05bcf02e0fe1add54744aaee"
+        }
+      ]
+    },
+    {
+      "name": "musl",
+      "job": 131270677456,
+      "bytes": 1203989,
+      "sha256": "6751da879adf53bf21e289d7e0dc6dc7d5d3db528073b76e2d7b530486ee167b",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-000.bin",
+          "offset": 0,
+          "bytes": 350000,
+          "sha256": "bec9d53755bbfe1b7f98ee444a2bda4891a8a154af7c5b54f980716054327433",
+          "git_blob": "b5b5f284b825d251b8a9e40299421fce3593aa52"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-001.bin",
+          "offset": 350000,
+          "bytes": 350000,
+          "sha256": "521e3db2a16637249d95c088d39b32bd6e1f3c3140557b68b5be6c83b9e4b914",
+          "git_blob": "7037557351583a61308abf1ea9e59fb40f07ba92"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-002.bin",
+          "offset": 700000,
+          "bytes": 350000,
+          "sha256": "e959a0ed917f66afb91827f8f9e6a24b79d0d357110bab4d3918fe499376ec74",
+          "git_blob": "7e9a40abb2ceabca606af6719e6ff89d0b7cf4ee"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/1631e01-expired-fixture-failure/musl.job.original.log.part-003.bin",
+          "offset": 1050000,
+          "bytes": 153989,
+          "sha256": "e0db471497a40d709eab456948312cdab22433c93e9197281eeecd8461d48b08",
+          "git_blob": "de90b2f2d9a8bb5ff81078fdbc6df5ff6e695f37"
+        }
+      ]
+    }
+  ],
+  "actual_failure": {
+    "jobs": [
+      131270677456,
+      131270677652
+    ],
+    "method": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+    "minted_at_ms": 1794496120984,
+    "expires_at_seconds": 1794496121,
+    "remaining_ms_at_mint": 16,
+    "elapsed_ms_at_append_failure": 16,
+    "error": "Lease(\"local lease/outbox stale fence: local lease has expired\")",
+    "selected_target": {
+      "passed": 2,
+      "failed": 1
+    },
+    "full_unit_target": "Aborted"
+  },
+  "fixture_fix": {
+    "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "base_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "base_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+    "post_blob": "467bba30b2cd77a322b714b9c0655a5823336214",
+    "post_bytes": 39110,
+    "post_sha256": "ef5bba1fae1fbd47ba7c897600ba121b7cf902f414bee62c91287d1eb522f148",
+    "changes": [
+      {
+        "old": "    let expires_at = minted_at.as_secs() + 1;",
+        "new": "    // Leave a full preparation window after converting to whole lease seconds.\n    let expires_at = (minted_at + Duration::from_secs(10)).as_secs() + 1;"
+      },
+      {
+        "old": "    tokio::time::sleep(Duration::from_secs(2)).await;",
+        "new": "    timeout(Duration::from_secs(15), async {\n        loop {\n            let observed_at = SystemTime::now()\n                .duration_since(UNIX_EPOCH)\n                .unwrap_or_else(|error| {\n                    panic!(\"{}: {error:?}\", expiry_stage(\"observe seeded lease expiry\"))\n                });\n            if observed_at.as_secs() >= expires_at {\n                break;\n            }\n            tokio::time::sleep(Duration::from_millis(50)).await;\n        }\n    })\n    .await\n    .unwrap_or_else(|error| {\n        panic!(\"{}: {error:?}\", expiry_stage(\"wait for seeded lease expiry\"))\n    });"
+      }
+    ],
+    "actual_failure": {
+      "jobs": [
+        131270677456,
+        131270677652
+      ],
+      "method": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "minted_at_ms": 1794496120984,
+      "expires_at_seconds": 1794496121,
+      "remaining_ms_at_mint": 16,
+      "elapsed_ms_at_append_failure": 16,
+      "error": "Lease(\"local lease/outbox stale fence: local lease has expired\")",
+      "selected_target": {
+        "passed": 2,
+        "failed": 1
+      },
+      "full_unit_target": "Aborted"
+    },
+    "rationale": "Integer seconds truncation left only 16ms for required H7 setup. A full ten-second minimum fixture preparation window is followed by bounded polling of the real wall-clock expiry before the existing quarantine call. Original production expiry code, writable-input rejection and ExpiredActive registry-head assertion are unchanged.",
+    "new_fixed_sleep": false,
+    "real_expiry_required": true,
+    "wait_timeout_seconds": 15,
+    "production_changes": false,
+    "tests_rerun": false,
+    "status": "UNPUBLISHED_STATIC_CANDIDATE_NOT_TESTED"
+  },
+  "old_assertions_unchanged": true,
+  "production_expiry_changed": false,
+  "new_success_claim": false,
+  "owner_decision": null
+}

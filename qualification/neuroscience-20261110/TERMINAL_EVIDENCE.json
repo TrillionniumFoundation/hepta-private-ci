@@ -524,6 +524,20 @@
           "actual_execution_commit": "9c122c9b32eedfb7a8d177534035d705cad0e0dc",
           "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
           "root_original_metadata_verified": true
+        },
+        "bazel_qualification_failure": {
+          "jobs": [
+            131270677652,
+            131270677456
+          ],
+          "method": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+          "selected_target_passed": 2,
+          "selected_target_failed": 1,
+          "full_unit_target": "Aborted",
+          "remaining_ms_at_mint": 16,
+          "root_actual_full_logs_retrieved": true,
+          "fix": "Test-only full preparation window and bounded observed expiry wait under review",
+          "evidence": "../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json"
         }
       },
       "pending_integration": {

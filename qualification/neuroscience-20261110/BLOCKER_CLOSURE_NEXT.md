@@ -52,6 +52,8 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 
 截至本页时刻，exact 1631 的原 source/parser 两个步骤已 success，同源 helper 构建已越过，ordinary 与 Root suites 正在运行，完整 caller 审计仍在运行；尚不填原生通过数。发布构建和格式检查已有成功观察。Clippy 原日志则真实报告 15 个不同位置：11 个禁止跨 await 持有的 Tokio MutexGuard、4 个 expect。当前正在用保持唯一原状态所有权的私有 lease 修复，保留取消、竞争、failed 位及原 I/O 顺序；不加 allow、不关闭检查。另一个 blob-size job 在 Fence 初始化时因 local_control_inventory_unavailable 失败，未 checkout、未运行检查器，因此 checker_result=null。见[原 Clippy 与环境失败](../evaluated-current-read-20261112/1631e01-clippy-and-fence/ROOT_REVIEW.json)。
 
+补充原 GNU/musl 两个 Bazel test job 的已知失败：同一过期租约测试在 H7 准备写入时到期，mint 后只剩 16 ms；该选择目标 2 PASS／1 FAIL，随后完整 unit target Aborted。root 已取回两个完整原日志。测试夹具正在改为完整准备窗口与有界的真实到期轮询，原隔离、不可返回可写输入、ExpiredActive 断言和产品到期逻辑保持。见[原失败与精确测试修复候选](../evaluated-current-read-20261112/1631e01-expired-fixture-failure/ROOT_FAILURE_REVIEW.json)。
+
 原 EBE 的 source 414/414、parser 16/16 成功仍属于 EBE；caller 1,705,860 B 与 native 2,018,235 B 的完整原日志已从 Git 分片读回并核全 SHA。其 native 编译退出 101，0 个 Rust 测试，原 JUnit 缺失被拒绝，Root/fix/fmt 均未运行。Windows 在 LEARN 36 门前取消。父 841 修复两处原 rustfmt hunk 并清除相互冲突的历史活动 hash；原格式 job 已实际通过，执行 synthetic merge 的 tree 与 841 完全相同，不能转给别的源码。历史失败与[完整日志独立核验](../evaluated-current-read-20261112/ebe6723-caller-native-failures/ROOT_FULL_LOG_VERIFICATION.json)、[841 格式原件](../evaluated-current-read-20261112/841fb9-rustfmt-pass/MANIFEST.json)分别保留。
 
 原三次短准备失败也全部保留。v3 原 job1a1d0221d7d-2564-1b37 在 14:31:17 因 600 秒 Git fetch 超时结束，exit2、stages=[]、0 个 gate，17 B 原 fetch.log 为 fatal: early EOF。没有第四次 fetch，没有重复本机 native。既有 hosted CI 的精确源结果单独读取。[v3 原失败](../evaluated-current-read-20261112/ebe6723-format-source-v3-failure/MANIFEST.json)。
