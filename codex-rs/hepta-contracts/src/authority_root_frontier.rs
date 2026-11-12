@@ -242,10 +242,10 @@ impl RootFinalUseFrontierClient {
             self.root
                 .check(deadline)
                 .inspect_err(|error| {
-                    crate::final_use::diagnostic::record(
+                    crate::final_use::diagnostic::record_transport(
                         "frontier.owner-before",
                         crate::final_use::FinalUseError::Unavailable,
-                        Some(error.kind()),
+                        *error,
                     );
                 })
                 .map_err(unavailable)?;
@@ -256,20 +256,20 @@ impl RootFinalUseFrontierClient {
                     deadline,
                 )
                 .inspect_err(|error| {
-                    crate::final_use::diagnostic::record(
+                    crate::final_use::diagnostic::record_transport(
                         "frontier.write-prefix",
                         crate::final_use::FinalUseError::Unavailable,
-                        Some(error.kind()),
+                        *error,
                     );
                 })
                 .map_err(unavailable)?;
             self.root
                 .write_until(&mut channel.stream, &bytes, deadline)
                 .inspect_err(|error| {
-                    crate::final_use::diagnostic::record(
+                    crate::final_use::diagnostic::record_transport(
                         "frontier.write-body",
                         crate::final_use::FinalUseError::Unavailable,
-                        Some(error.kind()),
+                        *error,
                     );
                 })
                 .map_err(unavailable)?;
@@ -277,10 +277,10 @@ impl RootFinalUseFrontierClient {
             self.root
                 .read_until(&mut channel.stream, &mut prefix, deadline)
                 .inspect_err(|error| {
-                    crate::final_use::diagnostic::record(
+                    crate::final_use::diagnostic::record_transport(
                         "frontier.read-prefix",
                         crate::final_use::FinalUseError::Unavailable,
-                        Some(error.kind()),
+                        *error,
                     );
                 })
                 .map_err(unavailable)?;
@@ -297,10 +297,10 @@ impl RootFinalUseFrontierClient {
             self.root
                 .read_until(&mut channel.stream, &mut bytes, deadline)
                 .inspect_err(|error| {
-                    crate::final_use::diagnostic::record(
+                    crate::final_use::diagnostic::record_transport(
                         "frontier.read-body",
                         crate::final_use::FinalUseError::Unavailable,
-                        Some(error.kind()),
+                        *error,
                     );
                 })
                 .map_err(unavailable)?;
@@ -316,10 +316,10 @@ impl RootFinalUseFrontierClient {
             self.root
                 .check(deadline)
                 .inspect_err(|error| {
-                    crate::final_use::diagnostic::record(
+                    crate::final_use::diagnostic::record_transport(
                         "frontier.owner-after",
                         crate::final_use::FinalUseError::Unavailable,
-                        Some(error.kind()),
+                        *error,
                     );
                 })
                 .map_err(unavailable)?;

@@ -7,6 +7,7 @@
 //! Release builds retain no diagnostic state and emit no output.
 
 use super::FinalUseError;
+use crate::authority_host_issuer_transport::HostIssuerTransportError;
 use std::io::ErrorKind;
 
 #[cfg(debug_assertions)]
@@ -24,6 +25,7 @@ struct Refusal {
     stage: &'static str,
     error: FinalUseError,
     io_kind: Option<ErrorKind>,
+    transport_error: Option<HostIssuerTransportError>,
 }
 
 #[cfg(debug_assertions)]
@@ -77,6 +79,23 @@ impl RefusalScope {
 }
 
 pub(crate) fn record(stage: &'static str, error: FinalUseError, io_kind: Option<ErrorKind>) {
+    record_refusal(stage, error, io_kind, None);
+}
+
+pub(crate) fn record_transport(
+    stage: &'static str,
+    error: FinalUseError,
+    transport_error: HostIssuerTransportError,
+) {
+    record_refusal(stage, error, None, Some(transport_error));
+}
+
+fn record_refusal(
+    stage: &'static str,
+    error: FinalUseError,
+    io_kind: Option<ErrorKind>,
+    transport_error: Option<HostIssuerTransportError>,
+) {
     #[cfg(debug_assertions)]
     {
         let _ = CURRENT.try_with(|current| {
@@ -88,6 +107,7 @@ pub(crate) fn record(stage: &'static str, error: FinalUseError, io_kind: Option<
                     stage,
                     error,
                     io_kind,
+                    transport_error,
                 });
                 current.set(Some(active));
             }
@@ -95,7 +115,7 @@ pub(crate) fn record(stage: &'static str, error: FinalUseError, io_kind: Option<
     }
     #[cfg(not(debug_assertions))]
     {
-        let _ = (stage, error, io_kind);
+        let _ = (stage, error, io_kind, transport_error);
     }
 }
 
@@ -136,12 +156,13 @@ impl Drop for RefusalScope {
             // Failure to write a diagnostic cannot replace the original error.
             let _ = writeln!(
                 std::io::stderr().lock(),
-                "ROOT_FINAL_USE_DIAGNOSTIC pid={} operation={} stage={} error={:?} io_kind={:?} sequence={} record_cap=64",
+                "ROOT_FINAL_USE_DIAGNOSTIC pid={} operation={} stage={} error={:?} io_kind={:?} transport_error={:?} sequence={} record_cap=64",
                 std::process::id(),
                 active.operation,
                 refusal.stage,
                 refusal.error,
                 refusal.io_kind,
+                refusal.transport_error,
                 sequence + 1,
             );
         }

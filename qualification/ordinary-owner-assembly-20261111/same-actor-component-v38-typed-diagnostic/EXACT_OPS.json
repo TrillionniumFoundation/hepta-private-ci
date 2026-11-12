@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.exact-source-ops.v1",
+  "source": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "source_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "native_failure": {
+    "stage": "fix-seven-crates",
+    "exit_code": 101,
+    "log_bytes": 25181,
+    "log_sha256": "d446a47ff516fcb0b7282b44746dc2b08ac6efa3a34d23fa67fcc1929d880e3b",
+    "rust_error": "E0599",
+    "sites": 6
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "pre": {
+        "blob": "bece0d0f4773d8d7e4a7e6fd2822b037768ee23c",
+        "bytes": 15770,
+        "sha256": "300154978073f9223685c6667716a206a708f5c1751505ccdb0b245f66def29d"
+      },
+      "post": {
+        "blob": "db496111b3b81d65953e927cda0f6b96914a3d69",
+        "bytes": 15758,
+        "sha256": "57aa7582b90a5adfde59fbf06ae43ec41c4eb1bdd6e977b3b710baa1c002e7ff"
+      },
+      "ops": [
+        {
+          "old_text": "crate::final_use::diagnostic::record(\n                        \"frontier.owner-before\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        Some(error.kind()),\n                    );",
+          "new_text": "crate::final_use::diagnostic::record_transport(\n                        \"frontier.owner-before\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        *error,\n                    );",
+          "expected_matches": 1,
+          "purpose": "retain actual typed transport refusal without inventing an I/O error kind"
+        },
+        {
+          "old_text": "crate::final_use::diagnostic::record(\n                        \"frontier.write-prefix\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        Some(error.kind()),\n                    );",
+          "new_text": "crate::final_use::diagnostic::record_transport(\n                        \"frontier.write-prefix\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        *error,\n                    );",
+          "expected_matches": 1,
+          "purpose": "retain actual typed transport refusal without inventing an I/O error kind"
+        },
+        {
+          "old_text": "crate::final_use::diagnostic::record(\n                        \"frontier.write-body\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        Some(error.kind()),\n                    );",
+          "new_text": "crate::final_use::diagnostic::record_transport(\n                        \"frontier.write-body\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        *error,\n                    );",
+          "expected_matches": 1,
+          "purpose": "retain actual typed transport refusal without inventing an I/O error kind"
+        },
+        {
+          "old_text": "crate::final_use::diagnostic::record(\n                        \"frontier.read-prefix\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        Some(error.kind()),\n                    );",
+          "new_text": "crate::final_use::diagnostic::record_transport(\n                        \"frontier.read-prefix\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        *error,\n                    );",
+          "expected_matches": 1,
+          "purpose": "retain actual typed transport refusal without inventing an I/O error kind"
+        },
+        {
+          "old_text": "crate::final_use::diagnostic::record(\n                        \"frontier.read-body\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        Some(error.kind()),\n                    );",
+          "new_text": "crate::final_use::diagnostic::record_transport(\n                        \"frontier.read-body\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        *error,\n                    );",
+          "expected_matches": 1,
+          "purpose": "retain actual typed transport refusal without inventing an I/O error kind"
+        },
+        {
+          "old_text": "crate::final_use::diagnostic::record(\n                        \"frontier.owner-after\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        Some(error.kind()),\n                    );",
+          "new_text": "crate::final_use::diagnostic::record_transport(\n                        \"frontier.owner-after\",\n                        crate::final_use::FinalUseError::Unavailable,\n                        *error,\n                    );",
+          "expected_matches": 1,
+          "purpose": "retain actual typed transport refusal without inventing an I/O error kind"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_diagnostic.rs",
+      "pre": {
+        "blob": "fa6dc685cfc45d8b4b379a6fe6ba7fffcd62294a",
+        "bytes": 4352,
+        "sha256": "a5d1d66c1d51a0c266509cd487bb59cc5d6640636ff7d8c3672e08fa2bcbe4ae"
+      },
+      "post": {
+        "blob": "3301834a89bbe08a20059ce49ff88cd40e846d64",
+        "bytes": 5006,
+        "sha256": "dd517cd33e65b92db737918cd091b392fb661e66af07740f12eaf75225df2138"
+      },
+      "ops": [
+        {
+          "old_text": "use super::FinalUseError;\nuse std::io::ErrorKind;",
+          "new_text": "use super::FinalUseError;\nuse crate::authority_host_issuer_transport::HostIssuerTransportError;\nuse std::io::ErrorKind;",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "    io_kind: Option<ErrorKind>,\n}",
+          "new_text": "    io_kind: Option<ErrorKind>,\n    transport_error: Option<HostIssuerTransportError>,\n}",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "pub(crate) fn record(stage: &'static str, error: FinalUseError, io_kind: Option<ErrorKind>) {",
+          "new_text": "pub(crate) fn record(stage: &'static str, error: FinalUseError, io_kind: Option<ErrorKind>) {\n    record_refusal(stage, error, io_kind, None);\n}\n\npub(crate) fn record_transport(\n    stage: &'static str,\n    error: FinalUseError,\n    transport_error: HostIssuerTransportError,\n) {\n    record_refusal(stage, error, None, Some(transport_error));\n}\n\nfn record_refusal(\n    stage: &'static str,\n    error: FinalUseError,\n    io_kind: Option<ErrorKind>,\n    transport_error: Option<HostIssuerTransportError>,\n) {",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "                    io_kind,\n                });",
+          "new_text": "                    io_kind,\n                    transport_error,\n                });",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "        let _ = (stage, error, io_kind);",
+          "new_text": "        let _ = (stage, error, io_kind, transport_error);",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "error={:?} io_kind={:?} sequence={}",
+          "new_text": "error={:?} io_kind={:?} transport_error={:?} sequence={}",
+          "expected_matches": 1
+        },
+        {
+          "old_text": "                refusal.io_kind,\n                sequence + 1,",
+          "new_text": "                refusal.io_kind,\n                refusal.transport_error,\n                sequence + 1,",
+          "expected_matches": 1
+        }
+      ]
+    }
+  ],
+  "unchanged": {
+    "public_transport_enum": true,
+    "behavioral_error_mapping": true,
+    "lane_poisoning": true,
+    "deadline": true,
+    "request_freshness_ns": 500000000,
+    "first_refusal": true,
+    "nested_scope_merge": true,
+    "debug_only": true,
+    "output_after_original_guard_drop": true,
+    "output_cap": 64,
+    "caller_metadata": true,
+    "checker": true,
+    "tests": true
+  },
+  "native_validated": false
+}

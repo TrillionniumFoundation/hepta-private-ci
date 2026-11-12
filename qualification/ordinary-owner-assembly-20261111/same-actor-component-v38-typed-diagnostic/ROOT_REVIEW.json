@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.root-source-review.v1",
+  "parent_commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "parent_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "repair_scope": "two-file typed diagnostic compile correction only",
+  "native_failure_evidence": {
+    "commit": "f29be5642ed31600b18eb3cea14167b47df9cd58",
+    "tree": "2c0e44496fa4924fa2db8cd3fcc8b30449b9a572",
+    "parent": "f9d82d4831fe40e46a21e2ada77e66a1e062e735",
+    "branch": "codex/ordinary-owner-evidence-v9-20261112-af52",
+    "prefix": "qualification/ordinary-owner-assembly-20261111/native-components-3dbffb4-seven/v12",
+    "files": 35,
+    "verified": true,
+    "source_changes": 0,
+    "main_merged": false
+  },
+  "packet": {
+    "blob": "51e87734269322c2d77854e5903fbd84ed3fc5d7",
+    "bytes": 7907,
+    "sha256": "7492de4dd95012f505a7adc99b35740f14182a24963c07bee3277b1a5a257bf5"
+  },
+  "independent_review": {
+    "blob": "1413dc999d7f9c7674302aaa98794f68ff4987c7",
+    "bytes": 4240,
+    "sha256": "20532dfaa080225be194f3165e3c98d8de08552c434187f47c3f43e473fd143c",
+    "verdict": "no_confirmed_static_blocker_in_this_exact_two_file_delta"
+  },
+  "root_reversible_proof": {
+    "files": 2,
+    "ops": 13,
+    "all_unique_forward_reverse": true,
+    "all_created_get_verified": true,
+    "source": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "transport_enum": {
+      "blob": "83acf4c92c2d6192454508d57f4998dbd1eac2f3",
+      "bytes": 8628,
+      "sha256": "20b0121aa8d1d4d0a7fa3d2d0f459000459d01b8db268820b0d9c74fd42138b4"
+    }
+  },
+  "reviewed_findings": [
+    "The actual transport error is a Copy/Debug enum, not std::io::Error, so all six former error.kind() calls fail compilation.",
+    "The six exact frontier edits preserve stage, original map_err(unavailable)?, deadline calculations, frame/request handling, take/restore and permanent lane closure.",
+    "record_transport retains the actual enum with io_kind=None; existing record callers retain their original IO kind with no transport enum. No OS error kind is manufactured.",
+    "The existing first-refusal record, nested merge and TLS restoration remain intact. Only the outermost RefusalScope writes after its original state guard is released, only in debug builds, at most64 records; stderr failure cannot replace original error.",
+    "No CALLERS row, allowlist, checker/helper, test, signature, authority decision, freshness or deadline changes. The old FinalUse leaf remains unknown until actual native evidence."
+  ],
+  "compiler_formatter_caller_or_native_pass_inherited": false,
+  "source_product_files_changed": 2,
+  "exact_replacements": 13,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "main_merged": false
+}

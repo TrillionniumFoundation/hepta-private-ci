@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.independent-static-review.v1",
+  "reviewer": "hepta_audit",
+  "subject": "V37 E0599 diagnostic-only typed transport correction",
+  "verdict": "no_confirmed_static_blocker_in_this_exact_two_file_delta",
+  "source": {
+    "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+  },
+  "packet": {
+    "blob": "51e87734269322c2d77854e5903fbd84ed3fc5d7",
+    "bytes": 7907,
+    "sha256": "7492de4dd95012f505a7adc99b35740f14182a24963c07bee3277b1a5a257bf5"
+  },
+  "evidence_read": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "pre": "bece0d0f4773d8d7e4a7e6fd2822b037768ee23c",
+      "post": "db496111b3b81d65953e927cda0f6b96914a3d69"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_diagnostic.rs",
+      "pre": "fa6dc685cfc45d8b4b379a6fe6ba7fffcd62294a",
+      "post": "3301834a89bbe08a20059ce49ff88cd40e846d64"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_issuer_transport.rs",
+      "blob": "83acf4c92c2d6192454508d57f4998dbd1eac2f3",
+      "actual_enum": "#[derive(Clone, Copy, Debug, Eq, PartialEq)] HostIssuerTransportError"
+    }
+  ],
+  "verified": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "pre": "bece0d0f4773d8d7e4a7e6fd2822b037768ee23c",
+      "post": "db496111b3b81d65953e927cda0f6b96914a3d69",
+      "ops": 6,
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_diagnostic.rs",
+      "pre": "fa6dc685cfc45d8b4b379a6fe6ba7fffcd62294a",
+      "post": "3301834a89bbe08a20059ce49ff88cd40e846d64",
+      "ops": 7,
+      "forward": true,
+      "reverse": true
+    }
+  ],
+  "findings": [
+    "Independently GET all three post/definition objects plus exact packet; checked full Git blob, byte counts and SHA256. Actual current preimages were independently retained/read and full hashes verified. All 13 unique exact replacements replay forward and reverse to the complete declared bytes.",
+    "The six original check/write_until/read_until error closures receive &HostIssuerTransportError. Copy permits *error; ErrorKind::kind is not an API of this enum. All six stage labels and original map_err(unavailable)? expressions remain byte-identical outside the diagnosis replacement.",
+    "record_transport stores the actual enum in transport_error and always sets io_kind to None. It does not invent an underlying OS error or convert a typed refusal into another business error.",
+    "The original record API still records io_kind and sets transport_error to None. The shared first-refusal-only assignment adds the optional field without modifying selection, execution or retry rules.",
+    "RefusalScope Drop control flow from its declaration through the output point is byte-identical: nested scopes merge only the first refusal into the prior scope, restore TLS and do not emit. Only the outermost scope can decrement the bounded emission allowance and write after its original caller's state guard has dropped.",
+    "All TLS state and output remain cfg(debug_assertions); release builds perform only the no-state diagnostic call with discarded arguments. stderr errors remain ignored. The 64-record bound is unchanged.",
+    "No transport callback, nonce, frame bound, state take/restore, poison, lifetime, attempt count, 500ms request-age rule, original return mapping, source authority or tests are changed by these exact operations.",
+    "This is a necessary source type correction in diagnostic instrumentation. It does not establish the previously unknown FinalUse leaf or qualify either the old failed attempt or this unexecuted candidate."
+  ],
+  "scope_limits": {
+    "original_checker_run": false,
+    "rust_compiler_or_formatter_run": false,
+    "native_or_component_tests_run": false,
+    "h_or_pty_used": false,
+    "branch_or_ref_modified": false,
+    "whole_repo_audit": false,
+    "current_CALLERS_and_allowlist_authored": false,
+    "native_failure_log": "Parent-supplied context, not independently re-read in this bounded delta review.",
+    "ordinary_chain_count": 0,
+    "independent_consumer_count": 0,
+    "daemon_root_cold_restart_count": 0
+  }
+}
