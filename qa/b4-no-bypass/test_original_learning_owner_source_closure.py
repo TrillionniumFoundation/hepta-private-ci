@@ -114,7 +114,7 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
             with self.subTest(marker=marker): self.rejects(path, "fn drain_completed_task<", marker)
         path = AGENT + "circuit_feature_current_learning.rs"
         for marker in ("coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.head_digest = selection.predecessor", "self.read_learning_selection(&prefix)?", "actual_selection != selection.observation", "source\n            .read_run_publication(", "self.committed(&before)?", "receipt.bundle_digest != candidate_bundle", "self.task.require_current()?"):
-            with self.subTest(marker=marker): self.rejects(path, "fn read_learning_next_use<", marker)
+            with self.subTest(marker=marker): self.rejects(path, "fn read_learning_next_use_set(", marker)
 
     def test_historical_read_never_reactivates_or_repairs_previous_owner(self):
         path = AGENT + "circuit_feature_current_recovery.rs"

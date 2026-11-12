@@ -217,6 +217,20 @@ impl<'a> Reader<'a> {
             .map_err(|_| Error::Binding("material identifier"))?;
         StableId::new(value).map_err(|_| Error::Binding("material identifier"))
     }
+    // The original HPEXEV01 envelope uses two-byte identifier lengths.
+    pub(super) fn id_u16(&mut self) -> Result<StableId, Error> {
+        let length = usize::from(u16::from_be_bytes(
+            self.take(2)?
+                .try_into()
+                .map_err(|_| Error::Binding("material identifier length"))?,
+        ));
+        if !(1..=128).contains(&length) {
+            return Err(Error::Binding("bounded original execution identifier"));
+        }
+        let value = std::str::from_utf8(self.take(length)?)
+            .map_err(|_| Error::Binding("material identifier"))?;
+        StableId::new(value).map_err(|_| Error::Binding("material identifier"))
+    }
     pub(super) fn ids(&mut self) -> Result<Vec<StableId>, Error> {
         (0..self.count(1024)?).map(|_| self.id()).collect()
     }

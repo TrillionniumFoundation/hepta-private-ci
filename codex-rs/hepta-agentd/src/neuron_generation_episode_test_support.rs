@@ -347,13 +347,10 @@ impl LedgerFixture {
             &self.directory(),
         ))
     }
+}
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(fs::read(self.directory.path().join("ledger"))),
-            checked(fs::read(self.directory.path().join("witness"))),
-        ]
-    }
+pub(super) fn ledger_bytes(writer: &mut LedgerWriter) -> [Vec<u8>; 2] {
+    checked(writer.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024))
 }
 
 pub(super) fn append_decision(

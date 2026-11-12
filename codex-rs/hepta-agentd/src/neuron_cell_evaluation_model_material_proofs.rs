@@ -22,8 +22,8 @@ pub(super) fn execution(
     let mut raw = Reader::new(&member.execution_record);
     raw.literal(b"HPEXEV01")?;
     let original = SignedLearningEvidenceV1 {
-        evidence_id: raw.id()?,
-        principal_id: raw.id()?,
+        evidence_id: raw.id_u16()?,
+        principal_id: raw.id_u16()?,
         role: LearningEvidenceRoleV1::Evaluator,
         trust_digest: raw.digest()?,
         scope_digest: raw.digest()?,

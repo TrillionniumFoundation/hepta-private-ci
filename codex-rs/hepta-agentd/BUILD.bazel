@@ -1,4 +1,3 @@
-load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
@@ -9,6 +8,7 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
     "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
 
@@ -46,9 +46,16 @@ codex_rust_crate(
     # Cargo unifies the qualification-only dev dependency for integration tests.
     # Keep the complete existing test graph without changing product binaries.
     integration_test_use_unit_test_dependencies = True,
+    # Partition the complete libtest roster using the existing outer launcher.
+    # Keep the default 300-second shard timeout and never retry a failed shard.
+    test_shard_counts = {
+        "hepta-agentd-unit-tests": 8,
+    },
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
     unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
+    unit_test_flaky = False,
+    unit_test_threads = 2,
 )
 
 v13_acceptance_example()
@@ -144,7 +151,7 @@ rust_binary(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
 )
 
 rust_test(
@@ -165,8 +172,8 @@ rust_test(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
-        normal = True,
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(
+        _UNIT_TEST_DEPENDENCIES,
         normal_dev = True,
     ),
 )

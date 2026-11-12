@@ -214,7 +214,9 @@ def codex_rust_crate(
         integration_test_extra_srcs = {},
         extra_binaries = [],
         extra_binaries_non_windows = [],
-        run_tests_with_wine_exec = False):
+        run_tests_with_wine_exec = False,
+        unit_test_threads = 0,
+        unit_test_flaky = None):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -271,6 +273,10 @@ def codex_rust_crate(
         test_threads: Optional Rust test thread limit for sharded integration tests.
         unit_test_timeout: Optional Bazel timeout for the unit-test target
             generated from `src/**/*.rs`.
+        unit_test_threads: Optional library unit-test thread limit, passed via
+            RUST_TEST_THREADS so the workspace-root launcher still shards.
+        unit_test_flaky: Optional library unit-test flaky attribute override.
+            None preserves the existing default for sharded and unsharded tests.
         unit_test_extra_binaries: Additional binary labels to surface as
             unit-test runfiles and `CARGO_BIN_EXE_*` environment variables.
         unit_test_extra_srcs: Additional source files required only by the
@@ -414,12 +420,15 @@ def codex_rust_crate(
         if unit_test_shard_count:
             unit_test_kwargs["shard_count"] = unit_test_shard_count
             unit_test_kwargs["flaky"] = True
+        if unit_test_flaky != None:
+            unit_test_kwargs["flaky"] = unit_test_flaky
 
         workspace_root_test(
             name = unit_test_name,
             env = test_env,
             runfile_env = unit_test_cargo_env_runfiles,
             test_bin = ":" + unit_test_binary,
+            test_threads = unit_test_threads,
             workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
             tags = test_tags,
             **unit_test_kwargs

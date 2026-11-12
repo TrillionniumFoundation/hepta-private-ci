@@ -84,6 +84,8 @@ pub(crate) enum GenerationCommand {
         response: Response<()>,
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
+    #[cfg(test)]
+    QualificationFileBytes(Response<[Vec<u8>; 2]>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
     #[cfg(unix)]
     LearningRead {

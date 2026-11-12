@@ -32,11 +32,49 @@ use tokio_util::sync::CancellationToken;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::RuntimeTasks;
+use crate::neuron_generation_runtime::GenerationCommand;
+use crate::neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 
 pub(super) fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
         Err(error) => panic!("generation service fixture: {error:?}"),
+    }
+}
+
+// Retain no owner lifetime: the original service must still own its sender.
+pub(super) struct GenerationFiles {
+    sender: tokio::sync::mpsc::WeakSender<GenerationCommand>,
+}
+
+impl GenerationFiles {
+    pub(super) fn new(handle: &NeuronGenerationRuntimeHandleV2) -> Self {
+        Self {
+            sender: handle.sender.downgrade(),
+        }
+    }
+
+    pub(super) async fn read(&self) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
+        let (response, receive) = tokio::sync::oneshot::channel();
+        {
+            let sender = self
+                .sender
+                .upgrade()
+                .ok_or(CellGenerationErrorV2::Unavailable)?;
+            sender
+                .try_send(GenerationCommand::QualificationFileBytes(response))
+                .map_err(|error| match error {
+                    tokio::sync::mpsc::error::TrySendError::Full(_) => {
+                        CellGenerationErrorV2::Capacity
+                    }
+                    tokio::sync::mpsc::error::TrySendError::Closed(_) => {
+                        CellGenerationErrorV2::Unavailable
+                    }
+                })?;
+        }
+        receive
+            .await
+            .map_err(|_| CellGenerationErrorV2::CommitUncertain)?
     }
 }
 

@@ -306,24 +306,46 @@ fn expiration_during_admission_settles_known_no_contact_without_calling_model() 
     );
     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = checked(
+        owner
+            .journal_mut()
+            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
+    );
     assert_eq!(
         checked(owner.step(req.clone(), || panic!(
             "exact replay must not sample a clock"
         ))),
         receipt
     );
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(
+        checked(
+            owner
+                .journal_mut()
+                .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
+        ),
+        journal_bytes
+    );
     assert!(checked(owner.drain()));
     drop(owner);
     let mut owner = fixture.owner(model.clone());
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = checked(
+        owner
+            .journal_mut()
+            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
+    );
     assert_eq!(
         checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
         receipt
     );
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(
+        checked(
+            owner
+                .journal_mut()
+                .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
+        ),
+        journal_bytes
+    );
     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
 }
 

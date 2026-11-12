@@ -2,6 +2,7 @@
 //! deliberately returns an unknown result; no model execution is qualified.
 
 use std::fs;
+use std::fs::OpenOptions;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
@@ -18,6 +19,7 @@ use tokio::time::sleep;
 use tokio::time::timeout;
 
 use super::support::Fixture;
+use super::support::GenerationFiles;
 use super::support::checked;
 use super::support::host;
 use super::support::request;
@@ -176,14 +178,21 @@ fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
     original
 }
 
-fn durable_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
-    ["generation-journal", "generation-witness", CONTROL_FILE]
-        .map(|name| checked(fs::read(fixture.directory.path().join(name))))
-}
-
 #[tokio::test]
 async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost() {
     let mut fixture = Fixture::new().await;
+    // Prepare the same empty input before its first exclusive Control owner.
+    // create_new refuses replacement; the baseline is an actual closed-file read.
+    let control_path = fixture.directory.path().join(CONTROL_FILE);
+    let mut options = OpenOptions::new();
+    options.create_new(true).append(true).read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    drop(checked(options.open(&control_path)));
+    let control_before = checked(fs::read(&control_path));
     let clock = clock();
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
     let worker = Arc::new(UnknownWorker::default());
@@ -195,7 +204,6 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         Arc::clone(&contacts),
     )
     .await;
-    let control_before = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
     let original = original(&fixture, &clock);
     let receipt = checked(handle.step(original.clone()).await);
     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
@@ -225,9 +233,9 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let mut expected = fixture.config.initial.clone();
     expected.revision = 1;
     assert_eq!(checked(handle.snapshot().await), expected);
-    let bytes = durable_bytes(&fixture);
+    let bytes = checked(GenerationFiles::new(&handle).read().await);
     assert_eq!(checked(handle.step(original.clone()).await), receipt);
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
     assert!(checked(handle.drain().await));
     assert_eq!(
         checked(fixture.state().neuron_generation_drain_blockers()),
@@ -240,9 +248,10 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         )
         .await,
     ));
-    let drained_bytes = durable_bytes(&fixture);
+    let drained_bytes = checked(GenerationFiles::new(&handle).read().await);
     tasks.shutdown().await;
     drop(handle);
+    assert_eq!(checked(fs::read(&control_path)), control_before);
 
     fixture.reopen_state().await;
     let (handle, mut tasks) = start(
@@ -256,14 +265,12 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.task_cost().await), receipt.cost);
     assert_eq!(checked(handle.snapshot().await), expected);
     assert!(checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), drained_bytes);
-    assert_eq!(
-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
-        control_before
-    );
+    assert_eq!(checked(GenerationFiles::new(&handle).read().await), drained_bytes);
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
+    drop(handle);
+    assert_eq!(checked(fs::read(&control_path)), control_before);
 }
 
 #[tokio::test]
@@ -298,6 +305,9 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         assert!(!checked(control.generation_has_unresolved()));
     }
 
+    // The original Control owner is closed here. Compare its complete file
+    // across the entire cold service lifetime, including the narrower replay.
+    let control_bytes = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
     fixture.reopen_state().await;
     let (handle, mut tasks) = start(
         &fixture,
@@ -306,7 +316,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         Arc::clone(&contacts),
     )
     .await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = checked(GenerationFiles::new(&handle).read().await);
     assert_eq!(
         handle.reconcile(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Pending)
@@ -315,7 +325,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         handle.step(original.clone()).await,
         Err(CellGenerationErrorV2::Pending)
     );
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
     assert_eq!(
         handle.cancel(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Conflict)
@@ -328,6 +338,11 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
+    drop(handle);
+    assert_eq!(
+        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
+        control_bytes
+    );
 }
 
 #[tokio::test]
@@ -377,10 +392,13 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
         assert!(checked(control.generation_has_unresolved()));
     }
 
+    // The original Control owner is closed here. Compare its complete file
+    // across the entire cold service lifetime, including the narrower replay.
+    let control_bytes = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
     fixture.reopen_state().await;
     let (handle, mut tasks) =
         start(&fixture, clock, Arc::clone(&worker), Arc::clone(&contacts)).await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = checked(GenerationFiles::new(&handle).read().await);
     assert_eq!(
         handle.reconcile(digest).await,
         Err(CellGenerationErrorV2::Pending)
@@ -391,7 +409,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     );
     assert_eq!(checked(handle.pending_request().await), Some(original));
     assert!(!checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
     assert_eq!(contacts.load(Ordering::SeqCst), 1);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     assert!(checked(handle.pending_output().await).is_none());
@@ -400,4 +418,9 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
         None
     );
     tasks.shutdown().await;
+    drop(handle);
+    assert_eq!(
+        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
+        control_bytes
+    );
 }

@@ -13,6 +13,10 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+default = []
+qualification-file-observation = []
+
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-types = { path = "../hepta-types" }

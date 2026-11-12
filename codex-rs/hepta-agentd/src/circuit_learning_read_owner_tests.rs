@@ -440,5 +440,64 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
     Ok(())
 }
 
+#[tokio::test]
+async fn q24_remote_current_set_rejects_source_withdrawal_after_native_completion()
+-> anyhow::Result<()> {
+    let mut f = SelectionFixture::ready().await?;
+    let (trainer, thread) = f.peer(f.config.training_evidence.clone(), 2)?;
+    let mut selector = f.create()?;
+    let selection = selector
+        .attest_original_selection(f.sources(&f.config.decision, &trainer))
+        .await?;
+    drop(selector);
+    finish(trainer, thread)?;
+    let mut selected = LearningIterationCoordinatorV1::from_snapshot(f.config.decision.clone())?;
+    selected.record(selection.0.clone(), selection.0.observed_unix_seconds)?;
+    f.original.config.selection = selected.snapshot().clone();
+    f.original.config.selection_evidence = selection.1;
+    let publication = execute(&f.original.session, 1).await?;
+    let expected = f.original.session.cell.read_learning_next_use(
+        &selected,
+        f.original.session.source.as_ref(),
+        &f.original.session.runtime.identity,
+    )?;
+    let owner = original(&f.original, next_use_context(&f.original.config))?;
+    let before = owner_bytes(&f.original.session)?;
+    let (live, channel) = transport::client(next_use_context(&f.original.config))?;
+    let server = transport::serve(Arc::clone(&owner), channel);
+    let actual = live.read_current().await?;
+    assert_eq!(actual.observation(), &expected);
+    assert_eq!(
+        transport::source_publication(&actual),
+        Some(publication.publication_digest())
+    );
+    assert_eq!(owner_bytes(&f.original.session)?, before);
+    let source_path = f
+        .original
+        .session
+        .runtime
+        .identity
+        .home_root
+        .join("q24-source.journal");
+    owner.fixture_withdraw_source_before_read_tail(
+        std::fs::OpenOptions::new().write(true).open(&source_path)?,
+    )?;
+    assert!(live.read_current().await.is_err());
+    assert_eq!(std::fs::metadata(&source_path)?.len(), 0);
+    assert!(matches!(
+        live.read_current().await,
+        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
+    ));
+    drop(live);
+    assert!(
+        server
+            .join()
+            .map_err(|_| anyhow::anyhow!("original Source tail peer"))?
+            .is_err()
+    );
+    f.original.session.stop().await?;
+    Ok(())
+}
+
 #[path = "circuit_selection_command_owner_tests.rs"]
 mod command_owner;

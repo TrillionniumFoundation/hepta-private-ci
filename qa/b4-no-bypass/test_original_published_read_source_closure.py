@@ -23,12 +23,14 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 MAIN = AGENT + "circuit_learning_read_capability.rs"
 SERVICE = AGENT + "circuit_learning_read_service.rs"
+CURRENT = AGENT + "circuit_feature_current_learning.rs"
 WIRE = AGENT + "circuit_learning_read_wire.rs"
 SOURCE = AGENT + "circuit_task_source_readback.rs"
 JOURNAL = AGENT + "circuit_task_source_journal.rs"
 SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
+    "circuit_feature_original_next_use_read_set": (SERVICE,),
     "learning_original_evaluated_read_selection_context": (),
     "learning_original_evaluated_read_next_use_context": (),
     "learning_original_evaluated_read_client_create": (),
@@ -237,17 +239,25 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "input.scope.principal_digest.to_string() != request.principal_id.as_str()",
             "source.require_original_input(&self.identity, input)?",
         ):
-            self.rejects(SERVICE, "fn require_task_input_current(", marker)
+            self.rejects(SERVICE, "fn require_original_task_input(", marker)
         for marker in (
+            "self.cell.task.require_current()?",
+            "self.require_original_task_input()?",
             "cell.read_learning_selection(&coordinator)?",
             "self.require_original_selection(&selection)?",
-            "wire::Mode::Selection => (selection.clone(), None)",
+            "(selection.clone(), selection, None)",
             "wire::Mode::NextUse",
-            "cell.read_learning_next_use(",
-            "before.publication_digest()",
+            "PublishedCircuitCellOwnerV1::read_learning_next_use_set(",
+            "(selection, observation, Some(publication))",
             "cell.read_learning_selection(&coordinator)? != selection",
+            "self.require_original_task_input()?;\n        self.cell.task.require_current()?;\n        Ok(Readback",
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
+        for marker in (
+            "self.cell.task.require_current()?",
+            "self.require_original_task_input()?",
+        ):
+            self.rejects(SERVICE, "fn require_task_input_current(", marker)
         for marker in (
             "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",
@@ -256,6 +266,28 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "bytes.is_empty() || bytes.len() > 16_384",
         ):
             self.rejects(SERVICE, "fn response(", marker)
+
+    def test_same_call_set_keeps_native_source_and_cell_guards_before_consumption(self):
+        self.rejects(
+            CURRENT, "fn read_learning_next_use<",
+            ".read_learning_next_use_set(coordinator, source, identity)?",
+        )
+        for marker in (
+            "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)",
+            "self.read_learning_selection(&prefix)?",
+            "actual_selection != selection.observation",
+            "source\n            .read_run_publication(",
+            "self.committed(&before)?",
+            "receipt.bundle_digest != candidate_bundle",
+            "previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id",
+            "if source\n            .read_run_publication(",
+            "!= before",
+            "self.task.require_current()?",
+            "source_publication: before.publication_digest()",
+        ):
+            self.rejects(CURRENT, "fn read_learning_next_use_set(", marker)
+        for marker in ("self.selection", "self.observation", "self.source_publication"):
+            self.rejects(CURRENT, "fn into_parts(", marker)
 
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
         for path, function, predecessor, verifier in (

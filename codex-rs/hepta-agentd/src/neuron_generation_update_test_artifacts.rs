@@ -187,6 +187,7 @@ impl ArtifactFiles {
         })
     }
 
+    #[cfg(target_os = "linux")]
     pub(super) fn retained_artifact_checkpoint(
         &self,
     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {
@@ -196,6 +197,7 @@ impl ArtifactFiles {
         })
     }
 
+    #[cfg(target_os = "linux")]
     pub(super) fn retained_publication_selection(
         &self,
         now: u64,

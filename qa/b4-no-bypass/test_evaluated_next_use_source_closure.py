@@ -162,7 +162,7 @@ class EvaluatedNextUseClosureTests(unittest.TestCase):
                         PROOF._verify_boundary(ROOT, row, changed, ())
         row = self.boundaries["circuit_feature_original_next_use_observation"]
         self.assertEqual(row.product_callers, (
-            OWNER, AGENT + "circuit_learning_read_service.rs", EVALUATED,
+            OWNER, EVALUATED,
         ))
         sources = {path: code((ROOT / path).read_text())
                    for path in (row.definition_path, *row.product_callers)}

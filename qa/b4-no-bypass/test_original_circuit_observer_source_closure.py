@@ -109,8 +109,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
         expected = {
             "learning_evidence_original_owner_readback": READERS,
             "circuit_feature_original_next_use_observation": (
-                OWNER, AGENT + "circuit_learning_read_service.rs",
-                AGENT + "circuit_evaluated_next_use_receipt.rs",
+                OWNER, AGENT + "circuit_evaluated_next_use_receipt.rs",
             ),
             **{"learning_original_circuit_next_use_receipt_" + suffix: ()
                for suffix in ("create", "recover", "attest", "readback")},

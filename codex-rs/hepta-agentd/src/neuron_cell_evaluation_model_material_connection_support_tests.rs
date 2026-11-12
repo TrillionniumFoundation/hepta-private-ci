@@ -306,6 +306,42 @@ impl OriginalCellEvaluationModelMaterialV1 {
                     .is_err()
             );
         }
+        // Independently locate the two actual HPEXEV01 identifier fields.
+        // Its u16 lengths differ from the u32 Product signing payload.
+        let (_, signed) = crate::learning_owner_evidence::decode(&raw.execution)?;
+        let mut execution = Reader::new(&raw.execution_record);
+        execution.literal(b"HPEXEV01")?;
+        for expected in [&signed.evidence_id, &signed.principal_id] {
+            let start = execution.offset;
+            let length = usize::from(u16::from_be_bytes(execution.take(2)?.try_into()?));
+            anyhow::ensure!((1..=128).contains(&length), "actual execution identifier");
+            let identifier = std::str::from_utf8(execution.take(length)?)?;
+            assert_eq!(identifier, expected.as_str());
+            let original = &raw.execution_record[start..execution.offset];
+            let mut reader = Reader::new(original);
+            assert_eq!(reader.id_u16()?, *expected);
+            reader.finish()?;
+            for end in [0, 1, original.len() - 1] {
+                assert!(Reader::new(&original[..end]).id_u16().is_err());
+            }
+            for length in [0, u16::try_from(length)? + 1, 129, u16::MAX] {
+                let mut changed = Body::decode(&self.bytes)?;
+                changed.members[0].execution_record[start..start + 2]
+                    .copy_from_slice(&length.to_be_bytes());
+                assert!(
+                    verify::material(&self.context, &self.evaluation, &changed.encode()?, current)
+                        .is_err(),
+                    "changed original execution identifier at {start}: {length}"
+                );
+            }
+            // All original bytes remain, but a u32 prefix must not be accepted.
+            let mut changed = Body::decode(&self.bytes)?;
+            drop(changed.members[0].execution_record.splice(start..start, [0, 0]));
+            assert!(
+                verify::material(&self.context, &self.evaluation, &changed.encode()?, current)
+                    .is_err()
+            );
+        }
         let record: serde_json::Value = serde_json::from_slice(&raw.record)?;
         let candidate: CellBackendManifestV2 =
             serde_json::from_value(record["candidate"]["manifest"].clone())?;

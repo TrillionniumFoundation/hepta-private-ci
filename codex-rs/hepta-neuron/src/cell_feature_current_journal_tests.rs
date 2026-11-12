@@ -215,6 +215,7 @@ fn published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_
         )
     );
     assert_eq!(owner.pending_inference(&expected.scope).unwrap(), None);
+    drop(owner);
     assert_eq!(files.bytes(), bytes);
 }
 
@@ -242,13 +243,13 @@ fn published_feature_revoked_admission_does_not_create_pending_work() {
     .unwrap();
     let admission =
         crate::cell_inference::admission_for_step(&prepared, /*now_micros*/ 11).unwrap();
-    let before = files.bytes();
+    let before = owner.locked_bytes_for_test();
     *current.0.lock().unwrap() = (None, None);
     assert_eq!(
         owner.admit_inference(admission),
         Err(CellExecutionError::OwnerUnavailable)
     );
-    assert_eq!(files.bytes(), before);
+    assert_eq!(owner.locked_bytes_for_test(), before);
     *current.0.lock().unwrap() = (Some(binding), None);
     assert_eq!(
         owner.pending_inference(&cell::scope("feature")).unwrap(),

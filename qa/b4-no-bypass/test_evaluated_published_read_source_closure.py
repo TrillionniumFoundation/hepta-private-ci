@@ -279,8 +279,9 @@ class EvaluatedPublishedReadClosureTests(unittest.TestCase):
     def test_actual_source_and_cell_surround_each_read_and_five_cut_c_result(self):
         for function, markers in (
             ("from_original_profile", ("owner.require_task_input_current()?", "cell.read_learning_selection(&coordinator)?", "owner.require_original_selection(&observed)?", "owner.context.binding(fresh)? != binding")),
-            ("require_task_input_current", ("self.cell.task.require_current()?", "let request = &self.context.prefix().request;", "source.require_original_input(&self.identity, input)?")),
-            ("read_original", ("self.require_task_input_current()?", "cell.read_learning_selection(&coordinator)?", "circuit_feature_task_digest_v1(", "wire::Mode::Selection => (selection.clone(), None)", "cell.read_learning_next_use(", "before.publication_digest()", "cell.read_learning_selection(&coordinator)? != selection")),
+            ("require_task_input_current", ("self.cell.task.require_current()?", "self.require_original_task_input()?")),
+            ("require_original_task_input", ("let request = &self.context.prefix().request;", "source.require_original_input(&self.identity, input)?")),
+            ("read_original", ("self.cell.task.require_current()?", "self.require_original_task_input()?", "cell.read_learning_selection(&coordinator)?", "circuit_feature_task_digest_v1(", "(selection.clone(), selection, None)", "PublishedCircuitCellOwnerV1::read_learning_next_use_set(", "(selection, observation, Some(publication))", "cell.read_learning_selection(&coordinator)? != selection", "self.require_original_task_input()?;\n        self.cell.task.require_current()?;\n        Ok(Readback")),
             ("response", ("self.context.require_request(&request, self.binding, request_id)?", "self.read_original()?", "self.context.binding(fresh)? != self.binding")),
         ):
             for marker in markers:

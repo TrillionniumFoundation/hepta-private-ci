@@ -31,7 +31,7 @@ codex-hepta-types = { path = "../hepta-types" }
 
 [dev-dependencies]
 codex-hepta-contracts = { path = "../hepta-contracts" }
-codex-hepta-neuron = { path = "../hepta-neuron" }
+codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-file-observation"] }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
 ed25519-dalek = { workspace = true }

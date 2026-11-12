@@ -335,6 +335,16 @@ impl From<io::Error> for WitnessStoreError {
 pub trait AnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
 
+    /// Read the complete original locked witness for bounded qualification.
+    /// Backends without this capability remain unavailable; no cached substitute.
+    #[cfg(feature = "qualification-file-observation")]
+    fn qualification_file_bytes(
+        &mut self,
+        _maximum_bytes: u64,
+    ) -> Result<Vec<u8>, WitnessStoreError> {
+        Err(WitnessStoreError::Unavailable)
+    }
+
     fn compare_and_swap(
         &mut self,
         expected: Option<JournalAnchor>,

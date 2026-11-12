@@ -306,3 +306,11 @@ pub(crate) fn withdraw_source_before_final_selection_read<
         anyhow::bail!("actual final Selection read was not attempted")
     })
 }
+
+/// Inspect only the already returned read-only data in a native assertion.
+/// This exposes no production CURRENT getter or capability constructor.
+pub(crate) fn source_publication(
+    read: &super::OriginalCircuitLearningReadbackV1,
+) -> Option<codex_hepta_types::Digest32> {
+    read.source_publication
+}

@@ -26,6 +26,10 @@ use crate::JournalAnchor;
 use crate::JournalScope;
 use crate::WitnessStoreError;
 
+#[cfg(feature = "qualification-file-observation")]
+#[path = "witness_qualification.rs"]
+mod qualification;
+
 const MAGIC: &[u8; 8] = b"HPTNWA01";
 const HEADER: usize = 112;
 const RECORD: usize = 112;
@@ -144,6 +148,14 @@ impl FileAnchorWitnessStore {
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
+    #[cfg(feature = "qualification-file-observation")]
+    fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, WitnessStoreError> {
+        qualification::file_bytes(self, maximum_bytes)
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.poisoned.load(Ordering::Acquire) {
             return Err(WitnessStoreError::Poisoned);

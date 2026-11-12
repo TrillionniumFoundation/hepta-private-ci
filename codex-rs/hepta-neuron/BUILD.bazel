@@ -8,6 +8,7 @@ codex_rust_crate(
         "tests/support/joint_synthetic.rs",
     ],
     crate_name = "codex_hepta_neuron",
+    unit_test_features = ["qualification-file-observation"],
     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
 )
 

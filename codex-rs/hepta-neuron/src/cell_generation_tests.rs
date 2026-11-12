@@ -18,6 +18,9 @@ use crate::cell_test_support::checked;
 mod observation;
 #[path = "cell_generation_physical_current_tests.rs"]
 mod physical_current;
+#[cfg(feature = "qualification-file-observation")]
+#[path = "cell_generation_qualification_tests.rs"]
+mod qualification;
 #[path = "cell_generation_test_support.rs"]
 mod support;
 use support::*;
