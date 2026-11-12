@@ -121,8 +121,8 @@ pub(super) fn serve_until(
                     if stop.load(Ordering::Acquire) {
                         return Err(io::Error::other("original B source serving stopped"));
                     }
-                    // The source may exit after receiving its actual ACK.
-                    // Its incarnation was checked inside and after admission.
+                    // The source may exit only after the separate finalized
+                    // notice sent here, after the whole frame has returned.
                     owner_alive(owner, end)
                 })?;
             }

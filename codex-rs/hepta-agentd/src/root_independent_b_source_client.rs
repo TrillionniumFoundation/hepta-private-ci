@@ -70,7 +70,7 @@ pub async fn submit_original_root_b_source_with_candidate(
     let bootstrap: SourceBootstrap = serde_json::from_slice(&bytes)?;
     if bytes.len() != length as usize
         || serde_json::to_vec(&bootstrap)? != bytes
-        || bootstrap.schema != 2
+        || bootstrap.schema != 3
         || bootstrap.purpose != PURPOSE
         || bootstrap.root.uid != 0
         || bootstrap.root.pid != handoff.root_pid
@@ -80,6 +80,7 @@ pub async fn submit_original_root_b_source_with_candidate(
         || (bootstrap.mode == SourceMode::FreshInput) != handoff.source.is_some()
         || (bootstrap.mode == SourceMode::FreshInput) != handoff.candidate_data.is_some()
         || (bootstrap.mode == SourceMode::FreshInput) != handoff.candidate_notice.is_some()
+        || (bootstrap.mode == SourceMode::FreshInput) != handoff.source_finalized.is_some()
     {
         return Err(refused("original B source bootstrap differs"));
     }
@@ -201,6 +202,7 @@ pub async fn submit_original_root_b_source_with_candidate(
     )
     .await
     .map_err(|_| refused("original B source connection timed out"))??;
+    let original_root = handoff.root_pidfd.try_clone()?;
     let mut stream = OriginalPublicationStream::from_stream_until(
         stream.into_std()?,
         handoff.root_pidfd,
@@ -227,6 +229,31 @@ pub async fn submit_original_root_b_source_with_candidate(
     }
     require_process(&bootstrap.source_peer)?;
     require_process(&bootstrap.root)?;
+    // A response alone precedes the server's final source-pidfd check. Stay
+    // alive until its separate terminal DATA notification has reached EOF.
+    let finalized = handoff
+        .source_finalized
+        .take()
+        .ok_or_else(|| refused("original B source finalization missing"))?;
+    let bytes = crate::root_independent_b_notice::receive_original_notice(
+        finalized,
+        handoff.root_pid,
+        end,
+        || {
+            require_process(&bootstrap.root)?;
+            require_process(&bootstrap.source_peer)?;
+            crate::root_observation_stream::check_lifetime(&original_root).map_err(io::Error::other)
+        },
+    )?;
+    crate::root_independent_b_source_finalized::require_original_source_finalized(
+        &bytes, &candidate, &response,
+    )?;
+    require_process(&bootstrap.root)?;
+    require_process(&bootstrap.source_peer)?;
+    crate::root_observation_stream::check_lifetime(&original_root).map_err(io::Error::other)?;
+    if Instant::now() >= end {
+        return Err(refused("original B source end elapsed after finalization"));
+    }
     Ok(OriginalBSourceIngressStatusV1::RetainedInput { source_digest })
 }
 

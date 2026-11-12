@@ -43,8 +43,25 @@ impl OriginalBSourceRoute {
             (None, None)
         };
         let metadata = files.source.original_readonly()?.metadata()?;
+        let retained = if mode == SourceMode::Retained {
+            let cut = enrollment
+                .admitted_source
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original retained B source absent"))?;
+            cut.require_original(files)?;
+            Some(
+                cut.acknowledgement(crate::root_independent_b_protocol::digest(
+                    &original.binding,
+                )?),
+            )
+        } else {
+            None
+        };
+        let (flow, notices) = OriginalBSourceFlow::prepare(mode, retained)?;
+        let candidate_notice = notices.candidate.as_ref().map(File::metadata).transpose()?;
+        let source_finalized = notices.finalized.as_ref().map(File::metadata).transpose()?;
         let bootstrap = SourceBootstrap {
-            schema: 2,
+            schema: 3,
             purpose: crate::root_independent_b_source_protocol::PURPOSE.into(),
             mode,
             root: original.root.clone(),
@@ -62,6 +79,10 @@ impl OriginalBSourceRoute {
             source_inode: metadata.ino(),
             candidate_data_device: original.candidate_data_device,
             candidate_data_inode: original.candidate_data_inode,
+            candidate_notice_device: candidate_notice.as_ref().map_or(0, MetadataExt::dev),
+            candidate_notice_inode: candidate_notice.as_ref().map_or(0, MetadataExt::ino),
+            source_finalized_device: source_finalized.as_ref().map_or(0, MetadataExt::dev),
+            source_finalized_inode: source_finalized.as_ref().map_or(0, MetadataExt::ino),
             registered_at_seconds: enrollment.registered_at_seconds,
             absolute_end_monotonic_ns: seal_original_end(original_end)?,
             frame_timeout_ms: config.timeout_ms,
@@ -73,22 +94,6 @@ impl OriginalBSourceRoute {
             peer.require_live()?;
         }
         files.require_original_files()?;
-        let retained = if mode == SourceMode::Retained {
-            let cut = enrollment
-                .admitted_source
-                .as_ref()
-                .ok_or_else(|| io::Error::other("original retained B source absent"))?;
-            cut.require_original(files)?;
-            Some(
-                cut.acknowledgement(crate::root_independent_b_protocol::digest(
-                    &original.binding,
-                )?),
-            )
-        } else {
-            None
-        };
-        let (flow, candidate_notice, source_admitted) =
-            OriginalBSourceFlow::prepare(mode, retained)?;
         let candidate_data = if mode == SourceMode::FreshInput {
             Some(files.candidate_data.original_readonly()?)
         } else {
@@ -104,9 +109,10 @@ impl OriginalBSourceRoute {
                 bootstrap: sealed,
                 source,
                 candidate_data,
-                candidate_notice,
+                candidate_notice: notices.candidate,
+                source_finalized: notices.finalized,
             },
-            source_admitted,
+            notices.admitted,
         ))
     }
 }
