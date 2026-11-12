@@ -1,0 +1,29 @@
+--- v1/worker.py
++++ v2/worker.py
+@@ -132,6 +132,7 @@
+ 
+         originals.append((container, name, original))
+         setattr(container, name, invoke)
++        return invoke
+ 
+     signal.signal(signal.SIGALRM, stop)
+     signal.setitimer(signal.ITIMER_REAL, max(0.001, 220 - (time.perf_counter() - started_wall)))
+@@ -164,8 +165,17 @@
+         helper_path = Path(proof.typed_callers.__file__).resolve()
+         if helper_path != (source / 'scripts/hepta_typed_callers.py').resolve():
+             raise RuntimeError('typed helper import came from another source')
++        if proof.has_authority_call is not proof.typed_callers.has_authority_call:
++            raise RuntimeError('original authority-call function aliases differ')
++        original_has_authority_call = proof.has_authority_call
+         measured_function(proof.typed_callers, '_declared_aliases', '_declared_aliases')
+-        measured_function(proof.typed_callers, 'has_authority_call', 'has_authority_call')
++        authority_call_wrapper = measured_function(
++            proof.typed_callers, 'has_authority_call', 'has_authority_call'
++        )
++        # The verifier captured this exact function at module import time.
++        # Both references must share one wrapper, which delegates once only.
++        originals.append((proof, 'has_authority_call', original_has_authority_call))
++        proof.has_authority_call = authority_call_wrapper
+         measured_function(proof, '_verify_boundary', '_verify_boundary', boundary=True)
+         verify_started = time.perf_counter()
+         verify_cpu_started = time.process_time()

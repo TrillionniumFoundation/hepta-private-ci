@@ -1,0 +1,77 @@
+{
+  "binaries": [
+    {
+      "bytes": 282318328,
+      "copy_readback_equal": true,
+      "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+      "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+      "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+      "source_ctime_ns": 1794493816523629969,
+      "source_device": 2067,
+      "source_inode": 33062611,
+      "source_mode": "0o700",
+      "source_mtime_ns": 1794493816493630860
+    },
+    {
+      "bytes": 7018584,
+      "copy_readback_equal": true,
+      "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_intelligence_eval-01bad425e883a60a",
+      "sha256": "620cdd697da9c865dff8e1f9e3e2d4e71f7622f264e537acd31880a44540761a",
+      "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_intelligence_eval-01bad425e883a60a",
+      "source_ctime_ns": 1794492507898507812,
+      "source_device": 2067,
+      "source_inode": 33055004,
+      "source_mode": "0o700",
+      "source_mtime_ns": 1794492507896507872
+    },
+    {
+      "bytes": 7033640,
+      "copy_readback_equal": true,
+      "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_intelligence_eval-3990847f24f29162",
+      "sha256": "0a31fd0c77e68ad282fd5084f69ffed99ca4595de4505c54d0f437abc44c31a4",
+      "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_intelligence_eval-3990847f24f29162",
+      "source_ctime_ns": 1794493606293875702,
+      "source_device": 2067,
+      "source_inode": 33062572,
+      "source_mode": "0o700",
+      "source_mtime_ns": 1794493606291875762
+    }
+  ],
+  "cargo_or_tests_launched": false,
+  "eval65_equal": true,
+  "finished_at": "2026-11-12T14:52:28.037800+00:00",
+  "kind": "failed_native_binary_preservation_and_readonly_input_audit",
+  "next_upstream_availability": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "commit_present": false,
+    "network_fetch_performed": false,
+    "probe_returncode": 128,
+    "probe_stderr": "fatal: Not a valid object name a96d1b821d10ed3d9e99dd06c5141f9f242ae318^{commit}\n",
+    "refs_or_source_changed": false
+  },
+  "qualification": false,
+  "source_after": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "files": 14851,
+    "gzip_bytes": 1143993,
+    "gzip_sha256": "3c918a210def53cb84c29afc903f3b1275de476f17f5334746b8a4eabf4dc9c7",
+    "inventory_bytes": 3440077,
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_before": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "files": 14851,
+    "gzip_bytes": 1143993,
+    "gzip_sha256": "3c918a210def53cb84c29afc903f3b1275de476f17f5334746b8a4eabf4dc9c7",
+    "inventory_bytes": 3440077,
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "started_at": "2026-11-12T14:52:20.189014+00:00",
+  "status": "retained_original_failed_binaries"
+}

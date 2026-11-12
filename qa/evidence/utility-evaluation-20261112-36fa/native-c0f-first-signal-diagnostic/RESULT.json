@@ -1,0 +1,95 @@
+{
+  "binary": {
+    "bytes": 282318328,
+    "copy_readback_equal": true,
+    "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+    "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "source_ctime_ns": 1794493816523629969,
+    "source_device": 2067,
+    "source_inode": 33062611,
+    "source_mode": "0o700",
+    "source_mtime_ns": 1794493816493630860
+  },
+  "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+  "cwd": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-agentd",
+  "debugger_invocation_started": true,
+  "environment": {
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-final-native-target-v1",
+    "CODEX_REPO_ROOT": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "NEXTEST_PROFILE": "local",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUST_MIN_STACK": "8388608"
+  },
+  "environment_delta_from_original_focused": {
+    "executable_path": "Verified byte-identical create-only retained copy of the original failed native ELF",
+    "runner": "Direct GDB/libtest invocation instead of nextest; nextest per-case injected metadata is not reproduced"
+  },
+  "execution": {
+    "log_bytes": 43646,
+    "log_sha256": "a5794043e3cb211fb7e4131f5a06dee329edb5a67fb11e2127fb85be67daf70d",
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "timed_out": false
+  },
+  "execution_difference": "Direct GDB invocation of the exact libtest --exact case using the retained original failed binary; diagnostic only, not the nextest runner or a qualification",
+  "finished_at": "2026-11-12T15:17:00.149357+00:00",
+  "label": "ORIGINAL_FAILED_BINARY_DIAGNOSTIC",
+  "observed_stop_signals": [
+    "SIGSEGV"
+  ],
+  "original_failed_case": {
+    "junit_sha256": "e1e7901986fef0bb4a682156d87eef31b93a54f7e8759e564966dac136e198e7",
+    "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+    "original_command_exit_code": 100
+  },
+  "original_run_binary_available": true,
+  "original_stack_contract": {
+    "RUST_MIN_STACK": "8388608",
+    "adjusted_rlimit": false,
+    "rlimit_before": [
+      8388608,
+      -1
+    ],
+    "source": "exact c0f justfile rust_min_stack and test recipe"
+  },
+  "qualification": false,
+  "raw": {
+    "bytes": 43646,
+    "gzip_bytes": 6410,
+    "gzip_sha256": "a6b22059c26c617e15d2a39280ffa07ce1a724f257f90edb8eb1e5e52495bda9",
+    "sha256": "a5794043e3cb211fb7e4131f5a06dee329edb5a67fb11e2127fb85be67daf70d"
+  },
+  "recompiled": false,
+  "runtime_helper": {
+    "bytes": 1439936,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers/bin/hepta-joint-propose",
+    "sha256": "0a144016bc0f95c570b8fefcfb3eaa2f87171aa0ef2c888c971990f348813c4f"
+  },
+  "scope": "One bounded first-signal debugger diagnostic on a byte-identical retained original c0f failed test binary; not a qualification, repair, new build, or suite rerun",
+  "source_after": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "files": 14851,
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_before": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "files": 14851,
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_changed": false,
+  "source_comparison": "equal",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "started_at": "2026-11-12T15:16:50.597066+00:00",
+  "status": "first_crash_diagnostic_retained",
+  "test_started": true
+}

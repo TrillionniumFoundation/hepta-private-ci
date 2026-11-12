@@ -1,0 +1,27 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs
+@@ -49,6 +49,24 @@
+         .collect::<anyhow::Result<Vec<_>>>()?;
+     anyhow::ensure!(candidates.is_empty());
+     let (mut circuit, mut bindings) = configuration();
++    // Keep each original route's outcome and edges paired with its candidate.
++    // Registry admission also compares routes and the definition by position.
++    anyhow::ensure!(bindings[0].routes.len() == candidate_count);
++    let mut routes = std::mem::take(&mut bindings[0].routes)
++        .into_iter()
++        .map(|route| (route.candidate_id.clone(), route))
++        .collect::<std::collections::BTreeMap<_, _>>();
++    anyhow::ensure!(routes.len() == candidate_count);
++    bindings[0].routes = definition
++        .candidates
++        .iter()
++        .map(|candidate| {
++            routes
++                .remove(&candidate.candidate_id)
++                .ok_or_else(|| anyhow::anyhow!("complete original fixture route order"))
++        })
++        .collect::<anyhow::Result<Vec<_>>>()?;
++    anyhow::ensure!(routes.is_empty());
+     bindings[0].cell = definition.clone();
+     circuit.parameter_bundle_digest =
+         Sha256Digest::parse(bundle.to_string()).map_err(anyhow::Error::msg)?;

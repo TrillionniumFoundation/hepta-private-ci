@@ -1,0 +1,74 @@
+{
+  "at": "2026-11-12T15:16:54.388666+00:00",
+  "binary": {
+    "bytes": 282318328,
+    "copy_readback_equal": true,
+    "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+    "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "source_ctime_ns": 1794493816523629969,
+    "source_device": 2067,
+    "source_inode": 33062611,
+    "source_mode": "0o700",
+    "source_mtime_ns": 1794493816493630860
+  },
+  "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+  "command": [
+    "/usr/bin/gdb",
+    "--batch",
+    "--nx",
+    "--quiet",
+    "-x",
+    "/home/qian-qi/hepta-utility-36fa-evidence/c0f-panel-first-signal-v1/commands.gdb",
+    "--args",
+    "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "--exact",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+    "--nocapture"
+  ],
+  "cwd": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-agentd",
+  "environment": {
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-final-native-target-v1",
+    "CODEX_REPO_ROOT": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "NEXTEST_PROFILE": "local",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUST_MIN_STACK": "8388608"
+  },
+  "environment_delta_from_original_focused": {
+    "executable_path": "Verified byte-identical create-only retained copy of the original failed native ELF",
+    "runner": "Direct GDB/libtest invocation instead of nextest; nextest per-case injected metadata is not reproduced"
+  },
+  "execution_difference": "Direct GDB invocation of the exact libtest --exact case using the retained original failed binary; diagnostic only, not the nextest runner or a qualification",
+  "label": "ORIGINAL_FAILED_BINARY_DIAGNOSTIC",
+  "original_failed_case": {
+    "junit_sha256": "e1e7901986fef0bb4a682156d87eef31b93a54f7e8759e564966dac136e198e7",
+    "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+    "original_command_exit_code": 100
+  },
+  "original_run_binary_available": true,
+  "original_stack_contract": {
+    "RUST_MIN_STACK": "8388608",
+    "adjusted_rlimit": false,
+    "rlimit_before": [
+      8388608,
+      -1
+    ],
+    "source": "exact c0f justfile rust_min_stack and test recipe"
+  },
+  "qualification": false,
+  "recompiled": false,
+  "runtime_helper": {
+    "bytes": 1439936,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers/bin/hepta-joint-propose",
+    "sha256": "0a144016bc0f95c570b8fefcfb3eaa2f87171aa0ef2c888c971990f348813c4f"
+  },
+  "scope": "One bounded first-signal debugger diagnostic on a byte-identical retained original c0f failed test binary; not a qualification, repair, new build, or suite rerun",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "started_at": "2026-11-12T15:16:50.597066+00:00",
+  "status": "preparing",
+  "test_started": false,
+  "timeout_seconds": 60
+}

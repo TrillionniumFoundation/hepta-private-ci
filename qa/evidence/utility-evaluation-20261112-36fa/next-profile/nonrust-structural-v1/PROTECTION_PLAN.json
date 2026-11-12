@@ -1,0 +1,479 @@
+{
+  "status": "scope_plan_only_no_unformatted_literal_contracts_frozen",
+  "source_tree_unformatted": "02103ded93173dd17aef645ddfcaa5fc6f674042",
+  "new_protected_scopes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "source": {
+        "bytes": 9625,
+        "sha256": "a6ebc9fe1e07500366bde02f5b3d42b88c9bc7c98f1590fb0aa61f1021968281",
+        "git_blob_sha": "6cb5e7fc0f274cbdbae9fe57140b48cca4983677"
+      },
+      "functions_present": [
+        "new",
+        "refresh",
+        "bind_selector",
+        "bind_next_use",
+        "is_evaluated_no_update",
+        "evaluated_prefix",
+        "require_evaluated_retained_stage"
+      ],
+      "invariants_to_fence": [
+        "Only the complete evaluated NoUpdate cut is admitted; legacy TrainingNoUpdate and Adopt do not acquire this route.",
+        "Actual held Dataset/Training/Evaluation provenance, full pins, original windows and four/five/six-cut prefixes remain distinct.",
+        "Initial Version, Selector, NextUse and readiness channels are consumed once from the existing common owner state; no reconnect or new signing authority."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "source": {
+        "bytes": 7081,
+        "sha256": "62f787c6afce6de146f21c06d4934a50b8789ff052180399dbd5903303d62b85",
+        "git_blob_sha": "0e24b809a531f741ccecc13b8262e184aec1dfb1"
+      },
+      "functions_present": [
+        "execute_evaluated_retained_stage",
+        "prepare_retained_version",
+        "await_completed_c"
+      ],
+      "invariants_to_fence": [
+        "The Root effect gate is checked around real effects and original deadlines remain unchanged.",
+        "A lane is fenced before awaiting effects; Version Prepare, Selector Execute and C attestation each use their original one-shot owner path.",
+        "C requires actual completion readiness and actual published Version/current evidence; original bounded polling is retained."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "source": {
+        "bytes": 7189,
+        "sha256": "0390d83874b107b2946b311bdd2fd983b6c50c9d6a95ab42052546c1b495e881",
+        "git_blob_sha": "3caae9286796ae6d40579812d6c725904e1926ab"
+      },
+      "functions_present": [
+        "require_published",
+        "pin_selection",
+        "pin_completion",
+        "read_selection",
+        "read_completion",
+        "read_evaluated_retained_prefix",
+        "retained_attestation"
+      ],
+      "invariants_to_fence": [
+        "Four-cut evaluated evidence, five-cut Selector and six-cut C remain distinct and bind the same complete preceding observations.",
+        "Published Version, T/E, S and C are read through their original owners; no new grant, reconnect, signature or fabricated readback."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "source": {
+        "bytes": 5872,
+        "sha256": "53f70e2f5d14229dab8ca9c3dfb56677524e2e2bead2554f1add3729499c860c",
+        "git_blob_sha": "c64626eb19dae7b01dd6c77e8d931abe36272e41"
+      },
+      "functions_present": [
+        "clone",
+        "from_original_evaluation",
+        "from_evaluated_context",
+        "authenticate_evaluated",
+        "operation",
+        "clone",
+        "eq",
+        "fmt",
+        "evaluated_context",
+        "evaluated_receipt",
+        "recover_from_original_evaluated_stream"
+      ],
+      "invariants_to_fence": [
+        "The opaque evaluated profile uses a distinct purpose and verifies original training/evaluation identity, signature, scope and current windows.",
+        "Recovered command construction attenuates to readback before binding; legacy constructors retain their original semantics.",
+        "An evaluated receipt can be obtained only from the original authenticated completed command response."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "source": {
+        "bytes": 1838,
+        "sha256": "2489a8ba8547be9283b59280f5eb6df43546bdb87c39e298ee664482d6acd2e9",
+        "git_blob_sha": "37275599142dce61221b02f1ecbd69139f32a21b"
+      },
+      "functions_present": [
+        "original_evaluated_command_context",
+        "into_evaluated_command_owner",
+        "from_original_command_response"
+      ],
+      "invariants_to_fence": [
+        "The original Selector owner is consumed by value, retaining the same opaque evaluation context.",
+        "Command-response conversion preserves the authenticated original signed receipt and full evaluated prefix; it does not re-sign."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "source": {
+        "bytes": 3971,
+        "sha256": "ea74cae24545206a7a31b5539692b7c07f58a12f8fc65894b0fea5ffb8a15bb1",
+        "git_blob_sha": "473ff552c0aece25492f3fe5a0c20c346bd873c3"
+      },
+      "functions_present": [
+        "from_original_evaluated_receipt_owner",
+        "observe_original"
+      ],
+      "invariants_to_fence": [
+        "Legacy and evaluated predecessor branches retain their actual held clients; no metadata-only replacement.",
+        "Actual original attest/readback calls remain behind the existing origin, one-shot, current and command authentication checks."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "source": {
+        "bytes": 4502,
+        "sha256": "3b8b6c21d2e1f9947ab908f58e45c14998cef5d9f2ac2286c6a6f7527fa4d09c",
+        "git_blob_sha": "6dac672a00b5116148f9c931b7f7c9fbb81d293f"
+      },
+      "functions_present": [
+        "from_original_evaluated_selection",
+        "from_evaluated_selection",
+        "authenticate_evaluated",
+        "operation",
+        "eq",
+        "fmt",
+        "evaluated_selection",
+        "recover_from_original_evaluated_stream"
+      ],
+      "invariants_to_fence": [
+        "The evaluated C purpose requires the same opaque original Selector and complete preceding evaluated cut.",
+        "Recovery is readback-only and retains full scope, objective, original signatures and time windows."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "source": {
+        "bytes": 4553,
+        "sha256": "62ad1269e3a7a0b24b806cd4dfff263e96be34d6f7660a31ffc1c09977eacbd3",
+        "git_blob_sha": "d44ab21c8e2d8cf46225214f6a16e116e2dc7939"
+      },
+      "functions_present": [
+        "from_original_evaluated_receipt_owner",
+        "observe_original"
+      ],
+      "invariants_to_fence": [
+        "The same held actual Training, Evaluation and Selector clients are used for C predecessor reads.",
+        "Legacy/evaluated dispatch calls the original C owner behind existing origin and one-shot restrictions."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "source": {
+        "bytes": 3904,
+        "sha256": "45c3cb55d88cb6cc65f15dea4623ad93c5987533b3c4ae1df2a78e9b780306d4",
+        "git_blob_sha": "4c5c98eca6126fe808ba6f01365525deeb14d816"
+      },
+      "functions_present": [
+        "snapshot",
+        "trainer",
+        "selector",
+        "evaluated_owners",
+        "location",
+        "require_profile",
+        "observe",
+        "original_evaluated_command_selection",
+        "attest_original_evaluated_remote_completion",
+        "readback_evaluated_remote_completion",
+        "into_evaluated_command_owner"
+      ],
+      "invariants_to_fence": [
+        "The source profile and opaque Selector must agree with the complete evaluated predecessor.",
+        "EvaluatedOwner location preserves the final actual Source/Cell observation after all awaited T/E/S predecessor reads.",
+        "Recovered original attest requests remain readback-only; the original owner is consumed for the command-owner transfer."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "source": {
+        "bytes": 3098,
+        "sha256": "7635d2d7a7222fe4aeeb623292e21cdf1df0fc94f91dc5f027369801d469bd11",
+        "git_blob_sha": "b62728f79eeda3e17f4067bcaa3227c96da40e42"
+      },
+      "functions_present": [
+        "final_use_binding",
+        "intent_digest",
+        "completed",
+        "trainer",
+        "evaluator",
+        "publish"
+      ],
+      "invariants_to_fence": [
+        "A private non-Clone enum consumes the original prepared publication by value and returns the same T/E custody.",
+        "Explicit original Prepared type UFCS retains the original signed inputs, await, return values and effect ordering."
+      ],
+      "final_marker_status": "pending_actual_native_rustfmt"
+    }
+  ],
+  "existing_rows_requiring_review": [
+    {
+      "index": 203,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "source_blob": "542e4e532443ac2082bd0b8fa7649fcdb25deca9",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 267,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "source_blob": "4db1399444a01432f056f71e7322990750f3ce0f",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 269,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "source_blob": "70b9f0751f3a66ec3ece56e052ff297ab2ce2708",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 270,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "source_blob": "e71678cfe13ed276dd7c5ec7692959e6a448c12f",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 271,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+      "source_blob": "edb6b381246d2fd927772ed33607bf0e8e4ac8dc",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 279,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "source_blob": "d2512ef649afa6e5a723de54ecf5f579b82c150c",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 280,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "source_blob": "6aefc9c12e05fe7b052346bcff14f0c05fae664d",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 281,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "source_blob": "2f4867ac61d636c323cb8cfd36b0363e5c490b38",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 282,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "source_blob": "988542fea74e3c077929ab9313a2c9bc0ae40d52",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 293,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "source_blob": "d4f5618ba50678f6dea3d5af731492d8679f9f03",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 295,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "source_blob": "516dbb946cc04d920f1671bb2df336e8b49d3b32",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 298,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "source_blob": "2cc7863be53975b17f661bc19b3d098c2e43a352",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 299,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+      "source_blob": "9c0dd4ce4576120fd4835ed785c566cdc0dffa69",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 300,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "source_blob": "7bc9d61e1d069b8801d86a4bea0fcbcc2e478beb",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 301,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "source_blob": "aebe684c36cab0a89c13e4f702e18e1b37a27f10",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 324,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "source_blob": "9128be835dbb0ca724591499ab0a7a34c9a9f3f2",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 339,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "source_blob": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 340,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "source_blob": "dd33ee5fae36cac16f6543d4becb80b695b04da5",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 351,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "source_blob": "74be1cee263699d8e5ab793387290417f9444ad7",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 353,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "source_blob": "cd5dbe4c394c7416c0b81ad9065af82ae08da4da",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 358,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "source_blob": "ae1efbd3b0ffecbd925d67e98b85fee801d4766a",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 359,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "source_blob": "8e2157b1c5f4ac24fd601e2a7221cdb239ca324c",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 360,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "source_blob": "1f28eee14dc754e17445ddaa11cc092913a804a6",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 361,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "source_blob": "02f8f03d1d4f52db6d476e0f84bb3d353d91769d",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 362,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "source_blob": "6ac9d7f3ac8412391804d9fdb9a9626663132d33",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 364,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "source_blob": "d5c9cac9bb551376adce36d04b167f6fa978791d",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 365,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "source_blob": "ebc02be6cff65a205b1fa1fc171307a0e8a4c05c",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 366,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "source_blob": "34dc709c958cca632bb21189c78be2bb19c08fb7",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 367,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "source_blob": "38be926458be8a3b1db0e5c22e1336dc1c8737f8",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 370,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "source_blob": "6ac9d7f3ac8412391804d9fdb9a9626663132d33",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 371,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "source_blob": "ebc02be6cff65a205b1fa1fc171307a0e8a4c05c",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 372,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "source_blob": "34dc709c958cca632bb21189c78be2bb19c08fb7",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 373,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "source_blob": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 374,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "source_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 381,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "source_blob": "185310b62f39e6fe2b789566145057f634a2bd6a",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 383,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "source_blob": "fdf5e0b5e93c16ed312aa09e8d249e13b0b22520",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 390,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "source_blob": "3ab1c8a5e7ac5192300c231b1b42d1ac67446871",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 391,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "source_blob": "768febf4707ae5114bdedd61820630f30d63d0a2",
+      "preserve_all_existing_forbidden_items": true
+    },
+    {
+      "index": 409,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "source_blob": "749a448516c46079683536ffdbc1714432bf3023",
+      "preserve_all_existing_forbidden_items": true
+    }
+  ],
+  "counts": {
+    "current_original_protected_rows": 412,
+    "new_scopes_planned": 10,
+    "existing_affected_rows": 39,
+    "expected_final_rows": 422
+  },
+  "marker_rules": [
+    "Wait for actual native formatting before freezing exact function-body, order and mutation strings.",
+    "Keep every unchanged original row/constraint; moved original owner calls must be guarded in their actual new helper rather than deleted.",
+    "Full stripped bodies do not protect literal contents. Preserve purpose and digest-domain literals with exact actual-code/function-span checks; comment or dead-code decoys are not sufficient.",
+    "Use the original validator without changing required membership equality, source collection, receiver rules or Unknown behavior.",
+    "The two Source/C profiles, three/four/five/six receipt counts, cold reader admission/invalidation and real Published outcome require separate negative mutations.",
+    "Keep all original QA attacks and original 600/300/4800 second entrypoint budgets. Mechanism fixtures and local source mutation checks do not establish real A/B/C or an ordinary deployed loop."
+  ],
+  "pending_qa": [
+    "Rebase existing helper/body mutation strings after formatting without deleting attacks or changing assertions.",
+    "Add focused mutations for complete evaluated route eligibility and original Root gates/one-shot channel custody.",
+    "Add focused mutations for pre-held E, two complete cold recovery reads, recovered reader invalidation and Published-only service admission.",
+    "Add focused mutations for distinct legacy/evaluated purposes, correct receipt positions and literal/comment-decoy rejection.",
+    "Synchronize the exact final CALLERS SHA256 in the existing blob-size allowlist only after all markers are final."
+  ],
+  "source_closure_run": false,
+  "full_caller_run": false
+}

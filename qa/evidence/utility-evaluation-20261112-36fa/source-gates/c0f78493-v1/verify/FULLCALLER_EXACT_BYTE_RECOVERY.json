@@ -1,0 +1,55 @@
+{
+  "status": "exact_original_bytes_recovered_and_verified_not_new_on_site_full_read",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "original_record_git_blob": "e9a23c31c7fc7575348b1b4720a4200d45f9d632",
+  "original_manifest_git_blob": "2fdb2404ada7280852d98c4151c75de39f2b14cf",
+  "original_gate_final_git_blob": "b355dec4a4bd0a45b6930cd7f43fe87bf21246d4",
+  "original_command_returncode": 0,
+  "original_timed_out": false,
+  "original_output_limit_exceeded": false,
+  "original_raw": {
+    "bytes": 251757,
+    "sha256": "c35b1087bfd1d113fe745ebba74dfaceab650c694842d93372b88ba07687ba2d",
+    "git_blob_sha": "d99d8f143638e563d10804dc4b5be0e663ba7012"
+  },
+  "actual_fixed_version": "2050:50138380:251757:1794497865513153660:1794497872711020558",
+  "observed_chunks": [
+    {
+      "offset": 0,
+      "bytes": 65536,
+      "sha256": "68f3f20f97f3edb60b3ec474dd62e66ca67328572c719fe604ea5d29a3f5f27a",
+      "matches_recovered_bytes": true
+    },
+    {
+      "offset": 196608,
+      "bytes": 55149,
+      "sha256": "36bbceb5c4e0b104f0d82ac81f26e680162861d937353dd478030d0d1661197d",
+      "matches_recovered_bytes": true
+    }
+  ],
+  "middle_direct_reads": "Both original direct middle-page reads returned MCP timeout; a retained async read was admitted/requested separately and is not treated as completed here.",
+  "reconstruction_inputs": {
+    "CALLERS_git_blob": "2216d20b41a447ea57ef9c8210cd5a6205aea55e",
+    "CALLERS_sha256": "a3a61f17bde5f81222c718f9243ec95fe035e896a23effbb4f7e14ad67865bb9",
+    "verifier_git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "serialization": "Exact original verify return schema and json.dumps(indent=2, sort_keys=True) + LF; boundary metadata parsed with original _boundary_rows only; successful original observed=expected equality supplies the recorded productCallers; recorded tail supplies rustFilesScanned=6597."
+  },
+  "checks": {
+    "original_raw_bytes_sha256_git_all_equal": true,
+    "both_actual_chunks_equal": true,
+    "new_full_source_verification_executed": false,
+    "original_source_modified": false
+  },
+  "recovered_original_receipt_counts": {
+    "boundaries": 534,
+    "privilegedInventory": 534,
+    "protectedFiles_rows": 409,
+    "protectedFiles_unique_paths": 338,
+    "rustFilesScanned": 6597
+  },
+  "limitations": [
+    "This recovery does not turn source-closure failure into a pass.",
+    "This recovery is not a new full direct remote read and is not another qualification execution.",
+    "The reconstructed output was accepted only after equality of the independently observed original full-file length, SHA256 and Git blob plus the actual fixed-version prefix/tail chunks."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "format": "hepta.utility.typed-parser-shortcircuit-integration-plan.v1",
+  "state": "PREPARED_IN_MEMORY_NOT_APPLIED_TO_FILESYSTEM",
+  "candidate_base_tree": "f1db976f9712af1884fd681b51d4e871d38d3683",
+  "path": "scripts/hepta_typed_callers.py",
+  "before": {
+    "git_blob_sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "bytes": 7672,
+    "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+  },
+  "after": {
+    "git_blob_sha": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+    "bytes": 7759,
+    "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2"
+  },
+  "observed_basis": {
+    "diagnostic_metrics_git_blob_sha": "6b9c99de29fdc479fb34ea9d8a44c47e4bf0651e",
+    "diagnostic_result_git_blob_sha": "747eadc9a2c862ba1757685b163983ad520263fc",
+    "full_source_count": 6597,
+    "stopped_in_original_helper_line": 193,
+    "original_verify_returned": false,
+    "source_unchanged": true
+  },
+  "changes": [
+    "Before the two original escaped-target alias regexes, return the same empty set when target is absent as a literal.",
+    "For each type name, require its literal presence before the unchanged escaped word-boundary regex."
+  ],
+  "exact_two_text_replacements_equal_full_postimage": true,
+  "unchanged": [
+    "_normalize_aliases and substitutions",
+    "authority field fixed point and field computation",
+    "all source collection and stripping",
+    "all boundary inputs, memberships, strict equality and Unknown behavior",
+    "original test cases and all 600/300/4800 qualification budgets"
+  ],
+  "qualification_pass": false,
+  "optimized_performance_measurement": false,
+  "filesystem_write_status": "cloud unavailable; no application claimed",
+  "next": "After root review, compose this one exact blob into the next full prepared source map; all qualification remains pending on a future exact formatted source."
+}

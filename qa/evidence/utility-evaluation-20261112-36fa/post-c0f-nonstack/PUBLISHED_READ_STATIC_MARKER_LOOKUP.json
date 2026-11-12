@@ -1,0 +1,95 @@
+{
+  "status": "confirmed_static_marker_lookup_mismatch_not_runtime_traceback",
+  "source_commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "raw_observation_git_blob": "e1846e0161dfffb713b51983d9740ce67d0e107e",
+  "qa_old_git_blob": "24dea8d8d521414607aa627374de313bbf94c7ef",
+  "qa_fixed_a96_integrated_git_blob": "c35c9322d8f88b49ec00008a3a2fa630ac3fc86a",
+  "original_verifier_git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+  "rows": [
+    {
+      "source_file": "circuit_selection_receipt_owner.rs",
+      "source_git_blob": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+      "function": "readback_source",
+      "old_marker": "if matches!(source.location(), ObservationLocation::RemoteOwner)",
+      "old_offset": null,
+      "old_lookup_error": {
+        "type": "ValueError",
+        "message": "substring not found"
+      },
+      "fixed_a96_marker": "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+      "new_offset": 15204
+    },
+    {
+      "source_file": "circuit_selection_receipt_owner.rs",
+      "source_git_blob": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+      "function": "readback_source",
+      "old_marker": "authenticate_training(&self.config, &before, now()?)?",
+      "old_offset": null,
+      "old_lookup_error": {
+        "type": "ValueError",
+        "message": "substring not found"
+      },
+      "fixed_a96_marker": "authenticate_training(&self.config, &self.profile, &before, now()?)?",
+      "new_offset": 15364
+    },
+    {
+      "source_file": "circuit_selection_receipt_owner.rs",
+      "source_git_blob": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+      "function": "authenticate_completed",
+      "old_marker": "authenticate_training(&self.config, evidence, current)?",
+      "old_offset": null,
+      "old_lookup_error": {
+        "type": "ValueError",
+        "message": "substring not found"
+      },
+      "fixed_a96_marker": "authenticate_training(&self.config, &self.profile, evidence, current)?",
+      "new_offset": 20865
+    },
+    {
+      "source_file": "circuit_next_use_receipt_owner.rs",
+      "source_git_blob": "467831627aaf7833f035804b3c94629739b3a981",
+      "function": "readback_source",
+      "old_marker": "if matches!(source.location(), ObservationLocation::RemoteOwner)",
+      "old_offset": null,
+      "old_lookup_error": {
+        "type": "ValueError",
+        "message": "substring not found"
+      },
+      "fixed_a96_marker": "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+      "new_offset": 16764
+    },
+    {
+      "source_file": "circuit_next_use_receipt_owner.rs",
+      "source_git_blob": "467831627aaf7833f035804b3c94629739b3a981",
+      "function": "readback_source",
+      "old_marker": "authenticate_predecessors(&self.config, &before, now()?)?",
+      "old_offset": null,
+      "old_lookup_error": {
+        "type": "ValueError",
+        "message": "substring not found"
+      },
+      "fixed_a96_marker": "evaluated::authenticate_predecessors(&self.config, &self.profile, &before, now()?)?",
+      "new_offset": 16919
+    },
+    {
+      "source_file": "circuit_next_use_receipt_owner.rs",
+      "source_git_blob": "467831627aaf7833f035804b3c94629739b3a981",
+      "function": "authenticate_completed",
+      "old_marker": "authenticate_predecessors(&self.config, evidence, current)?",
+      "old_offset": null,
+      "old_lookup_error": {
+        "type": "ValueError",
+        "message": "substring not found"
+      },
+      "fixed_a96_marker": "evaluated::authenticate_predecessors(&self.config, &self.profile, evidence, current)?",
+      "new_offset": 23163
+    }
+  ],
+  "first_lookup_failure": "Selector readback_source old one-line RemoteOwner-only marker is absent. The original rejects helper invokes source.index before protected verification and therefore this lookup raises ValueError. The current integrated a96 QA uses the actual RemoteOwner | EvaluatedOwner expression and actual profile-aware authentication calls.",
+  "limits": [
+    "The original source-closure raw ended before its traceback/summary; this report does not invent that missing traceback.",
+    "Only exact original source-span marker lookups were evaluated; no unittest, Cargo, full source collector or gate was run.",
+    "Presence of replacement markers is not proof that complete existing or new QA methods pass.",
+    "No active gate source, QA source or original evidence was modified."
+  ]
+}

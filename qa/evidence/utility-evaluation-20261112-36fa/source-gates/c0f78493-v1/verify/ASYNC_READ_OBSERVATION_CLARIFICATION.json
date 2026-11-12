@@ -1,0 +1,17 @@
+{
+  "format": "hepta.observation-clarification.v1",
+  "related_recovery_proof": "b17659ce039eed1b9f8741b85ffd1586546f236a",
+  "as_of": "2026-11-12T15:58:51Z",
+  "clarification": "The offset65536 operation_start request returned an MCP timeout. No operation_id was observed; its admission and completion remain Unknown. The earlier proof phrase 'admitted/requested' must be read only as requested, not as evidence of admission. This does not change the independently verified exact full-file recovery identities.",
+  "operation_request_key": "hepta-utility-36fa-c0f-fullcaller-log-offset65536-v1",
+  "original_tool_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.operation_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "replayed": false
+}

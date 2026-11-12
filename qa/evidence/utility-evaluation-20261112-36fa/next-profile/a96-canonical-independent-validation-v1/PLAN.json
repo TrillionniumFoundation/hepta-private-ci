@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.canonical-independent-validation.plan.v1",
+  "status": "PREPARATION_ONLY_NOT_LAUNCHED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "host": "desktop",
+  "source_object_repository": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1",
+  "evidence_directory": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1",
+  "argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/driver.py"
+  ],
+  "process_key": "hepta-utility-36fa-a96-canonical-independent-validation-v1",
+  "outer_timeout_seconds": 900,
+  "driver_timeout_seconds": 600,
+  "driver_sha256": "de06c9c92068b1741b9faeaea413b87e5e7316330dac1b7eb07d17eef1776c99",
+  "driver_git_blob": "49c9c2c13cf545b2a47cce110b8dce6b60a0e86a",
+  "manifest_git_blob": "7781160ffff79c238c5955bd8ca2e320e7ef7c99",
+  "part_blobs": [
+    "7e312f224db4bbc39dd2561299b5da25f8c4583e",
+    "48e1a99f77f4c2a9cb67777f883f9bb9e1060499",
+    "b4fcf6c05f32793d7ca6988753595b97db473935",
+    "c725fdd0040ff94d56c177c9aafd8c0294d98b52",
+    "5e740c0f4388095ce35dbffce214a8a3fc3f4cde"
+  ],
+  "import": false,
+  "checkout": false,
+  "source_ref_write": false,
+  "cargo_or_tests": false,
+  "scope": "Pinned b298+c0f snapshot membership, exact seven-new-snapshot prerequisite set, authentic 395 raw objects and seven commits/complete leaves; no recursive history fsck.",
+  "current_source_physical_files_read": false,
+  "source_git_state_before_after": [
+    "HEAD",
+    "HEAD tree",
+    "default index exact bytes hash",
+    "all refs exact listing hash"
+  ],
+  "audit_outputs": [
+    "ROOT_REVIEW.json",
+    "OBJECT_AUDIT.json.gz",
+    "SNAPSHOT_LEAVES.json.gz",
+    "TREE_AND_ANCHOR_RAW.json.gz",
+    "CANONICAL_COMMITS_AND_DIFFS.json",
+    "COMMANDS.json",
+    "ARTIFACTS.json",
+    "gzip byte slices <=262144 bytes, encoded separately"
+  ],
+  "ast_check": {
+    "executed": false,
+    "reason": "Cloud executor unavailable; one AST-only command returned No usable execution environment. No native validation or other task launched."
+  }
+}

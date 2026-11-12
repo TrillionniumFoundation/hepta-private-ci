@@ -1,0 +1,455 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+running 1 test
+[New Thread 0x71d6fefff6c0 (LWP 1548153)]
+[New Thread 0x71d6fe7fe6c0 (LWP 1548154)]
+[New Thread 0x71d6fdffd6c0 (LWP 1548155)]
+[New Thread 0x71d6fd7fc6c0 (LWP 1548156)]
+[New Thread 0x71d6fcffb6c0 (LWP 1548157)]
+[New Thread 0x71d6e7fff6c0 (LWP 1548158)]
+[New Thread 0x71d6e77fe6c0 (LWP 1548159)]
+[New Thread 0x71d6e6ffd6c0 (LWP 1548160)]
+[Thread 0x71d6e7fff6c0 (LWP 1548158) exited]
+[Thread 0x71d6e77fe6c0 (LWP 1548159) exited]
+[New Thread 0x71d6e77fe6c0 (LWP 1548161)]
+
+Thread 2 "runtime::tests:" received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x71d6fefff6c0 (LWP 1548153)]
+0x000059f1f6be76c4 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_for_publication::{{closure}} ()
+Last stopped for thread 2 (Thread 0x71d6fefff6c0 (LWP 1548153)).
+	Using the running image of child process 1548148.
+Program stopped at 0x59f1f6be76c4.
+It stopped with signal SIGSEGV, Segmentation fault.
+  Id   Target Id                                             Frame 
+  1    Thread 0x71d6ff95fb80 (LWP 1548148) "codex_hepta_age" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+* 2    Thread 0x71d6fefff6c0 (LWP 1548153) "runtime::tests:" 0x000059f1f6be76c4 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_for_publication::{{closure}} ()
+  3    Thread 0x71d6fe7fe6c0 (LWP 1548154) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  4    Thread 0x71d6fdffd6c0 (LWP 1548155) "tokio-rt-worker" 0x000071d6ff12a2d2 in epoll_wait (epfd=..., events=..., maxevents=..., timeout=...) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  5    Thread 0x71d6fd7fc6c0 (LWP 1548156) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  6    Thread 0x71d6fcffb6c0 (LWP 1548157) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  9    Thread 0x71d6e6ffd6c0 (LWP 1548160) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  10   Thread 0x71d6e77fe6c0 (LWP 1548161) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+
+Thread 10 (Thread 0x71d6e77fe6c0 (LWP 1548161) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000059f1fce404d7 in std::thread::functions::park ()
+#2  0x000059f1fbd78c37 in flume::signal::SyncSignal::wait ()
+#3  0x000059f1fa3cfe48 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000059f1fa3cbba2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000059f1fa3c7f5d in flume::Shared<T>::recv ()
+#6  0x000059f1fa3cb9f8 in flume::Shared<T>::recv_sync ()
+#7  0x000059f1fa3cf0f7 in flume::Receiver<T>::recv ()
+#8  0x000059f1fa3d2c7b in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000059f1fa3f7751 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000059f1fa41e037 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000059f1fa38e54d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000059f1fa3e63b4 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000059f1fa380750 in std::panicking::catch_unwind::do_call ()
+#14 0x000059f1fa39a06b in __rust_try ()
+#15 0x000059f1fa38e0b6 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000059f1fa3d6a17 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 9 (Thread 0x71d6e6ffd6c0 (LWP 1548160) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000059f1fce404d7 in std::thread::functions::park ()
+#2  0x000059f1fbd78c37 in flume::signal::SyncSignal::wait ()
+#3  0x000059f1fa3cfe48 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000059f1fa3cbba2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000059f1fa3c7f5d in flume::Shared<T>::recv ()
+#6  0x000059f1fa3cb9f8 in flume::Shared<T>::recv_sync ()
+#7  0x000059f1fa3cf0f7 in flume::Receiver<T>::recv ()
+#8  0x000059f1fa3d2c7b in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000059f1fa3f7751 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000059f1fa41e037 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000059f1fa38e54d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000059f1fa3e63b4 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000059f1fa380750 in std::panicking::catch_unwind::do_call ()
+#14 0x000059f1fa39a06b in __rust_try ()
+#15 0x000059f1fa38e0b6 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000059f1fa3d6a17 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 6 (Thread 0x71d6fcffb6c0 (LWP 1548157) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000059f1fce404d7 in std::thread::functions::park ()
+#2  0x000059f1fbd78c37 in flume::signal::SyncSignal::wait ()
+#3  0x000059f1fa3cfe48 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000059f1fa3cbba2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000059f1fa3c7f5d in flume::Shared<T>::recv ()
+#6  0x000059f1fa3cb9f8 in flume::Shared<T>::recv_sync ()
+#7  0x000059f1fa3cf0f7 in flume::Receiver<T>::recv ()
+#8  0x000059f1fa3d2c7b in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000059f1fa3f7751 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000059f1fa41e037 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000059f1fa38e54d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000059f1fa3e63b4 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000059f1fa380750 in std::panicking::catch_unwind::do_call ()
+#14 0x000059f1fa39a06b in __rust_try ()
+#15 0x000059f1fa38e0b6 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000059f1fa3d6a17 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 5 (Thread 0x71d6fd7fc6c0 (LWP 1548156) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000059f1fce404d7 in std::thread::functions::park ()
+#2  0x000059f1fbd78c37 in flume::signal::SyncSignal::wait ()
+#3  0x000059f1fa3cfe48 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000059f1fa3cbba2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000059f1fa3c7f5d in flume::Shared<T>::recv ()
+#6  0x000059f1fa3cb9f8 in flume::Shared<T>::recv_sync ()
+#7  0x000059f1fa3cf0f7 in flume::Receiver<T>::recv ()
+#8  0x000059f1fa3d2c7b in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000059f1fa3f7751 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000059f1fa41e037 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000059f1fa38e54d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000059f1fa3e63b4 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000059f1fa380750 in std::panicking::catch_unwind::do_call ()
+#14 0x000059f1fa39a06b in __rust_try ()
+#15 0x000059f1fa38e0b6 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000059f1fa3d6a17 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 4 (Thread 0x71d6fdffd6c0 (LWP 1548155) "tokio-rt-worker"):
+#0  0x000071d6ff12a2d2 in epoll_wait (epfd=..., events=..., maxevents=..., timeout=...) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x000059f1fc0e6cac in mio::sys::unix::selector::Selector::select ()
+#2  0x000059f1fc0e6fce in mio::poll::Poll::poll ()
+#3  0x000059f1fc061902 in tokio::runtime::io::driver::Driver::turn ()
+#4  0x000059f1fc061162 in tokio::runtime::io::driver::Driver::park_timeout ()
+#5  0x000059f1fc08c9ca in tokio::runtime::signal::Driver::park_timeout ()
+#6  0x000059f1fc0c388a in tokio::runtime::process::Driver::park_timeout ()
+#7  0x000059f1fc06c3d8 in tokio::runtime::driver::IoStack::park_timeout ()
+#8  0x000059f1fc07a549 in tokio::runtime::time::Driver::park_thread_timeout ()
+#9  0x000059f1fc07a409 in tokio::runtime::time::Driver::park_internal ()
+#10 0x000059f1fc07a82b in tokio::runtime::time::Driver::park ()
+#11 0x000059f1fc06b34f in tokio::runtime::driver::TimeDriver::park ()
+#12 0x000059f1fc06c226 in tokio::runtime::driver::Driver::park ()
+#13 0x000059f1fc0c3a74 in tokio::runtime::scheduler::multi_thread::park::Inner::park_driver ()
+#14 0x000059f1fc0c46fa in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#15 0x000059f1fc0c4c37 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#16 0x000059f1fc0b9fbe in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#17 0x000059f1fc0bb340 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#18 0x000059f1fc0bad47 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#19 0x000059f1fc0b7184 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#20 0x000059f1fc0ae05f in tokio::runtime::context::scoped::Scoped<T>::set ()
+#21 0x000059f1fc0b5951 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#22 0x000059f1fc0aa646 in std::thread::local::LocalKey<T>::try_with ()
+#23 0x000059f1fc0a99f7 in std::thread::local::LocalKey<T>::with ()
+#24 0x000059f1fc0b5892 in tokio::runtime::context::set_scheduler ()
+#25 0x000059f1fc0b708c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#26 0x000059f1fc0aeca4 in tokio::runtime::context::runtime::enter_runtime ()
+#27 0x000059f1fc0b6e91 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#28 0x000059f1fc0b81f7 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#29 0x000059f1fc0c8fd1 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#30 0x000059f1fc05b56e in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#31 0x000059f1fc05b0d8 in tokio::runtime::task::core::Core<T,S>::poll ()
+#32 0x000059f1fc05666e in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#33 0x000059f1fc09d111 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#34 0x000059f1fc09db76 in std::panicking::catch_unwind::do_call ()
+#35 0x000059f1fc07527b in __rust_try ()
+#36 0x000059f1fc07455f in std::panic::catch_unwind ()
+#37 0x000059f1fc0560f8 in tokio::runtime::task::harness::poll_future ()
+#38 0x000059f1fc0571a1 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#39 0x000059f1fc057c27 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#40 0x000059f1fc072240 in tokio::runtime::task::raw::poll ()
+#41 0x000059f1fc0728fb in tokio::runtime::task::raw::RawTask::poll ()
+#42 0x000059f1fc09fa39 in tokio::runtime::task::UnownedTask<S>::run ()
+#43 0x000059f1fc07b896 in tokio::runtime::blocking::pool::Task::run ()
+#44 0x000059f1fc07bae0 in tokio::runtime::blocking::pool::Inner::run ()
+#45 0x000059f1fc07cf54 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#46 0x000059f1fc08ee66 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#47 0x000059f1fc0a2612 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#48 0x000059f1fc09cfd1 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#49 0x000059f1fc09ddc1 in std::panicking::catch_unwind::do_call ()
+#50 0x000059f1fc0a863b in __rust_try ()
+#51 0x000059f1fc0a21f0 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#52 0x000059f1fc0c9297 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#53 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#54 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#55 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 3 (Thread 0x71d6fe7fe6c0 (LWP 1548154) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000059f1fca2efd9 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000059f1fca2ee7a in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000059f1fca38643 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000059f1fca36499 in parking_lot_core::parking_lot::park ()
+#5  0x000059f1fca3ab43 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000059f1fc081848 in parking_lot::condvar::Condvar::wait ()
+#7  0x000059f1fc0ad8e4 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000059f1fc0c3e47 in tokio::runtime::scheduler::multi_thread::park::Inner::park_condvar ()
+#9  0x000059f1fc0c46b9 in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#10 0x000059f1fc0c4c37 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#11 0x000059f1fc0b9fbe in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#12 0x000059f1fc0bb340 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#13 0x000059f1fc0bad47 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#14 0x000059f1fc0b7184 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#15 0x000059f1fc0ae05f in tokio::runtime::context::scoped::Scoped<T>::set ()
+#16 0x000059f1fc0b5951 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#17 0x000059f1fc0aa646 in std::thread::local::LocalKey<T>::try_with ()
+#18 0x000059f1fc0a99f7 in std::thread::local::LocalKey<T>::with ()
+#19 0x000059f1fc0b5892 in tokio::runtime::context::set_scheduler ()
+#20 0x000059f1fc0b708c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#21 0x000059f1fc0aeca4 in tokio::runtime::context::runtime::enter_runtime ()
+#22 0x000059f1fc0b6e91 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#23 0x000059f1fc0b81f7 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#24 0x000059f1fc0c8fd1 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#25 0x000059f1fc05b56e in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#26 0x000059f1fc05b0d8 in tokio::runtime::task::core::Core<T,S>::poll ()
+#27 0x000059f1fc05666e in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#28 0x000059f1fc09d111 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000059f1fc09db76 in std::panicking::catch_unwind::do_call ()
+#30 0x000059f1fc07527b in __rust_try ()
+#31 0x000059f1fc07455f in std::panic::catch_unwind ()
+#32 0x000059f1fc0560f8 in tokio::runtime::task::harness::poll_future ()
+#33 0x000059f1fc0571a1 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#34 0x000059f1fc057c27 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#35 0x000059f1fc072240 in tokio::runtime::task::raw::poll ()
+#36 0x000059f1fc0728fb in tokio::runtime::task::raw::RawTask::poll ()
+#37 0x000059f1fc09fa39 in tokio::runtime::task::UnownedTask<S>::run ()
+#38 0x000059f1fc07b896 in tokio::runtime::blocking::pool::Task::run ()
+#39 0x000059f1fc07bae0 in tokio::runtime::blocking::pool::Inner::run ()
+#40 0x000059f1fc07cf54 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#41 0x000059f1fc08ee66 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#42 0x000059f1fc0a2612 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#43 0x000059f1fc09cfd1 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#44 0x000059f1fc09ddc1 in std::panicking::catch_unwind::do_call ()
+#45 0x000059f1fc0a863b in __rust_try ()
+#46 0x000059f1fc0a21f0 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#47 0x000059f1fc0c9297 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#48 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#49 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#50 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 2 (Thread 0x71d6fefff6c0 (LWP 1548153) "runtime::tests:"):
+#0  0x000059f1f6be76c4 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_for_publication::{{closure}} ()
+#1  0x000059f1f8671ae7 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#2  0x000059f1f6c2312a in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}} ()
+#3  0x000059f1f8672417 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#4  0x000059f1f7f27d70 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}} ()
+#5  0x000059f1f8670e17 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#6  0x000059f1f7f2b7b0 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} ()
+#7  0x000059f1f8670dd7 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#8  0x000059f1f6d17786 in tokio::runtime::park::CachedParkThread::block_on::{{closure}} ()
+#9  0x000059f1f6d0d256 in tokio::runtime::park::CachedParkThread::block_on ()
+#10 0x000059f1f68f9205 in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#11 0x000059f1f7b1da44 in tokio::runtime::scheduler::multi_thread::MultiThread::block_on::{{closure}} ()
+#12 0x000059f1f60404ff in tokio::runtime::context::runtime::enter_runtime ()
+#13 0x000059f1f7b1cb7d in tokio::runtime::scheduler::multi_thread::MultiThread::block_on ()
+#14 0x000059f1f8385daa in tokio::runtime::runtime::Runtime::block_on_inner ()
+#15 0x000059f1f838b969 in tokio::runtime::runtime::Runtime::block_on ()
+#16 0x000059f1f7f2b55c in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures ()
+#17 0x000059f1f7f2d593 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} ()
+#18 0x000059f1f5037186 in core::ops::function::FnOnce::call_once ()
+#19 0x000059f1f86963cb in test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> ()
+#20 0x000059f1f86a2d9b in test::run_test::{closure#0} ()
+#21 0x000059f1f869e4b4 in std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()> ()
+#22 0x000059f1f86a59a2 in <std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0} ()
+#23 0x000059f1fce462ef in <std::sys::thread::unix::Thread>::new::thread_start ()
+#24 0x000071d6ff09cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#25 0x000071d6ff129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x71d6ff95fb80 (LWP 1548148) "codex_hepta_age"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000059f1fce2e476 in <std::thread::thread::Thread>::park_timeout ()
+#2  0x000059f1f86a3a69 in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv::{closure#1} ()
+#3  0x000059f1f86ada8c in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv ()
+#4  0x000059f1f86ba934 in test::console::run_tests_console ()
+#5  0x000059f1f86a8ed9 in test::test_main ()
+#6  0x000059f1f86a672b in test::test_main_static ()
+#7  0x000059f1f685cc43 in codex_hepta_agentd::main ()
+#8  0x000059f1f504d1a3 in core::ops::function::FnOnce::call_once ()
+#9  0x000059f1f5f10d16 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000059f1f59b5e49 in std::rt::lang_start::{{closure}} ()
+#11 0x000059f1fce3ae84 in std::rt::lang_start_internal ()
+#12 0x000059f1f59b5e31 in std::rt::lang_start ()
+#13 0x000059f1f691c9b5 in main ()
+rax            0x71d6ff2e0010      125168218144784
+rbx            0x71d6feffe778      125168215123832
+rcx            0x71d6ff2e0010      125168218144784
+rdx            0x71d6fee7a998      125168213535128
+rsi            0x71d6ff2e0010      125168218144784
+rdi            0x71d6fe9990c0      125168208416960
+rbp            0x71d6feffe200      0x71d6feffe200
+rsp            0x71d6fe7ffb48      0x71d6fe7ffb48
+r8             0x71d6ff2e0010      125168218144784
+r9             0x0                 0
+r10            0x22                34
+r11            0x71d6fe6e8b48      125168205597512
+r12            0x59f1fd418ab8      98895870921400
+r13            0x7fffffffffffffff  9223372036854775807
+r14            0x3b9aca00          1000000000
+r15            0x1                 1
+rip            0x59f1f6be76c4      0x59f1f6be76c4 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_for_publication::{{closure}}+20>
+eflags         0x10206             [ PF IF RF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+fs_base        0x71d6fefff6c0      125168215127744
+gs_base        0x0                 0
+Stack level 0, frame at 0x71d6fe915b60:
+ rip = 0x59f1f6be76c4 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_for_publication::{{closure}}; saved rip = 0x59f1f8671ae7
+ called by frame at 0x71d6fe915b90
+ Arglist at 0x71d6fe7ffb40, args: 
+ Locals at 0x71d6fe7ffb40, Previous frame's sp is 0x71d6fe915b60
+ Saved registers:
+  rip at 0x71d6fe915b58
+codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_for_publication::{{closure}} + 20 in section .text of /home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd
+   0x59f1f6be7684 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+100>:	fmuls  0x4c8a0628(%rbp)
+   0x59f1f6be768a <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+106>:	and    $0x17,%al
+   0x59f1f6be768c <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+108>:	mov    0x18(%rsp),%rdi
+   0x59f1f6be7691 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+113>:	mov    0x20(%rsp),%rax
+   0x59f1f6be7696 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+118>:	and    $0x1,%cl
+   0x59f1f6be7699 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+121>:	mov    %cl,0x1d869(%rdi)
+   0x59f1f6be769f <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+127>:	movb   $0x0,0x1d868(%rdi)
+   0x59f1f6be76a6 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+134>:	add    $0x28,%rsp
+   0x59f1f6be76aa <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication17hf6701c3df26817a6E+138>:	ret
+   0x59f1f6be76ab:	int3
+   0x59f1f6be76ac:	int3
+   0x59f1f6be76ad:	int3
+   0x59f1f6be76ae:	int3
+   0x59f1f6be76af:	int3
+   0x59f1f6be76b0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE>:	push   %r14
+   0x59f1f6be76b2 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+2>:	push   %rbx
+   0x59f1f6be76b3 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+3>:	mov    %rsp,%r11
+   0x59f1f6be76b6 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+6>:	sub    $0x22d000,%r11
+   0x59f1f6be76bd <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+13>:	sub    $0x1000,%rsp
+=> 0x59f1f6be76c4 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+20>:	movq   $0x0,(%rsp)
+   0x59f1f6be76cc <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+28>:	cmp    %r11,%rsp
+   0x59f1f6be76cf <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+31>:	jne    0x59f1f6be76bd <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+13>
+   0x59f1f6be76d1 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+33>:	sub    $0xa78,%rsp
+   0x59f1f6be76d8 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+40>:	mov    %rsi,0xc18(%rsp)
+   0x59f1f6be76e0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+48>:	mov    %rdi,0xc20(%rsp)
+   0x59f1f6be76e8 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+56>:	mov    %rdi,0xc28(%rsp)
+   0x59f1f6be76f0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+64>:	mov    %rdx,0xc38(%rsp)
+   0x59f1f6be76f8 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+72>:	movzbl 0x1d868(%rsi),%eax
+   0x59f1f6be76ff <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+79>:	mov    %rax,0xc30(%rsp)
+   0x59f1f6be7707 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+87>:	mov    0xc30(%rsp),%rcx
+   0x59f1f6be770f <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+95>:	lea    -0x30f390e(%rip),%rax        # 0x59f1f3af3e08
+   0x59f1f6be7716 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+102>:	movslq (%rax,%rcx,4),%rcx
+   0x59f1f6be771a <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+106>:	add    %rcx,%rax
+   0x59f1f6be771d <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+109>:	jmp    *%rax
+   0x59f1f6be771f <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+111>:	ud2
+   0x59f1f6be7721 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+113>:	mov    0xc18(%rsp),%rsi
+   0x59f1f6be7729 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+121>:	movb   $0x0,0x1d84a(%rsi)
+   0x59f1f6be7730 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+128>:	movb   $0x0,0x1d867(%rsi)
+   0x59f1f6be7737 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+135>:	movb   $0x0,0x1d866(%rsi)
+   0x59f1f6be773e <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture21ready_for_publication28_$u7b$$u7b$closure$u7d$$u7d$17h7cb7ef40bca06cadE+142>:	movb   $0x0,0x1d865(%rsi)
+process 1548148
+Mapped address spaces:
+
+          Start Addr           End Addr       Size     Offset  Perms  objfile
+      0x59f1f1f28000     0x59f1f502d000  0x3105000        0x0  r--p   /home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd
+      0x59f1f502d000     0x59f1fce71000  0x7e44000  0x3104000  r-xp   /home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd
+      0x59f1fce71000     0x59f1fd404000   0x593000  0xaf47000  r--p   /home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd
+      0x59f1fd404000     0x59f1fd415000    0x11000  0xb4d9000  rw-p   /home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd
+      0x59f1fd415000     0x59f1fd419000     0x4000        0x0  rw-p   
+      0x59f20457f000     0x59f2045a0000    0x21000        0x0  rw-p   [heap]
+      0x71d6d8000000     0x71d6d80c6000    0xc6000        0x0  rw-p   
+      0x71d6d80c6000     0x71d6dc000000  0x3f3a000        0x0  ---p   
+      0x71d6e0000000     0x71d6e00f0000    0xf0000        0x0  rw-p   
+      0x71d6e00f0000     0x71d6e4000000  0x3f10000        0x0  ---p   
+      0x71d6e67fd000     0x71d6e67fe000     0x1000        0x0  ---p   
+      0x71d6e67fe000     0x71d6e6ffe000   0x800000        0x0  rw-p   
+      0x71d6e6ffe000     0x71d6e6fff000     0x1000        0x0  ---p   
+      0x71d6e6fff000     0x71d6e77ff000   0x800000        0x0  rw-p   
+      0x71d6e77ff000     0x71d6e7800000     0x1000        0x0  ---p   
+      0x71d6e7800000     0x71d6e8000000   0x800000        0x0  rw-p   
+      0x71d6e8000000     0x71d6e820d000   0x20d000        0x0  rw-p   
+      0x71d6e820d000     0x71d6ec000000  0x3df3000        0x0  ---p   
+      0x71d6ec000000     0x71d6ec0fd000    0xfd000        0x0  rw-p   
+      0x71d6ec0fd000     0x71d6f0000000  0x3f03000        0x0  ---p   
+      0x71d6f0000000     0x71d6f0021000    0x21000        0x0  rw-p   
+      0x71d6f0021000     0x71d6f4000000  0x3fdf000        0x0  ---p   
+      0x71d6f4000000     0x71d6f4021000    0x21000        0x0  rw-p   
+      0x71d6f4021000     0x71d6f8000000  0x3fdf000        0x0  ---p   
+      0x71d6f8000000     0x71d6f805d000    0x5d000        0x0  rw-p   
+      0x71d6f805d000     0x71d6fc000000  0x3fa3000        0x0  ---p   
+      0x71d6fc7fb000     0x71d6fc7fc000     0x1000        0x0  ---p   
+      0x71d6fc7fc000     0x71d6fcffc000   0x800000        0x0  rw-p   
+      0x71d6fcffc000     0x71d6fcffd000     0x1000        0x0  ---p   
+      0x71d6fcffd000     0x71d6fd7fd000   0x800000        0x0  rw-p   
+      0x71d6fd7fd000     0x71d6fd7fe000     0x1000        0x0  ---p   
+      0x71d6fd7fe000     0x71d6fdffe000   0x800000        0x0  rw-p   
+      0x71d6fdffe000     0x71d6fdfff000     0x1000        0x0  ---p   
+      0x71d6fdfff000     0x71d6fe7ff000   0x800000        0x0  rw-p   
+      0x71d6fe7ff000     0x71d6fe800000     0x1000        0x0  ---p   
+      0x71d6fe800000     0x71d6ff000000   0x800000        0x0  rw-p   
+      0x71d6ff000000     0x71d6ff028000    0x28000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x71d6ff028000     0x71d6ff1b1000   0x189000    0x28000  r-xp   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x71d6ff1b1000     0x71d6ff200000    0x4f000   0x1b1000  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x71d6ff200000     0x71d6ff204000     0x4000   0x1ff000  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x71d6ff204000     0x71d6ff206000     0x2000   0x203000  rw-p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x71d6ff206000     0x71d6ff213000     0xd000        0x0  rw-p   
+      0x71d6ff2e0000     0x71d6ff317000    0x37000        0x0  rw-p   
+      0x71d6ff317000     0x71d6ff327000    0x10000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x71d6ff327000     0x71d6ff3a6000    0x7f000    0x10000  r-xp   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x71d6ff3a6000     0x71d6ff3fe000    0x58000    0x8f000  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x71d6ff3fe000     0x71d6ff3ff000     0x1000    0xe7000  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x71d6ff3ff000     0x71d6ff400000     0x1000    0xe8000  rw-p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x71d6ff400000     0x71d6ff4b3000    0xb3000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x71d6ff4b3000     0x71d6ff7e7000   0x334000    0xb3000  r-xp   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x71d6ff7e7000     0x71d6ff8b2000    0xcb000   0x3e7000  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x71d6ff8b2000     0x71d6ff90e000    0x5c000   0x4b1000  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x71d6ff90e000     0x71d6ff911000     0x3000   0x50d000  rw-p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x71d6ff911000     0x71d6ff914000     0x3000        0x0  rw-p   
+      0x71d6ff91f000     0x71d6ff964000    0x45000        0x0  rw-p   
+      0x71d6ff964000     0x71d6ff968000     0x4000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x71d6ff968000     0x71d6ff98c000    0x24000     0x4000  r-xp   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x71d6ff98c000     0x71d6ff990000     0x4000    0x28000  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x71d6ff990000     0x71d6ff991000     0x1000    0x2b000  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x71d6ff991000     0x71d6ff992000     0x1000    0x2c000  rw-p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x71d6ff992000     0x71d6ff9b0000    0x1e000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x71d6ff9b0000     0x71d6ffa12000    0x62000    0x1e000  r-xp   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x71d6ffa12000     0x71d6ffa2e000    0x1c000    0x80000  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x71d6ffa2e000     0x71d6ffa38000     0xa000    0x9c000  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x71d6ffa38000     0x71d6ffa3c000     0x4000    0xa6000  rw-p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x71d6ffa3f000     0x71d6ffa40000     0x1000        0x0  ---p   
+      0x71d6ffa40000     0x71d6ffa42000     0x2000        0x0  rw-p   
+      0x71d6ffa42000     0x71d6ffa4a000     0x8000        0x0  rw-s   /tmp/.tmp96bQQO/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/home/hepta_evidence_2.sqlite-shm
+      0x71d6ffa4a000     0x71d6ffa4b000     0x1000        0x0  ---p   
+      0x71d6ffa4b000     0x71d6ffa4d000     0x2000        0x0  rw-p   
+      0x71d6ffa4d000     0x71d6ffa4e000     0x1000        0x0  ---p   
+      0x71d6ffa4e000     0x71d6ffa50000     0x2000        0x0  rw-p   
+      0x71d6ffa50000     0x71d6ffa58000     0x8000        0x0  rw-s   /tmp/.tmp96bQQO/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-shm
+      0x71d6ffa58000     0x71d6ffa59000     0x1000        0x0  ---p   
+      0x71d6ffa59000     0x71d6ffa5b000     0x2000        0x0  rw-p   
+      0x71d6ffa5b000     0x71d6ffa5c000     0x1000        0x0  ---p   
+      0x71d6ffa5c000     0x71d6ffa5e000     0x2000        0x0  rw-p   
+      0x71d6ffa5e000     0x71d6ffa5f000     0x1000        0x0  ---p   
+      0x71d6ffa5f000     0x71d6ffa61000     0x2000        0x0  rw-p   
+      0x71d6ffa61000     0x71d6ffa62000     0x1000        0x0  ---p   
+      0x71d6ffa62000     0x71d6ffa64000     0x2000        0x0  rw-p   
+      0x71d6ffa64000     0x71d6ffa65000     0x1000        0x0  ---p   
+      0x71d6ffa65000     0x71d6ffa67000     0x2000        0x0  rw-p   
+      0x71d6ffa67000     0x71d6ffa69000     0x2000        0x0  rw-p   
+      0x71d6ffa69000     0x71d6ffa6d000     0x4000        0x0  r--p   [vvar]
+      0x71d6ffa6d000     0x71d6ffa6f000     0x2000        0x0  r--p   [vvar_vclock]
+      0x71d6ffa6f000     0x71d6ffa71000     0x2000        0x0  r-xp   [vdso]
+      0x71d6ffa71000     0x71d6ffa72000     0x1000        0x0  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x71d6ffa72000     0x71d6ffa9d000    0x2b000     0x1000  r-xp   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x71d6ffa9d000     0x71d6ffaa7000     0xa000    0x2c000  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x71d6ffaa7000     0x71d6ffaa9000     0x2000    0x36000  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x71d6ffaa9000     0x71d6ffaab000     0x2000    0x38000  rw-p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7ffd10000000     0x7ffd10021000    0x21000        0x0  rw-p   [stack]
+  0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
+{"kernel_signal_info": {"fault_address": "0x71d6fe7ffb48", "number": 11, "raw": "$1 = {si_signo = 11, si_errno = 0, si_code = 2, _sifields = {_pad = {-25167032, 29142, 0 <repeats 26 times>}, _kill = {si_pid = -25167032, si_uid = 29142}, _timer = {si_tid = -25167032, si_overrun = 29142, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = -25167032, si_uid = 29142, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = -25167032, si_uid = 29142, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x71d6fe7ffb48, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 125168206740296, si_fd = 0}, _sigsys = {_call_addr = 0x71d6fe7ffb48, _syscall = 0, _arch = 0}}}\n"}}
+{"method": "Read-only /proc thread maps plus stopped-thread registers; no inferior function call", "near_sp_and_fault_and_named_stack_mappings": [{"bytes": 8388608, "contains_fault_address": false, "contains_sp": false, "end": "0x71d6fe7ff000", "line": "71d6fdfff000-71d6fe7ff000 rw-p 00000000 00:00 0 ", "start": "0x71d6fdfff000"}, {"bytes": 4096, "contains_fault_address": true, "contains_sp": true, "end": "0x71d6fe800000", "line": "71d6fe7ff000-71d6fe800000 ---p 00000000 00:00 0 ", "start": "0x71d6fe7ff000"}, {"bytes": 8388608, "contains_fault_address": false, "contains_sp": false, "end": "0x71d6ff000000", "line": "71d6fe800000-71d6ff000000 rw-p 00000000 00:00 0 ", "start": "0x71d6fe800000"}, {"bytes": 135168, "contains_fault_address": false, "contains_sp": false, "end": "0x7ffd10021000", "line": "7ffd10000000-7ffd10021000 rw-p 00000000 00:00 0                          [stack]", "start": "0x7ffd10000000"}], "pc": "0x59f1f6be76c4", "pid": 1548148, "signal_info": {"fault_address": "0x71d6fe7ffb48", "number": 11, "raw": "$1 = {si_signo = 11, si_errno = 0, si_code = 2, _sifields = {_pad = {-25167032, 29142, 0 <repeats 26 times>}, _kill = {si_pid = -25167032, si_uid = 29142}, _timer = {si_tid = -25167032, si_overrun = 29142, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = -25167032, si_uid = 29142, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = -25167032, si_uid = 29142, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x71d6fe7ffb48, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 125168206740296, si_fd = 0}, _sigsys = {_call_addr = 0x71d6fe7ffb48, _syscall = 0, _arch = 0}}}\n"}, "sp": "0x71d6fe7ffb48", "tid": 1548153}

@@ -1,0 +1,76 @@
+{
+  "binary_direct_probe": {
+    "content": [
+      {
+        "type": "text",
+        "text": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf7 in position 8: invalid start byte"
+      }
+    ],
+    "structuredContent": {
+      "error": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf7 in position 8: invalid start byte",
+      "error_code": "UNKNOWN"
+    },
+    "isError": true
+  },
+  "binary_utf8_probe": {
+    "content": [
+      {
+        "type": "text",
+        "text": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)"
+      }
+    ],
+    "structuredContent": {
+      "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "binary_json_probes": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: {\r\n  \"message\": \"Not Found\",\r\n  \"documentation_url\": \"https://docs.github.com/rest\",\r\n  \"status\": \"404\"\r\n}"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: {\r\n  \"message\": \"Not Found\",\r\n  \"documentation_url\": \"https://docs.github.com/rest\",\r\n  \"status\": \"404\"\r\n}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest",
+            "status": "404"
+          }
+        },
+        "isError": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "HEPTEX01÷ [*\u0014\u000eÂÕ\u001ae!a'âå\u001dæƒü8EIÙà\u001fmÜW¸(‘©âŒ,¥š›«ÏÜa’‘é'Q®awf^€GLš!œ‘.Ïà:",
+          "title": "selector-assert-right-component-0.bin",
+          "modified_date": null,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-0.bin?ref=90fd0f22cfdfd6c839ef5ba9c694e9189c51e947",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-0.bin?ref=90fd0f22cfdfd6c839ef5ba9c694e9189c51e947",
+          "display_title": "selector-assert-right-component-0.bin",
+          "structuredContent": {
+            "title": "selector-assert-right-component-0.bin",
+            "content": "HEPTEX01÷ [*\u0014\u000eÂÕ\u001ae!a'âå\u001dæƒü8EIÙà\u001fmÜW¸(‘©âŒ,¥š›«ÏÜa’‘é'Q®awf^€GLš!œ‘.Ïà:",
+            "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-0.bin?ref=90fd0f22cfdfd6c839ef5ba9c694e9189c51e947"
+          }
+        },
+        "isError": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "actual_failure_evidence": {
+    "backtrace_or_exact_runtime_failure_line_available": false,
+    "claim_limit": "This identifies an independently deterministic source refusal. It does not invent a runtime stack trace or claim that the prepared correction passes.",
+    "classification_blob": "9f876775e386e4f9ca51e8c9ca5f429fd0d72331",
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "error": "InvalidBinding",
+    "junit_blob": "96d5b747e0579ff70730a89f70eb7ae3b70dd479",
+    "junit_seconds": "12.044",
+    "source_proven_precondition": "configuration routes [a,b,abstain] remain in their original order after the definition is reordered to input [b,abstain,a]; registry compares route/candidate IDs position by position and rejects.",
+    "test": "original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes"
+  },
+  "base": {
+    "composed_baseline_tree": "7d26396020a11227914948be902fb3721084630c",
+    "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "source_commit": "c0f78493f815780f68b9bf5e390a21314d79311f"
+  },
+  "files": [
+    {
+      "after": {
+        "bytes": 5395,
+        "git_blob": "bc7be5dd406bb4da8afda7a9fd9df06cda2cece0",
+        "sha256": "47d5369b7021820692819215f27e8b17b1ffde2cf5f1f656d916c4d2c99ab030"
+      },
+      "before": {
+        "bytes": 4567,
+        "git_blob": "bdfdc2f72241589983b33a01dc8d8d101b3c40bf",
+        "sha256": "6238d49f05923e67628db58ebfb646d2b3e19778a58d5c6c92b95fb6f3c599c4"
+      },
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs"
+    }
+  ],
+  "format": "hepta-unsorted-route-alignment-manifest-v1",
+  "packet": {
+    "bytes": 14326,
+    "git_blob": "ed23fa728a2a61b3c8a171983e6e8578b073a359",
+    "sha256": "5ee1dd1d14aaccccc75519150bc4ca99763ea92ff16d1579fecda3616896a8b8"
+  },
+  "patch": {
+    "bytes": 1340,
+    "git_blob": "fde4f2fd5123f8727ce97e1a851efccbfc4246ae",
+    "sha256": "8163972cb4addb3046188f887e972cec521fdb54238e75390aeac4ea4fbea248"
+  },
+  "required_application_precondition": "Read the actual target file and require the full before bytes, SHA256 and Git blob to match. Do not overwrite a diverged candidate. After integration run the original test/gates at the new exact source identity; no c0f result transfers.",
+  "scope": {
+    "changed_files": 1,
+    "circuit_route_policy_digest_recomputed_after_alignment": true,
+    "compiled": false,
+    "complete_original_route_objects_moved_by_id": true,
+    "existing_assertions_preserved_byte_for_byte": true,
+    "formatted": false,
+    "frozen_59_rust_package_untouched": true,
+    "input_order_activation_mapping_selected_candidate_outcomes_and_edges_preserved": true,
+    "production_rust_changes": 0,
+    "route_count_unique_missing_and_exhaustion_checks": true,
+    "runtime_tests": "not_run",
+    "source_refs_changed": false,
+    "test_attributes_or_filters_changed": false
+  }
+}

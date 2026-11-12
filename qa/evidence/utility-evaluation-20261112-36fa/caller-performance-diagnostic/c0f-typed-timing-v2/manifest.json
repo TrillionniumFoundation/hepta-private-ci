@@ -1,0 +1,48 @@
+{
+  "status": "prepared_v2_ready_for_root_review_not_launched",
+  "v1_status": "retained_immutable_prepared_never_executed",
+  "v1_worker": {
+    "bytes": 12618,
+    "sha256": "0e99e2bbf66d235772594c14d46c121730895f48d82f825390430c8c1c29beac",
+    "git_blob_sha": "5e3a10e56ed8c0fed15cde099253df9f71b978f9"
+  },
+  "v1_manifest_git_blob": "631b163e55f586722cb534fc04fd4bf80d9dbf75",
+  "finding": "Original verifier captures typed_callers.has_authority_call in its module-level alias. V1 wrapping only the helper module would miss calls via that alias.",
+  "correction": "Assert both original references are the identical function; create exactly one timing wrapper and install it into both names; its delegated target is the saved original function; register and restore both references in finally. No double wrapper and no double count.",
+  "files": {
+    "driver.py": {
+      "bytes": 3802,
+      "sha256": "3d43ad09170570e0b7a002a73ae02fca9b01a59760eaec7f2fe4eb6e7957b14a",
+      "git_blob_sha": "24c932c8c088ade4e69365b7842e125b2430c443"
+    },
+    "worker.py": {
+      "bytes": 13210,
+      "sha256": "4205c7032e494a1eaecccae0b4bd3231ff2e7d9c7e1db6fb040840f39312b028",
+      "git_blob_sha": "9381dd67bc8f6d12e0ef135f91f0761981bc2434"
+    },
+    "INPUT_READY_FOR_REVIEW.json": {
+      "bytes": 2340,
+      "sha256": "ea7c0f1e0beb0c4aebb61e3ea8304d8e99583e7cc7e83dbaf65c152fbd1fbbbf",
+      "git_blob_sha": "e64d6c9f2ca0c6971882e364b1a45331aac576a1"
+    },
+    "delta.patch": {
+      "bytes": 1606,
+      "sha256": "4a42e54cd3addeb2571842166d9a49cbfc8f980ab21c2dd577bbd57a04246522",
+      "git_blob_sha": "39a1f7d71f9ac1a64da8945fe458befa2f043a7f"
+    }
+  },
+  "unchanged": [
+    "launcher exact bytes",
+    "220-second internal stop",
+    "original execute_logged 240-second deadline",
+    "300-second outer recording limit",
+    "exact complete c0f source inventory and original verifier/CALLERS/helper/collector",
+    "arguments, returned objects and propagated original exceptions",
+    "inclusive timings must not be summed",
+    "source changed failure and unavailable inventory Unknown semantics"
+  ],
+  "actual_gate_prior_terminal": "225cf314e1022fa72591c9aba93386caa5764fff",
+  "full_gate_run": false,
+  "timing_diagnostic_executed": false,
+  "static_validation": "AST parsed; exact two worker text edits only; source/scripts and active gate source untouched"
+}

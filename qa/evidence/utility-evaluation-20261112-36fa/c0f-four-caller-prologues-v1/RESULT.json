@@ -1,0 +1,211 @@
+{
+  "binary_after": {
+    "bytes": 282318328,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+    "stat": [
+      2050,
+      50138393,
+      282318328,
+      1794495144101698106,
+      1794495144101698106
+    ]
+  },
+  "binary_before": {
+    "bytes": 282318328,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+    "stat": [
+      2050,
+      50138393,
+      282318328,
+      1794495144101698106,
+      1794495144101698106
+    ]
+  },
+  "binary_executed": false,
+  "cargo_started": false,
+  "cfi": {
+    "available": false,
+    "budget_seconds": 20,
+    "bytes_scanned": 67129344,
+    "command": [
+      "/usr/bin/readelf",
+      "--debug-dump=frames",
+      "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd"
+    ],
+    "requested_frames": [
+      2,
+      4,
+      6,
+      16
+    ],
+    "retained": {
+      "bytes": 44,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-four-caller-prologues-v1/FOUR_CALLER_CFI.json",
+      "sha256": "8a403e7a6f8e195b50ad3494c9a7470f33d945ddcedd24b20267a78796ca12fc"
+    },
+    "returncode": -15,
+    "scope": "Only exact-PC covering FDE blocks and their referenced CIE blocks are retained; other readelf text is discarded",
+    "selected_frames": [],
+    "stderr": {
+      "bytes": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-four-caller-prologues-v1/CFI.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stop_reason": "stream_byte_budget",
+    "stream_byte_limit": 67108864,
+    "tool": "/usr/bin/readelf"
+  },
+  "combined_disassembly": {
+    "bytes": 17335,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-four-caller-prologues-v1/BOUNDED_PROLOGUES.txt",
+    "sha256": "8b604cc77402afa956e85ecb2f5978e0c2f6f2f0a14f7ef92317f7070b72b210"
+  },
+  "elf": {
+    "elf_type": 3,
+    "load_bias": "0x59f1f1f28000",
+    "machine": 62,
+    "mapped_offset_zero_start": "0x59f1f1f28000",
+    "observed_frame_count": 4,
+    "program_headers": [
+      {
+        "align": 8,
+        "filesz": 672,
+        "flags": 4,
+        "memsz": 672,
+        "offset": 64,
+        "paddr": 64,
+        "type": 6,
+        "vaddr": 64
+      },
+      {
+        "align": 1,
+        "filesz": 28,
+        "flags": 4,
+        "memsz": 28,
+        "offset": 736,
+        "paddr": 736,
+        "type": 3,
+        "vaddr": 736
+      },
+      {
+        "align": 4096,
+        "filesz": 51398676,
+        "flags": 4,
+        "memsz": 51398676,
+        "offset": 0,
+        "paddr": 0,
+        "type": 1,
+        "vaddr": 0
+      },
+      {
+        "align": 4096,
+        "filesz": 132395280,
+        "flags": 5,
+        "memsz": 132395280,
+        "offset": 51398720,
+        "paddr": 51402816,
+        "type": 1,
+        "vaddr": 51402816
+      },
+      {
+        "align": 4096,
+        "filesz": 5839408,
+        "flags": 6,
+        "memsz": 5842608,
+        "offset": 183794000,
+        "paddr": 183802192,
+        "type": 1,
+        "vaddr": 183802192
+      },
+      {
+        "align": 4096,
+        "filesz": 67496,
+        "flags": 6,
+        "memsz": 83960,
+        "offset": 189633408,
+        "paddr": 189645696,
+        "type": 1,
+        "vaddr": 189645696
+      },
+      {
+        "align": 8,
+        "filesz": 448,
+        "flags": 4,
+        "memsz": 1120,
+        "offset": 183794000,
+        "paddr": 183802192,
+        "type": 7,
+        "vaddr": 183802192
+      },
+      {
+        "align": 8,
+        "filesz": 512,
+        "flags": 6,
+        "memsz": 512,
+        "offset": 187435256,
+        "paddr": 187443448,
+        "type": 2,
+        "vaddr": 187443448
+      },
+      {
+        "align": 1,
+        "filesz": 5839408,
+        "flags": 4,
+        "memsz": 5842608,
+        "offset": 183794000,
+        "paddr": 183802192,
+        "type": 1685382482,
+        "vaddr": 183802192
+      },
+      {
+        "align": 4,
+        "filesz": 4169580,
+        "flags": 4,
+        "memsz": 4169580,
+        "offset": 33043412,
+        "paddr": 33043412,
+        "type": 1685382480,
+        "vaddr": 33043412
+      },
+      {
+        "align": 0,
+        "filesz": 0,
+        "flags": 6,
+        "memsz": 0,
+        "offset": 0,
+        "paddr": 0,
+        "type": 1685382481,
+        "vaddr": 0
+      },
+      {
+        "align": 4,
+        "filesz": 68,
+        "flags": 4,
+        "memsz": 68,
+        "offset": 764,
+        "paddr": 764,
+        "type": 4,
+        "vaddr": 764
+      }
+    ],
+    "symtab_function_count": 521247
+  },
+  "finished_at": "2026-11-12T15:38:00.453451+00:00",
+  "qualification": false,
+  "source_after": {
+    "sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_before": {
+    "sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_mutated": false,
+  "started_at": "2026-11-12T15:37:45.962706+00:00",
+  "status": "bounded_static_prologues_retained",
+  "tests_started": false
+}

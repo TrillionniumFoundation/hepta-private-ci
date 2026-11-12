@@ -1,0 +1,239 @@
+1:c5|
+2:5c|===== frame 2 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}} RVA 0x4cfb12a =====
+3:c5|
+4:46|/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd：     文件格式 elf64-x86-64
+5:c5|
+6:c5|
+7:ad|Disassembly of section .text:
+8:c5|
+9:7e|0000000004cfa160 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}>:
+10:ea| 4cfa160:	mov    %rsp,%r11
+11:7e| 4cfa163:	sub    $0x121000,%r11
+12:7b| 4cfa16a:	sub    $0x1000,%rsp
+13:f2| 4cfa171:	movq   $0x0,(%rsp)
+14:63| 4cfa179:	cmp    %r11,%rsp
+15:ce| 4cfa17c:	jne    4cfa16a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0xa>
+16:4a| 4cfa17e:	sub    $0x918,%rsp
+17:f8| 4cfa185:	mov    %rsi,0x198(%rsp)
+18:c9| 4cfa18d:	mov    %rdi,0x1a0(%rsp)
+19:5e| 4cfa195:	mov    %rdi,0x1a8(%rsp)
+20:bd| 4cfa19d:	mov    %rdx,0x1b8(%rsp)
+21:37| 4cfa1a5:	movzbl 0x1(%rsi),%eax
+22:ac| 4cfa1a9:	mov    %rax,0x1b0(%rsp)
+23:9c| 4cfa1b1:	mov    0x1b0(%rsp),%rcx
+24:3b| 4cfa1b9:	lea    -0x312e13c(%rip),%rax        # 1bcc084 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x7a154>
+25:4a| 4cfa1c0:	movslq (%rax,%rcx,4),%rcx
+26:bb| 4cfa1c4:	add    %rcx,%rax
+27:58| 4cfa1c7:	jmp    *%rax
+28:6d| 4cfa1c9:	ud2
+29:95| 4cfa1cb:	mov    0x198(%rsp),%rax
+30:be| 4cfa1d3:	movb   $0x0,0x3(%rax)
+31:2e| 4cfa1d7:	movb   $0x0,0xf14a7(%rsp)
+32:4b| 4cfa1df:	mov    (%rax),%cl
+33:c2| 4cfa1e1:	mov    %cl,0x2(%rax)
+34:88| 4cfa1e4:	lea    -0x31a66ab(%rip),%rsi        # 1b53b40 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x1c10>
+35:13| 4cfa1eb:	lea    0x87c8(%rsp),%rdi
+36:2c| 4cfa1f3:	mov    $0x20,%edx
+37:47| 4cfa1f8:	call   4fd5c30 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission>
+38:57| 4cfa1fd:	jmp    4cfa26f <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x10f>
+39:6b| 4cfa1ff:	xor    %eax,%eax
+40:3d| 4cfa201:	test   $0x1,%al
+41:97| 4cfa203:	jne    4cfa1ff <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x9f>
+42:85| 4cfa205:	jmp    4cfa2ba <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x15a>
+43:69| 4cfa20a:	xor    %eax,%eax
+44:55| 4cfa20c:	test   $0x1,%al
+45:f7| 4cfa20e:	jne    4cfa20a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0xaa>
+46:42| 4cfa210:	jmp    4cfa2c7 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x167>
+47:f3| 4cfa215:	mov    0x1b8(%rsp),%rax
+48:7a| 4cfa21d:	mov    %rax,0x1b8(%rsp)
+49:c3| 4cfa225:	jmp    4cfa2a4 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x144>
+50:73| 4cfa227:	mov    0x1b8(%rsp),%rax
+51:6f| 4cfa22f:	mov    %rax,0x1b8(%rsp)
+52:3a| 4cfa237:	jmp    4cfaf8c <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0xe2c>
+53:cb| 4cfa23c:	mov    0x198(%rsp),%rax
+54:0d| 4cfa244:	movb   $0x0,0x3(%rax)
+55:86| 4cfa248:	movb   $0x2,0x1(%rax)
+56:ed| 4cfa24c:	mov    0x108568(%rsp),%rdi
+57:7b| 4cfa254:	call   af48470 <_Unwind_Resume@plt>
+58:f5| 4cfa259:	mov    %rax,%rcx
+59:24| 4cfa25c:	mov    %edx,%eax
+60:5a| 4cfa25e:	rex.W
+61:bf| 4cfa25f:	.byte 0x89
+62:c5|
+63:9e|===== frame 4 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}} RVA 0x5fffd70 =====
+64:c5|
+65:46|/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd：     文件格式 elf64-x86-64
+66:c5|
+67:c5|
+68:ad|Disassembly of section .text:
+69:c5|
+70:d3|0000000005fffaf0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}>:
+71:e0| 5fffaf0:	mov    %rsp,%r11
+72:4d| 5fffaf3:	sub    $0x1c6000,%r11
+73:eb| 5fffafa:	sub    $0x1000,%rsp
+74:f3| 5fffb01:	movq   $0x0,(%rsp)
+75:a4| 5fffb09:	cmp    %r11,%rsp
+76:91| 5fffb0c:	jne    5fffafa <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0xa>
+77:4f| 5fffb0e:	sub    $0x748,%rsp
+78:1c| 5fffb15:	mov    %rsi,0x190(%rsp)
+79:70| 5fffb1d:	mov    %rdi,0x198(%rsp)
+80:2d| 5fffb25:	mov    %rdi,0x1a0(%rsp)
+81:c4| 5fffb2d:	mov    %rdx,0x1b0(%rsp)
+82:40| 5fffb35:	movzbl 0x170c9(%rsi),%eax
+83:64| 5fffb3c:	mov    %rax,0x1a8(%rsp)
+84:4e| 5fffb44:	mov    0x1a8(%rsp),%rcx
+85:12| 5fffb4c:	lea    -0x43dca1f(%rip),%rax        # 1c23134 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0xd1204>
+86:94| 5fffb53:	movslq (%rax,%rcx,4),%rcx
+87:88| 5fffb57:	add    %rcx,%rax
+88:d2| 5fffb5a:	jmp    *%rax
+89:28| 5fffb5c:	ud2
+90:61| 5fffb5e:	mov    0x190(%rsp),%rax
+91:80| 5fffb66:	movb   $0x0,0x170c8(%rax)
+92:9e| 5fffb6d:	movb   $0x0,0x16cdaf(%rsp)
+93:44| 5fffb75:	movb   $0x0,0x16cdae(%rsp)
+94:a9| 5fffb7d:	movb   $0x0,0x16cdad(%rsp)
+95:71| 5fffb85:	movzbl 0x170ca(%rax),%esi
+96:8b| 5fffb8c:	lea    0x17278(%rsp),%rdi
+97:6f| 5fffb94:	call   4cfa150 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication>
+98:76| 5fffb99:	jmp    5fffc45 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x155>
+99:f3| 5fffb9e:	xor    %eax,%eax
+100:b7| 5fffba0:	test   $0x1,%al
+101:15| 5fffba2:	jne    5fffb9e <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0xae>
+102:e7| 5fffba4:	jmp    5fffd0a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x21a>
+103:8a| 5fffba9:	xor    %eax,%eax
+104:e3| 5fffbab:	test   $0x1,%al
+105:c2| 5fffbad:	jne    5fffba9 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0xb9>
+106:b5| 5fffbaf:	jmp    5fffd17 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x227>
+107:36| 5fffbb4:	mov    0x1b0(%rsp),%rax
+108:d3| 5fffbbc:	mov    %rax,0x1b0(%rsp)
+109:e6| 5fffbc4:	jmp    5fffcf2 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x202>
+110:d5| 5fffbc9:	mov    0x1b0(%rsp),%rax
+111:13| 5fffbd1:	mov    %rax,0x1b0(%rsp)
+112:b9| 5fffbd9:	jmp    60001be <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x6ce>
+113:97| 5fffbde:	mov    0x1b0(%rsp),%rax
+114:e7| 5fffbe6:	mov    %rax,0x1b0(%rsp)
+115:1a| 5fffbee:	.byte 0xe9
+116:c3| 5fffbef:	.byte 0x69
+117:c5|
+118:6e|===== frame 6 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} RVA 0x60037b0 =====
+119:c5|
+120:46|/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd：     文件格式 elf64-x86-64
+121:c5|
+122:c5|
+123:ad|Disassembly of section .text:
+124:c5|
+125:7f|00000000060035e0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}>:
+126:aa| 60035e0:	mov    %rsp,%r11
+127:10| 60035e3:	sub    $0x27c000,%r11
+128:84| 60035ea:	sub    $0x1000,%rsp
+129:24| 60035f1:	movq   $0x0,(%rsp)
+130:48| 60035f9:	cmp    %r11,%rsp
+131:04| 60035fc:	jne    60035ea <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0xa>
+132:3f| 60035fe:	sub    $0xc58,%rsp
+133:42| 6003605:	mov    %rdi,0x398(%rsp)
+134:b0| 600360d:	mov    %rsi,0x3a8(%rsp)
+135:3e| 6003615:	movzbl 0x349a1(%rdi),%eax
+136:aa| 600361c:	mov    %rax,0x3a0(%rsp)
+137:87| 6003624:	mov    0x3a0(%rsp),%rcx
+138:c0| 600362c:	lea    -0x43e04b3(%rip),%rax        # 1c23180 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0xd1250>
+139:29| 6003633:	movslq (%rax,%rcx,4),%rcx
+140:49| 6003637:	add    %rcx,%rax
+141:7a| 600363a:	jmp    *%rax
+142:5f| 600363c:	ud2
+143:3f| 600363e:	mov    0x398(%rsp),%rax
+144:84| 6003646:	movb   $0x0,0x349a0(%rax)
+145:e4| 600364d:	xor    %edi,%edi
+146:62| 600364f:	call   6002170 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed>
+147:42| 6003654:	mov    %rax,0x390(%rsp)
+148:87| 600365c:	jmp    6003704 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x124>
+149:c0| 6003661:	xor    %eax,%eax
+150:2c| 6003663:	test   $0x1,%al
+151:32| 6003665:	jne    6003661 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x81>
+152:53| 6003667:	jmp    600374a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x16a>
+153:78| 600366c:	xor    %eax,%eax
+154:b5| 600366e:	test   $0x1,%al
+155:57| 6003670:	jne    600366c <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x8c>
+156:be| 6003672:	jmp    6003757 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x177>
+157:2b| 6003677:	mov    0x3a8(%rsp),%rax
+158:2a| 600367f:	mov    %rax,0x3a8(%rsp)
+159:2b| 6003687:	jmp    6003732 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x152>
+160:e7| 600368c:	mov    0x3a8(%rsp),%rax
+161:c1| 6003694:	mov    %rax,0x3a8(%rsp)
+162:99| 600369c:	jmp    6003a7a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x49a>
+163:89| 60036a1:	mov    0x3a8(%rsp),%rax
+164:e1| 60036a9:	mov    %rax,0x3a8(%rsp)
+165:01| 60036b1:	jmp    6004bab <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x15cb>
+166:7d| 60036b6:	mov    0x3a8(%rsp),%rax
+167:65| 60036be:	mov    %rax,0x3a8(%rsp)
+168:2d| 60036c6:	jmp    6005232 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x1c52>
+169:4b| 60036cb:	mov    0x398(%rsp),%rax
+170:ae| 60036d3:	movb   $0x0,0x349a0(%rax)
+171:d3| 60036da:	.byte 0xc6
+172:68| 60036db:	.byte 0x80
+173:e5| 60036dc:	.byte 0xa1
+174:c8| 60036dd:	add    (%r8),%rax
+175:c5|
+176:22|===== frame 16 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures RVA 0x600355c =====
+177:c5|
+178:46|/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd：     文件格式 elf64-x86-64
+179:c5|
+180:c5|
+181:ad|Disassembly of section .text:
+182:c5|
+183:72|0000000006003410 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures>:
+184:38| 6003410:	mov    %rsp,%r11
+185:f3| 6003413:	sub    $0x183000,%r11
+186:49| 600341a:	sub    $0x1000,%rsp
+187:67| 6003421:	movq   $0x0,(%rsp)
+188:f2| 6003429:	cmp    %r11,%rsp
+189:8c| 600342c:	jne    600341a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xa>
+190:a2| 600342e:	sub    $0x568,%rsp
+191:41| 6003435:	movb   $0x0,0x349b9(%rsp)
+192:1e| 600343d:	lea    0xc19f0(%rsp),%rdi
+193:00| 6003445:	lea    0x18(%rsp),%rsi
+194:3d| 600344a:	mov    $0xc19d8,%edx
+195:d4| 600344f:	call   af48460 <memcpy@plt>
+196:3c| 6003454:	jmp    600347e <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x6e>
+197:34| 6003456:	lea    0xc19f0(%rsp),%rdi
+198:30| 600345e:	call   3295de0 <core::ptr::drop_in_place<codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}>>
+199:54| 6003463:	jmp    60035d3 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x1c3>
+200:22| 6003468:	mov    %rax,%rcx
+201:9f| 600346b:	mov    %edx,%eax
+202:7e| 600346d:	mov    %rcx,0x183558(%rsp)
+203:ac| 6003475:	mov    %eax,0x183560(%rsp)
+204:bc| 600347c:	jmp    6003456 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x46>
+205:aa| 600347e:	mov    0x52c323b(%rip),%rax        # b2c66c0 <_DYNAMIC+0x3dc8>
+206:95| 6003485:	lea    0x183468(%rsp),%rdi
+207:f0| 600348d:	call   *%rax
+208:52| 600348f:	jmp    6003491 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x81>
+209:67| 6003491:	lea    0x5091e18(%rip),%rdx        # b0952b0 <starlark::values::types::ellipsis::_::__CTOR+0x14a9e8>
+210:93| 6003498:	mov    0x52c3229(%rip),%rax        # b2c66c8 <_DYNAMIC+0x3dd0>
+211:2f| 600349f:	lea    0x183468(%rsp),%rdi
+212:bd| 60034a7:	mov    $0x2,%esi
+213:c2| 60034ac:	call   *%rax
+214:20| 60034ae:	mov    %rax,0x10(%rsp)
+215:48| 60034b3:	jmp    60034de <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xce>
+216:c3| 60034b5:	mov    0x52c283c(%rip),%rax        # b2c5cf8 <_DYNAMIC+0x3400>
+217:b5| 60034bc:	lea    0x183468(%rsp),%rdi
+218:6a| 60034c4:	call   *%rax
+219:05| 60034c6:	jmp    6003456 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x46>
+220:15| 60034c8:	mov    %rax,%rcx
+221:14| 60034cb:	mov    %edx,%eax
+222:3d| 60034cd:	mov    %rcx,0x183558(%rsp)
+223:38| 60034d5:	mov    %eax,0x183560(%rsp)
+224:1f| 60034dc:	jmp    60034b5 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xa5>
+225:12| 60034de:	mov    0x10(%rsp),%rdi
+226:91| 60034e3:	mov    0x52c2806(%rip),%rax        # b2c5cf0 <_DYNAMIC+0x33f8>
+227:c8| 60034ea:	call   *%rax
+228:68| 60034ec:	mov    %rax,0x8(%rsp)
+229:e4| 60034f1:	jmp    60034f3 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xe3>
+230:9d| 60034f3:	mov    0x8(%rsp),%rsi
+231:46| 60034f8:	mov    0x52c2801(%rip),%rax        # b2c5d00 <_DYNAMIC+0x3408>
+232:06| 60034ff:	lea    0x183418(%rsp),%rdi
+233:e0| 6003507:	call   *%rax
+234:bb| 6003509:	jmp    600350b <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xfb>
+235:c1| 600350b:	rex.W
+236:62| 600350c:	.byte 0x8d
+237:77| 600350d:	.byte 0x15
+238:13| 600350e:	rex.WRX
+239:ec| 600350f:	.byte 0xa

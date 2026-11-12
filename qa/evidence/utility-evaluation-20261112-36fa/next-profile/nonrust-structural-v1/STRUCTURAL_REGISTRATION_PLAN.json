@@ -1,0 +1,880 @@
+{
+  "status": "structural_only_pending_actual_fmt_full_source_checks_and_qa_alignment",
+  "source_tree_unformatted": "02103ded93173dd17aef645ddfcaa5fc6f674042",
+  "base_callers_blob": "cf194d0ef743ca0e7cf7b0125b52ceec914649dd",
+  "original_boundaries_retained": 541,
+  "new_boundaries": [
+    {
+      "id": "learning_original_candidate_retained_stage_route",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage",
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "definition_markers": [
+        "fn require_evaluated_retained_stage("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_candidate_retained_stage_execute",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::execute_evaluated_retained_stage",
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "definition_markers": [
+        "fn execute_evaluated_retained_stage("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_candidate_retained_stage_readback",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::read_evaluated_retained_prefix",
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "definition_markers": [
+        "fn read_evaluated_retained_prefix("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_candidate_retained_stage_attestation",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::retained_attestation",
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "definition_markers": [
+        "fn retained_attestation("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_read_next_use_binding",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_next_use",
+      "receiver_type": "OriginalCircuitLearningReadClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "definition_markers": [
+        "fn require_original_evaluated_next_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_context",
+      "symbol": "OriginalCircuitSelectionCommandContextV1::from_original_evaluation",
+      "receiver_type": "OriginalCircuitSelectionCommandContextV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "definition_markers": [
+        "fn from_original_evaluation("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_recover",
+      "symbol": "OriginalCircuitSelectionCommandClientV1::recover_from_original_evaluated_stream",
+      "receiver_type": "OriginalCircuitSelectionCommandClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "definition_markers": [
+        "fn recover_from_original_evaluated_stream("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_profile",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_evaluated_command_context",
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "definition_markers": [
+        "fn original_evaluated_command_context("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_factory",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_receipt_owner",
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_receipt_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_transfer",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::into_evaluated_command_owner",
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "definition_markers": [
+        "fn into_evaluated_command_owner("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_receipt",
+      "symbol": "OriginalCircuitEvaluatedSelectionReceiptV1::from_original_command_response",
+      "receiver_type": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "definition_markers": [
+        "fn from_original_command_response("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_readback_binding",
+      "symbol": "OriginalCircuitSelectionReadbackConnectionV1::bind_original_evaluated_selection",
+      "receiver_type": "OriginalCircuitSelectionReadbackConnectionV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "definition_markers": [
+        "fn bind_original_evaluated_selection("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_stage_binding",
+      "symbol": "OriginalCircuitSelectionCommandClientV1::bind_original_evaluated_stage_channel",
+      "receiver_type": "OriginalCircuitSelectionCommandClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "definition_markers": [
+        "fn bind_original_evaluated_stage_channel("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_context",
+      "symbol": "OriginalCircuitNextUseCommandContextV1::from_original_evaluated_selection",
+      "receiver_type": "OriginalCircuitNextUseCommandContextV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_selection("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_recover",
+      "symbol": "OriginalCircuitNextUseCommandClientV1::recover_from_original_evaluated_stream",
+      "receiver_type": "OriginalCircuitNextUseCommandClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "definition_markers": [
+        "fn recover_from_original_evaluated_stream("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_profile",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_evaluated_command_selection",
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "definition_markers": [
+        "fn original_evaluated_command_selection("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_factory",
+      "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_receipt_owner",
+      "receiver_type": "OriginalCircuitNextUseCommandOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_receipt_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_transfer",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::into_evaluated_command_owner",
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "definition_markers": [
+        "fn into_evaluated_command_owner("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_remote_attest",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion",
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "definition_markers": [
+        "fn attest_original_evaluated_remote_completion("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_remote_readback",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion",
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "definition_markers": [
+        "fn readback_evaluated_remote_completion("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_stage_binding",
+      "symbol": "OriginalCircuitNextUseCommandClientV1::bind_original_evaluated_stage_channel",
+      "receiver_type": "OriginalCircuitNextUseCommandClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+      "definition_markers": [
+        "fn bind_original_evaluated_stage_channel("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_c_readiness_binding",
+      "symbol": "OriginalCircuitCompletionReadinessClientV1::bind_original_evaluated_stage_channel",
+      "receiver_type": "OriginalCircuitCompletionReadinessClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "definition_markers": [
+        "fn bind_original_evaluated_stage_channel("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_evaluated_c_readiness_serve",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::serve_evaluated_completion_readiness",
+      "receiver_type": "OriginalCircuitLearningReadOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "definition_markers": [
+        "fn serve_evaluated_completion_readiness("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_selection_channel",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_retained_channel",
+      "receiver_type": "OriginalCircuitLearningReadOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "definition_markers": [
+        "fn serve_original_evaluated_retained_channel("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_client_bind",
+      "symbol": "OriginalCircuitRetainedVersionClientV1::bind_original_evaluated_stage_channel",
+      "receiver_type": "OriginalCircuitRetainedVersionClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "definition_markers": [
+        "fn bind_original_evaluated_stage_channel("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_client_recover",
+      "symbol": "OriginalCircuitRetainedVersionClientV1::recover_original_evaluated_stage_channel",
+      "receiver_type": "OriginalCircuitRetainedVersionClientV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "definition_markers": [
+        "fn recover_original_evaluated_stage_channel("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_host_create",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::from_original_evaluated_owners",
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_owners("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_host_recover",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::recover_from_original_evaluated_owners",
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "definition_markers": [
+        "fn recover_from_original_evaluated_owners("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    }
+  ],
+  "changed_existing_boundaries": [
+    {
+      "position": 296,
+      "id": "learning_original_owner_snapshot_encode",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs"
+      ]
+    },
+    {
+      "position": 326,
+      "id": "learning_original_published_read_client_current",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ]
+    },
+    {
+      "position": 331,
+      "id": "learning_original_circuit_selection_remote_attest",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "remove": [
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"
+      ],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ]
+    },
+    {
+      "position": 332,
+      "id": "learning_original_circuit_selection_remote_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "remove": [
+        "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"
+      ],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ]
+    },
+    {
+      "position": 333,
+      "id": "learning_original_circuit_next_use_remote_attest",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "remove": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"
+      ],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ]
+    },
+    {
+      "position": 334,
+      "id": "learning_original_circuit_next_use_remote_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "remove": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"
+      ],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ]
+    },
+    {
+      "position": 337,
+      "id": "learning_original_selector_command_owner_profile",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ]
+    },
+    {
+      "position": 341,
+      "id": "learning_original_selector_command_client_execute",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ]
+    },
+    {
+      "position": 342,
+      "id": "learning_original_selector_command_client_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ]
+    },
+    {
+      "position": 364,
+      "id": "learning_original_next_use_command_owner_profile",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ]
+    },
+    {
+      "position": 368,
+      "id": "learning_original_next_use_command_client_attest",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ]
+    },
+    {
+      "position": 369,
+      "id": "learning_original_next_use_command_client_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ]
+    },
+    {
+      "position": 391,
+      "id": "learning_original_c_readiness_current",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ]
+    },
+    {
+      "position": 411,
+      "id": "root_resident_gate_effect_current",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ]
+    },
+    {
+      "position": 412,
+      "id": "root_resident_gate_training_cancel",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ]
+    },
+    {
+      "position": 446,
+      "id": "learning_evaluated_retention_context",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+      ]
+    },
+    {
+      "position": 447,
+      "id": "learning_evaluated_retention_context_recover",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+      ]
+    },
+    {
+      "position": 448,
+      "id": "learning_evaluated_retention_prepare",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
+      ]
+    },
+    {
+      "position": 450,
+      "id": "learning_evaluated_retention_preserve_original_evidence",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+      ]
+    },
+    {
+      "position": 465,
+      "id": "learning_original_evaluation_connection_training",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ]
+    },
+    {
+      "position": 468,
+      "id": "learning_original_evaluation_command_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ]
+    },
+    {
+      "position": 474,
+      "id": "learning_retained_version_client_prepare",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ]
+    },
+    {
+      "position": 475,
+      "id": "learning_retained_version_client_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+      ]
+    },
+    {
+      "position": 484,
+      "id": "learning_retained_version_preserve_trainer",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+      ],
+      "remove": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
+      ],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+      ]
+    },
+    {
+      "position": 534,
+      "id": "learning_original_evaluated_read_selection_context",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ]
+    },
+    {
+      "position": 535,
+      "id": "learning_original_evaluated_read_next_use_context",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs"
+      ]
+    },
+    {
+      "position": 537,
+      "id": "learning_original_evaluated_read_owner_create",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ]
+    },
+    {
+      "position": 538,
+      "id": "learning_original_evaluated_read_selection_binding",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "remove": [],
+      "before": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs"
+      ],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ]
+    },
+    {
+      "position": 539,
+      "id": "learning_original_evaluated_selection_remote_attest",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ]
+    },
+    {
+      "position": 540,
+      "id": "learning_original_evaluated_selection_remote_readback",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "remove": [],
+      "before": [],
+      "after": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ]
+    }
+  ],
+  "existing_protected_rows_retained_unchanged_at_this_stage": 412,
+  "pending_new_protected_paths": [
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+  ],
+  "expected_final_protected_row_count": 422,
+  "authority_flags_unchanged_false": true,
+  "full_collector_gate_run": false,
+  "strict_membership_equality_unchanged": true,
+  "limits": [
+    "Changed-file pure parsing is source planning only, not full-source verification.",
+    "The prior two enum-arm ambiguities are addressed only by the separately reviewed Prepared UFCS postimage b62728f.",
+    "The new cross-file Self call is represented by the separately reviewed original-owner UFCS postimage 0e24b809.",
+    "Exact source fences, all corresponding original QA attacks and the allowlist await the actual formatted source.",
+    "No actual authorized A/B/C, real adoption, deployment or native runtime result is asserted."
+  ]
+}

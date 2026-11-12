@@ -1,0 +1,48 @@
+{
+  "application_condition": "Preparation only. Do not integrate until an actual bounded profile on the original full source confirms the relevant hotspot. If selected, the non-Rust owner must integrate this exact reviewed delta, preserve every original source/negative case and budget, and rerun the original gates on the eventual exact formatted source. This preparation does not repair or rerun the ongoing c0f gate.",
+  "equivalence_argument": [
+    "Both _declared_aliases regular expressions contain re.escape(target) with default case-sensitive matching. A successful match requires that exact target substring in the same code. If the substring is absent, both original findall results are empty.",
+    "The has_authority_call word-boundary expression likewise contains re.escape(name). Its match implies name in code. Combining the necessary substring condition with the existing regular expression leaves the any result unchanged.",
+    "Alias fixed-point discovery, global alias normalization and replacement validation, source_index traversal, field extraction, typed receiver parsing, unknown-receiver exceptions, and returned verdicts are otherwise byte-identical.",
+    "No cache, path filter, boundary exemption, pattern expansion, allowlist, changed source membership, or budget increase is introduced."
+  ],
+  "files": {
+    "after": {
+      "bytes": 7759,
+      "git_blob": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+      "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2"
+    },
+    "before": {
+      "bytes": 7672,
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    "mode": "100644",
+    "path": "scripts/hepta_typed_callers.py"
+  },
+  "format": "hepta.typed-callers-shortcircuit-manifest.v1",
+  "packet": {
+    "bytes": 21203,
+    "git_blob": "82f5bbf1a781eced6a2b91a5753ddc58170290fe",
+    "sha256": "e1194b38ecf6ceee221889f434d123b8f28080d477a94a2daa5172f3d2cc4f8b"
+  },
+  "patch": {
+    "bytes": 980,
+    "git_blob": "70d6461b0163c517500a2205cc935373eed192fb",
+    "sha256": "c27368986f440c977b5536f4c22ac9a7a841aa4ae7096e0872eec8831658f2a8"
+  },
+  "prepared_tree_before": "02103ded93173dd17aef645ddfcaa5fc6f674042",
+  "source_baseline_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "validation": {
+    "candidate_modified": false,
+    "exact_two_replacements_and_reverse_equality": true,
+    "full_caller_gate": "not_run",
+    "full_original_self_test": "not_run",
+    "native_modified": false,
+    "native_profile": "not_run",
+    "performance_gain": "not_measured",
+    "python_ast_parse": true,
+    "source_closure": "not_run",
+    "source_refs_modified": false
+  }
+}

@@ -1,0 +1,560 @@
+[
+  {
+    "row": 203,
+    "path": "circuit_feature_current.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn require_bundle(",
+      "fn require_active("
+    ]
+  },
+  {
+    "row": 267,
+    "path": "circuit_learning_read_capability.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn observation(",
+      "fn from_original_profile(",
+      "fn read_current(",
+      "fn require_original_context(",
+      "fn require_timing(",
+      "fn now(",
+      "fn from_original_stream("
+    ]
+  },
+  {
+    "row": 269,
+    "path": "circuit_selection_command_wire.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn new(",
+      "fn require_context(",
+      "fn require_request(",
+      "fn encode_completed(",
+      "fn decode_completed(",
+      "fn authenticate_completed(",
+      "fn authenticate_receipt("
+    ]
+  },
+  {
+    "row": 270,
+    "path": "circuit_selection_command_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_receipt_owner(",
+      "fn serve_commands(",
+      "fn serve_evidence_readback(",
+      "fn serve_command_channel(",
+      "fn command_response(",
+      "fn original_response(",
+      "fn original_state("
+    ]
+  },
+  {
+    "row": 271,
+    "path": "circuit_selection_command_evidence.rs",
+    "missing_required": [
+      "OriginalCircuitSelectionReceiptOwnerV1::readback_remote"
+    ],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn serve_evidence_channel(",
+      "fn evidence_response("
+    ]
+  },
+  {
+    "row": 279,
+    "path": "circuit_next_use_receipt_owner.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn create(",
+      "fn recover(",
+      "fn prepare(",
+      "fn attest_source(",
+      "fn readback_source(",
+      "fn predecessors(",
+      "fn finish_original_readback(",
+      "fn decode_completed(",
+      "fn authenticate_completed(",
+      "fn attest_original_completion(",
+      "fn attest_original_remote_completion(",
+      "fn readback(",
+      "fn readback_remote(",
+      "fn read_local_next_use(",
+      "fn read_remote_next_use(",
+      "fn original_command_profile(",
+      "fn into_command_owner("
+    ]
+  },
+  {
+    "row": 280,
+    "path": "circuit_next_use_command_wire.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn new(",
+      "fn require_context(",
+      "fn require_request(",
+      "fn encode_completed(",
+      "fn decode_completed(",
+      "fn authenticate_completed(",
+      "fn authenticate_receipt("
+    ]
+  },
+  {
+    "row": 281,
+    "path": "circuit_next_use_command_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_receipt_owner(",
+      "fn serve_commands(",
+      "fn serve_evidence_readback(",
+      "fn serve_command_channel(",
+      "fn command_response(",
+      "fn original_response(",
+      "fn original_state("
+    ]
+  },
+  {
+    "row": 282,
+    "path": "circuit_next_use_command_evidence.rs",
+    "missing_required": [
+      "OriginalCircuitNextUseReceiptOwnerV1::readback_remote("
+    ],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn serve_evidence_channel(",
+      "fn evidence_response("
+    ]
+  },
+  {
+    "row": 293,
+    "path": "circuit_selection_command.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_training(",
+      "fn from_checkpoint(",
+      "fn authenticate(",
+      "fn binding(",
+      "fn from_original_stream(",
+      "fn recover_from_original_stream(",
+      "fn bind_original_stream(",
+      "fn execute_selection(",
+      "fn readback(",
+      "fn receipt_attestation(",
+      "fn exchange(",
+      "fn require_clock(",
+      "fn now(",
+      "fn drop("
+    ]
+  },
+  {
+    "row": 295,
+    "path": "circuit_next_use_command.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_selection(",
+      "fn from_checkpoint(",
+      "fn authenticate(",
+      "fn binding(",
+      "fn from_original_stream(",
+      "fn recover_from_original_stream(",
+      "fn bind_original_stream(",
+      "fn attest_completed_task(",
+      "fn readback(",
+      "fn receipt_attestation(",
+      "fn exchange(",
+      "fn require_clock(",
+      "fn now(",
+      "fn drop("
+    ]
+  },
+  {
+    "row": 298,
+    "path": "circuit_selection_command_stage_binding.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn bind_original_stage_channel("
+    ]
+  },
+  {
+    "row": 299,
+    "path": "circuit_next_use_command_stage_binding.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn bind_original_stage_channel("
+    ]
+  },
+  {
+    "row": 300,
+    "path": "circuit_learning_completion_readiness.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn new(",
+      "fn require_context(",
+      "fn bind_original_stage_channel(",
+      "fn read_current("
+    ]
+  },
+  {
+    "row": 301,
+    "path": "circuit_learning_completion_readiness_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn serve_completion_readiness(",
+      "fn serve_readiness_channel(",
+      "fn readiness_response(",
+      "fn read_original_readiness("
+    ]
+  },
+  {
+    "row": 324,
+    "path": "authority_host_learning_resident_stages.rs",
+    "missing_required": [
+      "Err(Error::OwnerUnavailable(\n                    \"original Candidate selection and adoption route is absent\",\n                ))"
+    ],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn require_initial(",
+      "fn install_fresh_resident_gate(",
+      "fn require_stage(",
+      "fn read_original_model("
+    ]
+  },
+  {
+    "row": 339,
+    "path": "cell_q24_candidate_stage_owners.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_streams(",
+      "fn recover_original_streams(",
+      "fn require_initial(",
+      "fn install_fresh_resident_gate(",
+      "fn require_live_deadline("
+    ]
+  },
+  {
+    "row": 340,
+    "path": "cell_q24_candidate_stage_inputs.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn bind("
+    ]
+  },
+  {
+    "row": 351,
+    "path": "circuit_learning_read_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_profile(",
+      "fn serve_readback(",
+      "fn serve_channel(",
+      "fn response(",
+      "fn require_task_input_current(",
+      "fn require_original_selection(",
+      "fn read_original(",
+      "fn serve_original_retained_channel(",
+      "fn from_original_owners("
+    ]
+  },
+  {
+    "row": 353,
+    "path": "cell_q24_no_update_stage_state.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn read_prefix(",
+      "fn read_stage(",
+      "fn read_attestation(",
+      "fn ensure_trainer(",
+      "fn ensure_selector(",
+      "fn ensure_next_use(",
+      "fn ensure_readiness(",
+      "fn record_material(",
+      "fn record_training(",
+      "fn record_selection(",
+      "fn record_next_use(",
+      "fn pin(",
+      "fn ensure_version("
+    ]
+  },
+  {
+    "row": 358,
+    "path": "circuit_retained_version.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn now(",
+      "fn require_clock("
+    ]
+  },
+  {
+    "row": 359,
+    "path": "circuit_retained_version_context.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original(",
+      "fn authenticate(",
+      "fn require_fresh("
+    ]
+  },
+  {
+    "row": 360,
+    "path": "circuit_retained_version_client.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn bind_original_stage_channel(",
+      "fn recover_original_stage_channel(",
+      "fn bind(",
+      "fn exchange(",
+      "fn drop("
+    ]
+  },
+  {
+    "row": 361,
+    "path": "circuit_retained_version_wire.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn new(",
+      "fn require_cut(",
+      "fn decode("
+    ]
+  },
+  {
+    "row": 362,
+    "path": "circuit_retained_version_host.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_owners(",
+      "fn recover_from_original_owners(",
+      "fn new("
+    ]
+  },
+  {
+    "row": 364,
+    "path": "circuit_retained_version_state.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn bind_original_predecessor(",
+      "fn read_original(",
+      "fn require_cut_current(",
+      "fn observe_phase(",
+      "fn install_original_selection_reader("
+    ]
+  },
+  {
+    "row": 365,
+    "path": "circuit_retained_version_effect.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn prepare_original(",
+      "fn publish_original_final_use(",
+      "fn run_original_c(",
+      "fn drop("
+    ]
+  },
+  {
+    "row": 366,
+    "path": "circuit_retained_version_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn serve_commands(",
+      "fn serve_original_ordinary(",
+      "fn serve_original_selection_readback(",
+      "fn command_response(",
+      "fn encode_response("
+    ]
+  },
+  {
+    "row": 367,
+    "path": "circuit_retained_version_c_task.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn require_completed_a(",
+      "fn install_original(",
+      "fn observe("
+    ]
+  },
+  {
+    "row": 370,
+    "path": "circuit_retained_version_host.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_owners(",
+      "fn recover_from_original_owners(",
+      "fn new("
+    ]
+  },
+  {
+    "row": 371,
+    "path": "circuit_retained_version_effect.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn prepare_original(",
+      "fn publish_original_final_use(",
+      "fn run_original_c("
+    ]
+  },
+  {
+    "row": 372,
+    "path": "circuit_retained_version_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn serve_original_ordinary(",
+      "fn command_response("
+    ]
+  },
+  {
+    "row": 373,
+    "path": "circuit_evaluated_retention_context.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_evaluation(",
+      "fn recover_original_evaluation(",
+      "fn snapshot(",
+      "fn authenticate(",
+      "fn require_current(",
+      "fn verify_original_predecessors(",
+      "fn clone_for_original_receipt(",
+      "fn into_original_receipt_readback(",
+      "fn receipt_configuration(",
+      "fn receipt_context_binding(",
+      "fn original_receipt_predecessors(",
+      "fn require_new_original_receipt(",
+      "fn require_original_receipt_owners("
+    ]
+  },
+  {
+    "row": 374,
+    "path": "circuit_evaluated_retention_publication.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn final_use_binding(",
+      "fn intent_digest(",
+      "fn publish_and_retain_original_evidence(",
+      "fn publish_original_retained_task("
+    ]
+  },
+  {
+    "row": 381,
+    "path": "circuit_evaluated_selection_receipt.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn clone(",
+      "fn original_context(",
+      "fn evidence_domain(",
+      "fn require_new(",
+      "fn require_signed_separation(",
+      "fn trainer(",
+      "fn evaluated_owners(",
+      "fn location(",
+      "fn observe(",
+      "fn create_evaluated(",
+      "fn recover_evaluated(",
+      "fn from_evaluated_custody(",
+      "fn attest_original_evaluated_selection(",
+      "fn readback_evaluated_selection(",
+      "fn completed_evaluated_selection(",
+      "fn authenticate_evaluated_training(",
+      "fn into_original_receipt_readback(",
+      "fn original_receipt_binding(",
+      "fn original_receipt_predecessors("
+    ]
+  },
+  {
+    "row": 383,
+    "path": "circuit_evaluated_next_use_receipt.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn require_new(",
+      "fn require_signed_separation(",
+      "fn trainer(",
+      "fn selector(",
+      "fn evaluated_owners(",
+      "fn location(",
+      "fn observe(",
+      "fn create_evaluated(",
+      "fn recover_evaluated(",
+      "fn from_evaluated_custody(",
+      "fn attest_original_evaluated_completion(",
+      "fn readback_evaluated_completion(",
+      "fn completed_evaluated_next_use(",
+      "fn authenticate_predecessors("
+    ]
+  },
+  {
+    "row": 390,
+    "path": "circuit_selection_command_readback.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn from_original_stream(",
+      "fn bind_original_selection(",
+      "fn readback(",
+      "fn context_binding(",
+      "fn request(",
+      "fn require_request("
+    ]
+  },
+  {
+    "row": 391,
+    "path": "circuit_selection_command_readback_service.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn serve_original_selection_readback(",
+      "fn serve_original_selection_readback_channel(",
+      "fn original_selection_readback_response("
+    ]
+  },
+  {
+    "row": 409,
+    "path": "circuit_evaluated_learning_read.rs",
+    "missing_required": [],
+    "now_present_forbidden": [],
+    "functions": [
+      "fn clone(",
+      "fn for_original_selection(",
+      "fn for_original_next_use(",
+      "fn prefix(",
+      "fn scope(",
+      "fn mode(",
+      "fn binding(",
+      "fn decision(",
+      "fn require_original_selection(",
+      "fn from_original_evaluated_stream(",
+      "fn require_original_evaluated_selection(",
+      "fn from_original_evaluated_owners("
+    ]
+  }
+]

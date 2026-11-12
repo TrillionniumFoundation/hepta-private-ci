@@ -1,0 +1,281 @@
+{
+  "kind": "limited_changed_file_source_planning",
+  "full_membership_verified": false,
+  "full_gate_run": false,
+  "changed_files": 47,
+  "elapsed_seconds": 1.3937418709974736,
+  "boundaries": [
+    {
+      "id": "learning_original_candidate_retained_stage_route",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_candidate_retained_stage_execute",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_candidate_retained_stage_readback",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_candidate_retained_stage_attestation",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_read_next_use_binding",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_context",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_recover",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_profile",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_factory",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_transfer",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_receipt",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_readback_binding",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_selector_stage_binding",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_context",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_recover",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_profile",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_factory",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_transfer",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_remote_attest",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_remote_readback",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_next_use_stage_binding",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_c_readiness_binding",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_original_evaluated_c_readiness_serve",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_selection_channel",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_client_bind",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_client_recover",
+      "observed_in_changed_files": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "expected_changed_file_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+      ],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_host_create",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    },
+    {
+      "id": "learning_retained_version_evaluated_host_recover",
+      "observed_in_changed_files": [],
+      "expected_changed_file_callers": [],
+      "same_within_changed_file_scope": true,
+      "unresolved_in_changed_files": []
+    }
+  ]
+}

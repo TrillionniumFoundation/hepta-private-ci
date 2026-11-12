@@ -1,0 +1,68 @@
+{
+  "application_precondition": "The entire actual target must match before bytes/SHA256/Git blob. Apply as an additional delta to the frozen 59-file package. Actual formatting and original gates belong to the eventual exact source version.",
+  "base": {
+    "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "frozen_59_rust_manifest_blob": "0fd55e0acf06ca52e7302950bb54e98a21c6c6ef",
+    "frozen_59_rust_packet_blob": "0255a77c479f3c9ae2cbcbd681a1eaaecbfecb09"
+  },
+  "changes": [
+    {
+      "arm": "TrainingNoUpdate",
+      "method": "publish_and_retain_original_trainer",
+      "receiver": "PreparedOriginalCircuitRetainedPublicationV1"
+    },
+    {
+      "arm": "EvaluatedNoUpdate",
+      "method": "publish_and_retain_original_evidence",
+      "receiver": "PreparedOriginalCircuitEvaluatedRetentionV1"
+    }
+  ],
+  "files": [
+    {
+      "after": {
+        "bytes": 3098,
+        "git_blob": "b62728f79eeda3e17f4067bcaa3227c96da40e42",
+        "sha256": "7635d2d7a7222fe4aeeb623292e21cdf1df0fc94f91dc5f027369801d469bd11"
+      },
+      "before": {
+        "bytes": 2853,
+        "git_blob": "371d951092f71575d81a49cc6737adcd535bf0e8",
+        "sha256": "63091058f64ccc66d3db91a4c46f2a169afc9dfdb6e3c7878b1c1d99553cd132"
+      },
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+    }
+  ],
+  "format": "hepta-retained-publication-precise-receiver-manifest-v1",
+  "invariants": [
+    "Same original consumed self and arm value",
+    "Same SignedFinalUseGrant moved once into the same original callee",
+    "Same single await and propagated error",
+    "Same original task and T/E connection values returned",
+    "No new caller, authority, receipt, key, reconnect or retry",
+    "No verifier or CALLERS modification",
+    "No public visibility change",
+    "All other bytes preserved by roundtrip replacement"
+  ],
+  "packet": {
+    "bytes": 8975,
+    "git_blob": "4e5f9ebe4917eef70eafa8675ee065137625e1f1",
+    "sha256": "beaf747a9bdc7091277498c3cf2906a18e932870f1d6e324e67690356111f42e"
+  },
+  "patch": {
+    "bytes": 1164,
+    "git_blob": "bf4e8d75381638ebc55f4a4075819d434260b11c",
+    "sha256": "91ca50f582944968b7270a3aff120548bd3d06242920e008d19ecc09239f524d"
+  },
+  "reason": "The strict caller collector recognizes arguments and let bindings but cannot derive these original receiver types solely from enum-arm pattern bindings. Explicit original-type UFCS gives the collector the actual method owner without changing its semantics.",
+  "validation": {
+    "compiled": false,
+    "exact_before_hash_checked": true,
+    "exact_two_replacements_and_reverse_equality_checked": true,
+    "formatted": false,
+    "native_source_modified": false,
+    "runtime_tests": "not_run",
+    "source_refs_modified": false,
+    "strict_caller_gate": "not_run"
+  }
+}

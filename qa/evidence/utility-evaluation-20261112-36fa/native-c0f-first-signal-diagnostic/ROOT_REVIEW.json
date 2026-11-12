@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.c0f-first-signal-root-review.v1",
+  "source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "original_binary": {
+    "bytes": 282318328,
+    "copy_readback_equal": true,
+    "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+    "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "source_ctime_ns": 1794493816523629969,
+    "source_device": 2067,
+    "source_inode": 33062611,
+    "source_mode": "0o700",
+    "source_mtime_ns": 1794493816493630860
+  },
+  "original_case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+  "run": {
+    "started_at": "2026-11-12T15:16:50.597066+00:00",
+    "finished_at": "2026-11-12T15:17:00.149357+00:00",
+    "debugger_exit": 0,
+    "timeout": false,
+    "qualification": false,
+    "stack_bytes": 8388608,
+    "stack_limit_changed": false
+  },
+  "raw": {
+    "bytes": 43646,
+    "sha256": "a5794043e3cb211fb7e4131f5a06dee329edb5a67fb11e2127fb85be67daf70d",
+    "git_blob": "e0c0d9d82475980089e921ec2332c907469b02a6",
+    "complete_gzip_roundtrip": true,
+    "gzip_blob": "6b057d2e355e8a86137174e800fb64a7484cd311"
+  },
+  "first_signal": {
+    "signal": "SIGSEGV",
+    "sp": "0x71d6fe7ffb48",
+    "fault_address": "0x71d6fe7ffb48",
+    "program_counter": "0x59f1f6be76c4",
+    "guard": {
+      "bytes": 4096,
+      "contains_fault_address": true,
+      "contains_sp": true,
+      "end": "0x71d6fe800000",
+      "line": "71d6fe7ff000-71d6fe800000 ---p 00000000 00:00 0 ",
+      "start": "0x71d6fe7ff000"
+    },
+    "adjacent_read_write_stack": {
+      "bytes": 8388608,
+      "contains_fault_address": false,
+      "contains_sp": false,
+      "end": "0x71d6ff000000",
+      "line": "71d6fe800000-71d6ff000000 rw-p 00000000 00:00 0 ",
+      "start": "0x71d6fe800000"
+    }
+  },
+  "all_input_text_hashes_verified": true,
+  "source_before_after_equal": true,
+  "scope": "Original failed c0f binary diagnostic only. First stop is a stack probe in PositiveFixture::ready_for_publication poll against a non-writable page adjoining the original 8 MiB thread stack. No test PASS, new candidate runtime result, general claim for all 24 crashes, or evidence that any prepared boxing fixes this stop."
+}

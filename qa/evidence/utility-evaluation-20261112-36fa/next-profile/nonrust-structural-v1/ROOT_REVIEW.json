@@ -1,0 +1,163 @@
+{
+  "schema": "hepta.nonrust-structural-root-review.v1",
+  "manifest_blob": "ef1b6d57369aa6fcdc4950424429b11bfbb0c37b",
+  "base_tree_unformatted": "02103ded93173dd17aef645ddfcaa5fc6f674042",
+  "result_tree_unformatted": "f1db976f9712af1884fd681b51d4e871d38d3683",
+  "files": 15188,
+  "artifacts_fully_hashed": 20,
+  "exact_five_part_packet_reconstruction": true,
+  "packet_json_identity": {
+    "bytes": 4063355,
+    "sha256": "231adf98978c6df6479a8e5aa1e8ea174687ccb8e5d3efaf6fd0b59b4e88a290",
+    "git_blob_sha": "7ab265e360d00e37da915c3cf52dd25cdddc6f2d"
+  },
+  "all_13_before_images_match_full_leaf_map": true,
+  "all_13_postimages_and_actual_patch_application_equal": true,
+  "old_boundaries_retained_in_order": 541,
+  "new_boundary_count": 28,
+  "all_569_boundary_ids_required": true,
+  "existing_boundary_only_product_callers_changed": true,
+  "changed_old_boundary_rows": 30,
+  "member_additions": 38,
+  "member_migrations_removed": 8,
+  "unchanged_original_protected_rows": 412,
+  "unchanged_authority_flags_all_false": true,
+  "qa": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_evaluated_read_selection_context",
+        "learning_original_evaluated_read_next_use_context",
+        "learning_original_evaluated_read_owner_create",
+        "learning_original_evaluated_read_selection_binding",
+        "learning_original_evaluated_selection_remote_attest",
+        "learning_original_evaluated_selection_remote_readback",
+        "learning_original_published_read_client_current"
+      ],
+      "unchanged_function_count": 22
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "changed_expected_keys": [
+        "learning_evaluated_retention_context",
+        "learning_evaluated_retention_context_recover",
+        "learning_evaluated_retention_prepare",
+        "learning_evaluated_retention_preserve_original_evidence",
+        "learning_original_evaluation_command_readback"
+      ],
+      "unchanged_function_count": 14
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "changed_expected_keys": [
+        "root_resident_gate_effect_current"
+      ],
+      "unchanged_function_count": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_evaluation_connection_training",
+        "learning_original_evaluation_command_readback"
+      ],
+      "unchanged_function_count": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "changed_expected_keys": [
+        "root_resident_gate_effect_current",
+        "root_resident_gate_training_cancel",
+        "learning_original_owner_snapshot_encode"
+      ],
+      "unchanged_function_count": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_next_use_command_owner_profile",
+        "learning_original_next_use_command_client_attest",
+        "learning_original_next_use_command_client_readback",
+        "learning_original_owner_snapshot_encode",
+        "learning_original_circuit_next_use_remote_attest",
+        "learning_original_circuit_next_use_remote_readback"
+      ],
+      "unchanged_function_count": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_selector_command_client_execute",
+        "learning_original_selector_command_client_readback",
+        "learning_original_next_use_command_client_attest",
+        "learning_original_next_use_command_client_readback",
+        "learning_original_c_readiness_current"
+      ],
+      "unchanged_function_count": 12
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_published_read_client_current",
+        "learning_original_circuit_selection_remote_attest",
+        "learning_original_circuit_selection_remote_readback",
+        "learning_original_circuit_next_use_remote_attest",
+        "learning_original_circuit_next_use_remote_readback"
+      ],
+      "unchanged_function_count": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_circuit_selection_remote_readback"
+      ],
+      "unchanged_function_count": 12
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_selector_command_owner_profile",
+        "learning_original_selector_command_client_execute",
+        "learning_original_selector_command_client_readback",
+        "learning_original_owner_snapshot_encode",
+        "learning_original_circuit_selection_remote_attest",
+        "learning_original_circuit_selection_remote_readback"
+      ],
+      "unchanged_function_count": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "changed_expected_keys": [
+        "learning_original_owner_snapshot_encode"
+      ],
+      "unchanged_function_count": 11
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "changed_expected_keys": [
+        "root_resident_gate_effect_current",
+        "root_resident_gate_training_cancel"
+      ],
+      "unchanged_function_count": 12
+    }
+  ],
+  "pending": {
+    "ten_new_protected_paths": [
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+    ],
+    "existing_protected_literal_rows": 39,
+    "new_qa_mutations": "not_added",
+    "exact_markers_and_allowlist": "pending_actual_native_fmt",
+    "source_closure_and_full_caller": "not_run",
+    "rust_compile_and_runtime_gates": "not_run"
+  },
+  "scope": "Independent complete byte, patch, TOML and existing QA AST/body verification of an incomplete structural preparation only. This does not establish full-source caller membership, new guard coverage, formatted source, compilation, native qualification, actual authorized A/B/C or adoption."
+}

@@ -1,0 +1,75 @@
+{
+  "application_precondition": "Require the entire actual target to equal the before bytes/SHA256/Git blob. Apply separately on top of the immutable 59-file package. Derive final source fences only after actual isolated maintenance/formatting.",
+  "base": {
+    "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "frozen_59_manifest_blob": "0fd55e0acf06ca52e7302950bb54e98a21c6c6ef",
+    "frozen_59_packet_blob": "0255a77c479f3c9ae2cbcbd681a1eaaecbfecb09"
+  },
+  "files": [
+    {
+      "after": {
+        "bytes": 7081,
+        "git_blob": "0e24b809a531f741ccecc13b8262e184aec1dfb1",
+        "sha256": "62f787c6afce6de146f21c06d4934a50b8789ff052180399dbd5903303d62b85"
+      },
+      "before": {
+        "bytes": 6998,
+        "git_blob": "e34473c5c2cfa7e783aa7787994f0c6383ae0444",
+        "sha256": "99f183f39c91418b67e96267e89dec46cfde13cf93c5f92c2fb561b6a0dfe3f7"
+      },
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+    }
+  ],
+  "format": "hepta-retained-stage-explicit-original-type-manifest-v1",
+  "import_detail": "The execution file previously imported the parent alias Owners via use super::*. It did not introduce the canonical spelling. The minimal additional use crate::OriginalCellQ24CandidateStageOwnersV1 imports the already existing reexport; no alias, new type, visibility or authority is created.",
+  "invariants": [
+    "Same enclosing impl Owners and async function signature",
+    "Same exact original associated method",
+    "Same snapshot and stage arguments, in the same order",
+    "Same single call before origin/Root/lane checks",
+    "Same question-mark error propagation and return behavior",
+    "All remaining bytes preserved by reverse-replacement equality",
+    "No new caller or permission; no verifier/CALLERS/wire/deadline/contract change"
+  ],
+  "packet": {
+    "bytes": 19759,
+    "git_blob": "1bb4c6c526cc1c1e52433aa189e8ff3f1f3d70dc",
+    "sha256": "770120cc9acd04ddba72cf0ec5e4ce593915253128da4fd75477a30c6ecf5276"
+  },
+  "patch": {
+    "bytes": 957,
+    "git_blob": "ca7a7f0cd7f8a74b04e6dc9b2f3f70075405fce8",
+    "sha256": "6f2b4c6fa8b8bff2f578e9dc20c2f01f8947401eef54232243d545a37ff172b7"
+  },
+  "reason": "The original strict caller collector cannot prove the cross-file Self associated call. Naming the actual original owner type makes the existing same associated method explicit without changing the verifier.",
+  "source_resolution": [
+    {
+      "anchor": "OriginalCellQ24CandidateStageOwnersV1 is the actual struct; retained is its child module.",
+      "git_blob": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    },
+    {
+      "anchor": "use super::OriginalCellQ24CandidateStageOwnersV1 as Owners; impl Owners defines require_evaluated_retained_stage and declares the execution child module.",
+      "git_blob": "6cb5e7fc0f274cbdbae9fe57140b48cca4983677",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+    },
+    {
+      "anchor": "Existing pub use learning_iteration_evidence_client::OriginalCellQ24CandidateStageOwnersV1 makes the actual type available at crate scope.",
+      "git_blob": "9f8ebe25c68ce396305ad0b6d3eb8bcc74770000",
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    }
+  ],
+  "validation": {
+    "associated_call_count": 1,
+    "compiled": false,
+    "formatted": false,
+    "frozen_59_manifest_and_packet_hashes_verified": true,
+    "full_before_bytes_and_both_hashes_verified": true,
+    "full_caller_gate": "not_run",
+    "native_source_changed": false,
+    "rust_tests": "not_run",
+    "source_refs_changed": false,
+    "two_exact_text_replacements_and_reverse_equality_checked": true
+  }
+}

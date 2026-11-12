@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.root.preparation86dd-review.v1",
+  "status": "PREPARATION/HOLD; source ref remains c0f",
+  "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "parents": [
+    "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+  ],
+  "canonical_commit": {
+    "bytes": 1388,
+    "sha256": "62f050d9cbe56cad3c46f4d9a02a57cc27f4f6fa3453d60db1580f3a7561936c",
+    "git_sha": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "matches_independent_GitHub_GET": true
+  },
+  "tree_bodies": [
+    {
+      "sha": "f1db976f9712af1884fd681b51d4e871d38d3683",
+      "entries": 56,
+      "raw_bytes": 2155,
+      "sha256": "4f16f21f7e9f7d6d53a891ffee13e90e0c30ac2ff198e214dd8b85f1d1252c70"
+    },
+    {
+      "sha": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+      "entries": 56,
+      "raw_bytes": 2155,
+      "sha256": "fa89b6c107f3ecdd5139d3c42f3fdd0ec5a53f817f0184c72d1c797e21c5b7c2"
+    },
+    {
+      "sha": "8b97e16bce086c417d7f270d9632c589491b1666",
+      "entries": 199,
+      "raw_bytes": 10660,
+      "sha256": "d2f186169c6c18ac37e5c1076fa6534b9163f0640e3734da7a49375bb7167eed"
+    },
+    {
+      "sha": "7bbd23a96d10b7f3b00f48cb142cca64905a970a",
+      "entries": 199,
+      "raw_bytes": 10660,
+      "sha256": "b909fc839277d3b91a51b7aaad925093f0f333ae176b87cc4ff92601824138d2"
+    }
+  ],
+  "root_only_change": [
+    {
+      "before": {
+        "path": "scripts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8b97e16bce086c417d7f270d9632c589491b1666"
+      },
+      "after": {
+        "path": "scripts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "7bbd23a96d10b7f3b00f48cb142cca64905a970a"
+      }
+    }
+  ],
+  "script_only_change": [
+    {
+      "before": {
+        "path": "hepta_typed_callers.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+      },
+      "after": {
+        "path": "hepta_typed_callers.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4"
+      }
+    }
+  ],
+  "previous_full_verified_leaf_map_tree": "f1db976f9712af1884fd681b51d4e871d38d3683",
+  "leaf_count_unchanged": 15188,
+  "prepared_only": true,
+  "native_import": false,
+  "fix_fmt": false,
+  "compiled": false,
+  "qualification": false,
+  "real_A_T_B_C_or_cold_recovery": false,
+  "incomplete": [
+    "10 new protected rows and 39 existing protected-row updates",
+    "new QA",
+    "final allowlist synchronization",
+    "original maintenance and exact-version qualification"
+  ]
+}

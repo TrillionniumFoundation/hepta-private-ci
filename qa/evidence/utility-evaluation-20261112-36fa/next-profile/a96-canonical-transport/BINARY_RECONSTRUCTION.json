@@ -1,0 +1,30 @@
+{
+  "algorithm": "base64-decode, strict UTF-8-decode; for each character with code point below 256 retain that byte, otherwise require a one-byte CP1252 encoding; concatenate; require exact expected size and original Git blob SHA",
+  "algorithm_does_not_assume_actual_connector_internal_encoding": true,
+  "bytes": 72,
+  "errors_not_interpreted_as_missing_object": true,
+  "expected_bytes": 72,
+  "format": "hepta-canonical-payload-reconstruction-v1",
+  "native_written": false,
+  "original_git_blob_sha_verified": true,
+  "original_response": {
+    "content": "SEVQVEVYMDHDtyBbKhQOw4LDlRplIWEnw6LDpR3DpsaSw7w4RUnDmcOgH23D\nnFfCuCjigJjCqcOixZIswqXFoeKAusKrw4/DnGHigJnigJjDqSdRwq5hd8KN\nZl7igqxHTMWhIcWT4oCYLsOPw6A6\n",
+    "encoding": "base64",
+    "sha": "a55050a560cfdb2eabe08a60c14e586b76b3fae9",
+    "source": {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-0.bin",
+      "ref": "90fd0f22cfdfd6c839ef5ba9c694e9189c51e947",
+      "returned_sha": "a55050a560cfdb2eabe08a60c14e586b76b3fae9",
+      "tool": "github_fetch_file",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/90fd0f22cfdfd6c839ef5ba9c694e9189c51e947/qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-0.bin"
+    }
+  },
+  "raw_base64": "SEVQVEVYMDH3IFsqFA7C1RplIWEn4uUd5oP8OEVJ2eAfbdxXuCiRqeKMLKWam6vP3GGSkeknUa5hd41mXoBHTJohnJEuz+A6",
+  "ref_changed": false,
+  "returned_bytes": 111,
+  "returned_encoding": "base64 of UTF-8 text",
+  "returned_git_sha": "5ea4ccad190fe44ca1e62e16e3e0ed599f8e821d",
+  "returned_sha256": "74116dbbc07dbccf392bee3a75b5ce635f628c2fa9207d4904109243a200c898",
+  "sha": "a55050a560cfdb2eabe08a60c14e586b76b3fae9",
+  "sha256": "c7dad6a0c209ed5a3a69fbd3f0de34540ff79b2cd33f4a216629511e704b41da"
+}

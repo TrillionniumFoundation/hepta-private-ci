@@ -1,0 +1,610 @@
+{
+  "kind": "limited_changed_file_source_planning",
+  "full_membership_verified": false,
+  "full_source_gate_run": false,
+  "warning": "Uses only the 59-file delta for source planning; field aliases outside this delta are not present. No full caller-set conclusion or gate result is produced.",
+  "baseline_callers_blob": "cf194d0ef743ca0e7cf7b0125b52ceec914649dd",
+  "rust_manifest_blob": "0fd55e0acf06ca52e7302950bb54e98a21c6c6ef",
+  "changed_production_files": 47,
+  "elapsed_seconds": 28.688614655999118,
+  "events": [
+    {
+      "boundary_position": 296,
+      "id": "learning_original_owner_snapshot_encode",
+      "symbol": "encode_original_owner_snapshot_v1",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 326,
+      "id": "learning_original_published_read_client_current",
+      "symbol": "OriginalCircuitLearningReadClientV1::read_current",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 331,
+      "id": "learning_original_circuit_selection_remote_attest",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 331,
+      "id": "learning_original_circuit_selection_remote_attest",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 332,
+      "id": "learning_original_circuit_selection_remote_readback",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 332,
+      "id": "learning_original_circuit_selection_remote_readback",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 332,
+      "id": "learning_original_circuit_selection_remote_readback",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 332,
+      "id": "learning_original_circuit_selection_remote_readback",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 333,
+      "id": "learning_original_circuit_next_use_remote_attest",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 333,
+      "id": "learning_original_circuit_next_use_remote_attest",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 334,
+      "id": "learning_original_circuit_next_use_remote_readback",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 334,
+      "id": "learning_original_circuit_next_use_remote_readback",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 334,
+      "id": "learning_original_circuit_next_use_remote_readback",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::readback_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 337,
+      "id": "learning_original_selector_command_owner_profile",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_command_profile",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 341,
+      "id": "learning_original_selector_command_client_execute",
+      "symbol": "OriginalCircuitSelectionCommandClientV1::execute_selection",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 342,
+      "id": "learning_original_selector_command_client_readback",
+      "symbol": "OriginalCircuitSelectionCommandClientV1::readback",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 364,
+      "id": "learning_original_next_use_command_owner_profile",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_command_profile",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 368,
+      "id": "learning_original_next_use_command_client_attest",
+      "symbol": "OriginalCircuitNextUseCommandClientV1::attest_completed_task",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 369,
+      "id": "learning_original_next_use_command_client_readback",
+      "symbol": "OriginalCircuitNextUseCommandClientV1::readback",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 391,
+      "id": "learning_original_c_readiness_current",
+      "symbol": "OriginalCircuitCompletionReadinessClientV1::read_current",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 391,
+      "id": "learning_original_c_readiness_current",
+      "symbol": "OriginalCircuitCompletionReadinessClientV1::read_current",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 411,
+      "id": "root_resident_gate_effect_current",
+      "symbol": "RootResidentLearningEffectGateV3::require_current",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 412,
+      "id": "root_resident_gate_training_cancel",
+      "symbol": "RootResidentLearningEffectGateV3::training_cancellation",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 446,
+      "id": "learning_evaluated_retention_context",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 446,
+      "id": "learning_evaluated_retention_context",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 446,
+      "id": "learning_evaluated_retention_context",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 446,
+      "id": "learning_evaluated_retention_context",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 447,
+      "id": "learning_evaluated_retention_context_recover",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 447,
+      "id": "learning_evaluated_retention_context_recover",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 447,
+      "id": "learning_evaluated_retention_context_recover",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 447,
+      "id": "learning_evaluated_retention_context_recover",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 448,
+      "id": "learning_evaluated_retention_prepare",
+      "symbol": "prepare_original_circuit_evaluated_retention_v1",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 450,
+      "id": "learning_evaluated_retention_preserve_original_evidence",
+      "symbol": "PreparedOriginalCircuitEvaluatedRetentionV1::publish_and_retain_original_evidence",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "unresolved": "unresolved possible PreparedOriginalCircuitEvaluatedRetentionV1::publish_and_retain_original_evidence receiver"
+      }
+    },
+    {
+      "boundary_position": 465,
+      "id": "learning_original_evaluation_connection_training",
+      "symbol": "OriginalCellEvaluationCommandConnectionV1::bind_original_training",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 468,
+      "id": "learning_original_evaluation_command_readback",
+      "symbol": "OriginalCellEvaluationCommandClientV1::readback",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 474,
+      "id": "learning_retained_version_client_prepare",
+      "symbol": "OriginalCircuitRetainedVersionClientV1::prepare_original_version",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 475,
+      "id": "learning_retained_version_client_readback",
+      "symbol": "OriginalCircuitRetainedVersionClientV1::readback",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 475,
+      "id": "learning_retained_version_client_readback",
+      "symbol": "OriginalCircuitRetainedVersionClientV1::readback",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 484,
+      "id": "learning_retained_version_preserve_trainer",
+      "symbol": "PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "registered_in_baseline": true,
+      "before_changed_file_parse": {
+        "call": true
+      },
+      "after_changed_file_parse": {
+        "call": false
+      }
+    },
+    {
+      "boundary_position": 484,
+      "id": "learning_retained_version_preserve_trainer",
+      "symbol": "PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "unresolved": "unresolved possible PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer receiver"
+      }
+    },
+    {
+      "boundary_position": 534,
+      "id": "learning_original_evaluated_read_selection_context",
+      "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 535,
+      "id": "learning_original_evaluated_read_next_use_context",
+      "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 537,
+      "id": "learning_original_evaluated_read_owner_create",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 538,
+      "id": "learning_original_evaluated_read_selection_binding",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_selection",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 539,
+      "id": "learning_original_evaluated_selection_remote_attest",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    },
+    {
+      "boundary_position": 540,
+      "id": "learning_original_evaluated_selection_remote_readback",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "registered_in_baseline": false,
+      "before_changed_file_parse": {
+        "call": false
+      },
+      "after_changed_file_parse": {
+        "call": true
+      }
+    }
+  ]
+}

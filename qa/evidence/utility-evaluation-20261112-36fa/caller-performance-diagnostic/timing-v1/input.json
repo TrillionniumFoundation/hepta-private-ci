@@ -1,0 +1,36 @@
+{
+  "format": "hepta.utility.original-verifier-timing.v1",
+  "state": "READY_FOR_SINGLE_TIMING_DIAGNOSTIC",
+  "run_identity": "hepta-utility-36fa-c0f-typed-timing-v1",
+  "source_checkout": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "records": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-typed-timing-v1",
+  "worker_path": "/home/qian-qi/hepta-utility-36fa-evidence/prepared-c0f-typed-timing-v1/worker.py",
+  "worker_sha256": "0e99e2bbf66d235772594c14d46c121730895f48d82f825390430c8c1c29beac",
+  "launcher_sha256": "3d43ad09170570e0b7a002a73ae02fca9b01a59760eaec7f2fe4eb6e7957b14a",
+  "inventory_driver_path": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/driver.py",
+  "inventory_driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "expected_inventory_bytes": 5474911,
+  "expected_inventory_sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+  "original_input_sha256": {
+    "CALLERS.toml": "a3a61f17bde5f81222c718f9243ec95fe035e896a23effbb4f7e14ad67865bb9",
+    "scripts/hepta_ci_exec.py": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+    "scripts/hepta_typed_callers.py": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+    "scripts/verify_hepta_callers.py": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+  },
+  "internal_stop_seconds": 220,
+  "hard_timeout_seconds": 240,
+  "outer_process_timeout_seconds": 300,
+  "prior_job_id": "1a1d01a6652-2564-1b2d",
+  "prior_job_state_observed": "failed",
+  "prior_gate_records": "/home/qian-qi/hepta-utility-36fa-evidence/source-gates-c0f78493-v1",
+  "prior_terminal_files": {
+    "verify/execution-terminal.json": "de41aaab791ee774d3feb168e6e4751d2dcfe94391a6a64758f4129dbcad880f",
+    "run-result.json": "a2616958272b2f1670d223ed533aa1bb46084f5cdbe493b6d31629f2bb8bae56"
+  },
+  "measurement_interpretation": "Inclusive nested timing counters overlap; never sum them to assert elapsed percentages. Stopped diagnostic is not a qualification PASS.",
+  "full_gate_run": false,
+  "new_source_or_parser_candidate_used": false,
+  "prior_job_status_original_git_blob": "225cf314e1022fa72591c9aba93386caa5764fff"
+}

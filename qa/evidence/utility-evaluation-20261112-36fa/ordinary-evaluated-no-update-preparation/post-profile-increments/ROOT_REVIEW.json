@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.reviewed-post-profile-increments.v1",
+  "source_parent": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "before_preformat_tree": "8a3e1ad32948453205c2e91507dcbe97752cad19",
+  "after_preformat_tree": "02103ded93173dd17aef645ddfcaa5fc6f674042",
+  "files": 15188,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "before": {
+        "bytes": 4567,
+        "git_blob": "bdfdc2f72241589983b33a01dc8d8d101b3c40bf",
+        "sha256": "6238d49f05923e67628db58ebfb646d2b3e19778a58d5c6c92b95fb6f3c599c4"
+      },
+      "after": {
+        "bytes": 5395,
+        "git_blob": "bc7be5dd406bb4da8afda7a9fd9df06cda2cece0",
+        "sha256": "47d5369b7021820692819215f27e8b17b1ffde2cf5f1f656d916c4d2c99ab030"
+      },
+      "manifest_blob": "dfd30e0e1471c5bd8f4dd74fca42dedee99e36bd",
+      "complete_artifact_hashes_and_patch_application": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "before": {
+        "bytes": 2853,
+        "git_blob": "371d951092f71575d81a49cc6737adcd535bf0e8",
+        "sha256": "63091058f64ccc66d3db91a4c46f2a169afc9dfdb6e3c7878b1c1d99553cd132"
+      },
+      "after": {
+        "bytes": 3098,
+        "git_blob": "b62728f79eeda3e17f4067bcaa3227c96da40e42",
+        "sha256": "7635d2d7a7222fe4aeeb623292e21cdf1df0fc94f91dc5f027369801d469bd11"
+      },
+      "manifest_blob": "0747be883417e5f023dbb6a42851f8dd298ab39f",
+      "complete_artifact_hashes_and_patch_application": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "before": {
+        "bytes": 6998,
+        "git_blob": "e34473c5c2cfa7e783aa7787994f0c6383ae0444",
+        "sha256": "99f183f39c91418b67e96267e89dec46cfde13cf93c5f92c2fb561b6a0dfe3f7"
+      },
+      "after": {
+        "bytes": 7081,
+        "git_blob": "0e24b809a531f741ccecc13b8262e184aec1dfb1",
+        "sha256": "62f787c6afce6de146f21c06d4934a50b8789ff052180399dbd5903303d62b85"
+      },
+      "manifest_blob": "f8d8b6e69c5f2bdedb4f15628c74328bf32de155",
+      "complete_artifact_hashes_and_patch_application": "verified"
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "before": {
+        "bytes": 27811,
+        "git_blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+        "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334"
+      },
+      "after": {
+        "bytes": 28133,
+        "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+        "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+      },
+      "claim": "One 322-byte explicit original Root FQN registration; removing exactly that line restores complete original workflow bytes. Not executed."
+    }
+  ],
+  "scope": "Complete deterministic preformat tree projection with three immutable Rust increments and one explicit Root registration. No native source mutation, formatting, compilation, qualification, source commit, or ref publication. Complete CALLERS/protected/QA synchronization remains pending."
+}

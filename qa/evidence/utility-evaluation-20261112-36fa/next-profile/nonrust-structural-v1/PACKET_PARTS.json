@@ -1,0 +1,47 @@
+{
+  "format": "hepta.exact-byte-parts.v1",
+  "original_file": "packet.json.gz.b64",
+  "original_identity": {
+    "bytes": 1067601,
+    "sha256": "36f67975d4cb4c68a964950a2e55c685431edc161230ab7ac582777d4f4da850",
+    "git_blob_sha": "fdca8c11aae0ebb6bac6c7d6c980469a22bb30a7"
+  },
+  "parts": [
+    {
+      "index": 0,
+      "path": "packet.json.gz.b64.part-000",
+      "bytes": 262144,
+      "sha256": "3df54c32ad424d25f0df90d5a93be06c94d1c467c1f627d0a72b9ac79647b746",
+      "git_blob_sha": "33c9272666f00485b4eeb35c32111bede77753e0"
+    },
+    {
+      "index": 1,
+      "path": "packet.json.gz.b64.part-001",
+      "bytes": 262144,
+      "sha256": "408856293e30b745c1b9a3b97f04f28a58eeab39e6c2b2995b851daa2588299b",
+      "git_blob_sha": "4ae486ddea720e36df061cde50efb35c268d727d"
+    },
+    {
+      "index": 2,
+      "path": "packet.json.gz.b64.part-002",
+      "bytes": 262144,
+      "sha256": "06ec4e475af32e6146477e420ad57025b3c743bfc32d9e48fbba0c169bd94a27",
+      "git_blob_sha": "6e93a371d651d3bbf7c0624b310442d1676d82d5"
+    },
+    {
+      "index": 3,
+      "path": "packet.json.gz.b64.part-003",
+      "bytes": 262144,
+      "sha256": "0c21a697ba2a7f9156bce5bb7ba659999fee1244e43bc43a12e14e1e5455a0b1",
+      "git_blob_sha": "6dfac43dbdda47c74f0e752c202fef64be284f22"
+    },
+    {
+      "index": 4,
+      "path": "packet.json.gz.b64.part-004",
+      "bytes": 19025,
+      "sha256": "96554723a7fa118bdff64e5369dcc229ab67afb15859d235d1e151b14b390e19",
+      "git_blob_sha": "759c67f3051f5ae7b2791e19432549ae16cd0172"
+    }
+  ],
+  "reconstruction": "Concatenate these five UTF-8 parts in index order, without adding or removing any bytes. Verify complete original length/SHA256/Git blob, base64-decode the resulting UTF-8 text, then gzip-decompress. The decompressed packet.json identity and each before/after image identity are in MANIFEST.json. These are lossless transport parts, not separate test records."
+}

@@ -1,0 +1,512 @@
+{
+  "actual_cfi": {
+    "available": false,
+    "budget_seconds": 20,
+    "bytes_scanned": 67129344,
+    "command": [
+      "/usr/bin/readelf",
+      "--debug-dump=frames",
+      "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd"
+    ],
+    "requested_frames": [
+      2,
+      4,
+      6,
+      16
+    ],
+    "retained": {
+      "bytes": 44,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-four-caller-prologues-v1/FOUR_CALLER_CFI.json",
+      "sha256": "8a403e7a6f8e195b50ad3494c9a7470f33d945ddcedd24b20267a78796ca12fc"
+    },
+    "returncode": -15,
+    "scope": "Only exact-PC covering FDE blocks and their referenced CIE blocks are retained; other readelf text is discarded",
+    "selected_frames": [],
+    "stderr": {
+      "bytes": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-four-caller-prologues-v1/CFI.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stop_reason": "stream_byte_budget",
+    "stream_byte_limit": 67108864,
+    "tool": "/usr/bin/readelf"
+  },
+  "actual_static_scope": {
+    "binary_executed": false,
+    "cargo_started": false,
+    "source_and_elf_before_after_equal": true,
+    "tests_started": false
+  },
+  "arithmetic": {
+    "call_return_address_bytes": 8,
+    "caveat": "The prologue faults part way through page probing, before completing this reservation. These are actual old-binary frame facts, not new-candidate size estimates.",
+    "entry_memcpy_is_not_a_new_Rust_size_of_measurement": true,
+    "entry_stack_to_stack_memcpy_bytes": 793048,
+    "four_caller_local_reservations_bytes": 7242272,
+    "original_stack_bytes": 8388608,
+    "planned_ready_frame_deficit_including_pushes_and_return_bytes": 1146672,
+    "previous_frame_sp": "0x71d6fe915b60",
+    "previous_frame_to_stack_high_bytes": 7251104,
+    "ready_poll_page_reservation_bytes": 2281472,
+    "ready_poll_remainder_bytes": 2680,
+    "ready_poll_reservation_bytes": 2284152,
+    "ready_register_push_bytes": 16,
+    "remaining_observed_caller_to_top_bytes": 8832,
+    "remaining_to_writable_stack_low_bytes": 1137504,
+    "stack_high": "0x71d6ff000000",
+    "stack_low": "0x71d6fe800000"
+  },
+  "conclusions": [
+    "The current c0f first signal is explained by actual simultaneous nested frame reservations reaching the guard page at ready_for_publication prologue; no recursive-call or SQL-wait explanation is needed for this observed fault.",
+    "The four caller local reservations explain 7,242,272 of the observed 7,251,104 caller-to-stack-top bytes; the remaining 8,832 bytes include return addresses, intermediate frames and other overhead and are not individually attributed without CFI.",
+    "A future is polled on the current thread stack even when its state is boxed. Existing caller-side Box::pin is not proof that poll-time locals or construction temporaries have disappeared.",
+    "The two a96 inner Box additions can change completed_member future size and the enclosing PanelFixture poll construction temporaries even though execution has not reached that later member branch when ready first faults. Their numerical effect on the new compiled candidate is Unknown.",
+    "The current evidence does not measure the prepared candidate, does not prove its adequacy or failure, and does not establish a common root cause for all 24 focused stack failures."
+  ],
+  "disposition": {
+    "additional_boxing_patch_prepared": false,
+    "candidate_runtime_status": "Not executed",
+    "existing_stack_and_budget_unchanged": true,
+    "production_authority_and_assertions_unchanged": true,
+    "reason": "Root instructed retaining the two already-reviewed fixed-a96 changes and not adding a speculative extra hunk before the candidate layout/runtime is observed."
+  },
+  "format": "hepta-current-c0f-four-caller-stack-addendum-v1",
+  "frames": [
+    {
+      "frame": 2,
+      "header": "2 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}} RVA 0x4cfb12a =====",
+      "local_reservation_bytes": 1186072,
+      "page_reservation_bytes": 1183744,
+      "page_reservation_hex": "0x121000",
+      "page_step_bytes": 4096,
+      "register_push_bytes_in_initial_prologue": 0,
+      "remainder_bytes": 2328,
+      "remainder_hex": "0x918"
+    },
+    {
+      "frame": 4,
+      "header": "4 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}} RVA 0x5fffd70 =====",
+      "local_reservation_bytes": 1861448,
+      "page_reservation_bytes": 1859584,
+      "page_reservation_hex": "0x1c6000",
+      "page_step_bytes": 4096,
+      "register_push_bytes_in_initial_prologue": 0,
+      "remainder_bytes": 1864,
+      "remainder_hex": "0x748"
+    },
+    {
+      "frame": 6,
+      "header": "6 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} RVA 0x60037b0 =====",
+      "local_reservation_bytes": 2608216,
+      "page_reservation_bytes": 2605056,
+      "page_reservation_hex": "0x27c000",
+      "page_step_bytes": 4096,
+      "register_push_bytes_in_initial_prologue": 0,
+      "remainder_bytes": 3160,
+      "remainder_hex": "0xc58"
+    },
+    {
+      "frame": 16,
+      "header": "16 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures RVA 0x600355c =====",
+      "local_reservation_bytes": 1586536,
+      "page_reservation_bytes": 1585152,
+      "page_reservation_hex": "0x183000",
+      "page_step_bytes": 4096,
+      "register_push_bytes_in_initial_prologue": 0,
+      "remainder_bytes": 1384,
+      "remainder_hex": "0x568"
+    }
+  ],
+  "frozen_59_boxing": [
+    {
+      "after": {
+        "bytes": 8635,
+        "git_blob": "d0e72874ecc92302fbdf6262be1e0e2a67f148e5",
+        "sha256": "43cf53d4357c491598521071ebc85f8287ac2ffe9b029cdbddc81137cb7d83ce"
+      },
+      "before": null,
+      "boxing_diff_lines": [
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, s_predecessor_peers) = Box::pin(published(&mut f)).await?;"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 8914,
+        "git_blob": "53bf5fd6d5952390aa447bf28471869a2fe277c0",
+        "sha256": "d5035529c58c5357271db53b4acfe94ca62b3fa27ba1c03b7c6c83025f441bb4"
+      },
+      "before": null,
+      "boxing_diff_lines": [
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 8366,
+        "git_blob": "df615ba69e4ed6f46eedb47b68ed0ad8c81188b1",
+        "sha256": "b30c4dada881f69d15c445d03ca78b51c34b8c0109ef7f7c6034f2e49910a29d"
+      },
+      "before": null,
+      "boxing_diff_lines": [
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (held, peers) = Box::pin(held_predecessors_with_evaluator(&f, evaluator, evaluator_peer)).await?;"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 7893,
+        "git_blob": "cc7ac948679ab4081c726dc5cc3998f18158ab88",
+        "sha256": "781491dea1832524d4ee19467d0405b7d49fa254333c0ea0a4cdf37faf715ce5"
+      },
+      "before": null,
+      "boxing_diff_lines": [
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (held, peers) = Box::pin(held_predecessors(&f)).await?;",
+        "+    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (held, peers) = Box::pin(held_predecessors(&f)).await?;",
+        "+    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (held, peers) = Box::pin(held_predecessors(&f)).await?;",
+        "+    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (held, peers) = Box::pin(held_predecessors(&f)).await?;",
+        "+    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (held, peers) = Box::pin(held_predecessors(&f)).await?;",
+        "+    let (mut c, mut recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs"
+    }
+  ],
+  "original_case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+  "original_elf": {
+    "bytes": 282318328,
+    "copy_readback_equal": true,
+    "retained": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-failed-binary-preservation-v1/bin/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "b63053496fb1a8f610445862a6ce980ccb7beead4e08796feaa97ab21813e119",
+    "source": "/data/hepta-utility-36fa-final-native-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "source_ctime_ns": 1794493816523629969,
+    "source_device": 2067,
+    "source_inode": 33062611,
+    "source_mode": "0o700",
+    "source_mtime_ns": 1794493816493630860
+  },
+  "original_first_signal": {
+    "adjacent_read_write_stack": {
+      "bytes": 8388608,
+      "contains_fault_address": false,
+      "contains_sp": false,
+      "end": "0x71d6ff000000",
+      "line": "71d6fe800000-71d6ff000000 rw-p 00000000 00:00 0 ",
+      "start": "0x71d6fe800000"
+    },
+    "fault_address": "0x71d6fe7ffb48",
+    "guard": {
+      "bytes": 4096,
+      "contains_fault_address": true,
+      "contains_sp": true,
+      "end": "0x71d6fe800000",
+      "line": "71d6fe7ff000-71d6fe800000 ---p 00000000 00:00 0 ",
+      "start": "0x71d6fe7ff000"
+    },
+    "program_counter": "0x59f1f6be76c4",
+    "signal": "SIGSEGV",
+    "sp": "0x71d6fe7ffb48"
+  },
+  "other_upstream_boxing": [
+    {
+      "a96": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+      "boxing_diff_lines": [
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;",
+        "+    Box::pin(original_predecessor_withdrawal(WithdrawOriginal::Trainer)).await",
+        "+    Box::pin(original_predecessor_withdrawal(WithdrawOriginal::Evaluator)).await",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;",
+        "+    let mut f = Box::pin(PublicationFixture::ready()).await?;",
+        "+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;"
+      ],
+      "c0f": null,
+      "composed": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs"
+    },
+    {
+      "a96": "a5fadf41d93333097f9b3613e07f9ca705f36223",
+      "boxing_diff_lines": [
+        "+    let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;",
+        "+    let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;",
+        "+    let (original, mut primary, _retention, registration) = Box::pin(preregistered()).await?;",
+        "+    let (original, mut primary, _retention, registration) = Box::pin(preregistered()).await?;"
+      ],
+      "c0f": "a42826fa67ed1c598916c3bd9046dfd255e64280",
+      "composed": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs"
+    }
+  ],
+  "prior_source_facts_blob": "c3f233b1c308c6a57a9fb1a44c93a0f4187bef98",
+  "raw_first_signal": {
+    "bytes": 43646,
+    "complete_gzip_roundtrip": true,
+    "git_blob": "e0c0d9d82475980089e921ec2332c907469b02a6",
+    "gzip_blob": "6b057d2e355e8a86137174e800fb64a7484cd311",
+    "sha256": "a5794043e3cb211fb7e4131f5a06dee329edb5a67fb11e2127fb85be67daf70d"
+  },
+  "raw_prologues": {
+    "bytes": 17335,
+    "git_blob": "f919c40fff919bf7395a87e492bcc34be0f4c624",
+    "original_view_blob": "a50197de87a44c4dffe41b737024c6b067b600ce",
+    "recovery_proof_blob": "babbc91e2d21b4546d4780e5e1c2c10dfdbd26dc",
+    "sha256": "8b604cc77402afa956e85ecb2f5978e0c2f6f2f0a14f7ef92317f7070b72b210"
+  },
+  "relevant_new_inner_boxing": [
+    {
+      "a96": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+      "boxing_diff_lines": [
+        "+        let qualification = Box::pin(qualification_owner.qualify_or_readback("
+      ],
+      "c0f": "0e7f3c909fcc97742e228eb4ad189bd074727604",
+      "composed": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs"
+    },
+    {
+      "a96": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+      "boxing_diff_lines": [
+        "+    Box::pin(PanelMemberFixture::complete("
+      ],
+      "c0f": "c968ff41de9cca02f5321cb2fa813ef5f8eeef6b",
+      "composed": "89e82d4b77f7cd76ac8df20e4ad88790e66a7158",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs"
+    }
+  ],
+  "source_projection": {
+    "composed_baseline_tree": "7d26396020a11227914948be902fb3721084630c",
+    "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "frozen_59_manifest": "0fd55e0acf06ca52e7302950bb54e98a21c6c6ef",
+    "full_upstream_source_config_delta_count": 31,
+    "projection_has_not_been_formatted_compiled_or_executed": true,
+    "rust_paths_in_that_delta": 23,
+    "separate_three_rust_increments": [
+      {
+        "after": {
+          "bytes": 5395,
+          "git_blob": "bc7be5dd406bb4da8afda7a9fd9df06cda2cece0",
+          "sha256": "47d5369b7021820692819215f27e8b17b1ffde2cf5f1f656d916c4d2c99ab030"
+        },
+        "before": {
+          "bytes": 4567,
+          "git_blob": "bdfdc2f72241589983b33a01dc8d8d101b3c40bf",
+          "sha256": "6238d49f05923e67628db58ebfb646d2b3e19778a58d5c6c92b95fb6f3c599c4"
+        },
+        "boxing_diff_lines": [],
+        "directory": "hepta-36fa-unsorted-route-alignment-v1",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs"
+      },
+      {
+        "after": {
+          "bytes": 3098,
+          "git_blob": "b62728f79eeda3e17f4067bcaa3227c96da40e42",
+          "sha256": "7635d2d7a7222fe4aeeb623292e21cdf1df0fc94f91dc5f027369801d469bd11"
+        },
+        "before": {
+          "bytes": 2853,
+          "git_blob": "371d951092f71575d81a49cc6737adcd535bf0e8",
+          "sha256": "63091058f64ccc66d3db91a4c46f2a169afc9dfdb6e3c7878b1c1d99553cd132"
+        },
+        "boxing_diff_lines": [],
+        "directory": "hepta-36fa-retained-publish-ufcs-v1",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+      },
+      {
+        "after": {
+          "bytes": 7081,
+          "git_blob": "0e24b809a531f741ccecc13b8262e184aec1dfb1",
+          "sha256": "62f787c6afce6de146f21c06d4934a50b8789ff052180399dbd5903303d62b85"
+        },
+        "before": {
+          "bytes": 6998,
+          "git_blob": "e34473c5c2cfa7e783aa7787994f0c6383ae0444",
+          "sha256": "99f183f39c91418b67e96267e89dec46cfde13cf93c5f92c2fb561b6a0dfe3f7"
+        },
+        "boxing_diff_lines": [],
+        "directory": "hepta-36fa-retained-stage-explicit-type-v1",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+      }
+    ],
+    "source_comparisons": [
+      {
+        "a96": "7179071338fb9779017a7e138742ce0b389c086e",
+        "c0f": "218cbb06e2e078be28f48d2019cc901aee478499",
+        "composed": "7179071338fb9779017a7e138742ce0b389c086e",
+        "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs"
+      },
+      {
+        "a96": "b4ad6a28ee6f7bf839bc8d029440e4c1b86be33a",
+        "c0f": null,
+        "composed": "b4ad6a28ee6f7bf839bc8d029440e4c1b86be33a",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs"
+      },
+      {
+        "a96": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+        "c0f": "2e301a7097eaf063f9f241d736a47340b82d4218",
+        "composed": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs"
+      },
+      {
+        "a96": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+        "c0f": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+        "composed": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs"
+      },
+      {
+        "a96": "51bdd87145c538078ad8f343ad455bb370fa4f32",
+        "c0f": "a83916a9e2150f4c0edc819b128b433590701a6d",
+        "composed": "51bdd87145c538078ad8f343ad455bb370fa4f32",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs"
+      },
+      {
+        "a96": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+        "c0f": null,
+        "composed": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs"
+      },
+      {
+        "a96": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee",
+        "c0f": null,
+        "composed": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs"
+      },
+      {
+        "a96": "ab97ea7713fe060932345c5f8a30810ff92df7e0",
+        "c0f": "c858c9fbc172355f3dab28a68367b183d69c34c5",
+        "composed": "ab97ea7713fe060932345c5f8a30810ff92df7e0",
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+      },
+      {
+        "a96": "fa21f8466e7de1bd2e273f2c5a941f9d5dd29f6e",
+        "c0f": "b4f4d299a93d397510d0d128fd2444ecd01a8067",
+        "composed": "fa21f8466e7de1bd2e273f2c5a941f9d5dd29f6e",
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs"
+      },
+      {
+        "a96": "4615bd9040ea5522dbbda5ac3a9da698a63f87cd",
+        "c0f": "b10334c2e89bb2862ea753708a11cee863ab300b",
+        "composed": "4615bd9040ea5522dbbda5ac3a9da698a63f87cd",
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs"
+      },
+      {
+        "a96": "bec9a048b3a583811ea824dc8f02bafbed3b35da",
+        "c0f": null,
+        "composed": "bec9a048b3a583811ea824dc8f02bafbed3b35da",
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs"
+      },
+      {
+        "a96": "facfbd75b7a94c7d40f1ddea9d1cfd207f2357cc",
+        "c0f": "9b7aabe73fdeb343bb17347c553ba544174b523b",
+        "composed": "facfbd75b7a94c7d40f1ddea9d1cfd207f2357cc",
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+      },
+      {
+        "a96": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+        "c0f": "6947e5e0bf9c73b2e8f0de0232b72256dd1ed9e3",
+        "composed": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs"
+      },
+      {
+        "a96": "f4c8b85909503ca1ca19c1b8345b6e753499d7a6",
+        "c0f": "b7a6392ceaf4929714525c6c6e109ec306275957",
+        "composed": "f4c8b85909503ca1ca19c1b8345b6e753499d7a6",
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs"
+      },
+      {
+        "a96": "0169864d8a5743a1ce00eacf293392a118026d8d",
+        "c0f": "5c1958b2ab3e8d552a0d82d1a6f0e8ec059f2cae",
+        "composed": "0169864d8a5743a1ce00eacf293392a118026d8d",
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs"
+      },
+      {
+        "a96": "23e8989ebd2644947b15c80ab9c641a70767de99",
+        "c0f": "467831627aaf7833f035804b3c94629739b3a981",
+        "composed": "23e8989ebd2644947b15c80ab9c641a70767de99",
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+      },
+      {
+        "a96": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+        "c0f": "0e7f3c909fcc97742e228eb4ad189bd074727604",
+        "composed": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs"
+      },
+      {
+        "a96": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+        "c0f": "c968ff41de9cca02f5321cb2fa813ef5f8eeef6b",
+        "composed": "89e82d4b77f7cd76ac8df20e4ad88790e66a7158",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs"
+      },
+      {
+        "a96": "a5fadf41d93333097f9b3613e07f9ca705f36223",
+        "c0f": "a42826fa67ed1c598916c3bd9046dfd255e64280",
+        "composed": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs"
+      },
+      {
+        "a96": "5a462fab5c7b93038596953957434c52e62a00ee",
+        "c0f": "9505db2dcf4d62cc1b80d586f88a8a3c3c5a2749",
+        "composed": "bdfdc2f72241589983b33a01dc8d8d101b3c40bf",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs"
+      },
+      {
+        "a96": "139596784fcb0c337392ed9ed86174582a58de34",
+        "c0f": "84ed0652816f53dfe62e9e74f4c3943a0b752d6e",
+        "composed": "139596784fcb0c337392ed9ed86174582a58de34",
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs"
+      },
+      {
+        "a96": "82dcc4191411c653b8a4f9c09ce879d918fc3601",
+        "c0f": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+        "composed": "82dcc4191411c653b8a4f9c09ce879d918fc3601",
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+      },
+      {
+        "a96": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a",
+        "c0f": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+        "composed": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a",
+        "path": "codex-rs/hepta-agentd/src/lib.rs"
+      }
+    ]
+  },
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "static_result_blob": "8208865988e7bf8e8aa80fa4217b153ce3dbdf46",
+  "unchanged_ready_source": {
+    "absent_from_frozen_59_and_three_increments": true,
+    "identity": {
+      "bytes": 26865,
+      "git_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+      "sha256": "63738f26b0968a912d0d1bf0d95fce5434479341cc3cbe16c0d5cd526b557022"
+    },
+    "old_existing_boxing": [
+      "ready_with_profile -> ready_with_admission",
+      "ready_with_admission -> ready_for_publication",
+      "preregistered_for_publication -> PositiveFixture::ready_for_publication",
+      "PanelFixture::completed_for_publication returns Box::pin(async move ...)",
+      "PanelFixture -> preregistered_for_publication",
+      "PanelFixture -> retention completed_member",
+      "PanelFixture -> primary completed_member"
+    ],
+    "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+    "same_in_c0f_a96_and_composed_baseline": true
+  }
+}

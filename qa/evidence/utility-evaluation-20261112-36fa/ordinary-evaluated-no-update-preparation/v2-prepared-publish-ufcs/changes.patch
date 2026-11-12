@@ -1,0 +1,24 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs
+@@ -58,11 +58,19 @@
+         Option<OriginalCellEvaluationCommandClientV1>), Error> {
+         match self {
+             Self::TrainingNoUpdate(original) => {
+-                let (task, trainer) = original.publish_and_retain_original_trainer(signed).await?;
++                let (task, trainer) = PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(
++                    original,
++                    signed,
++                )
++                .await?;
+                 Ok((task, trainer, None))
+             }
+             Self::EvaluatedNoUpdate(original) => {
+-                let (task, trainer, evaluator) = original.publish_and_retain_original_evidence(signed).await?;
++                let (task, trainer, evaluator) = PreparedOriginalCircuitEvaluatedRetentionV1::publish_and_retain_original_evidence(
++                    original,
++                    signed,
++                )
++                .await?;
+                 Ok((task, trainer, Some(evaluator)))
+             }
+         }

@@ -1,0 +1,64 @@
+{
+  "behavioral_tests_started": true,
+  "error": "RuntimeError: original native focused driver failed",
+  "finished_at": "2026-11-12T14:37:11.791062+00:00",
+  "qualification": "Native tests only; no real authorized ordinary A/B/C iteration qualification",
+  "source_after": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "files": 14851,
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_before": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "files": 14851,
+    "inventory_sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "status": "",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "source_change": false,
+  "source_comparison": "equal",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "stage": "finished",
+  "stages": [
+    {
+      "command_exit_code": 0,
+      "name": "toolchain",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/toolchain.json",
+      "result": 0
+    },
+    {
+      "command_exit_code": 0,
+      "name": "fix",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/fix.json",
+      "result": 0
+    },
+    {
+      "command_exit_code": 0,
+      "name": "fmt",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/fmt.json",
+      "result": 0
+    },
+    {
+      "collection": 0,
+      "name": "eval-lib",
+      "record": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/eval-lib.json",
+      "result": 0
+    },
+    {
+      "log_bytes": 145631,
+      "log_sha256": "d4e45d987d90f887b5cc6d3b4c04a02e954b01ae2d53b27bc63e842beda5a531",
+      "name": "focused",
+      "observed_failed_tests": 28,
+      "observed_passed_tests": 81,
+      "output_limit_exceeded": false,
+      "records": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused",
+      "returncode": 1,
+      "timed_out": false
+    }
+  ],
+  "started_at": "2026-11-12T14:05:04.212504+00:00",
+  "status": "failed"
+}

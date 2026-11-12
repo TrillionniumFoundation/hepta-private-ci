@@ -1,0 +1,31 @@
+{
+  "status": "prepared_ready_for_root_review_not_launched",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "files": {
+    "driver.py": {
+      "bytes": 3802,
+      "sha256": "3d43ad09170570e0b7a002a73ae02fca9b01a59760eaec7f2fe4eb6e7957b14a",
+      "git_blob_sha": "24c932c8c088ade4e69365b7842e125b2430c443"
+    },
+    "worker.py": {
+      "bytes": 12618,
+      "sha256": "0e99e2bbf66d235772594c14d46c121730895f48d82f825390430c8c1c29beac",
+      "git_blob_sha": "5e3a10e56ed8c0fed15cde099253df9f71b978f9"
+    },
+    "INPUT_READY_FOR_REVIEW.json": {
+      "bytes": 2340,
+      "sha256": "4430dfa8cfd19a3d2ce99ca6fe2887c561a9fe6e2fca29b6baa7ce5d89318104",
+      "git_blob_sha": "538d84339fdff49f8313e40c66c8c602d92c34cc"
+    }
+  },
+  "full_gate_run": false,
+  "prior_original_job_has_actual_terminal_observation": true,
+  "approved_internal_stop_seconds": 220,
+  "original_execute_logged_hard_timeout_seconds": 240,
+  "outer_metadata_wrapper_timeout_seconds": 300,
+  "measurements": "_declared_aliases, has_authority_call and _verify_boundary; all inclusive and nested, never summed to a percentage",
+  "source_inputs": "unchanged complete c0f inventory, original CALLERS, verifier/helper and original collector; no candidate shortcircuit loaded",
+  "safety_of_recording": "timing-metrics fsync precedes final full inventory; source change is actual failure, unavailable after inventory remains Unknown; worker exit3 explicitly marks the internal diagnostic stop and outer driver preserves it",
+  "validation": "AST parse and literal source inspection only; neither worker nor driver executed"
+}

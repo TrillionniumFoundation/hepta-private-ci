@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "import hashlib,json,os,sys\nfrom pathlib import Path\npayload=sys.stdin.buffer.read()\nif hashlib.sha256(payload).hexdigest() != 'b97d1491b8505d85c7eaba0f9f70608c3abc082070708c4cfffcc303f51fe66d':\n    raise RuntimeError('exact reviewed control packet differs')\ndata=json.loads(payload)\nif data['run_identity'] != 'hepta-utility-36fa-c0f-typed-timing-v2':\n    raise RuntimeError('diagnostic identity differs')\ncontrol=Path('/home/qian-qi/hepta-utility-36fa-evidence/prepared-c0f-typed-timing-v2')\nif control.parent.resolve() != control.parent or not control.parent.is_dir():\n    raise RuntimeError('control parent is not the known real evidence directory')\ncontrol.mkdir(exist_ok=False)\nif [x['name'] for x in data['files']] != ['driver.py','worker.py','input.json']:\n    raise RuntimeError('unexpected control file set')\nobserved=[]\nfor item in data['files']:\n    raw=item['content'].encode()\n    if len(raw) != item['bytes'] or hashlib.sha256(raw).hexdigest() != item['sha256']:\n        raise RuntimeError('control payload identity differs')\n    path=control/item['name']\n    with path.open('xb') as stream:\n        stream.write(raw);stream.flush();os.fsync(stream.fileno())\n    actual=path.read_bytes()\n    if actual != raw:\n        raise RuntimeError('control full file readback differs')\n    observed.append({'path':str(path),'bytes':len(actual),'sha256':hashlib.sha256(actual).hexdigest()})\nrecord={'event':'control_bundle_read_back','run_identity':data['run_identity'],'files':observed}\nwith (control/'TRANSFER_READBACK.json').open('x') as stream:\n    json.dump(record,stream,sort_keys=True,indent=2);stream.write('\\n');stream.flush();os.fsync(stream.fileno())\nprint(json.dumps(record,sort_keys=True),flush=True)\nos.execv(sys.executable,[sys.executable,'-B',str(control/'driver.py'),str(control/'input.json')])\n"
+    ],
+    "created_unix_ms": 1794499395851,
+    "cwd": "/home/qian-qi/hepta-utility-36fa-evidence",
+    "env_keys": [
+      "GIT_OPTIONAL_LOCKS",
+      "PYTHONDONTWRITEBYTECODE"
+    ],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1d07fc10b-2564-1b8c",
+    "idempotency_key": "hepta-utility-36fa-c0f-typed-timing-v2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1d07fc10b-2564-1b8c",
+    "request_digest": "00f7b39698a5116ea3935a3769f364a63fcec5b242fa37e9076d743a115e6280",
+    "request_fingerprint": 69721778634953070,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1d07fc10b-2564-1b8c"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1d07fc10b-2564-1b8c"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

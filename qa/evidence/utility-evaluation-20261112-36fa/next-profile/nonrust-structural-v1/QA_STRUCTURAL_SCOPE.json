@@ -1,0 +1,548 @@
+[
+  {
+    "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 8,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_evaluated_selection_receipt.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_retained_version_c_task.rs"
+    ],
+    "test_methods": 4,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_evaluated_next_use_receipt.rs",
+      "circuit_evaluated_retention_context.rs",
+      "circuit_evaluated_selection_receipt.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 22,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "ids": [
+      "learning_original_evaluated_read_next_use_context",
+      "learning_original_evaluated_read_owner_create",
+      "learning_original_evaluated_read_selection_binding",
+      "learning_original_evaluated_read_selection_context",
+      "learning_original_evaluated_selection_remote_attest",
+      "learning_original_evaluated_selection_remote_readback",
+      "learning_original_published_read_client_current"
+    ],
+    "rust_names": [
+      "circuit_evaluated_learning_read.rs",
+      "circuit_evaluated_selection_receipt.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 16,
+    "expected_node": "EXPECTED = {\n    \"learning_original_evaluated_read_selection_context\": (),\n    \"learning_original_evaluated_read_next_use_context\": (),\n    \"learning_original_evaluated_read_client_create\": (),\n    \"l"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+    "ids": [
+      "learning_evaluated_retention_context",
+      "learning_evaluated_retention_context_recover",
+      "learning_evaluated_retention_prepare",
+      "learning_evaluated_retention_preserve_original_evidence",
+      "learning_original_evaluation_command_readback"
+    ],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_evaluated_retention_context.rs",
+      "circuit_evaluated_retention_publication.rs",
+      "circuit_retained_version_state.rs"
+    ],
+    "test_methods": 11,
+    "expected_node": "EXPECTED = {\n    \"learning_evaluated_retention_context\": (),\n    \"learning_evaluated_retention_context_recover\": (),\n    \"learning_evaluated_retention_prepare\": (),\n    \"learning_evaluated_retention_p"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_evaluated_retention_context.rs",
+      "circuit_evaluated_selection_receipt.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_receipt_owner.rs",
+      "circuit_retained_version_c_task.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_service.rs"
+    ],
+    "test_methods": 13,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs"
+    ],
+    "test_methods": 16,
+    "expected_node": "EXPECTED = ('codex-rs/hepta-agentd/src/cell_q24_training_command.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs', 'codex-rs/hepta-agentd/src/cell_q24_material_command.rs', 'codex"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+    "ids": [
+      "root_resident_gate_effect_current"
+    ],
+    "rust_names": [
+      "authority_host_learning_resident_stages.rs",
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_candidate_stage_owners.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command_readback.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": "EXPECTED = {\n    \"learning_original_no_update_stage_create\": (\"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\",),\n    \"learning_original_no_update_stage_recover\": (\"codex-rs/hepta-agentd"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_evaluated_next_use_receipt.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+    "ids": [
+      "learning_original_evaluation_command_readback",
+      "learning_original_evaluation_connection_training"
+    ],
+    "rust_names": [
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_candidate_stage_owners.rs",
+      "circuit_evaluated_retention_context.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": "EXPECTED = {\n    \"learning_original_evaluation_host_consume\": (),\n    \"learning_original_evaluation_host_profile\": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/s"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 9,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_feature_current.rs"
+    ],
+    "test_methods": 15,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs"
+    ],
+    "test_methods": 8,
+    "expected_node": "EXPECTED = {\n    \"learning_original_material_command_bootstrap\": (),\n    \"learning_original_material_command_custody\": (\"codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs\",),\n    \"learning_"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+    "ids": [
+      "learning_original_owner_snapshot_encode",
+      "root_resident_gate_effect_current",
+      "root_resident_gate_training_cancel"
+    ],
+    "rust_names": [
+      "authority_host_learning_resident_stages.rs",
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_candidate_stage_owners.rs",
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_stage_binding.rs",
+      "circuit_next_use_command_wire.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_stage_binding.rs",
+      "circuit_selection_command_wire.rs"
+    ],
+    "test_methods": 7,
+    "expected_node": "EXPECTED = {\n    \"learning_original_model_command_initial_create\": (\"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\",),\n    \"learning_original_model_command_initial_recover\": (\"codex-rs/"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_evaluated_selection_receipt.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_retained_version_c_task.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+    "ids": [
+      "learning_original_circuit_next_use_remote_attest",
+      "learning_original_circuit_next_use_remote_readback",
+      "learning_original_next_use_command_client_attest",
+      "learning_original_next_use_command_client_readback",
+      "learning_original_next_use_command_owner_profile",
+      "learning_original_owner_snapshot_encode"
+    ],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_evidence.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_stage_binding.rs",
+      "circuit_next_use_command_wire.rs",
+      "circuit_next_use_receipt_owner.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_wire.rs"
+    ],
+    "test_methods": 7,
+    "expected_node": "EXPECTED = {\n    \"learning_original_next_use_command_context\": (\"codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\",),\n    \"learning_original_next_use_command_owner_consume\": (),\n   "
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "ids": [
+      "learning_original_c_readiness_current",
+      "learning_original_next_use_command_client_attest",
+      "learning_original_next_use_command_client_readback",
+      "learning_original_selector_command_client_execute",
+      "learning_original_selector_command_client_readback"
+    ],
+    "rust_names": [
+      "authority_host_learning_resident_stages.rs",
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_candidate_stage_owners.rs",
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_evaluated_retention_context.rs",
+      "circuit_evaluated_selection_receipt.rs",
+      "circuit_learning_completion_readiness.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_stage_binding.rs",
+      "circuit_retained_version_c_task.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_retained_version_state.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_stage_binding.rs"
+    ],
+    "test_methods": 8,
+    "expected_node": "EXPECTED = {\n    \"learning_original_owner_command_channel\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs\", \"codex-rs/hepta"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+    "ids": [
+      "learning_original_circuit_next_use_remote_attest",
+      "learning_original_circuit_next_use_remote_readback",
+      "learning_original_circuit_selection_remote_attest",
+      "learning_original_circuit_selection_remote_readback",
+      "learning_original_published_read_client_current"
+    ],
+    "rust_names": [
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command_evidence.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_receipt_owner.rs",
+      "circuit_retained_version_c_task.rs",
+      "circuit_retained_version_state.rs",
+      "circuit_selection_command_evidence.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs"
+    ],
+    "test_methods": 7,
+    "expected_node": "EXPECTED = {\n    \"learning_original_published_read_client_create\": (),\n    \"learning_original_published_read_client_current\": (SELECTOR, OBSERVER, AGENT + \"circuit_evaluated_selection_remote.rs\"),\n   "
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_next_use_receipt_owner.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "ids": [
+      "learning_original_circuit_selection_remote_readback"
+    ],
+    "rust_names": [
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_stage_binding.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_evidence.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_stage_binding.rs"
+    ],
+    "test_methods": 9,
+    "expected_node": "EXPECTED = {'learning_original_owner_command_channel': ('codex-rs/hepta-agentd/src/cell_q24_training_command.rs',\n                                             'codex-rs/hepta-agentd/src/cell_q24_train"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+    "ids": [
+      "learning_original_circuit_selection_remote_attest",
+      "learning_original_circuit_selection_remote_readback",
+      "learning_original_owner_snapshot_encode",
+      "learning_original_selector_command_client_execute",
+      "learning_original_selector_command_client_readback",
+      "learning_original_selector_command_owner_profile"
+    ],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_wire.rs",
+      "circuit_next_use_receipt_owner.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_evidence.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_stage_binding.rs",
+      "circuit_selection_command_wire.rs"
+    ],
+    "test_methods": 7,
+    "expected_node": "EXPECTED = {\n    \"learning_original_selector_command_context\": ('codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_retained_version_state.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs"
+    ],
+    "test_methods": 8,
+    "expected_node": "EXPECTED = {\n    \"learning_original_dataset_readback_attenuation\": (),\n    \"learning_original_dataset_readback_current\": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+    "ids": [
+      "learning_original_owner_snapshot_encode"
+    ],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_evaluated_retention_context.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_wire.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_retained_version_state.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_wire.rs"
+    ],
+    "test_methods": 9,
+    "expected_node": "EXPECTED = {\n    \"learning_original_training_command_client_create\": (),\n    \"learning_original_training_command_client_recover\": (),\n    \"learning_original_training_command_client_execute\": (\"codex-r"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_stage_binding.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_retained_version_state.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_stage_binding.rs"
+    ],
+    "test_methods": 6,
+    "expected_node": "EXPECTED = {\n    \"learning_original_training_initial_connection_create\": (\"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\""
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "cell_q24_candidate_stage_inputs.rs",
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_learning_completion_readiness.rs",
+      "circuit_learning_completion_readiness_service.rs",
+      "circuit_learning_read_capability.rs",
+      "circuit_learning_read_service.rs",
+      "circuit_next_use_command.rs",
+      "circuit_next_use_command_service.rs",
+      "circuit_next_use_command_stage_binding.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs",
+      "circuit_selection_command.rs",
+      "circuit_selection_command_readback.rs",
+      "circuit_selection_command_readback_service.rs",
+      "circuit_selection_command_service.rs",
+      "circuit_selection_command_stage_binding.rs"
+    ],
+    "test_methods": 9,
+    "expected_node": "EXPECTED = {'learning_source_bound_training_stage_readback': ['codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs',\n                                                   'codex-rs/hepta-agent"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "authority_host_learning_resident_stages.rs",
+      "cell_q24_candidate_stage_owners.rs"
+    ],
+    "test_methods": 4,
+    "expected_node": "EXPECTED = {\n    \"learning_original_no_update_stage_initial\": (\"codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs\", \"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs\",),"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "authority_host_learning_resident_stages.rs",
+      "cell_q24_candidate_stage_owners.rs"
+    ],
+    "test_methods": 8,
+    "expected_node": null
+  },
+  {
+    "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+    "ids": [
+      "root_resident_gate_effect_current",
+      "root_resident_gate_training_cancel"
+    ],
+    "rust_names": [],
+    "test_methods": 10,
+    "expected_node": "EXPECTED = {\n    \"root_resident_original_register\": [],\n    \"root_resident_original_recover\": [],\n    \"root_resident_original_custody_open\": [\n        \"codex-rs/hepta-agentd/src/authority_host_residen"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "cell_q24_no_update_stage_state.rs",
+      "circuit_evaluated_retention_context.rs",
+      "circuit_retained_version_context.rs",
+      "circuit_retained_version_effect.rs",
+      "circuit_retained_version_state.rs"
+    ],
+    "test_methods": 11,
+    "expected_node": "EXPECTED = {\n    \"learning_retained_publication_context\": ('codex-rs/hepta-agentd/src/circuit_retained_version_context.rs',),\n    \"learning_retained_publication_prepare\": ('codex-rs/hepta-agentd/src/c"
+  },
+  {
+    "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+    "ids": [],
+    "rust_names": [
+      "circuit_retained_version_effect.rs",
+      "circuit_retained_version_host.rs",
+      "circuit_retained_version_service.rs"
+    ],
+    "test_methods": 9,
+    "expected_node": "EXPECTED = {\n    \"learning_retained_version_original_issuer_attenuation\": (HOST,),\n    \"learning_retained_version_original_issuer_request\": (WORKER,),\n    \"learning_retained_version_original_issuer_wo"
+  }
+]

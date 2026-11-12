@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.root.scoped-timing-v2-review.v1",
+  "files": [
+    {
+      "name": "timing-metrics.json",
+      "bytes": 7691,
+      "sha256": "b830a8ce2d620052c7ee4801af30dd842ad1d779d58bc24267a2ec40662e2da1",
+      "git_blob": "6b9c99de29fdc479fb34ea9d8a44c47e4bf0651e",
+      "version": "2050:50138504:7691:1794499619153575544:1794499619153575544"
+    },
+    {
+      "name": "diagnostic-result.json",
+      "bytes": 641,
+      "sha256": "489c99b118f1effdf8beba019f8f8aa58fc9c59b7dcb7148dd77d971a44e7a65",
+      "git_blob": "747eadc9a2c862ba1757685b163983ad520263fc",
+      "version": "2050:50138506:641:1794499624007154634:1794499624007154634"
+    },
+    {
+      "name": "launcher-final.json",
+      "bytes": 1137,
+      "sha256": "74a5ebb44488007f59c282075352a1e38c31c413f78c2ba04755a2b6833a8c23",
+      "git_blob": "fb84b260fcc19b521ebb33bac5eb6b5c779da41c",
+      "version": "2050:50138508:1137:1794499624166825351:1794499624166825351"
+    },
+    {
+      "name": "original-execute-logged.json",
+      "bytes": 473,
+      "sha256": "49777aa8ddb164f6f455a37832e769ef4b36e4eab9ab0896467b0bfd72e04fbe",
+      "git_blob": "dbd020b36b0c936bee24362b9057ff201ebaaf20",
+      "version": "2050:50138507:473:1794499624076033884:1794499624076033884"
+    }
+  ],
+  "status": "Observed stopped diagnostic, not a full verifier pass",
+  "elapsed_seconds": 224.88051252695732,
+  "internal_stop_seconds": 220,
+  "worker_returncode": 3,
+  "source_before_after_equal": true,
+  "inventory_sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+  "wrapped_timings_inclusive_not_additive": true,
+  "unreduced_rust_sources": 6597,
+  "boundary_calls": 14,
+  "boundary_completions": 13,
+  "stopped_boundary": "final_use_open_state",
+  "exact_hotspot": "scripts/hepta_typed_callers.py:193 original word-boundary regex per type name",
+  "no_candidate_short_circuit_loaded": true,
+  "qualification": false
+}
