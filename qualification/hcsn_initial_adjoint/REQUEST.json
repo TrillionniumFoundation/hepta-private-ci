@@ -1,0 +1,17 @@
+{
+  "identity": "hcsn-initial-adjoint-local-20261112-c06d-stage1",
+  "status": "INTENT_NOT_EXECUTED",
+  "base_commit": "4962e28c1ffa073e5e994194f3b5785659af236c",
+  "precommit_required": true,
+  "attempt": 1,
+  "command": "python -m qualification.hcsn_initial_adjoint.validate --output qualification/hcsn_initial_adjoint/evidence/local001 --baseline-archive qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz",
+  "maximum_adjoint_calls": 18,
+  "maximum_independent_matrix_exponentials": 1024,
+  "static_perpetual_solves": 2,
+  "forward_dde_calls": 0,
+  "forward_basis_calls": 0,
+  "torch_calls": 0,
+  "optimizer_updates": 0,
+  "old_native_or_ci_jobs_repeated": false,
+  "qualification_transfer": false
+}
