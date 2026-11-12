@@ -6,7 +6,7 @@ use crate::CircuitTaskSourceInputV1;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-pub(super) const DOMAIN: &str = "linux_clock_monotonic_micros_v1";
+pub(in crate::production_launcher) const DOMAIN: &str = "linux_clock_monotonic_micros_v1";
 
 fn now() -> Result<u64, AgentdError> {
     let mut time = std::mem::MaybeUninit::<libc::timespec>::uninit();
@@ -27,7 +27,7 @@ fn now() -> Result<u64, AgentdError> {
         .ok_or_else(|| AgentdError::GenerationFenced("monotonic clock overflow".into()))
 }
 
-pub(super) fn sample() -> CircuitCellTimeV1 {
+pub(in crate::production_launcher) fn sample() -> CircuitCellTimeV1 {
     let cell_micros = now().unwrap_or(u64::MAX);
     let circuit_millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -48,7 +48,7 @@ pub(super) fn sample() -> CircuitCellTimeV1 {
     }
 }
 
-pub(super) fn require_source_deadline(
+pub(in crate::production_launcher) fn require_source_deadline(
     source: &CircuitTaskSourceInputV1,
 ) -> Result<(), AgentdError> {
     let observed = now()?;

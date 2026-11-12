@@ -10,7 +10,7 @@ use crate::OriginalRootInitialFeatureTargetV1;
 use crate::RootGenerationInitialModeV1;
 
 #[path = "production_initial_q24_clock.rs"]
-mod clock;
+pub(super) mod clock;
 #[path = "production_initial_q24_deployment.rs"]
 mod deployment;
 #[path = "production_initial_q24_files.rs"]
