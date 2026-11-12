@@ -187,6 +187,11 @@ def terminal_result_gate(row, path, parent, contract):
             cumulative_epochs_completed=result.get('cumulative_epochs_completed'))
         if output['returncode'] == 0:
             require(result.get('status') == 'completed_development', 'exit0 lacks expected success state')
+            counters = ('cumulative_epochs_completed', 'parent_retained_epochs',
+                        'retained_main_updates_at_resume', 'logical_main_updates', 'new_main_updates',
+                        'actual_executed_main_updates_logged_all_phases')
+            require(all(type(result.get(name)) is int and result[name] >= 0 for name in counters),
+                    'exit0 counters must be exact nonnegative integers')
             require(result.get('source_and_parent_inputs_unchanged') is True
                     and result.get('common_and_physical_weights_unchanged') is True
                     and result.get('source_before') == prior['source_before'] == result.get('source_after'),
@@ -200,16 +205,49 @@ def terminal_result_gate(row, path, parent, contract):
                     and result.get('new_main_updates') == (epochs - retained) * steps
                     and result.get('actual_executed_main_updates_logged_all_phases') == prior['main_updates'] + (epochs - retained) * steps,
                     'exit0 cumulative/partial-work counters differ')
-            require([r['epoch'] for r in result.get('epochs', [])] == list(range(retained + 1, epochs + 1))
+            require(all(type(r.get('epoch')) is int for r in result.get('epochs', []))
+                    and [r['epoch'] for r in result.get('epochs', [])] == list(range(retained + 1, epochs + 1))
                     and all(r.get('complete') is True for r in result['epochs']),
                     'exit0 complete epoch journal coverage differs')
             require(result.get('parent_full_outer_wall_charged') == parent['whole_process_wall_seconds']
                     and result.get('cumulative_active_wall_cap_seconds') == contract['cumulative_active_wall_seconds'],
                     'exit0 resource envelope differs')
             require(result.get('stop_reason') in ('development_plateau', 'epoch_cap_not_convergence')
+                    and (result['stop_reason'] != 'epoch_cap_not_convergence'
+                         or epochs == contract['maximum_epochs'])
                     and result.get('training_adequacy_established') is
                     (result['stop_reason'] == 'development_plateau' and prior['memorization']['passed']),
                     'exit0 training adequacy/stopping claim differs')
+
+            def bound_object(artifact, expected_sha, maximum_bytes):
+                require(artifact.is_file() and not artifact.is_symlink()
+                        and not artifact.parent.is_symlink()
+                        and 0 < artifact.stat().st_size <= maximum_bytes,
+                        'exit0 bound JSON artifact absent/unsafe/oversized: ' + str(artifact))
+                observed_artifact = identity(artifact)
+                with artifact.open('rb') as artifact_stream:
+                    artifact_bytes = artifact_stream.read(maximum_bytes + 1)
+                require(0 < len(artifact_bytes) <= maximum_bytes
+                        and {'bytes': len(artifact_bytes), 'sha256': hashlib.sha256(artifact_bytes).hexdigest()}
+                        == observed_artifact and observed_artifact['sha256'] == expected_sha,
+                        'exit0 bound JSON bytes differ: ' + str(artifact))
+                artifact_object = json.loads(artifact_bytes, object_pairs_hook=unique_pairs,
+                    parse_constant=no_nonfinite_constant, parse_float=finite_float)
+                require(type(artifact_object) is dict and identity(artifact) == observed_artifact,
+                        'exit0 bound JSON object changed: ' + str(artifact))
+                return artifact_object, observed_artifact
+
+            plan, _ = bound_object(parent_dir / 'plan.json', prior['plan_sha256'], 1024 * 1024)
+            manifest, _ = bound_object(Path(plan['prepared']) / 'data-manifest.json',
+                plan['manifest_sha256'], 16 * 1024 * 1024)
+            require(plan['manifest_sha256'] == contract['data_manifest_sha256']
+                    and type(plan['batch_size']) is int and plan['batch_size'] == prior['effective_batch_size']
+                    and manifest.get('confirmation_access') is False,
+                    'exit0 sample manifest or batch contract differs')
+            train_ids = [item['id'] for item in manifest['episodes'] if item['partition'] == 'train']
+            require(all(type(name) is str and name for name in train_ids)
+                    and len(train_ids) == len(set(train_ids)) == prior['episodes_train'] > 0,
+                    'exit0 bound training roster differs')
             for filename, field in [('development_logits.pt', 'selected_development_logits'),
                     ('events.jsonl', 'events'), ('resume-start.pt', 'resume_start_checkpoint'),
                     ('RESUME-START.json', 'resume_start_receipt')]:
@@ -230,6 +268,7 @@ def terminal_result_gate(row, path, parent, contract):
             require(event_identity == result['events'], 'exit0 event journal changed before parse')
             completed, epoch_index, in_epoch, phase = 0, 0, False, 'resume'
             event_digest, event_bytes = hashlib.sha256(), 0
+            previous_commit, last_commit_object, episode_order, consumed = None, None, [], 0
             with event_path.open('rb') as event_stream:
                 for line_number, line in enumerate(iter(lambda: event_stream.readline(1024 * 1024 + 1), b''), 1):
                     event_digest.update(line)
@@ -253,11 +292,22 @@ def terminal_result_gate(row, path, parent, contract):
                                 and type(event.get('epoch')) is int
                                 and event['epoch'] == retained + epoch_index + 1,
                                 'exit0 event epoch start differs')
+                        episode_order = event.get('episode_order')
+                        require(type(episode_order) is list
+                                and all(type(name) is str for name in episode_order)
+                                and len(episode_order) == len(train_ids)
+                                and set(episode_order) == set(train_ids), 'exit0 event sample roster differs')
+                        consumed = 0
                         in_epoch, phase = True, 'update'
                     elif kind == 'update_started':
                         require(in_epoch and phase == 'update' and event.get('phase') == 'main'
                                 and completed < (epoch_index + 1) * steps,
                                 'exit0 event update start is out of order')
+                        episode_ids = event.get('episode_ids')
+                        require(type(episode_ids) is list and episode_ids
+                                and episode_ids == episode_order[consumed:consumed + plan['batch_size']],
+                                'exit0 event batch differs from bound epoch order')
+                        consumed += len(episode_ids)
                         phase = 'optimizer'
                     elif kind == 'optimizer_started':
                         require(in_epoch and phase == 'optimizer' and event.get('phase') == 'main'
@@ -275,9 +325,33 @@ def terminal_result_gate(row, path, parent, contract):
                         completed, phase = completed + 1, 'update'
                     elif kind == 'epoch_completed':
                         require(in_epoch and phase == 'update' and completed == (epoch_index + 1) * steps
+                                and consumed == len(train_ids)
                                 and {key: value for key, value in event.items()
                                      if key not in ('kind', 'commit')} == result['epochs'][epoch_index],
                                 'exit0 event complete epoch differs')
+                        commit_path = path.parent / 'commits' / f'epoch-{event["epoch"]:04d}.json'
+                        commit_receipt = event.get('commit')
+                        require(type(commit_receipt) is dict and type(commit_receipt.get('bytes')) is int
+                                and commit_receipt.get('path') == str(commit_path),
+                                'exit0 epoch commit path differs')
+                        commit, commit_identity = bound_object(commit_path, commit_receipt.get('sha256'), 16 * 1024 * 1024)
+                        require(commit_receipt == {'path': str(commit_path), **commit_identity}
+                                and commit.get('schema') == 'hcsn-c2-complete-epoch-commit-v1'
+                                and type(commit.get('epoch')) is dict
+                                and type(commit['epoch'].get('epoch')) is int
+                                and commit.get('epoch') == result['epochs'][epoch_index]
+                                and type(commit.get('logical_main_updates')) is int
+                                and commit['logical_main_updates'] == retained * steps + completed
+                                and commit.get('previous_commit') == previous_commit,
+                                'exit0 epoch commit lineage differs')
+                        checkpoint_path = path.parent / 'checkpoints' / f'epoch-{event["epoch"]:04d}.pt'
+                        require(commit.get('checkpoint_path') == str(checkpoint_path)
+                                and checkpoint_path.is_file() and not checkpoint_path.is_symlink()
+                                and not checkpoint_path.parent.is_symlink()
+                                and checkpoint_path.stat().st_size > 0
+                                and identity(checkpoint_path) == commit.get('checkpoint'),
+                                'exit0 epoch checkpoint bytes differ')
+                        previous_commit, last_commit_object = commit_receipt, commit
                         epoch_index, in_epoch, phase = epoch_index + 1, False, 'between_epochs'
                     elif kind == 'finished':
                         require(phase == 'between_epochs' and not in_epoch
@@ -291,6 +365,9 @@ def terminal_result_gate(row, path, parent, contract):
                     and {'bytes': event_bytes, 'sha256': event_digest.hexdigest()} == event_identity
                     and identity(event_path) == event_identity,
                     'exit0 event journal incomplete, counters differ or bytes changed')
+            require(result.get('last_commit') == previous_commit
+                    and last_commit_object['checkpoint']['sha256'] == result['last_checkpoint_sha256'],
+                    'exit0 last checkpoint does not match final complete commit')
             output['event_accounting'] = {'schema': 'hcsn-c2-terminal-event-accounting-v1',
                 'journal': event_identity, 'rows': line_number,
                 'new_main_updates_completed': completed, 'complete_new_epochs': epoch_index,

@@ -19,13 +19,23 @@ class TerminalEventAccountingTests(unittest.TestCase):
                       "epochs": [{"epoch": 1}], "episodes_train": 4,
                       "effective_batch_size": 2, "main_updates": 2,
                       "memorization": {"passed": False}}
+        prepared = self.root / 'prepared'
+        prepared.mkdir()
+        manifest_path = prepared / 'data-manifest.json'
+        manifest_path.write_text(json.dumps({'confirmation_access': False,
+            'episodes': [{'id': name, 'partition': 'train'} for name in 'abcd']}))
+        plan_path = self.parent_dir / 'plan.json'
+        plan_path.write_text(json.dumps({'prepared': str(prepared),
+            'manifest_sha256': sha(manifest_path), 'batch_size': 2}))
+        self.prior['plan_sha256'] = sha(plan_path)
         parent_result = self.parent_dir / "result.json"
         parent_result.write_text(json.dumps(self.prior), encoding="utf-8")
         self.parent = {"name": self.parent_dir.name, "seed": 101,
                        "learning_rate": 0.001, "result_sha256": sha(parent_result),
                        "whole_process_wall_seconds": 10.0}
         self.contract = {"parent_campaign": str(self.parent_dir.parent),
-                         "maximum_epochs": 200, "cumulative_active_wall_seconds": 43200}
+                         "maximum_epochs": 2, "cumulative_active_wall_seconds": 43200,
+                         "data_manifest_sha256": sha(manifest_path)}
         self.row = {"returncode": 0, "hard_timeout_sent": False, "process_started": True,
                     "whole_process_wall_seconds": 2.0, "child_cpu_seconds": 1.0}
         self.result = {"schema": "hcsn-c2-soft-wall-continuation-v1",
@@ -62,12 +72,23 @@ class TerminalEventAccountingTests(unittest.TestCase):
             {"kind": "epoch_started", "epoch": 2, "episode_order": ["a", "b", "c", "d"]}]
         for number in (1, 2):
             self.events.extend([
-                {"kind": "update_started", "phase": "main", "episode_ids": ["a", "b"]},
+                {"kind": "update_started", "phase": "main",
+                 "episode_ids": ["a", "b"] if number == 1 else ["c", "d"]},
                 {"kind": "optimizer_started", "phase": "main", "logical_next_update": number + 2},
                 {"kind": "optimizer_completed", "phase": "main", "number": number + 2,
                  "new_number": number}])
+        (self.root / 'checkpoints').mkdir()
+        checkpoint_path = self.root / 'checkpoints/epoch-0002.pt'
+        checkpoint_path.write_bytes((self.root / 'last.pt').read_bytes())
+        (self.root / 'commits').mkdir()
+        self.commit_path = self.root / 'commits/epoch-0002.json'
+        self.commit = {'schema': 'hcsn-c2-complete-epoch-commit-v1',
+            'epoch': self.result['epochs'][0], 'checkpoint_path': str(checkpoint_path),
+            'checkpoint': identity(checkpoint_path), 'logical_main_updates': 4, 'previous_commit': None}
+        self.commit_path.write_text(json.dumps(self.commit))
+        self.result['last_commit'] = {'path': str(self.commit_path), **identity(self.commit_path)}
         self.events.extend([{"kind": "epoch_completed", **self.result["epochs"][0],
-                             "commit": {"synthetic": True}},
+                             "commit": self.result['last_commit']},
                             {"kind": "finished", "status": "completed_development"}])
         self.gate = terminal_gate()
 
@@ -136,6 +157,91 @@ class TerminalEventAccountingTests(unittest.TestCase):
 
     def test_missing_second_update_is_rejected(self):
         self.assertFalse(self.invoke(self.events[:5] + self.events[8:])["terminal_evidence_complete"])
+
+    def test_float_terminal_counters_are_rejected(self):
+        for name in ('parent_retained_epochs', 'retained_main_updates_at_resume',
+                     'logical_main_updates', 'new_main_updates',
+                     'actual_executed_main_updates_logged_all_phases', 'cumulative_epochs_completed'):
+            with self.subTest(counter=name):
+                original = self.result[name]
+                self.result[name] = float(original)
+                self.assertFalse(self.invoke()['terminal_evidence_complete'])
+                self.result[name] = original
+
+    def test_float_epoch_row_is_rejected(self):
+        self.result['epochs'][0]['epoch'] = 2.0
+        self.assertFalse(self.invoke()['terminal_evidence_complete'])
+
+    def test_premature_epoch_cap_stop_is_rejected(self):
+        self.contract['maximum_epochs'] = 200
+        self.assertFalse(self.invoke()['terminal_evidence_complete'])
+
+    def test_empty_epoch_order_is_rejected(self):
+        events = copy.deepcopy(self.events)
+        events[1]['episode_order'] = []
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_wrong_epoch_population_is_rejected(self):
+        events = copy.deepcopy(self.events)
+        events[1]['episode_order'][-1] = 'unseen'
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_empty_batch_is_rejected(self):
+        events = copy.deepcopy(self.events)
+        events[2]['episode_ids'] = []
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_repeated_first_batch_is_rejected(self):
+        events = copy.deepcopy(self.events)
+        events[5]['episode_ids'] = ['a', 'b']
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_missing_epoch_commit_is_rejected(self):
+        self.commit_path.unlink()
+        self.assertFalse(self.invoke()['terminal_evidence_complete'])
+
+    def test_foreign_epoch_commit_is_rejected(self):
+        events = copy.deepcopy(self.events)
+        events[-2]['commit'] = {'path': '/missing', 'bytes': 0, 'sha256': '0' * 64}
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_hash_consistent_wrong_commit_chain_is_rejected(self):
+        self.commit['previous_commit'] = {'path': '/missing', 'bytes': 0, 'sha256': '0' * 64}
+        self.commit_path.write_text(json.dumps(self.commit))
+        receipt = {'path': str(self.commit_path), **identity(self.commit_path)}
+        events = copy.deepcopy(self.events)
+        events[-2]['commit'] = receipt
+        self.result['last_commit'] = receipt
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_missing_epoch_checkpoint_is_rejected(self):
+        (self.root / 'checkpoints/epoch-0002.pt').unlink()
+        self.assertFalse(self.invoke()['terminal_evidence_complete'])
+
+    def test_empty_epoch_checkpoint_is_rejected(self):
+        (self.root / 'checkpoints/epoch-0002.pt').write_bytes(b'')
+        self.commit['checkpoint'] = identity(self.root / 'checkpoints/epoch-0002.pt')
+        self.commit_path.write_text(json.dumps(self.commit))
+        receipt = {'path': str(self.commit_path), **identity(self.commit_path)}
+        events = copy.deepcopy(self.events)
+        events[-2]['commit'] = receipt
+        self.result['last_commit'] = receipt
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_hash_consistent_float_commit_epoch_is_rejected(self):
+        self.commit['epoch'] = {**self.result['epochs'][0], 'epoch': 2.0}
+        self.commit_path.write_text(json.dumps(self.commit))
+        receipt = {'path': str(self.commit_path), **identity(self.commit_path)}
+        events = copy.deepcopy(self.events)
+        events[-2]['commit'] = receipt
+        self.result['last_commit'] = receipt
+        self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+
+    def test_final_checkpoint_alias_disagreement_is_rejected(self):
+        path = self.root / 'last.pt'
+        path.write_bytes(b'other hash-consistent checkpoint')
+        self.result['last_checkpoint_sha256'] = sha(path)
+        self.assertFalse(self.invoke()['terminal_evidence_complete'])
 
 
 if __name__ == "__main__":
