@@ -449,7 +449,12 @@ fn generation_transitions_preserve_unrelated_result_buffers() -> Result<(), Erro
         // A copied replacement buffer is not reuse of the retained allocation.
         // No pointer is dereferenced after a mutation.
         assert_eq!(
-            record.result.as_ref().expect("historical result").bytes.as_ptr(),
+            record
+                .result
+                .as_ref()
+                .expect("historical result")
+                .bytes
+                .as_ptr(),
             retained
         );
     };
@@ -502,8 +507,7 @@ fn failed_generation_append_fences_without_installing_staged_state() -> Result<(
         let before = locked_bytes(&control)?;
         // Retain the actual locked writer while injecting a real read-only
         // descriptor write error. This does not emulate power loss or fsync.
-        let original_file =
-            std::mem::replace(&mut control.file, fs::File::open(fixture.path())?);
+        let original_file = std::mem::replace(&mut control.file, fs::File::open(fixture.path())?);
         let failed = if fail_settlement {
             control.settle_generation(&request, b"must not publish".to_vec())
         } else {

@@ -348,9 +348,8 @@ impl GenerationRecordV1 {
         if self.result.is_some() {
             return 0;
         }
-        let metadata = u64::from(self.dispatched_at_micros.is_none())
-            + u64::from(!self.cancel_requested)
-            + 1;
+        let metadata =
+            u64::from(self.dispatched_at_micros.is_none()) + u64::from(!self.cancel_requested) + 1;
         u64::from(self.binding.result_limit_bytes) * 4 + metadata * METADATA_RESERVE
     }
 }
@@ -368,7 +367,8 @@ impl GenerationJournal {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("generation decode"))?;
         let record = self.next_record(event)?;
-        self.records.insert(record.binding.request_id.clone(), record);
+        self.records
+            .insert(record.binding.request_id.clone(), record);
         Ok(())
     }
 
