@@ -38,6 +38,9 @@ use crate::SessionIngress;
 #[path = "client_control.rs"]
 mod control;
 #[cfg(target_os = "linux")]
+#[path = "client_q24_completed_history.rs"]
+mod q24_completed_history;
+#[cfg(target_os = "linux")]
 #[path = "client_q24_outcome.rs"]
 mod q24_outcome;
 pub(crate) use control::ObjectiveStartReplyV1;

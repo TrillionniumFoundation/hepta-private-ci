@@ -93,3 +93,61 @@ fn completed_history_data_rejects_zero_and_noncanonical_cuts()
     assert!(version.validate_data().is_err());
     Ok(())
 }
+
+#[test]
+fn completed_history_query_accepts_no_caller_business_data()
+-> Result<(), Box<dyn std::error::Error>> {
+    let request = crate::AgentdRequest {
+        schema_version: crate::AGENTD_CONTROL_SCHEMA_VERSION,
+        request_id: 19,
+        spawn_generation: 3,
+        method: crate::AgentdMethod::OriginalQ24CompletedHistory {},
+    };
+    let encoded = serde_json::to_vec(&request)?;
+    assert_eq!(
+        serde_json::from_slice::<crate::AgentdRequest>(&encoded)?,
+        request
+    );
+    for field in [
+        "scope",
+        "terminal_head",
+        "verified_at",
+        "successor_cut",
+        "grant",
+        "path",
+    ] {
+        let mut foreign = serde_json::to_value(&request)?;
+        foreign["method"][field] = serde_json::json!("caller-selected");
+        assert!(
+            serde_json::from_value::<crate::AgentdRequest>(foreign).is_err(),
+            "{field}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn completed_history_missing_remains_distinct_from_observed_data()
+-> Result<(), Box<dyn std::error::Error>> {
+    for data in [None, Some(data())] {
+        let response = crate::AgentdResponse {
+            schema_version: crate::AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: u64::MAX,
+            agent_id: codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")
+                .map_err(std::io::Error::other)?,
+            spawn_generation: u64::MAX,
+            current_generation: u64::MAX,
+            payload: crate::AgentdPayload::OriginalQ24CompletedHistory { data },
+        };
+        let bytes = serde_json::to_vec(&response)?;
+        assert!((bytes.len() as u64) < crate::MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<crate::AgentdResponse>(&bytes)?,
+            response
+        );
+        let mut forged = serde_json::to_value(&response)?;
+        forged["payload"]["completed"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<crate::AgentdResponse>(forged).is_err());
+    }
+    Ok(())
+}

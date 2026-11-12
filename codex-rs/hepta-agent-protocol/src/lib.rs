@@ -613,6 +613,7 @@ pub enum AgentdMethod {
         request: Box<Q24OriginalTerminalOutcomeRequestV1>,
     },
     Q24OriginalTaskObservation {},
+    OriginalQ24CompletedHistory {},
     Health,
     Lifecycle,
     Readiness,
@@ -785,6 +786,9 @@ pub enum AgentdPayload {
     Generation(GenerationControlResponseV1),
     Q24OriginalTerminalOutcome(Q24OriginalTerminalOutcomeReceiptV1),
     Q24OriginalTaskObservation(Q24OriginalTaskObservationV1),
+    OriginalQ24CompletedHistory {
+        data: Option<OriginalQ24CompletedHistoryDataV1>,
+    },
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     Readiness(ReadinessSnapshot),
