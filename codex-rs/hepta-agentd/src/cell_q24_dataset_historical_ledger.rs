@@ -13,6 +13,11 @@ use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;
 use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1;
 
 impl HistoricalDatasetLedgerV1 {
+    pub(crate) fn original_unix_seconds(&self) -> io::Result<u64> {
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&self.trust, &self.receipt)?;
+        OriginalHistoricalLearningTrustV1::original_unix_seconds(&self.trust)
+    }
+
     pub(crate) fn capture_original(
         receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
         trust: Arc<OriginalHistoricalLearningTrustV1>,

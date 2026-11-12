@@ -68,6 +68,30 @@ impl OriginalHistoricalTaskReadReceiptV1 {
 }
 
 impl OriginalHistoricalLearningTrustV1 {
+    pub(crate) fn original_unix_seconds(&self) -> io::Result<u64> {
+        let result = (|| {
+            if self.receipt.client.fenced.load(Ordering::Acquire) {
+                return Err(refused());
+            }
+            self.receipt
+                .client
+                .connection
+                .require_original_session()
+                .map_err(io::Error::other)?;
+            let observed = self.clock.now_unix_ms().map_err(io::Error::other)? / 1_000;
+            self.receipt
+                .client
+                .connection
+                .require_original_session()
+                .map_err(io::Error::other)?;
+            Ok(observed)
+        })();
+        if result.is_err() {
+            self.receipt.client.fence();
+        }
+        result
+    }
+
     pub(crate) fn require_original_receipt(
         &self,
         receipt: &Arc<OriginalHistoricalTaskReadReceiptV1>,
