@@ -16,6 +16,8 @@ use crate::root_historical_learning_trust_data::HistoricalLearningTrustPinV1;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustResponseV1;
 use crate::root_historical_learning_trust_data::require_original_trust_reply;
 use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
+use crate::root_historical_task_read_protocol::CompletedLearningAcceptanceResponseV1;
+use crate::root_historical_task_read_protocol::CompletedLearningHistoryResponseV1;
 use crate::root_historical_task_read_protocol::HistoricalReadOperationV1;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadDataV1;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadRequestV1;
@@ -23,6 +25,8 @@ use crate::root_historical_task_read_protocol::MAX_READS;
 use crate::root_historical_task_read_protocol::PURPOSE;
 use crate::root_historical_task_read_protocol::PostAFrozenLearningResponseV1;
 use crate::root_historical_task_read_protocol::require_complete_reply;
+use crate::root_historical_task_read_protocol::require_completed_acceptance_reply;
+use crate::root_historical_task_read_protocol::require_completed_history_reply;
 use crate::root_historical_task_read_protocol::require_post_a_learning_reply;
 use crate::root_production_inputs::RootHistoricalTaskReadConnectionV1;
 
@@ -37,6 +41,9 @@ pub(crate) use learning_trust::OriginalHistoricalStageAuthoritiesV1;
 #[path = "root_post_a_learning_client.rs"]
 mod post_a;
 pub(crate) use post_a::OriginalPostAFrozenLearningAckV1;
+
+#[path = "root_completed_learning_history.rs"]
+pub(crate) mod completed_history;
 
 struct Lane {
     stream: OriginalPublicationStream,
@@ -60,6 +67,8 @@ enum Reply {
     Task(Box<HistoricalTaskReadDataV1>),
     LearningTrust(Box<HistoricalLearningTrustResponseV1>),
     PostAFrozenLearning(PostAFrozenLearningResponseV1),
+    CompletedAcceptance(CompletedLearningAcceptanceResponseV1),
+    CompletedHistory(CompletedLearningHistoryResponseV1),
 }
 
 pub(crate) struct RootHistoricalTaskReadClientV1 {
@@ -69,6 +78,7 @@ pub(crate) struct RootHistoricalTaskReadClientV1 {
     learning_trust: HistoricalLearningTrustPinV1,
     lane: Mutex<Option<Lane>>,
     fenced: AtomicBool,
+    completed_attempted: AtomicBool,
 }
 
 /// Opaque same-client receipt. Serialized reply data alone cannot construct it
@@ -98,6 +108,7 @@ impl RootHistoricalTaskReadClientV1 {
                 sequence: 1,
             })),
             fenced: AtomicBool::new(false),
+            completed_attempted: AtomicBool::new(false),
         })
     }
 
@@ -132,7 +143,10 @@ impl RootHistoricalTaskReadClientV1 {
     fn observe(&self) -> io::Result<HistoricalTaskReadDataV1> {
         match self.exchange(HistoricalReadOperationV1::Task)? {
             Reply::Task(data) => Ok(*data),
-            Reply::LearningTrust(_) | Reply::PostAFrozenLearning(_) => {
+            Reply::LearningTrust(_)
+            | Reply::PostAFrozenLearning(_)
+            | Reply::CompletedAcceptance(_)
+            | Reply::CompletedHistory(_) => {
                 self.fence();
                 Err(refused())
             }
@@ -164,24 +178,32 @@ impl RootHistoricalTaskReadClientV1 {
             })
             .map_err(io::Error::other)?;
             let bytes = lane.stream.exchange(&request)?;
-            let data =
-                match operation {
-                    HistoricalReadOperationV1::Task => Reply::Task(Box::new(
-                        require_complete_reply(&bytes, request_id, &self.profile)?,
-                    )),
-                    HistoricalReadOperationV1::LearningTrust => {
-                        Reply::LearningTrust(Box::new(require_original_trust_reply(
-                            &bytes,
-                            request_id,
-                            &self.profile,
-                            &self.learning_trust,
-                            &self.initial,
-                        )?))
-                    }
-                    HistoricalReadOperationV1::PostAFrozenLearning => Reply::PostAFrozenLearning(
-                        require_post_a_learning_reply(&bytes, request_id, &self.profile)?,
-                    ),
-                };
+            let data = match operation {
+                HistoricalReadOperationV1::Task => Reply::Task(Box::new(require_complete_reply(
+                    &bytes,
+                    request_id,
+                    &self.profile,
+                )?)),
+                HistoricalReadOperationV1::LearningTrust => {
+                    Reply::LearningTrust(Box::new(require_original_trust_reply(
+                        &bytes,
+                        request_id,
+                        &self.profile,
+                        &self.learning_trust,
+                        &self.initial,
+                    )?))
+                }
+                HistoricalReadOperationV1::PostAFrozenLearning => Reply::PostAFrozenLearning(
+                    require_post_a_learning_reply(&bytes, request_id, &self.profile)?,
+                ),
+                HistoricalReadOperationV1::AcceptCompletedLearning => Reply::CompletedAcceptance(
+                    require_completed_acceptance_reply(&bytes, request_id, &self.profile)?,
+                ),
+                HistoricalReadOperationV1::CaptureCompletedHistory
+                | HistoricalReadOperationV1::ReadCompletedHistory => Reply::CompletedHistory(
+                    require_completed_history_reply(&bytes, request_id, &self.profile, operation)?,
+                ),
+            };
             self.connection
                 .require_original_session()
                 .map_err(io::Error::other)?;

@@ -29,7 +29,10 @@ impl OriginalHistoricalTaskReadReceiptV1 {
                 HistoricalReadOperationV1::PostAFrozenLearning,
             )? {
                 Reply::PostAFrozenLearning(response) => response,
-                Reply::Task(_) | Reply::LearningTrust(_) => return Err(refused()),
+                Reply::Task(_)
+                | Reply::LearningTrust(_)
+                | Reply::CompletedAcceptance(_)
+                | Reply::CompletedHistory(_) => return Err(refused()),
             };
             if response.data_cut != self.data.data_cut.to_string()
                 || self.client.observe()? != self.data

@@ -271,6 +271,8 @@ mod root_historical_learning_trust_data;
 #[cfg(target_os = "linux")]
 mod root_historical_task_read_client;
 #[cfg(target_os = "linux")]
+pub(crate) use root_historical_task_read_client::completed_history as root_completed_learning_history;
+#[cfg(target_os = "linux")]
 mod root_historical_task_read_protocol;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
