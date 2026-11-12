@@ -1,0 +1,240 @@
+{
+  "schema": "hepta.original-observation-stream-absolute-end-delivery.v1",
+  "status": "Frozen bootstrap-constructor candidate, static Git/V8 integrity only. No original checker, formatter, compiler, tests, h/PTY/native or ref operations for this slice.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "actual_product_preimage": "9d3d24bd5104be99372c8a55859360e792120605",
+    "actual_original_tests": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+    "same_as_previously_pinned_3c5_product": true,
+    "new_test_absence_at_d973_confirmed": true
+  },
+  "prerequisites": {
+    "metadata_preimage": "37ea232602494310f405cac3c612c22314fc01a3",
+    "grant_manifest": "215e3dc49c7205c943e2db142eb5e1951184ed70",
+    "grant_ops": "2fdddeddf91200838a5754bfacd1dfda7c45c083",
+    "foundation_manifest": "c47e0d089af95aec0c61c19c1400186d82f45456",
+    "foundation_review": "be46823cdcfc6462c4b8a5e8456770aa70dd9f33",
+    "frontier_manifest": "94001742be4ac902fb79b05cf0eeb90afef94665",
+    "frontier_review": "0345ba4c362f4ecf3097fed52c9b0a2ae84b9e02",
+    "source_dependency": "The new stream constructor itself adds no new cross-crate dependency. Metadata is an exact sequential delta after the already frozen foundation/frontier/grant cuts."
+  },
+  "scope": {
+    "product_edited": [
+      "codex-rs/hepta-agentd/src/root_observation_stream.rs"
+    ],
+    "only_new_product_methods": [
+      "from_stream_until",
+      "from_stream_for_uid_until"
+    ],
+    "unchanged": [
+      "RootObservationStream struct and all fields",
+      "original from_stream and from_stream_for_uid implementations",
+      "root_lifetime",
+      "original read semaphore/take/cancellation/deadline/parse/restore flow",
+      "framed_exchange",
+      "bounded_text",
+      "check_lifetime",
+      "unavailable"
+    ],
+    "runtime_owned_followup": [
+      "actual root_production_same_actor_phase_inputs.rs receive",
+      "root_authority_session.rs new mode",
+      "phase gate and cross-lane terminal close",
+      "actual ACK and sealed/LiveRoot BOOTTIME after-checks"
+    ]
+  },
+  "interface": {
+    "symbol": "RootObservationStream::from_stream_until",
+    "signature": "pub(crate) fn from_stream_until(stream: UnixStream, peer: AgentdRootAuthorityPeer, root_pidfd: OwnedFd, timeout: Duration, end: Instant) -> Result<Self, AgentdRootAuthorityError>",
+    "fixed_uid": 0,
+    "private_helper_visibility": "fn from_stream_for_uid_until is private; only the fixed UID0 entry and descendant same-UID tests call it in this slice. The original pub(super) from_stream_for_uid remains unchanged for the existing evidence-client contract.",
+    "deadline": "Use the actual daemon process's already captured Instant end. Its checked remaining duration validates the exact original zero/300-second lifetime bounds only; no now+remaining or later bootstrap time reconstructs a session end.",
+    "bounds": {
+      "maximum_request_timeout_milliseconds": 500,
+      "maximum_session_lifetime_seconds": 300,
+      "maximum_frame_bytes": 16384
+    },
+    "validation_order": [
+      "checked_duration_since(Instant::now()) must exist",
+      "original PID/start/timeout/lifetime zero and upper bounds",
+      "actual held pidfd kind and bounded fdinfo PID",
+      "bounded original boot ID",
+      "bounded original process start ticks",
+      "actual nonblocking pidfd liveness poll",
+      "original stream nonblocking setup and Tokio conversion",
+      "actual SO_PEERCRED UID and PID",
+      "original AsyncFd registration holding the same OwnedFd",
+      "original check_lifetime after registration",
+      "reject if actual Instant::now() has reached the same supplied end",
+      "retain original Semaphore/Mutex/Arc shape and the exact supplied end"
+    ],
+    "errors": "Invalid/expired admission end and original shape or identity failures are Refused. If the end is crossed during the successful original construction, the new postcheck returns Unavailable. Underlying original I/O/liveness errors remain unchanged. Original read failures still leave the exclusive stream slot empty."
+  },
+  "exact_operations": {
+    "git_blob": "3ac77eb43d0e80e6112c7c5577744e5ddb56f3df",
+    "bytes": 18823,
+    "sha256": "46f9674051ec7759fca63bf2bc20eb8d760071d9472697bb49f6e8ea8c4c140a",
+    "operations": 6,
+    "files": 4
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "pre_git": "9d3d24bd5104be99372c8a55859360e792120605",
+      "post_git": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c",
+      "bytes": 13169,
+      "sha256": "971216ee16d408873f4aa9acfceb79b748eb6acc807e825e5d1bf9bb4d112864",
+      "lines": 326,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+      "pre_git": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+      "post_git": "f773dd9c73f6a0c519eccdb39f99bf52e902f08e",
+      "bytes": 8807,
+      "sha256": "488c5338ed7ca4aa8c55321f1a59e2c1160ab630fea8f93c7053aaca8442a9d4",
+      "lines": 253,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a",
+      "bytes": 4676,
+      "sha256": "2d8bab1e48de976fb0326c9e89236f7386d07cc9719540fde63d5521e79dd4ae",
+      "lines": 146,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "37ea232602494310f405cac3c612c22314fc01a3",
+      "post_git": "ffa8a49d2c2d086c00f4945d25d66cac0cd5f523",
+      "bytes": 686817,
+      "sha256": "5c4273335c4c185d5473f18d6e079244aa1dacc8c63edc81658c06ff37bb64c6",
+      "lines": 7338,
+      "operations": 3,
+      "forward_reverse_equal": true
+    }
+  ],
+  "equivalence": {
+    "old_full_source_recovered_by_removing_only_new_methods": true,
+    "old_public_bytes": 321,
+    "old_private_bytes": 2695,
+    "old_public_and_private_full_bodies_exact": true,
+    "unchanged_suffix_bytes": 4928,
+    "root_lifetime_read_framing_bounded_proc_liveness_error_and_test_suffix_exact": true,
+    "struct_full_fields_unchanged": true,
+    "new_private_original_check_body_only_five_explicit_substitutions": true,
+    "old_tests_complete_prefix": true,
+    "old_test_methods": 6,
+    "new_test_methods": 4,
+    "all_forward_reverse_equal": true
+  },
+  "source_transform": {
+    "old_private_body_substitutions": [
+      "new private method name/visibility only",
+      "lifetime Duration parameter becomes supplied end Instant",
+      "prepend checked remaining-duration validation",
+      "append exact end expiration rejection after the original final liveness check",
+      "Self.end becomes the supplied end instead of Instant::now()+lifetime"
+    ],
+    "original_source_reconstruction": "Removing only the two new methods from the full postimage restores the entire original product source byte for byte.",
+    "async_runtime": "Like the original constructor, this runs inside the existing I/O-enabled runtime context. It does not create a runtime or background task.",
+    "io_and_effect_scope": "The new constructor repeats only the original bootstrap procfs/peer/pidfd operations; there are no refreshes, additional socket requests, claim/sign operations or retry loops."
+  },
+  "metadata": {
+    "base": "37ea232602494310f405cac3c612c22314fc01a3",
+    "post": "ffa8a49d2c2d086c00f4945d25d66cac0cd5f523",
+    "boundaries": {
+      "before": 509,
+      "after": 510
+    },
+    "protected": {
+      "before": 370,
+      "after": 370
+    },
+    "new_id": "root_original_observation_stream_until",
+    "new_external_callers": [],
+    "original_pinned_stream_explicit_uid_boundary_unchanged": true,
+    "existing_protected_row": "Preserve all existing required/forbidden/function-order/read-order text and insert two exact constructor function-order entries.",
+    "internal_call_protection": "The original checker excludes the definition file from external caller sets; the same-file UID0 delegation is protected inside the actual unique method.",
+    "literal_calls": [
+      "Path::new(\"anon_inode:[pidfd]\")",
+      ".strip_prefix(\"Pid:\")",
+      ".rsplit_once(\") \")"
+    ],
+    "literal_scope": "These are real original-supported exact call shapes. Multiargument bounded_text/format procfs literals are retained byte-identically, not misrepresented as proven literal-call spans.",
+    "all_new_function_sequences_have_at_least_two_markers": true,
+    "actual_receiver_pending": "runtime_access will register only the actual frozen new-mode receive and session callers. The proposed filenames are not treated as implemented external calls in this cut.",
+    "old_inventory_entries_unchanged": true,
+    "old_checker_or_limits_modified": false,
+    "checker_execution": false,
+    "allowlist": "Root must synchronize the existing exact final assembled CALLERS content-hash allowance; no global limit change is included."
+  },
+  "tests": {
+    "old_file_methods": 6,
+    "old_file_complete_byte_prefix_retained": true,
+    "new_file": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+    "new_methods": [
+      "absolute_root_observation_end_keeps_original_framing_and_end",
+      "absolute_root_observation_end_refuses_late_read_without_rearm",
+      "absolute_root_observation_lost_reply_closes_without_resend",
+      "absolute_root_observation_constructor_keeps_identity_and_bounds"
+    ],
+    "count": 4,
+    "root_parents_added": 0,
+    "executed": 0,
+    "scope": "Same-UID components reuse the original actual identity_for/pidfd_for and framing helpers. Numeric JSON replies test transport only; they are not verified Root observations, grants, signatures or phase authority.",
+    "cases": [
+      "Two actual original-format reads retain the exact end.",
+      "A read after original end sends no new frame and leaves the stream closed.",
+      "One actual request followed by peer write shutdown causes refusal and no second frame.",
+      "Conditional public non-UID0 rejection plus exact wrong PID/boot/start/non-pidfd/zero timeout/501ms timeout/expired end/over-300s end rejection."
+    ],
+    "no_new_upper_wall_time_assertion": true,
+    "existing_test_assertions_unchanged": true,
+    "layout": "Manual alignment only; no rustfmt execution or format-pass claim."
+  },
+  "verification": {
+    "performed": [
+      "Actual V34 product and old test GET with exact immutable Git identities.",
+      "New test path 404 at that exact source.",
+      "All six ops applied and reversed in pure V8; original source/test/protected text restored exactly.",
+      "All four postimages CREATE/GET verified by full text, byte length, SHA256 and Git blob hash.",
+      "Original error enum Eq/PartialEq/Debug read from the fixed source for exact test assertions."
+    ],
+    "not_performed": [
+      "original typed/protected checker",
+      "Rust parser/compiler",
+      "unit or Root tests",
+      "native qualification",
+      "full same-session phase",
+      "ordinary business acceptance",
+      "actual OS restart"
+    ],
+    "h_calls": 0,
+    "pty_calls": 0,
+    "ref_mutations": 0,
+    "qualification_inherited": false
+  },
+  "limits": [
+    "This constructor does not validate a sealed bootstrap, Root writer proof, live BOOTTIME deadline or an independent consumer. Those original checks remain the actual receiver/session responsibilities.",
+    "Root-process Instant and daemon-process Instant are distinct process-local anchors. The supplied daemon end must derive from its earliest existing admission, and actual sealed/LiveRoot BOOTTIME must separately narrow it; this cut does no cross-process Instant conversion.",
+    "Unknown effect, failed claim or lost phase ACK still requires cross-lane terminal closure. Reusing the original stream closure is not a complete phase gate.",
+    "Root original actor continuity is not independent C/controller evidence. Original A/C scope, source/Cell/principal equality and new run/input constraints remain unchanged.",
+    "No roles, keys, deadlines, frame limits, permissions, policy or B matched-budget rules are broadened."
+  ],
+  "business": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0
+  },
+  "independent_review": {
+    "status": "Pending for this isolated constructor cut; predecessor reviews do not qualify it."
+  }
+}

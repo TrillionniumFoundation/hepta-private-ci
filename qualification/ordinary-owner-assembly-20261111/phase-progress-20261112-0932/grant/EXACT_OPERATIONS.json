@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.original-root-issuer-absolute-end-exact-operations.v1",
+  "base": {
+    "source_commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "source_tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "same_source_preimages_as": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "metadata_pre_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+    "prerequisite_foundation_manifest": "c47e0d089af95aec0c61c19c1400186d82f45456",
+    "prerequisite_frontier_manifest": "94001742be4ac902fb79b05cf0eeb90afef94665"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "pre_git": "e6a8969341404b3220ff0a2080a739986a74fa38",
+      "post_git": "510e9780df64b404bf0b9f23afd8bc20d71b0b86",
+      "bytes": 9853,
+      "sha256": "a7374f4233e2a5309fbc57fb6eaf5600dca9ccc5515857c8d522847859366f5e",
+      "lines": 264,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+      "pre_git": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+      "post_git": "4be776f01978d384997f1043b47858260d928a8b",
+      "bytes": 9892,
+      "sha256": "cbdc67e942a8dacfe851128997ad6d53e1d5b6f0b0f12d7904f1d534b6c2defc",
+      "lines": 292,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "28e5e1b9bb23ad95c2def9280b337a680517e041",
+      "bytes": 5376,
+      "sha256": "6aff64f810c9633457ef73c9c563ad50eda6dfc3bbe2d78e49ea693bb1657fb3",
+      "lines": 162,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "post_git": "37ea232602494310f405cac3c612c22314fc01a3",
+      "bytes": 684583,
+      "sha256": "ed13a86d88ec74a2293e3a2f9aeccfb7b63293e1bd2d7afca397b4ba7ea71e98",
+      "lines": 7327,
+      "operations": 3,
+      "forward_reverse_equal": true
+    }
+  ],
+  "operations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "operation": "replace_unique",
+      "before": "    fn protected_stream(\n",
+      "after": "    /// Bind the original UID-0 issuer lane to the daemon's already fixed end.\n    /// Remaining lifetime only bounds admission; it never starts a new session.\n    pub(crate) fn from_root_stream_until(\n        stream: UnixStream,\n        root_pid: u32,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        end: Instant,\n    ) -> Result<Self, AgentdFinalUseIssuerError> {\n        Self::protected_stream_until(stream, root_pid, root_pidfd, timeout, end, 0)\n    }\n\n    fn protected_stream_until(\n        stream: UnixStream,\n        root_pid: u32,\n        root_pidfd: OwnedFd,\n        timeout: Duration,\n        end: Instant,\n        uid: u32,\n    ) -> Result<Self, AgentdFinalUseIssuerError> {\n        let lifetime = remaining(end)?;\n        let channel = HostAuthorityPeerChannel::from_stream_until(\n            stream.try_clone().map_err(io_error)?,\n            HostAuthorityPeerPolicy {\n                peer: HostIssuerPeer { uid, pid: root_pid },\n                timeout,\n                lifetime,\n                request_bound: MAX_RESPONSE_BYTES,\n                response_bound: MAX_RESPONSE_BYTES,\n            },\n            root_pidfd,\n            end,\n        )\n        .map_err(|_| AgentdFinalUseIssuerError::PeerDenied)?;\n        let mut provider = Self::from_stream(\n            stream,\n            AgentdFinalUseIssuerPeer { uid, pid: root_pid },\n            timeout,\n        )?;\n        provider.protected_root = Some(ProtectedRootIssuer { channel, end });\n        remaining(end)?;\n        Ok(provider)\n    }\n\n    fn protected_stream(\n",
+      "why": "New crate-private Root issuer constructor transfers the exact supplied end through the original peer/pidfd checks and original provider; old constructors remain byte-identical."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+      "operation": "append_exact",
+      "before": "",
+      "after": "\n#[path = \"root_issuer_client_deadline_tests.rs\"]\nmod deadline;\n",
+      "why": "Keep the complete original tests and attach a separate bounded deadline component module."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+      "operation": "add_file",
+      "before": null,
+      "after": "use super::*;\nuse pretty_assertions::assert_eq;\n\n// Real socket/pidfd transport components. The peer only returns a denial;\n// these fixtures provide no Root deployment, signature or granted authority.\nfn provider_until(end: Instant) -> (AgentdUnixFinalUseGrantProvider, UnixStream) {\n    let (stream, server) = UnixStream::pair().unwrap();\n    let provider = AgentdUnixFinalUseGrantProvider::protected_stream_until(\n        stream,\n        std::process::id(),\n        pidfd(std::process::id()),\n        Duration::from_secs(5),\n        end,\n        unsafe { libc::geteuid() },\n    )\n    .unwrap();\n    assert_eq!(provider.protected_root.as_ref().unwrap().end, end);\n    (provider, server)\n}\n\nfn binding() -> FinalUseBinding {\n    FinalUseBinding {\n        subject_id: \"original-agent\".into(),\n        destination_id: \"original-notes\".into(),\n        request_sha256: [1; 32],\n        scope_sha256: [2; 32],\n        payload_sha256: [3; 32],\n    }\n}\n\nfn assert_closed(stream: &mut UnixStream) {\n    stream\n        .set_read_timeout(Some(Duration::from_secs(5)))\n        .unwrap();\n    assert_eq!(stream.read(&mut [0; 1]).unwrap(), 0);\n}\n\n#[test]\nfn absolute_root_issuer_end_keeps_original_request_and_denial() {\n    let end = Instant::now() + Duration::from_secs(60);\n    let (provider, mut server) = provider_until(end);\n    let worker = thread::spawn(move || {\n        for _ in 0..2 {\n            assert_eq!(\n                read(&mut server),\n                json!({\"schema_version\":1,\"operation\":OPERATION,\"binding\":binding()})\n            );\n            send(\n                &mut server,\n                json!({\"schema_version\":1,\"revocations\":{\"authority_epoch\":1,\"revision\":1,\"revoked_grant_ids\":[]},\"grant\":null,\"denial_reason\":\"explicit denial\"}),\n            );\n        }\n    });\n    for _ in 0..2 {\n        assert_eq!(\n            provider.request_grant(&binding()),\n            Err(AgentdFinalUseIssuerError::Denied)\n        );\n        assert_eq!(provider.protected_root.as_ref().unwrap().end, end);\n    }\n    worker.join().unwrap();\n}\n\n#[test]\nfn absolute_root_issuer_end_refuses_late_request_without_rearm() {\n    let end = Instant::now() + Duration::from_secs(2);\n    let (provider, mut server) = provider_until(end);\n    thread::sleep(end.saturating_duration_since(Instant::now()) + Duration::from_millis(1));\n    assert_eq!(\n        provider.request_grant(&binding()),\n        Err(AgentdFinalUseIssuerError::PeerDenied)\n    );\n    assert_closed(&mut server);\n    assert_eq!(\n        provider.request_grant(&binding()),\n        Err(AgentdFinalUseIssuerError::ChannelClosed)\n    );\n}\n\n#[test]\nfn absolute_root_issuer_lost_ack_closes_original_lane_without_resend() {\n    let (provider, mut server) = provider_until(Instant::now() + Duration::from_secs(60));\n    let worker = thread::spawn(move || {\n        assert_eq!(\n            read(&mut server),\n            json!({\"schema_version\":1,\"operation\":OPERATION,\"binding\":binding()})\n        );\n        server.shutdown(Shutdown::Write).unwrap();\n        assert_closed(&mut server);\n    });\n    assert_eq!(\n        provider.request_grant(&binding()),\n        Err(AgentdFinalUseIssuerError::Unavailable)\n    );\n    assert_eq!(\n        provider.request_grant(&binding()),\n        Err(AgentdFinalUseIssuerError::ChannelClosed)\n    );\n    worker.join().unwrap();\n}\n\n#[test]\nfn absolute_root_issuer_constructor_keeps_uid_pidfd_and_end_guards() {\n    if unsafe { libc::geteuid() } != 0 {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        assert_eq!(\n            AgentdUnixFinalUseGrantProvider::from_root_stream_until(\n                stream,\n                std::process::id(),\n                pidfd(std::process::id()),\n                Duration::from_secs(1),\n                Instant::now() + Duration::from_secs(60),\n            )\n            .err(),\n            Some(AgentdFinalUseIssuerError::PeerDenied)\n        );\n        assert_closed(&mut server);\n    }\n    for (case, expected) in [\n        (\"pid\", AgentdFinalUseIssuerError::PeerDenied),\n        (\"pidfd\", AgentdFinalUseIssuerError::PeerDenied),\n        (\"timeout\", AgentdFinalUseIssuerError::PeerDenied),\n        (\"expired\", AgentdFinalUseIssuerError::DeadlineElapsed),\n        (\"too_far\", AgentdFinalUseIssuerError::PeerDenied),\n    ] {\n        let (stream, mut server) = UnixStream::pair().unwrap();\n        let root_pid = if case == \"pid\" {\n            std::process::id() + 1\n        } else {\n            std::process::id()\n        };\n        let root_pidfd: OwnedFd = if case == \"pidfd\" {\n            std::fs::File::open(\"/dev/null\").unwrap().into()\n        } else {\n            pidfd(std::process::id())\n        };\n        let timeout = if case == \"timeout\" {\n            Duration::ZERO\n        } else {\n            Duration::from_secs(1)\n        };\n        let end = match case {\n            \"expired\" => Instant::now(),\n            \"too_far\" => Instant::now() + Duration::from_secs(3600),\n            _ => Instant::now() + Duration::from_secs(60),\n        };\n        assert_eq!(\n            AgentdUnixFinalUseGrantProvider::protected_stream_until(\n                stream,\n                root_pid,\n                root_pidfd,\n                timeout,\n                end,\n                unsafe { libc::geteuid() },\n            )\n            .err(),\n            Some(expected)\n        );\n        assert_closed(&mut server);\n    }\n}\n",
+      "why": "Four transport-only components cover exact retained end, denial, original expiry, uncertain ACK closure and constructor identity/deadline rejection."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "\"root_original_final_use_frontier_until\"]",
+      "after": "\"root_original_final_use_frontier_until\",\"root_original_root_issuer_until\"]",
+      "why": "Append only the new absolute Root issuer constructor to the exact privileged inventory."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "replace_unique",
+      "before": "[[boundary]]\nid = \"root_original_peer_channel_until\"\nsymbol = \"HostAuthorityPeerChannel::from_stream_until\"\nreceiver_type = \"HostAuthorityPeerChannel\"\ndefinition_path = \"codex-rs/hepta-contracts/src/authority_host_peer.rs\"\ndefinition_markers = [\"pub fn from_stream_until(\",\"remaining > policy.lifetime\",\"OwnerChannel::new_until(owner_pidfd, policy.peer.pid, end)?\"]\nproduct_callers = []\ncaller_markers = []",
+      "after": "[[boundary]]\nid = \"root_original_peer_channel_until\"\nsymbol = \"HostAuthorityPeerChannel::from_stream_until\"\nreceiver_type = \"HostAuthorityPeerChannel\"\ndefinition_path = \"codex-rs/hepta-contracts/src/authority_host_peer.rs\"\ndefinition_markers = [\"pub fn from_stream_until(\",\"remaining > policy.lifetime\",\"OwnerChannel::new_until(owner_pidfd, policy.peer.pid, end)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/root_issuer_client.rs\"]\ncaller_markers = []",
+      "why": "Register the actual new peer-until call in the original Root grant provider."
+    },
+    {
+      "path": "CALLERS.toml",
+      "operation": "append_exact",
+      "before": "",
+      "after": "\n[[boundary]]\nid = \"root_original_root_issuer_until\"\nsymbol = \"AgentdUnixFinalUseGrantProvider::from_root_stream_until\"\nreceiver_type = \"AgentdUnixFinalUseGrantProvider\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_issuer_client.rs\"\ndefinition_markers = [\"pub(crate) fn from_root_stream_until(\",\"Self::protected_stream_until(stream, root_pid, root_pidfd, timeout, end, 0)\",\"HostAuthorityPeerChannel::from_stream_until(\",\"provider.protected_root = Some(ProtectedRootIssuer { channel, end })\"]\nproduct_callers = []\ncaller_markers = []\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_issuer_client.rs\"\nrequired = [\"MAX_RESPONSE_BYTES\",\"ProtectedRootIssuer { channel, end }\"]\nforbidden = [\"UnixStream::connect(\",\"from_raw_fd(\",\"SigningKey\",\"thread::sleep(\"]\nrequired_function_order = [\n  {function = \"fn from_root_stream(\", sequence = [\"fn from_root_stream(\",\"Self::protected_stream(stream, root_pid, root_pidfd, timeout, lifetime, 0)\"]},\n  {function = \"fn protected_stream(\", sequence = [\"let end = Instant::now()\",\".checked_add(lifetime)\",\".ok_or(AgentdFinalUseIssuerError::InvalidConfiguration)?\",\"HostAuthorityPeerChannel::from_stream(\",\"stream.try_clone().map_err(io_error)?\",\"HostAuthorityPeerPolicy {\",\"peer: HostIssuerPeer { uid, pid: root_pid }\",\"timeout,\",\"lifetime,\",\"request_bound: MAX_RESPONSE_BYTES\",\"response_bound: MAX_RESPONSE_BYTES\",\"root_pidfd,\",\".map_err(|_| AgentdFinalUseIssuerError::PeerDenied)?\",\"let mut provider = Self::from_stream(\",\"stream,\",\"AgentdFinalUseIssuerPeer { uid, pid: root_pid }\",\"timeout,\",\"provider.protected_root = Some(ProtectedRootIssuer { channel, end })\",\"Ok(provider)\"]},\n  {function = \"fn from_root_stream_until(\", sequence = [\"fn from_root_stream_until(\",\"Self::protected_stream_until(stream, root_pid, root_pidfd, timeout, end, 0)\"]},\n  {function = \"fn protected_stream_until(\", sequence = [\"let lifetime = remaining(end)?\",\"HostAuthorityPeerChannel::from_stream_until(\",\"stream.try_clone().map_err(io_error)?\",\"HostAuthorityPeerPolicy {\",\"peer: HostIssuerPeer { uid, pid: root_pid }\",\"timeout,\",\"lifetime,\",\"request_bound: MAX_RESPONSE_BYTES\",\"response_bound: MAX_RESPONSE_BYTES\",\"root_pidfd,\",\"end,\",\".map_err(|_| AgentdFinalUseIssuerError::PeerDenied)?\",\"let mut provider = Self::from_stream(\",\"stream,\",\"AgentdFinalUseIssuerPeer { uid, pid: root_pid }\",\"timeout,\",\"provider.protected_root = Some(ProtectedRootIssuer { channel, end })\",\"remaining(end)?\",\"Ok(provider)\"]}\n]\n",
+      "why": "Protect fixed UID-0 original and new constructors plus exact end forwarding; external caller set remains empty until the actual new-mode receiver is frozen."
+    }
+  ]
+}

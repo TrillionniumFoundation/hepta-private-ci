@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "scope": "Original deadline getter rebased onto exact V34 native-format postimage. Not an authority read or completed phase.",
+  "base": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+  "supersedes_for_integration": "0bdb23c31665ab1a754e03e691cdcc09c2e3bd7b",
+  "prior_semantic_root_review": "d6fecfb4e539dea1ec33549e1a43478f64ecebcd",
+  "file": {
+    "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+    "preimage": {
+      "git_blob": "13ef7d0943f056527f45a7805e07a3f89b302985",
+      "bytes": 21608,
+      "sha256": "56ea30f1ee4d1e529dc7abb0f5b800afb351fa8dc481ff67b0def5de010c146f"
+    },
+    "postimage": {
+      "git_blob": "1f1aae78fe0defc1c0757bd8159d668eba5478c3",
+      "bytes": 21953,
+      "sha256": "94d3ede0c84cb2f90fc27d7e9fafae5019532b8c14cc368e44ac826afced5048"
+    },
+    "operations": [
+      {
+        "operation": "replace_exact_once",
+        "old_text": "    pub fn clock(&self) -> Arc<dyn AuthorityClock> {\n        self.live.clone()\n    }\n",
+        "new_text": "    /// The exact BOOTTIME end captured by this original live session. This is\n    /// only a deadline pin: it does not read authority, refresh the feed, keep\n    /// the session active, or authorize another connection after retirement.\n    pub(crate) fn original_session_end_boottime_ns(&self) -> u64 {\n        self.live.end_boottime_ns\n    }\n\n    pub fn clock(&self) -> Arc<dyn AuthorityClock> {\n        self.live.clone()\n    }\n"
+      }
+    ]
+  },
+  "exact_ops": {
+    "git_blob": "4c05c69162b98fd9befa1785638d9a1f2a6015ac",
+    "bytes": 1250,
+    "sha256": "9977fa474ba9e40654912a44b2eefe138e70abc08bcbe32eb649bce045967383"
+  },
+  "new_bytes": 345,
+  "all_other_bytes_preserved": true,
+  "native_run": false,
+  "phase_still_unassembled": true
+}

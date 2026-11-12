@@ -1,0 +1,292 @@
+{
+  "schema": "hepta.independent-original-root-issuer-until-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "no-confirmed-static-blocker-in-this-foundation-cut-not-qualified-or-phase-assembled",
+  "reviewed_delivery": {
+    "git_blob": "215e3dc49c7205c943e2db142eb5e1951184ed70",
+    "bytes": 12015,
+    "sha256": "74395ba133795079217ca351cb95674a76b0bc141a7ae8fa58b48dfab93c596c"
+  },
+  "reviewed_operations": {
+    "git_blob": "2fdddeddf91200838a5754bfacd1dfda7c45c083",
+    "bytes": 14618,
+    "sha256": "f5d82ba66997962aa3f58a265bc66ec4c3b829a4db852f06dd4b490316961922"
+  },
+  "fixed_source_base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "parent": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "source_preimages_3c5_and_d973_independently_get_equal": true,
+    "product_preimage": "e6a8969341404b3220ff0a2080a739986a74fa38",
+    "read_only_parent": "d6dbdcfca4ed85d7f9a13be5fa143de8cf561984"
+  },
+  "prerequisite_reviews": {
+    "foundation": "be46823cdcfc6462c4b8a5e8456770aa70dd9f33",
+    "frontier": "0345ba4c362f4ecf3097fed52c9b0a2ae84b9e02",
+    "current_core_draft_limits": "84ef12e62b83dee5848315adef97560f49c6bbdb"
+  },
+  "integrity": {
+    "original_fixed_d973_files_personally_fetched": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+        "git_blob": "e6a8969341404b3220ff0a2080a739986a74fa38",
+        "bytes": 8321,
+        "sha256": "aa6c8730e8e0657ce8b4d4dd6d4a9973a606352fa4207df42605ec0cf6a88acc",
+        "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+        "git_blob": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+        "bytes": 9828,
+        "sha256": "dccff570372744be99e9a0aeb87baadef5120aef33e57420fee7fa84adbd1a2d",
+        "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "git_blob": "d6dbdcfca4ed85d7f9a13be5fa143de8cf561984",
+        "bytes": 10769,
+        "sha256": "09ca7b5b6d50540ea93e10468ff481d3be2bbe28173663566c8a901885267a84",
+        "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea"
+      }
+    ],
+    "new_test_path_lookup": {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+      "ref": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "result": "GitHub contents lookup returned explicit 404 NOT_FOUND; other base files at same commit fetched successfully"
+    },
+    "replay": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+        "pre_git": "e6a8969341404b3220ff0a2080a739986a74fa38",
+        "post_git": "510e9780df64b404bf0b9f23afd8bc20d71b0b86",
+        "bytes": 9853,
+        "sha256": "a7374f4233e2a5309fbc57fb6eaf5600dca9ccc5515857c8d522847859366f5e",
+        "ops": 1,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+        "pre_git": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+        "post_git": "4be776f01978d384997f1043b47858260d928a8b",
+        "bytes": 9892,
+        "sha256": "cbdc67e942a8dacfe851128997ad6d53e1d5b6f0b0f12d7904f1d534b6c2defc",
+        "ops": 1,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+        "pre_git": null,
+        "post_git": "28e5e1b9bb23ad95c2def9280b337a680517e041",
+        "bytes": 5376,
+        "sha256": "6aff64f810c9633457ef73c9c563ad50eda6dfc3bbe2d78e49ea693bb1657fb3",
+        "ops": 1,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "pre_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+        "post_git": "37ea232602494310f405cac3c612c22314fc01a3",
+        "bytes": 684583,
+        "sha256": "ed13a86d88ec74a2293e3a2f9aeccfb7b63293e1bd2d7afca397b4ba7ea71e98",
+        "ops": 3,
+        "forward_equal": true,
+        "reverse_equal": true
+      }
+    ],
+    "equivalence": {
+      "old_public_constructor_exact": true,
+      "old_private_constructor_exact": true,
+      "prefix_before_constructor_insertion_exact": true,
+      "old_signature_and_decoder_suffix_exact": true,
+      "old_tests_complete_prefix_exact": true,
+      "new_test_count": 4,
+      "old_test_count": 6
+    },
+    "new_private_constructor": {
+      "new_private_derived_by_six_unique_replacements": true,
+      "replacements": [
+        [
+          "fn protected_stream(",
+          "fn protected_stream_until("
+        ],
+        [
+          "lifetime: Duration,",
+          "end: Instant,"
+        ],
+        [
+          "let end = Instant::now()\n            .checked_add(lifetime)\n            .ok_or(AgentdFinalUseIssuerError::InvalidConfiguration)?;",
+          "let lifetime = remaining(end)?;"
+        ],
+        [
+          "HostAuthorityPeerChannel::from_stream(",
+          "HostAuthorityPeerChannel::from_stream_until("
+        ],
+        [
+          "            root_pidfd,\n        )",
+          "            root_pidfd,\n            end,\n        )"
+        ],
+        [
+          "provider.protected_root = Some(ProtectedRootIssuer { channel, end });\n        Ok(provider)",
+          "provider.protected_root = Some(ProtectedRootIssuer { channel, end });\n        remaining(end)?;\n        Ok(provider)"
+        ]
+      ],
+      "old_bytes": 1103,
+      "new_bytes": 1053
+    },
+    "all_postimages_personally_get_hashed": true,
+    "byte_measurement_note": "Function equivalence spans start at exact 'fn NAME(' and end at its matching brace; raw file hashes and whole-file unique-operation replay are authoritative. Local function-span byte counts need not include author's surrounding indentation/newlines."
+  },
+  "source_review": [
+    {
+      "subject": "Actual grant client and unchanged parent",
+      "finding": "已亲读实际 final_use_issuer.rs，新增入口属于原 AgentdUnixFinalUseGrantProvider；没有把旧 contracts HostIssuerSession 服务端当客户端。父文件 d6dbdc…全文原样；stream Mutex<Option<UnixStream>>、request_grant、exchange_guarded、签名/绑定/长度校验、错误分类与关闭策略均不变。旧 Root 构造器、text/sign_objective 和 decoder 后缀逐字相等。"
+    },
+    {
+      "subject": "Exact end and original Root admission",
+      "finding": "新 from_root_stream_until 固定 UID 0，只接现成 UnixStream、真实 Root PID 与持有 pidfd。private helper 先 remaining(end)，再构造原 peer policy 并把同一 Instant 传到已审 HostAuthorityPeerChannel::from_stream_until/OwnerChannel::new_until。policy.lifetime 是准入上界；它不重建结束时间。原 peer UID/PID、pidfd fdinfo、存活、timeout/frame/300 秒上界保留。",
+      "suffix": "随后原 Self::from_stream 再校 socket peer，存 ProtectedRootIssuer {channel,end}，新路径在返回前再次 remaining(end)。新前/后过期都失败并丢所转移的描述符；没有发送原操作、创建签名、重连或续签。",
+      "caveat": "该 crate-private 构造器不能凭参数证明 caller 的 end 是最初 receive 抓取的值；实际新 phase receiver 及 sealed/LiveRoot BOOTTIME 上限仍须提供并核验。Instant 是本进程值，不能当跨进程共享授权。"
+    },
+    {
+      "subject": "Actual request and ACK boundary",
+      "finding": "父 exchange_guarded 原来就取走唯一 stream，request deadline=min(now+原 timeout, protected_root.end)，原 check_root 和 remaining 在 exchange 前后。response framing/parse/signature/binding 仍在这条原调用路径，只有完整成功才把原 stream 放回；完整 Denied 在外层 request_grant 返回所以可继续使用，不会把未知错误当拒绝成功。",
+      "exact_errors": "过期 request 先进入原 check_root，OwnerChannel 到期映射 PeerDenied；随后原 stream 被 shutdown 且不恢复。新测试依此期待首 PeerDenied、后 ChannelClosed。真正丢 ACK/EOF 原 Unavailable 同样不恢复 lane。",
+      "limits": "原 callback 后期限/peer拒绝可能发生在 Root 已处理请求之后，继续保持 unknown/close 而不重发。这里只保原单 lane 行为；跨 lane 关闭、原 phase gate/cancel/BOOTTIME后验和后继转阶段不由此构造器实现。"
+    },
+    {
+      "subject": "Ownership and observable types",
+      "finding": "root_client 为原 final_use_issuer 子模块；同 provider 私有字段和父 remaining/io_error 可见。新 until 仅 crate-private，无 Clone/Serialize/raw constructor/任意新 signing API。真实 socket clone 用于同原 Root lifetime check；旧 provider 从原连接持有请求流。错误退出丢所有新持有 fd，原 request 不确定路径 shutdown 原 socket 亦作用于这些 aliases。",
+      "caveat": "这是静态所有权与已读签名检查，不替代 Rust borrow/type/compiler 结果。"
+    }
+  ],
+  "metadata": {
+    "boundary_before": 508,
+    "boundary_after": 509,
+    "protected_before": 369,
+    "protected_after": 370,
+    "old_boundary_ids_all_retained": true,
+    "changed_old": [
+      "root_original_peer_channel_until"
+    ],
+    "new_ids": [
+      "root_original_root_issuer_until"
+    ],
+    "required_unique": true,
+    "required_exact": true,
+    "old_required_prefix_exact": true,
+    "old_protected_prefix_exact": true,
+    "exact_old_change": "只有 root_original_peer_channel_until 的 product_callers 从 [] 追加实际 root_issuer_client.rs；该 boundary 其余字段保留。",
+    "new_boundary": "root_original_root_issuer_until，definition_path 为实际新方法文件；product_callers 暂 []，因为 final new-mode receiver 尚未冻结。",
+    "protection": "原 369 protected 全行顺序/字节保留，新增一个真实 root_issuer_client.rs 块。四函数顺序都在各自唯一函数体内成立；两个单调用 wrapper 用 fn header + 完整固定 UID0 call，表达包含关系而不是虚构两次权限动作。",
+    "function_order_static_navigation": [
+      {
+        "function": "fn from_root_stream(",
+        "sequence_length": 2,
+        "positions": [
+          0,
+          215
+        ],
+        "body_includes_header": true
+      },
+      {
+        "function": "fn protected_stream(",
+        "sequence_length": 19,
+        "positions": [
+          233,
+          270,
+          305,
+          385,
+          436,
+          487,
+          529,
+          590,
+          615,
+          641,
+          692,
+          755,
+          785,
+          847,
+          897,
+          917,
+          978,
+          1007,
+          1085
+        ],
+        "body_includes_header": true
+      },
+      {
+        "function": "fn from_root_stream_until(",
+        "sequence_length": 2,
+        "positions": [
+          0,
+          215
+        ],
+        "body_includes_header": true
+      },
+      {
+        "function": "fn protected_stream_until(",
+        "sequence_length": 19,
+        "positions": [
+          233,
+          287,
+          344,
+          395,
+          437,
+          498,
+          523,
+          549,
+          600,
+          663,
+          687,
+          710,
+          772,
+          822,
+          842,
+          903,
+          932,
+          1010,
+          1035
+        ],
+        "body_includes_header": true
+      }
+    ],
+    "checked_against_original_rule": "沿已亲读原 checker 的包含函数头提取范围与 sequence 长度至少 2 规则静态核验；没有运行原 checker，也未声称 full field index 或全 boundary 通过。",
+    "caller_inventory_note": "原 508 boundary ID/required 顺序全留，509 required 与 509 实表一一对应。没有将测试或未来计划路径列成现有 product caller。allowlist 最终摘要仍由 Root 依据合并后 bytes 更新，本文无 allowlist 修改。"
+  },
+  "tests": {
+    "old_prefix_preserved": true,
+    "old_tests": 6,
+    "new_tests": 4,
+    "executed": 0,
+    "new_root_parents": 0,
+    "new_blob": "28e5e1b9bb23ad95c2def9280b337a680517e041",
+    "scope": "真实本地 socketpair 与 self pidfd，沿原 private same-UID helper；回复只提供原明确 Denied，无成功签名或业务 receipt。",
+    "cases": [
+      "两次真实原帧请求与明确 denial，原 end 不变。",
+      "原 end 以后不发送请求，原精确 PeerDenied/ChannelClosed，未重新开流。",
+      "服务端读到一次请求后关闭写侧，原请求 Unavailable 后 ChannelClosed，服务端 EOF 检查不能靠 retained fd 续命。",
+      "conditional 实际非 Root 调 public UID0入口拒绝；错 PID、非 pidfd、零 timeout、已过期 end、超原 300 秒 bound 均拒绝。"
+    ],
+    "helper_review": "新测试显式 pretty_assertions::assert_eq，使用原父 read/send/pidfd、标准 Read/Shutdown 和真实 inherited 类型；没有确认的 helper 签名/可见性阻断。5 秒 socket read bound 保留；新 expiry 测试仅睡过既有 end，无要求调度完成在某个上界之前。",
+    "unverified": "未运行任何测试；same-UID fixture 不是 Root 部署、独立 C、grant issuance 或 ordinary A→C 资格。"
+  },
+  "scope_limits": {
+    "h": 0,
+    "pty": 0,
+    "native": 0,
+    "cargo": 0,
+    "formatter": 0,
+    "checker": 0,
+    "ref_mutations": 0,
+    "no_new_phase_authority": true,
+    "no_root_identity_or_key_created": true,
+    "no_source_qualification_inherited": true,
+    "actual_phase_receiver_pending": true,
+    "ordinary_counts": "0/0/0 unchanged"
+  },
+  "conclusion": "在所读固定源码、6 个 exact ops、4 个后像及原父实现范围内未发现新的确定静态阻断。可交 Root 作为尚未编译/未资格的基础候选；不能由本报告推断完整 same-session phase 已装配，亦不能放宽原 deadline、FinalUse、独立 Outcome、Source/CURRENT 或控制者条件。"
+}

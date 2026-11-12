@@ -1,0 +1,373 @@
+{
+  "schema": "hepta.independent-static-review.same-session-foundation.v2",
+  "status": "NO_REMAINING_CONFIRMED_STATIC_BLOCKER_FOUND_FOUNDATION_ONLY_UNQUALIFIED",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Independent Git/static review of the three production foundation edits, one five-test module and exact CALLERS edits. No h/PTY, native command, Cargo, formatter, original checker, helper or tests were run. No source, branch or ref was modified.",
+  "base": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "actual_path_fetches": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+        "sha": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+        "bytes": 6221,
+        "sha256": "cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78",
+        "actual_base_path_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "sha": "36e4524baea04320b7610325579f0ff206690fab",
+        "bytes": 6672,
+        "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352",
+        "actual_base_path_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "sha": "275842b2fd966afa349697705ab90095a913d0ff",
+        "bytes": 14836,
+        "sha256": "4b17088389ad1fc8689f3d85f13047d73537e57adf54e50abb0edef22808381a",
+        "actual_base_path_equal": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "sha": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+        "bytes": 669225,
+        "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd",
+        "actual_base_path_equal": true
+      }
+    ],
+    "new_test_absence": {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+      "observation": "Absent in actual fixed-base contracts/src contents listing of 71 entries; original peer/channel blob mappings match independently fetched base files.",
+      "listing_read_only": true
+    }
+  },
+  "reviewed_candidate": {
+    "manifest": {
+      "git_blob": "c47e0d089af95aec0c61c19c1400186d82f45456",
+      "bytes": 19901,
+      "sha256": "2d97e8e420d6b5bcbd9d62241681fce2ee50326e33ca5859364b21c66052a4d9"
+    },
+    "exact_operations": {
+      "git_blob": "89666c639e40730cf32acf5996a4b90244201278",
+      "bytes": 36860,
+      "sha256": "a36a1baedef971a548dd61609f90be6b04a18c33b55b714b40bcac3b6fe24ff9"
+    },
+    "callers": {
+      "git_blob": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "bytes": 678040,
+      "sha256": "15b9d289e847f2863a569d1fb94b31be2cfffc9b999a6258a24178dba35256e7"
+    }
+  },
+  "design_review": {
+    "evidence_commit": "e1ba1e6e1c77c787c7d438e6a1ac707d568e67ff",
+    "directory": "qualification/ordinary-owner-assembly-20261111/assembly-protocol-review",
+    "full_documents_read": [
+      {
+        "file": "REVIEW_DISPOSITION.json",
+        "git_blob": "b2cac2aa60cee64fe4db34c522e65a6c6b6e1909"
+      },
+      {
+        "file": "actual-entry-review.json",
+        "git_blob": "da4be619e0a9cc17387eb29de3cf19d402ee5d3a"
+      },
+      {
+        "file": "independent-phase-review.json",
+        "git_blob": "d1e7ccc2db295e1c5d9a828f818991fa183ff2d2"
+      },
+      {
+        "file": "live-owner-review.json",
+        "git_blob": "dfaa66d37d88415421882c20a1a04cc3e752a6df"
+      },
+      {
+        "file": "model-reservation-deadline-readiness.json",
+        "git_blob": "11e7f8c493816b37cf26f2826320f56ce4986e38"
+      },
+      {
+        "file": "proposal-delivery.json",
+        "git_blob": "b500fb94f081479f02a87a52c0fd102f439fe8ce"
+      },
+      {
+        "file": "same-session-proposal-v2.json",
+        "git_blob": "bfa322cdf161c184ec476e77d3b1f31402af88e1"
+      }
+    ],
+    "mandatory_corrections_retained": [
+      "A same-runtime-incarnation custodian is not a different independently controlled consumer.",
+      "C retains the existing agent/cell/principal partition with a new real run/input; independent cross-controller acceptance is a different, unimplemented contract.",
+      "The actual original absolute end must reach OwnerChannel and all real connect/accept/dispatch/phase-ACK postchecks; a newly derived relative TTL is insufficient.",
+      "The outer phase must durably claim its one use before effects, bind original session/A operation/material, preserve partial namespace outcomes and close future admissions across lanes on uncertainty; scoped readback does not recreate offers.",
+      "Closing A requires atomic admission-permit transfer into the original pending queue, drain/join and real retained source; merely switching a route enum is insufficient."
+    ],
+    "implementation_scope": "This cut supplies absolute-end transport construction and a same-Service reserve helper. It does not implement the durable phase claim, A admission cut, cross-lane controller or actual Learning/C composition."
+  },
+  "integrity": {
+    "exact_operations": 13,
+    "source_operations": 9,
+    "metadata_operations": 4,
+    "files": 5,
+    "method": "Pure V8 literal replacement and cryptographic identity calculations over fetched UTF-8 objects; this is not execution of repository code or its checker.",
+    "all_replacements_unique_forward_and_reverse": true,
+    "file_receipts": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+        "pre_git": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+        "post_git": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+        "bytes": 7508,
+        "sha256": "b01371b59ab743db58935ea3590e692a69494ab92feb9abb4d352577400d4b37",
+        "operations": 2,
+        "unique_forward_and_reverse": true,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "pre_git": "36e4524baea04320b7610325579f0ff206690fab",
+        "post_git": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+        "bytes": 8664,
+        "sha256": "2a0eca20235067945c47780b0df848c3284430eb1a95e7a952e57364d7d94845",
+        "operations": 4,
+        "unique_forward_and_reverse": true,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "pre_git": "275842b2fd966afa349697705ab90095a913d0ff",
+        "post_git": "6713a98ad63ee3c825dffc86b26ed4b583f9d134",
+        "bytes": 15737,
+        "sha256": "758942d83ebbd045714022a519807dc4804403f67edd64942e63c7e4d803eb40",
+        "operations": 2,
+        "unique_forward_and_reverse": true,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+        "pre_git": null,
+        "post_git": "573fd94965f6daff1ddd318d8d900e6b9da15905",
+        "bytes": 6129,
+        "sha256": "4ff0c3a7fa70b87082740fd33cf93985ddd1c4520c20368d7b8251cdf36e9d12",
+        "operations": 1,
+        "unique_forward_and_reverse": true,
+        "forward_equal": true,
+        "reverse_equal": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "pre_git": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+        "post_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+        "bytes": 678040,
+        "sha256": "15b9d289e847f2863a569d1fb94b31be2cfffc9b999a6258a24178dba35256e7",
+        "operations": 4,
+        "unique_forward_and_reverse": true,
+        "forward_equal": true,
+        "reverse_equal": true
+      }
+    ],
+    "source_postimages_identical_between_v1_and_v2": true,
+    "sole_v2_registry_delta": {
+      "before_pin": {
+        "git_blob": "09c38614d9e8904dff8919f241af210d6c58ceb6",
+        "bytes": 678025,
+        "sha256": "d6029fb5d9cdf474d63decda225a8b43977fd8aaa9b1df4d1f6c0558ffa8bde3"
+      },
+      "after_pin": {
+        "git_blob": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+        "bytes": 678040,
+        "sha256": "15b9d289e847f2863a569d1fb94b31be2cfffc9b999a6258a24178dba35256e7"
+      },
+      "before": "sequence = [\"(Instant::now() + timeout).min(self.end)\"]",
+      "after": "sequence = [\"fn deadline(\",\"(Instant::now() + timeout).min(self.end)\"]",
+      "unique_forward_reverse": true,
+      "product_source_changed": false
+    }
+  },
+  "discovered_and_corrected_blocker": {
+    "original_manifest": "50b7f6283e86967aedc7e7da104be1e674dc7bb8",
+    "original_ops": "533cd131a94a38a2c928800b722adec582983747",
+    "original_registry": "09c38614d9e8904dff8919f241af210d6c58ceb6",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "actual_rule": "_verify_function_order extracts body = code[start : end + 1], starting at the unique exact fn marker, then delegates [sequence] to _verify_required_order. That rule rejects len(sequence) < 2.",
+    "v1_failure": "The new fn deadline( function-order row had one marker: the original full min expression. It would be rejected structurally by the unchanged original checker.",
+    "v2_fix": [
+      "fn deadline(",
+      "(Instant::now() + timeout).min(self.end)"
+    ],
+    "proof_scope": "The first marker is the actual function header included in the original extraction. The second is the complete unchanged calculation inside that same unique function. This records one calculation's containment after its header, not two permission actions. No whole-file occurrence is substituted for the function-bounded check.",
+    "disposition": "Only this new metadata sequence changed; all product/test bytes are unchanged. Historical v1 remains superseded and unexecuted. Static admissibility is not an original checker PASS."
+  },
+  "product_review": {
+    "old_behavior_equivalence": {
+      "old_new_constructor_exact": true,
+      "old_new_bytes": 1242,
+      "old_from_stream_exact": true,
+      "old_from_stream_bytes": 1105,
+      "original_channel_suffix_exact": true,
+      "original_peer_request_exchange_exact_after_only_test_module_removal": true,
+      "original_model_open_seal_validation_file_helpers_exact": true,
+      "same_service_reference_substitutions": [
+        {
+          "before": "service.with_learning_profile(",
+          "after": "self.with_learning_profile(",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "&config,",
+          "after": "config,",
+          "occurrences": 3,
+          "actual": 3
+        },
+        {
+          "before": "&registration,",
+          "after": "registration,",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "&learning.profile,",
+          "after": "learning,",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "learning.profile.require_cell_scope",
+          "after": "learning.require_cell_scope",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "service\n",
+          "after": "self\n",
+          "occurrences": 2,
+          "actual": 2
+        },
+        {
+          "before": "&service.identity",
+          "after": "&self.identity",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "service.identity.spawn_generation",
+          "after": "self.identity.spawn_generation",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "witness_domain(config, &reservation)",
+          "after": "witness_domain(config, reservation)",
+          "occurrences": 2,
+          "actual": 2
+        },
+        {
+          "before": "witness_path(&reservation)",
+          "after": "witness_path(reservation)",
+          "occurrences": 1,
+          "actual": 1
+        },
+        {
+          "before": "policy_digest(&reservation)",
+          "after": "policy_digest(reservation)",
+          "occurrences": 1,
+          "actual": 1
+        }
+      ],
+      "model_body_substitution_plus_one_indentation_level_exact": true,
+      "new_helper_original_wrapper_is_only_same_file_product_call": true,
+      "original_wrapper_open_registered_writer_count": 1
+    },
+    "channel": {
+      "post_git": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+      "absolute_end": "new_until accepts and stores the supplied process-local Instant directly as Self { owner, end }. Its remaining-duration samples only reject expired/oversized input; they never construct a later end.",
+      "guards": "The existing 300-second maximum is unchanged, with its constant made visible only to the sibling peer module. The original /proc pidfd-kind and fdinfo exact PID checks remain; the completed channel is checked against the supplied end after those reads.",
+      "retained_ownership": "The original OwnedFd is moved into OwnerChannel, retained for every original owner poll, and not rediscovered or serialized.",
+      "all_later_checks": "The unchanged channel suffix caps per-request deadlines by self.end, bounds reads/writes by that end and lets owner exit win when both stream and pidfd are ready. EINTR paths retain the original remaining/end checks."
+    },
+    "peer": {
+      "post_git": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+      "entry": "from_stream_until retains the original policy bounds and exact SO_PEERCRED uid/pid checks, checks original policy lifetime bounds, rejects nonpositive remaining or remaining greater than that policy, then passes the very same end into OwnerChannel::new_until.",
+      "original_entry": "The old from_stream body remains byte-identical, including old relative-lifetime sampling and error ordering. The original new constructor is likewise unchanged.",
+      "request_and_ack": "The existing request/exchange routines are byte-identical. They consume the stream before work; all IO uses capped deadlines, and peer/end checks bracket handler execution and final response processing. The handler-crosses-end path refuses before writing a success response. Failure leaves the taken stream unavailable through the original shutdown/drop paths; no reconnect or retry is added.",
+      "limits": "These are software admission/postcheck bounds, not forcible cancellation of a running handler or a claim that already-sent bytes can be recalled. A callback may already have committed before a late error, and the outer phase must retain that uncertainty. The new constructor alone does not attest who supplied the Instant; the real phase must pass its original retained cap end."
+    },
+    "model": {
+      "post_git": "6713a98ad63ee3c825dffc86b26ed4b583f9d134",
+      "same_service": "The existing public wrapper preserves its original config/registration/reservation reads, single open_registered_writer and open_registered_learning_checkpoint, then calls the new method on that exact service and learning profile. The helper does not reopen, prepare, clone or replace an authority service.",
+      "extracted_body": "The moved body is exactly the original body after the listed receiver/reference substitutions and one indentation level. It remains inside self.with_learning_profile, preserving actual identity/proof/scope, trusted-clock expiry before/after, real directory/journal/witness creation, prior-history rejection, file pins, Root frontier initialization, required-bind and witness-domain checks.",
+      "retained_suffix": "All original open_q24_model_factory, seal_q24_model_factory_offer, FactoryRecord/current, policy and file-helper code is byte-identical. Offer file rights are still taken under the original fail-closed discipline.",
+      "scope_limit": "Create-only setup can leave a real partial namespace on error. This helper has no repair/retry, one-use phase store or cross-lane gate; those remain mandatory outer composition work."
+    }
+  },
+  "metadata": {
+    "old_boundary_count": 504,
+    "new_boundary_count": 507,
+    "all_old_ids_retained": true,
+    "all_old_caller_receiver_symbol_and_definition_path_fields_byte_identical": true,
+    "only_changed_old_boundary": "root_q24_factory_explicit_reserve: only definition_markers now point through its actual original-learning open and same-service delegation; its sole external bin caller remains unchanged.",
+    "unchanged_old_boundary_tables_except_that_one": 503,
+    "privileged_inventory_count": 507,
+    "declared_boundary_count": 507,
+    "unique_and_exact_equal": true,
+    "old_required_order_preserved": true,
+    "protected_before": 366,
+    "protected_after": 368,
+    "only_changed_old_protected_row": "authority_host_q24_model_registration.rs: wrapper read/open/delegate and extracted helper receive separate function-bounded orders, preserving original required/forbidden and open/seal sequences.",
+    "added_protected_rows": [
+      "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+    ],
+    "existing_duplicate_protected_path_rows": "Original ordered multiple rows for the same paths are retained; comparison is by path plus occurrence, not a lossy unique-path map.",
+    "new_boundaries": [
+      {
+        "id": "root_original_owner_channel_until",
+        "definition": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+        "product_callers": [
+          "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+        ]
+      },
+      {
+        "id": "root_original_peer_channel_until",
+        "definition": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "product_callers": [],
+        "reason": "No actual outer phase production caller exists in this foundation."
+      },
+      {
+        "id": "root_q24_factory_same_service_reserve",
+        "definition": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "product_callers": [],
+        "reason": "The actual public wrapper is in the same definition file, which the original external caller scan excludes; its exact internal delegation is protected by the function-order row."
+      }
+    ],
+    "no_fixture_registered_as_product_caller": true,
+    "source_roots_ignored_fragments_and_rule_unchanged": true,
+    "original_checker_and_typed_helper_not_modified": true,
+    "eventual_integration": "Add only real phase caller paths when their final code exists, and update only the exact combined CALLERS blob-size allowance digest. This review did not modify an allowlist."
+  },
+  "new_tests": {
+    "file": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+    "git_blob": "573fd94965f6daff1ddd318d8d900e6b9da15905",
+    "names": [
+      "absolute_end_preserves_original_peer_request_and_exact_end",
+      "absolute_end_rejects_expiry_and_both_original_lifetime_bounds",
+      "absolute_end_keeps_socket_peer_and_original_pidfd_validation",
+      "expired_original_end_emits_no_request_and_cannot_rearm",
+      "handler_finishing_after_original_end_emits_no_success_and_cannot_rearm"
+    ],
+    "source_review": "Real UnixStream pairs and actual self pidfds; no fabricated business receipt, actor, signing key, Root service or learning outcome. The tests cover exact stored end/response, expiry and lifetime bounds, wrong credentials/descriptor/PID, no outbound request after expiry, handler expiry before response, and absorbing Closed behavior.",
+    "limits": "Source review only. The two 2-second expiry cases use real scheduling/sleep and fail if setup cannot finish before its supplied end; no execution timing guarantee is claimed. This is not a different-UID Root test or a completed A/Learning/C case.",
+    "old_tests_preserved": true,
+    "new_root_parents": 0,
+    "executed": 0
+  },
+  "unverified_and_remaining": [
+    "No formatter/compiler/test execution, original full caller or protected-file checker run, full Rust typed index replay or full-repository caller search occurred in this review.",
+    "No real phase cap/record/controller, transport caller, registration ACK, cross-lane closure or A admission permit has been installed by this foundation. Their original end and one-use semantics still require actual implementation and qualification.",
+    "Original Root BOOTTIME session end, 500 ms observation freshness, signed request/lease deadlines, live-owner/epoch/proof checks and all real role/material requirements remain separately authoritative; Instant does not replace any of them.",
+    "No claim of ordinary A-to-training-to-adoption-to-C closure, independent consumer acceptance or daemon/Root cold restart. Business acceptance counters remain 0/0/0.",
+    "The five component tests are unexecuted; original Root parent roster and retries=0 are not changed by this patch. No old source qualification is inherited."
+  ],
+  "conclusion": "The v1 singleton metadata row was a definite static blocker and is now narrowly corrected in v2. No other confirmed static blocker was found in the bounded foundation review. The candidate remains unformatted/uncompiled/unqualified until Root's fixed-source pipeline, and it is not the complete same-session phase implementation."
+}

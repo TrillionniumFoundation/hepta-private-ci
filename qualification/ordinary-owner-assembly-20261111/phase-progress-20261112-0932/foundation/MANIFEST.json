@@ -1,0 +1,402 @@
+{
+  "schema": "hepta.same-service-phase-foundation-delivery.v2",
+  "status": "Frozen source candidate and static equivalence checks only. No formatter, compiler, original checker, component test, ordinary business task, h/PTY or ref mutation was performed by this slice.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "prior_design_source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "all_three_product_preimages_equal_to_prior_design_source": true,
+    "verification": "Actual fixed-3c5 path GETs with Git/SHA/length verification; no inferred mutable HEAD."
+  },
+  "authority_and_scope": {
+    "authorized_by": "Root's three-file assignment, coordinated with runtime_access's actual same-session assembly.",
+    "owned_product_paths": [
+      "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+    ],
+    "additional_files": [
+      "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+      "CALLERS.toml"
+    ],
+    "no_root_service_reopen": true,
+    "no_new_role_key_signer_grant_or_permission": true,
+    "no_actor_or_controller_independence_claim": true,
+    "no_business_evidence_or_C_receipt_created": true,
+    "no_cold_restart_or_rearm": true
+  },
+  "design_records": [
+    {
+      "key": "disposition",
+      "git_blob": "b2cac2aa60cee64fe4db34c522e65a6c6b6e1909",
+      "bytes": 2685,
+      "sha256": "25d5709637c5ddaaebf242ebdfc35c47a6d3e11030868e00020970ede24ad9f3"
+    },
+    {
+      "key": "actual_entry",
+      "git_blob": "da4be619e0a9cc17387eb29de3cf19d402ee5d3a",
+      "bytes": 16082,
+      "sha256": "6fbdc0b8acb32ddfc5c335b41a4ff2bcd31afa1f86f3ceab8af3e595d977d08e"
+    },
+    {
+      "key": "independent_phase",
+      "git_blob": "d1e7ccc2db295e1c5d9a828f818991fa183ff2d2",
+      "bytes": 41335,
+      "sha256": "be83ca64337ee534bb032f74b23c428af7fe7b08993b82af8360716af8ab6067"
+    },
+    {
+      "key": "live_owner",
+      "git_blob": "dfaa66d37d88415421882c20a1a04cc3e752a6df",
+      "bytes": 17237,
+      "sha256": "220876e4c553cb264e292a0735fefbf41ae3e79ef0c00e65e8db82cf4c214702"
+    },
+    {
+      "key": "readiness",
+      "git_blob": "11e7f8c493816b37cf26f2826320f56ce4986e38",
+      "bytes": 7965,
+      "sha256": "029513a8eed2a71af31852a0abd1a00649da693ca0cb9e98a08029d37dc3c2d8"
+    },
+    {
+      "key": "delivery",
+      "git_blob": "b500fb94f081479f02a87a52c0fd102f439fe8ce",
+      "bytes": 3701,
+      "sha256": "ab8742eff0084af31656fa2882ae67901d347be05c45c201739adf2371e042ad"
+    },
+    {
+      "key": "proposal",
+      "git_blob": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+      "bytes": 37654,
+      "sha256": "48e2ec5faecff263fc7f53f6bc6182cd00bf0234d98aed2e268d12e8b2132371"
+    }
+  ],
+  "exact_operations": {
+    "git_blob": "89666c639e40730cf32acf5996a4b90244201278",
+    "bytes": 36860,
+    "sha256": "a36a1baedef971a548dd61609f90be6b04a18c33b55b714b40bcac3b6fe24ff9",
+    "operations": 13,
+    "files": 5
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "pre_git": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "post_git": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+      "bytes": 7508,
+      "sha256": "b01371b59ab743db58935ea3590e692a69494ab92feb9abb4d352577400d4b37",
+      "lines": 217,
+      "operations": 2,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "pre_git": "36e4524baea04320b7610325579f0ff206690fab",
+      "post_git": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+      "bytes": 8664,
+      "sha256": "2a0eca20235067945c47780b0df848c3284430eb1a95e7a952e57364d7d94845",
+      "lines": 220,
+      "operations": 4,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "pre_git": "275842b2fd966afa349697705ab90095a913d0ff",
+      "post_git": "6713a98ad63ee3c825dffc86b26ed4b583f9d134",
+      "bytes": 15737,
+      "sha256": "758942d83ebbd045714022a519807dc4804403f67edd64942e63c7e4d803eb40",
+      "lines": 402,
+      "operations": 2,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "573fd94965f6daff1ddd318d8d900e6b9da15905",
+      "bytes": 6129,
+      "sha256": "4ff0c3a7fa70b87082740fd33cf93985ddd1c4520c20368d7b8251cdf36e9d12",
+      "lines": 200,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "post_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "bytes": 678040,
+      "sha256": "15b9d289e847f2863a569d1fb94b31be2cfffc9b999a6258a24178dba35256e7",
+      "forward_reverse_equal": true,
+      "old_boundaries_preserved_except_wrapper_markers": true,
+      "required_inventory_count": 507,
+      "declared_boundary_count": 507,
+      "inventory_exact": true
+    }
+  ],
+  "interfaces": [
+    {
+      "symbol": "OwnerChannel::new_until",
+      "signature": "pub(crate) fn new_until(owner: OwnedFd, pid: u32, end: Instant) -> Result<Self, HostIssuerTransportError>",
+      "scope": "Private original pidfd channel. The supplied process-local end is retained exactly.",
+      "behavior": [
+        "Reject already expired/zero remaining end.",
+        "Reject remaining interval above the original 300-second cap.",
+        "Apply the original /proc pidfd identity and exact PID checks.",
+        "Store Self { owner, end }, then check that same end and process before success."
+      ],
+      "legacy": "Old OwnerChannel::new remains byte-identical, including its original post-pidfd now+lifetime sample."
+    },
+    {
+      "symbol": "HostAuthorityPeerChannel::from_stream_until",
+      "signature": "pub fn from_stream_until(stream: UnixStream, policy: HostAuthorityPeerPolicy, owner_pidfd: OwnedFd, end: Instant) -> Result<Self, HostIssuerTransportError>",
+      "scope": "Purpose-channel constructor, not an authority constructor. The trusted caller must supply its already captured original end.",
+      "behavior": [
+        "Preserve complete original PID/timeout/frame-bound and SO_PEERCRED checks.",
+        "Preserve policy lifetime zero/300-second limits and require original end remaining interval <= policy.lifetime.",
+        "Use OwnerChannel::new_until with the unchanged end, then the original nonblocking stream setup.",
+        "Reuse unchanged request/exchange/per-request min(end,timeout) and absorbing error-close logic."
+      ],
+      "legacy": "Old from_stream remains byte-identical. No legacy constructor delegates through new timing checks."
+    },
+    {
+      "symbol": "HostAuthorityService::reserve_q24_model_factory",
+      "signature": "pub(crate) fn reserve_q24_model_factory(&self, config: &HostAuthorityServiceConfig, registration: &HostAuthorityRegistration, owner_pidfd: &OwnedFd, learning: &HostAuthorityLearningProfileV1, reservation: &HostAuthorityQ24ModelFactoryReservationV1) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1>",
+      "scope": "The exact held original Service only. This extracts the original guarded reserve body.",
+      "public_wrapper": "register_host_q24_model_factory keeps its original signature and config/registration/reservation reads, original writer open and registered-Learning open; it calls the new method with &service and &learning.profile via explicit UFCS.",
+      "guards": "Original with_learning_profile, actual clock/work expiry, required scope, separate Root witness domain, create-new 0700/0600 files, FilePins, witness empty/history check, original frontier initialization, required-bind/domain and clock postchecks remain in order.",
+      "neighboring_methods": "open_q24_model_factory is still open-only; seal_q24_model_factory_offer still takes its unique writable rights before validation. The complete original suffix is unchanged."
+    }
+  ],
+  "equivalence": {
+    "base": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "old_new_constructor_exact_bytes": 1244,
+    "old_peer_constructor_exact_bytes": 1107,
+    "old_channel_end_deadline_check_wait_io_remaining_suffix_unchanged": true,
+    "old_peer_request_exchange_closing_and_tests_suffix_unchanged": true,
+    "old_model_open_seal_factory_validation_and_file_helpers_suffix_unchanged": true,
+    "model_reserve_body_exact_reference_substitutions": [
+      {
+        "before": "service.with_learning_profile(",
+        "after": "self.with_learning_profile(",
+        "occurrences": 1
+      },
+      {
+        "before": "&config,",
+        "after": "config,",
+        "occurrences": 3
+      },
+      {
+        "before": "&registration,",
+        "after": "registration,",
+        "occurrences": 1
+      },
+      {
+        "before": "&learning.profile,",
+        "after": "learning,",
+        "occurrences": 1
+      },
+      {
+        "before": "learning.profile.require_cell_scope",
+        "after": "learning.require_cell_scope",
+        "occurrences": 1
+      },
+      {
+        "before": "service\n",
+        "after": "self\n",
+        "occurrences": 2
+      },
+      {
+        "before": "&service.identity",
+        "after": "&self.identity",
+        "occurrences": 1
+      },
+      {
+        "before": "service.identity.spawn_generation",
+        "after": "self.identity.spawn_generation",
+        "occurrences": 1
+      },
+      {
+        "before": "witness_domain(config, &reservation)",
+        "after": "witness_domain(config, reservation)",
+        "occurrences": 2
+      },
+      {
+        "before": "witness_path(&reservation)",
+        "after": "witness_path(reservation)",
+        "occurrences": 1
+      },
+      {
+        "before": "policy_digest(&reservation)",
+        "after": "policy_digest(reservation)",
+        "occurrences": 1
+      }
+    ],
+    "model_reserve_body_after_substitutions_equal": true,
+    "execution": "V8 text/hash/reversible-operation checks only; no original checker, formatter, compiler or test execution."
+  },
+  "static_integrity": {
+    "every_replacement_unique": true,
+    "forward_and_reverse_operations_restore_complete_files": true,
+    "new_test_absent_in_actual_base": true,
+    "create_and_get_all_source_postimages_exact": true,
+    "create_and_get_registry_and_ops_exact": true,
+    "source_ops": 9,
+    "metadata_ops": 4,
+    "max_source_lines": 402,
+    "operation_line_span_upper_bound": 592,
+    "formatter": "Not run. Long new test call layout was adjusted manually; this is not a rustfmt claim."
+  },
+  "caller_metadata": {
+    "base_git": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "candidate_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+    "boundaries": {
+      "before": 504,
+      "after": 507
+    },
+    "protected": {
+      "before": 366,
+      "after": 368
+    },
+    "privileged_inventory": {
+      "before": 504,
+      "after": 507,
+      "all_old_ids_unchanged": true,
+      "exact_match_to_declared_boundary_ids": true
+    },
+    "new_boundary_ids": [
+      "root_original_owner_channel_until",
+      "root_original_peer_channel_until",
+      "root_q24_factory_same_service_reserve"
+    ],
+    "existing_public_caller_set": "root_q24_factory_explicit_reserve keeps only codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs.",
+    "changed_existing_protection": "The old Model wrapper read/open/delegate and extracted helper body receive separate exact function-order proofs; original raw reserve/open/seal order and required/forbidden sets remain. Actual journal literal uses original literal_calls matching.",
+    "added_transport_protection": "Exact old/new constructor order plus unchanged request/exchange error-close and end handling. Original pidfd kind and Pid literal calls are checked as actual literal spans.",
+    "only_actual_base_external_callers": {
+      "root_original_owner_channel_until": [
+        "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+      ],
+      "root_original_peer_channel_until": [],
+      "root_q24_factory_same_service_reserve": []
+    },
+    "same_file_callers": "Model's actual public wrapper calls the helper in its definition file. Original checker excludes definition files from the external set, so the internal exact function-order guard records this edge.",
+    "composition_pending": "runtime_access owns the actual phase lane/transport files. Append only their final actual callers to the two empty external sets during assembly; these empty base sets are not a finished phase inventory.",
+    "checker": "Original 7a6709691c372504ca11b5d2a74e14ba819fca8f read; not executed or modified.",
+    "typed_helper": "Original e23bb8aa42241b429ef5dbce5a4660853b66eb2f not modified or executed.",
+    "blob_size_allowlist": "The eventual combined CALLERS bytes need Root's exact existing SHA allowance synchronization; do not copy a stale whole allowlist or change the global limit."
+  },
+  "tests": {
+    "new_path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+    "new_component_test_methods": [
+      "absolute_end_preserves_original_peer_request_and_exact_end",
+      "absolute_end_rejects_expiry_and_both_original_lifetime_bounds",
+      "absolute_end_keeps_socket_peer_and_original_pidfd_validation",
+      "expired_original_end_emits_no_request_and_cannot_rearm",
+      "handler_finishing_after_original_end_emits_no_success_and_cannot_rearm"
+    ],
+    "new_methods": 5,
+    "old_peer_test_file": "8d9b69b7f324322c8f1cabd925327ffe3ef3b29c",
+    "old_test_file_unchanged": true,
+    "model_existing_tests_unchanged": true,
+    "actual_resources": "Ordinary UnixStream pairs and actual pidfd_open of the current test process; one /dev/null wrong-descriptor negative. No fake Root/observer/Cell/role success.",
+    "timing": "Expiry tests permit arbitrary late scheduling and make no wall-time upper-bound assertion. They exercise original absolute end and permanent close, not 500ms Root freshness.",
+    "actual_execution": 0,
+    "root_parent_delta": 0,
+    "new_native_qualification_required": true
+  },
+  "bounded_qa_review": {
+    "fixed_files": [
+      "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "qa/b4-no-bypass/test_root_admin_source_closure.py"
+    ],
+    "finding": "No observed mutation needle on the extracted public Model reservation or new until names in this bounded three-file review. No QA file was changed.",
+    "limit": "Not an exhaustive repository QA scan and not a test result."
+  },
+  "composition_obligations": [
+    "The actual same-session phase record/cap must preserve Root and custodian PID/boot/start/spawn, original live verifier, writer/lease, scope and allowed operation before calling these methods.",
+    "Carry the original process-local absolute end through the actual accept/connect/request/dispatch postcheck and phase ACK. Instant is not serialized authority and is not a BOOTTIME conversion.",
+    "Keep original Root BOOTTIME session end, signed request/lease deadlines and 500ms observation freshness separately authoritative.",
+    "Claim the one-use phase durably before any new Learning/Model namespace effect. Model reservation may leave a real partial namespace; this helper does not retry, repair, compensate or reopen it.",
+    "Use the same Service's actual guarded methods without invoking them recursively under a held with_live writer guard.",
+    "On lost phase ACK, cancellation or uncertainty, close all affected future-admission lanes, preserve in-flight outcome, do not rearm or reissue rights. Those outer gates are not implemented by this foundation.",
+    "Daemon A admission-to-queue/pending transfer and real Learning/C installation remain runtime_access's separate typed composition.",
+    "Ordinary C still means same agent/cell/principal with a new run and input; different independently controlled consumer acceptance is a separate contract."
+  ],
+  "historical_drafts": {
+    "superseded_metadata": {
+      "path": "CALLERS.toml",
+      "pre_git": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "post_git": "dde16c77e27dd5a7df4ab6daa53cfcfd3469418e",
+      "bytes": 677914,
+      "sha256": "4d49e9560f0eb6e63c1bbafca371218b849c8f1a94fe1ded48b516dbc8798906",
+      "forward_reverse_equal": true,
+      "old_boundaries_preserved_except_wrapper_markers": true
+    },
+    "superseded_ops": {
+      "git_blob": "2cc69ff2677d79178a6defae29de5788d3ab01d3",
+      "bytes": 36275,
+      "sha256": "b54f668926e05c07fd85204000bef6ea899f081af77dd130d35f9dd9ac676b22",
+      "operations": 12,
+      "files": 5
+    },
+    "reason": "Early static draft omitted the three new IDs from required_boundary_ids; corrected before any execution/ref integration. No product or test bytes changed.",
+    "superseded_test_layout": {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "7b416854455080046c23224c27fc6b6be587eb92",
+      "bytes": 6106,
+      "sha256": "e78a0c25336f28c9ed42e255be480b6dd3ec1b14dab6ebac151672e03f2f9d8f",
+      "lines": 196,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    "layout_reason": "One long added test call was manually expanded; no test logic or product changes.",
+    "foundation_v1_metadata": {
+      "path": "CALLERS.toml",
+      "pre_git": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "post_git": "09c38614d9e8904dff8919f241af210d6c58ceb6",
+      "bytes": 678025,
+      "sha256": "d6029fb5d9cdf474d63decda225a8b43977fd8aaa9b1df4d1f6c0558ffa8bde3",
+      "forward_reverse_equal": true,
+      "old_boundaries_preserved_except_wrapper_markers": true,
+      "required_inventory_count": 507,
+      "declared_boundary_count": 507,
+      "inventory_exact": true
+    },
+    "foundation_v1_exactops": {
+      "git_blob": "533cd131a94a38a2c928800b722adec582983747",
+      "bytes": 36843,
+      "sha256": "dca8dd514f5c8bffff006ce7fbf7614d184a0376754b9dbecd8c2f66da8d392a",
+      "operations": 13,
+      "files": 5
+    },
+    "foundation_v1_manifest": {
+      "git_blob": "50b7f6283e86967aedc7e7da104be1e674dc7bb8",
+      "bytes": 18112,
+      "sha256": "3ad2e87713d45f84b7e00bdc06807cb7fd45b8d3b8e2fe5b525f8d5df54e6139"
+    },
+    "v2_metadata_correction": {
+      "discovered_by": "hepta_audit independent static review",
+      "original_checker_rule": "_verify_required_order requires each sequence to have at least two nonempty markers; _verify_function_order's body includes the actual function signature.",
+      "before": "  {function = \"fn deadline(\", sequence = [\"(Instant::now() + timeout).min(self.end)\"]}",
+      "after": "  {function = \"fn deadline(\", sequence = [\"fn deadline(\",\"(Instant::now() + timeout).min(self.end)\"]}",
+      "scope": "Only the new deadline rule; the exact full original expression is still required in that unique actual function. No product or test source, checker, old inventory, count or caller-set change.",
+      "v1_disposition": "Superseded unexecuted static candidate; original bytes retained."
+    }
+  },
+  "qualification": {
+    "native_compiler": 0,
+    "formatter": 0,
+    "original_checker": 0,
+    "qa_execution": 0,
+    "component_execution": 0,
+    "root_execution": 0,
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "phase_completed": false,
+    "independent_C": false,
+    "physical_restart": false,
+    "current_base_result": "Root separately reported V33's original idle preflight stopped before clone/fmt/Cargo due to unrelated live Rust jobs. No qualification result is inherited by this candidate.",
+    "refs_changed": 0,
+    "h_or_pty_calls": 0
+  }
+}

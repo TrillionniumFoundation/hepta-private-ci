@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.independent-same-actor-phase-core-draft-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "/root/hepta_audit",
+  "status": "draft-core-static-review-with-resolved-local-eof-defect-and-unassembled-protocol-blockers",
+  "base": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60"
+  },
+  "scope": {
+    "performed": [
+      "Git GET each four draft text and original dependencies; independently recomputed full UTF-8 byte length, SHA256 and Git blob identity",
+      "Full source inspection of gate, durable record, Initial claim, original five-lane draft and its exact EOF revision",
+      "Two unique forward/reverse replacements independently reproduce a5238 from 215e; no repository or running source mutated"
+    ],
+    "not_performed": [
+      "No h, PTY, Cargo, native, formatter, checker or test execution",
+      "No complete same-session controller, daemon route, module declarations, final caller metadata or full integration was supplied",
+      "No native or business qualification claim"
+    ],
+    "ordinary_counts": "0/0/0 unchanged",
+    "archive": "V13 transfer remains paused at the existing 8/42 checkpoint"
+  },
+  "draft_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "git_blob": "72e6ad48045f75179c16915af73b7bff19c3dfa8",
+      "bytes": 12721,
+      "sha256": "89ce83b7c1e6953df9a59127d36f55d0301b71e815442acce3a7a9745b48dde0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "git_blob": "a8fde41f81c82513518bc0e2fa15ab3214937bc5",
+      "bytes": 6577,
+      "sha256": "9012186441084a161e76a8048c912885b74b2477d8a9da57eb54a359b5d6e968"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "git_blob": "26847191637841d6d8441def76dcb673708b9acf",
+      "bytes": 6696,
+      "sha256": "be5f229a3f59809005c10db66c196ba2e9894f1d1e77a72c373422d4c55fb601"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "git_blob": "a5238ae4f69bd7a057c24dcfb9620db8263b0a63",
+      "bytes": 2339,
+      "sha256": "d384d403c3a8dbcf349316ad394a3c1e8d00d8b746a6fef1e6e2f016e4428776"
+    }
+  ],
+  "historical_defect_source": {
+    "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+    "git_blob": "215eae5e3d17f270e656148101af9f6656aa0b93",
+    "bytes": 2030,
+    "sha256": "adfb82af9432fbba63a9ff3332d2308dab0ccdd8924d5f8a6572398c1ac91bd6"
+  },
+  "actual_dependencies_read": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "git_blob": "e7010b23dde46c73398082d038bae73e45e3716e",
+      "bytes": 10513,
+      "sha256": "7776e029bf05e0b5f0fe2c3dd75d62e8326789105d348855a0e748d7a921950b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+      "bytes": 9897,
+      "sha256": "9f8613d8a78e7ad0567de8c6adf02410a93e668db5ef19a2a8a20b42b0eaa071"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "git_blob": "93f9e4bc85f79954ed70c2a7b7f5517766a2adee",
+      "bytes": 23079,
+      "sha256": "0568b37f58197ea82fcc4cd91b225cb445975187316d19146c5fdc917a194b0b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observer.rs",
+      "git_blob": "a9dc269b3a1cc2105807d94d2c6440b62154a0f8",
+      "bytes": 9851,
+      "sha256": "ffb6a6917ac6cc1e6b3d39d3ff0d21462b3459a7976672bc14baad705a2fdb7e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observation.rs",
+      "git_blob": "47edaa34ddeaad7498bbfc4326bab58a228d2670",
+      "bytes": 4715,
+      "sha256": "ffd165406294415483b619db154a5bb458865fc833b3350876c3d3868ddd4151"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "git_blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+      "bytes": 9377,
+      "sha256": "48b1cd2fbbc38f22b9ebfadc660d2f4071e23d4d3d61a3714959d09f1a0bebd1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "bytes": 13390,
+      "sha256": "9b7fc5fbd163baabd4f234b8e6c1d06fcdc4ce02f024186509fbf6dfa8342e5b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "git_blob": "bf8c26ce91aa3ac517fc883e24d9be86b08dac1a",
+      "bytes": 23282,
+      "sha256": "5dfce4e6265be61d99b6fe4009f1750ad8b234019bff243ef7a9293f36927b3b"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+      "bytes": 16412,
+      "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+    }
+  ],
+  "findings": [
+    {
+      "id": "CORE-EOF-1",
+      "classification": "confirmed defect in original draft; resolved in exact local revision",
+      "old_blob": "215eae5e3d17f270e656148101af9f6656aa0b93",
+      "fixed_blob": "a5238ae4f69bd7a057c24dcfb9620db8263b0a63",
+      "finding": "原五条必需 owner lane 的 exchange(false)/EOF 路径曾 gate.require_open 后 disarm 并返回 Ok，不能证明整 phase 完成，可能让其余 lane 保持开放。",
+      "exact_correction": "修订保留 armed CloseSameActorPhaseOnDrop，EOF 返回原 HostIssuerTransportError::Closed；每次 exchange(true) 返回后再 gate.require_open。原 handler 入场 permit、实际 self.handle、handler 内 gate 后验、peer policy/原 checkpoint peer 校验及共同 Instant 均保留。",
+      "local_drop_order": "函数栈中 channel 在 stream alias guard 之后创建，因此退栈先 drop channel、后删除并 shutdown 该 alias、最后共同 CloseOnDrop 关闭 gate/其余 aliases。未发现本函数成功/EOF留下 detached alias 的路径。",
+      "caveat": "ACK 后检查仅阻止后续阶段推进，不能撤回已经发送的字节，也不是物理网络送达时刻证明。实际 consumer 的同 gate/live-root ACK 后验仍需后继代码。"
+    },
+    {
+      "id": "CORE-INITIAL-RETIRE-2",
+      "classification": "unassembled protocol blocker; author accepts explicit one-use handshake",
+      "finding": "Initial 专用通道可以存在有意退役，但它不是五条必需 lane 中的一条正常 EOF 成功路径。当前四稿没有预期退役状态/握手、实际 daemon A 收尾和 slot 转移 caller。",
+      "required": "只有同一 Root/daemon controller 的原一次退役握手、原 A 入场截止与队列 drain/join、实际 Complete/独立 Outcome/Prepared/retained source 的精确 join 才能进入后继 Claim。任意 EOF、丢 ACK、cancel、已关闭 gate 或仅后来读到 Published/drained 均不能替代这些事实。",
+      "no_rearm": "正常交接保留同一 gate/两个原绝对 end。不得关闭旧 gate 后重建新 gate 来清除 closed；必需 lane 意外 EOF 永久结束该 phase。"
+    },
+    {
+      "id": "CORE-GATE-3",
+      "classification": "bounded local source review; controller responsibilities remain",
+      "finding": "Gate 只做短 Mutex 内 admission/active/epoch/socket alias accounting；无 writer、lease、Outcome 或 publication 权能。BOOTTIME 在持同一 state lock 后采样，倒退/两个原绝对期限失败均关闭。remaining 仅是等待预算，不写回新的截止。",
+      "closure": "close 先取消 token，持原 state 锁标 closed、取出 aliases，锁外 notify/shutdown；poison 路径释放其 guard 后调用 close。epoch 在检查响应前抓取、发送响应后 notify，等待时检查同 epoch，局部实现避免该握手约定下的 lost wakeup。",
+      "pending": "实际 startup/receiver 必须提供同 original Root/session 的 end 与身份；deadline 数据构造器不是 authority。active 有计数，但本稿尚无 A 专属 route cut、原 pending queue 或 wait-for-zero/join 装配，不能称 F5 已完成。最多 16 aliases 的真实总体使用量尚待整合确认。"
+    },
+    {
+      "id": "CORE-CLAIM-4",
+      "classification": "actual physical source cut and durable ordering verified; business completion not independently proved",
+      "finding": "claim_same_actor_phase_after_original_a 在原 with_learning_profile witness 内重用真实 writer/peer/proof/clock/revocation 前后检查。它要求 Reserve mode、原 Initial deployment/writer/identity一致、实际 selected manifest、target 原 journal/witness 观察且 drained、同 agent/cell/run/principal、原 CURRENT Initial Published 及 retained consumed FinalUse。",
+      "ordering": "构造 claim 来自原 profile/head/scope、实际 CURRENT head、target files/owner/checkpoint/完整 observation；record.claim_before_namespaces 位于所有 Learning/Model namespace 之前。其后再次核 target 全值、files、CURRENT head、retained use、profile、selection，再返回捕获值。原 with_learning_profile 还执行外层 issuer/proof/clock/peer 后验。",
+      "type_facts": "真实 target.observe 返回的 CellGenerationObservedV1 派生 Eq/PartialEq；owner_checkpoint() 返回 Digest32。草稿全值观察比较与 checkpoint.to_string 在这两点没有已确认类型问题。",
+      "limit": "is_drained 的真实定义是 draining 且 pending/outbox 为空，不能提升为业务 Complete、独立 Outcome 或 HQ2 学习完成。实际 daemon 必须用原 producer.prepare_learning 和 Prepared/retained cap 与该物理 source cut 逐值且同 Arc/source join；合法 NoUpdate/OwnerDrainedSameModel 不应被猜测的 terminal/stopped 门误拒。",
+      "caller_obligation": "Initial CURRENT owner/slot 的实际 drop 在后继 caller 才发生；本函数捕获时仍借用 original slot。原注释 completed A/owner dropped 需要按上述有限保证收窄。"
+    },
+    {
+      "id": "CORE-RECORD-5",
+      "classification": "durable no-reinitialize and local uncertainty consumption verified; failure gate pending caller",
+      "finding": "record owner 由实际 Initial target.digest 域分离派生，不由 caller attempt 派生。原 HostAuthorityFrontierStore::initialize_bounded 在原 publication lock 下遇已有记录拒绝，无 Recover/open-existing fallback；同 original Root namespace 中换 PID/attempt 不会覆盖已有 Reserved/Claimed/Scoped。",
+      "mutation": "两个阶段 CAS 都先 expected.take，随后原 load/CAS/load 精确校验；失败或不确定没有 expected 可再次调用。记录仅有 Reserved、Claimed、Scoped，没有 durable Closed。",
+      "remaining": "若 durable Claim 成功而之后实际 source/with_learning_profile 后验失败，原记录仍可能是 Claimed，函数不返回 A cap。真实 phase worker 必须 armed CloseOnDrop 并立即停止后续 namespace；require_scoped 的任何失败同样关闭 gate。不能把错误后 retained expected 误用为继续权能，也不能声称已持久写入 Closed。当前四稿尚无该 worker。",
+      "scope": "防重开承诺绑定实际同 Root directory 与 target owner；不能对任意另选 Root directory 或另造 caller 身份做未证明的跨部署承诺。64 KiB 上界严格拒绝，无容量通过声明。"
+    }
+  ],
+  "exact_five_lane_revision": {
+    "exact_changes": [
+      {
+        "old": "let mut closing = CloseSameActorPhaseOnDrop::new(gate);",
+        "new": "let _closing = CloseSameActorPhaseOnDrop::new(gate);"
+      },
+      {
+        "old": "        })? {}\n        gate.require_open().map_err(unavailable)?;\n        closing.disarm();\n        Ok(())",
+        "new": "        })? {\n            // The framed ACK has completed. Instant-only transport checks\n            // do not replace the phase's retained BOOTTIME boundary.\n            gate.require_open().map_err(unavailable)?;\n        }\n        // These five owner lanes are required for the entire phase.\n        // EOF is not a completion receipt and closes every participating lane.\n        Err(HostIssuerTransportError::Closed)"
+      }
+    ],
+    "forward_equal": true,
+    "reverse_equal": true,
+    "old_close_disarm_removed": true,
+    "handler_pre_admission_retained": true,
+    "handler_postcheck_retained": true,
+    "ack_postcheck_added": true,
+    "eof_returns_closed": true
+  },
+  "reviewed_author_coordination": {
+    "accepted_by_author": [
+      "Mandatory five-lane EOF must return Closed with common close guard armed",
+      "Synchronous post-exchange common-gate/BOOTTIME check",
+      "Claim/postcheck errors close entire original phase; no reuse of record",
+      "Physical drain is not Complete/Outcome; later daemon Prepared/retained cap must join",
+      "Initial EOF requires a separate actual one-use retirement handshake; draft not assembled"
+    ],
+    "supplied_fixed_pin": "a5238ae4f69bd7a057c24dcfb9620db8263b0a63",
+    "not_yet_supplied": [
+      "Initial retirement/controller and actual daemon route source",
+      "Claim worker error guard and actual slot-drop/namespace sequencing",
+      "Final module/reexport/caller metadata and tests"
+    ]
+  },
+  "conclusion": "原 215e 的 EOF 缺陷在 a5238 的本函数范围已静态修正；当前没有证据把四草稿判作完整可集成 phase。明确剩余阻断是预期 Initial retirement、A admission/drain 与真实 Prepared/Outcome source join、错误关闭及共同期限的实际 controller/consumer 装配。没有运行或继承任何资格结果。"
+}

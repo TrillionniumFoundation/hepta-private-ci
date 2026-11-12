@@ -1,0 +1,249 @@
+{
+  "schema": "hepta.original-frontier-absolute-end-delivery.v1",
+  "status": "Frozen construction adapter candidate; static Git/V8 integrity only. No h/PTY/native/Cargo/formatter/original-checker/test/ref operation.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "original_frontier_blob": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+    "same_actual_preimage_at_prior_5a": true
+  },
+  "prerequisite": {
+    "foundation_manifest": {
+      "git_blob": "c47e0d089af95aec0c61c19c1400186d82f45456",
+      "bytes": 19901,
+      "sha256": "2d97e8e420d6b5bcbd9d62241681fce2ee50326e33ca5859364b21c66052a4d9"
+    },
+    "foundation_ops": {
+      "git_blob": "89666c639e40730cf32acf5996a4b90244201278",
+      "bytes": 36860,
+      "sha256": "a36a1baedef971a548dd61609f90be6b04a18c33b55b714b40bcac3b6fe24ff9",
+      "operations": 13,
+      "files": 5
+    },
+    "OwnerChannel_until": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+    "CALLERS_input": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621"
+  },
+  "exact_operations": {
+    "git_blob": "d77803995f3e67b08a02aed73187c925f2f7099d",
+    "bytes": 17826,
+    "sha256": "58b2e507bb622d3d414589e93b22a5b822d03f0938e7409569479b5a9df8b345",
+    "operations": 7,
+    "files": 4
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "pre_git": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+      "post_git": "ea360605daafec088a2f3891d11622bd2edfc010",
+      "bytes": 10540,
+      "sha256": "518bc4ad98b2af21ffa90027e257cbaeaffc8a8875b3d279ecfffa38a41f26c0",
+      "lines": 281,
+      "operations": 2,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_tests.rs",
+      "pre_git": "1656af0d3b0ed8faaff8cf3d74085a5bee4f0d5c",
+      "post_git": "9d74ca12c14730e3b8ba9b6b345bf3f9e8254b2d",
+      "bytes": 9875,
+      "sha256": "d2709044d6bbf9d69aef323b35d4576bbee5791842649b56b35aa57f55fbd103",
+      "lines": 312,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "76ed6df0567c669eb9fec4a43f4f7f359e71fbbc",
+      "bytes": 4877,
+      "sha256": "0e844d42236eeed8952569aa746ba22b22452245abf89d2bae67514e913fc147",
+      "lines": 148,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "post_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "bytes": 682061,
+      "sha256": "a8fd2dd65e6633660ae6cb356db0c66228084e5c68c46a240c1e95692b2e7d57",
+      "lines": 7307,
+      "operations": 3,
+      "forward_reverse_equal": true
+    }
+  ],
+  "role_correction": {
+    "original_assignment": [
+      "codex-rs/hepta-contracts/src/authority_host_issuer_transport.rs",
+      "codex-rs/hepta-contracts/src/authority_root_frontier.rs"
+    ],
+    "actual_issuer_file": "The original 83acf4c92c2d6192454508d57f4998dbd1eac2f3 defines the old HostIssuerSession grant server; it is not a HostFinalUseIssuerClient. The actual phase Root service uses HostAuthorityPeerChannel. No orphan HostIssuerSession adapter was added.",
+    "final_authorized_product_scope": [
+      "codex-rs/hepta-contracts/src/authority_root_frontier.rs"
+    ],
+    "daemon_grant_client": "runtime_access owns the actual AgentdUnixFinalUseGrantProvider in root_issuer_client.rs and its real receive chain.",
+    "original_issuer_file_unchanged": true,
+    "observation_stream_ownership": "RootObservationStream and earliest receive/end/BOOTTIME composition remain runtime_access's separate source."
+  },
+  "actual_interface": {
+    "symbol": "RootFinalUseFrontierClient::from_stream_until",
+    "signature": "pub fn from_stream_until(stream: UnixStream, owner_id: String, peer: RootPeerIdentity, root_pidfd: OwnedFd, timeout: Duration, end: Instant) -> Result<Self, AuthorityTrustError>",
+    "public_root_uid": 0,
+    "private_helper": "from_stream_for_uid_until preserves the existing private same-UID test-helper shape; all public construction passes the literal UID 0.",
+    "end": "Exact process-local end, consumed through OwnerChannel::new_until; no now+lifetime or remaining-to-new-end reconstruction.",
+    "preserved": [
+      "owner ID empty/256 bounds",
+      "PID nonzero/i32 and process start nonzero checks",
+      "timeout nonzero/5-second bound",
+      "held original pidfd kind/PID and live-owner checks",
+      "exact SO_PEERCRED UID and PID",
+      "original bounded /proc start-tick and boot-ID checks",
+      "nonblocking setup then final original live check",
+      "request counter starts at the same 1 and all subsequent code is unchanged"
+    ],
+    "failure_mapping": "The existing unavailable mapping remains unchanged. Expired end or malformed pidfd cannot reopen the channel; wrong boot/start/UID retains its original Invalid path."
+  },
+  "equivalence": {
+    "old_public_and_private_constructor_bytes": 2044,
+    "old_constructor_region_exact": true,
+    "old_exchange_store_bounded_read_unavailable_and_test_declaration_suffix_exact": true,
+    "new_body_exact_single_substitution": {
+      "before": "OwnerChannel::new(root_pidfd, peer.pid, lifetime)",
+      "after": "OwnerChannel::new_until(root_pidfd, peer.pid, end)"
+    },
+    "old_test_file_complete_prefix_exact": true,
+    "inherited_same_uid_fixture_scope": "Framing only, not original Root deployment",
+    "original_issuer_server_file_unmodified": "83acf4c92c2d6192454508d57f4998dbd1eac2f3",
+    "execution": "Pure V8 byte/hash and exact-operation verification only."
+  },
+  "operation_integrity": {
+    "source_operations": 4,
+    "metadata_operations": 3,
+    "all_forward_reverse_exact": true,
+    "all_postimages_create_get_exact": true,
+    "new_test_file_originally_absent": true,
+    "old_public_private_constructors_exact_bytes": 2044,
+    "old_framing_cas_unavailable_and_cleanup_suffix_exact": true,
+    "all_original_test_bytes_retained": true,
+    "manual_layout_only_no_formatter_claim": true
+  },
+  "metadata": {
+    "pre_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+    "post": {
+      "path": "CALLERS.toml",
+      "pre_git": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "post_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "bytes": 682061,
+      "sha256": "a8fd2dd65e6633660ae6cb356db0c66228084e5c68c46a240c1e95692b2e7d57",
+      "lines": 7307,
+      "operations": 3,
+      "forward_reverse_equal": true
+    },
+    "boundaries": {
+      "before": 507,
+      "after": 508
+    },
+    "inventory": {
+      "before": 507,
+      "after": 508,
+      "old_ids_unchanged": true,
+      "new_id": "root_original_final_use_frontier_until"
+    },
+    "protected": {
+      "before": 368,
+      "after": 369
+    },
+    "actual_added_existing_caller": {
+      "boundary": "root_original_owner_channel_until",
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs"
+    },
+    "new_public_boundary": {
+      "id": "root_original_final_use_frontier_until",
+      "symbol": "RootFinalUseFrontierClient::from_stream_until",
+      "receiver_type": "RootFinalUseFrontierClient",
+      "definition_path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "definition_markers": [
+        "pub fn from_stream_until(",
+        "Self::from_stream_for_uid_until(stream, owner_id, peer, root_pidfd, timeout, end, 0)",
+        "OwnerChannel::new_until(root_pidfd, peer.pid, end)"
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    "pending_actual_phase_callers": "The new public boundary's base external set is empty until runtime_access freezes the actual new receive file. Append that actual caller during joint assembly, not a hypothetical filename.",
+    "function_order": "Exact old and new fixed-UID0 public delegation, old and new private identity/pidfd/bound checks, and unchanged exchange counter/ACK/conflict/closed behavior.",
+    "minimum_sequence_rule": "All added sequences have at least two real markers under the original 7a670 rule. Single-call public wrappers use the exact actual fn marker followed by the entire fixed-UID0 call, retaining that complete expression.",
+    "raw_proc_literal_limit": "The original multiargument bounded_text /proc literals remain byte-identical in source and required raw markers; the code-order proof validates their bounds and identity comparisons but does not claim the original literal_calls helper proves multiargument string spans.",
+    "checker_executed": false,
+    "checker_modified": false,
+    "final_combined_CALLERS_allowance": "Root must synchronize the existing exact content-hash allowance for the final combined metadata; no global limit change."
+  },
+  "tests": {
+    "new_file": "codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs",
+    "methods": [
+      "absolute_frontier_end_keeps_original_framing_and_exact_end",
+      "absolute_frontier_end_refuses_expired_request_without_rearm",
+      "absolute_frontier_lost_ack_does_not_resend_the_operation",
+      "absolute_frontier_constructor_keeps_root_incarnation_and_pidfd_guards"
+    ],
+    "methods_added": 4,
+    "root_parent_added": 0,
+    "actual_execution": 0,
+    "fixture": "Reuse the existing private same-UID socketpair/pidfd framing helpers as a nested test module. This is not a Root deployment, original remote grant, real business consumer, or real remote storage commit.",
+    "verified_behavior_planned": [
+      "Actual framed Load and exact end retained across an accepted response",
+      "Expired original end emits no request and later calls remain unavailable",
+      "A lost CAS ACK does not resend or reset the original request sequence",
+      "Public non-Root refusal and exact wrong boot/start/pid/end errors"
+    ],
+    "original_test_file": {
+      "before": "1656af0d3b0ed8faaff8cf3d74085a5bee4f0d5c",
+      "original_bytes": 9800,
+      "prefix_retained": true,
+      "change": "Only append the new child module declaration."
+    },
+    "no_os_hard_realtime_assertion": true
+  },
+  "runtime_composition_limits": [
+    "Root lanes share their actual Root-process PhaseDeadline; daemon lanes must use their own earliest original receive Instant. Instants are not transferable authority and are not equal values across processes.",
+    "The actual daemon receive must additionally verify and tighten to the original sealed Root/LiveRoot BOOTTIME end; this constructor does not perform a clock-domain conversion or renewal.",
+    "Original request/lease/role windows and 500ms Root observation freshness remain mandatory and unchanged.",
+    "Phase ACK loss/cancellation must close every affected future effect path. This adapter reuses the existing stream closure but does not implement the outer cross-lane phase gate.",
+    "A legal existing Root/daemon/source capability is still required; these transport constructors do not create a Prepared batch, consumer independence, a new C actor, or a restartable phase."
+  ],
+  "historical_unexecuted_metadata_draft": {
+    "candidate": {
+      "path": "CALLERS.toml",
+      "pre_git": "09c38614d9e8904dff8919f241af210d6c58ceb6",
+      "post_git": "4d757d92d765a92d2684780aef2611708aab220f",
+      "bytes": 682004,
+      "sha256": "5f4d7c76bddbcb4eb4953c12d861049a2b90922e0090ec0b28c17cd64930a724",
+      "lines": 7307,
+      "operations": 3,
+      "forward_reverse_equal": true
+    },
+    "disposition": "Not delivered as final. Replaced to depend on foundation v2 and to satisfy the original minimum two-marker function-order syntax. Product/test bytes did not change."
+  },
+  "validation_boundary": {
+    "observed": "Fixed source reads, SHA/Git/length checks, complete code inspection and reversible source/metadata operations.",
+    "not_performed": [
+      "formatter",
+      "compiler",
+      "unit tests",
+      "Root component tests",
+      "original full caller checker",
+      "native qualification",
+      "physical restart",
+      "ordinary A-to-C acceptance"
+    ],
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "new_source_qualification_inherited": false,
+    "phase_completion_claimed": false,
+    "h_calls": 0,
+    "pty_calls": 0,
+    "refs_mutated": 0
+  }
+}

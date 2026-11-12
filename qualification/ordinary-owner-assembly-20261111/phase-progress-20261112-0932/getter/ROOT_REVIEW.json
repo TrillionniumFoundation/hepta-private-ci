@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.original-session-end-v34-root-review.v1",
+  "source": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "manifest": "8debee5d8d0f7aefd97ca27ef66afd4c2eb9c7ba",
+  "ops": {
+    "git_blob": "4c05c69162b98fd9befa1785638d9a1f2a6015ac",
+    "bytes": 1250,
+    "sha256": "9977fa474ba9e40654912a44b2eefe138e70abc08bcbe32eb649bce045967383"
+  },
+  "pre": {
+    "git_blob": "13ef7d0943f056527f45a7805e07a3f89b302985",
+    "bytes": 21608,
+    "sha256": "56ea30f1ee4d1e529dc7abb0f5b800afb351fa8dc481ff67b0def5de010c146f"
+  },
+  "post": {
+    "git_blob": "1f1aae78fe0defc1c0757bd8159d668eba5478c3",
+    "bytes": 21953,
+    "sha256": "94d3ede0c84cb2f90fc27d7e9fafae5019532b8c14cc368e44ac826afced5048"
+  },
+  "new_bytes": 345,
+  "checks": [
+    "Full preimage is the independently reconstructed and Git-verified V34 actual formatter postimage.",
+    "Full new blob fetched and Git/SHA256/length verified.",
+    "One unique forward operation produces the complete postimage; reversing restores every V34 byte.",
+    "Only a crate-private constant getter of self.live.end_boottime_ns plus explanatory comments is inserted; all original source bytes remain unchanged.",
+    "No authority read, clock refresh, lifetime renewal, new mutex, grant, rearm, reopen, or helper/checker change."
+  ],
+  "limits": [
+    "Not assembled into V34 or a new source commit.",
+    "No compilation/checker/component/native result claimed; V34 qualification does not cover this insertion.",
+    "Actual receiver must bind this data pin with the earliest original Instant and independently validated Root phase BOOTTIME end."
+  ],
+  "ordinary_counts": [
+    0,
+    0,
+    0
+  ]
+}

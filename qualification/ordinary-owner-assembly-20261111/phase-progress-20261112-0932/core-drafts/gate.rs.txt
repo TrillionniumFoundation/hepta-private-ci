@@ -1,0 +1,361 @@
+//! Shared stop and deadline accounting for the explicit same-actor phase.
+//! This gate supplies no writer, lease, outcome, or publication permission.
+//! Every effect still enters its original owner and dispatch-witness checks.
+
+use std::collections::BTreeMap;
+use std::io;
+use std::net::Shutdown;
+use std::os::unix::net::UnixStream;
+use std::sync::Arc;
+use std::sync::Condvar;
+use std::sync::Mutex;
+use std::time::Duration;
+use std::time::Instant;
+
+use tokio_util::sync::CancellationToken;
+
+const MAX_STREAMS: usize = 16;
+const STOP_PROBE: Duration = Duration::from_millis(5);
+
+/// The two time domains remain distinct. Neither field is reconstructed from
+/// a later remaining Duration. BOOTTIME also expires across system suspend.
+#[derive(Clone, Copy)]
+pub(crate) struct SameActorPhaseDeadline {
+    instant: Instant,
+    boottime_ns: u64,
+}
+
+impl SameActorPhaseDeadline {
+    /// Only the original Root serving scope calls this, before any service or
+    /// ready callback. The same value reaches every original and late lane.
+    pub(crate) fn at_original_service_start(lifetime: Duration) -> io::Result<Self> {
+        if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
+            return Err(refused("original phase lifetime is outside its bound"));
+        }
+        let boot = crate::root_observation_cache::boottime_ns().map_err(io::Error::other)?;
+        let instant = Instant::now()
+            .checked_add(lifetime)
+            .ok_or_else(|| refused("original phase Instant overflow"))?;
+        let boottime_ns = boot
+            .checked_add(u64::try_from(lifetime.as_nanos()).map_err(io::Error::other)?)
+            .ok_or_else(|| refused("original phase BOOTTIME overflow"))?;
+        Ok(Self { instant, boottime_ns })
+    }
+
+    /// Data pins captured by the actual receiver and original LiveRoot, plus
+    /// the Root-sealed phase bound. A later offer cannot increase either pin.
+    pub(crate) fn from_original_receive(
+        instant: Instant,
+        session_boottime_ns: u64,
+        root_phase_boottime_ns: u64,
+    ) -> io::Result<Self> {
+        if session_boottime_ns == 0 || root_phase_boottime_ns == 0 {
+            return Err(refused("original phase deadline is missing"));
+        }
+        let deadline = Self {
+            instant,
+            boottime_ns: session_boottime_ns.min(root_phase_boottime_ns),
+        };
+        deadline.remaining_at(
+            crate::root_observation_cache::boottime_ns().map_err(io::Error::other)?,
+        )?;
+        Ok(deadline)
+    }
+
+    pub(crate) fn instant(&self) -> Instant {
+        self.instant
+    }
+
+    pub(crate) fn boottime_ns(&self) -> u64 {
+        self.boottime_ns
+    }
+
+    fn remaining_at(&self, now: u64) -> io::Result<Duration> {
+        let boot = self.boottime_ns.checked_sub(now)
+            .filter(|remaining| *remaining != 0)
+            .map(Duration::from_nanos)
+            .ok_or_else(|| refused("original phase BOOTTIME end elapsed"))?;
+        let local = self.instant.checked_duration_since(Instant::now())
+            .filter(|remaining| !remaining.is_zero())
+            .ok_or_else(|| refused("original phase Instant end elapsed"))?;
+        Ok(boot.min(local))
+    }
+}
+
+struct GateState {
+    closed: bool,
+    epoch: u64,
+    last_boottime_ns: u64,
+    active: usize,
+    next_stream: u64,
+    streams: BTreeMap<u64, UnixStream>,
+}
+
+/// The short mutex guards only in-memory admission/accounting. It is never
+/// held across an owner callback, filesystem work, a frame, or an await.
+pub(crate) struct SameActorPhaseGate {
+    deadline: SameActorPhaseDeadline,
+    state: Mutex<GateState>,
+    changed: Condvar,
+    closed: CancellationToken,
+}
+
+/// Owns the shutdown alias for exactly one original channel lifetime.
+/// Dropping the channel cannot leave an alias keeping its peer alive.
+pub(crate) struct SameActorPhaseStream {
+    gate: Arc<SameActorPhaseGate>,
+    id: u64,
+}
+
+pub(crate) struct SameActorPhaseAdmission {
+    gate: Arc<SameActorPhaseGate>,
+}
+
+/// Cancelling a phase future or losing its response closes all participating
+/// lanes. Disarming transfers responsibility; it never reopens a closed gate.
+pub(crate) struct CloseSameActorPhaseOnDrop {
+    gate: Arc<SameActorPhaseGate>,
+    armed: bool,
+}
+
+impl SameActorPhaseGate {
+    pub(crate) fn from_original_deadline(deadline: SameActorPhaseDeadline) -> io::Result<Arc<Self>> {
+        let now = crate::root_observation_cache::boottime_ns().map_err(io::Error::other)?;
+        deadline.remaining_at(now)?;
+        Ok(Arc::new(Self {
+            deadline,
+            state: Mutex::new(GateState {
+                closed: false,
+                epoch: 0,
+                last_boottime_ns: now,
+                active: 0,
+                next_stream: 1,
+                streams: BTreeMap::new(),
+            }),
+            changed: Condvar::new(),
+            closed: CancellationToken::new(),
+        }))
+    }
+
+    pub(crate) fn deadline(&self) -> SameActorPhaseDeadline {
+        self.deadline
+    }
+
+    fn check_locked(&self, state: &mut GateState) -> io::Result<Duration> {
+        if state.closed || self.closed.is_cancelled() {
+            return Err(refused("original same-actor phase is closed"));
+        }
+        // Sample after acquiring the same state guard. A delayed reader cannot
+        // mistake a newer concurrent check for physical clock regression.
+        let now = crate::root_observation_cache::boottime_ns().map_err(io::Error::other)?;
+        if now < state.last_boottime_ns {
+            return Err(refused("original phase BOOTTIME regressed"));
+        }
+        let remaining = self.deadline.remaining_at(now)?;
+        state.last_boottime_ns = now;
+        Ok(remaining)
+    }
+
+    pub(crate) fn require_open(&self) -> io::Result<Duration> {
+        let checked = self.state.lock()
+            .map_err(|_| refused("original phase gate is poisoned"))
+            .and_then(|mut state| self.check_locked(&mut state));
+        if checked.is_err() {
+            self.close();
+        }
+        checked
+    }
+
+    pub(crate) fn enter_original_lane(self: &Arc<Self>) -> io::Result<SameActorPhaseAdmission> {
+        let admitted = (|| {
+            let mut state = self.state.lock()
+                .map_err(|_| refused("original phase gate is poisoned"))?;
+            self.check_locked(&mut state)?;
+            state.active = state.active.checked_add(1)
+                .ok_or_else(|| refused("original phase active count overflow"))?;
+            Ok(SameActorPhaseAdmission { gate: Arc::clone(self) })
+        })();
+        if admitted.is_err() {
+            self.close();
+        }
+        admitted
+    }
+
+    /// Retain a shutdown alias while this exact original channel is owned.
+    /// The returned guard must be kept inside that channel, never detached.
+    pub(crate) fn retain_original_stream(
+        self: &Arc<Self>,
+        stream: &UnixStream,
+    ) -> io::Result<SameActorPhaseStream> {
+        let retained = (|| {
+            let alias = stream.try_clone()?;
+            let mut state = self.state.lock()
+                .map_err(|_| refused("original phase gate is poisoned"))?;
+            self.check_locked(&mut state)?;
+            if state.streams.len() >= MAX_STREAMS {
+                return Err(refused("original phase stream bound exceeded"));
+            }
+            let id = state.next_stream;
+            state.next_stream = id.checked_add(1)
+                .ok_or_else(|| refused("original phase stream identity exhausted"))?;
+            state.streams.insert(id, alias);
+            Ok(SameActorPhaseStream { gate: Arc::clone(self), id })
+        })();
+        if retained.is_err() {
+            self.close();
+        }
+        retained
+    }
+
+    pub(crate) fn close(&self) {
+        self.closed.cancel();
+        // A poisoned guard cannot authorize anything. Its retained socket
+        // aliases are still owned here and must be shut down to wake waiters.
+        let streams = {
+            let mut state = match self.state.lock() {
+                Ok(state) => state,
+                Err(poisoned) => poisoned.into_inner(),
+            };
+            state.closed = true;
+            state.epoch = state.epoch.saturating_add(1);
+            std::mem::take(&mut state.streams)
+        };
+        self.changed.notify_all();
+        for stream in streams.into_values() {
+            let _ = stream.shutdown(Shutdown::Both);
+        }
+    }
+
+    pub(crate) async fn cancelled(&self) {
+        self.closed.cancelled().await;
+    }
+
+    /// Run in the original scoped Root thread or required daemon worker.
+    /// This is not detached and never refreshes an authority observation.
+    /// A short stop probe also notices BOOTTIME advancing across suspend.
+    pub(crate) fn watch_original_deadline(&self) {
+        loop {
+            let mut state = match self.state.lock() {
+                Ok(state) => state,
+                Err(poisoned) => { drop(poisoned); self.close(); return; }
+            };
+            if state.closed || self.closed.is_cancelled() {
+                return;
+            }
+            let remaining = match self.check_locked(&mut state) {
+                Ok(remaining) => remaining,
+                Err(_) => { drop(state); self.close(); return; }
+            };
+            match self.changed.wait_timeout(state, remaining.min(STOP_PROBE)) {
+                Ok((next, _)) => drop(next),
+                Err(poisoned) => { drop(poisoned); self.close(); return; }
+            }
+        }
+    }
+
+    pub(crate) fn notify_original_waiters(&self) {
+        match self.state.lock() {
+            Ok(mut state) => {
+                if let Some(next) = state.epoch.checked_add(1) {
+                    state.epoch = next;
+                } else {
+                    drop(state);
+                    self.close();
+                    return;
+                }
+            }
+            Err(poisoned) => {
+                drop(poisoned);
+                self.close();
+                return;
+            }
+        }
+        self.changed.notify_all();
+    }
+
+    /// Snapshot before checking an acknowledgement. A sender publishes its
+    /// response before notifying; comparing this epoch prevents a lost wakeup.
+    pub(crate) fn original_wait_epoch(&self) -> io::Result<u64> {
+        let result = (|| {
+            let mut state = self.state.lock()
+                .map_err(|_| refused("original phase gate is poisoned"))?;
+            self.check_locked(&mut state)?;
+            Ok(state.epoch)
+        })();
+        if result.is_err() { self.close(); }
+        result
+    }
+
+    pub(crate) fn wait_original_change(&self, epoch: u64) -> io::Result<()> {
+        let result = (|| {
+            let mut state = self.state.lock()
+                .map_err(|_| refused("original phase gate is poisoned"))?;
+            let remaining = self.check_locked(&mut state)?;
+            if state.epoch == epoch {
+                // This is only a wait budget; the two retained absolute ends
+                // are checked again after wakeup and are never recomputed.
+                state = self.changed.wait_timeout(state, remaining.min(STOP_PROBE))
+                    .map_err(|_| refused("original phase wait is poisoned"))?.0;
+            }
+            self.check_locked(&mut state)?;
+            Ok(())
+        })();
+        if result.is_err() { self.close(); }
+        result
+    }
+}
+
+impl Drop for SameActorPhaseStream {
+    fn drop(&mut self) {
+        let stream = match self.gate.state.lock() {
+            Ok(mut state) => state.streams.remove(&self.id),
+            Err(poisoned) => {
+                drop(poisoned);
+                self.gate.close();
+                return;
+            }
+        };
+        if let Some(stream) = stream {
+            let _ = stream.shutdown(Shutdown::Both);
+        }
+    }
+}
+
+impl Drop for SameActorPhaseAdmission {
+    fn drop(&mut self) {
+        let valid = match self.gate.state.lock() {
+            Ok(mut state) => match state.active.checked_sub(1) {
+                Some(active) => { state.active = active; true }
+                None => false,
+            },
+            Err(_) => false,
+        };
+        if valid {
+            self.gate.notify_original_waiters();
+        } else {
+            self.gate.close();
+        }
+    }
+}
+
+impl CloseSameActorPhaseOnDrop {
+    pub(crate) fn new(gate: &Arc<SameActorPhaseGate>) -> Self {
+        Self { gate: Arc::clone(gate), armed: true }
+    }
+
+    pub(crate) fn disarm(&mut self) {
+        self.armed = false;
+    }
+}
+
+impl Drop for CloseSameActorPhaseOnDrop {
+    fn drop(&mut self) {
+        if self.armed {
+            self.gate.close();
+        }
+    }
+}
+
+fn refused(message: &'static str) -> io::Error {
+    io::Error::other(message)
+}

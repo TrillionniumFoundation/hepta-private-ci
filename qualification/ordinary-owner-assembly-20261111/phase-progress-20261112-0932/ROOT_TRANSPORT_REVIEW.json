@@ -1,0 +1,224 @@
+{
+  "schema": "hepta.phase-foundation-through-observation-root-static-review.v1",
+  "status": "unassembled source candidates; no native or business qualification",
+  "base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "manifests": {
+    "foundation": "c47e0d089af95aec0c61c19c1400186d82f45456",
+    "frontier": "94001742be4ac902fb79b05cf0eeb90afef94665",
+    "grant": "215e3dc49c7205c943e2db142eb5e1951184ed70",
+    "observation": "c10b5264ce2cfd57ae82166b6527585cc3111146"
+  },
+  "checks": [
+    {
+      "cut": "foundationOps",
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "operations": 2,
+      "pre": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "post": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "foundationOps",
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "operations": 4,
+      "pre": "36e4524baea04320b7610325579f0ff206690fab",
+      "post": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "foundationOps",
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "operations": 2,
+      "pre": "275842b2fd966afa349697705ab90095a913d0ff",
+      "post": "6713a98ad63ee3c825dffc86b26ed4b583f9d134",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "foundationOps",
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs",
+      "operations": 1,
+      "pre": null,
+      "post": "573fd94965f6daff1ddd318d8d900e6b9da15905",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "foundationOps",
+      "path": "CALLERS.toml",
+      "operations": 4,
+      "pre": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "post": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "frontierOps",
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "operations": 2,
+      "pre": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+      "post": "ea360605daafec088a2f3891d11622bd2edfc010",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "frontierOps",
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_tests.rs",
+      "operations": 1,
+      "pre": "1656af0d3b0ed8faaff8cf3d74085a5bee4f0d5c",
+      "post": "9d74ca12c14730e3b8ba9b6b345bf3f9e8254b2d",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "frontierOps",
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs",
+      "operations": 1,
+      "pre": null,
+      "post": "76ed6df0567c669eb9fec4a43f4f7f359e71fbbc",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "frontierOps",
+      "path": "CALLERS.toml",
+      "operations": 3,
+      "pre": "4bf2d4d19ad4ece369d6d5b0fccc881df9cca621",
+      "post": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "grantOps",
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "operations": 1,
+      "pre": "e6a8969341404b3220ff0a2080a739986a74fa38",
+      "post": "510e9780df64b404bf0b9f23afd8bc20d71b0b86",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "grantOps",
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+      "operations": 1,
+      "pre": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+      "post": "4be776f01978d384997f1043b47858260d928a8b",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "grantOps",
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+      "operations": 1,
+      "pre": null,
+      "post": "28e5e1b9bb23ad95c2def9280b337a680517e041",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "grantOps",
+      "path": "CALLERS.toml",
+      "operations": 3,
+      "pre": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "post": "37ea232602494310f405cac3c612c22314fc01a3",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "observationOps",
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "operations": 1,
+      "pre": "9d3d24bd5104be99372c8a55859360e792120605",
+      "post": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "observationOps",
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_tests.rs",
+      "operations": 1,
+      "pre": "c16cf8ebcd27800deeceb9098bf2c81eecc91d1b",
+      "post": "f773dd9c73f6a0c519eccdb39f99bf52e902f08e",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "observationOps",
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs",
+      "operations": 1,
+      "pre": null,
+      "post": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a",
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "cut": "observationOps",
+      "path": "CALLERS.toml",
+      "operations": 3,
+      "pre": "37ea232602494310f405cac3c612c22314fc01a3",
+      "post": "ffa8a49d2c2d086c00f4945d25d66cac0cd5f523",
+      "forward": true,
+      "reverse": true
+    }
+  ],
+  "metadata": {
+    "old_boundaries": 504,
+    "new_boundaries": 510,
+    "old_ids_all_present": true,
+    "old_inventory_prefix_exact": true,
+    "new_ids": [
+      "root_original_owner_channel_until",
+      "root_original_peer_channel_until",
+      "root_q24_factory_same_service_reserve",
+      "root_original_final_use_frontier_until",
+      "root_original_root_issuer_until",
+      "root_original_observation_stream_until"
+    ],
+    "old_tables_changed": [
+      "root_q24_factory_explicit_reserve"
+    ],
+    "old_changed_fields_only": [
+      "definition_markers"
+    ],
+    "all_other_old_boundary_tables_equal": true,
+    "protected_before": 366,
+    "protected_after": 370,
+    "scope": "Pure V8 table/inventory comparison, not TOML parsing, Rust type analysis or original checker execution."
+  },
+  "source_inspection": [
+    "Root read all actual source operations for foundation, Frontier, grant provider and observation constructors; pre/post full blobs were independently fetched, hashed and transformed/reversed.",
+    "Fixed V34 path GETs independently bind seven existing foundation/Frontier/grant preimages. Observation preimages were fetched as exact blobs; author separately fetched their fixed V34 paths.",
+    "Original transport and public defaults retained. New adapters retain exact supplied original Instant, same UID/PID/pidfd/incarnation, frame and timeout bounds. New transport rights do not replace a Root authorization.",
+    "Model reservation extracts the same guarded body onto its held Service; original expiry, witness, required binding, create-only files and open/seal suffix remain.",
+    "Phase gate/record/claim and explicit Initial join are separate unassembled work. Required lane EOF was corrected from normal success to Closed and shared closure. Returned A physical cut is not a business Complete/Outcome."
+  ],
+  "independent_reviews": {
+    "foundation": "be46823cdcfc6462c4b8a5e8456770aa70dd9f33",
+    "frontier": "0345ba4c362f4ecf3097fed52c9b0a2ae84b9e02",
+    "core_initial": "84ef12e62b83dee5848315adef97560f49c6bbdb",
+    "grant": "pending at this checkpoint",
+    "observation": "pending at this checkpoint"
+  },
+  "required_next": [
+    "Freeze and review actual Root worker, daemon earliest admission, two-domain deadline/ACK gate and real Prepared/Outcome/source join.",
+    "Append only actual final production callers; empty isolated adapter sets do not establish caller closure.",
+    "Update only exact combined CALLERS size allowance, then run the unchanged original fixed-source full qualification.",
+    "Retain every actual failure and ambiguous side effect; no rearm, retry, replacement business receipt or inherited PASS."
+  ],
+  "limits": {
+    "native_executed": false,
+    "original_checker_executed": false,
+    "business_counts": [
+      0,
+      0,
+      0
+    ],
+    "independent_C": false,
+    "physical_restart": false
+  }
+}

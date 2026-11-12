@@ -1,0 +1,215 @@
+{
+  "schema": "hepta.original-root-issuer-absolute-end-delivery.v1",
+  "status": "Frozen constructor candidate. Git/V8 static integrity only; no formatter/compiler/checker/test/native/h/PTY/ref execution.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "parent": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "source_preimages_3c5_and_d973_independently_get_equal": true,
+    "product_preimage": "e6a8969341404b3220ff0a2080a739986a74fa38",
+    "read_only_parent": "d6dbdcfca4ed85d7f9a13be5fa143de8cf561984"
+  },
+  "prerequisites": {
+    "foundation_manifest": "c47e0d089af95aec0c61c19c1400186d82f45456",
+    "foundation_review": "be46823cdcfc6462c4b8a5e8456770aa70dd9f33",
+    "actual_peer_until_post": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+    "actual_owner_until_post": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+    "frontier_manifest": "94001742be4ac902fb79b05cf0eeb90afef94665",
+    "metadata_preimage": "6cac387f221b96282cdc1cadf383ee82ccf1e871"
+  },
+  "scope": {
+    "production_edited": [
+      "codex-rs/hepta-agentd/src/root_issuer_client.rs"
+    ],
+    "parent_read_only": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+    "runtime_owned_not_edited": [
+      "RootObservationStream",
+      "original phase gate and its cross-lane close/ACK lifecycle",
+      "actual root_production_same_actor_phase_inputs.rs receiver",
+      "parent exchange_guarded phase integration",
+      "same-service Model open follow-up"
+    ],
+    "role_correction": "HostIssuerSession in contracts authority_host_issuer_transport.rs is the old server, not the actual daemon grant client. It remains completely untouched."
+  },
+  "interface": {
+    "symbol": "AgentdUnixFinalUseGrantProvider::from_root_stream_until",
+    "visibility": "pub(crate)",
+    "signature": "fn from_root_stream_until(stream: UnixStream, root_pid: u32, root_pidfd: OwnedFd, timeout: Duration, end: Instant) -> Result<Self, AgentdFinalUseIssuerError>",
+    "fixed_root_uid": 0,
+    "private_helper": "protected_stream_until mirrors the existing private uid-parameter construction shape solely behind the fixed-UID0 crate-private method and same-UID tests.",
+    "end_contract": "Receive the daemon's already captured process-local end and store that exact Instant in both OwnerChannel and ProtectedRootIssuer. remaining(end) is only the policy lifetime bound; no later now+remaining reconstructs an end.",
+    "order": [
+      "remaining(end)? before constructing the new channel",
+      "original connected stream try_clone",
+      "same HostAuthorityPeerPolicy peer/timeout/request/response bounds",
+      "HostAuthorityPeerChannel::from_stream_until with original pidfd and the exact end",
+      "original PeerDenied mapping for the peer constructor",
+      "original Self::from_stream with the actual connected stream, actual expected peer and timeout",
+      "ProtectedRootIssuer retains that same channel and end",
+      "remaining(end)? before returning provider"
+    ],
+    "additional_postcheck": "Only the new path refuses construction if its original end has passed during the original checked construction. No refresh, extra claim, new signature or reconnect occurs.",
+    "legacy_unchanged": "Both old constructors, their time sampling/order and all original text/objective/decoding methods are byte-identical. Parent request/FinalUse/signature/binding/closure logic is unmodified."
+  },
+  "exact_operations": {
+    "git_blob": "2fdddeddf91200838a5754bfacd1dfda7c45c083",
+    "bytes": 14618,
+    "sha256": "f5d82ba66997962aa3f58a265bc66ec4c3b829a4db852f06dd4b490316961922",
+    "operations": 6,
+    "files": 4
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "pre_git": "e6a8969341404b3220ff0a2080a739986a74fa38",
+      "post_git": "510e9780df64b404bf0b9f23afd8bc20d71b0b86",
+      "bytes": 9853,
+      "sha256": "a7374f4233e2a5309fbc57fb6eaf5600dca9ccc5515857c8d522847859366f5e",
+      "lines": 264,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs",
+      "pre_git": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+      "post_git": "4be776f01978d384997f1043b47858260d928a8b",
+      "bytes": 9892,
+      "sha256": "cbdc67e942a8dacfe851128997ad6d53e1d5b6f0b0f12d7904f1d534b6c2defc",
+      "lines": 292,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+      "pre_git": null,
+      "post_git": "28e5e1b9bb23ad95c2def9280b337a680517e041",
+      "bytes": 5376,
+      "sha256": "6aff64f810c9633457ef73c9c563ad50eda6dfc3bbe2d78e49ea693bb1657fb3",
+      "lines": 162,
+      "operations": 1,
+      "forward_reverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre_git": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+      "post_git": "37ea232602494310f405cac3c612c22314fc01a3",
+      "bytes": 684583,
+      "sha256": "ed13a86d88ec74a2293e3a2f9aeccfb7b63293e1bd2d7afca397b4ba7ea71e98",
+      "lines": 7327,
+      "operations": 3,
+      "forward_reverse_equal": true
+    }
+  ],
+  "equivalence": {
+    "old_public_constructor_bytes": 305,
+    "old_private_constructor_bytes": 1109,
+    "old_constructors_exact": true,
+    "old_signature_text_and_decoder_suffix_bytes": 3700,
+    "old_signature_text_and_decoder_suffix_exact": true,
+    "old_test_file_complete_prefix_exact": true,
+    "old_test_method_count": 6,
+    "new_test_method_count": 4,
+    "parent_file_unchanged": "d6dbdcfca4ed85d7f9a13be5fa143de8cf561984",
+    "new_private_derived_by_exact_six_replacements": true,
+    "all_forward_reverse_equal": true
+  },
+  "failure_contract": {
+    "new_prefix_expiry": "DeadlineElapsed before a transport lane is installed; transferred descriptors drop.",
+    "peer_bounds_or_proof_failure": "Original HostAuthorityPeerChannel failure maps to PeerDenied; actual UID/PID, held pidfd and bounds remain checked.",
+    "new_suffix_expiry": "DeadlineElapsed and drop the newly retained descriptors without sending any operation; caller must still close its outer phase gate.",
+    "request_deadline": "Original exchange_guarded uses min(original request timeout, same protected_root.end); check_root and remaining still precede and follow the exchange.",
+    "expired_request_exact_error": "The original check_root precedes remaining and maps OwnerChannel expiry to PeerDenied; the new component assertion preserves that exact order.",
+    "lost_ack": "Original stream slot is taken once; any uncertain exchange shuts down it and does not restore it. The new component observes one actual frame then peer EOF, followed by ChannelClosed on a second request.",
+    "no_retry_or_rearm": true,
+    "cross_lane_not_implemented_here": "This constructor does not implement the whole phase's terminal state or close all other sockets. Runtime's actual phase gate remains mandatory before the new mode is considered complete."
+  },
+  "metadata": {
+    "base": "6cac387f221b96282cdc1cadf383ee82ccf1e871",
+    "post": "37ea232602494310f405cac3c612c22314fc01a3",
+    "boundaries": {
+      "before": 508,
+      "after": 509
+    },
+    "protected": {
+      "before": 369,
+      "after": 370
+    },
+    "new_id": "root_original_root_issuer_until",
+    "inventory_old_ids_unchanged": true,
+    "actual_added_existing_caller": {
+      "id": "root_original_peer_channel_until",
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs"
+    },
+    "new_external_callers": [],
+    "same_file_internal_guard": "Exact unique function-order protections cover both fixed UID0 entry methods and both private construction bodies. Original checker excludes definition_path from the external caller set.",
+    "pending_actual_receiver": "runtime_access will append its actual frozen root_production_same_actor_phase_inputs.rs call during complete assembly. The planned path is not claimed as a present caller in this isolated cut.",
+    "minimum_order_length": "All four new protected function sequences contain at least two actual markers; the one-call wrappers use exact fn header plus complete fixed-UID0 call.",
+    "literal_span_rules": "No quoted-string literal markers are required in these constructor sequences.",
+    "old_checker_unchanged": true,
+    "checker_executed": false,
+    "allowlist": "Final assembled CALLERS exact hash allowance must be updated by Root; this slice does not change a global limit or replace an old allowlist."
+  },
+  "tests": {
+    "old_test_file": "9afcb2e46fbce69605051b295414daaf00ec9db1",
+    "old_test_methods": 6,
+    "old_complete_prefix_retained": true,
+    "new_file": "codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs",
+    "new_methods": [
+      "absolute_root_issuer_end_keeps_original_request_and_denial",
+      "absolute_root_issuer_end_refuses_late_request_without_rearm",
+      "absolute_root_issuer_lost_ack_closes_original_lane_without_resend",
+      "absolute_root_issuer_constructor_keeps_uid_pidfd_and_end_guards"
+    ],
+    "count": 4,
+    "root_parents_added": 0,
+    "executed": 0,
+    "scope": "Actual local socketpair/pidfd framing with the existing private same-UID pattern. Replies only deny grants; no signature, fixture success receipt, Root deployment or business action is constructed.",
+    "specific_cases": [
+      "Two correctly framed grant requests receive explicit denials and retain the exact original end.",
+      "A request after the original end emits no frame, yields the original PeerDenied, and cannot reopen.",
+      "One real request followed by peer write shutdown yields exact Unavailable, closes the socket, and forbids resend.",
+      "Conditional public non-UID0 rejection; wrong peer PID; non-pidfd descriptor; zero timeout; expired end; more than original 300-second bound."
+    ],
+    "timing": "No upper wall-time scheduling assertion. Expiry test sleeps past its already stored end and then checks rejection.",
+    "layout": "Hand-aligned to adjacent source; no formatter or formatter-pass claim."
+  },
+  "verification": {
+    "performed": [
+      "Fixed 3c5 and d973 Git reads with full byte equality for product/read-only parent/old test sources.",
+      "New test path was absent at 3c5.",
+      "All six exact operations applied and reversed in pure V8 to the full original strings.",
+      "All four source/metadata postimages CREATE/GET full-byte equality and independent Git/SHA256/length checks.",
+      "Only six explicit substitutions transform the old private construction into the new private method."
+    ],
+    "not_performed": [
+      "original checker",
+      "Rust parsing or compilation",
+      "unit tests",
+      "Root tests",
+      "native qualification",
+      "phase execution",
+      "ordinary A/C acceptance",
+      "OS restart"
+    ],
+    "h_calls": 0,
+    "pty_calls": 0,
+    "ref_mutations": 0,
+    "source_qualification_inherited": false
+  },
+  "phase_boundaries": [
+    "The daemon process's earliest Instant and the Root process's own PhaseDeadline are not the same transferable value. Actual sealed/LiveRoot BOOTTIME end must be checked independently by runtime's receive logic.",
+    "Original Root grant/Objective authentication, owner/role/lease windows, 500ms observation freshness, full Source/Cell/CURRENT checks and same-session identity remain required.",
+    "This helper creates no Root rights, Consumer/C identity, grant, signer, phase claim, Prepared batch or cold-restart capability.",
+    "No statement that the same-session phase or ordinary A-to-C loop is complete. No independent C/positive adoption/business evidence is added."
+  ],
+  "business": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0
+  },
+  "independent_review": {
+    "status": "Requested from runtime_access; not yet claimed complete.",
+    "foundation_review_is_not_review_of_this_cut": true
+  }
+}

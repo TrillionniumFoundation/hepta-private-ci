@@ -1,0 +1,393 @@
+{
+  "schema": "hepta.ordinary-assembly-operational-checkpoint.v10",
+  "status": "Work in progress: original V34 full qualification running; phase not assembled",
+  "observation_utc": "2026-11-12 09:32:09 UTC",
+  "source": {
+    "branch": "codex/ordinary-owner-broker-staging-20261111-af52",
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "assembly": "85c7729dbf74f75b338efb4ef0fc21ce3acaf9f0",
+    "source_delta": "V34 is the prior reviewed V33 source plus six exact actual rustfmt postimages and its evidence; no future phase code is integrated."
+  },
+  "native": {
+    "work": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9",
+    "session": "dpty-1222ac4070757c4e43621722572e2a145cccf6eccddb21224d925e3791ae6268",
+    "next_offset": 6421,
+    "idempotency_key": "af52-ordinary-d973793-seven-final-v9-20261112",
+    "request": {
+      "git_blob": "89a4360e2c074f5c234b283b2f089692bfe2c93a",
+      "bytes": 56726,
+      "sha256": "89c9e1bb9442bee12b876a85d8ab2d5b042a816b6cba56879cf37e2c9a3ccb34"
+    },
+    "admission": {
+      "git_blob": "ec15bc8e290fbd0106c569343e02597fb9e78cfc",
+      "bytes": 57716,
+      "sha256": "8bf3ecc4bdc50f4be16fd5b0f574dc0bdcc8d028204cacd408a1e23cb846336a"
+    },
+    "observed_stage": "caller-full-verify",
+    "terminal": false,
+    "original_harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "full_packages": 7,
+    "root_roster": 17,
+    "retries": 0,
+    "overall_seconds": 27000,
+    "caller_seconds": 3600,
+    "freshness_ns": "500000000",
+    "qualification_inherited": false
+  },
+  "public": {
+    "hepta_draft": 6006,
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "draft_only": true,
+    "merge_forbidden": true,
+    "chain_draft": 909,
+    "chain_head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "chain_evidence_commit": "6a8c1bdcd8d698fdf30fa3ed8b2a3ab3a2611f25",
+    "chain_result": "Nine workflows terminal: five success, four failure; not all green; no independent C or Hepta FinalUse acceptance."
+  },
+  "archives": {
+    "V12": {
+      "source": "894138f (full exact source identity retained in committed INDEX)",
+      "complete": true,
+      "evidence_commit": "2fbb25a6bac11d29b6d62523af94d645a082955e",
+      "archive_git": "e5a484bbb82c15ac9d7ad4b75bcb5bebc743a5ad",
+      "bytes": 1205440,
+      "sha256": "44008c4fa113fe83e3122af5a2c3e3c0e9a2505df5e1f02f95cc89cc60a3e0b4",
+      "root_review": "d90e4e50249cd14a05dc954569bf182506411e1e",
+      "parts_complete": 34,
+      "independent_second_tar_parse": false
+    },
+    "V13": {
+      "source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "original_export_success": true,
+      "transfer_complete": false,
+      "last_frozen_checkpoint": "abd5b0c5e00ea97cb377aac88f3657fe2859d810",
+      "parts_verified_at_frozen_checkpoint": 8,
+      "parts_total": 42,
+      "archive_expected_git": "04495f75a40aa96a1183f6e00fc980ca88a3246f",
+      "archive_expected_sha256": "85cd371adf28d5c7f76f858815d52b772a245a8abfac7b68a2edf6561d945a5c",
+      "bytes": 1483428,
+      "live_work": "chain_nextuse explicitly authorized read-only resume from part008, two immutable files per batch, one in-flight, stop after two consecutive MCP timeouts; no archive completion claimed."
+    }
+  },
+  "phase": {
+    "integrated": false,
+    "native_executed": false,
+    "components": "four sequential constructor/factory cuts and separately reviewed deadline getter",
+    "metadata_root_check": {
+      "old_boundaries": 504,
+      "new_boundaries": 510,
+      "old_ids_all_present": true,
+      "old_inventory_prefix_exact": true,
+      "new_ids": [
+        "root_original_owner_channel_until",
+        "root_original_peer_channel_until",
+        "root_q24_factory_same_service_reserve",
+        "root_original_final_use_frontier_until",
+        "root_original_root_issuer_until",
+        "root_original_observation_stream_until"
+      ],
+      "old_tables_changed": [
+        "root_q24_factory_explicit_reserve"
+      ],
+      "old_changed_fields_only": [
+        "definition_markers"
+      ],
+      "all_other_old_boundary_tables_equal": true,
+      "protected_before": 366,
+      "protected_after": 370,
+      "scope": "Pure V8 table/inventory comparison, not TOML parsing, Rust type analysis or original checker execution."
+    },
+    "root_transport_review": "807d72cc7f4d3bfc3ada90bbec04a136d82c62ab",
+    "core_review": "84ef12e62b83dee5848315adef97560f49c6bbdb",
+    "core_limits": [
+      "Core review precedes newer Initial retirement/join and narrowed claim documentation; no whole-core approval is implied.",
+      "Required five-lane EOF correction is local and verified; actual expected Initial retirement and worker still need composition review.",
+      "Record reserves and claims once; it has Reserved/Claimed/Scoped only, no durable Closed.",
+      "Physical drain and retained initial use do not prove business Complete/Outcome.",
+      "Actual Root worker, daemon Prepared/retained source join, atomic task admission and complete caller metadata remain unfinished."
+    ]
+  },
+  "owners": {
+    "root": "Only PTY/native/Cargo scheduler, original evidence and final source/ref/CAS integration.",
+    "runtime_access": "Actual same-session Root worker/cap/gate, earliest deadline receive, typed daemon/controller, final metadata.",
+    "hepta_audit": "Independent static review; no h/native.",
+    "chain_nextuse": "Transport cuts complete; read-only V13 archive transfer with stated bounds."
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "actual_daemon_root_os_restart": false
+  },
+  "rules": [
+    "No second native attempt while this one is running/unknown.",
+    "Preserve failed original worktrees/records and uncertain effects; no reset/retry/rearm/expiry renewal.",
+    "Do not repair host permissions, install runtime packages, change credentials/network, kill jobs or weaken the checker.",
+    "No fabricated A/Outcome/C/receipts; same actor with another run is not independent C.",
+    "Draft only; no merge."
+  ],
+  "files": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c47e0d089af95aec0c61c19c1400186d82f45456"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/EXACT_OPERATIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89666c639e40730cf32acf5996a4b90244201278"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/INDEPENDENT_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be46823cdcfc6462c4b8a5e8456770aa70dd9f33"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/postimages/codex-rs/hepta-contracts/src/authority_host_channel.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "16f592cd8bcb5a6822193bc46d38887227c3d30f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/postimages/codex-rs/hepta-contracts/src/authority_host_peer.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/postimages/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6713a98ad63ee3c825dffc86b26ed4b583f9d134"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/foundation/postimages/codex-rs/hepta-contracts/src/authority_host_peer_deadline_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "573fd94965f6daff1ddd318d8d900e6b9da15905"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/frontier/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94001742be4ac902fb79b05cf0eeb90afef94665"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/frontier/EXACT_OPERATIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d77803995f3e67b08a02aed73187c925f2f7099d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/frontier/INDEPENDENT_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0345ba4c362f4ecf3097fed52c9b0a2ae84b9e02"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/frontier/postimages/codex-rs/hepta-contracts/src/authority_root_frontier.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea360605daafec088a2f3891d11622bd2edfc010"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/frontier/postimages/codex-rs/hepta-contracts/src/authority_root_frontier_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d74ca12c14730e3b8ba9b6b345bf3f9e8254b2d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/frontier/postimages/codex-rs/hepta-contracts/src/authority_root_frontier_deadline_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76ed6df0567c669eb9fec4a43f4f7f359e71fbbc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/grant/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "215e3dc49c7205c943e2db142eb5e1951184ed70"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/grant/EXACT_OPERATIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2fdddeddf91200838a5754bfacd1dfda7c45c083"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/grant/INDEPENDENT_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b650b7df9b25cc0f50b906601d671d4aa106ef78"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/grant/postimages/codex-rs/hepta-agentd/src/root_issuer_client.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "510e9780df64b404bf0b9f23afd8bc20d71b0b86"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/grant/postimages/codex-rs/hepta-agentd/src/root_issuer_client_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4be776f01978d384997f1043b47858260d928a8b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/grant/postimages/codex-rs/hepta-agentd/src/root_issuer_client_deadline_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "28e5e1b9bb23ad95c2def9280b337a680517e041"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/observation/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c10b5264ce2cfd57ae82166b6527585cc3111146"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/observation/EXACT_OPERATIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ac77eb43d0e80e6112c7c5577744e5ddb56f3df"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/observation/postimages/codex-rs/hepta-agentd/src/root_observation_stream.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfece0ef578d08bd1e44189e38a95dfe9cebfb2c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/observation/postimages/codex-rs/hepta-agentd/src/root_observation_stream_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f773dd9c73f6a0c519eccdb39f99bf52e902f08e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/observation/postimages/codex-rs/hepta-agentd/src/root_observation_stream_deadline_tests.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "359e7607fc24f1ad3beb42380e51bac8b5d31d5a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/gate.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72e6ad48045f75179c16915af73b7bff19c3dfa8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/record.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8fde41f81c82513518bc0e2fa15ab3214937bc5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/initial-claim.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d294f8ff7d8b48c9e274edfd0406dce27475cd12"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/five-lanes.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5238ae4f69bd7a057c24dcfb9620db8263b0a63"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/initial-retirement-join.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8562a3d3592d11588fe362c816870c96517a1774"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/initial-worker.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6a49d5662d060e56e64d3618fa2848e7933811ef"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/core-drafts/INDEPENDENT_CORE_REVIEW_v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84ef12e62b83dee5848315adef97560f49c6bbdb"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/ROOT_TRANSPORT_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "807d72cc7f4d3bfc3ada90bbec04a136d82c62ab"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/getter/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8debee5d8d0f7aefd97ca27ef66afd4c2eb9c7ba"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/getter/EXACT_OPERATIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4c05c69162b98fd9befa1785638d9a1f2a6015ac"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/getter/ROOT_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d48f00e9dc0a566ab8ef7d792e60e35cd6555134"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/getter/root_authority_session.rs.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f1aae78fe0defc1c0757bd8159d668eba5478c3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v34-running/CONFIG.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e56666a45f47b3604c400f276678ca10d104a35"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v34-running/REQUEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89a4360e2c074f5c234b283b2f089692bfe2c93a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v34-running/EXACT_REQUEST_OPERATIONS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f3b20f98edc1b6abc1894774347bd55006f3b2b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v34-running/ROOT_PREPARATION_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "121f52333da5b6702b44cdd4e0443b2462b2aca4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v34-running/ADMISSION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec15bc8e290fbd0106c569343e02597fb9e78cfc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v13-paused/TRANSFER_CHECKPOINT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abd5b0c5e00ea97cb377aac88f3657fe2859d810"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/phase-progress-20261112-0932/native-v13-paused/ORIGINAL_EXPORT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e6bcc3b326c721c37df02192eac5084552cd665"
+    }
+  ]
+}
