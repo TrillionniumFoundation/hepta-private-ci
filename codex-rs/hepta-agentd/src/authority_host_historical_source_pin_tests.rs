@@ -90,18 +90,9 @@ fn source_pin_recomputes_the_published_task_instead_of_accepting_matching_scope(
     Ok(())
 }
 
-#[test]
-#[ignore = "actual UID0 and original Root-owned directory custody"]
-fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
--> anyhow::Result<()> {
-    original_root()?;
-    let directory = tempfile::Builder::new()
-        .prefix("source-pin-")
-        .tempdir_in("/run")?;
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-    let root = RootAuthorityDirectory::open(directory.path())?;
-    let (target, _, _) = target()?;
-    assert!(RootHistoricalSourcePinV1::open_existing(root.clone(), &target).is_err());
+fn component_pin(
+    target: CellGenerationOwnerBindingV1,
+) -> anyhow::Result<(tempfile::NamedTempFile, SourcePin)> {
     let named = tempfile::NamedTempFile::new()?;
     let file = named.as_file();
     file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
@@ -120,7 +111,7 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
             process_start_ticks: 1,
         },
         writer: "component-writer".into(),
-        target: target.clone(),
+        target,
         target_files: "component-target-files".into(),
         source_files: [file_pin.clone(), file_pin],
         source_configuration: "component-configuration".into(),
@@ -131,6 +122,22 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
         completed_task: "component-completion".into(),
         fence_digest: Digest32::of_bytes(b"component-fence-digest").to_string(),
     };
+    Ok((named, pin))
+}
+
+#[test]
+#[ignore = "actual UID0 and original Root-owned directory custody"]
+fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
+-> anyhow::Result<()> {
+    original_root()?;
+    let directory = tempfile::Builder::new()
+        .prefix("source-pin-")
+        .tempdir_in("/run")?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let root = RootAuthorityDirectory::open(directory.path())?;
+    let (target, _, _) = target()?;
+    assert!(RootHistoricalSourcePinV1::open_existing(root.clone(), &target).is_err());
+    let (_source_file, pin) = component_pin(target.clone())?;
     let retained = retain_pin(root.clone(), pin.clone())?;
     let digest = retained.readback_digest()?;
     assert_eq!(
@@ -156,3 +163,6 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
     assert!(RootHistoricalSourcePinV1::open_existing(root, &target).is_err());
     Ok(())
 }
+
+#[path = "authority_host_historical_source_pin_cold_tests.rs"]
+mod cold;

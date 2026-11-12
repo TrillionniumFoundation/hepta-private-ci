@@ -165,3 +165,6 @@ fn root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recovera
     assert!(RootHistoricalSourceHandoffV1::open_finalized(root, &original.target).is_err());
     Ok(())
 }
+
+#[path = "authority_host_historical_source_handoff_cold_tests.rs"]
+mod cold;
