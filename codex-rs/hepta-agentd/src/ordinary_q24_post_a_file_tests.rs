@@ -119,7 +119,7 @@ impl OriginalFileData {
         Ok(bytes)
     }
 
-    fn require_file(&self, file: &File) -> anyhow::Result<()> {
+    pub(super) fn require_file(&self, file: &File) -> anyhow::Result<()> {
         let metadata = file.metadata()?;
         anyhow::ensure!(
             Self::capture(&self.path)? == *self
