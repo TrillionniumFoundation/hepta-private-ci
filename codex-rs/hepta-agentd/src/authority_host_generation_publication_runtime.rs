@@ -78,12 +78,60 @@ pub(in super::super) fn serve_optional(
     owner: &OwnedFd,
     original: impl FnOnce() -> io::Result<()>,
 ) -> io::Result<()> {
+    serve_optional_with_end(
+        publication,
+        learning,
+        service,
+        config,
+        registration,
+        owner,
+        /*original_end*/ None,
+        original,
+    )
+}
+
+pub(in super::super) fn serve_optional_until(
+    publication: Option<&BoundPublication>,
+    learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    end: Instant,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
+    owner_alive(owner, end)?;
+    let result = serve_optional_with_end(
+        publication,
+        learning,
+        service,
+        config,
+        registration,
+        owner,
+        Some(end),
+        original,
+    );
+    owner_alive(owner, end)?;
+    result
+}
+
+fn serve_optional_with_end(
+    publication: Option<&BoundPublication>,
+    learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    original_end: Option<Instant>,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
     let Some(publication) = publication else {
         return original();
     };
     let stopping = AtomicBool::new(false);
     let active = Mutex::new(None::<UnixStream>);
-    let end = Instant::now() + Duration::from_millis(config.lifetime_ms);
+    let end =
+        original_end.unwrap_or_else(|| Instant::now() + Duration::from_millis(config.lifetime_ms));
     publication
         .runtime
         .phase
@@ -116,6 +164,9 @@ pub(in super::super) fn serve_optional(
             );
             let slot = match slot {
                 Ok(slot) => {
+                    if original_end.is_some() {
+                        owner_alive(owner, end)?;
+                    }
                     if stopping.load(Ordering::Acquire)
                         || submission
                             .acknowledgement
@@ -168,15 +219,27 @@ pub(in super::super) fn serve_optional(
                 request_bound: 16 * 1024,
                 response_bound: 16 * 1024,
             };
-            let result = service.serve_generation_publication(
-                &slot,
-                learning,
-                config,
-                registration,
-                stream,
-                policy,
-                owner.try_clone()?,
-            );
+            let result = match original_end {
+                Some(end) => service.serve_generation_publication_until(
+                    &slot,
+                    learning,
+                    config,
+                    registration,
+                    stream,
+                    policy,
+                    owner.try_clone()?,
+                    end,
+                ),
+                None => service.serve_generation_publication(
+                    &slot,
+                    learning,
+                    config,
+                    registration,
+                    stream,
+                    policy,
+                    owner.try_clone()?,
+                ),
+            };
             if stopping.load(Ordering::Acquire) {
                 Ok(())
             } else {

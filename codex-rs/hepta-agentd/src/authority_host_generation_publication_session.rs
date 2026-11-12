@@ -18,6 +18,7 @@ use crate::authority_host_service::generation_publication::SOCKET;
 mod runtime;
 pub(super) use runtime::BoundPublication;
 pub(super) use runtime::serve_optional;
+pub(super) use runtime::serve_optional_until;
 
 #[path = "authority_host_publication_deployment.rs"]
 pub(super) mod deployment;
