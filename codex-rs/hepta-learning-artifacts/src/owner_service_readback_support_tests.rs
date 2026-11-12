@@ -5,6 +5,8 @@ use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 pub(super) struct OriginalPublicationReadbackFixture {
@@ -106,7 +108,7 @@ impl OriginalPublicationReadbackFixture {
         let mut failed = request.clone();
         failed.payload = b"wrong-original-payload".to_vec();
         assert!(self.service.publish(failed).is_err());
-        ::std::assert_eq!(
+        assert_eq!(
             self.service.recovery_required(),
             Some(&request.operation_id)
         );

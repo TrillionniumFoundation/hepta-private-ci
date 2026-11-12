@@ -38,6 +38,12 @@ use profile::ReadProfile;
 mod readiness;
 pub(crate) use readiness::OriginalCircuitCompletionReadinessClientV1;
 
+#[path = "circuit_evaluated_completion_readiness.rs"]
+mod evaluated_readiness;
+pub(crate) use evaluated_readiness::OriginalCircuitEvaluatedCompletionReadinessClientV1;
+#[cfg(test)]
+pub(crate) use evaluated_readiness::fixture as evaluated_readiness_fixture;
+
 #[path = "circuit_learning_read_service.rs"]
 mod serving;
 #[path = "circuit_learning_read_wire.rs"]

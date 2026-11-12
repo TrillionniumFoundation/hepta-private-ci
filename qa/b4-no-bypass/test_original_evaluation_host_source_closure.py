@@ -37,10 +37,10 @@ EXPECTED = {
     "learning_original_evaluation_host_serve": (),
     "learning_original_evaluation_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_evaluation_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
-    "learning_original_evaluation_connection_training": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
+    "learning_original_evaluation_connection_training": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",),
     "learning_original_evaluation_connection_recovery": (),
     "learning_original_evaluation_command_execute": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
-    "learning_original_evaluation_command_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"),
+    "learning_original_evaluation_command_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",),
     "learning_original_evaluation_command_attestation": (),
 }
 
@@ -190,7 +190,9 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
     def test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch(self):
         self.rejects(CORE, "fn validate_recovery<'a>", "self.read_original_evaluation(snapshot).await?")
         self.rejects(CORE, "fn validate_recovery<'a>", "snapshot.receipts.len() != 4")
-        self.rejects(EVALUATION, "fn read_original_evaluation(", "Action::Readback")
+        self.rejects(EVALUATION, "fn read_original_evaluation(",
+                     ".read_original_evaluation_with_originals(snapshot)")
+        self.rejects(EVALUATION, "fn read_original_evaluation_with_originals(", "Action::Readback")
         for marker in (
             "self.common.origin != Origin::Fresh", "snapshot.receipts.len() != 3",
             "self.original_evaluation(snapshot, Action::Execute).await?",

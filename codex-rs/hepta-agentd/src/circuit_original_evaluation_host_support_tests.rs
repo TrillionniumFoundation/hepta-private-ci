@@ -38,9 +38,13 @@ impl HostFixture {
     }
 
     pub(super) async fn before_adoption() -> anyhow::Result<Self> {
+        Box::pin(Self::before_publication(PublicationMode::RetainOriginalA)).await
+    }
+
+    pub(super) async fn before_publication(publication: PublicationMode) -> anyhow::Result<Self> {
         let panel = Box::pin(PanelFixture::completed_for_publication(
             TrainingPeer::Original,
-            PublicationMode::RetainOriginalA,
+            publication,
         ))
         .await?;
         Self::from_panel(panel, /*pending_claim*/ false)

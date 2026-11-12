@@ -136,6 +136,28 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         self.prepared.intent_digest()
     }
 
+    // Only the parent Version continuation can observe this same preparation.
+    // No role client, signer or fresh publication custody leaves this value.
+    pub(super) fn original_completed_for_version(&self) -> &PublishedCircuitFeatureCompletionV1 {
+        &self.completed
+    }
+
+    pub(super) async fn require_current_for_original_version(
+        &self,
+        expected: &OriginalCircuitEvaluatedRetentionContextV1,
+    ) -> Result<(), Error> {
+        if self.context.snapshot() != expected.snapshot()
+            || self.context.receipt_context_binding() != expected.receipt_context_binding()
+        {
+            return Err(Error::Binding(
+                "same original prepared evaluated Version context",
+            ));
+        }
+        self.context
+            .require_current(&self.trainer, &self.evaluator, PublicationAccess::Readback)
+            .await
+    }
+
     /// Only the independent original grant may publish this exact intent.
     /// Lost ACK, cancellation or a changed owner never becomes another prepare.
     pub async fn publish_original_retained_task(

@@ -108,6 +108,7 @@ pub(super) struct Fixture {
 enum MaterialFixtureProfile {
     NoUpdate,
     CandidatePages,
+    CandidateMaximumPages,
 }
 
 impl Fixture {
@@ -123,6 +124,15 @@ impl Fixture {
     async fn candidate_pages() -> anyhow::Result<Self> {
         Self::candidate_pages_for_evaluation_profile(d("explicit-independent-evaluation-profile"))
             .await
+    }
+
+    async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+        Self::with_profile(
+            /*expired_work*/ false,
+            MaterialFixtureProfile::CandidateMaximumPages,
+            d("explicit-independent-evaluation-profile"),
+        )
+        .await
     }
 
     async fn candidate_pages_for_evaluation_profile(
@@ -147,6 +157,9 @@ impl Fixture {
         let (baseline, bundle) = match profile {
             MaterialFixtureProfile::NoUpdate => source::model(&root)?,
             MaterialFixtureProfile::CandidatePages => source::candidate_page_model(&root)?,
+            MaterialFixtureProfile::CandidateMaximumPages => {
+                source::candidate_maximum_page_model(&root)?
+            }
         };
         let baseline = Arc::new(baseline);
         let generator = signer("generator", LearningEvidenceRoleV1::Generator, 1, at);
@@ -279,7 +292,8 @@ impl Fixture {
             observed_at: Some(at - 10),
             value: Some(match profile {
                 MaterialFixtureProfile::NoUpdate => FixedQ32::ZERO,
-                MaterialFixtureProfile::CandidatePages => FixedQ32::from_raw(2_i64 << 32),
+                MaterialFixtureProfile::CandidatePages
+                | MaterialFixtureProfile::CandidateMaximumPages => FixedQ32::from_raw(2_i64 << 32),
             }),
             unit_profile_digest: d("explicit-material-unit"),
             support_digest: d("explicit-terminal-outcome-support"),
@@ -308,6 +322,7 @@ impl Fixture {
             match profile {
                 MaterialFixtureProfile::NoUpdate => 1_024,
                 MaterialFixtureProfile::CandidatePages => 4_108,
+                MaterialFixtureProfile::CandidateMaximumPages => 32_780,
             },
             evaluation_profile,
         )?;
@@ -352,7 +367,8 @@ impl Fixture {
             epochs: 1,
             learning_rate_q24: match profile {
                 MaterialFixtureProfile::NoUpdate => 1,
-                MaterialFixtureProfile::CandidatePages => 1 << 20,
+                MaterialFixtureProfile::CandidatePages
+                | MaterialFixtureProfile::CandidateMaximumPages => 1 << 20,
             },
         };
         let update_rule = crate::cell_q24_single_head_update_rule_v1(

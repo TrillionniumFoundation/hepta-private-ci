@@ -60,6 +60,19 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             coverage.ORIGINAL_EVALUATION_PROVIDER_PREFIX + name for name in names
         )
 
+    def deep_native_cases(self):
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs"
+        ).read_text()
+        names = re.findall(
+            r"(?m)^#\[tokio::test(?:\([^\n]*\))?\]\n"
+            r"async fn (q24_deep_original_\w+)\(",
+            source,
+        )
+        self.assertTrue(names, "no registered native Deep tests found")
+        return tuple(coverage.DEEP_ORIGINAL_READBACK_PREFIX + name for name in names)
+
     def test_exact_subset_retains_other_native_cases(self):
         root, log = self.reports()
         self.assertTrue(self.assess(root, log))
@@ -74,8 +87,13 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             coverage.ORIGINAL_EVALUATION_PROVIDER_CASES, self.provider_native_cases()
         )
 
-    def test_provider_cases_require_both_original_reports_and_package(self):
-        for name in self.provider_native_cases():
+    def test_deep_catalog_tracks_registered_native_tests(self):
+        self.assertCountEqual(
+            coverage.DEEP_ORIGINAL_READBACK_CASES, self.deep_native_cases()
+        )
+
+    def test_provider_and_deep_cases_require_both_original_reports_and_package(self):
+        for name in (*self.provider_native_cases(), *self.deep_native_cases()):
             for mutation in ("missing_junit", "missing_log", "foreign_package"):
                 with self.subTest(name=name, mutation=mutation):
                     root, log = self.reports()

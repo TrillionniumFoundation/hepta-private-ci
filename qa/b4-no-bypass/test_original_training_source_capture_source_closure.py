@@ -26,6 +26,7 @@ NATIVE = AGENT + "cell_composed_q24_training_owner.rs"
 BOUND = AGENT + "cell_q24_source_bound_stage.rs"
 STAGE = AGENT + "cell_q24_training_stage.rs"
 MODEL = AGENT + "cell_q24_training_model_lane.rs"
+READ_LANE = AGENT + "cell_q24_training_source_read_lane.rs"
 EXPECTED = {
     "learning_original_training_source_capture": (),
     "learning_original_remote_training_source_capture": (AGENT + "cell_q24_training_bootstrap_build.rs",),
@@ -46,7 +47,7 @@ EXPECTED = {
     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),
     "learning_original_training_source_inputs": (OWNER,),
     "learning_original_training_source_identity": (OWNER,),
-    "learning_source_bound_training_admission": (BOUND, MODEL),
+    "learning_source_bound_training_admission": (BOUND, READ_LANE),
     "learning_source_bound_training_live_check": (NATIVE, STAGE, MODEL),
     "learning_source_bound_training_work_deadline": (NATIVE,),
 }

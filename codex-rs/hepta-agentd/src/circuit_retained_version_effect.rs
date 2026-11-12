@@ -12,11 +12,13 @@ use super::super::super::context::PublicationAccess;
 use super::super::Error;
 use super::super::OriginalCircuitRetainedVersionReadbackV1;
 use super::super::RetainedVersionOriginV1;
+use super::super::profile::VersionCut;
 use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionFinalUseOutcomeV1;
 use super::RetainedVersionHostPhaseV1;
 use super::RetainedVersionHostStateV1;
-use crate::PreparedOriginalCircuitRetainedPublicationV1;
+use super::RetainedVersionPreparedV1;
+use super::SharedEvaluatedReadbacks;
 
 impl OriginalCircuitRetainedVersionHostV1 {
     pub(super) fn prepare_original(
@@ -38,16 +40,34 @@ impl OriginalCircuitRetainedVersionHostV1 {
         task.require_completed_a(&inputs.completed)?;
         cut.require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
         let trainer = state.trainer.take().ok_or(Error::CommitUncertain)?;
-        let prepared = self
-            .runtime
-            .block_on(crate::prepare_original_circuit_retained_publication_v1(
-                cut.original_context(),
-                trainer,
-                *inputs,
-            ))
-            .map_err(|_| Error::CommitUncertain)?;
+        let prepared = match cut {
+            VersionCut::TrainingNoUpdate(cut) => {
+                let prepared = self
+                    .runtime
+                    .block_on(crate::prepare_original_circuit_retained_publication_v1(
+                        cut.original_context(),
+                        trainer,
+                        *inputs,
+                    ))
+                    .map_err(|_| Error::CommitUncertain)?;
+                RetainedVersionPreparedV1::TrainingNoUpdate(Box::new(prepared))
+            }
+            VersionCut::Evaluated(cut) => {
+                let evaluator = state.evaluator.take().ok_or(Error::CommitUncertain)?;
+                let prepared = self
+                    .runtime
+                    .block_on(crate::prepare_original_circuit_evaluated_retention_v1(
+                        cut.evaluated.clone_for_original_receipt(),
+                        trainer,
+                        evaluator,
+                        *inputs,
+                    ))
+                    .map_err(|_| Error::CommitUncertain)?;
+                RetainedVersionPreparedV1::Evaluated(Box::new(prepared))
+            }
+        };
         state.phase = Some(RetainedVersionHostPhaseV1::Prepared {
-            original: Box::new(prepared),
+            original: prepared,
             task,
         });
         let actual = self
@@ -146,13 +166,12 @@ impl OriginalCircuitRetainedVersionHostV1 {
             else {
                 return Err(Error::CommitUncertain);
             };
-            task.require_completed_a(&original.completed)?;
+            task.require_completed_a(original.completed())?;
             require_not_cancelled(&cancellation)?;
-            let (published, trainer) = self.runtime.block_on(
-                PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(
-                    *original, signed,
-                ),
-            ).map_err(|_| Error::CommitUncertain)?;
+            let (published, trainer, evaluator) = self
+                .runtime
+                .block_on(original.publish(signed))
+                .map_err(|_| Error::CommitUncertain)?;
             let cut = state.cut.as_ref().ok_or(Error::CommitUncertain)?;
             let intent = match &published.0.publication {
                 crate::circuit_feature_current::Publication::Update { original, .. } => {
@@ -166,7 +185,18 @@ impl OriginalCircuitRetainedVersionHostV1 {
             let (installed, config) = task
                 .install_original(published, cut, intent)
                 .map_err(|_| Error::CommitUncertain)?;
-            state.trainer = Some(trainer);
+            match (&state.cut, evaluator) {
+                (Some(VersionCut::TrainingNoUpdate(_)), None) => {
+                    state.trainer = Some(trainer);
+                }
+                (Some(VersionCut::Evaluated(_)), Some(evaluator)) => {
+                    state.shared_evaluated = Some(SharedEvaluatedReadbacks {
+                        trainer: Arc::new(trainer),
+                        evaluator: Arc::new(evaluator),
+                    });
+                }
+                _ => return Err(Error::CommitUncertain),
+            }
             state.phase = Some(RetainedVersionHostPhaseV1::Installed {
                 original: installed,
                 config: Some(config),

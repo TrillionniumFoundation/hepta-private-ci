@@ -21,17 +21,19 @@ use tokio::sync::Notify;
 use tokio::sync::Semaphore;
 
 use super::super::OriginalCircuitRetainedPublicationInputsV1;
-use super::super::PreparedOriginalCircuitRetainedPublicationV1;
 use super::Error;
 use super::OriginalCircuitRetainedTaskInputsV1;
 use super::RetainedVersionOriginV1;
 use super::c_task::RetainedVersionInstalledTaskV1;
-use super::context::OriginalVersionCut;
+use super::profile::VersionCut;
+use super::profile::VersionPurpose;
 use crate::AgentdConfig;
 use crate::AgentdIdentity;
 use crate::AgentdUnixFinalUseGrantProvider;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::NeuronGenerationCurrentOwnerV1;
+use crate::OriginalCellEvaluationCommandClientV1;
+use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
@@ -42,17 +44,27 @@ use crate::PublishedCircuitCellOwnerV1;
 
 #[path = "circuit_retained_version_artifact.rs"]
 mod artifact;
+#[path = "circuit_evaluated_version_host.rs"]
+mod evaluated;
+use evaluated::EvaluatedVersionExpectedV1;
+pub use evaluated::OriginalCircuitEvaluatedVersionRecoveryV1;
 #[path = "circuit_retained_version_effect.rs"]
 mod effect;
 #[path = "circuit_retained_version_issuer.rs"]
 mod issuer;
+#[path = "circuit_retained_version_prepared.rs"]
+mod prepared;
+use prepared::RetainedVersionPreparedV1;
+#[path = "circuit_evaluated_version_readiness.rs"]
+mod readiness;
+pub use readiness::OriginalCircuitEvaluatedReadinessChannelV1;
+#[path = "circuit_evaluated_version_commands.rs"]
+mod evaluated_commands;
 #[path = "circuit_retained_version_service.rs"]
 mod service;
 #[path = "circuit_retained_version_state.rs"]
 mod state;
 
-type RetainedVersionPreparedV1 =
-    PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 type RetainedVersionInputsV1 =
     OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
@@ -98,7 +110,7 @@ enum RetainedVersionHostPhaseV1 {
         task: OriginalCircuitRetainedTaskInputsV1,
     },
     Prepared {
-        original: Box<RetainedVersionPreparedV1>,
+        original: RetainedVersionPreparedV1,
         task: OriginalCircuitRetainedTaskInputsV1,
     },
     Installed {
@@ -120,8 +132,14 @@ struct RetainedVersionHostStateV1 {
     dataset: OriginalCellQ24DatasetCommandReadbackV1,
     initial_trainer: Option<OriginalCellQ24TrainingCommandConnectionV1>,
     trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
-    cut: Option<OriginalVersionCut>,
+    initial_evaluator: Option<OriginalCellEvaluationCommandConnectionV1>,
+    evaluator: Option<OriginalCellEvaluationCommandClientV1>,
+    // Only successful publication or fully verified cold custody creates this
+    // pair. S/C receive sealed command owners; the clients never escape.
+    shared_evaluated: Option<SharedEvaluatedReadbacks>,
+    cut: Option<VersionCut>,
     expected: Option<RetainedVersionColdCutV1>,
+    expected_evaluated: Option<EvaluatedVersionExpectedV1>,
     control: Arc<NeuronGenerationCurrentOwnerV1>,
     artifacts: RetainedVersionArtifactOwnerV1,
     final_use_issuer: Option<OriginalRootRetainedVersionIssuerV1>,
@@ -132,10 +150,19 @@ struct RetainedVersionHostStateV1 {
         Arc<OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
     >,
 }
+
+struct SharedEvaluatedReadbacks {
+    trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,
+    evaluator: Arc<OriginalCellEvaluationCommandClientV1>,
+}
+
 pub struct OriginalCircuitRetainedVersionHostV1 {
     material: OriginalCellQ24MaterialReceiptConfigV1,
     initial_binding: Digest32,
     origin: RetainedVersionOriginV1,
+    selection_command_requested: AtomicBool,
+    next_use_command_requested: AtomicBool,
+    purpose: VersionPurpose,
     state: Mutex<RetainedVersionHostStateV1>,
     preparation_requested: AtomicBool,
     publication_requested: AtomicBool,
@@ -188,12 +215,17 @@ impl OriginalCircuitRetainedVersionHostV1 {
             material,
             initial_binding,
             RetainedVersionOriginV1::Fresh,
+            VersionPurpose::TrainingNoUpdate,
             RetainedVersionHostStateV1 {
                 dataset,
                 initial_trainer: Some(trainer),
                 trainer: None,
+                initial_evaluator: None,
+                evaluator: None,
+                shared_evaluated: None,
                 cut: None,
                 expected: None,
+                expected_evaluated: None,
                 control,
                 artifacts,
                 phase: Some(phase),
@@ -238,15 +270,20 @@ impl OriginalCircuitRetainedVersionHostV1 {
             material,
             initial_binding,
             RetainedVersionOriginV1::Recovered,
+            VersionPurpose::TrainingNoUpdate,
             RetainedVersionHostStateV1 {
                 dataset,
                 initial_trainer: Some(trainer),
                 trainer: None,
+                initial_evaluator: None,
+                evaluator: None,
+                shared_evaluated: None,
                 cut: None,
                 expected: Some(RetainedVersionColdCutV1 {
                     training: original.training,
                     attestations: original.attestations,
                 }),
+                expected_evaluated: None,
                 control: original.current,
                 artifacts,
                 phase: Some(phase),
@@ -261,6 +298,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         material: OriginalCellQ24MaterialReceiptConfigV1,
         initial_binding: Digest32,
         origin: RetainedVersionOriginV1,
+        purpose: VersionPurpose,
         state: RetainedVersionHostStateV1,
         lifetime: Duration,
     ) -> Result<Self, Error> {
@@ -272,6 +310,9 @@ impl OriginalCircuitRetainedVersionHostV1 {
             material,
             initial_binding,
             origin,
+            selection_command_requested: AtomicBool::new(false),
+            next_use_command_requested: AtomicBool::new(false),
+            purpose,
             state: Mutex::new(state),
             preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
             publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),

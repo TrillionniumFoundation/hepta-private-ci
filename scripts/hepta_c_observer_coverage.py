@@ -254,6 +254,7 @@ DEEP_ORIGINAL_READBACK_CASES = tuple(
     DEEP_ORIGINAL_READBACK_PREFIX + name
     for name in (
         "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
         "q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
     )
 )

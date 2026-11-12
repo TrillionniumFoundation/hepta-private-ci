@@ -393,11 +393,13 @@ async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -
     let bytes = f.f.original.bytes()?;
     let (evidence, channel) = next::evidence_client(&context)?;
     let evidence_server = next::serve_evidence(Arc::clone(&service.owner), channel);
+    next::evidence_diagnostic_marker("client_read_begin", 1);
     let evidence_started = std::time::Instant::now();
     let original_evidence = evidence
         .readback(completed.snapshot(), completed.receipt())
         .await;
     let evidence_elapsed = evidence_started.elapsed();
+    next::evidence_diagnostic_marker("client_read_return", 1);
     let original_evidence = match original_evidence {
         Ok(original) => original,
         Err(error) => {

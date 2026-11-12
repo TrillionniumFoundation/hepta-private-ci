@@ -24,7 +24,8 @@ pub struct OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'a, C: AnchorWitnes
     pub evaluator: &'a OriginalCellEvaluationCommandClientV1,
 }
 
-/// Only an actual original Selector journal read constructs this result.
+/// Only an actual original Selector journal read or its authenticated fixed
+/// command response constructs this result.
 /// It grants no C execution, publication, signing custody or later CURRENT.
 pub struct OriginalCircuitEvaluatedSelectionReceiptV1 {
     context: OriginalCircuitEvaluatedRetentionContextV1,
@@ -45,6 +46,37 @@ impl Clone for OriginalCircuitEvaluatedSelectionReceiptV1 {
 }
 
 impl OriginalCircuitEvaluatedSelectionReceiptV1 {
+    /// The purpose-fixed command decoder is the only remote constructor.
+    /// The original context retains its origin; cold decoding cannot promote it.
+    pub(crate) fn authenticate_original_command_response(
+        context: OriginalCircuitEvaluatedRetentionContextV1,
+        snapshot: LearningIterationSnapshotV1,
+        attestation: SignedLearningEvidenceV1,
+        current: u64,
+    ) -> Result<Self, Error> {
+        let prefix = context.snapshot();
+        if snapshot.request != prefix.request
+            || snapshot.owners != prefix.owners
+            || snapshot.receipts.len() != 5
+            || !snapshot.receipts.starts_with(&prefix.receipts)
+        {
+            return Err(OwnerError::Binding("one original evaluated Selection extension").into());
+        }
+        let receipt = snapshot
+            .receipts
+            .last()
+            .ok_or(OwnerError::Binding("original evaluated Selection receipt"))?
+            .clone();
+        let original = Self {
+            context,
+            snapshot,
+            receipt,
+            attestation,
+        };
+        original.original_receipt_predecessors(current)?;
+        Ok(original)
+    }
+
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
         &self.snapshot
     }
@@ -334,6 +366,31 @@ pub(super) fn authenticate_evaluated_training(
 }
 
 impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W> {
+    /// The immutable evaluated pins remain attached to this exact owner.
+    /// No key, journal or caller-selected recovery brand leaves this accessor.
+    pub(crate) fn original_evaluated_command_context(
+        &self,
+    ) -> Result<OriginalCircuitEvaluatedRetentionContextV1, Error> {
+        let Profile::Evaluated(context) = &self.profile else {
+            return Err(OwnerError::Binding("original evaluated Selector command profile").into());
+        };
+        Ok(context.clone_for_original_receipt())
+    }
+
+    pub fn into_evaluated_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        trainer: std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,
+        evaluator: std::sync::Arc<OriginalCellEvaluationCommandClientV1>,
+    ) -> Result<
+        crate::OriginalCircuitEvaluatedSelectionCommandOwnerV1<W>,
+        crate::OriginalCircuitEvaluatedSelectionCommandErrorV1,
+    > {
+        crate::OriginalCircuitEvaluatedSelectionCommandOwnerV1::from_original_receipt_owner(
+            self, live, trainer, evaluator,
+        )
+    }
+
     /// Consume the same original Selector custody into a read-only host.
     /// C receives only the existing evidence purpose, never this mutable owner.
     pub fn into_evaluated_readback_owner<C: AnchorWitnessStore + Send + 'static>(

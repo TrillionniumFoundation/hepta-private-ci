@@ -42,6 +42,7 @@ pub(super) struct Admission {
 #[path = "circuit_retained_version_task_support_tests.rs"]
 mod retained_version_task;
 pub(super) use retained_version_task::retained_version_task_inputs;
+pub(super) use retained_version_task::start_installed_retained_version;
 
 pub(super) struct Session {
     pub runtime: RuntimeFixture,
