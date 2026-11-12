@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.q24-factory-v2.guard-development.v1",
+  "head": "da1a4fd1c5c899466185d6b3aa4f641af7711ac0",
+  "status": " M .github/blob-size-allowlist.txt\n M CALLERS.toml\n M codex-rs/hepta-agentd/src/authority_host_q24_model_profile_variants.rs\n M codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs\n M codex-rs/hepta-agentd/src/authority_host_q24_model_registration_v2.rs\n M codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs\n M codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs\n M codex-rs/hepta-agentd/src/root_q24_model_factory.rs\n M qa/b4-no-bypass/test_derived_learning_source_closure.py\n M qa/b4-no-bypass/test_post_a_product_source_closure.py\n M qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py\n?? qa/b4-no-bypass/test_q24_factory_v2_source_closure.py\n",
+  "protected_rows": 578,
+  "inventory_rows": 736,
+  "added_boundary_ids": [
+    "root_q24_factory_original_witness_binding",
+    "root_q24_factory_original_witness_generation",
+    "root_q24_factory_v2_live_admission",
+    "root_q24_factory_v2_live_context",
+    "root_q24_factory_v2_open_existing",
+    "root_q24_factory_v2_original_reservation",
+    "root_q24_factory_v2_reservation_description",
+    "root_q24_factory_v2_reserve_same_service",
+    "root_q24_factory_versioned_live_context"
+  ],
+  "old_boundary_mutations": [
+    {
+      "id": "root_q24_factory_open_original",
+      "fields": [
+        "product_callers",
+        "definition_markers"
+      ]
+    },
+    {
+      "id": "root_learning_live_profile_action",
+      "fields": [
+        "product_callers"
+      ]
+    },
+    {
+      "id": "cell_original_physical_witness_codec",
+      "fields": [
+        "product_callers"
+      ]
+    },
+    {
+      "id": "root_q24_factory_reserve_same_service",
+      "fields": [
+        "product_callers"
+      ]
+    }
+  ],
+  "old_protected_mutations": [
+    {
+      "index": 235,
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "fields": [
+        "required_order"
+      ]
+    },
+    {
+      "index": 236,
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "fields": [
+        "required_order",
+        "required"
+      ]
+    },
+    {
+      "index": 238,
+      "path": "codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs",
+      "fields": [
+        "required_order"
+      ]
+    },
+    {
+      "index": 239,
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "fields": [
+        "required_order"
+      ]
+    },
+    {
+      "index": 336,
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "fields": [
+        "required_function_order"
+      ]
+    },
+    {
+      "index": 531,
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "fields": [
+        "required_function_order"
+      ]
+    },
+    {
+      "index": 546,
+      "path": "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs",
+      "fields": [
+        "required_function_order"
+      ]
+    },
+    {
+      "index": 560,
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "fields": [
+        "required_function_order"
+      ]
+    }
+  ],
+  "all_old_boundaries_retained": true,
+  "all_old_protected_paths_and_forbidden_markers_retained": true,
+  "callers_sha256": "f7d10165424cdace688878101daaf2bae7f97dacce88c5461f201e3157959fa0",
+  "native_executed": false,
+  "full_caller_checker_executed": false
+}

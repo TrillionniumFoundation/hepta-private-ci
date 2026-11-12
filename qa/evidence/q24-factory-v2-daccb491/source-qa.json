@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.q24-factory-v2.frozen-source-qa.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "test_q24_factory_v2_source_closure",
+    "test_derived_learning_source_closure",
+    "test_post_a_product_source_closure",
+    "test_root_publication_existing_owner_source_closure",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass",
+  "start_unix": 1794483931.7432814,
+  "end_unix": 1794483939.6699233,
+  "exit_code": 0,
+  "before": {
+    "head": "daccb491e30815a3a3d7b78e52331a51f17946ab",
+    "tree": "77fc7c9d8255d1ec6e11c1728eb55b22178f9c22",
+    "status": "",
+    "source_files": 7525,
+    "source_sha256": "3a910ff3c85702a0736c2435dea73914fbf2ffefdc2c7941d25e68f86d021e1c"
+  },
+  "after": {
+    "head": "daccb491e30815a3a3d7b78e52331a51f17946ab",
+    "tree": "77fc7c9d8255d1ec6e11c1728eb55b22178f9c22",
+    "status": "",
+    "source_files": 7525,
+    "source_sha256": "3a910ff3c85702a0736c2435dea73914fbf2ffefdc2c7941d25e68f86d021e1c"
+  },
+  "source_unchanged": true,
+  "protected_rows": 578,
+  "inventory_rows": 736,
+  "full_caller_checker_executed": false,
+  "native_executed": false,
+  "raw_log_bytes": 5631,
+  "raw_log_sha256": "a24e8d2fd9bbddcc09f2ded5c8800fb20d8cefc81c99ee1cd5bf20486758855c"
+}

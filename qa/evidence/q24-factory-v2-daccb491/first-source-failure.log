@@ -1,0 +1,127 @@
+test_actual_client_uses_original_witness_and_current_live_reply (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_actual_client_uses_original_witness_and_current_live_reply) ... ok
+test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) ... 
+  test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_generation', marker='Self::LegacyV1(_)') ... ERROR
+  test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_generation', marker='profile.reservation.original_generation()') ... ERROR
+  test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_binding', marker='Self::LegacyV1(profile) => profile.binding()') ... ERROR
+  test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_binding', marker='profile.reservation.durable_binding()') ... ERROR
+test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) ... ERROR
+test_durable_context_keeps_every_original_file_scope_and_generation (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_durable_context_keeps_every_original_file_scope_and_generation) ... ok
+test_legacy_stays_exact_live_bound_and_original_root_custody (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_legacy_stays_exact_live_bound_and_original_root_custody) ... ok
+test_reopen_never_upgrades_initializes_or_repairs (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_reopen_never_upgrades_initializes_or_repairs) ... ok
+test_reopen_physical_checks_enclose_all_root_postchecks (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_reopen_physical_checks_enclose_all_root_postchecks) ... ok
+test_reserve_alone_mutates_under_actual_root_and_original_end (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_reserve_alone_mutates_under_actual_root_and_original_end) ... ok
+test_versioned_boundaries_have_actual_closed_callers (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_versioned_boundaries_have_actual_closed_callers) ... 
+  test_versioned_boundaries_have_actual_closed_callers (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_versioned_boundaries_have_actual_closed_callers) (boundary='root_q24_factory_original_witness_generation') ... ERROR
+
+======================================================================
+ERROR: test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_generation', marker='Self::LegacyV1(_)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 103, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 101, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_q24_model_profile_variants.rs:fn witness_generation(: required code order missing: ['Self::LegacyV1(_) => Generation::new(current_spawn_generation)', 'Self::SessionV2(profile) => profile.reservation.original_generation()']
+
+======================================================================
+ERROR: test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_generation', marker='profile.reservation.original_generation()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 103, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 101, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_q24_model_profile_variants.rs:fn witness_generation(: required code order missing: ['Self::LegacyV1(_) => Generation::new(current_spawn_generation)', 'Self::SessionV2(profile) => profile.reservation.original_generation()']
+
+======================================================================
+ERROR: test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_binding', marker='Self::LegacyV1(profile) => profile.binding()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 103, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 101, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_q24_model_profile_variants.rs:fn witness_generation(: required code order missing: ['Self::LegacyV1(_) => Generation::new(current_spawn_generation)', 'Self::SessionV2(profile) => profile.reservation.original_generation()']
+
+======================================================================
+ERROR: test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof) (function='witness_binding', marker='profile.reservation.durable_binding()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 173, in check
+    self.reject(path, name, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_historical_task_read_source_closure.py", line 168, in reject
+    self.mutate(path, change)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 103, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 101, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_q24_model_profile_variants.rs:fn witness_generation(: required code order missing: ['Self::LegacyV1(_) => Generation::new(current_spawn_generation)', 'Self::SessionV2(profile) => profile.reservation.original_generation()']
+
+======================================================================
+ERROR: test_current_admission_cannot_reuse_old_process_or_proof (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_current_admission_cannot_reuse_old_process_or_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 166, in test_current_admission_cannot_reuse_old_process_or_proof
+    self.mutate(VAR, lambda source: source.replace("enum " + enum + " {", "enum " + enum + " { Auto,", 1))
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 103, in mutate
+    verify(source)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 101, in verify
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_q24_model_profile_variants.rs:fn witness_generation(: required code order missing: ['Self::LegacyV1(_) => Generation::new(current_spawn_generation)', 'Self::SessionV2(profile) => profile.reservation.original_generation()']
+
+======================================================================
+ERROR: test_versioned_boundaries_have_actual_closed_callers (test_q24_factory_v2_source_closure.Q24FactoryV2SourceTests.test_versioned_boundaries_have_actual_closed_callers) (boundary='root_q24_factory_original_witness_generation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/qa/b4-no-bypass/test_q24_factory_v2_source_closure.py", line 118, in test_versioned_boundaries_have_actual_closed_callers
+    PROOF._verify_boundary(ROOT, row, self.sources, ())
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-historical-read-cloud/scripts/verify_hepta_callers.py", line 512, in _verify_boundary
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: root_q24_factory_original_witness_generation: missing definition marker 'Self::LegacyV1(_) => Generation::new(current_spawn_generation)'
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.425s
+
+FAILED (errors=6)
