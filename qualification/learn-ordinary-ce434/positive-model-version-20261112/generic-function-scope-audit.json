@@ -1,0 +1,16 @@
+{
+  "parent": "ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c",
+  "qa_methods_before": 7,
+  "qa_methods_after": 8,
+  "checked_actual_generic_functions": [
+    "circuit_learning_model_binding.rs::require_inputs",
+    "circuit_learning_model_publication.rs::prepare_original_circuit_model_publication_v1",
+    "circuit_learning_model_publication.rs::prepare_in_original_model_operation",
+    "circuit_learning_model_recovery.rs::recover_original_circuit_model_publication_v1"
+  ],
+  "change": "Every global required_order guard is also required inside the exact actual generic function; relocation outside that function must fail. No protected record, boundary, production source or old QA method is removed.",
+  "source_check": "4 function sequences located and all required markers ordered inside their bodies via JS",
+  "python": "not_run",
+  "native": "not_run",
+  "ordinary_acceptance": 0
+}
