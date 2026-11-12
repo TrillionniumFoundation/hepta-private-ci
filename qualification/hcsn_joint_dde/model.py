@@ -39,9 +39,9 @@ class JointModel:
                 or not math.isfinite(value)
             ):
                 raise ValueError("finite scalar model parameters required")
-        h, endpoint = self.spatial.spacing, self.spatial.endpoint
+        nodes = self.spatial.nodes
         if (
-            not h <= self.reset <= endpoint - h
+            not nodes[1] <= self.reset <= nodes[-2]
             or not 0 < self.delay <= 2
             or not 0.001 <= self.discount <= 4
         ):
@@ -55,18 +55,19 @@ class JointModel:
         matrix = self.spatial.matrix()
         transient = matrix[1:-1, 1:-1]
         lower, upper = matrix[1:-1, 0], matrix[1:-1, -1]
-        position = self.reset / self.spatial.spacing
-        left = int(math.floor(position))
+        nodes = self.spatial.nodes
+        left = int(np.searchsorted(nodes, self.reset, side="right") - 1)
+        fraction = (self.reset - nodes[left]) / (nodes[left + 1] - nodes[left])
         reset = np.zeros(self.spatial.intervals + 1)
-        reset[left] = 1 - (position - left)
-        reset[left + 1] = position - left
+        reset[left] = 1 - fraction
+        reset[left + 1] = fraction
         return transient, lower, upper, reset[1:-1]
 
     def perpetual(self):
         """Continuation of THIS same CTMC/delay model, including upper flow."""
         phi = self.spatial.discounted_lower_hit(self.discount)
         reset_phi = float(
-            np.interp(self.reset, np.linspace(0, self.spatial.endpoint, len(phi)), phi)
+            np.interp(self.reset, self.spatial.nodes, phi)
         )
         base = self.active_reward / self.discount
         eta = math.exp(-self.discount * self.delay)
