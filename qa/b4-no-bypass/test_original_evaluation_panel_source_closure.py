@@ -145,14 +145,14 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         for marker in (
             "let before = self.read_cells()?",
             "self.qualification.completed_bytes()?",
-            "sources.prepare(&self.qualification.config, started_at).await?",
+            "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?",
             ".finish_readback(",
             "drop(sources)",
             "let after = self.read_cells()?",
             "if before != after",
         ):
             self.rejects(MEMBER, "fn read_original(", marker)
-        self.rejects(MEMBER, "fn read_original(", "/*new_publication*/ false", "/*new_publication*/ true")
+        self.rejects(MEMBER, "fn read_original(", "false", "true")
         for effect in ("owner.qualify_or_readback()", "File::open(path)", "self.qualification.config = changed"):
             with self.assertRaises(PROOF.VerificationFailure):
                 self.verifies(MEMBER, (ROOT / MEMBER).read_text() + "\nfn bypass() { " + effect + "; }\n")
@@ -170,7 +170,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
             "original::clock_time(started_at, current)?",
             "self.primary.authenticate(&after[0], current)?",
             "owner.authenticate(observed, current)?",
-            "self.retained.as_ref().is_some_and(|original| original != &result)",
+            "self\n            .retained\n            .as_ref()\n            .is_some_and(|original| original != &result)",
         ):
             self.rejects(CORE, "fn read_original_panel(", marker)
         for marker in (
@@ -189,7 +189,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
             "retained_digests.push(member.qualification.product().evidence_digest)",
             "retained_digests.is_empty()",
             "retained_digests.windows(2).any(|pair| pair[0] == pair[1])",
-            "self.primary.qualification.config.context.retention_receipt_digests",
+            "self\n                .primary\n                .qualification\n                .config\n                .context\n                .retention_receipt_digests",
             "observed[0].prepared.bundle.retention_receipt_digests != retained_digests",
         ):
             self.rejects(BINDING, "fn require_observed_panel(", marker)
@@ -236,8 +236,8 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
     def test_original_cohort_current_brackets_all_members_before_final_clock(self):
         self.rejects(MEMBER, "fn read_original(", "let started_at = original::now()?")
         for marker in (
-            "let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
-            "let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+            "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+            "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
             "cohort_before != cohort_after",
             "cohort: cohort_after",
             "let current = clock()?",

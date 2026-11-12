@@ -125,7 +125,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "self.authenticate_panel(&after, current)?",
             "config.signing.verifier.require_signer_binding(",
             "contract::authenticate_receipt(context, completed.0, completed.1, current)?",
-            "self.retained.as_ref().is_some_and(|previous| previous != &original)",
+            "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)",
         ):
             self.rejects(HOST, "fn read_original_completion(", marker)
         self.rejects(HOST, "fn completion(", "self.fenced = true")
@@ -136,7 +136,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "&initial != expected.snapshot()", "peer.actor_id != initial.owners.evaluator",
             "initial.request.evaluation_profile != registration.evaluation_profile()",
             "original_owner_command_channel_v1(",
-            "peer.uid, original_owner_pidfd, timeout, lifetime",
+            "peer.uid,\n            original_owner_pidfd,\n            timeout,\n            lifetime",
             "require_clock(started_at, observed_at)?",
         ):
             self.rejects(COMMAND, "fn bind_initial(", marker)
@@ -148,7 +148,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "self.origin == Origin::ReadbackOnly && origin != Origin::ReadbackOnly",
             "self.channel.check_peer_lifetime()?", "let current = now()?",
             "require_clock(self.observed_at, current)?", "context.binding(current)?",
-            "expected.snapshot.clone(), expected.attestation.clone(), current",
+            "expected.snapshot.clone(),\n                expected.attestation.clone(),\n                current",
             "execution_requested: origin == Origin::ReadbackOnly",
         ):
             self.rejects(COMMAND, "fn finish_binding(", marker)
@@ -166,11 +166,11 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "slot.take().ok_or(Error::Unavailable)?", "channel.execution_requested = true",
             "QueuedCancellation(Arc::new(AtomicBool::new(false)))",
             "action == wire::Action::Execute && queued.load(Ordering::Acquire)",
-            "channel.peer.request(&encoded)", "response.require_request(&request)?",
+            "channel\n                .peer\n                .request(&encoded)", "response.require_request(&request)?",
             "channel.peer.check_peer_lifetime()?", "self.context.authenticate(current)?",
             "retained.as_ref().is_some_and(|saved| saved != &original)",
             "wire::Outcome::Missing | wire::Outcome::Pending",
-            "self.retained.try_lock().map_err(|_| Error::Unavailable)?.is_some()",
+            "self\n                    .retained\n                    .try_lock()\n                    .map_err(|_| Error::Unavailable)?\n                    .is_some()",
             "wire::Outcome::Uncertain => return Err(Error::CommitUncertain)",
         ):
             self.rejects(COMMAND, "fn exchange(", marker)
@@ -208,14 +208,14 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "OriginalCellEvaluationCommandClientV1::readback(client).await",
             "before.heads() != after.heads()",
             "self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?",
-            "lane.retained.as_ref().is_some_and(|saved| saved != &original)",
+            "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != &original)",
         ):
             self.rejects(EVALUATION, "fn original_evaluation(", marker)
         for occurrence in (0, 1, 2):
             self.rejects(
                 EVALUATION, "fn original_evaluation(",
-                "gate, &training_cut, &self.common.material.scope",
-                "gate, snapshot, &self.common.material.scope", occurrence=occurrence,
+                "gate,\n                &training_cut,\n                &self.common.material.scope",
+                "gate,\n                snapshot,\n                &self.common.material.scope", occurrence=occurrence,
             )
 
     def test_full_evaluator_role_payload_and_original_generator_separation_remain_required(self):
@@ -223,7 +223,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
             "receipt.observed_unix_seconds > signed.issued_at",
             "*candidate_bundle == candidate",
             "*evaluation_profile == context.registration.evaluation_profile()",
-            "LearningEvidenceRoleV1::Evaluator, &signed",
+            "LearningEvidenceRoleV1::Evaluator,\n        &signed",
             "learning_iteration_receipt_signing_bytes_v1(&receipt)?",
             "verify_signed_actor_separation(&generator, &evaluator, current)?",
         ):
@@ -231,9 +231,9 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
         for marker in (
             "original.training_attestation() != training.attestation()",
             "original.authority() != AuthorityPosture::DENY_ALL",
-            "supplied.receipts.get(3).is_some_and(|saved| saved != receipt)",
+            "supplied\n                .receipts\n                .get(3)\n                .is_some_and(|saved| saved != receipt)",
             "*evaluation_profile == self.protocol.evaluation_profile()",
-            "LearningEvidenceRoleV1::Evaluator, signed",
+            "LearningEvidenceRoleV1::Evaluator,\n                signed",
             "verify_signed_actor_separation(&generator, &evaluator, current)",
         ):
             self.rejects(EVALUATION, "fn verify_original_evaluation(", marker)
