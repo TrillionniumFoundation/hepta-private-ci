@@ -69,7 +69,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         let end = request_end;
         self.require_original_learning(learning)?;
         let (bootstrap, sealed, candidate_data, source, source_offer) =
-            self.record.inspect(end, |enrollment| {
+            OriginalBRecord::inspect(&self.record, end, |enrollment| {
                 let mut state = self
                     .state
                     .try_lock()
@@ -191,7 +191,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         frame_end: Instant,
     ) -> io::Result<String> {
         let end = self.end.min(frame_end);
-        self.record.inspect(end, |enrollment| {
+        OriginalBRecord::inspect(&self.record, end, |enrollment| {
             let state = self
                 .state
                 .try_lock()

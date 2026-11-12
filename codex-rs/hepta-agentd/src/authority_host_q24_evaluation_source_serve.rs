@@ -83,19 +83,17 @@ pub(super) fn serve_until(
                     {
                         return Err(HostIssuerTransportError::InvalidRequest);
                     }
-                    bound
-                        .runtime
-                        .host
-                        .retain_original_signed_source(
-                            service,
-                            config,
-                            registration,
-                            owner,
-                            peer,
-                            frame_end,
-                            &request,
-                        )
-                        .map_err(|_| HostIssuerTransportError::Unavailable)
+                    OriginalRootIndependentBEvaluationFilesV1::retain_original_signed_source(
+                        &bound.runtime.host,
+                        service,
+                        config,
+                        registration,
+                        owner,
+                        peer,
+                        frame_end,
+                        &request,
+                    )
+                    .map_err(|_| HostIssuerTransportError::Unavailable)
                 })
                 .map_err(io::Error::other)?;
             if !exchanged && !stop.load(Ordering::Acquire) {

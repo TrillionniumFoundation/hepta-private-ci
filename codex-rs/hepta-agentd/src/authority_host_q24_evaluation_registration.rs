@@ -134,7 +134,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         }
         let root = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
         let record = OriginalBRecord::open(root, initial)?;
-        let files = record.inspect(request_end, |enrollment| {
+        let files = OriginalBRecord::inspect(&record, request_end, |enrollment| {
             let files = service.with_learning_profile(
                 config,
                 registration,

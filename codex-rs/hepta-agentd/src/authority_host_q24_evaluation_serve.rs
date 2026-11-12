@@ -137,10 +137,7 @@ fn serve_evaluation_until(
                             let (_, signed) =
                                 crate::learning_owner_evidence::decode(&training_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                            bound
-                                .runtime
-                                .host
-                                .prepare_original_candidate(
+                            OriginalRootIndependentBEvaluationFilesV1::prepare_original_candidate(&bound.runtime.host,
                                     service,
                                     config,
                                     registration,
@@ -171,10 +168,7 @@ fn serve_evaluation_until(
                             let (_, plan_signed) =
                                 crate::learning_owner_evidence::decode(&plan_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                            bound
-                                .runtime
-                                .host
-                                .complete_from_original_training(
+                            OriginalRootIndependentBEvaluationFilesV1::complete_from_original_training(&bound.runtime.host,
                                     service,
                                     config,
                                     registration,
@@ -196,10 +190,7 @@ fn serve_evaluation_until(
                         Command::Readback { training_head } => {
                             let head = digest(&training_head)
                                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                            bound
-                                .runtime
-                                .host
-                                .with_original_completed_evaluation(
+                            OriginalRootIndependentBEvaluationFilesV1::with_original_completed_evaluation(&bound.runtime.host,
                                     service,
                                     config,
                                     registration,

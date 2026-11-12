@@ -27,7 +27,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         // Keep both real SH locks through the durable Ready CAS, not just the
         // inner Root callback. No native borrow can release these descriptors.
         let mut cell_locks = None;
-        self.record.inspect(end, |enrollment| {
+        OriginalBRecord::inspect(&self.record, end, |enrollment| {
             let mut state = self
                 .state
                 .try_lock()

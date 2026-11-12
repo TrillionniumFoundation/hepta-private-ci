@@ -204,7 +204,7 @@ impl PostALearningRuntime {
                             )?;
                         RegisteredHostLearningCheckpointV1::attach_original_model_b(
                             &mut learning,
-                            prepared.original_custodian(),
+                            PreparedRootIndependentBEvaluationV1::original_custodian(&prepared),
                         )?;
                         Some(prepared)
                     }
