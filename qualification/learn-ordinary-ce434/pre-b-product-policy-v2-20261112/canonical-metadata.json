@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.learn.product-policy-v2.canonical-metadata-spec.v1",
+  "prefix": "hepta.intelligence-eval.product-evaluation-policy.v2\\0",
+  "maximum_bytes": 131072,
+  "integral_encoding": "Big-endian u16 ID byte length, u32 vector length, u32 alpha/m, u64 timeline/usize, i64 FixedQ32 raw, Digest32 32 raw bytes.",
+  "sequence": [
+    "context.plan_id: id",
+    "context.objective_digest: digest",
+    "context.family_alpha_ppm: u32",
+    "context.simultaneous_comparisons: u32",
+    "context.final_holdout_window_id: id",
+    "context.candidate_temporal: complete Temporal",
+    "context.baseline_temporal: complete Temporal",
+    "input.claim_scope: tag (Qualification=0,SystemLongitudinal=1)",
+    "input.base_estimand_digest: digest",
+    "input.baseline_id: id",
+    "metric_contracts: u32 count; each metric_id:id,direction:tag(Maximize0,Minimize1),safety_floor:tag(None0,Some1)+optional i64 raw",
+    "metric_roles: u32 count; each metric_id:id,role:tag(Primary0+i64 minimum_improvement,NonInferiority1+i64 maximum_regression,Absolute2)",
+    "metric_sources: u32 count; each metric_id:id,source:tag(IPS0,SNIPS1,DR2)",
+    "folds: u32 count; each fold_id:id, six id vectors in order training_principals/training_episodes/training_windows/holdout_principals/holdout_episodes/holdout_windows,model_digest:digest,predictions_digest:digest"
+  ],
+  "temporal_sequence": [
+    "plan_digest:digest",
+    "evaluation_id:id",
+    "objective_digest:digest",
+    "fold.plan_digest:digest",
+    "fold.fold_id:id",
+    "fold.training_watermark:u64",
+    "fold.evaluation_start:u64",
+    "fold.minimum_per_action:u64",
+    "ope.plan_digest:digest",
+    "ope.outcome_watermark:u64",
+    "ope.minimum_rows:u64",
+    "ope.minimum_ess:i64",
+    "ope.maximum_weight:i64",
+    "confidence.plan_digest:digest",
+    "confidence.assumptions_digest:digest",
+    "confidence.family_alpha_ppm:u32",
+    "confidence.simultaneous_comparisons:u32",
+    "confidence.minimum_clusters:u64"
+  ],
+  "canonical_rules": [
+    "StableId UTF8 uses original validator and 1..128 bytes.",
+    "Metric arrays sort by exact original metric ID and retain duplicates as errors.",
+    "Folds sort by fold ID and every original lineage vector sorts under original duplicate/leakage checks.",
+    "All typed fields are present; no omitted default values.",
+    "All unknown tags, truncation, trailing bytes, overflow, excessive lengths/counts, invalid original policy values and noncanonical order are rejected.",
+    "Strict decode calls metadata freeze and requires full canonical byte equality.",
+    "No old receipt seal format appears in this codec."
+  ],
+  "remote_expected": {
+    "result": "ProductEvaluationPolicyCommitmentsV2",
+    "getters": [
+      "plan()->&[u8]",
+      "estimand()->&[u8]",
+      "roles()->&[u8]"
+    ],
+    "plan_domain": "hepta.intelligence-eval.product-frozen-paired-on-policy.v1",
+    "estimand_domain": "hepta.intelligence-eval.product-paired-on-policy-estimand.v1",
+    "roles_domain": "hepta.intelligence-eval.metric-contract.v2",
+    "changed_old_domains": false
+  },
+  "legacy_vectors": {
+    "candidate": "e3c8c5833c14a0f8d8d56e794e531cee336239ceea7a61b8600ac951b43a4557",
+    "baseline": "d9ce467bb260cc5f636793977b7c7807fa626148e98ce4b872225dcfac0a22ed",
+    "legacyMetric": "499d47595cb6f42a75737fa20c954faf99a98bb5a622feb326d9e8afe65e224b",
+    "roles": "db4fa9a488704f5bef436b3d2cd096796534e95a891d8c30398bb6ed49276503",
+    "shared": {
+      "plan": "d4ca86dc405b8f07ae4bc1547372784e42d4044339e659d8f42b495d47a27735",
+      "estimand": "fce0ff3a02a654ebbd219a309b1e27afdd51632eed008ef41944f18f6b619782",
+      "raw": "cbdd9ce98a87d04c7e4f6213ef06261c43d57e54c7d89b6a9bee47ef13574431",
+      "rolePlan": "f27f101e19c7f4302d4edaf0d9d4b79a30019e1bfc0a25b28ec15c6929db5f84",
+      "bytes": 376
+    },
+    "paired": {
+      "plan": "9ddb817ecb5f44e88e075effe27d1f76b69939e2548035ccb57bb22648beb31a",
+      "estimand": "3d099f76023824e58b354ba4cb6a9c0f57f90da191d8c516f50f3b94f89a87df",
+      "raw": "ab9d8dc9ccab4140031e17e0153b82c66715a4b82819ccd7c933a2345d03bcdb",
+      "rolePlan": "836cf09bc96ba96122798efc5535fef36ca61dfe47a84c9d640de3c64a95f119",
+      "bytes": 1073
+    },
+    "pair": "81f76108b7a0b39e22ed8139aa3be2126f04bec16510d921acb1b9e5c9a70672"
+  }
+}

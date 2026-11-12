@@ -49,6 +49,14 @@ use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::evaluate_temporal_holdout;
 use crate::freeze_cross_fold_plan_v2;
 
+#[path = "product_policy.rs"]
+mod policy;
+pub use policy::ProductEvaluationPolicyV2;
+pub use policy::ProductEvaluationPolicyContextV2;
+pub use policy::ProductEvaluationPolicyInputV2;
+pub use policy::ProductEvaluationPolicyBindingsV2;
+pub use policy::ProductEvaluationPolicyCommitmentsV2;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProductMetricSourceV1 {
     Ips,
@@ -98,30 +106,35 @@ impl ProductFrozenEvaluationPlanV1 {
     }
 }
 
-pub fn freeze_product_evaluation_plan_v1(
-    mut plan: CrossFoldPlanV1,
-    mut metric_roles: Vec<MetricRoleContractV2>,
-    mut metric_sources: Vec<ProductMetricSourceContractV1>,
+#[allow(clippy::too_many_arguments)]
+fn normalize_product_plan_inputs(
+    objective_digest: Digest32,
+    family_alpha_ppm: u32,
+    simultaneous_comparisons: u32,
+    estimand_digest: Digest32,
+    original_metric_contracts: &[MetricContractV1],
+    metric_roles: &mut [MetricRoleContractV2],
+    metric_sources: &mut [ProductMetricSourceContractV1],
     candidate_temporal: &TemporalEvaluationPlan,
     baseline_temporal: &TemporalEvaluationPlan,
-) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {
+) -> Result<Vec<MetricContractV1>, ProductEvaluationError> {
     if candidate_temporal.plan_digest.is_zero()
         || baseline_temporal.plan_digest.is_zero()
         || candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?
         || baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?
-        || candidate_temporal.objective_digest != plan.objective_digest
-        || baseline_temporal.objective_digest != plan.objective_digest
-        || candidate_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm
-        || baseline_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm
-        || candidate_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons
-        || baseline_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons
+        || candidate_temporal.objective_digest != objective_digest
+        || baseline_temporal.objective_digest != objective_digest
+        || candidate_temporal.confidence.family_alpha_ppm != family_alpha_ppm
+        || baseline_temporal.confidence.family_alpha_ppm != family_alpha_ppm
+        || candidate_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons
+        || baseline_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons
     {
         return Err(ProductEvaluationError::Binding("temporal plan"));
     }
-    if plan.metric_contracts.is_empty() || plan.estimand_digest.is_zero() {
+    if original_metric_contracts.is_empty() || estimand_digest.is_zero() {
         return Err(ProductEvaluationError::Binding("metric or estimand"));
     }
-    let mut metric_contracts = plan.metric_contracts.clone();
+    let mut metric_contracts = original_metric_contracts.to_vec();
     metric_contracts.sort_by_key(|row| row.metric_id.clone());
     metric_sources.sort_by_key(|row| row.metric_id.clone());
     metric_roles.sort_by_key(|row| row.metric_id.clone());
@@ -138,6 +151,22 @@ pub fn freeze_product_evaluation_plan_v1(
     {
         return Err(ProductEvaluationError::Binding("metric source coverage"));
     }
+
+    Ok(metric_contracts)
+}
+
+pub fn freeze_product_evaluation_plan_v1(
+    mut plan: CrossFoldPlanV1,
+    mut metric_roles: Vec<MetricRoleContractV2>,
+    mut metric_sources: Vec<ProductMetricSourceContractV1>,
+    candidate_temporal: &TemporalEvaluationPlan,
+    baseline_temporal: &TemporalEvaluationPlan,
+) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {
+    let metric_contracts = normalize_product_plan_inputs(
+        plan.objective_digest, plan.family_alpha_ppm, plan.simultaneous_comparisons,
+        plan.estimand_digest, &plan.metric_contracts, &mut metric_roles,
+        &mut metric_sources, candidate_temporal, baseline_temporal,
+    )?;
 
     let base_estimand_digest = plan.estimand_digest;
     plan.estimand_digest = bound_estimand_digest(
