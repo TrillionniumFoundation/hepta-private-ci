@@ -63,6 +63,11 @@ impl HostAuthorityService {
                             boot_id: registration.boot_id.clone(),
                             process_start_ticks: registration.process_start_ticks,
                         },
+                        peer_gid: config.peer_gid,
+                        registered_identity: serde_json::to_string(
+                            &registration.registered_identity,
+                        )
+                        .map_err(io::Error::other)?,
                         target: target.clone(),
                         files: (*files.file_pins()).clone(),
                         context: files.context_digest().to_string(),
