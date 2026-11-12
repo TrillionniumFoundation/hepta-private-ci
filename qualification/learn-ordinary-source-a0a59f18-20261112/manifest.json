@@ -1,0 +1,83 @@
+{
+  "scope": "All qa/b4-no-bypass/test_*.py at exacta0;914 PASS; no complete callerCLI or native execution.",
+  "source": {
+    "head": "a0a59f18a63cc1ad775ae1bd079cc627a640c891",
+    "tree": "f95b913e9b315966ba317bb8628621b8b7559413",
+    "status": "",
+    "tracked_files": 15493,
+    "tracked_bytes": 234362498,
+    "tracked_sha256": "85511c71fbafc7e2bfd20f4b37262fc8ceb630d0917b11053a930b4d4d26a241",
+    "callers_sha256": "95ca5f9122f57513d236b9ce37406dadf34b08bd4644874dc54babaa43e82c44"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "files": [
+    {
+      "path": "checkout.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/checkout.json",
+      "bytes": 498,
+      "sha256": "843fd19747f824f4b9071c4ac5bed28c78eef2d93d07e3744e89589a9b349b61",
+      "git_blob": "e3fc2974d5908f8c6e7b42977bd420d7b815ea3e"
+    },
+    {
+      "path": "failure-sections.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/failure-sections.json",
+      "bytes": 226,
+      "sha256": "227898831ab78d5fa074322a3a2f0f2ea1d35e9252b0695213e0ab6ed1dfee9a",
+      "git_blob": "6054713d20ebfc53609b2d0881af265ddc3ca0f9"
+    },
+    {
+      "path": "fullsource.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/fullsource.json",
+      "bytes": 1569,
+      "sha256": "27028b06586bbbb34eab4e16ee51ad788440cb1f184db55b86dcc31ba33cb00f",
+      "git_blob": "55ff9e26a49966565637344a0b0623fcdfe214f4"
+    },
+    {
+      "path": "fullsource.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/fullsource.stderr.log",
+      "bytes": 189679,
+      "sha256": "abe05dfd73843f7ea2a8e68fe9e9635812022e8a7f5e6d22b9ef3c7be0bada1c",
+      "git_blob": "fabd4172d90a5c29e846c962723e0f7e91d0dc31"
+    },
+    {
+      "path": "fullsource.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/fullsource.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "result.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/result.json",
+      "bytes": 3071,
+      "sha256": "270dce6005ec49ce180578f72cd1e2f4a03820b81ec1689727c1b284a1da21ea",
+      "git_blob": "03a8adc8e46998117ea8207b9632ad6d47a9f7c2"
+    },
+    {
+      "path": "source-before.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-a0a59f18-full-source-ci-evidence-v1/source-before.json",
+      "bytes": 359,
+      "sha256": "945419b852962c21ae0a126ecdfad9aa8751a45e4ae7f04501dde56dc616f61d",
+      "git_blob": "5ec5427fefa18cce2dc3add48bda2b583150eb96"
+    },
+    {
+      "path": "driver.py",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/run_root_a0a59f18_full_source_ci_evidence_v1.py",
+      "bytes": 5777,
+      "sha256": "2c460e953c79ad65dcce3dccdf559c23b0fd0b1c60f4cb4f968460cfb2dc32ab",
+      "git_blob": "498440d18f970acd7df13285f63aee5dce76a91a"
+    }
+  ],
+  "file_count": 8,
+  "input_bytes": 201179
+}

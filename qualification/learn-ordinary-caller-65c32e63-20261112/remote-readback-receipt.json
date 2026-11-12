@@ -1,0 +1,111 @@
+{
+  "commit": "d5047f899d78985001bc11c2699e7e9e75564ca6",
+  "tree": "7ed5e4614eeea39d504ee8f565cfba3bbb1925fe",
+  "parent": "bd56bfeaf13b251ac354777cd6eb36b2b1925b7c",
+  "entries": [
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/originals.tar.xz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61e93c69f5bf0dd8aa638c9748b5de5594200d9a"
+    },
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c87b927815191b147d864276e560c019e22544d1"
+    },
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/verification.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a8e7953d68a55ec03c56294fe0f91096f1a8f17"
+    },
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cdaee5a760c7dfd6ee27c71c1c251dcfa382f737"
+    },
+    {
+      "path": "qualification/learn-native-originals-42ef-d2-20261112/remote-readback-receipt.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9abb6beefb033e44725ef5c4b2ef9cd8aeb3149c"
+    }
+  ],
+  "lease": true,
+  "expected": [
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/originals.tar.xz",
+      "bytes": 45068,
+      "sha256": "78254212ca6f922dfd7135143b5527b75b2a71adae02ccc8a57585a0c3693b2a",
+      "blob": "61e93c69f5bf0dd8aa638c9748b5de5594200d9a"
+    },
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/manifest.json",
+      "bytes": 12763,
+      "sha256": "b0dce95a8271bfb0fbc4ab6734cf3c235677c764e1a78a3880bd779932193f26",
+      "blob": "c87b927815191b147d864276e560c019e22544d1"
+    },
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/verification.json",
+      "bytes": 882,
+      "sha256": "021503ee502125603e68dd789c1248165b9931035874921f9eb59df96bcc5c45",
+      "blob": "2a8e7953d68a55ec03c56294fe0f91096f1a8f17"
+    },
+    {
+      "path": "qualification/learn-ordinary-caller-65c32e63-20261112/README.md",
+      "bytes": 2629,
+      "sha256": "08667e45729696eca9d7d3e417558da065f8b697613625899e04dda3e5128c55",
+      "blob": "cdaee5a760c7dfd6ee27c71c1c251dcfa382f737"
+    },
+    {
+      "path": "qualification/learn-native-originals-42ef-d2-20261112/remote-readback-receipt.json",
+      "bytes": 5316,
+      "sha256": "1117a4bb3323b60378fd7d57da0c2cf33f85acfaf3923e7bce1dfaeb98634854",
+      "blob": "9abb6beefb033e44725ef5c4b2ef9cd8aeb3149c"
+    }
+  ],
+  "remote_readback": {
+    "observed_utc": "2026-11-12T22:32:38.630778+00:00",
+    "method": "git fetch published immutable commit then git show each path; actual size/SHA256/Gitblob",
+    "files": [
+      {
+        "path": "qualification/learn-ordinary-caller-65c32e63-20261112/originals.tar.xz",
+        "bytes": 45068,
+        "sha256": "78254212ca6f922dfd7135143b5527b75b2a71adae02ccc8a57585a0c3693b2a",
+        "blob": "61e93c69f5bf0dd8aa638c9748b5de5594200d9a",
+        "actual_get_verified": true
+      },
+      {
+        "path": "qualification/learn-ordinary-caller-65c32e63-20261112/manifest.json",
+        "bytes": 12763,
+        "sha256": "b0dce95a8271bfb0fbc4ab6734cf3c235677c764e1a78a3880bd779932193f26",
+        "blob": "c87b927815191b147d864276e560c019e22544d1",
+        "actual_get_verified": true
+      },
+      {
+        "path": "qualification/learn-ordinary-caller-65c32e63-20261112/verification.json",
+        "bytes": 882,
+        "sha256": "021503ee502125603e68dd789c1248165b9931035874921f9eb59df96bcc5c45",
+        "blob": "2a8e7953d68a55ec03c56294fe0f91096f1a8f17",
+        "actual_get_verified": true
+      },
+      {
+        "path": "qualification/learn-ordinary-caller-65c32e63-20261112/README.md",
+        "bytes": 2629,
+        "sha256": "08667e45729696eca9d7d3e417558da065f8b697613625899e04dda3e5128c55",
+        "blob": "cdaee5a760c7dfd6ee27c71c1c251dcfa382f737",
+        "actual_get_verified": true
+      },
+      {
+        "path": "qualification/learn-native-originals-42ef-d2-20261112/remote-readback-receipt.json",
+        "bytes": 5316,
+        "sha256": "1117a4bb3323b60378fd7d57da0c2cf33f85acfaf3923e7bce1dfaeb98634854",
+        "blob": "9abb6beefb033e44725ef5c4b2ef9cd8aeb3149c",
+        "actual_get_verified": true
+      }
+    ]
+  }
+}
