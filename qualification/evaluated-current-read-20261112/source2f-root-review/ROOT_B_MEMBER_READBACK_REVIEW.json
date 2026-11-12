@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "base_head": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "candidate_manifest": "318554479f297f01f2e615f283ea752c280c75bc",
+  "code_tree": "f5952294ad9399c5b751576a419987241997ef0e",
+  "root_full_byte_readbacks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "bytes": 3758,
+      "sha256": "84a45871a6f94603e3b3887a35774ce6858d0f22fc22fe4957e9b0462270b7fa",
+      "git_blob": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "bytes": 6346,
+      "sha256": "dc4554f89a30c3853835934389283013b8e19294295d3bd8b2535acd8ee5d125",
+      "git_blob": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "bytes": 13872,
+      "sha256": "35cc00872d03cc10057a113df16c4a866cec53eed24742a6a7c4647ea49c1295",
+      "git_blob": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "base_blob": "0b328d77083060c943234ae0d8bf68088474bd6f"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "bytes": 13432,
+      "sha256": "6cb2478192d303d85cc94db92be8d71b9ca2a860e2081221ad07cfb1a1f9f2f4",
+      "git_blob": "4807f4f5aa158f885119d2cb394e2170e6842385",
+      "base_blob": "980b7c9b8d364453e13cd0a220611600d6204891"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "bytes": 12916,
+      "sha256": "7620897ea5d075a3add9811aabfa3c0f725b84fdabc9b40dedd3c2919070b3ac",
+      "git_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "base_blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "bytes": 11187,
+      "sha256": "febd324dfd87c5fa16a35697082caf08e941e265836b97da8f3259e782923aff",
+      "git_blob": "d1f255a21ef9a590e7bbd536177df0b16875a8ea",
+      "base_blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453"
+    },
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1898908,
+      "sha256": "1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a",
+      "git_blob": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "base_blob": "73fdfb4db43bee14530701784ab163a64dbb5956"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "bytes": 11847,
+      "sha256": "7c5ebdb53998acbc944fb96e3b692c878b870ed6d2cad87b51bee84957b1bc6f",
+      "git_blob": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "base_blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4"
+    }
+  ],
+  "scope": "Root full diff, complete Host path, proof state machine, tree applicability and protected caller comparison; independent full review tracked separately",
+  "review": {
+    "readonly_branch_only": true,
+    "execute_original_first_middle_final_owner_checks_preserved": true,
+    "bound_delegates_original_call": true,
+    "per_member_actual_Trainer_pointer_and_full_configuration_match": true,
+    "call_identity_and_source_Arc_identity_required": true,
+    "single_begin_CAS": true,
+    "Refused_replaces_cursor_before_every_await": true,
+    "first_and_last_original_member_slots": [
+      0,
+      7
+    ],
+    "intermediate_slots_authenticate_original_full_signed_Training": true,
+    "complete_cursor_required_before_final_authentication": true,
+    "no_cross_call_cache_or_new_endpoint": true,
+    "receipt_owner_middle_original_Trainer_read_unchanged": true,
+    "receipt_journal_final_actual_read_unchanged": true,
+    "source8_fixes_preserved": true,
+    "all628_original_boundary_blocks_byte_identical": true,
+    "old_boundary_count": 628,
+    "new_boundary_count": 629,
+    "added_boundary": "learning_original_panel_training_readback_call",
+    "sole_active_pin_exact": true
+  },
+  "candidate_counts_not_measured": {
+    "individual_success_readback_primary": [
+      9,
+      3
+    ],
+    "individual_success_readback_each_retention": [
+      8,
+      2
+    ],
+    "individual_execute_unchanged": [
+      10,
+      8
+    ],
+    "bound_execute_readback_unchanged": [
+      4,
+      3
+    ],
+    "three_added_native_test_expected_counts": [
+      [
+        54,
+        38
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        3,
+        3
+      ]
+    ]
+  },
+  "limits": {
+    "production_Bound_210_plus30R_still_OPEN": true,
+    "latency_cause_unproven": true,
+    "source_or_native_execution": "NOT_RUN",
+    "all_blockers_closed": false,
+    "owner_decision": null
+  },
+  "tree_diff_review": "ROOT_B10_TREE_REVIEW.json"
+}

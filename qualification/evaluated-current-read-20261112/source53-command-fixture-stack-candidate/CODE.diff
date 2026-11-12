@@ -1,0 +1,201 @@
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs
+@@ -22,9 +22,11 @@
+ #[path = "circuit_evaluated_next_use_command_tests.rs"]
+ mod next_use_command_tests;
+ 
++// Boxing the ready future does not box its output or the consuming cleanup future.
++// Keep the same owned fixture and live Session out of the outer test frame.
+ struct ActualCommand {
+-    f: PublicationFixture,
+-    c: support::Session,
++    f: Box<PublicationFixture>,
++    c: Box<support::Session>,
+     trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,
+     evaluator: Arc<OriginalCellEvaluationCommandClientV1>,
+     peers: Peers,
+@@ -35,9 +37,10 @@
+ }
+ 
+ impl ActualCommand {
+-    async fn ready(mode: OpenReceipt) -> anyhow::Result<Self> {
+-        let mut f = Box::pin(PublicationFixture::ready()).await?;
++    async fn ready(mode: OpenReceipt) -> anyhow::Result<Box<Self>> {
++        let mut f = Box::new(Box::pin(PublicationFixture::ready()).await?);
+         let (c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
++        let c = Box::new(c);
+         let trainer = Arc::new(trainer);
+         let evaluator = Arc::new(evaluator);
+         let context = ReadContext::for_original_selection(f.context()?)?;
+@@ -63,7 +66,7 @@
+             Arc::clone(&trainer),
+             Arc::clone(&evaluator),
+         )?);
+-        Ok(Self {
++        Ok(Box::new(Self {
+             f,
+             c,
+             trainer,
+@@ -73,10 +76,10 @@
+             task_host,
+             task_peer,
+             host,
+-        })
++        }))
+     }
+ 
+-    async fn finish(self, counts: [u64; 2], task_reads: u64) -> anyhow::Result<()> {
++    async fn finish(self: Box<Self>, counts: [u64; 2], task_reads: u64) -> anyhow::Result<()> {
+         let Self {
+             f,
+             mut c,
+@@ -87,7 +90,7 @@
+             task_host,
+             task_peer,
+             host,
+-        } = self;
++        } = *self;
+         drop(host);
+         assert_eq!(
+             task_peer.join().expect("same actual evaluated task peer")?,
+@@ -100,10 +103,10 @@
+         drop(files);
+         c.stop().await?;
+         drop(c);
+-        f.finish().await
++        Box::pin(f.finish()).await
+     }
+ 
+-    fn recover_original_owner(self) -> anyhow::Result<Self> {
++    fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
+         let Self {
+             f,
+             c,
+@@ -114,7 +117,7 @@
+             task_host,
+             task_peer,
+             host,
+-        } = self;
++        } = *self;
+         let live = commands::release_original_task_peer(host)?;
+         let owner = files.owner(&f, OpenReceipt::Readback)?;
+         let host = Arc::new(owner.into_evaluated_command_owner(
+@@ -122,7 +125,7 @@
+             Arc::clone(&trainer),
+             Arc::clone(&evaluator),
+         )?);
+-        Ok(Self {
++        Ok(Box::new(Self {
+             f,
+             c,
+             trainer,
+@@ -132,7 +135,7 @@
+             task_host,
+             task_peer,
+             host,
+-        })
++        }))
+     }
+ }
+ 
+@@ -425,7 +428,7 @@
+                 Withdraw::Training => [7, 6],
+                 Withdraw::Evaluation => [7, 7],
+             },
+-            3,
++            4,
+         )
+         .await
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs
+@@ -20,7 +20,7 @@
+ type NextCommandOwner = OriginalCircuitEvaluatedNextUseCommandOwnerV1<FileAnchorWitnessStore>;
+ 
+ struct ActualNextCommand {
+-    common: ActualCommand,
++    common: Box<ActualCommand>,
+     material: OriginalCellQ24MaterialReceiptConfigV1,
+     dataset: OriginalCellQ24MaterialCommandReceiptV1,
+     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+@@ -59,7 +59,7 @@
+ }
+ 
+ impl ActualNextCommand {
+-    async fn ready(mode: OpenReceipt) -> anyhow::Result<Self> {
++    async fn ready(mode: OpenReceipt) -> anyhow::Result<Box<Self>> {
+         let common = Box::pin(ActualCommand::ready(OpenReceipt::Fresh)).await?;
+         let original_dataset = Box::pin(version_material::original_dataset(&common.f)).await?;
+         let material = original_dataset.config;
+@@ -125,7 +125,7 @@
+             Arc::clone(&common.evaluator),
+             selector,
+         )?);
+-        Ok(Self {
++        Ok(Box::new(Self {
+             common,
+             material,
+             dataset,
+@@ -137,10 +137,10 @@
+             task_peer,
+             files,
+             host,
+-        })
++        }))
+     }
+ 
+-    fn recover_original_owner(self) -> anyhow::Result<Self> {
++    fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
+         let Self {
+             common,
+             material,
+@@ -153,7 +153,7 @@
+             task_peer,
+             files,
+             host,
+-        } = self;
++        } = *self;
+         let (live, selector) = next_commands::release_original_read_peers(host)?;
+         let owner = next_owner(&files, &common.f, &selection, OpenReceipt::Readback)?;
+         let host = Arc::new(owner.into_evaluated_command_owner(
+@@ -162,7 +162,7 @@
+             Arc::clone(&common.evaluator),
+             selector,
+         )?);
+-        Ok(Self {
++        Ok(Box::new(Self {
+             common,
+             material,
+             dataset,
+@@ -174,11 +174,11 @@
+             task_peer,
+             files,
+             host,
+-        })
++        }))
+     }
+ 
+     async fn finish(
+-        self,
++        self: Box<Self>,
+         counts: [u64; 2],
+         selection_reads: u64,
+         next_reads: u64,
+@@ -196,7 +196,7 @@
+             task_peer,
+             files,
+             host,
+-        } = self;
++        } = *self;
+         drop(host);
+         assert_eq!(
+             task_peer
+@@ -219,7 +219,7 @@
+             2
+         );
+         drop(files);
+-        common.finish(counts, selection_reads).await
++        Box::pin(common.finish(counts, selection_reads)).await
+     }
+ }
+ 

@@ -1,0 +1,545 @@
+{
+  "schema_version": 1,
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "candidate_source_only_tree": "f5952294ad9399c5b751576a419987241997ef0e",
+  "scope": "Independent limited CALLERS/QA/source-marker and direct count-consumer review; production/test full review belongs to replay agent",
+  "candidate_blobs": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "git_blob_sha": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "bytes": 11847
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob_sha": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "bytes": 1898908
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "git_blob_sha": "d1f255a21ef9a590e7bbd536177df0b16875a8ea",
+      "bytes": 11187
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "git_blob_sha": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "bytes": 3758
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "git_blob_sha": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "bytes": 12916
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "git_blob_sha": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "bytes": 6346
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "git_blob_sha": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "bytes": 13872
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "git_blob_sha": "4807f4f5aa158f885119d2cb394e2170e6842385",
+      "bytes": 13432
+    }
+  ],
+  "manifest_review": {
+    "base_callers": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "candidate_callers": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+    "changed_groups": [
+      {
+        "key": "header:header#0",
+        "kind": "header",
+        "name": "header",
+        "status": "modified"
+      },
+      {
+        "key": "protected:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs#0",
+        "kind": "protected",
+        "name": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "status": "modified"
+      },
+      {
+        "key": "boundary:learning_original_panel_training_readback_call#0",
+        "kind": "boundary",
+        "name": "learning_original_panel_training_readback_call",
+        "status": "added"
+      },
+      {
+        "key": "protected:codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs#0",
+        "kind": "protected",
+        "name": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "status": "modified"
+      }
+    ],
+    "removed_groups": [],
+    "existing_boundary_groups_byte_identical": true,
+    "new_boundary": "learning_original_panel_training_readback_call",
+    "new_boundary_actual_caller": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+    "caller_resolution": "Direct UFCS OriginalPanelTrainingSourceV1::readback_call; no chained untyped receiver",
+    "sole_callers_pin": "sha256:1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a CALLERS.toml",
+    "upstream1cb_resolution": "No source delta; same source53 baseline remains valid. Review67daf53ec61c0de6d8b13e4d9a5d7caa012263be."
+  },
+  "guard_review": {
+    "method": "Independent static raw ordered-marker and Rust brace-depth inspection; not execution of the repository's verifier",
+    "changed_rows": 2,
+    "guards": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn from_original_receipt_owner(",
+        "sequence_count": 21,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn completion(",
+        "sequence_count": 8,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn read_original_completion(",
+        "sequence_count": 43,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn read_panel(",
+        "sequence_count": 2,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn authenticate_panel(",
+        "sequence_count": 6,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn current_time(",
+        "sequence_count": 2,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn now(",
+        "sequence_count": 2,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn require_clock(",
+        "sequence_count": 3,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn read_panel_with_training(",
+        "sequence_count": 5,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn from_original_training_readback(",
+        "sequence_count": 3,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn readback_call(",
+        "sequence_count": 19,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn call(",
+        "sequence_count": 8,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn begin(",
+        "sequence_count": 8,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn read(",
+        "sequence_count": 23,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn finish(",
+        "sequence_count": 27,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn require_source(",
+        "sequence_count": 10,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn require_member_source(",
+        "sequence_count": 11,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn authenticate(",
+        "sequence_count": 8,
+        "missing": [],
+        "topWrong": [],
+        "marker_exact": true
+      }
+    ],
+    "schema_checks": "All 18 exact fn markers; all sequences contain at least two items; each sequence found in order inside its actual function; every declared top_level marker at body depth1.",
+    "qualification": "No repository source gate, caller verifier or native compilation was executed."
+  },
+  "qa_review": {
+    "base_blob": "980b7c9b8d364453e13cd0a220611600d6204891",
+    "post_blob": "4807f4f5aa158f885119d2cb394e2170e6842385",
+    "methods": {
+      "oldNames": [
+        "test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls",
+        "test_actual_factory_binds_all_members_before_minting_private_source",
+        "test_first_and_last_reads_stay_in_the_original_physical_slots",
+        "test_call_identity_counter_and_immutable_signature_cannot_be_substituted",
+        "test_cohort_cells_qualification_and_receipt_tails_remain_real",
+        "test_original_effect_owner_and_transport_budgets_are_unchanged"
+      ],
+      "newNames": [
+        "test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls",
+        "test_actual_factory_binds_all_members_before_minting_private_source",
+        "test_first_and_last_reads_stay_in_the_original_physical_slots",
+        "test_call_identity_counter_and_immutable_signature_cannot_be_substituted",
+        "test_cohort_cells_qualification_and_receipt_tails_remain_real",
+        "test_readonly_member_pins_are_local_ordered_and_execute_keeps_original_path",
+        "test_original_effect_owner_and_transport_budgets_are_unchanged"
+      ],
+      "missing": [],
+      "new": [
+        "test_readonly_member_pins_are_local_ordered_and_execute_keeps_original_path"
+      ]
+    },
+    "exact_line_edits": [
+      {
+        "type": "+",
+        "line": 64,
+        "text": "            'source': (FACTORY,), 'call': (HOST,), 'readback_call': (HOST,), 'begin': (HOST,),"
+      },
+      {
+        "type": "-",
+        "line": 64,
+        "text": "            'source': (FACTORY,), 'call': (HOST,), 'begin': (HOST,),"
+      },
+      {
+        "type": "+",
+        "line": 103,
+        "text": "            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),"
+      },
+      {
+        "type": "-",
+        "line": 103,
+        "text": "            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),"
+      },
+      {
+        "type": "+",
+        "line": 112,
+        "text": "            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', 'Arc::ptr_eq(original, expected_source)', '!same_source', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),"
+      },
+      {
+        "type": "-",
+        "line": 112,
+        "text": "            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', '!Arc::ptr_eq(original, expected_source)', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),"
+      },
+      {
+        "type": "+",
+        "line": 131,
+        "text": "    def test_readonly_member_pins_are_local_ordered_and_execute_keeps_original_path(self):"
+      },
+      {
+        "type": "+",
+        "line": 132,
+        "text": "        for function, markers in ("
+      },
+      {
+        "type": "+",
+        "line": 133,
+        "text": "            ('fn readback_call(', ["
+      },
+      {
+        "type": "+",
+        "line": 134,
+        "text": "                'primary: &Member', 'retention: &[Member]',"
+      },
+      {
+        "type": "+",
+        "line": 135,
+        "text": "                'Self::Bound(_) => return Self::call(self, retention.len() + 1)',"
+      },
+      {
+        "type": "+",
+        "line": 136,
+        "text": "                'Self::Individual => {}',"
+      },
+      {
+        "type": "+",
+        "line": 137,
+        "text": "                'Self::ReadbackMembers(_) => return Err(Error::CommitUncertain)',"
+      },
+      {
+        "type": "+",
+        "line": 138,
+        "text": "                'if retention.is_empty()', '.checked_add(1)', '.checked_mul(8)',"
+      },
+      {
+        "type": "+",
+        "line": 139,
+        "text": "                'std::iter::once(primary)', '.chain(retention)',"
+      },
+      {
+        "type": "+",
+        "line": 140,
+        "text": "                'trainer: Arc::clone(&member.trainer)',"
+      },
+      {
+        "type": "+",
+        "line": 141,
+        "text": "                'config: member.qualification.config.clone()',"
+      },
+      {
+        "type": "+",
+        "line": 142,
+        "text": "                'source: Self::ReadbackMembers(Arc::new(members))',"
+      },
+      {
+        "type": "+",
+        "line": 143,
+        "text": "                'identity: Arc::new(())', 'admitted: AtomicBool::new(false)',"
+      },
+      {
+        "type": "+",
+        "line": 144,
+        "text": "            ]),"
+      },
+      {
+        "type": "+",
+        "line": 145,
+        "text": "            ('fn read(', ["
+      },
+      {
+        "type": "+",
+        "line": 146,
+        "text": "                'let width = members.len() * 2',"
+      },
+      {
+        "type": "+",
+        "line": 147,
+        "text": "                'let original = &members[(slot % width) / 2]',"
+      },
+      {
+        "type": "+",
+        "line": 148,
+        "text": "                'let member_slot = (slot / width) * 2 + slot % 2',"
+      },
+      {
+        "type": "+",
+        "line": 149,
+        "text": "                'original.require_member_source(source.trainer, config)?',"
+      },
+      {
+        "type": "+",
+        "line": 150,
+        "text": "                'member_slot == 0 || member_slot == 7', 'if physical',"
+      },
+      {
+        "type": "+",
+        "line": 151,
+        "text": "            ]),"
+      },
+      {
+        "type": "+",
+        "line": 152,
+        "text": "            ('fn require_member_source(', ["
+      },
+      {
+        "type": "+",
+        "line": 153,
+        "text": "                'self.require_source(trainer, config)?',"
+      },
+      {
+        "type": "+",
+        "line": 154,
+        "text": "                'self.config.plan != config.plan',"
+      },
+      {
+        "type": "+",
+        "line": 155,
+        "text": "                'self.config.execution_namespace != config.execution_namespace',"
+      },
+      {
+        "type": "+",
+        "line": 156,
+        "text": "                'self.config.qualification_namespace != config.qualification_namespace',"
+      },
+      {
+        "type": "+",
+        "line": 157,
+        "text": "                'self.config.context.evaluator != config.context.evaluator',"
+      },
+      {
+        "type": "+",
+        "line": 158,
+        "text": "                'self.config.context.retention_receipt_digests',"
+      },
+      {
+        "type": "+",
+        "line": 159,
+        "text": "                'self.config.context.unlearning_receipt_digest',"
+      },
+      {
+        "type": "+",
+        "line": 160,
+        "text": "                'self.config.product_evidence != config.product_evidence',"
+      },
+      {
+        "type": "+",
+        "line": 161,
+        "text": "                'self.config.execution_evidence != config.execution_evidence',"
+      },
+      {
+        "type": "+",
+        "line": 162,
+        "text": "            ]),"
+      },
+      {
+        "type": "+",
+        "line": 163,
+        "text": "            ('fn finish(', ["
+      },
+      {
+        "type": "+",
+        "line": 164,
+        "text": "                'OriginalPanelTrainingSourceV1::ReadbackMembers(expected_source)',"
+      },
+      {
+        "type": "+",
+        "line": 165,
+        "text": "                'for original in members.iter()', 'original.authenticate(current)?',"
+      },
+      {
+        "type": "+",
+        "line": 166,
+        "text": "            ]),"
+      },
+      {
+        "type": "+",
+        "line": 167,
+        "text": "        ):"
+      },
+      {
+        "type": "+",
+        "line": 168,
+        "text": "            for marker in markers:"
+      },
+      {
+        "type": "+",
+        "line": 169,
+        "text": "                with self.subTest(function=function, marker=marker):"
+      },
+      {
+        "type": "+",
+        "line": 170,
+        "text": "                    self.rejects(TRANSACTION, function, marker)"
+      },
+      {
+        "type": "+",
+        "line": 171,
+        "text": "        for marker in ("
+      },
+      {
+        "type": "+",
+        "line": 172,
+        "text": "            'wire::Action::Execute => OriginalPanelTrainingSourceV1::call(',"
+      },
+      {
+        "type": "+",
+        "line": 173,
+        "text": "            'wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(',"
+      },
+      {
+        "type": "+",
+        "line": 174,
+        "text": "            '&self.panel.primary', '&self.panel.retention',"
+      },
+      {
+        "type": "+",
+        "line": 175,
+        "text": "        ):"
+      },
+      {
+        "type": "+",
+        "line": 176,
+        "text": "            self.rejects(HOST, 'fn read_original_completion(', marker)"
+      },
+      {
+        "type": "+",
+        "line": 177,
+        "text": ""
+      }
+    ],
+    "retained_semantics": [
+      "Six original test methods are preserved; one new readonly-member guard method is added.",
+      "The old physical-read boolean is now carried in the exact same guarded branch and consumed by if physical; both are mutated in QA.",
+      "The old negative pointer condition is represented by the guarded same_source comparison and separate !same_source rejection; both remain mutation-tested.",
+      "Exact source53 SERVICE checksum d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640 remains unchanged."
+    ]
+  },
+  "assessment": "No additional CALLERS/QA static blocker identified in this limited review.",
+  "execution": {
+    "formatter": "NOT_RUN",
+    "source_gate": "NOT_RUN",
+    "caller_gate": "NOT_RUN",
+    "rust": "NOT_RUN",
+    "ref_changed": false
+  }
+}

@@ -1,0 +1,649 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs
+@@ -0,0 +1,91 @@
++//! Actual independent original member peers; their budgets are not replaced.
++use std::sync::Arc;
++
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++
++use super::CommandError;
++use super::HostFixture;
++use super::finish;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_member_readback_keeps_full_original_bytes_below_peer_bound()
++-> anyhow::Result<()> {
++    let fixture = Box::pin(HostFixture::new(/*pending_claim*/ false)).await?;
++    let upstream = fixture.upstream_files()?;
++    let (client, peer) = fixture.commands(
++        /*readback_only*/ false, /*expected*/ None, "original",
++    )?;
++    let original = client.execute_evaluation().await?;
++    let completed = fixture.original_files()?;
++    // The original individual path needed 2 + 10 + 14*9 = 138 primary
++    // requests. These are fourteen full calls on the very same original peer.
++    for _ in 0..14 {
++        assert_eq!(client.readback().await?, original);
++        assert_eq!(fixture.original_files()?, completed);
++        assert_eq!(fixture.upstream_files()?, upstream);
++    }
++    assert!(matches!(
++        client.execute_evaluation().await,
++        Err(CommandError::ReadbackRequired)
++    ));
++    assert_eq!(finish(client, peer)?, 15);
++    assert_eq!(fixture.finish().await?, [54, 38]);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_member_proof_refuses_partial_cross_call_source_and_extra_slots()
++-> anyhow::Result<()> {
++    let fixture = Box::pin(HostFixture::new(/*pending_claim*/ false)).await?;
++    let upstream = fixture.upstream_files()?;
++    let original = fixture.original_files()?;
++    let host = Arc::clone(
++        fixture.host.as_ref().ok_or_else(|| anyhow::anyhow!("original host"))?,
++    );
++    tokio::task::spawn_blocking(move || host.fixture_member_readback_proof_lifecycle()).await??;
++    assert_eq!(fixture.original_files()?, original);
++    assert_eq!(fixture.upstream_files()?, upstream);
++    // Setup2, one partial call1, then two complete calls2 each. Wrong member
++    // and changed Qualification pins are both refused before Trainer I/O.
++    assert_eq!(fixture.finish().await?, [7, 7]);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn original_evaluation_member_readback_refuses_actual_source_withdrawal_inside_call()
++-> anyhow::Result<()> {
++    let fixture = Box::pin(HostFixture::new(/*pending_claim*/ false)).await?;
++    let upstream = fixture.upstream_files()?;
++    let original = fixture.original_files()?;
++    let host = Arc::clone(
++        fixture.host.as_ref().ok_or_else(|| anyhow::anyhow!("original host"))?,
++    );
++    let (entered, reached) = tokio::sync::oneshot::channel();
++    let (resume, proceed) = std::sync::mpsc::channel();
++    let task = tokio::task::spawn_blocking(move || {
++        host.fixture_member_readback_source_withdrawal(entered, proceed)
++    });
++    reached.await?;
++    let withdrawal = fixture.retention_b.withdraw_target();
++    resume.send(())?;
++    withdrawal?;
++    task.await??;
++    assert_ne!(fixture.upstream_files()?, upstream);
++    assert_eq!(fixture.original_files()?, original);
++    for expected_first in [true, false] {
++        let (client, peer) = fixture.commands(
++            /*readback_only*/ true, /*expected*/ None, "original",
++        )?;
++        let result = client.readback().await;
++        if expected_first {
++            assert!(matches!(result, Err(CommandError::PredecessorUnavailable)));
++        } else {
++            assert!(matches!(result, Err(CommandError::CommitUncertain)));
++        }
++        assert_eq!(finish(client, peer)?, 1);
++        assert_eq!(fixture.original_files()?, original);
++    }
++    assert_eq!(fixture.finish().await?, [3, 3]);
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs
+@@ -0,0 +1,166 @@
++//! Per-member readonly proof checks using the actual original owners.
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++
++use super::*;
++use crate::OriginalCellEvaluationQualificationErrorV1 as QualificationError;
++use crate::OriginalCellEvaluationQualificationSourcesV1;
++
++impl OriginalCellEvaluationHostV1 {
++    pub(crate) fn fixture_member_readback_proof_lifecycle(&self) -> anyhow::Result<()> {
++        let mut owners = self
++            .owners
++            .try_lock()
++            .map_err(|_| anyhow::anyhow!("original B lane"))?;
++        self.runtime.block_on(Box::pin(check_lifecycle(&mut owners)))
++    }
++
++    pub(crate) fn fixture_member_readback_source_withdrawal(
++        &self,
++        entered: tokio::sync::oneshot::Sender<()>,
++        resume: std::sync::mpsc::Receiver<()>,
++    ) -> anyhow::Result<()> {
++        let mut owners = self
++            .owners
++            .try_lock()
++            .map_err(|_| anyhow::anyhow!("original B lane"))?;
++        self.runtime.block_on(Box::pin(check_source_withdrawal(
++            &mut owners,
++            entered,
++            resume,
++        )))
++    }
++}
++
++async fn check_source_withdrawal(
++    owners: &mut Owners,
++    entered: tokio::sync::oneshot::Sender<()>,
++    resume: std::sync::mpsc::Receiver<()>,
++) -> anyhow::Result<()> {
++    let call = readonly_call(owners)?;
++    let mut proof = call.begin()?;
++    Box::pin(owners.read_panel_with_training(&mut proof)).await?;
++    entered.send(()).map_err(|_| anyhow::anyhow!("original B read barrier"))?;
++    resume.recv()?;
++    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++    assert!(owners.panel.fenced);
++    Ok(())
++}
++
++fn readonly_call(owners: &Owners) -> Result<OriginalPanelTrainingCallV1, QualificationError> {
++    OriginalPanelTrainingSourceV1::readback_call(
++        &owners.training_source,
++        &owners.panel.primary,
++        &owners.panel.retention,
++    )
++}
++
++async fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {
++    assert!(matches!(&owners.training_source, OriginalPanelTrainingSourceV1::Individual));
++    assert!(!Arc::ptr_eq(&owners.panel.primary.trainer, &owners.panel.retention[0].trainer));
++    assert_eq!(
++        owners.panel.primary.qualification.config.training_evidence,
++        owners.panel.retention[0].qualification.config.training_evidence
++    );
++    let call = readonly_call(owners)?;
++    let proof = call.begin()?;
++    assert!(call.begin().is_err());
++    let other_call = readonly_call(owners)?;
++    assert!(matches!(
++        proof.finish(&other_call, owners.current_time()?),
++        Err(QualificationError::Binding(_))
++    ));
++    assert!(call.begin().is_err());
++
++    let call = readonly_call(owners)?;
++    let mut proof = call.begin()?;
++    let before = Box::pin(owners.read_panel_with_training(&mut proof)).await?;
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++
++    // The first slot belongs to the actual primary, never this independently
++    // enrolled retention peer even though its full Training bytes are equal.
++    let call = readonly_call(owners)?;
++    let mut proof = call.begin()?;
++    {
++        let member = &mut owners.panel.retention[0];
++        let sources = OriginalCellEvaluationQualificationSourcesV1 {
++            runner: &mut member.runner,
++            journals: CellEvaluationJournalsV1 {
++                candidate: &member.candidate,
++                fixed_expert: &member.fixed_expert,
++            },
++            candidate_plan: &member.candidate_plan,
++            baseline_plan: &member.baseline_plan,
++            executions: &mut member.executions,
++            trainer: member.trainer.as_ref(),
++        };
++        assert!(matches!(
++            proof.read(&sources, &member.qualification.config).await,
++            Err(QualificationError::Binding(
++                "same actual panel Trainer channel and full Training pin"
++            ))
++        ));
++    }
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++
++    let call = readonly_call(owners)?;
++    let mut proof = call.begin()?;
++    {
++        let member = &mut owners.panel.primary;
++        let mut wrong = member.qualification.config.clone();
++        assert_ne!(wrong.qualification_namespace, Digest32::ZERO);
++        wrong.qualification_namespace = Digest32::ZERO;
++        let sources = OriginalCellEvaluationQualificationSourcesV1 {
++            runner: &mut member.runner,
++            journals: CellEvaluationJournalsV1 {
++                candidate: &member.candidate,
++                fixed_expert: &member.fixed_expert,
++            },
++            candidate_plan: &member.candidate_plan,
++            baseline_plan: &member.baseline_plan,
++            executions: &mut member.executions,
++            trainer: member.trainer.as_ref(),
++        };
++        assert!(matches!(
++            proof.read(&sources, &wrong).await,
++            Err(QualificationError::Binding("same original readonly panel member"))
++        ));
++    }
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++
++    let call = readonly_call(owners)?;
++    let mut proof = call.begin()?;
++    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
++    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
++    let new_call = call.fixture_same_call_new_source();
++    assert!(matches!(
++        proof.finish(&new_call, owners.current_time()?),
++        Err(QualificationError::Binding("same completed panel Training call and Source"))
++    ));
++
++    let call = readonly_call(owners)?;
++    let mut proof = call.begin()?;
++    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
++    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
++    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());
++    assert!(matches!(
++        proof.finish(&call, owners.current_time()?),
++        Err(QualificationError::CommitUncertain)
++    ));
++    assert!(call.begin().is_err());
++    assert!(owners.panel.fenced);
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs
+@@ -1,4 +1,4 @@
+-//! One private panel read transaction on the same actual bounded Trainer peer.
++//! Private panel read transactions on the actual original Trainer peers.
+ //! Intermediate slots authenticate the original immutable Training pin. They
+ //! are not CURRENT results: only the original first and last peer reads close
+ //! this call, and no proof, signature or authority is returned to a caller.
+@@ -10,16 +10,26 @@
+ use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
+ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+ use codex_hepta_neuron::AnchorWitnessStore;
++use codex_hepta_neuron::FileAnchorWitnessStore;
+ 
+ use super::Error;
++use super::OriginalCellEvaluationPanelMemberOwnersV1;
+ use super::OriginalCellEvaluationQualificationConfigV1;
+ use super::OriginalCellEvaluationQualificationSourcesV1;
+ use super::binding;
+ use crate::LearningIterationEvidenceClientV1;
+ 
++type Member = OriginalCellEvaluationPanelMemberOwnersV1<
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++>;
++
+ pub(super) enum OriginalPanelTrainingSourceV1 {
+     Individual,
+     Bound(Arc<OriginalPanelTrainingPinV1>),
++    ReadbackMembers(Arc<Vec<OriginalPanelTrainingPinV1>>),
+ }
+ 
+ pub(super) struct OriginalPanelTrainingPinV1 {
+@@ -65,6 +75,41 @@
+         }))
+     }
+ 
++    /// A readonly Host call pins each existing member separately. Even two
++    /// members with the same Training bytes retain distinct source slots.
++    pub(super) fn readback_call(
++        &self,
++        primary: &Member,
++        retention: &[Member],
++    ) -> Result<OriginalPanelTrainingCallV1, Error> {
++        match self {
++            Self::Bound(_) => return Self::call(self, retention.len() + 1),
++            Self::Individual => {}
++            Self::ReadbackMembers(_) => return Err(Error::CommitUncertain),
++        }
++        if retention.is_empty() {
++            return Err(Error::Binding("original nonempty retention panel"));
++        }
++        let slots = retention
++            .len()
++            .checked_add(1)
++            .and_then(|members| members.checked_mul(8))
++            .ok_or(Error::Binding("original panel Training read bound"))?;
++        let members = std::iter::once(primary)
++            .chain(retention)
++            .map(|member| OriginalPanelTrainingPinV1 {
++                trainer: Arc::clone(&member.trainer),
++                config: member.qualification.config.clone(),
++            })
++            .collect();
++        Ok(OriginalPanelTrainingCallV1 {
++            source: Self::ReadbackMembers(Arc::new(members)),
++            identity: Arc::new(()),
++            slots,
++            admitted: AtomicBool::new(false),
++        })
++    }
++
+     pub(super) fn call(&self, members: usize) -> Result<OriginalPanelTrainingCallV1, Error> {
+         if members < 2 {
+             return Err(Error::Binding("original nonempty retention panel"));
+@@ -75,6 +120,7 @@
+         let source = match self {
+             Self::Individual => Self::Individual,
+             Self::Bound(original) => Self::Bound(Arc::clone(original)),
++            Self::ReadbackMembers(_) => return Err(Error::CommitUncertain),
+         };
+         Ok(OriginalPanelTrainingCallV1 {
+             source,
+@@ -94,7 +140,8 @@
+             OriginalPanelTrainingSourceV1::Individual => {
+                 Ok(OriginalPanelTrainingReadV1::Individual)
+             }
+-            OriginalPanelTrainingSourceV1::Bound(_) => Ok(OriginalPanelTrainingReadV1::Panel(
++            OriginalPanelTrainingSourceV1::Bound(_)
++            | OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Ok(OriginalPanelTrainingReadV1::Panel(
+                 OriginalPanelTrainingProofV1 {
+                     call: self,
+                     cursor: Cursor::Next(0),
+@@ -125,11 +172,25 @@
+                     return Err(Error::CommitUncertain);
+                 };
+                 // A failed or canceled await never leaves a reusable slot.
+-                let OriginalPanelTrainingSourceV1::Bound(original) = &proof.call.source else {
+-                    return Err(Error::CommitUncertain);
++                let (original, physical) = match &proof.call.source {
++                    OriginalPanelTrainingSourceV1::Individual => {
++                        return Err(Error::CommitUncertain);
++                    }
++                    OriginalPanelTrainingSourceV1::Bound(original) => {
++                        original.require_source(source.trainer, config)?;
++                        (original.as_ref(), slot == 0 || slot + 1 == proof.call.slots)
++                    }
++                    OriginalPanelTrainingSourceV1::ReadbackMembers(members) => {
++                        // Each panel pass visits every member's prepare and
++                        // finish slots. Four passes close this readonly call.
++                        let width = members.len() * 2;
++                        let original = &members[(slot % width) / 2];
++                        let member_slot = (slot / width) * 2 + slot % 2;
++                        original.require_member_source(source.trainer, config)?;
++                        (original, member_slot == 0 || member_slot == 7)
++                    }
+                 };
+-                original.require_source(source.trainer, config)?;
+-                if slot == 0 || slot + 1 == proof.call.slots {
++                if physical {
+                     // These are the existing prepare / finish_readback slots,
+                     // never an earlier read moved outside the physical work.
+                     OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)
+@@ -154,19 +215,22 @@
+         match self {
+             Self::Individual => match &expected.source {
+                 OriginalPanelTrainingSourceV1::Individual => Ok(()),
+-                OriginalPanelTrainingSourceV1::Bound(_) => Err(Error::CommitUncertain),
++                OriginalPanelTrainingSourceV1::Bound(_)
++                | OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Err(Error::CommitUncertain),
+             },
+             Self::Panel(proof) => {
+-                let (
+-                    OriginalPanelTrainingSourceV1::Bound(original),
+-                    OriginalPanelTrainingSourceV1::Bound(expected_source),
+-                ) = (&proof.call.source, &expected.source)
+-                else {
+-                    return Err(Error::CommitUncertain);
++                let same_source = match (&proof.call.source, &expected.source) {
++                    (
++                        OriginalPanelTrainingSourceV1::Bound(original),
++                        OriginalPanelTrainingSourceV1::Bound(expected_source),
++                    ) => Arc::ptr_eq(original, expected_source),
++                    (
++                        OriginalPanelTrainingSourceV1::ReadbackMembers(original),
++                        OriginalPanelTrainingSourceV1::ReadbackMembers(expected_source),
++                    ) => Arc::ptr_eq(original, expected_source),
++                    _ => return Err(Error::CommitUncertain),
+                 };
+-                if !Arc::ptr_eq(&proof.call.identity, &expected.identity)
+-                    || !Arc::ptr_eq(original, expected_source)
+-                {
++                if !Arc::ptr_eq(&proof.call.identity, &expected.identity) || !same_source {
+                     return Err(Error::Binding(
+                         "same completed panel Training call and Source",
+                     ));
+@@ -174,7 +238,16 @@
+                 if !matches!(proof.cursor, Cursor::Complete) {
+                     return Err(Error::CommitUncertain);
+                 }
+-                original.authenticate(current)
++                match &proof.call.source {
++                    OriginalPanelTrainingSourceV1::Individual => Err(Error::CommitUncertain),
++                    OriginalPanelTrainingSourceV1::Bound(original) => original.authenticate(current),
++                    OriginalPanelTrainingSourceV1::ReadbackMembers(members) => {
++                        for original in members.iter() {
++                            original.authenticate(current)?;
++                        }
++                        Ok(())
++                    }
++                }
+             }
+         }
+     }
+@@ -183,14 +256,30 @@
+ #[cfg(test)]
+ impl OriginalPanelTrainingCallV1 {
+     pub(super) fn fixture_same_call_new_source(&self) -> Self {
+-        let OriginalPanelTrainingSourceV1::Bound(original) = &self.source else {
+-            panic!("actual original Trainer composition is required");
++        let source = match &self.source {
++            OriginalPanelTrainingSourceV1::Individual => {
++                panic!("actual original Trainer composition is required");
++            }
++            OriginalPanelTrainingSourceV1::Bound(original) => {
++                OriginalPanelTrainingSourceV1::from_original_training_readback(
++                    Arc::clone(&original.trainer),
++                    &original.config,
++                )
++            }
++            OriginalPanelTrainingSourceV1::ReadbackMembers(members) => {
++                OriginalPanelTrainingSourceV1::ReadbackMembers(Arc::new(
++                    members
++                        .iter()
++                        .map(|original| OriginalPanelTrainingPinV1 {
++                            trainer: Arc::clone(&original.trainer),
++                            config: original.config.clone(),
++                        })
++                        .collect(),
++                ))
++            }
+         };
+         Self {
+-            source: OriginalPanelTrainingSourceV1::from_original_training_readback(
+-                Arc::clone(&original.trainer),
+-                &original.config,
+-            ),
++            source,
+             identity: Arc::clone(&self.identity),
+             slots: self.slots,
+             admitted: AtomicBool::new(true),
+@@ -220,6 +309,28 @@
+         Ok(())
+     }
+ 
++    fn require_member_source(
++        &self,
++        trainer: &LearningIterationEvidenceClientV1,
++        config: &OriginalCellEvaluationQualificationConfigV1,
++    ) -> Result<(), Error> {
++        self.require_source(trainer, config)?;
++        if self.config.plan != config.plan
++            || self.config.execution_namespace != config.execution_namespace
++            || self.config.qualification_namespace != config.qualification_namespace
++            || self.config.context.evaluator != config.context.evaluator
++            || self.config.context.retention_receipt_digests
++                != config.context.retention_receipt_digests
++            || self.config.context.unlearning_receipt_digest
++                != config.context.unlearning_receipt_digest
++            || self.config.product_evidence != config.product_evidence
++            || self.config.execution_evidence != config.execution_evidence
++        {
++            return Err(Error::Binding("same original readonly panel member"));
++        }
++        Ok(())
++    }
++
+     fn authenticate(&self, current: u64) -> Result<(), Error> {
+         let original = self.config.verifier.verify(
+             LearningEvidenceRoleV1::Generator,
+--- a/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py
++++ b/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py
+@@ -61,7 +61,7 @@
+ 
+     def test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls(self):
+         expected = {
+-            'source': (FACTORY,), 'call': (HOST,), 'begin': (HOST,),
++            'source': (FACTORY,), 'call': (HOST,), 'readback_call': (HOST,), 'begin': (HOST,),
+             'slot': (SOURCE, READ), 'finish': (HOST,), 'actual': (TRANSACTION,),
+             'prepare': (MEMBER,), 'qualification': (MEMBER,),
+             'panel': (HOST,),
+@@ -100,7 +100,7 @@
+         for path, function, markers in (
+             (SOURCE, 'fn prepare_with_training(', ['let before = self.read_original(config)?', 'OriginalPanelTrainingReadV1::read(training, self, config).await?', 'let after = self.read_original(config)?', 'binding::authenticate(config, &after, current)?']),
+             (READ, 'fn finish_readback_with_training(', ['runner.qualify_and_persist(', 'drop(sink)', 'OriginalPanelTrainingReadV1::read(training, source, &self.config).await?', 'source.verify_current(&self.config, prepared)?', 'if self.completed_bytes()? != bytes', 'binding::authenticate(&self.config, prepared, current)?', 'revalidate_product_qualification_v1(']),
+-            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
++            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
+         ):
+             for marker in markers:
+                 with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+@@ -109,7 +109,7 @@
+         for function, markers in (
+             ('fn call(', ['.checked_mul(8)', 'identity: Arc::new(())', 'admitted: AtomicBool::new(false)']),
+             ('fn begin(', ['.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)', 'call: self', 'cursor: Cursor::Next(0)']),
+-            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', '!Arc::ptr_eq(original, expected_source)', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),
++            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', 'Arc::ptr_eq(original, expected_source)', '!same_source', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),
+             ('fn require_source(', ['!std::ptr::eq(self.trainer.as_ref(), trainer)', 'self.config.training != config.training', 'self.config.scope != config.scope', 'self.config.training_evidence != config.training_evidence', 'self.config.context.generator != config.context.generator', 'self.config.verifier.trust_digest() != config.verifier.trust_digest()', 'self.config.verifier.scope_digest() != config.verifier.scope_digest()', 'self.config.verifier.objective_digest() != config.verifier.objective_digest()']),
+             ('fn authenticate(', ['self.config.verifier.verify(', 'LearningEvidenceRoleV1::Generator', 'learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?', 'original.principal() != &self.config.context.generator']),
+         ):
+@@ -128,6 +128,53 @@
+             for marker in markers:
+                 with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+ 
++    def test_readonly_member_pins_are_local_ordered_and_execute_keeps_original_path(self):
++        for function, markers in (
++            ('fn readback_call(', [
++                'primary: &Member', 'retention: &[Member]',
++                'Self::Bound(_) => return Self::call(self, retention.len() + 1)',
++                'Self::Individual => {}',
++                'Self::ReadbackMembers(_) => return Err(Error::CommitUncertain)',
++                'if retention.is_empty()', '.checked_add(1)', '.checked_mul(8)',
++                'std::iter::once(primary)', '.chain(retention)',
++                'trainer: Arc::clone(&member.trainer)',
++                'config: member.qualification.config.clone()',
++                'source: Self::ReadbackMembers(Arc::new(members))',
++                'identity: Arc::new(())', 'admitted: AtomicBool::new(false)',
++            ]),
++            ('fn read(', [
++                'let width = members.len() * 2',
++                'let original = &members[(slot % width) / 2]',
++                'let member_slot = (slot / width) * 2 + slot % 2',
++                'original.require_member_source(source.trainer, config)?',
++                'member_slot == 0 || member_slot == 7', 'if physical',
++            ]),
++            ('fn require_member_source(', [
++                'self.require_source(trainer, config)?',
++                'self.config.plan != config.plan',
++                'self.config.execution_namespace != config.execution_namespace',
++                'self.config.qualification_namespace != config.qualification_namespace',
++                'self.config.context.evaluator != config.context.evaluator',
++                'self.config.context.retention_receipt_digests',
++                'self.config.context.unlearning_receipt_digest',
++                'self.config.product_evidence != config.product_evidence',
++                'self.config.execution_evidence != config.execution_evidence',
++            ]),
++            ('fn finish(', [
++                'OriginalPanelTrainingSourceV1::ReadbackMembers(expected_source)',
++                'for original in members.iter()', 'original.authenticate(current)?',
++            ]),
++        ):
++            for marker in markers:
++                with self.subTest(function=function, marker=marker):
++                    self.rejects(TRANSACTION, function, marker)
++        for marker in (
++            'wire::Action::Execute => OriginalPanelTrainingSourceV1::call(',
++            'wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(',
++            '&self.panel.primary', '&self.panel.retention',
++        ):
++            self.rejects(HOST, 'fn read_original_completion(', marker)
++
+     def test_original_effect_owner_and_transport_budgets_are_unchanged(self):
+         self.assertEqual(hashlib.sha256((ROOT / RECEIPT).read_bytes()).hexdigest(), 'b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7')
+         self.assertEqual(hashlib.sha256((ROOT / SERVICE).read_bytes()).hexdigest(), 'd076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640')
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+@@ -152,10 +152,17 @@
+     ) -> Result<Receipt, Error> {
+         let started_at = self.current_time()?;
+         context.authenticate(started_at)?;
+-        let call = OriginalPanelTrainingSourceV1::call(
+-            &self.training_source,
+-            self.panel.retention.len() + 1,
+-        )?;
++        let call = match action {
++            wire::Action::Execute => OriginalPanelTrainingSourceV1::call(
++                &self.training_source,
++                self.panel.retention.len() + 1,
++            )?,
++            wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(
++                &self.training_source,
++                &self.panel.primary,
++                &self.panel.retention,
++            )?,
++        };
+         let mut training = OriginalPanelTrainingCallV1::begin(&call)?;
+         let before = self.read_panel_with_training(&mut training).await?;
+         if before.training() != &context.training
+@@ -332,3 +339,7 @@
+ #[cfg(test)]
+ #[path = "neuron_cell_evaluation_training_read_access_tests.rs"]
+ mod training_read_tests;
++
++#[cfg(test)]
++#[path = "neuron_cell_evaluation_member_read_access_tests.rs"]
++mod member_read_tests;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
+@@ -81,7 +81,8 @@
+     assert_eq!(finish(client, peer)?, 2);
+     assert_eq!(fixture.original_files()?, completed);
+     assert_eq!(fixture.upstream_files()?, upstream);
+-    assert_eq!(fixture.finish().await?, [34, 30]);
++    // Setup2 + missing1 + unchanged Execute10/8 + two Readbacks3/2.
++    assert_eq!(fixture.finish().await?, [19, 15]);
+     Ok(())
+ }
+ 
+@@ -166,7 +167,8 @@
+     assert_eq!(finish(client, peer)?, 1);
+     assert_eq!(pending.original_files()?, claimed);
+     let counts = pending.finish().await?;
+-    assert_eq!(counts, [10, 10]);
++    // Setup2 + two incomplete readonly panel calls1 per actual member.
++    assert_eq!(counts, [4, 4]);
+ 
+     let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+     let empty = fixture.original_files()?;
+@@ -283,3 +285,6 @@
+ 
+ #[path = "circuit_original_evaluation_model_material_tests.rs"]
+ mod model_material;
++
++#[path = "circuit_original_evaluation_member_readback_tests.rs"]
++mod member_readback;

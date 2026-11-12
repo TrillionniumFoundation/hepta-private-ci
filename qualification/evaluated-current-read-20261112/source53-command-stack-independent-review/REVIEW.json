@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "candidate_code_tree": "0d269cbdb9b9686ba46df9962f707e5bdb491b26",
+  "scope": "Independent static type/ownership/callsite/guard review; no execution",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs",
+      "base": "bb93de64ccb9467b2e7c3f31bf3c13cc309ed9fb",
+      "post": "7356d3a3431b89ba62fcb0884320c2e835447f32",
+      "bytes": 15871,
+      "sha256": "950c2507ffd3996996f53797e9e158e7c28b11933c94e85eb30200fd425e78cb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs",
+      "base": "3970943404e829a6025e7b89f0cfda0215e94eb6",
+      "post": "81791260cc665b9717df81a6596e2c422caa1784",
+      "bytes": 17152,
+      "sha256": "2b0dbf0518c8a11c7b306ebeb21ecb01a6b469509076b52b1890562d7e5aae73"
+    }
+  ],
+  "observations": [
+    "Both private fixture types are owned, have no Drop implementation, and may move their fields exactly once out of self: Box<Self>.",
+    "All existing ready callers bind inferred local values or the matching boxed field; no remaining explicit ActualCommand-by-value field exists in the C fixture.",
+    "Existing functions expecting &PublicationFixture or &Session accept references to Box through Deref coercion. This neither clones custody nor changes which original owner is used.",
+    "Cleanup retains the original drop/join/stop order. Only the original finish futures are boxed; peer counts and signatures are unchanged except the independently reviewed shared task-read count correction.",
+    "S's entire suffix beginning at its first tokio test is byte-identical to the base plus exactly the approved expected task_reads 3-to-4 hunk. C's equivalent complete suffix is byte-identical to its original base.",
+    "Boxing the ready future previously did not force its large output or consuming cleanup future onto the heap. The candidate changes the storage/return ownership, without increasing stack size or method deadlines."
+  ],
+  "counter_correction": {
+    "review_blob": "e138c13785760bf6b6b7f35e9b84eabf52dccc20",
+    "one_shared_hunk_two_methods": true,
+    "task_peer_expected": 4
+  },
+  "guard_review": {
+    "full_callers": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "source_qa_files_scanned": 61,
+    "private_type_name_hits": 0,
+    "callers_hits": 0,
+    "one_qa_path": "qa/b4-no-bypass/test_evaluated_retention_command_source_closure.py",
+    "qa_blob": "45176b3224db1757ad8af035f0c5c84bfed869af",
+    "matching_contract": "NATIVE_CASES retains the same five S and three C method names; it does not bind these private fixture fields or ready return types.",
+    "original_named_methods_retained": 8
+  },
+  "original_failure": {
+    "native_archive": "81647037cb29f032f6cb0a15a2783b620d922904",
+    "failure_index": "b50243596e212d21bf49a5dbd41e1cfb6d4ab356",
+    "stack_overflow_methods": 4
+  },
+  "assessment": "No concrete static type, privacy, ownership, cleanup, or closed-caller blocker found. Actual future sizes and runtime SIGABRT disappearance remain unmeasured; every original method still requires execution on the final source.",
+  "execution": {
+    "format": "NOT_RUN",
+    "rust": "NOT_RUN",
+    "native": "NOT_RUN",
+    "bazel": "NOT_RUN",
+    "refs_changed": false
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "scope": "Pure review archive; source merge needs no file changes",
+  "ancestor": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "ours": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "theirs": "1cb195e590f7f5038a38625a943f259badea489a",
+  "resolution": {
+    "type": "SOURCE_TREE_NOOP",
+    "retain_ours_callers_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "retain_ours_allowlist_blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+    "unchanged_source53_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+    "boundary_entire_block_byte_equal": true,
+    "all_seven_actual_product_caller_files_present": true,
+    "all_seven_direct_source_tree_blobs_verified": true,
+    "actual_call_sites": 8,
+    "guards_changed": 0,
+    "qa_changed": 0,
+    "caller_paths_added_to_ours": 0,
+    "reason": "The complete upstream 40-caller boundary block is already byte-identical to ours, including order. All seven newly registered paths still make the actual original_owner_command_channel_v1 call in source53; no path was removed by the read-set optimization.",
+    "allowlist_reason": "Ours retains exactly the current complete CALLERS SHA256 and no other active pin for that path. The upstream hash describes its different entire CALLERS file. Appending it would restore conflicting asset entries, not preserve a required source permission.",
+    "active_pins": {
+      "ancestor": 14,
+      "theirs": 15,
+      "ours": [
+        "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml"
+      ]
+    },
+    "current_exact_pin": "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml",
+    "candidate_composition": "A merge parent may acknowledge 1cb without changing the prepared child tree. Preserve any already-reviewed source8 changes on top of source53; this report does not replace that child with the source53 base tree."
+  },
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-upstream1cb-noop-review/COMPARE_API.json",
+      "git_blob_sha": "b72a516cf21036f142fd0cf015a9663944558e92",
+      "bytes": 20120,
+      "sha256": "c202784086482d8397ca6df79d9d00dd79a58bf103b3de73fb7d307db819d673",
+      "kind": "original GitHub compare response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-upstream1cb-noop-review/SOURCE_EDGE_PROOF.json",
+      "git_blob_sha": "8cb7733402214782fd5009d96259f97e418ee579",
+      "bytes": 13556,
+      "sha256": "11a9a7a99eb0dd31f3f7764f5426e8ae629ed3a699fec573b973f98684c0b975",
+      "kind": "derived exact source blob and actual call-site binding"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-upstream1cb-noop-review/REVIEW.json",
+      "git_blob_sha": "51f656aef70d6aabbf903a3e03be9ecbf10a5964",
+      "bytes": 12731,
+      "sha256": "fd3eef87b38674fba188eb658985311b53e4aec5a9b98e49ce6ab320eb898d56",
+      "kind": "static three-way review"
+    }
+  ],
+  "all_payloads_read_back_equal": true,
+  "execution": "NOT_RUN",
+  "ref_changed": false
+}
