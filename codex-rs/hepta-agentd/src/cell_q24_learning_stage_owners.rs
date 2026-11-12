@@ -49,6 +49,8 @@ mod historical_stage;
 mod model;
 #[path = "cell_q24_learning_model_root.rs"]
 mod model_root;
+#[path = "cell_q24_learning_operation_lane.rs"]
+mod operation_lane;
 pub(crate) use historical_operation::OriginalHistoricalRestoreModeV1;
 pub(crate) use historical_operation::OriginalHistoricalResultV1;
 pub(crate) use historical_operation::OriginalHistoricalWorkV1;
@@ -77,6 +79,7 @@ struct Q24StageOwners {
 
 struct Q24StageState {
     prepared: Arc<CellQ24PreparedLearningV1>,
+    verifier: LearningEvidenceVerifierV1,
     dataset_cut: LearningIterationSnapshotV1,
     training: Arc<OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
     owners: Arc<Mutex<Q24StageOwners>>,
@@ -135,6 +138,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         local
             .require_context(prepared.initial(), prepared.scope())
             .map_err(unavailable)?;
+        let original_verifier = verifier.clone();
         let for_open = Arc::clone(&prepared);
         let (experience, dataset, dataset_cut, training, receipts) =
             tokio::task::spawn_blocking(move || {
@@ -171,6 +175,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         Ok(Arc::new(Self {
             inner: Arc::new(Q24StageState {
                 prepared,
+                verifier: original_verifier,
                 dataset_cut,
                 training: Arc::new(training),
                 owners: Arc::new(Mutex::new(Q24StageOwners {
@@ -194,7 +199,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     }
 
     pub(crate) async fn require_current(&self) -> Result<(), Error> {
-        self.inner.in_lane(|_, _, _| Ok(())).await
+        self.inner.in_original_prepared_lane(|_, _, _| Ok(())).await
     }
 
     pub async fn install_published_generation(
