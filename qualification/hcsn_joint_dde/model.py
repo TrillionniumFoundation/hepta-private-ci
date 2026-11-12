@@ -17,6 +17,7 @@ from scipy.sparse import block_diag, csr_matrix
 
 from qualification.hcsn_boundary_audit.spatial_generator import KilledSpatialGenerator
 from qualification.hcsn_boundary_audit.refractory_transport import Packet
+from .state_io import decode_state, encode_state, evaluate_flux, flux_pieces
 
 
 @dataclass(frozen=True)
@@ -80,13 +81,15 @@ class JointModel:
     def solve(
         self,
         query_times,
-        active,
-        content,
+        active=None,
+        content=None,
         phase=(),
         *,
         rtol=2e-9,
         atol=2e-11,
         max_step=None,
+        checkpoint=None,
+        export_state=False,
     ):
         """Return dense-history DDE states for fixed physics and one initial law.
 
@@ -95,6 +98,15 @@ class JointModel:
         Content is transported by the identical linear equation. Packet phase
         supports are remaining-time laws at time zero, and may include atoms.
         """
+        restored = None if checkpoint is None else decode_state(self, checkpoint)
+        start = 0.0 if restored is None else restored["time"]
+        if restored is not None:
+            if active is not None or content is not None or phase:
+                raise ValueError("restore must not replace the retained initial law/history")
+            saved = np.asarray(restored["state"])
+            n_saved = self.spatial.intervals - 1
+            active = np.r_[0.0, saved[0, :n_saved], saved[0, n_saved]]
+            content = np.vstack((np.zeros(len(saved)-1), saved[1:, :n_saved+1].T))
         times = np.asarray(query_times, dtype=np.float64)
         probability = np.asarray(active, dtype=np.float64)
         marked = np.asarray(content, dtype=np.float64)
@@ -102,7 +114,7 @@ class JointModel:
             times.ndim != 1
             or not 1 <= len(times) <= 4096
             or not np.all(np.isfinite(times))
-            or np.any(times < 0)
+            or np.any(times < start)
             or np.any(np.diff(times) <= 0)
             or times[-1] > 8
         ):
@@ -114,7 +126,7 @@ class JointModel:
             or not 1 <= marked.shape[1] <= 16
             or not np.all(np.isfinite(probability))
             or not np.all(np.isfinite(marked))
-            or np.min(probability) < 0
+            or np.min(probability) < (-1e-8 if restored is not None else 0)
             or probability[0] != 0
             or np.any(marked[0] != 0)
         ):
@@ -143,6 +155,7 @@ class JointModel:
         state[:, n] = np.r_[probability[-1], marked[-1]]
         uniform, atoms = [], {}
         base_knots = [0.0, *times]
+        source_knots = [0.0]
         for packet in phase:
             if not isinstance(packet, Packet):
                 raise ValueError("validated exact-support phase Packet required")
@@ -167,17 +180,28 @@ class JointModel:
                 )
             state[:, n + 5] += vector * phase_discount
             base_knots.extend((left, right))
+            source_knots.extend((left, right))
             if left == right:
                 atoms[left] = atoms.get(left, np.zeros(channels)) + vector
             else:
                 uniform.append((left, right, vector / (right - left)))
+        initial_totals = state[:, :n+2].sum(1)
+        if restored is not None:
+            state = saved.copy()
+            initial_totals = np.asarray(restored["initial_totals"])
+            uniform = [(lo, hi, np.asarray(v)) for lo, hi, v in restored["uniform"]]
+            atoms = {at: np.asarray(v) for at, v in restored["atoms"]}
+            source_knots = restored["source_knots"]
+            base_knots.extend(source_knots)
+            if len(base_knots) * (int(times[-1] / self.delay) + 2) > 16384:
+                raise ValueError("restored source breakpoint budget exceeded")
         # Propagate every source discontinuity by delay; splitting queries is
         # harmless and makes arbitrary observation schedules explicitly visible.
-        knots = {Fraction(0), Fraction(str(float(times[-1])))}
+        knots = {Fraction(str(start)), Fraction(str(float(times[-1])))}
         for base_time in base_knots:
             for k in range(int(times[-1] / self.delay) + 2):
                 value = Fraction(str(base_time)) + k * Fraction(str(self.delay))
-                if 0 <= value <= Fraction(str(float(times[-1]))):
+                if Fraction(str(start)) <= value <= Fraction(str(float(times[-1]))):
                     knots.add(value)
         knots = list(map(float, sorted(knots)))
         linear = np.zeros((size, size))
@@ -189,17 +213,23 @@ class JointModel:
         linear[n + 5, n + 5] = self.discount
         # H and A rows have time-dependent discount, supplied separately.
         jac = block_diag([csr_matrix(linear)] * channels, format="csr")
-        history, snapshots, steps = [], {}, 0
+        history = [] if restored is None else restored["history"].copy()
+        snapshots, steps = {}, 0
+        start_flux = state[:, :n] @ lower
 
         def past_flux(time):
             if time < 0:
                 return np.zeros(channels)
             # Delayed forcing is continuous within each recorded source
             # segment. Rightmost segment handles the post-atom convention.
-            for left, right, dense in reversed(history):
-                if left <= time <= right:
-                    return dense(time).reshape(channels, size)[:, :n] @ lower
-            return state[:, :n] @ lower if time == 0 else np.zeros(channels)
+            if restored is not None and time == start:
+                return start_flux
+            for piece in reversed(history):
+                if piece["left"] <= time <= piece["right"]:
+                    return evaluate_flux(piece, time)
+            if time == start:
+                return start_flux
+            raise ArithmeticError("required delayed flux history missing")
 
         for i, left in enumerate(knots):
             if left in atoms:
@@ -253,14 +283,11 @@ class JointModel:
             )
             if not result.success or not np.all(np.isfinite(result.y)):
                 raise ArithmeticError("DDE segment integration failed")
-            history.append((left, right, result.sol))
+            history.extend(flux_pieces(result.sol, channels, size, lower))
             state = result.y[:, -1].reshape(channels, size)
             steps += len(result.t) - 1
         outputs = []
-        initial_total = probability.sum() + sum(float(p.mass) for p in phase)
-        initial_content = marked.sum(0) + sum(
-            (np.asarray(p.content, dtype=float) for p in phase), np.zeros(channels - 1)
-        )
+        initial_total, initial_content = initial_totals[0], initial_totals[1:]
         for time in times:
             value = snapshots[float(time)]
             total = value[:, : n + 2].sum(1)
@@ -282,7 +309,7 @@ class JointModel:
                     "content_residual": total[1:] - initial_content,
                 }
             )
-        return {
+        output = {
             "rows": outputs,
             "internal_steps": steps,
             "upper_semantics": "permanently_active_nonreturning_escape",
@@ -290,4 +317,14 @@ class JointModel:
             "rtol": rtol,
             "atol": atol,
             "max_step": max_step,
+            "integration_started_at": start,
         }
+        if export_state:
+            output["checkpoint"] = encode_state(
+                self, time=float(times[-1]), state=state, history=history,
+                uniform=uniform, atoms=atoms, source_knots=source_knots,
+                initial_totals=initial_totals,
+                internal_steps=steps + (0 if restored is None else restored["internal_steps"]),
+            )
+        return output
+
