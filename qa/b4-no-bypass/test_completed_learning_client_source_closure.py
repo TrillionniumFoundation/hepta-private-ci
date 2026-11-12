@@ -33,6 +33,9 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         expected = {
             "root_completed_accept_original": (),
+            "root_completed_retain_acceptance": (),
+            "root_completed_accept_capsule": (),
+            "root_completed_acceptance_construct": (),
             "root_completed_read_original": (),
             "root_completed_history_current": (
                 AGENT + "config_q24_completed_history.rs", AGENT + "state_q24_completed_history.rs"),
@@ -57,6 +60,8 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
                 injected = dict(index)
                 expression = ("OriginalCompletedLearningHistoryV1 { client, data_cut, data }"
                               if identifier == "root_completed_history_construct"
+                              else "OriginalCompletedLearningAcceptanceV1 { client, identity }"
+                              if identifier == "root_completed_acceptance_construct"
                               else row.symbol + "()")
                 injected[AGENT + "unregistered_completed_client.rs"] = "fn bypass(){ " + expression + "; }"
                 with self.assertRaises(PROOF.VerificationFailure):
@@ -66,10 +71,7 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
         function = "fn accept_original_completed_learning("
         for marker in (
             "let mut fence = FenceReadOnDrop", "armed: true",
-            "self.completed_attempted.swap(true, Ordering::AcqRel)",
-            "RootHistoricalTaskReadClientV1::exchange(",
-            "HistoricalReadOperationV1::AcceptCompletedLearning",
-            "response.initial != self.initial.head_digest.to_string()",
+            "RootHistoricalTaskReadClientV1::accept_completed_once(self, identity)",
             "let identity_after = self.require_completed_identity(identity);",
             "let session_after =", "identity_after?;", "session_after?;", "let response = result?;",
         ):
@@ -78,6 +80,30 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
         for occurrence in (0, 1):
             self.rejects(CAP, function,
                          "RootHistoricalTaskReadClientV1::require_same_original_session(self, session)", occurrence)
+
+    def test_retained_capsule_requires_the_actual_session_and_private_recipient(self):
+        function = "fn retain_original_completed_acceptance("
+        for marker in ("let mut fence = FenceReadOnDrop", "armed: true",
+                       "self.completed_attempted.load(Ordering::Acquire)",
+                       "client: Arc::clone(self)", "identity: identity.clone()"):
+            self.rejects(CAP, function, marker)
+        for marker in ("RootHistoricalTaskReadClientV1::require_same_original_session(self, session)",
+                       "self.require_completed_identity(identity)?"):
+            for occurrence in (0, 1):
+                self.rejects(CAP, function, marker, occurrence)
+        for marker in ("let mut fence = FenceReadOnDrop", "client: &self.client", "armed: true",
+                       "RootHistoricalTaskReadClientV1::accept_completed_once(",
+                       "&self.identity"):
+            self.rejects(CAP, "fn accept(", marker)
+
+    def test_both_acceptance_routes_share_one_physical_attempt_and_error_postcheck(self):
+        for marker in ("self.require_completed_identity(identity)?;",
+                       "self.completed_attempted.swap(true, Ordering::AcqRel)",
+                       "RootHistoricalTaskReadClientV1::exchange(",
+                       "HistoricalReadOperationV1::AcceptCompletedLearning",
+                       "response.initial != self.initial.head_digest.to_string()",
+                       "let after = self.require_completed_identity(identity);", "after?;", "Ok(result?)"):
+            self.rejects(CAP, "fn accept_completed_once(", marker)
 
     def test_capture_cannot_retry_or_replace_the_required_finalized_read(self):
         function = "fn read_original_completed_history("
