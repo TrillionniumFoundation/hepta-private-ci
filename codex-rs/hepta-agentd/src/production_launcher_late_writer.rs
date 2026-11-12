@@ -21,7 +21,8 @@ impl AgentdProductionLaunch {
         arguments: Vec<OsString>,
         expected: &AgentdIdentity,
     ) -> Result<(AgentdConfig, Self, Vec<OsString>), AgentdError> {
-        let (inputs, ordinary) = OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?;
+        let (inputs, ordinary) =
+            OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?;
         let (config, launch) = inputs.consume_original_late_writer_inputs(expected).await?;
         Ok((config, launch, ordinary))
     }
@@ -46,7 +47,13 @@ impl OriginalLateWriterInputs {
         })?;
         require_late_owner(inputs.uid, inputs.gid)?;
         let session_end = Instant::now() + inputs.lifetime;
-        Ok((Self { inputs, session_end }, ordinary))
+        Ok((
+            Self {
+                inputs,
+                session_end,
+            },
+            ordinary,
+        ))
     }
 
     pub(super) async fn consume_original_late_writer_inputs(

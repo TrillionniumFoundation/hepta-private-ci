@@ -54,7 +54,8 @@ fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir, Arc<Clock>) {
         "original-observation-owner".into(),
         AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         clock.clone(),
-    ).unwrap();
+    )
+    .unwrap();
     registry.put_lease(lease(), 0).unwrap();
     (registry, directory, clock)
 }
@@ -64,8 +65,12 @@ fn metadata_progresses_during_dispatch_but_original_dispatch_remains_serial() {
     let (registry, _directory, _clock) = fixture();
     let verifier = registry.verifier();
     let original = lease();
-    let first = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
-    let second = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
+    let first = verifier
+        .verify_use(&original.lease_id, original.revision, &original.binding)
+        .unwrap();
+    let second = verifier
+        .verify_use(&original.lease_id, original.revision, &original.binding)
+        .unwrap();
     let (entered_tx, entered_rx) = mpsc::channel();
     let (release_tx, release_rx) = mpsc::channel();
     let (attempt_tx, attempt_rx) = mpsc::channel();
@@ -78,7 +83,8 @@ fn metadata_progresses_during_dispatch_but_original_dispatch_remains_serial() {
                 entered_tx.send(()).unwrap();
                 release_rx.recv_timeout(WAIT).unwrap();
                 41
-            }).unwrap()
+            })
+            .unwrap()
         });
         entered_rx.recv_timeout(WAIT).unwrap();
         let observation = verifier.observe_original_lease(&original).unwrap();
@@ -87,10 +93,12 @@ fn metadata_progresses_during_dispatch_but_original_dispatch_remains_serial() {
         let second_binding = &original.binding;
         let second_thread = scope.spawn(move || {
             attempt_tx.send(()).unwrap();
-            second_verifier.with_dispatch_boundary(second, second_binding, || {
-                second_tx.send(()).unwrap();
-                42
-            }).unwrap()
+            second_verifier
+                .with_dispatch_boundary(second, second_binding, || {
+                    second_tx.send(()).unwrap();
+                    42
+                })
+                .unwrap()
         });
         attempt_rx.recv_timeout(WAIT).unwrap();
         assert!(matches!(
@@ -116,9 +124,14 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
         registry.revoke_exact_before(&original, [9; 32], Instant::now() + WAIT),
         Err(AuthorityLeaseError::Unavailable)
     ));
-    assert_eq!(std::fs::read(directory.path().join("authority-leases.json")).unwrap(), before);
+    assert_eq!(
+        std::fs::read(directory.path().join("authority-leases.json")).unwrap(),
+        before
+    );
     observation.finish_original_observation().unwrap();
-    registry.revoke_exact_before(&original, [9; 32], Instant::now() + WAIT).unwrap();
+    registry
+        .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)
+        .unwrap();
     assert!(matches!(
         verifier.observe_original_lease(&original),
         Err(AuthorityLeaseError::Revoked)
@@ -134,19 +147,28 @@ fn observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_r
     let (registry, _directory, _clock) = fixture();
     let verifier = registry.verifier();
     let original = lease();
-    let token = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
-    let later_token = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
+    let token = verifier
+        .verify_use(&original.lease_id, original.revision, &original.binding)
+        .unwrap();
+    let later_token = verifier
+        .verify_use(&original.lease_id, original.revision, &original.binding)
+        .unwrap();
     let (entered_tx, entered_rx) = mpsc::channel();
     let (release_tx, release_rx) = mpsc::channel();
     std::thread::scope(|scope| {
         let original_verifier = &verifier;
         let original_binding = &original.binding;
         let worker = scope.spawn(move || {
-            dispatch_authority_lease_with_witness(original_verifier, token, original_binding, |_| {
-                entered_tx.send(()).unwrap();
-                release_rx.recv_timeout(WAIT).unwrap();
-                "actual-entered-result"
-            })
+            dispatch_authority_lease_with_witness(
+                original_verifier,
+                token,
+                original_binding,
+                |_| {
+                    entered_tx.send(()).unwrap();
+                    release_rx.recv_timeout(WAIT).unwrap();
+                    "actual-entered-result"
+                },
+            )
         });
         entered_rx.recv_timeout(WAIT).unwrap();
         let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
@@ -165,12 +187,26 @@ fn observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_r
                     && reference.store_revision == 2
         ));
     });
-    assert!(matches!(verifier.observe_original_lease(&original), Err(AuthorityLeaseError::Unavailable)));
-    assert!(matches!(verifier.verify_use(&original.lease_id, original.revision, &original.binding), Err(AuthorityLeaseError::Unavailable)));
-    assert!(matches!(registry.revoke(&original.lease_id, original.revision, [8; 32]), Err(AuthorityLeaseError::Unavailable)));
-    assert!(matches!(registry.put_lease(original.clone(), original.revision), Err(AuthorityLeaseError::Unavailable)));
     assert!(matches!(
-        verifier.with_dispatch_boundary::<()>(later_token, &original.binding, || panic!("fenced dispatch entered")),
+        verifier.observe_original_lease(&original),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        verifier.verify_use(&original.lease_id, original.revision, &original.binding),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        registry.revoke(&original.lease_id, original.revision, [8; 32]),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        registry.put_lease(original.clone(), original.revision),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        verifier.with_dispatch_boundary::<()>(later_token, &original.binding, || panic!(
+            "fenced dispatch entered"
+        )),
         Err(AuthorityLeaseError::Unavailable)
     ));
 }
@@ -180,7 +216,9 @@ fn original_dispatch_panic_prevents_pending_metadata_publication() {
     let (registry, _directory, _clock) = fixture();
     let verifier = registry.verifier();
     let original = lease();
-    let token = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
+    let token = verifier
+        .verify_use(&original.lease_id, original.revision, &original.binding)
+        .unwrap();
     let (entered_tx, entered_rx) = mpsc::channel();
     let (panic_tx, panic_rx) = mpsc::channel();
     std::thread::scope(|scope| {
@@ -202,7 +240,10 @@ fn original_dispatch_panic_prevents_pending_metadata_publication() {
             Err(AuthorityLeaseError::Unavailable)
         ));
     });
-    assert!(matches!(verifier.read_lease(&original.lease_id), Err(AuthorityLeaseError::Unavailable)));
+    assert!(matches!(
+        verifier.read_lease(&original.lease_id),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
 }
 
 #[test]
@@ -217,11 +258,19 @@ fn original_clock_is_sampled_after_waiting_for_the_observation_fence() {
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
             attempt_tx.send(()).unwrap();
-            matches!(verifier.observe_original_lease(&original), Err(AuthorityLeaseError::Expired))
+            matches!(
+                verifier.observe_original_lease(&original),
+                Err(AuthorityLeaseError::Expired)
+            )
         });
         attempt_rx.recv_timeout(WAIT).unwrap();
-        assert!(matches!(called_rx.recv_timeout(Duration::from_millis(50)), Err(mpsc::RecvTimeoutError::Timeout)));
-        clock.now.store(original.expires_at_unix_ms, Ordering::SeqCst);
+        assert!(matches!(
+            called_rx.recv_timeout(Duration::from_millis(50)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+        clock
+            .now
+            .store(original.expires_at_unix_ms, Ordering::SeqCst);
         observation.finish_original_observation().unwrap();
         assert!(worker.join().unwrap());
     });
@@ -258,22 +307,41 @@ impl AuthorityFrontierStore<AuthorityLeaseFrontier> for FailingFrontier {
 fn actual_durable_frontier_failure_fences_both_original_and_metadata_entries() {
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-    let clock = Arc::new(Clock { now: AtomicU64::new(2_000), calls: Mutex::new(None) });
+    let clock = Arc::new(Clock {
+        now: AtomicU64::new(2_000),
+        calls: Mutex::new(None),
+    });
     let frontier = Arc::new(FailingFrontier {
         head: Mutex::new(AuthorityLeaseFrontier::for_empty_epoch(7).unwrap()),
         fail: AtomicBool::new(false),
     });
     let registry = AuthorityLeaseRegistry::open_state_dir_with_trust(
-        directory.path(), "original-failed-owner".into(), clock, frontier.clone(),
-    ).unwrap();
+        directory.path(),
+        "original-failed-owner".into(),
+        clock,
+        frontier.clone(),
+    )
+    .unwrap();
     let original = lease();
     registry.put_lease(original.clone(), 0).unwrap();
     let verifier = registry.verifier();
     frontier.fail.store(true, Ordering::SeqCst);
-    assert!(matches!(registry.revoke(&original.lease_id, original.revision, [9; 32]), Err(AuthorityLeaseError::Unavailable)));
-    assert!(matches!(verifier.observe_original_lease(&original), Err(AuthorityLeaseError::Unavailable)));
-    assert!(matches!(verifier.verify_use(&original.lease_id, original.revision, &original.binding), Err(AuthorityLeaseError::Unavailable)));
-    assert!(matches!(registry.frontier(), Err(AuthorityLeaseError::Unavailable)));
+    assert!(matches!(
+        registry.revoke(&original.lease_id, original.revision, [9; 32]),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        verifier.observe_original_lease(&original),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        verifier.verify_use(&original.lease_id, original.revision, &original.binding),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
+    assert!(matches!(
+        registry.frontier(),
+        Err(AuthorityLeaseError::Unavailable)
+    ));
 }
 
 #[test]
@@ -284,13 +352,29 @@ fn matching_id_and_revision_cannot_extend_or_replace_the_original_lease() {
     let before = std::fs::read(directory.path().join("authority-leases.json")).unwrap();
     let mut extended = original.clone();
     extended.expires_at_unix_ms += 1;
-    assert!(matches!(verifier.observe_original_lease(&extended), Err(AuthorityLeaseError::RevisionMismatch)));
+    assert!(matches!(
+        verifier.observe_original_lease(&extended),
+        Err(AuthorityLeaseError::RevisionMismatch)
+    ));
     let mut rebound = original.clone();
     rebound.binding.payload_sha256 = [9; 32];
-    assert!(matches!(verifier.observe_original_lease(&rebound), Err(AuthorityLeaseError::RevisionMismatch)));
+    assert!(matches!(
+        verifier.observe_original_lease(&rebound),
+        Err(AuthorityLeaseError::RevisionMismatch)
+    ));
     let mut foreign_epoch = original.clone();
     foreign_epoch.authority_epoch += 1;
-    assert!(matches!(verifier.observe_original_lease(&foreign_epoch), Err(AuthorityLeaseError::EpochMismatch)));
-    verifier.observe_original_lease(&original).unwrap().finish_original_observation().unwrap();
-    assert_eq!(std::fs::read(directory.path().join("authority-leases.json")).unwrap(), before);
+    assert!(matches!(
+        verifier.observe_original_lease(&foreign_epoch),
+        Err(AuthorityLeaseError::EpochMismatch)
+    ));
+    verifier
+        .observe_original_lease(&original)
+        .unwrap()
+        .finish_original_observation()
+        .unwrap();
+    assert_eq!(
+        std::fs::read(directory.path().join("authority-leases.json")).unwrap(),
+        before
+    );
 }

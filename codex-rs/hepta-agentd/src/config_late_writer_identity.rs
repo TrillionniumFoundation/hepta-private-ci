@@ -24,9 +24,11 @@ pub(crate) fn read_original_late_writer_starting_identity()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?,
         spawn_generation: required_utf8(HEPTA_AGENT_GENERATION_ENV)?
             .parse::<u64>()
-            .map_err(|_| AgentdError::Invalid(format!(
-                "{HEPTA_AGENT_GENERATION_ENV} must be an unsigned integer"
-            )))?,
+            .map_err(|_| {
+                AgentdError::Invalid(format!(
+                    "{HEPTA_AGENT_GENERATION_ENV} must be an unsigned integer"
+                ))
+            })?,
         home_root: required_path(HEPTA_AGENT_HOME_ENV)?,
         run_root: required_path(HEPTA_AGENT_RUN_ROOT_ENV)?,
         codex_home: required_path("CODEX_HOME")?,
@@ -38,23 +40,26 @@ pub(crate) fn read_original_late_writer_starting_identity()
 impl OriginalStartingIdentityInput {
     fn read_expected_starting_identity(&self) -> Result<AgentdIdentity, AgentdError> {
         if self.spawn_generation == 0 {
-            return Err(AgentdError::Invalid("spawn generation must be non-zero".into()));
+            return Err(AgentdError::Invalid(
+                "spawn generation must be non-zero".into(),
+            ));
         }
         let typed_root = HeptaFleetRoot::parse(self.fleet_root.clone())
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         require_canonical(&self.fleet_root, "fleet root")?;
         let snapshot = FleetRegistry::read_existing_snapshot(typed_root)?;
-        let record = snapshot
-            .agent(&self.agent_id)
-            .cloned()
-            .ok_or_else(|| AgentdError::Invalid(format!("unknown fleet agent {}", self.agent_id)))?;
+        let record = snapshot.agent(&self.agent_id).cloned().ok_or_else(|| {
+            AgentdError::Invalid(format!("unknown fleet agent {}", self.agent_id))
+        })?;
         if record.lifecycle.lifecycle != AgentLifecycle::Starting
             || record.lifecycle.generation != self.spawn_generation
         {
             return Err(AgentdError::GenerationFenced(format!(
                 "agent {} expected Starting generation {}, found {:?} generation {}",
-                self.agent_id, self.spawn_generation,
-                record.lifecycle.lifecycle, record.lifecycle.generation
+                self.agent_id,
+                self.spawn_generation,
+                record.lifecycle.lifecycle,
+                record.lifecycle.generation
             )));
         }
         require_exact_path(&self.home_root, record.layout.home_root(), "agent home")?;
@@ -64,7 +69,8 @@ impl OriginalStartingIdentityInput {
         if workspace != record.manifest.workspace.as_path() {
             return Err(AgentdError::Invalid(format!(
                 "process workspace {} does not match manifest {}",
-                workspace.display(), record.manifest.workspace.as_path().display()
+                workspace.display(),
+                record.manifest.workspace.as_path().display()
             )));
         }
         let layout = record.layout;

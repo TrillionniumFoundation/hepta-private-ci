@@ -1,0 +1,528 @@
+{
+  "schema": "hepta.independent-three-slice-callers-integration-review.v1",
+  "reviewer": "runtime_access",
+  "status": "exact-merge-preserved; static-only-not-original-gate-result",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_source": {
+    "commit": "f1c9170c891b58d9f059302e80be5d50265798d5",
+    "tree": "2ca384f8cc81f9bf934939060fefc31c6f237aa8",
+    "parent": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "commit_and_tree_read": true
+  },
+  "merged_callers": {
+    "name": "merged_callers",
+    "git_blob": "5deb1b0c41bfa75a70abf50842395d38e584ca8c",
+    "bytes": 668466,
+    "sha256": "ff7177a112239415393738b67ab7dd86e7300e75fe0a4e1afceb66f377cb5b00"
+  },
+  "independently_reviewed_inputs": [
+    {
+      "slice": "C-feedback",
+      "registry": "5c424d0b9dbc460725d13361972fc5628941f080",
+      "exact_ops": "e36a44dbb8b97a5ce2bcf6594190acb425c956a5",
+      "review": "6c3a334a6b356000a5664d73e69631d4d81b1983",
+      "exact_operations": 39
+    },
+    {
+      "slice": "late-writer-CLI-V2",
+      "registry": "0261bec63e03861e73013bbbe13d7e12e832f499",
+      "exact_ops": "f28b48d70b4902b7ad49b6496525ddf690fc5a29",
+      "review": "1ce5d93a06b4311b9f798e9f4c24c74a7cf0970a",
+      "exact_operations": 18
+    },
+    {
+      "slice": "original-shared-observation",
+      "registry": "ac5ebbfbb4b29e5e74ab7e3f762bd750f2ff0286",
+      "exact_ops": "281a559512f0fba4c8584c031101fb854c483908",
+      "review": "d8616854ac8d301b5f7953b386a977cf4e22df2c",
+      "exact_operations": 21
+    }
+  ],
+  "union_verification": {
+    "counts": {
+      "base": {
+        "boundary": 492,
+        "required": 492,
+        "protected": 358
+      },
+      "C": {
+        "boundary": 493,
+        "required": 493,
+        "protected": 358
+      },
+      "CLI": {
+        "boundary": 497,
+        "required": 497,
+        "protected": 363
+      },
+      "Lease": {
+        "boundary": 498,
+        "required": 498,
+        "protected": 361
+      },
+      "merged": {
+        "boundary": 504,
+        "required": 504,
+        "protected": 366
+      }
+    },
+    "changed": [
+      {
+        "slice": "C",
+        "kind": "boundary",
+        "id": "q24_task_original_ledger_open"
+      },
+      {
+        "slice": "C",
+        "kind": "boundary",
+        "id": "q24_task_original_ready_observe"
+      },
+      {
+        "slice": "C",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs#0"
+      },
+      {
+        "slice": "C",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+        "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs#0"
+      },
+      {
+        "slice": "C",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+        "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs#0"
+      },
+      {
+        "slice": "CLI",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "key": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs#0"
+      },
+      {
+        "slice": "Lease",
+        "kind": "protected",
+        "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+        "key": "codex-rs/hepta-contracts/src/authority_lease.rs#0"
+      },
+      {
+        "slice": "Lease",
+        "kind": "protected",
+        "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+        "key": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs#0"
+      }
+    ],
+    "added": [
+      {
+        "slice": "C",
+        "kind": "boundary",
+        "id": "q24_successor_original_feedback_ledger"
+      },
+      {
+        "slice": "CLI",
+        "kind": "boundary",
+        "id": "agentd_original_late_writer_inputs_prepare"
+      },
+      {
+        "slice": "CLI",
+        "kind": "boundary",
+        "id": "agentd_original_late_writer_inputs_consume"
+      },
+      {
+        "slice": "CLI",
+        "kind": "boundary",
+        "id": "agentd_original_late_writer_cli_prepare"
+      },
+      {
+        "slice": "CLI",
+        "kind": "boundary",
+        "id": "agentd_original_late_writer_cli_consume"
+      },
+      {
+        "slice": "CLI",
+        "kind": "boundary",
+        "id": "fleet_original_readonly_snapshot"
+      },
+      {
+        "slice": "CLI",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "key": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs#0"
+      },
+      {
+        "slice": "CLI",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "key": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs#0"
+      },
+      {
+        "slice": "CLI",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "key": "codex-rs/hepta-agentd/src/production_launcher.rs#2"
+      },
+      {
+        "slice": "CLI",
+        "kind": "protected",
+        "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+        "key": "codex-rs/hepta-fleet/src/registry_readonly.rs#0"
+      },
+      {
+        "slice": "CLI",
+        "kind": "protected",
+        "path": "codex-rs/hepta-fleet/src/registry.rs",
+        "key": "codex-rs/hepta-fleet/src/registry.rs#0"
+      },
+      {
+        "slice": "Lease",
+        "kind": "boundary",
+        "id": "authority_original_lease_metadata_observation"
+      },
+      {
+        "slice": "Lease",
+        "kind": "boundary",
+        "id": "authority_original_lease_metadata_revision"
+      },
+      {
+        "slice": "Lease",
+        "kind": "boundary",
+        "id": "authority_original_lease_metadata_finish"
+      },
+      {
+        "slice": "Lease",
+        "kind": "boundary",
+        "id": "root_original_issuer_metadata_observation"
+      },
+      {
+        "slice": "Lease",
+        "kind": "boundary",
+        "id": "root_original_issuer_metadata_proof"
+      },
+      {
+        "slice": "Lease",
+        "kind": "boundary",
+        "id": "root_original_issuer_metadata_revocations"
+      },
+      {
+        "slice": "Lease",
+        "kind": "protected",
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "key": "codex-rs/hepta-contracts/src/authority_lease_observation.rs#0"
+      },
+      {
+        "slice": "Lease",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "key": "codex-rs/hepta-agentd/src/deployment_writer.rs#2"
+      },
+      {
+        "slice": "Lease",
+        "kind": "protected",
+        "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+        "key": "codex-rs/hepta-agentd/src/authority_host_writer.rs#2"
+      }
+    ],
+    "mismatched_boundaries": [],
+    "mismatched_protected": [],
+    "unexpected_boundaries": [],
+    "unexpected_protected": [],
+    "required_set_matches": true,
+    "unique_required": true,
+    "unique_boundaries": true,
+    "original_required_prefix": true
+  },
+  "findings": [
+    "The fixed commit's actual root tree points to the exact fetched CALLERS blob. Git object identity, length668466 and SHA256ff7177a112239415393738b67ab7dd86e7300e75fe0a4e1afceb66f377cb5b00 were independently recomputed.",
+    "Relative to base f90e0cf6fe2f024961104821a0f3c1be6256995d, every changed or added boundary/protected table is exactly the already-reviewed corresponding slice table, apart from irrelevant terminal whitespace. There is no missing union entry, overwritten slice rule, conflicting table or unreviewed extra table.",
+    "The original492 boundary tables remain byte-identical except two C-feedback product_callers arrays: q24_task_original_ledger_open and q24_task_original_ready_observe each append only the actual codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs caller. All their existing symbols, receivers, definitions and caller markers remain.",
+    "The merged504 unique boundary IDs equal the504 required IDs; the complete original required-ID prefix and order are preserved. The twelve additions are C1 + CLI5 + shared-observation6.",
+    "The original358 protected entries remain. Three C entries retain the reviewed closed invocation/cancel-postcheck changes, one original CLI entry retains its reviewed shared receive location changes, and two original lease entries retain the reviewed implementation-location changes. Five CLI and three shared-observation protected entries bring the total to366.",
+    "The schema, source roots, ignored-path fragments, rule text and all preamble fields except the exact required-ID extension are byte-identical. No fixture is added as a product caller and no new exclusion is introduced.",
+    "Actual fixed-source nonrecursive directory listings independently match all30 unique Rust postimage object IDs from the three reviewed slices. This confirms the merged registry refers to the reviewed source material, not only to matching table counts."
+  ],
+  "actual_source_postimage_checks": [
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "postimage": "3263eb485459626f3cca29e5d90d58032121ae16",
+      "actual": "3263eb485459626f3cca29e5d90d58032121ae16",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "postimage": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+      "actual": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "postimage": "d89d8ca0592089593c6ce6f870639e9b454435b6",
+      "actual": "d89d8ca0592089593c6ce6f870639e9b454435b6",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "postimage": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "actual": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "postimage": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+      "actual": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "postimage": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "actual": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "postimage": "dd802810439ed1e72f77f6d2126a0da48fd499b8",
+      "actual": "dd802810439ed1e72f77f6d2126a0da48fd499b8",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "postimage": "870305af6dddfc322271a2449d3d5e5c3b7d1488",
+      "actual": "870305af6dddfc322271a2449d3d5e5c3b7d1488",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+      "postimage": "c5b9267eaa8144e82a21f2059b1a249b7884a38d",
+      "actual": "c5b9267eaa8144e82a21f2059b1a249b7884a38d",
+      "equal": true
+    },
+    {
+      "slice": "C",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "postimage": "959b773736e88a272bd61e23b420f8832c928358",
+      "actual": "959b773736e88a272bd61e23b420f8832c928358",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "postimage": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "actual": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "postimage": "8a4932c42201071baf5940d6cb1878539fddc142",
+      "actual": "8a4932c42201071baf5940d6cb1878539fddc142",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "postimage": "4581a2604b7a34dcc75c852d34406bbc8f87076c",
+      "actual": "4581a2604b7a34dcc75c852d34406bbc8f87076c",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "postimage": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "actual": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "postimage": "8bbd85bf8af4f18635aff1a092a749a4cc4fc23d",
+      "actual": "8bbd85bf8af4f18635aff1a092a749a4cc4fc23d",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "postimage": "2816318bc469ce14cae03a744670b9531fa6f95f",
+      "actual": "2816318bc469ce14cae03a744670b9531fa6f95f",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+      "postimage": "5260b0e129476365f896979053c14d1a34779004",
+      "actual": "5260b0e129476365f896979053c14d1a34779004",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "postimage": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+      "actual": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "postimage": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+      "actual": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+      "equal": true
+    },
+    {
+      "slice": "CLI",
+      "path": "codex-rs/hepta-fleet/src/registry_readonly_tests.rs",
+      "postimage": "261fa7401034bbf26cabf410598c2febab66a35d",
+      "actual": "261fa7401034bbf26cabf410598c2febab66a35d",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "postimage": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+      "actual": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "postimage": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "actual": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "postimage": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+      "actual": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "postimage": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+      "actual": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "postimage": "da842adff40dfa5f63403195643d7c49112bdcd3",
+      "actual": "da842adff40dfa5f63403195643d7c49112bdcd3",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_tests.rs",
+      "postimage": "d4cc03578f8ae209f53b6285d0a7df5bacb2d304",
+      "actual": "d4cc03578f8ae209f53b6285d0a7df5bacb2d304",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "postimage": "2b7454e9257f0716ecfa62d0bfe5113adaf6f527",
+      "actual": "2b7454e9257f0716ecfa62d0bfe5113adaf6f527",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "postimage": "4b11ddb4433c4f0b8ed82c96091ffa8a12bdd7fb",
+      "actual": "4b11ddb4433c4f0b8ed82c96091ffa8a12bdd7fb",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+      "postimage": "79068ad0bf00068c8ed1fc778ad0895840aaf19f",
+      "actual": "79068ad0bf00068c8ed1fc778ad0895840aaf19f",
+      "equal": true
+    },
+    {
+      "slice": "Lease",
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke_tests.rs",
+      "postimage": "df32089dd116c7347beda560f72959d7cd9bc6b1",
+      "actual": "df32089dd116c7347beda560f72959d7cd9bc6b1",
+      "equal": true
+    }
+  ],
+  "allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "before": {
+      "name": "allowlist_before",
+      "git_blob": "ed737aba66b448d591f622439d0c60ae28ade4bd",
+      "bytes": 12066,
+      "sha256": "8af37cf76e98941f0df4abff24f81c3cd827fb15768273789de60a2dd09d0252"
+    },
+    "after": {
+      "name": "allowlist_after",
+      "git_blob": "85eaaa1d4b7da48682b202172104086bc007cc89",
+      "bytes": 12066,
+      "sha256": "e457b91dd298b2bd36ee77351d7e6fbc7587904f2f114fd171283b7597b49129"
+    },
+    "fixed_tree_entry": "85eaaa1d4b7da48682b202172104086bc007cc89",
+    "changes": [
+      {
+        "old_line": 91,
+        "new_line": 91,
+        "before": [
+          "sha256:ba5227700100722f935b710674225c0880a6a771dec418ad6a72c62100065e72 CALLERS.toml"
+        ],
+        "after": [
+          "sha256:ff7177a112239415393738b67ab7dd86e7300e75fe0a4e1afceb66f377cb5b00 CALLERS.toml"
+        ]
+      }
+    ],
+    "unique_forward_reverse_byte_equal": true,
+    "exact_digest_matches_actual_callers": true,
+    "explanation": "The entire allowlist differs only in the64-hex digest on its one CALLERS.toml line. The path stays exact and digest-bound, no unrestricted path exception is added, and all other historical entries remain byte-identical.",
+    "actual_checker": {
+      "path": "scripts/check_blob_size.py",
+      "name": "size_checker",
+      "git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+      "bytes": 6551,
+      "sha256": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+      "source_read": true,
+      "method": "The existing loader parses sha256:<64 lowercase hex> plus exact path and compares hashlib.sha256 of the actual blob; it does not accept an arbitrary CALLERS version under this line.",
+      "executed": false
+    }
+  },
+  "unchanged_original_caller_tools": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "actual_fixed_tree_verified": true
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "actual_fixed_tree_verified": true
+    }
+  ],
+  "qualification_limits": [
+    "This review is an exact static union/hash/source-object check. It is not the unchanged original typed caller scanner, QA suite, Rust formatter/compiler or native qualification.",
+    "Root exclusively owns the active seven-package harness. No predecessor native result is assigned to f1c9170c, and a real formatter drift must retain original postimages before a new immutable candidate is qualified.",
+    "Ordinary completed learning, positive adoption, ordinary no-update/rollback consumption, independent ordinary C and physical cold restart receive no additional acceptance from this merge review."
+  ],
+  "actions": {
+    "h_calls": 0,
+    "cargo_calls": 0,
+    "processes_launched": 0,
+    "source_mutations": 0,
+    "refs_mutated": false,
+    "original_checker_executed": false
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0
+  }
+}

@@ -30,7 +30,11 @@ fn fixture() -> anyhow::Result<IdentityFixture> {
         WorkspaceBinding::new(workspace.clone(), &typed)?,
         resources.clone(),
     )?)?;
-    registry.compare_and_transition(&agent_id, /*expected_generation*/ 0, AgentLifecycle::Starting)?;
+    registry.compare_and_transition(
+        &agent_id,
+        /*expected_generation*/ 0,
+        AgentLifecycle::Starting,
+    )?;
     let input = OriginalStartingIdentityInput {
         fleet_root: fleet_root.clone(),
         agent_id: agent_id.clone(),
@@ -52,11 +56,17 @@ fn fixture() -> anyhow::Result<IdentityFixture> {
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
-    Ok(IdentityFixture { _directory: directory, registry, input, expected })
+    Ok(IdentityFixture {
+        _directory: directory,
+        registry,
+        input,
+        expected,
+    })
 }
 
 #[test]
-fn late_cli_expected_identity_reads_original_registry_without_acquiring_writer() -> anyhow::Result<()> {
+fn late_cli_expected_identity_reads_original_registry_without_acquiring_writer()
+-> anyhow::Result<()> {
     let fixture = fixture()?;
     let mut options: std::fs::OpenOptions = std::fs::OpenOptions::new();
     options.create(true).truncate(false).read(true).write(true);
@@ -65,16 +75,29 @@ fn late_cli_expected_identity_reads_original_registry_without_acquiring_writer()
     writer.sync_all()?;
     writer.try_lock()?;
     let before = std::fs::read(fixture.expected.layout.writer_lock())?;
-    assert_eq!(fixture.input.read_expected_starting_identity()?, fixture.expected);
-    assert_eq!(std::fs::read(fixture.expected.layout.writer_lock())?, before);
+    assert_eq!(
+        fixture.input.read_expected_starting_identity()?,
+        fixture.expected
+    );
+    assert_eq!(
+        std::fs::read(fixture.expected.layout.writer_lock())?,
+        before
+    );
     // The comparison read does not claim Config authority; the old writer is
     // still held and the original Config loader must continue to reject it.
     let input = &fixture.input;
-    assert!(AgentdConfig::load(
-        input.fleet_root.clone(), input.agent_id.clone(), input.spawn_generation,
-        input.home_root.clone(), input.run_root.clone(), input.codex_home.clone(),
-        input.current_dir.clone(),
-    ).is_err());
+    assert!(
+        AgentdConfig::load(
+            input.fleet_root.clone(),
+            input.agent_id.clone(),
+            input.spawn_generation,
+            input.home_root.clone(),
+            input.run_root.clone(),
+            input.codex_home.clone(),
+            input.current_dir.clone(),
+        )
+        .is_err()
+    );
     Ok(())
 }
 
@@ -88,7 +111,9 @@ fn late_cli_expected_identity_refuses_old_or_running_generation() -> anyhow::Res
         Err(AgentdError::GenerationFenced(_))
     ));
     fixture.registry.compare_and_transition(
-        &fixture.input.agent_id, /*expected_generation*/ 1, AgentLifecycle::Running,
+        &fixture.input.agent_id,
+        /*expected_generation*/ 1,
+        AgentLifecycle::Running,
     )?;
     assert!(matches!(
         fixture.input.read_expected_starting_identity(),
@@ -114,7 +139,13 @@ fn late_cli_expected_identity_refuses_unregistered_roots_and_aliases() -> anyhow
     wrong_workspace.current_dir = other;
     let mut aliased_home = fixture.input.clone();
     aliased_home.home_root = alias;
-    for changed in [wrong_home, wrong_run, wrong_codex_home, wrong_workspace, aliased_home] {
+    for changed in [
+        wrong_home,
+        wrong_run,
+        wrong_codex_home,
+        wrong_workspace,
+        aliased_home,
+    ] {
         assert!(changed.read_expected_starting_identity().is_err());
     }
     Ok(())

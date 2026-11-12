@@ -81,28 +81,55 @@ impl Inner {
     pub(super) fn lock_dispatch_state(
         &self,
     ) -> Result<DispatchStateGuard<'_>, AuthorityLeaseError> {
-        let serial = self.serial.lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
-        let state = self.state.read().map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let serial = self
+            .serial
+            .lock()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let state = self
+            .state
+            .read()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
         self.require_available(&state)?;
-        Ok(DispatchStateGuard { _serial: serial, state })
+        Ok(DispatchStateGuard {
+            _serial: serial,
+            state,
+        })
     }
 
     pub(super) fn lock_mutation_state(
         &self,
     ) -> Result<MutationStateGuard<'_>, AuthorityLeaseError> {
-        let serial = self.serial.lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
-        let state = self.state.write().map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let serial = self
+            .serial
+            .lock()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let state = self
+            .state
+            .write()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
         self.require_available(&state)?;
-        Ok(MutationStateGuard { _serial: serial, state })
+        Ok(MutationStateGuard {
+            _serial: serial,
+            state,
+        })
     }
 
     pub(super) fn try_lock_mutation_state(
         &self,
     ) -> Result<MutationStateGuard<'_>, AuthorityLeaseError> {
-        let serial = self.serial.try_lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
-        let state = self.state.try_write().map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let serial = self
+            .serial
+            .try_lock()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let state = self
+            .state
+            .try_write()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
         self.require_available(&state)?;
-        Ok(MutationStateGuard { _serial: serial, state })
+        Ok(MutationStateGuard {
+            _serial: serial,
+            state,
+        })
     }
 }
 
@@ -116,8 +143,16 @@ impl AuthorityLeaseVerifier {
         original: &AuthorityLease,
     ) -> Result<AuthorityLeaseObservationV1<'_>, AuthorityLeaseError> {
         original.validate()?;
-        let serial = self.0.observations.lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
-        let state = self.0.state.read().map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let serial = self
+            .0
+            .observations
+            .lock()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .read()
+            .map_err(|_| AuthorityLeaseError::Unavailable)?;
         // Construct before any fallible clock callback so panic poisoning is
         // visible before this original state fence can be released.
         let observation = AuthorityLeaseObservationV1 {

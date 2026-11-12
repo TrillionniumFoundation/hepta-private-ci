@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.exact-formatted-marker-alignment.v1",
+  "before_registry": "5deb1b0c41bfa75a70abf50842395d38e584ca8c",
+  "after_registry": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+  "native_postimages": "9820c85befffda1120ce0ad7fb69e857c2502bd8",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.serial.lock()",
+      "new": "self\n            .serial\n            .lock()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.state.read()",
+      "new": "self\n            .state\n            .read()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.serial.lock()",
+      "new": "self\n            .serial\n            .lock()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.state.write()",
+      "new": "self\n            .state\n            .write()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.serial.try_lock()",
+      "new": "self\n            .serial\n            .try_lock()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.state.try_write()",
+      "new": "self\n            .state\n            .try_write()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.0.observations.lock()",
+      "new": "self\n            .0\n            .observations\n            .lock()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "field": "required_function_order",
+      "old": "self.0.state.read()",
+      "new": "self\n            .0\n            .state\n            .read()",
+      "source_paths": [
+        "codex-rs/hepta-contracts/src/authority_lease_observation.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "field": "required_function_order",
+      "old": "original.consume_original_late_writer_inputs(&identity).await?",
+      "new": "original\n            .consume_original_late_writer_inputs(&identity)\n            .await?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs"
+      ]
+    }
+  ],
+  "unresolved": [],
+  "checker_modified": false,
+  "ignored_paths_modified": false,
+  "boundary_or_protected_rows_added_or_removed": 0,
+  "rule": "Replace only exact source marker strings whose nonwhitespace content is identical and has one common actual postimage spelling; no regex, wildcard or caller-set expansion."
+}

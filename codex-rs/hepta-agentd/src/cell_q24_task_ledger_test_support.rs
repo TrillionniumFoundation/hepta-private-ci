@@ -185,10 +185,14 @@ impl Fixture {
             signature_witness: witness(root.path(), "signatures.witness", source.objective_digest)?,
             open_mode: crate::CircuitQ24TaskOpenModeV1::Create,
             config: config.clone(),
-            generator_key: SigningKey::from_bytes(&[match profile {
-                TaskProfile::SuccessorRefusedGenerator => 4,
-                TaskProfile::NonLearning | TaskProfile::Original | TaskProfile::SuccessorFeedback => 1,
-            }; 32]),
+            generator_key: SigningKey::from_bytes(
+                &[match profile {
+                    TaskProfile::SuccessorRefusedGenerator => 4,
+                    TaskProfile::NonLearning
+                    | TaskProfile::Original
+                    | TaskProfile::SuccessorFeedback => 1,
+                }; 32],
+            ),
         };
         let session = match profile {
             TaskProfile::Original => {

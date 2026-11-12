@@ -13,9 +13,9 @@ use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 
+use super::OriginalQ24SuccessorInvocationV1;
 use crate::CircuitTaskErrorV1;
 use crate::CircuitTaskHandleV1;
-use super::OriginalQ24SuccessorInvocationV1;
 use crate::LearningIterationRuntimeErrorV1 as LearningError;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

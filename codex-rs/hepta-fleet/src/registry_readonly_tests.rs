@@ -1,10 +1,10 @@
 use super::*;
-use codex_hepta_contracts::AgentId;
 use crate::AgentLifecycle;
 use crate::AgentManifest;
 use crate::AgentRecord;
 use crate::ResourceBudget;
 use crate::WorkspaceBinding;
+use codex_hepta_contracts::AgentId;
 use pretty_assertions::assert_eq;
 
 struct ReadFixture {
@@ -28,18 +28,34 @@ fn fixture() -> Result<ReadFixture, FleetRegistryError> {
         WorkspaceBinding::new(workspace, &root)?,
         ResourceBudget::local_default(),
     )?)?;
-    registry.compare_and_transition(&agent, /*expected_generation*/ 0, AgentLifecycle::Starting)?;
-    Ok(ReadFixture { _directory: directory, root, registry, record })
+    registry.compare_and_transition(
+        &agent,
+        /*expected_generation*/ 0,
+        AgentLifecycle::Starting,
+    )?;
+    Ok(ReadFixture {
+        _directory: directory,
+        root,
+        registry,
+        record,
+    })
 }
 
 #[test]
-fn original_readonly_snapshot_matches_full_registry_without_writer() -> Result<(), FleetRegistryError> {
+fn original_readonly_snapshot_matches_full_registry_without_writer()
+-> Result<(), FleetRegistryError> {
     let fixture = fixture()?;
     let expected = fixture.registry.load()?;
     let manifest = std::fs::read(fixture.record.layout.agent_config())?;
     assert!(!fixture.record.layout.writer_lock().exists());
-    assert_eq!(FleetRegistry::read_existing_snapshot(fixture.root)?, expected);
-    assert_eq!(std::fs::read(fixture.record.layout.agent_config())?, manifest);
+    assert_eq!(
+        FleetRegistry::read_existing_snapshot(fixture.root)?,
+        expected
+    );
+    assert_eq!(
+        std::fs::read(fixture.record.layout.agent_config())?,
+        manifest
+    );
     assert!(!fixture.record.layout.writer_lock().exists());
     Ok(())
 }
@@ -58,8 +74,8 @@ fn original_readonly_snapshot_refuses_missing_matrix_without_migration()
 
 #[cfg(unix)]
 #[test]
-fn original_readonly_snapshot_refuses_unsafe_matrix_without_chmod()
--> Result<(), FleetRegistryError> {
+fn original_readonly_snapshot_refuses_unsafe_matrix_without_chmod() -> Result<(), FleetRegistryError>
+{
     use std::os::unix::fs::PermissionsExt;
 
     let fixture = fixture()?;
@@ -69,14 +85,16 @@ fn original_readonly_snapshot_refuses_unsafe_matrix_without_chmod()
         FleetRegistry::read_existing_snapshot(fixture.root),
         Err(FleetRegistryError::Corrupt(_))
     ));
-    assert_eq!(std::fs::symlink_metadata(matrix)?.permissions().mode() & 0o777, 0o750);
+    assert_eq!(
+        std::fs::symlink_metadata(matrix)?.permissions().mode() & 0o777,
+        0o750
+    );
     Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn original_readonly_snapshot_refuses_aliased_control_geometry()
--> Result<(), FleetRegistryError> {
+fn original_readonly_snapshot_refuses_aliased_control_geometry() -> Result<(), FleetRegistryError> {
     let fixture = fixture()?;
     let run = fixture.record.layout.run_root();
     let saved = run.with_file_name("original-run");

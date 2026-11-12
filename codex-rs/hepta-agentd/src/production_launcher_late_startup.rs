@@ -2,8 +2,8 @@
 //! Parsing takes the real inherited rights in single-thread arg0 preflight;
 //! the first runtime only consumes that same pending receive and its deadline.
 
-use super::*;
 use super::late_writer::OriginalLateWriterInputs;
+use super::*;
 
 const ENTRY_FLAG: &str = "--root-production-entry";
 
@@ -77,7 +77,9 @@ impl OriginalLateWriterStartup {
             cognitive_mode,
         } = self;
         let original: OriginalLateWriterInputs = original;
-        let (config, launch) = original.consume_original_late_writer_inputs(&identity).await?;
+        let (config, launch) = original
+            .consume_original_late_writer_inputs(&identity)
+            .await?;
         Ok((config.with_cognitive_retrieval_mode(cognitive_mode), launch))
     }
 }
