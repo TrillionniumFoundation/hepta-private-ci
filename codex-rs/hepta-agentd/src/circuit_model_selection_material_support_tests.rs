@@ -421,11 +421,11 @@ pub(super) fn unstarted_material_with_profile(
         update_rule,
     )?;
     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
-        initial: initial.clone(),
-        scope: scope.clone(),
+        initial,
+        scope,
         rule,
-        freeze_plan: freeze_plan.clone(),
-        freeze_evidence: freeze_evidence.clone(),
+        freeze_plan,
+        freeze_evidence,
         experience_signer: credentials.experience.clone(),
         dataset_signer: credentials.dataset.clone(),
         verifier: writer.verifier().clone(),

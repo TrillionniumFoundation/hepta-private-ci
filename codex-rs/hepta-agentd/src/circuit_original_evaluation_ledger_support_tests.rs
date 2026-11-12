@@ -39,7 +39,7 @@ pub(in super::super) fn decision(
         selected_candidate_id: policy.selected().clone(),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id(&format!("B-actions:{}", episode)),
+            set_id: id(&format!("B-actions:{episode}")),
             state_digest: d("explicit-original-B-decision-state"),
             generator_id: credentials.generator.principal.principal_id.clone(),
             generator_code_digest: d("explicit-original-B-generator"),

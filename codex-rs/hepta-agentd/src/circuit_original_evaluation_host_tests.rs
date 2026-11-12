@@ -168,7 +168,7 @@ async fn original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effec
     let counts = pending.finish().await?;
     assert_eq!(counts, [10, 10]);
 
-    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
     let empty = fixture.original_files()?;
     let (wrong, peer) = fixture.commands(
         /*readback_only*/ false,
