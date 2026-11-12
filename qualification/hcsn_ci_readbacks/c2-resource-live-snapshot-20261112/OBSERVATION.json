@@ -1,0 +1,692 @@
+{
+  "schema": "hcsn-c2-live-resource-observation-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 6252,
+  "parent_head": "5c423c372792105cfa32c6038f32d9c2bfa08974",
+  "evidence_only": true,
+  "collection": {
+    "interfaces": [
+      "h.effective_config",
+      "h.host_health",
+      "h.hardware_snapshot"
+    ],
+    "model_calls": 0,
+    "optimizer_calls": 0,
+    "native_model_jobs": 0,
+    "new_idempotency_keys": 0,
+    "target_probe_performed": true,
+    "note": "Read-only point-in-time controller observations. No shell/process/model launch."
+  },
+  "effective_config": {
+    "schema": "hepta-effective-config-v1",
+    "scope": "loaded_runtime_policy_capabilities",
+    "semantics": "Configured flags and counts only; target reachability, path availability, specific argument authorization and existing sudo authorization are not verified.",
+    "redaction": "capabilities_and_counts_only",
+    "policy_mutation_supported": false,
+    "target_probe_performed": false,
+    "controller": {
+      "workspace_root_count": 1,
+      "file_workspace_roots_configured": true
+    },
+    "hosts": [
+      {
+        "alias": "ai395",
+        "platform": "linux",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": false
+      },
+      {
+        "alias": "desktop",
+        "platform": "linux",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": false
+      },
+      {
+        "alias": "mac",
+        "platform": "macos",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": false
+      },
+      {
+        "alias": "main",
+        "platform": "macos",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": false
+      },
+      {
+        "alias": "pocket4",
+        "platform": "linux",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": false
+      },
+      {
+        "alias": "rog",
+        "platform": "linux",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": false
+      },
+      {
+        "alias": "x230",
+        "platform": "linux",
+        "execution_mode": "operator",
+        "permissions": {
+          "allow_execute": true,
+          "allow_pty": true,
+          "allow_write": true,
+          "allow_job_network": true,
+          "allow_detached_fallback": true
+        },
+        "file_api": {
+          "read_root_count": 1,
+          "write_root_count": 1,
+          "read_paths_configured": true,
+          "write_paths_authorized_and_configured": true
+        },
+        "named_privileged_action_count": 0,
+        "checkpoint_pin_configured": true
+      }
+    ],
+    "limits": {
+      "concurrent_execution": "unbounded_by_runtime",
+      "maximum_summary_host_entries": 256,
+      "maximum_summary_response_bytes": 262144
+    }
+  },
+  "hosts": {
+    "desktop": {
+      "health": {
+        "authenticated": true,
+        "diagnostics_redacted": true,
+        "host": "desktop",
+        "measurement": "SSH invocation roundtrip including connection setup or reuse, authentication, remote shell startup and fixed response; not ICMP RTT.",
+        "platform": "linux",
+        "reachable": true,
+        "schema": "hepta-host-health-v1",
+        "ssh_roundtrip_ms": 5897.22,
+        "status": "healthy",
+        "timeout_ms": 10000,
+        "transport": "ssh"
+      },
+      "hardware": {
+        "accel_devices": [],
+        "bios": "5.11",
+        "board": "X99",
+        "cpu_model": "Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz",
+        "gpus": [
+          {
+            "busy_percent": null,
+            "card": "card0",
+            "device": "0x2882",
+            "gtt_total": null,
+            "gtt_used": null,
+            "mclk": null,
+            "sclk": null,
+            "vendor": "0x10de",
+            "vram_total": null,
+            "vram_used": null
+          }
+        ],
+        "hostname": "qian-qi",
+        "hwmon": [
+          {
+            "name": "coretemp",
+            "path": "/sys/class/hwmon/hwmon0",
+            "values": {
+              "temp10_input": "35000",
+              "temp11_input": "36000",
+              "temp12_input": "36000",
+              "temp13_input": "33000",
+              "temp14_input": "36000",
+              "temp15_input": "36000",
+              "temp1_input": "41000",
+              "temp2_input": "34000",
+              "temp3_input": "31000",
+              "temp4_input": "35000",
+              "temp5_input": "34000",
+              "temp6_input": "36000",
+              "temp7_input": "31000"
+            }
+          },
+          {
+            "name": "coretemp",
+            "path": "/sys/class/hwmon/hwmon1",
+            "values": {
+              "temp10_input": "34000",
+              "temp11_input": "32000",
+              "temp12_input": "33000",
+              "temp13_input": "29000",
+              "temp14_input": "33000",
+              "temp15_input": "34000",
+              "temp1_input": "38000",
+              "temp2_input": "34000",
+              "temp3_input": "38000",
+              "temp4_input": "33000",
+              "temp5_input": "35000",
+              "temp6_input": "33000",
+              "temp7_input": "34000"
+            }
+          }
+        ],
+        "kernel": "7.0.0-38-generic",
+        "machine": "x86_64",
+        "memory": {
+          "MemAvailable": "78853476 kB",
+          "MemTotal": "131760804 kB",
+          "SwapFree": "248 kB",
+          "SwapTotal": "8388604 kB"
+        },
+        "platform": "linux",
+        "platform_profile": null,
+        "power_limit_semantics": "Driver-reported requests/cached values; not measured sustained power.",
+        "power_limits": {},
+        "power_supplies": [],
+        "product": "X99",
+        "sampled_at_unix_ms": 1794497603341,
+        "schema": "hepta-hardware-v1",
+        "sensors": [
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp10_input",
+            "unit": "C",
+            "value": 35
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp11_input",
+            "unit": "C",
+            "value": 36
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp12_input",
+            "unit": "C",
+            "value": 36
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp13_input",
+            "unit": "C",
+            "value": 33
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp14_input",
+            "unit": "C",
+            "value": 36
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp15_input",
+            "unit": "C",
+            "value": 36
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp1_input",
+            "unit": "C",
+            "value": 41
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp2_input",
+            "unit": "C",
+            "value": 34
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp3_input",
+            "unit": "C",
+            "value": 31
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp4_input",
+            "unit": "C",
+            "value": 35
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp5_input",
+            "unit": "C",
+            "value": 34
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp6_input",
+            "unit": "C",
+            "value": 36
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon0/temp7_input",
+            "unit": "C",
+            "value": 31
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp10_input",
+            "unit": "C",
+            "value": 34
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp11_input",
+            "unit": "C",
+            "value": 32
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp12_input",
+            "unit": "C",
+            "value": 33
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp13_input",
+            "unit": "C",
+            "value": 29
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp14_input",
+            "unit": "C",
+            "value": 33
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp15_input",
+            "unit": "C",
+            "value": 34
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp1_input",
+            "unit": "C",
+            "value": 38
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp2_input",
+            "unit": "C",
+            "value": 34
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp3_input",
+            "unit": "C",
+            "value": 38
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp4_input",
+            "unit": "C",
+            "value": 33
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp5_input",
+            "unit": "C",
+            "value": 35
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp6_input",
+            "unit": "C",
+            "value": 33
+          },
+          {
+            "available": true,
+            "sensor": "coretemp",
+            "source": "/sys/class/hwmon/hwmon1/temp7_input",
+            "unit": "C",
+            "value": 34
+          }
+        ],
+        "thunderbolt": []
+      }
+    },
+    "ai395": {
+      "health": {
+        "authenticated": true,
+        "diagnostics_redacted": true,
+        "host": "ai395",
+        "measurement": "SSH invocation roundtrip including connection setup or reuse, authentication, remote shell startup and fixed response; not ICMP RTT.",
+        "platform": "linux",
+        "reachable": true,
+        "schema": "hepta-host-health-v1",
+        "ssh_roundtrip_ms": 4952.0587909999995,
+        "status": "healthy",
+        "timeout_ms": 10000,
+        "transport": "ssh"
+      },
+      "hardware": {
+        "accel_devices": [
+          "/dev/accel/accel0"
+        ],
+        "bios": "1.09",
+        "board": "Yinghe",
+        "cpu_model": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+        "gpus": [
+          {
+            "busy_percent": 0,
+            "card": "card0",
+            "device": "0x1586",
+            "gtt_total": 107374182400,
+            "gtt_used": 27070464,
+            "mclk": "0: 400Mhz \n1: 800Mhz \n2: 1000Mhz *",
+            "sclk": "0: 600Mhz *\n1: 1100Mhz \n2: 2900Mhz",
+            "vendor": "0x1002",
+            "vram_total": 536870912,
+            "vram_used": 168349696
+          }
+        ],
+        "hostname": "ai395",
+        "hwmon": [
+          {
+            "name": "acpitz_0",
+            "path": "/sys/class/hwmon/hwmon0",
+            "values": {
+              "temp1_input": "54000"
+            }
+          },
+          {
+            "name": "r8169_0_c100:00",
+            "path": "/sys/class/hwmon/hwmon1",
+            "values": {
+              "temp1_input": "47500"
+            }
+          },
+          {
+            "name": "r8169_0_c500:00",
+            "path": "/sys/class/hwmon/hwmon2",
+            "values": {
+              "temp1_input": "47500"
+            }
+          },
+          {
+            "name": "nvme",
+            "path": "/sys/class/hwmon/hwmon3",
+            "values": {
+              "temp1_input": "30850",
+              "temp2_input": "30850"
+            }
+          },
+          {
+            "name": "k10temp",
+            "path": "/sys/class/hwmon/hwmon4",
+            "values": {
+              "temp1_input": "54750"
+            }
+          },
+          {
+            "name": "mt7925_phy0",
+            "path": "/sys/class/hwmon/hwmon5",
+            "values": {
+              "temp1_input": "43000"
+            }
+          },
+          {
+            "name": "amdgpu",
+            "path": "/sys/class/hwmon/hwmon6",
+            "values": {
+              "freq1_input": "600000000",
+              "power1_average": "41006000",
+              "power1_input": "41006000",
+              "temp1_input": "36000"
+            }
+          }
+        ],
+        "kernel": "7.0.0-38-generic",
+        "machine": "x86_64",
+        "memory": {
+          "MemAvailable": "109707308 kB",
+          "MemTotal": "128650956 kB",
+          "SwapFree": "2700 kB",
+          "SwapTotal": "8388604 kB"
+        },
+        "platform": "linux",
+        "platform_profile": null,
+        "power_limit_semantics": "Driver-reported requests/cached values; not measured sustained power.",
+        "power_limits": {},
+        "power_supplies": [],
+        "product": "R1 PLUS",
+        "sampled_at_unix_ms": 1794497643642,
+        "schema": "hepta-hardware-v1",
+        "sensors": [
+          {
+            "available": true,
+            "sensor": "acpitz_0",
+            "source": "/sys/class/hwmon/hwmon0/temp1_input",
+            "unit": "C",
+            "value": 54
+          },
+          {
+            "available": true,
+            "sensor": "r8169_0_c100:00",
+            "source": "/sys/class/hwmon/hwmon1/temp1_input",
+            "unit": "C",
+            "value": 47.5
+          },
+          {
+            "available": true,
+            "sensor": "r8169_0_c500:00",
+            "source": "/sys/class/hwmon/hwmon2/temp1_input",
+            "unit": "C",
+            "value": 47.5
+          },
+          {
+            "available": true,
+            "sensor": "nvme",
+            "source": "/sys/class/hwmon/hwmon3/temp1_input",
+            "unit": "C",
+            "value": 30.85
+          },
+          {
+            "available": true,
+            "sensor": "nvme",
+            "source": "/sys/class/hwmon/hwmon3/temp2_input",
+            "unit": "C",
+            "value": 30.85
+          },
+          {
+            "available": true,
+            "sensor": "k10temp",
+            "source": "/sys/class/hwmon/hwmon4/temp1_input",
+            "unit": "C",
+            "value": 54.75
+          },
+          {
+            "available": true,
+            "sensor": "mt7925_phy0",
+            "source": "/sys/class/hwmon/hwmon5/temp1_input",
+            "unit": "C",
+            "value": 43
+          },
+          {
+            "available": true,
+            "sensor": "amdgpu",
+            "source": "/sys/class/hwmon/hwmon6/temp1_input",
+            "unit": "C",
+            "value": 36
+          },
+          {
+            "available": true,
+            "sensor": "amdgpu",
+            "source": "/sys/class/hwmon/hwmon6/power1_average",
+            "unit": "W",
+            "value": 41.006
+          },
+          {
+            "available": true,
+            "sensor": "amdgpu",
+            "source": "/sys/class/hwmon/hwmon6/power1_input",
+            "unit": "W",
+            "value": 41.006
+          },
+          {
+            "available": true,
+            "sensor": "amdgpu",
+            "source": "/sys/class/hwmon/hwmon6/freq1_input",
+            "unit": "Hz",
+            "value": 600000000
+          }
+        ],
+        "thunderbolt": [
+          {
+            "generation": "4",
+            "name": "0-0",
+            "unique_id": "e0c93804-4068-2689-ffff-ffffffffffff"
+          },
+          {
+            "name": "0-0:2.1"
+          },
+          {
+            "device_name": "alex-G1628-04",
+            "name": "0-2",
+            "rx_speed": "10.0 Gb/s",
+            "tx_speed": "10.0 Gb/s",
+            "unique_id": "67033804-21b9-9589-ffff-ffffffffffff"
+          },
+          {
+            "name": "0-2.0"
+          },
+          {
+            "generation": "4",
+            "name": "1-0",
+            "unique_id": "e0c93804-4168-2689-ffff-ffffffffffff"
+          },
+          {
+            "name": "1-0:2.1"
+          },
+          {
+            "device_name": "Mac17,2",
+            "name": "1-2",
+            "rx_speed": "20.0 Gb/s",
+            "tx_speed": "20.0 Gb/s",
+            "unique_id": "14af84ee-faed-4868-8414-2e406a762c00"
+          },
+          {
+            "name": "1-2.0"
+          },
+          {
+            "name": "domain0",
+            "security": "user"
+          },
+          {
+            "name": "domain1",
+            "security": "user"
+          }
+        ]
+      }
+    }
+  }
+}
