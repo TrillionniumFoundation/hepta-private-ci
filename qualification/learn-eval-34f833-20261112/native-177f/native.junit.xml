@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="13" failures="1" errors="0" uuid="41d2d1b8-7693-4cb6-b9e6-b08cfe212a51" timestamp="2026-11-12T00:43:34.515-05:00" time="26.872">
+    <testsuite name="codex-hepta-agentd" tests="12" disabled="0" errors="0" failures="1">
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.103">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.136">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.159">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.159">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.196">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.228">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="0.295">
+        </testcase>
+        <testcase name="circuit_experience_intake::tests::expiry_after_decision_keeps_partial_pair_unacknowledged_without_resigning" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="1.342">
+        </testcase>
+        <testcase name="circuit_experience_intake::tests::exact_request_continues_a_previously_committed_decision" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="1.454">
+        </testcase>
+        <testcase name="circuit_experience_intake::tests::signed_pair_replays_without_adding_or_rewriting_original_bytes" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="3.357">
+        </testcase>
+        <testcase name="circuit_experience_intake::tests::untrusted_or_wrong_source_measurements_cannot_append_a_decision" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="4.400">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes" classname="codex-hepta-agentd" timestamp="2026-11-12T00:43:34.532-05:00" time="26.851">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes&apos; (3748904) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes&apos; (3748904) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ Digest32(
+&lt;    &quot;e646158524c3bb27ce77ca889a399998c333a1821e62fc5694bb970f48a67b3e&quot;,
+&gt;    &quot;7c3c7988c5c85b9ca972717aad1cd4fff33bb7f383323135e013e956050314a0&quot;,
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1126 filtered out; finished in 26.82s
+
+</system-out>
+            <system-err>
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes&apos; (3748904) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ Digest32(
+&lt;    &quot;e646158524c3bb27ce77ca889a399998c333a1821e62fc5694bb970f48a67b3e&quot;,
+&gt;    &quot;7c3c7988c5c85b9ca972717aad1cd4fff33bb7f383323135e013e956050314a0&quot;,
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-intelligence-eval" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original" classname="codex-hepta-intelligence-eval" timestamp="2026-11-12T00:43:34.532-05:00" time="0.244">
+        </testcase>
+    </testsuite>
+</testsuites>
