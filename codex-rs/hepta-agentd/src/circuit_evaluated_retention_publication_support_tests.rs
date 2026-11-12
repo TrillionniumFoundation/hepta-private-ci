@@ -26,6 +26,8 @@ use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::OriginalCircuitEvaluatedRetentionRecoveryV1;
 use crate::OriginalCircuitRetainedPublicationInputsV1;
 use crate::learning_iteration_evidence_client::command_test_support as commands;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 type Trainer =
     OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;

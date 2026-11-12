@@ -254,11 +254,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             #[cfg(target_os = "linux")]
             if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
                 .map_err(|_| Error::CommitUncertain)?
+                && owners.require_captured_tail_current().is_err()
             {
-                if owners.require_captured_tail_current().is_err() {
-                    owners.source_fenced = true;
-                    return Err(Error::CommitUncertain);
-                }
+                owners.source_fenced = true;
+                return Err(Error::CommitUncertain);
             }
             result
         })

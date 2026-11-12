@@ -7,6 +7,8 @@ use crate::OriginalCircuitRetainedPublicationErrorV1 as PublicationError;
 use crate::prepare_original_circuit_evaluated_retention_v1;
 use crate::recover_original_circuit_evaluated_retention_v1;
 use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 #[path = "circuit_evaluated_retention_publication_support_tests.rs"]
 mod publication_fixture;

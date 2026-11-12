@@ -8,7 +8,7 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     pub(crate) fn create_from_current_material<T: AnchorWitnessStore>(
         file: File,
-        mut witness: W,
+        witness: W,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         dataset: LearningIterationSnapshotV1,
         training_cut: &LearningIterationSnapshotV1,
@@ -44,7 +44,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     /// acknowledge an already persisted suffix. No command calls this method.
     pub(crate) fn recover_from_current_material<T: AnchorWitnessStore>(
         file: File,
-        mut witness: W,
+        witness: W,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         dataset: LearningIterationSnapshotV1,
         training_cut: &LearningIterationSnapshotV1,

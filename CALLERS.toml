@@ -7135,7 +7135,7 @@ top_level = []
 path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 required = []
 forbidden = []
-required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","if owners.require_captured_tail_current().is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","result"]]
+required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","&& owners.require_captured_tail_current().is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","result"]]
 required_function_order = [
   { function = "fn require_captured_tail_current(", sequence = [".require_original_dataset_scope(", "&self.receipts.config.dataset,", "&self.receipts.config.scope,", ")?", "match self.receipts.journal.read(&self.receipts.saved)", "Ok(_) =>", "self.read_original_completion()?", "self.require_retained_attestation_current(&completed)?", "ProductEvaluationExecutionStoreErrorV1::Missing", "LearningOriginalOwnerErrorV1::Pending", "Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())", "Ok(())"] },
   { function = "fn require_retained_attestation_current(", sequence = ["learning_iteration_receipt_signing_bytes_v1(", "&completed.receipt", "self.receipts", ".verifier", ".verify(", "LearningEvidenceRoleV1::Generator", "&completed.attestation", "&payload", "super::now()", ".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?", "Ok(())"] },
@@ -7147,7 +7147,7 @@ required_function_order = [
 path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 required = []
 forbidden = []
-required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let source_bound","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","let current = owners",".read_original_completion().map_err(","if source_bound","owners.source_fenced = true","Error::CommitUncertain","if source_bound","if owners",".require_retained_attestation_current(&current)",".is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","current.receipt != original.receipt || current.attestation != original.attestation","result"]]
+required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let source_bound","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","let current = owners",".read_original_completion().map_err(","if source_bound","owners.source_fenced = true","Error::CommitUncertain","if source_bound","&& owners",".require_retained_attestation_current(&current)",".is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","current.receipt != original.receipt || current.attestation != original.attestation","result"]]
 
 
 
@@ -7155,7 +7155,7 @@ required_order = [["fn in_model_lane<T>","training.require_live_source_if_captur
 path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 required = ["source_fenced: bool", "source_fenced: false"]
 forbidden = []
-required_order = [["async fn in_lane<T:", "owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let result = work(&mut owners)", "if owners.require_captured_tail_current().is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
+required_order = [["async fn in_lane<T:", "owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let result = work(&mut owners)", "&& owners.require_captured_tail_current().is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
 
 
 
@@ -7163,7 +7163,7 @@ required_order = [["async fn in_lane<T:", "owners.try_lock()", "if owners.source
 path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 required = []
 forbidden = []
-required_order = [["fn in_model_lane<T>", "self.owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let original = owners.read_original_completion()?", "let current = owners", "if source_bound", "owners.source_fenced = true", "if owners", ".require_retained_attestation_current(&current)", ".is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
+required_order = [["fn in_model_lane<T>", "self.owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let original = owners.read_original_completion()?", "let current = owners", "if source_bound", "owners.source_fenced = true", "&& owners", ".require_retained_attestation_current(&current)", ".is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
 
 
 

@@ -1,6 +1,7 @@
 //! Actual Version/FinalUse mechanisms with an explicit UID-0 protocol fixture.
 //! These do not assert native Training or a deployed independent-role loop.
 use super::*;
+use codex_hepta_types::AuthorityPosture;
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

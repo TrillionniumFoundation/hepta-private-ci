@@ -212,16 +212,15 @@ impl OriginalCellEvaluationCommandConnectionV1 {
         let current = now()?;
         require_clock(self.observed_at, current)?;
         let binding = context.binding(current)?;
-        if let Some(expected) = &retained {
-            if wire::authenticate_completed(
+        if let Some(expected) = &retained
+            && wire::authenticate_completed(
                 &context,
                 expected.snapshot.clone(),
                 expected.attestation.clone(),
                 current,
             )? != *expected
-            {
-                return Err(Error::Binding("same original recovered Evaluation"));
-            }
+        {
+            return Err(Error::Binding("same original recovered Evaluation"));
         }
         Ok(OriginalCellEvaluationCommandClientV1 {
             channel: Mutex::new(Some(Channel {
