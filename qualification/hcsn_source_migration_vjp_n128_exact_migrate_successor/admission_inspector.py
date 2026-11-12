@@ -6,10 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 
-IDENTITY = "hcsn-original-visit897-source-migration-vjp-n128-exact-migrate-successor-20261112-c06d"
+IDENTITY = "hcsn-original-visit897-source-migration-vjp-n128-reviewer-schema-successor-20261112-c06d"
 KEY = f"{IDENTITY}-001"
-PARENT = "37672f24f828989f328de42dbd7b70603038e04a"
-BRANCH = "research/hcsn-visit897-source-migration-vjp-n128-exact-migrate-successor-20261112-c06d"
+PARENT = "833aead36dfd889d693d31b6f001f96f950e3a32"
+BYTE_GATE_PARENT = "37672f24f828989f328de42dbd7b70603038e04a"
+BRANCH = "research/hcsn-visit897-source-migration-vjp-n128-reviewer-schema-successor-20261112-c06d"
 
 
 def sha(path):
@@ -64,8 +65,8 @@ def main():
     )
     require(len(request["negative_guards"]) == 12, "twelve_negative_guards")
     require(
-        len(request["historical_red_retained"]) == 5,
-        "five_historical_red_records_retained",
+        len(request["historical_red_retained"]) == 6,
+        "six_historical_red_records_retained",
     )
     require(
         request["execution_policy"]
@@ -86,7 +87,7 @@ def main():
         forensic["parent_red"]
         == {
             "pr": 6266,
-            "head": PARENT,
+            "head": BYTE_GATE_PARENT,
             "run_id": 43272612558,
             "job_id": 131372742074,
             "artifact_id": 13967868905,
@@ -103,14 +104,45 @@ def main():
         and forensic["first_exact_mismatch"]["ulp_error"] == 1,
         "first_mismatch_exact",
     )
+    recompute = forensic["original_exact_migrate_recompute"]
+    require(recompute["active_mismatches"] == 0, "exact_migrate_active_zero")
+    require(recompute["content_mismatches"] == 0, "exact_migrate_content_zero")
     require(
-        forensic["original_exact_migrate_recompute"]
+        recompute["maximum_absolute_error"] == 0.0,
+        "exact_migrate_maximum_absolute_error_zero",
+    )
+    require(
+        recompute["exporter_operation"]
+        == "migrate(basis, probability, content).solve_inputs()",
+        "exact_migrate_exporter_operation_exact",
+    )
+    require(
+        recompute["accumulation"]
+        == (
+            "decimal-round-trip Fraction coefficients and exact lift weights; "
+            "final-scalar FP64 conversion"
+        ),
+        "exact_migrate_accumulation_provenance_exact",
+    )
+    require(
+        request["historical_red_retained"][-1]
         == {
-            "active_mismatches": 0,
-            "content_mismatches": 0,
-            "maximum_absolute_error": 0.0,
+            "kind": "hosted_reviewer_schema_preimport_failure",
+            "run_id": 43275048169,
+            "job_id": 131381121252,
+            "artifact_id": None,
+            "artifacts_found": 0,
+            "unique_execution_key": (
+                "hcsn-original-visit897-source-migration-vjp-n128-"
+                "exact-migrate-successor-20261112-c06d-001"
+            ),
+            "candidate_imports": 0,
+            "candidate_forwards": 0,
+            "continuous_adjoint_calls": 0,
+            "optimizer_updates": 0,
+            "status": "RED_PREIMPORT_REVIEWER_SCHEMA_NO_ARTIFACT_NO_READMISSION",
         },
-        "original_exact_migrate_reproduces_all_bytes",
+        "parent_reviewer_schema_red_exact",
     )
     clear = source["parent_static_clear"]
     require(
