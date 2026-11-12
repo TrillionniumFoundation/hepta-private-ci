@@ -211,7 +211,7 @@ pub(super) fn open_original_new_files(
     ))
 }
 
-fn require_original_paths(
+pub(super) fn require_original_paths(
     prepared: &PreparedPublicationData,
     source: &OriginalSingleQ24SourceConfigurationV1,
     data: &ExecutionFilesData,
