@@ -21,11 +21,12 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
 
     def test_current_trust_and_snapshot_have_only_actual_consumers(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        for key in ("root_historical_current_trust_read", "root_historical_current_trust_receipt",
-                    "root_historical_ledger_snapshot_data"):
+        for key in ("root_historical_current_trust_read", "root_historical_current_trust_receipt"):
             self.assertEqual(rows[key]["product_callers"], [HISTORY])
+        self.assertEqual(rows["root_historical_ledger_snapshot_data"]["product_callers"],
+                         [HISTORY, AGENT + "cell_q24_dataset_historical_preparation.rs"])
         self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"],
-                         [HISTORY, MATERIALIZER])
+                         [HISTORY, AGENT + "cell_q24_dataset_historical_preparation.rs", MATERIALIZER])
 
     def test_capture_checks_actual_task_and_trust_receipt_before_holding_view(self):
         self.check_markers(HISTORY, "fn capture_original(", (

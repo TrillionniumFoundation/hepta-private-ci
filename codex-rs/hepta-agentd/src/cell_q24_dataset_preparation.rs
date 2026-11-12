@@ -47,7 +47,7 @@ impl CellQ24DatasetFreezePreparationV1 {
         };
         let preparation = Self {
             config,
-            ledger,
+            ledger: OriginalDatasetLedgerV1::Live(ledger),
             tasks,
             snapshot,
             frontier,
@@ -71,7 +71,7 @@ impl CellQ24DatasetFreezePreparationV1 {
             .witness_frontier()?;
         let preparation: CellQ24DatasetFreezePreparationV1 = Self {
             config,
-            ledger,
+            ledger: OriginalDatasetLedgerV1::Live(ledger),
             tasks,
             snapshot,
             frontier,
@@ -87,6 +87,9 @@ impl CellQ24DatasetFreezePreparationV1 {
     /// A preparation identity, deliberately distinct from the later Root scope.
     /// Every field is fixed before signing; SGD(batch) is not fabricated here.
     pub fn identity(&self) -> Result<Digest32, Error> {
+        if let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger {
+            return self.identity_historical(ledger);
+        }
         self.revalidate_source()?;
         let initial = LearningIterationCoordinatorV1::new(
             self.config.request.clone(),
@@ -95,6 +98,7 @@ impl CellQ24DatasetFreezePreparationV1 {
         let payload = dataset_freeze_signing_payload_v2(&self.snapshot, &self.plan()?)?;
         let ledger = self
             .ledger
+            .original_writer()?
             .lock()
             .map_err(|_| Error::Binding("ledger lock"))?;
         Ok(crate::original_q24_dataset_preparation_identity_v1(
@@ -108,9 +112,13 @@ impl CellQ24DatasetFreezePreparationV1 {
     }
 
     pub fn revalidate_source(&self) -> Result<(), Error> {
+        if let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger {
+            return self.with_historical_cut(ledger, |_, _, _, _, _| Ok(()));
+        }
         require_configuration(&self.config, &self.tasks)?;
         let ledger = self
             .ledger
+            .original_writer()?
             .lock()
             .map_err(|_| Error::Binding("ledger lock"))?;
         let current = ledger.snapshot()?;
@@ -133,9 +141,13 @@ impl CellQ24DatasetFreezePreparationV1 {
     /// The existing Evaluator signs these exact bytes with its original key.
     /// A changed ledger cut requires a distinct explicit preparation attempt.
     pub fn signing_payload(&self) -> Result<Vec<u8>, Error> {
+        if let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger {
+            return self.signing_payload_historical(ledger);
+        }
         require_configuration(&self.config, &self.tasks)?;
         let owner = self
             .ledger
+            .original_writer()?
             .lock()
             .map_err(|_| Error::Binding("ledger lock"))?;
         self.require_frozen_cut(&owner)?;
@@ -149,12 +161,22 @@ impl CellQ24DatasetFreezePreparationV1 {
         self,
         authorization: SignedLearningEvidenceV1,
     ) -> Result<CellQ24PreparedLearningV1, Error> {
+        if let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger {
+            self.with_historical_cut(ledger, |_, _, _, _, observed_at| {
+                if observed_at >= self.config.request.envelope.expiry_unix_seconds {
+                    return Err(Error::Binding("new preparation deadline"));
+                }
+                Ok(())
+            })?;
+            return self.materialize_historical(authorization);
+        }
         if now()? >= self.config.request.envelope.expiry_unix_seconds {
             return Err(Error::Binding("new preparation deadline"));
         }
         let receipt = {
             let owner = self
                 .ledger
+                .original_writer()?
                 .lock()
                 .map_err(|_| Error::Binding("ledger lock"))?;
             self.require_frozen_cut(&owner)?;
@@ -162,7 +184,7 @@ impl CellQ24DatasetFreezePreparationV1 {
         };
         CellQ24PreparedLearningV1::from_original(
             self.config,
-            self.ledger,
+            self.ledger.into_original_writer()?,
             self.tasks,
             CellQ24FrozenDatasetV1 {
                 snapshot: self.snapshot,
@@ -178,18 +200,30 @@ impl CellQ24DatasetFreezePreparationV1 {
         self,
         authorization: SignedLearningEvidenceV1,
     ) -> Result<CellQ24PreparedLearningV1, Error> {
+        if matches!(&self.ledger, OriginalDatasetLedgerV1::Historical(_)) {
+            return self.materialize_historical(authorization);
+        }
         let frozen = self.validate_authorization(&authorization)?;
-        CellQ24PreparedLearningV1::from_original(self.config, self.ledger, self.tasks, frozen)
+        CellQ24PreparedLearningV1::from_original(
+            self.config,
+            self.ledger.into_original_writer()?,
+            self.tasks,
+            frozen,
+        )
     }
 
     pub(super) fn validate_authorization(
         &self,
         authorization: &SignedLearningEvidenceV1,
     ) -> Result<CellQ24FrozenDatasetV1, Error> {
+        if let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger {
+            return self.validate_authorization_historical(ledger, authorization);
+        }
         self.revalidate_source()?;
         let receipt = {
             let owner = self
                 .ledger
+                .original_writer()?
                 .lock()
                 .map_err(|_| Error::Binding("ledger lock"))?;
             let payload = dataset_freeze_signing_payload_v2(&self.snapshot, &self.plan()?)?;
@@ -212,7 +246,7 @@ impl CellQ24DatasetFreezePreparationV1 {
             authorization: authorization.clone(),
         };
         let batch: CellQ24TrainingBatchV1 = CellQ24TrainingBatchV1::from_original_dataset(
-            Arc::clone(&self.ledger),
+            Arc::clone(self.ledger.original_writer()?),
             frozen.snapshot.clone(),
             frozen.receipt.clone(),
             authorization.clone(),

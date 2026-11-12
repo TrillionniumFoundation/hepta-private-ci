@@ -210,6 +210,8 @@ fn validate_config(
     let identity = preparation.identity()?;
     let ledger = preparation
         .ledger
+        .original_writer()
+        .map_err(CellQ24LearningPreparationErrorV1::from)?
         .lock()
         .map_err(|_| LearningOriginalOwnerErrorV1::Binding("original ledger lock"))?;
     let original = ledger.verifier();

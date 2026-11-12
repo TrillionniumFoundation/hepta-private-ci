@@ -22,8 +22,8 @@ class FreezeIdentitySourceTests(unittest.TestCase):
 
     def test_only_actual_owner_consumers_are_listed(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        self.assertEqual(rows["q24_dataset_pure_preparation_identity"]["product_callers"], [CAPTURE, AGENT + "authority_host_post_a_derive.rs"])
-        self.assertEqual(rows["q24_dataset_pure_freeze_execution_key"]["product_callers"], [OWNER, AGENT + "authority_host_post_a_derive.rs"])
+        self.assertEqual(rows["q24_dataset_pure_preparation_identity"]["product_callers"], [AGENT + "cell_q24_dataset_historical_preparation.rs", AGENT + "cell_q24_dataset_preparation.rs", AGENT + "authority_host_post_a_derive.rs"])
+        self.assertEqual(rows["q24_dataset_pure_freeze_execution_key"]["product_callers"], [AGENT + "cell_q24_dataset_freeze_owner.rs", AGENT + "authority_host_post_a_derive.rs"])
 
     def test_full_preparation_data_and_order_remain_bound(self):
         self.check_markers(PURE, "fn original_q24_dataset_preparation_identity_v1(", (

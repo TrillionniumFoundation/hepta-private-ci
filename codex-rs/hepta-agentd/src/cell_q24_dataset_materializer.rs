@@ -211,6 +211,30 @@ pub(crate) enum OriginalDatasetLedgerV1 {
     Historical(Arc<HistoricalDatasetLedgerV1>),
 }
 
+impl OriginalDatasetLedgerV1 {
+    #[cfg(target_os = "linux")]
+    pub(super) fn original_writer(&self) -> Result<&Arc<Mutex<LedgerWriter>>, Error> {
+        match self {
+            Self::Live(ledger) => Ok(ledger),
+            #[cfg(target_os = "linux")]
+            Self::Historical(_) => {
+                Err(Error::Binding("historical Dataset cannot provide a writer"))
+            }
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn into_original_writer(self) -> Result<Arc<Mutex<LedgerWriter>>, Error> {
+        match self {
+            Self::Live(ledger) => Ok(ledger),
+            #[cfg(target_os = "linux")]
+            Self::Historical(_) => {
+                Err(Error::Binding("historical Dataset cannot provide a writer"))
+            }
+        }
+    }
+}
+
 #[cfg(target_os = "linux")]
 pub(crate) struct HistoricalDatasetLedgerV1 {
     receipt: Arc<crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1>,
