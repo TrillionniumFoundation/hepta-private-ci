@@ -1,0 +1,41 @@
+{
+  "error": "RuntimeError: original ancestry fsck failed",
+  "finished_at": "2026-11-12T12:42:16.610684+00:00",
+  "fsck": {
+    "returncode": 3,
+    "stderr_bytes": 896,
+    "stderr_sha256": "4a562ea1cf30471f5a2fa1ce0f61f11e2c9b44db29645e9f039615cfba10ec2a",
+    "stdout_bytes": 27453910,
+    "stdout_sha256": "b17a02343f862f1425fe2ecd07669212d6ca18e3524755a1d52ebb360e5cfae9"
+  },
+  "head_before": {
+    "bytes": 41,
+    "path": "/home/qian-qi/hepta-utility-36fa-review-19aa/.git/HEAD",
+    "sha256": "a77725d4ec2efc813f25681c9a624c9515d86d07f5fb700bfa47e16b038aa4c7"
+  },
+  "index_before": {
+    "bytes": 1996195,
+    "path": "/home/qian-qi/hepta-utility-36fa-review-19aa/.git/index",
+    "sha256": "230e7c4100cb170cb8c3c19c61644d1c8b5748121c1084f1bd63949aa16436ea"
+  },
+  "scope": "Exact original Git object import only; no HEAD/index/source/ref changes or qualification",
+  "source_after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T12:41:25.795724+00:00",
+  "status": "failed",
+  "tip": "b29869e856d08db1bfb066116a9c443376ccc57d"
+}

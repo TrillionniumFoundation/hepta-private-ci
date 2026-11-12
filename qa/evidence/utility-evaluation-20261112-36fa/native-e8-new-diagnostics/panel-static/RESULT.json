@@ -1,0 +1,179 @@
+{
+  "binary_after": {
+    "bytes": 281625080,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build",
+    "sha256": "03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908",
+    "stat": [
+      2050,
+      51842650,
+      281625080,
+      1794485027101044707,
+      1794485028206509979
+    ]
+  },
+  "binary_before": {
+    "bytes": 281625080,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build",
+    "sha256": "03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908",
+    "stat": [
+      2050,
+      51842650,
+      281625080,
+      1794485027101044707,
+      1794485028206509979
+    ]
+  },
+  "binary_executed": false,
+  "cargo_started": false,
+  "combined_disassembly": {
+    "bytes": 97755,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-panel-static-frames-v1/BOUNDED_PROLOGUES.txt",
+    "sha256": "4c0ac639bcc096eb9e34d645714f99110719dcaf48847d9c125e8c746e453688"
+  },
+  "elf": {
+    "elf_type": 3,
+    "load_bias": "0x6217f853a000",
+    "machine": 62,
+    "mapped_offset_zero_start": "0x6217f853a000",
+    "observed_frame_count": 39,
+    "program_headers": [
+      {
+        "align": 8,
+        "filesz": 672,
+        "flags": 4,
+        "memsz": 672,
+        "offset": 64,
+        "paddr": 64,
+        "type": 6,
+        "vaddr": 64
+      },
+      {
+        "align": 1,
+        "filesz": 28,
+        "flags": 4,
+        "memsz": 28,
+        "offset": 736,
+        "paddr": 736,
+        "type": 3,
+        "vaddr": 736
+      },
+      {
+        "align": 4096,
+        "filesz": 51318556,
+        "flags": 4,
+        "memsz": 51318556,
+        "offset": 0,
+        "paddr": 0,
+        "type": 1,
+        "vaddr": 0
+      },
+      {
+        "align": 4096,
+        "filesz": 131936144,
+        "flags": 5,
+        "memsz": 131936144,
+        "offset": 51318592,
+        "paddr": 51322688,
+        "type": 1,
+        "vaddr": 51322688
+      },
+      {
+        "align": 4096,
+        "filesz": 5825520,
+        "flags": 6,
+        "memsz": 5828912,
+        "offset": 183254736,
+        "paddr": 183262928,
+        "type": 1,
+        "vaddr": 183262928
+      },
+      {
+        "align": 4096,
+        "filesz": 67560,
+        "flags": 6,
+        "memsz": 84024,
+        "offset": 189080256,
+        "paddr": 189092544,
+        "type": 1,
+        "vaddr": 189092544
+      },
+      {
+        "align": 8,
+        "filesz": 448,
+        "flags": 4,
+        "memsz": 1120,
+        "offset": 183254736,
+        "paddr": 183262928,
+        "type": 7,
+        "vaddr": 183262928
+      },
+      {
+        "align": 8,
+        "filesz": 512,
+        "flags": 6,
+        "memsz": 512,
+        "offset": 186882104,
+        "paddr": 186890296,
+        "type": 2,
+        "vaddr": 186890296
+      },
+      {
+        "align": 1,
+        "filesz": 5825520,
+        "flags": 4,
+        "memsz": 5828912,
+        "offset": 183254736,
+        "paddr": 183262928,
+        "type": 1685382482,
+        "vaddr": 183262928
+      },
+      {
+        "align": 4,
+        "filesz": 4164068,
+        "flags": 4,
+        "memsz": 4164068,
+        "offset": 32990164,
+        "paddr": 32990164,
+        "type": 1685382480,
+        "vaddr": 32990164
+      },
+      {
+        "align": 0,
+        "filesz": 0,
+        "flags": 6,
+        "memsz": 0,
+        "offset": 0,
+        "paddr": 0,
+        "type": 1685382481,
+        "vaddr": 0
+      },
+      {
+        "align": 4,
+        "filesz": 68,
+        "flags": 4,
+        "memsz": 68,
+        "offset": 764,
+        "paddr": 764,
+        "type": 4,
+        "vaddr": 764
+      }
+    ],
+    "symtab_function_count": 520558
+  },
+  "finished_at": "2026-11-12T12:34:33.412491+00:00",
+  "qualification": false,
+  "source_after": {
+    "sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_before": {
+    "sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_mutated": false,
+  "started_at": "2026-11-12T12:34:06.480895+00:00",
+  "status": "bounded_static_prologues_retained",
+  "tests_started": false
+}

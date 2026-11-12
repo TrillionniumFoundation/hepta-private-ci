@@ -1,0 +1,119 @@
+{
+  "format": "hepta.root-gdb-driver-and-new-build-review.v1",
+  "observed_at": "2026-11-12T12:24:11.379803+00:00",
+  "scope": "Static driver correction review and exact original new-build/v1-preflight result interpretation; no debugger or Rust test started by root",
+  "driver_observations": [
+    {
+      "key": "native_gdb_old_pipeline",
+      "facts": {
+        "bytes": 6939,
+        "sha256": "60726a780f6dac8fd8f1ffb4cda45d9c33b4dda9d2e5f776f0d84e365275cd98",
+        "git_blob_sha": "7310045f2ea4c868819843e60ca52dbcefabcb92"
+      },
+      "ELF_magic_hex": "7f454c46",
+      "ELF_magic_bytes": 4,
+      "embedded_gdb_python_blocks_parsed": 0
+    },
+    {
+      "key": "native_gdb_old_panel",
+      "facts": {
+        "bytes": 10585,
+        "sha256": "e841b46e5e3434f6030c7759140208e952a2aaf441ef74125264ad739d405936",
+        "git_blob_sha": "2d4b5ad1043fd18d416393e2b49e16490a3ca639"
+      },
+      "ELF_magic_hex": "5c783766454c46",
+      "ELF_magic_bytes": 7,
+      "embedded_gdb_python_blocks_parsed": 1
+    },
+    {
+      "key": "native_gdb_old_deep",
+      "facts": {
+        "bytes": 11828,
+        "sha256": "258b5e8195510dd1aa2a43564087664458f83d8fa5aefb3554d3bd3ea63b5f56",
+        "git_blob_sha": "7eaf5a8fbffa1e29ebc76c567871babd7645650f"
+      },
+      "ELF_magic_hex": "5c783766454c46",
+      "ELF_magic_bytes": 7,
+      "embedded_gdb_python_blocks_parsed": 2
+    },
+    {
+      "key": "native_gdb_fixed_pipeline",
+      "facts": {
+        "bytes": 6939,
+        "sha256": "c7b6cd24c084573ce367b77f9876874e662abc720d335d0d89030ec200db1a04",
+        "git_blob_sha": "c368995f4498add5609edfe5f362093f2b15dad2"
+      },
+      "ELF_magic_hex": "7f454c46",
+      "ELF_magic_bytes": 4,
+      "embedded_gdb_python_blocks_parsed": 0
+    },
+    {
+      "key": "native_gdb_fixed_panel",
+      "facts": {
+        "bytes": 10584,
+        "sha256": "b8b58eb38ddba039e9fe2b0c4a044b9b2cdb9e1b8513b5da9437a64de09434d6",
+        "git_blob_sha": "3a9f6a40142270424e3d4eb3aae145d6b6fa4e3c"
+      },
+      "ELF_magic_hex": "7f454c46",
+      "ELF_magic_bytes": 4,
+      "embedded_gdb_python_blocks_parsed": 1
+    },
+    {
+      "key": "native_gdb_fixed_deep",
+      "facts": {
+        "bytes": 11827,
+        "sha256": "eb85f67e814e7129653d2d418243c97adce2a17f3a86afda81edc5f39d19b09d",
+        "git_blob_sha": "11e33813246dbb23a3da5859dfb2314468bfff8e"
+      },
+      "ELF_magic_hex": "7f454c46",
+      "ELF_magic_bytes": 4,
+      "embedded_gdb_python_blocks_parsed": 2
+    }
+  ],
+  "deep_v2_exit_code_copy_error": {
+    "success_status": "bounded_deep_thread_diagnostic_retained",
+    "final_exit_condition": "first_crash_diagnostic_retained",
+    "effect": "A successfully retained deep diagnostic will still exit 1. Preserve actual exit code and actual semantic status separately; this cannot be called a Rust test failure or pass.",
+    "disclosure": "Root informed native agent immediately. Agent reports the v2 unique start had already been submitted; no running driver modification or replay was requested."
+  },
+  "fixed_driver_controls": {
+    "per_debugger_budget_seconds": 60,
+    "RUST_MIN_STACK_bytes": 8388608,
+    "stack_limit_adjustment": false,
+    "ASLR_disabled": false,
+    "debuginfod_enabled": false,
+    "deep_pause": "55-second timer sends SIGSTOP through a pidfd bound to this GDB inferior only",
+    "source_before_after": "complete physical byte/mode inventory, exact e8 identity required",
+    "test_qualification": false
+  },
+  "actual_build_result": {
+    "blob": "d8b054efb4eca4a952bc48ef1352972d795e0d23",
+    "binary_identity_blob": "cc87fc892d939680868eb95512f78c6918ee6623",
+    "finished_at": "2026-11-12T12:03:55.774075+00:00",
+    "returncode": 0,
+    "tests_executed": 0,
+    "source_files": 14741,
+    "source_inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "binary_bytes": 281625080,
+    "binary_sha256": "03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908",
+    "build_log_bytes": 82091,
+    "build_log_sha256": "bd12f95f54ce857ffad7b3968b574d27660fe3df6f9815ed5976abea6ab76588",
+    "full_build_log_read_by_this_review": false
+  },
+  "actual_old_preflight": {
+    "pipeline_blob": "f3caf4a067abca3d888810f4c6315f3ce02bb6ce",
+    "panel_blob": "542f6458926b74a357fc0abc138bd1522566443e",
+    "test_started": false,
+    "source_before": null,
+    "source_after_verified_equal_to_e8": true,
+    "literal_error": "A seven-byte expected magic cannot match a four-byte slice. This deterministically explains rejection without proving that the ELF changed.",
+    "pipeline_error_interpretation": "The missing before inventory caused the generic source evidence error; there is no observed differing before/after pair."
+  },
+  "not_claimed": [
+    "original failed binary recovered",
+    "Rust test pass",
+    "native full gate",
+    "source mutation",
+    "ordinary A/B/C qualification"
+  ]
+}

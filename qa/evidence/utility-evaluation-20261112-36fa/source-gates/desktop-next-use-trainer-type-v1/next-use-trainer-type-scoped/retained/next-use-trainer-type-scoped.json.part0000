@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/next-use-trainer-type-scoped/diagnostic-result.json"
+  ],
+  "log_bytes": 13261,
+  "log_sha256": "d120ef25d4d175f2b07bd7830f71f93c60f8d492b8d44c7367b43b0bf608fbbd",
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 1,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "timed_out": false
+}

@@ -1,0 +1,869 @@
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -3648,7 +3648,7 @@
+ receiver_type = "OriginalCircuitSelectionCommandContextV1"
+ definition_path = "codex-rs/hepta-agentd/src/circuit_selection_command.rs"
+ definition_markers = ["pub fn from_original_training("]
+-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"]
+ caller_markers = []
+ 
+ 
+@@ -3670,7 +3670,7 @@
+ receiver_type = "OriginalCircuitSelectionReceiptOwnerV1"
+ definition_path = "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+ definition_markers = ["pub(crate) fn original_command_profile("]
+-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"]
+ caller_markers = []
+ 
+ 
+@@ -3681,7 +3681,7 @@
+ receiver_type = "OriginalCircuitSelectionCommandOwnerV1"
+ definition_path = "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"
+ definition_markers = ["pub(crate) fn from_original_receipt_owner("]
+-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"]
+ caller_markers = []
+ 
+ 
+@@ -3780,7 +3780,7 @@
+ receiver_type = "OriginalCellQ24DatasetCommandReadbackV1"
+ definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+ definition_markers = ["pub async fn readback("]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"]
+ caller_markers = []
+ 
+ 
+@@ -3970,7 +3970,7 @@
+ receiver_type = "OriginalCircuitNextUseCommandOwnerV1"
+ definition_path = "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"
+ definition_markers = ["pub(crate) fn from_original_receipt_owner("]
+-product_callers = ["codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"]
+ caller_markers = []
+ 
+ 
+@@ -8069,7 +8069,7 @@
+ required = ["trait NextUseSources {", "for OriginalCircuitNextUseRemoteSourcesV1", "pub struct OriginalCircuitNextUseReceiptOwnerV1", "command_origin: CommandOrigin", "enum CommandOrigin {", "enum ObservationLocation {", "completion_fenced: bool,", "profile: Profile,", "#[path = \"circuit_next_use_receipt_binding.rs\"]", "mod binding;"]
+ forbidden = ["pub trait NextUseSources", "pub(crate) trait NextUseSources", "dyn NextUseSources", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all", "if false", "pub fn sign_original", "pub(crate) fn sign_original", "pub fn receipt(", "pub(crate) fn receipt(", "pub journal:", "pub key:", "pub command_origin:", "pub enum CommandOrigin", "pub enum ObservationLocation", "pub(crate) enum ObservationLocation", "pub completion_fenced:", "pub(crate) completion_fenced:", "self.completion_fenced = false", "pub profile:", "pub(crate) profile:", "Profile::Evaluated(())"]
+ required_order = [["pub struct OriginalCircuitNextUseReceiptSourcesV1", "pub snapshot: &'a LearningIterationSnapshotV1", "pub cell: &'a PublishedCircuitCellOwnerV1<C>", "pub source: &'a CircuitTaskSourceReadbackV1<S>", "pub identity: &'a AgentdIdentity", "pub trainer: &'a LearningIterationEvidenceClientV1", "pub selector: &'a LearningIterationEvidenceClientV1", "pub struct OriginalCircuitNextUseReceiptOwnerV1", "journal: LearningOwnerJournalV1<W>", "config: OriginalCircuitNextUseReceiptConfigV1", "key: SigningKey", "saved: ProductEvaluationExecutionKeyV1"], ["for OriginalCircuitNextUseReceiptSourcesV1", "fn location(&self) -> ObservationLocation", "ObservationLocation::LocalOwner", "async fn observe(", "read_local_next_use(self, config)"], ["impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1", "fn location(&self) -> ObservationLocation", "ObservationLocation::RemoteOwner", "async fn observe(", "read_remote_next_use(self, config).await"], ["mod binding;", "use binding::authenticate_predecessors;", "use binding::evidence_id;", "use binding::now;", "use binding::prior;", "use binding::receipt;", "use binding::receipt_with_domain;", "use binding::require_new_attestation;", "use binding::sign_original;", "use binding::validate_config;"]]
+-required_function_order = [{ function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::FreshCreate", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::Recovered", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn prepare(", sequence = ["match (&self.profile, source.location()) {\n            (\n                Profile::Legacy,\n                ObservationLocation::LocalOwner | ObservationLocation::RemoteOwner,\n            )\n            | (Profile::Evaluated(_), ObservationLocation::EvaluatedOwner) => {}\n            _ => return Err(OwnerError::Binding(                                ).into()),\n        }", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request\n            || source.snapshot().owners != self.config.selection.owners\n            || !source\n                .snapshot()\n                .receipts\n                .starts_with(&self.config.selection.receipts)\n        {\n            return Err(OwnerError::Binding(                           ).into());\n        }", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"], top_level = ["match (&self.profile, source.location())", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"] }, { function = "fn attest_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len() {\n            return self.readback_source(source).await;\n        }", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let config = &self.config;", "let profile = &self.profile;", "let key = &self.key;", "let identity = self.saved.binding_digest;", "let bytes = self.journal.commit_once(&self.saved, || {\n            let issued_at = now()?;\n            profile.require_new(issued_at)?;\n            require_new_attestation(config, started_at, issued_at)?;\n            let predecessors =\n                evaluated::authenticate_predecessors(config, profile, &evidence, issued_at)\n                    .map_err(|_| OwnerError::Binding(                                    ))?;\n            let receipt = evaluated::receipt(config, profile, &observed, issued_at)\n                .map_err(|_| OwnerError::Binding(                    ))?;\n            let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)\n                .map_err(|_| OwnerError::Binding(                          ))?;\n            let signed = sign_original(config, key, &payload, identity, issued_at)?;\n            let verified = config.verifier.verify(\n                LearningEvidenceRoleV1::Observer,\n                &signed,\n                &payload,\n                issued_at,\n            )?;\n            profile\n                .require_signed_separation(&verified, issued_at)\n                .map_err(|_| OwnerError::Binding(                                      ))?;\n            for predecessor in &predecessors {\n                verify_signed_actor_separation(predecessor, &verified, issued_at)?;\n            }\n            learning_owner_evidence::encode(&payload, &signed)\n        })?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "true", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len()", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed", "let bytes = self.journal.commit_once(&self.saved, ||", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn readback_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        ) {\n            let before = self.predecessors(&source).await?;\n            evaluated::authenticate_predecessors(&self.config, &self.profile, &before, now()?)?;\n        }", "let bytes = self.journal.read(&self.saved)?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "false", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        )", "let bytes = self.journal.read(&self.saved)?;", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn predecessors(", sequence = ["let training = match &self.profile {\n            Profile::Legacy => {\n                source\n                    .trainer()\n                    .ok_or(OwnerError::Binding(                           ))?\n                    .readback(\n                        source.snapshot(),\n                        prior(&self.config, LearningIterationStageV1::Training)?,\n                    )\n                    .await?\n            }\n            Profile::Evaluated(selection) => {\n                let (trainer, evaluator) = source\n                    .evaluated_owners()\n                    .ok_or(OwnerError::Binding(                              ))?;\n                selection\n                    .original_context()\n                    .require_original_receipt_owners(trainer, evaluator)\n                    .await?;\n                self.config.training_evidence.clone()\n            }\n        }", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(\n                source.snapshot(),\n                prior(&self.config, LearningIterationStageV1::Selection)?,\n            )\n            .await?;", "Ok([training, selection])"], top_level = ["let training = match &self.profile", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(", "Ok([training, selection])"] }, { function = "fn finish_original_readback(", sequence = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location() {\n            ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {\n                let evidence = self.predecessors(source).await?;\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                evidence\n            }\n            ObservationLocation::RemoteOwner => {\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                self.predecessors(source).await?\n            }\n        }", "if self.journal.read(&self.saved)? != bytes {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"], top_level = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location()", "if self.journal.read(&self.saved)? != bytes", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"] }, { function = "fn decode_completed(", sequence = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?;", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\n            || source\n                .snapshot()\n                .receipts\n                .get(self.config.selection.receipts.len())\n                .is_some_and(|saved| saved != &receipt)\n        {\n            return Err(OwnerError::Binding(                            ).into());\n        }", "Ok((receipt, payload, signed))"], top_level = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "Ok((receipt, payload, signed))"] }, { function = "fn authenticate_completed(", sequence = ["let (receipt, payload, signed) = completed;", "if current < started_at {\n            return Err(OwnerError::Binding(                                         ).into());\n        }", "if new_attestation {\n            self.profile.require_new(current)?;\n            require_new_attestation(&self.config, started_at, current)?;\n        }", "let predecessors =\n            evaluated::authenticate_predecessors(&self.config, &self.profile, evidence, current)?;", "let verified = self.config.verifier.verify(\n            LearningEvidenceRoleV1::Observer,\n            &signed,\n            &payload,\n            current,\n        )?;", "if verified.principal() != &self.config.signer.principal\n            || verified.controller_id() != &self.config.signer.controller_id\n            || signed.evidence_id != evidence_id(self.saved.binding_digest)?\n        {\n            return Err(OwnerError::Binding(                              ).into());\n        }", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors {\n            verify_signed_actor_separation(predecessor, &verified, current)?;\n        }", "Ok((receipt, signed))"], top_level = ["let (receipt, payload, signed) = completed;", "if current < started_at", "if new_attestation", "let predecessors =\n            evaluated::authenticate_predecessors(", "let verified = self.config.verifier.verify(", "if verified.principal() != &self.config.signer.principal", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors", "Ok((receipt, signed))"] }, { function = "fn attest_original_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn attest_original_remote_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn readback(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn readback_remote(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn read_local_next_use(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?", "let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;", "cell.read_learning_next_use(", "&coordinator", "source.source", "source.identity"], top_level = [] }, { function = "fn read_remote_next_use(", sequence = ["let live: &OriginalCircuitLearningReadClientV1 = source.live;", "live.require_original_context(", "&config.selection", "&config.scope", "&config.verifier", "&config.training_evidence", "Some(&config.selection_evidence)", "let original = live.read_current().await?;", "Ok(original.observation().clone())"], top_level = ["live.require_original_context(", "let original = live.read_current().await?;", "Ok(original.observation().clone())"] }, { function = "fn original_command_profile(", sequence = ["&self.config", "matches!(self.command_origin, CommandOrigin::Recovered)"] }, { function = "fn into_command_owner(", sequence = ["\n        self,\n", "crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(", "self, live, trainer, selector,"] }]
++required_function_order = [{ function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::FreshCreate", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::Recovered", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn prepare(", sequence = ["match (&self.profile, source.location()) {\n            (\n                Profile::Legacy,\n                ObservationLocation::LocalOwner | ObservationLocation::RemoteOwner,\n            )\n            | (Profile::Evaluated(_), ObservationLocation::EvaluatedOwner) => {}\n            _ => return Err(OwnerError::Binding(                                ).into()),\n        }", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request\n            || source.snapshot().owners != self.config.selection.owners\n            || !source\n                .snapshot()\n                .receipts\n                .starts_with(&self.config.selection.receipts)\n        {\n            return Err(OwnerError::Binding(                           ).into());\n        }", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"], top_level = ["match (&self.profile, source.location())", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"] }, { function = "fn attest_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len() {\n            return self.readback_source(source).await;\n        }", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let config = &self.config;", "let profile = &self.profile;", "let key = &self.key;", "let identity = self.saved.binding_digest;", "let bytes = self.journal.commit_once(&self.saved, || {\n            let issued_at = now()?;\n            profile.require_new(issued_at)?;\n            require_new_attestation(config, started_at, issued_at)?;\n            let predecessors =\n                evaluated::authenticate_predecessors(config, profile, &evidence, issued_at)\n                    .map_err(|_| OwnerError::Binding(                                    ))?;\n            let receipt = evaluated::receipt(config, profile, &observed, issued_at)\n                .map_err(|_| OwnerError::Binding(                    ))?;\n            let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)\n                .map_err(|_| OwnerError::Binding(                          ))?;\n            let signed = sign_original(config, key, &payload, identity, issued_at)?;\n            let verified = config.verifier.verify(\n                LearningEvidenceRoleV1::Observer,\n                &signed,\n                &payload,\n                issued_at,\n            )?;\n            profile\n                .require_signed_separation(&verified, issued_at)\n                .map_err(|_| OwnerError::Binding(                                      ))?;\n            for predecessor in &predecessors {\n                verify_signed_actor_separation(predecessor, &verified, issued_at)?;\n            }\n            learning_owner_evidence::encode(&payload, &signed)\n        })?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "true", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len()", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed", "let bytes = self.journal.commit_once(&self.saved, ||", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn readback_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        ) {\n            let before = self.predecessors(&source).await?;\n            evaluated::authenticate_predecessors(&self.config, &self.profile, &before, now()?)?;\n        }", "let bytes = self.journal.read(&self.saved)?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "false", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        )", "let bytes = self.journal.read(&self.saved)?;", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn predecessors(", sequence = ["let training = match &self.profile {\n            Profile::Legacy => {\n                let trainer: &LearningIterationEvidenceClientV1 = source\n                    .trainer()\n                    .ok_or(OwnerError::Binding(                           ))?;\n                trainer\n                    .readback(\n                        source.snapshot(),\n                        prior(&self.config, LearningIterationStageV1::Training)?,\n                    )\n                    .await?\n            }\n            Profile::Evaluated(selection) => {\n                let (trainer, evaluator) = source\n                    .evaluated_owners()\n                    .ok_or(OwnerError::Binding(                              ))?;\n                selection\n                    .original_context()\n                    .require_original_receipt_owners(trainer, evaluator)\n                    .await?;\n                self.config.training_evidence.clone()\n            }\n        }", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(\n                source.snapshot(),\n                prior(&self.config, LearningIterationStageV1::Selection)?,\n            )\n            .await?;", "Ok([training, selection])"], top_level = ["let training = match &self.profile", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(", "Ok([training, selection])"] }, { function = "fn finish_original_readback(", sequence = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location() {\n            ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {\n                let evidence = self.predecessors(source).await?;\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                evidence\n            }\n            ObservationLocation::RemoteOwner => {\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                self.predecessors(source).await?\n            }\n        }", "if self.journal.read(&self.saved)? != bytes {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"], top_level = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location()", "if self.journal.read(&self.saved)? != bytes", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"] }, { function = "fn decode_completed(", sequence = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?;", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\n            || source\n                .snapshot()\n                .receipts\n                .get(self.config.selection.receipts.len())\n                .is_some_and(|saved| saved != &receipt)\n        {\n            return Err(OwnerError::Binding(                            ).into());\n        }", "Ok((receipt, payload, signed))"], top_level = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "Ok((receipt, payload, signed))"] }, { function = "fn authenticate_completed(", sequence = ["let (receipt, payload, signed) = completed;", "if current < started_at {\n            return Err(OwnerError::Binding(                                         ).into());\n        }", "if new_attestation {\n            self.profile.require_new(current)?;\n            require_new_attestation(&self.config, started_at, current)?;\n        }", "let predecessors =\n            evaluated::authenticate_predecessors(&self.config, &self.profile, evidence, current)?;", "let verified = self.config.verifier.verify(\n            LearningEvidenceRoleV1::Observer,\n            &signed,\n            &payload,\n            current,\n        )?;", "if verified.principal() != &self.config.signer.principal\n            || verified.controller_id() != &self.config.signer.controller_id\n            || signed.evidence_id != evidence_id(self.saved.binding_digest)?\n        {\n            return Err(OwnerError::Binding(                              ).into());\n        }", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors {\n            verify_signed_actor_separation(predecessor, &verified, current)?;\n        }", "Ok((receipt, signed))"], top_level = ["let (receipt, payload, signed) = completed;", "if current < started_at", "if new_attestation", "let predecessors =\n            evaluated::authenticate_predecessors(", "let verified = self.config.verifier.verify(", "if verified.principal() != &self.config.signer.principal", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors", "Ok((receipt, signed))"] }, { function = "fn attest_original_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn attest_original_remote_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn readback(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn readback_remote(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn read_local_next_use(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?", "let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;", "cell.read_learning_next_use(", "&coordinator", "source.source", "source.identity"], top_level = [] }, { function = "fn read_remote_next_use(", sequence = ["let live: &OriginalCircuitLearningReadClientV1 = source.live;", "live.require_original_context(", "&config.selection", "&config.scope", "&config.verifier", "&config.training_evidence", "Some(&config.selection_evidence)", "let original = live.read_current().await?;", "Ok(original.observation().clone())"], top_level = ["live.require_original_context(", "let original = live.read_current().await?;", "Ok(original.observation().clone())"] }, { function = "fn original_command_profile(", sequence = ["&self.config", "matches!(self.command_origin, CommandOrigin::Recovered)"] }, { function = "fn into_command_owner(", sequence = ["\n        self,\n", "crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(", "self, live, trainer, selector,"] }]
+ 
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs"
+@@ -9079,7 +9079,7 @@
+ receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+ definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+ definition_markers = ["pub(crate) fn original_host_profile("]
+-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"]
+ caller_markers = []
+ 
+ 
+@@ -9091,7 +9091,7 @@
+ receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+ definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+ definition_markers = ["pub(crate) fn require_original_host_completed("]
+-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"]
+ caller_markers = []
+ 
+ 
+@@ -9103,7 +9103,7 @@
+ receiver_type = "OriginalCellEvaluationHostV1"
+ definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+ definition_markers = ["pub(crate) fn from_original_receipt_owner("]
+-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"]
+ caller_markers = []
+ 
+ 
+@@ -10473,3 +10473,75 @@
+ forbidden = ["SigningKey", "Signer", "File::create", "OpenOptions", "std::fs::write", "fs::write", "std::fs::rename", "fs::rename", "UnixStream::connect", "permit_all", "if false", "pub checkpoint:", "pub registry:", "pub current:", "pub writer_lease:", "pub trust_digest:", "pub observed_unix_millis:"]
+ required_order = [["pub ", "struct OriginalArtifactRegistryDurableV1 {\n    checkpoint: ArtifactOwnerPublicationCheckpointV1,\n    registry: ArtifactRegistrySnapshot,\n    registry_receipt: RegistrySnapshotReceipt,\n    current: Option<SignedCurrentArtifactHeadV1>,\n    writer_lease: SignedArtifactWriterLeaseV1,\n    trust_digest: Digest32,\n    observed_unix_millis: u64,\n}"]]
+ required_function_order = [{ function = "fn authority(", sequence = ["fn ", "authority(&self) -> AuthorityPosture {\n        AuthorityPosture::DENY_ALL\n    }"] }, { function = "fn same_original_read(", sequence = ["fn ", "same_original_read(&self, other: &Self) -> bool {\n        self.checkpoint == other.checkpoint\n            && self.registry == other.registry\n            && self.current == other.current\n            && self.writer_lease == other.writer_lease\n            && self.trust_digest == other.trust_digest\n    }"] }, { function = "fn read_original_publication_checkpoints(", sequence = ["fn ", "read_original_publication_checkpoints(\n        &self,\n        operation_id: &StableId,\n    ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {\n        let mut observed = Vec::new();\n        let mut missing_seen = false;\n        let mut invariant = None;\n        for phase in ordered_phases() {\n            let path = self.checkpoint_path(operation_id, phase);\n            if !path.exists() {\n                missing_seen = true;\n                continue;\n            }\n            if missing_seen {\n                return Err(ArtifactOwnerHostError::CheckpointGap);\n            }\n            let checkpoint = decode_checkpoint(&read_small_record(&path, MAX_SMALL_RECORD_BYTES)?)?;\n            if checkpoint.operation_id != *operation_id || checkpoint.phase != phase {\n                return Err(ArtifactOwnerHostError::CheckpointMismatch);\n            }\n            let key = (\n                checkpoint.intent_digest,\n                checkpoint.admission_digest,\n                checkpoint.withdrawal_scope_digest,\n                checkpoint.expected_registry_predecessor_head,\n            );\n            if invariant.is_some_and(|value| value != key) {\n                return Err(ArtifactOwnerHostError::CheckpointMismatch);\n            }\n            invariant = Some(key);\n            observed.push(checkpoint);\n        }\n        Ok(observed)\n    }"] }, { function = "fn read_original_registry_durable(", sequence = ["fn ", "read_original_registry_durable(\n        &self,\n        context: &OriginalArtifactPublicationContextV1,\n        withdrawals: &DatasetWithdrawalRegistry,\n        binding: Digest32,\n        clock: &impl Fn() -> Result<u64, Error>,\n    ) -> Result<OriginalArtifactRegistryDurableV1, Error> {\n        let started = clock()?;\n        let writer = self.require_current_writer(started)?;\n        let withdrawals_before = withdrawals.snapshot();\n        validate_artifact_publication_v3(&context.admission, withdrawals, started)\n            .map_err(ArtifactPublicationError::from)?;\n        let before_records = self.read_original_publication_checkpoints(&context.operation_id)?;\n        let before = before_records.last().cloned().ok_or(Error::NoCheckpoint)?;\n                                                                            \n                                                                       \n        for checkpoint in &before_records {\n            if checkpoint.admission_digest != context.admission.admission_digest\n                || checkpoint.withdrawal_scope_digest != context.admission.withdrawal_scope_digest\n                || checkpoint.withdrawal_head_digest != context.admission.withdrawal_head_digest\n                || checkpoint.expected_registry_predecessor_head\n                    != context.expected_registry_predecessor_head\n                || checkpoint.original_writer_lease_digest != writer.lease_digest\n                || checkpoint.authority.grants_any()\n                || context.admission.validated_manifest.manifest.producer_id != writer.producer_id\n            {\n                return Err(Error::Context);\n            }\n            ArtifactPublicationTransactionV1::from_snapshot(\n                ArtifactPublicationTransactionSnapshotV1 {\n                    intent: ArtifactPublicationIntentV1 {\n                        operation_id: context.operation_id.clone(),\n                        admission: context.admission.clone(),\n                        expected_registry_predecessor_head: context\n                            .expected_registry_predecessor_head,\n                        intent_digest: checkpoint.intent_digest,\n                    },\n                    phase: checkpoint.phase,\n                    registry_receipt: checkpoint.registry_receipt,\n                    witness_receipt: checkpoint.witness_receipt,\n                    acknowledged_at: checkpoint.acknowledged_at,\n                    state_digest: checkpoint.state_digest,\n                },\n            )?;\n        }\n        if matches!(\n            before.phase,\n            ArtifactPublicationPhaseV1::Prepared | ArtifactPublicationPhaseV1::PayloadDurable\n        ) {\n            return Err(Error::Pending(before.phase));\n        }\n        let receipt = before.registry_receipt.ok_or(Error::Context)?;\n        if receipt.binding != binding {\n            return Err(Error::Context);\n        }\n        let (current_before, current_registry_before) =\n            self.read_preparation_current(binding, started)?;\n        let registry = read_registry_snapshot(\n            File::open(self.registry_snapshot_path(receipt))\n                .map_err(ArtifactOwnerHostError::from)?,\n            receipt,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        let mut predecessor_snapshot = registry.snapshot();\n        let last = predecessor_snapshot.records.pop().ok_or(Error::Context)?;\n        if last.predecessor_chain_digest != context.expected_registry_predecessor_head {\n            return Err(Error::Context);\n        }\n        predecessor_snapshot.head_digest = context.expected_registry_predecessor_head;\n        let predecessor = ArtifactRegistry::from_snapshot(predecessor_snapshot)\n            .map_err(ArtifactOwnerHostError::from)?;\n        let mut transaction = ArtifactPublicationTransactionV1::begin(\n            context.operation_id.clone(),\n            context.admission.clone(),\n            withdrawals,\n            &predecessor,\n            context.expected_registry_predecessor_head,\n            started,\n        )?;\n        if last.event != original_registration_event(&transaction)? {\n            return Err(Error::Context);\n        }\n        let manifest = &context.admission.validated_manifest.manifest;\n        let path = self.root.join(          ).join(format!(\n                       ,\n            manifest.artifact_id, manifest.bytes_digest\n        ));\n        let payload = read_candidate_payload(\n            File::open(&path).map_err(ArtifactOwnerHostError::from)?,\n            &registry,\n            &manifest.artifact_id,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        transaction.record_payload_durable(Digest32::of_bytes(&payload), payload.len() as u64)?;\n        transaction.record_registry_durable(&registry, receipt, withdrawals, started)?;\n        let current_head = current_before\n            .as_ref()\n            .map(|value| value.witness.head_digest);\n        let current_is_parent = current_registry_before.snapshot().head_digest\n            == context.expected_registry_predecessor_head\n            && (current_before.is_some()\n                || context.expected_registry_predecessor_head\n                    == self.verifier.trust.genesis_predecessor_head_digest);\n        if !current_is_parent && current_head != Some(receipt.head_digest) {\n            return Err(Error::Context);\n        }\n        if matches!(\n            before.phase,\n            ArtifactPublicationPhaseV1::WitnessDurable | ArtifactPublicationPhaseV1::Acknowledged\n        ) {\n            let signed = current_before.as_ref().ok_or(Error::Context)?;\n            if signed.witness.head_digest != receipt.head_digest {\n                return Err(Error::Context);\n            }\n            let requirement = self.preparation_head_requirement(signed, started);\n            let witness_receipt = before.witness_receipt.ok_or(Error::Context)?;\n            let witness_path = self.root.join(           ).join(format!(\n                               ,\n                signed.witness.generation.get(),\n                witness_receipt.witness_digest\n            ));\n            let actual = read_registry_head_witness(\n                File::open(witness_path).map_err(ArtifactOwnerHostError::from)?,\n                witness_receipt,\n                &requirement,\n            )\n            .map_err(ArtifactOwnerHostError::from)?;\n            if actual != signed.witness {\n                return Err(Error::Context);\n            }\n            transaction.record_witness_durable(\n                &actual,\n                &requirement,\n                witness_receipt,\n                withdrawals,\n                started,\n            )?;\n            if let Some(acknowledged_at) = before.acknowledged_at {\n                transaction.acknowledge(withdrawals, acknowledged_at)?;\n            }\n        }\n        if checkpoint_from_snapshot(&transaction.snapshot(), writer.lease_digest) != before {\n            return Err(Error::Context);\n        }\n                                                                               \n                                                              \n        let registry_after = read_registry_snapshot(\n            File::open(self.registry_snapshot_path(receipt))\n                .map_err(ArtifactOwnerHostError::from)?,\n            receipt,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        let payload_after = read_candidate_payload(\n            File::open(path).map_err(ArtifactOwnerHostError::from)?,\n            &registry_after,\n            &manifest.artifact_id,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        let (current_after, current_registry_after) =\n            self.read_preparation_current(binding, started)?;\n        let after_records = self.read_original_publication_checkpoints(&context.operation_id)?;\n        let after = after_records.last().cloned().ok_or(Error::NoCheckpoint)?;\n        if before_records != after_records\n            || registry.snapshot() != registry_after.snapshot()\n            || payload != payload_after\n            || current_before != current_after\n            || current_registry_before.snapshot() != current_registry_after.snapshot()\n            || withdrawals_before != withdrawals.snapshot()\n        {\n            return Err(Error::ChangedDuringRead);\n        }\n        let fresh = clock()?;\n        if fresh < started {\n            return Err(Error::Clock);\n        }\n        let writer_after = self.require_current_writer(fresh)?;\n        if writer_after.lease_digest != writer.lease_digest {\n            return Err(Error::ChangedDuringRead);\n        }\n        validate_artifact_publication_v3(&context.admission, withdrawals, fresh)\n            .map_err(ArtifactPublicationError::from)?;\n        if let Some(signed) = &current_after {\n            self.verifier.verify_signed_head(\n                signed,\n                &self.preparation_head_requirement(signed, fresh),\n                                           true,\n            )?;\n        }\n                                                                                \n                                                                            \n        Ok(OriginalArtifactRegistryDurableV1 {\n            checkpoint: after,\n            registry: registry_after.snapshot(),\n            registry_receipt: receipt,\n            current: current_after,\n            writer_lease: self.lease.clone(),\n            trust_digest: self.verifier.trust_digest(),\n            observed_unix_millis: fresh,\n        })\n    }"] }, { function = "fn preparation_head_requirement(", sequence = ["fn ", "preparation_head_requirement(\n        &self,\n        signed: &SignedCurrentArtifactHeadV1,\n        now: u64,\n    ) -> RegistryHeadRequirementV1 {\n        RegistryHeadRequirementV1 {\n            registry_id: self.verifier.trust.registry_id.clone(),\n            minimum_generation: signed.witness.generation,\n            expected_predecessor_head_digest: signed.witness.predecessor_head_digest,\n            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,\n            now,\n        }\n    }"] }, { function = "fn read_preparation_current(", sequence = ["fn ", "read_preparation_current(\n        &self,\n        binding: Digest32,\n        now: u64,\n    ) -> Result<(Option<SignedCurrentArtifactHeadV1>, ArtifactRegistry), ArtifactOwnerHostError>\n    {\n        let Some(head) = self.discover_current_head(now)? else {\n            return Ok((None, ArtifactRegistry::new()));\n        };\n        let current = self.current_registry_view_bounded(now)?;\n        if current.receipt().binding != binding\n            || current.receipt().head_digest != head.signed.witness.head_digest\n            || current.witness_digest() != head.witness_digest\n            || current.trust_digest() != head.trust_digest\n        {\n            return Err(ArtifactOwnerHostError::CurrentHeadConflict);\n        }\n        Ok((Some(head.signed), current.registry().clone()))\n    }"] }, { function = "fn read_original_registry_durable(", sequence = ["let manifest = &context.admission.validated_manifest.manifest;", ".join(\"payloads\")", "let payload = read_candidate_payload(", ".join(\"witnesses\")", "let actual = read_registry_head_witness(", "let registry_after = read_registry_snapshot(", "let payload_after = read_candidate_payload(", "let fresh = clock()?;"], literal_calls = [".join(\"payloads\")", ".join(\"witnesses\")"], top_level = ["let manifest = &context.admission.validated_manifest.manifest;", "let payload = read_candidate_payload(", "let registry_after = read_registry_snapshot(", "let payload_after = read_candidate_payload(", "let fresh = clock()?;"] }]
++
++# Reviewed host custody source-fence preparation; no caller-membership update here.
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"
++required = ["impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W>"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "SigningKey", "attest_original_selection(", "attest_original_remote_selection(", "OriginalCircuitSelectionReceiptOwnerV1::create(", "OriginalCircuitSelectionReceiptOwnerV1::recover(", "execute_selection(", "recover_from_original_stream("]
++required_order = []
++required_function_order = [{ function = "fn into_command_owner_from_original_readbacks(", sequence = ["\n        self,\n        live: OriginalCircuitLearningReadClientV1,\n        trainer: OriginalCellQ24TrainingReadbackConnectionV1,\n        dataset: OriginalCellQ24MaterialCommandReceiptV1,\n        training: OriginalCellQ24TrainingCommandReceiptV1,\n    ) -> Result<OriginalCircuitSelectionCommandOwnerV1<W>, Error> ", "{\n        let mut actual = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;\n        actual.record(\n            training.receipt().clone(),\n            training.receipt().observed_unix_seconds,\n        )?;\n        if actual.snapshot() != &self.config.decision\n            || training.attestation() != &self.config.training_evidence\n        {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }\n        let trainer = OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(\n            trainer, dataset, training,\n        )\n        .map_err(|_| Error::Binding(                                               ))?;\n        OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner(self, live, trainer)\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"
++required = ["impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseReceiptOwnerV1<W>"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "SigningKey", "attest_original_completion(", "attest_original_remote_completion(", "OriginalCircuitNextUseReceiptOwnerV1::create(", "OriginalCircuitNextUseReceiptOwnerV1::recover(", "attest_completed_task(", "recover_from_original_stream("]
++required_order = []
++required_function_order = [{ function = "fn into_command_owner_from_original_readbacks(", sequence = ["\n        self,\n        live: OriginalCircuitLearningReadClientV1,\n        trainer: OriginalCellQ24TrainingReadbackConnectionV1,\n        selector: OriginalCircuitSelectionReadbackConnectionV1,\n        dataset: OriginalCellQ24MaterialCommandReceiptV1,\n        training: OriginalCellQ24TrainingCommandReceiptV1,\n        selection: OriginalCircuitSelectionCommandReceiptV1,\n    ) -> Result<OriginalCircuitNextUseCommandOwnerV1<W>, Error> ", "{\n        let mut actual = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;\n        actual.record(\n            training.receipt().clone(),\n            training.receipt().observed_unix_seconds,\n        )?;\n        actual.record(\n            selection.receipt().clone(),\n            selection.receipt().observed_unix_seconds,\n        )?;\n        if actual.snapshot() != &self.config.selection\n            || selection.snapshot() != &self.config.selection\n            || training.attestation() != &self.config.training_evidence\n            || selection.training_attestation() != &self.config.training_evidence\n            || selection.attestation() != &self.config.selection_evidence\n        {\n            return Err(Error::Binding(\n                                                               ,\n            ));\n        }\n        let original_trainer = OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(\n            trainer,\n            dataset.clone(),\n            training.clone(),\n        )\n        .map_err(|_| Error::Binding(                                               ))?;\n        let original_selector =\n            OriginalCircuitSelectionReadbackConnectionV1::bind_original_selection(\n                selector, dataset, &training, selection,\n            )\n            .map_err(|_| Error::Binding(                                                ))?;\n        OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(\n            self,\n            live,\n            original_trainer,\n            original_selector,\n        )\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
++required = ["pub struct OriginalCellQ24ModelCommandHostV1", "enum Origin {", "struct State {"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "SigningKey", "pub bootstrap:", "pub state:", "pub registration:", "pub custody:", "pub material_connection:", "pub model:", "model_host_bound.store(", "state.execution_requested = false", "state.fenced = false", ".execute_training(", ".execute_evaluation("]
++required_order = [["enum Origin {\n    Fresh,\n    Recovered,\n}\nstruct State {\n    custody: Option<(File, FileAnchorWitnessStore)>,\n    material_connection: Option<OriginalCellEvaluationModelMaterialConnectionV1>,\n    material: Option<OriginalCellEvaluationModelMaterialClientV1>,\n    context: Option<Context>,\n    model: Option<Model>,\n    execution_requested: bool,\n    fenced: bool,\n    retained: Option<OriginalCellQ24ModelCommandReceiptV1>,\n}\n", "pub struct OriginalCellQ24ModelCommandHostV1 {\n    bootstrap: Arc<Bootstrap>,\n    registration: OriginalCellEvaluationPanelRegistrationV1,\n    state: Mutex<State>,\n    runtime: Handle,\n    connections: Arc<Semaphore>,\n}"]]
++required_function_order = [{ function = "fn from_original_bootstrap(", sequence = ["\n        bootstrap: Arc<Bootstrap>,\n        file: File,\n        witness: FileAnchorWitnessStore,\n        material: OriginalCellEvaluationModelMaterialConnectionV1,\n        registration: OriginalCellEvaluationPanelRegistrationV1,\n    ) -> Result<Self, Error> ", "{\n        if !matches!(bootstrap.origin, BootstrapOrigin::Fresh) {\n            return Err(Error::ReadbackRequired);\n        }\n        Self::bind(\n            bootstrap,\n            file,\n            witness,\n            material,\n            registration,\n            Origin::Fresh,\n        )\n    }"] }, { function = "fn recover_original_bootstrap(", sequence = ["\n        bootstrap: Arc<Bootstrap>,\n        file: File,\n        witness: FileAnchorWitnessStore,\n        material: OriginalCellEvaluationModelMaterialConnectionV1,\n        registration: OriginalCellEvaluationPanelRegistrationV1,\n    ) -> Result<Self, Error> ", "{\n        let host = Self::bind(\n            bootstrap,\n            file,\n            witness,\n            material,\n            registration,\n            Origin::Recovered,\n        )?;\n        tokio::task::spawn_blocking(move || {\n            host.recover_deployment()?;\n            Ok(host)\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)?\n    }"] }, { function = "fn bind(", sequence = ["\n        bootstrap: Arc<Bootstrap>,\n        file: File,\n        witness: FileAnchorWitnessStore,\n        material: OriginalCellEvaluationModelMaterialConnectionV1,\n        registration: OriginalCellEvaluationPanelRegistrationV1,\n        origin: Origin,\n    ) -> Result<Self, Error> ", "{\n        let config = &bootstrap.config.material;\n        crate::OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(config)?;\n        material.require_initial(\n            &config.initial,\n            &config.scope,\n            &registration,\n            &config.verifier,\n        )?;\n        if config.initial.request.evaluation_profile != registration.evaluation_profile() {\n            return Err(Error::Binding(                                          ));\n        }\n                                                                             \n                                                                             \n        bootstrap\n            .model_host_bound\n            .compare_exchange(\n                            false,\n                        true,\n                Ordering::AcqRel,\n                Ordering::Acquire,\n            )\n            .map_err(|_| Error::ReadbackRequired)?;\n        Ok(Self {\n            bootstrap,\n            registration,\n            runtime: Handle::current(),\n            connections: Arc::new(Semaphore::new(4)),\n            state: Mutex::new(State {\n                custody: Some((file, witness)),\n                material_connection: Some(material),\n                material: None,\n                context: None,\n                model: None,\n                execution_requested: matches!(origin, Origin::Recovered),\n                fenced: false,\n                retained: None,\n            }),\n        })\n    }"] }, { function = "fn original_inputs(", sequence = ["\n        &self,\n        state: &mut State,\n    ) -> Result<(Arc<Trainer>, Context, OriginalCellEvaluationModelMaterialV1), Error> ", "{\n        let started = now()?;\n        let original = self.bootstrap.ready()?.ok_or(Error::Unavailable)?;\n        let dataset = self\n            .runtime\n            .block_on(OriginalCellQ24DatasetCommandReadbackV1::readback(\n                &self.bootstrap.dataset,\n            ))?;\n        let training = self.runtime.block_on(\n            OriginalCellQ24TrainingCommandOwnerV1::read_original_model_training(\n                original.as_ref(),\n                &dataset,\n            ),\n        )?;\n        if state.material.is_none() {\n            let connection = state.material_connection.take().ok_or(Error::Unavailable)?;\n            state.material =\n                Some(connection.bind_original_training(dataset.snapshot().clone(), &training)?);\n        }\n                                                                              \n                                                                     \n        let material = self.runtime.block_on(\n            state\n                .material\n                .as_ref()\n                .ok_or(Error::Unavailable)?\n                .read_current(),\n        )?;\n        let context = Context::from_original(\n            self.bootstrap.config.material.clone(),\n            self.registration.clone(),\n            dataset,\n            training,\n            material.original_evaluation().clone(),\n        )?;\n        if let Some(retained) = &state.context\n            && retained.binding()? != context.binding()?\n        {\n            return Err(Error::Binding(                                       ));\n        }\n        let fresh = context.authenticate(started)?;\n        material.authenticate_current(fresh)?;\n        state.context = Some(context.clone());\n        Ok((original, context, material))\n    }"] }, { function = "fn recover_deployment(", sequence = ["&self) -> Result<(), Error> ", "{\n        let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;\n        let (original, context, before) = self.original_inputs(&mut state)?;\n        context.require_qualified()?;\n        before.require_original_model_input(\n            &context.training_cut,\n            context.training.attestation(),\n            context.authenticate(now()?)?,\n        )?;\n        let (file, witness) = state.custody.take().ok_or(Error::ReadbackRequired)?;\n                                                                              \n                                                                                \n        state.model = Some(\n            OriginalCellQ24TrainingCommandOwnerV1::recover_original_model(\n                original.as_ref(),\n                file,\n                witness,\n                &context,\n                &before,\n            )?,\n        );\n        let (observed, material, fresh) =\n            self.current_after(&mut state, &original, &context, &before)?;\n        if let effect::Observed::Completed(receipt) = observed {\n            use super::super::model_command::wire;\n            let wire::Outcome::Completed { record } =\n                wire::encode_completed(&context, &receipt, material, fresh)?\n            else {\n                return Err(Error::CommitUncertain);\n            };\n            state.retained = Some(wire::decode_completed(&context, &record, fresh)?);\n        }\n        Ok(())\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs"
++required = ["pub(in super::super) struct Context", "b\"hepta.agentd.original-q24-model-command.v1\\0\""]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "pub struct Context", "pub(crate) struct Context", "impl Default for Context", "Deserialize", "SignedLearningEvidenceV1 {"]
++required_order = [["pub(in super::super) struct Context ", "{\n    pub(in super::super) material: OriginalCellQ24MaterialReceiptConfigV1,\n    pub(in super::super) registration: OriginalCellEvaluationPanelRegistrationV1,\n    pub(in super::super) dataset: OriginalCellQ24MaterialCommandReceiptV1,\n    pub(in super::super) training: OriginalCellQ24TrainingCommandReceiptV1,\n    pub(in super::super) evaluation: OriginalCellEvaluationCommandReceiptV1,\n    pub(in super::super) training_cut: LearningIterationSnapshotV1,\n    initial_binding: Digest32,\n}"]]
++required_function_order = [{ function = "fn from_original(", sequence = ["\n        material: OriginalCellQ24MaterialReceiptConfigV1,\n        registration: OriginalCellEvaluationPanelRegistrationV1,\n        dataset: OriginalCellQ24MaterialCommandReceiptV1,\n        training: OriginalCellQ24TrainingCommandReceiptV1,\n        evaluation: OriginalCellEvaluationCommandReceiptV1,\n    ) -> Result<Self, Error> ", "{\n        let (initial_binding, started) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;\n        let mut coordinator =\n            LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;\n        if dataset.snapshot().receipts.len() != 2\n            || coordinator.next_stage() != Some(LearningIterationStageV1::Training)\n        {\n            return Err(Error::Binding(                             ));\n        }\n        coordinator.record(\n            training.receipt().clone(),\n            training.receipt().observed_unix_seconds,\n        )?;\n        let original = Self {\n            material,\n            registration,\n            dataset,\n            training,\n            evaluation,\n            training_cut: coordinator.snapshot().clone(),\n            initial_binding,\n        };\n        original.authenticate(started)?;\n        Ok(original)\n    }"] }, { function = "fn authenticate(", sequence = ["&self, lower: u64) -> Result<u64, Error> ", "{\n        let (binding, at) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        let dataset_at = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            &self.dataset,\n            &self.material,\n        )?;\n        let current = now()?;\n        require_clock(lower, at)?;\n        require_clock(at, dataset_at)?;\n        require_clock(dataset_at, current)?;\n        let initial = LearningIterationCoordinatorV1::new(\n            self.training_cut.request.clone(),\n            self.training_cut.owners.clone(),\n        )?;\n        let mut coordinator =\n            LearningIterationCoordinatorV1::from_snapshot(self.training_cut.clone())?;\n        let t = self.training.receipt();\n        let e = self.evaluation.receipt();\n        if binding != self.initial_binding\n            || initial.snapshot() != &self.material.initial\n            || self.training_cut.receipts.len() != 3\n            || coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)\n            || self.training_cut.receipts.last() != Some(t)\n            || !self\n                .training_cut\n                .receipts\n                .starts_with(&self.dataset.snapshot().receipts)\n            || !matches!(\n                &t.observation,\n                LearningIterationObservationV1::Training { .. }\n            )\n            || self.training_cut.request.evaluation_profile\n                != self.registration.evaluation_profile()\n            || self.evaluation.training_attestation() != self.training.attestation()\n            || t.actor_id != self.training_cut.owners.trainer\n            || t.observed_unix_seconds != self.training.attestation().issued_at\n            || e.actor_id != self.training_cut.owners.evaluator\n            || e.observed_unix_seconds > self.evaluation.attestation().issued_at\n            || t.observed_unix_seconds > current\n            || e.observed_unix_seconds > current\n        {\n            return Err(Error::Binding(\n                                                                               ,\n            ));\n        }\n        let verifier = &self.material.verifier;\n        let generator = verifier.verify(\n            LearningEvidenceRoleV1::Generator,\n            self.training.attestation(),\n            &learning_iteration_receipt_signing_bytes_v1(t)?,\n            current,\n        )?;\n        let evaluator = verifier.verify(\n            LearningEvidenceRoleV1::Evaluator,\n            self.evaluation.attestation(),\n            &learning_iteration_receipt_signing_bytes_v1(e)?,\n            current,\n        )?;\n        if generator.principal().principal_id != self.training_cut.owners.trainer\n            || evaluator.principal().principal_id != self.training_cut.owners.evaluator\n        {\n            return Err(Error::Binding(                                           ));\n        }\n        verify_signed_actor_separation(&generator, &evaluator, current)?;\n        coordinator.record(e.clone(), e.observed_unix_seconds)?;\n        self.material\n            .scope\n            .validate_snapshot(coordinator.snapshot())?;\n        if coordinator.snapshot() != self.evaluation.snapshot()\n            || self.evaluation.snapshot().receipts.len() != 4\n        {\n            return Err(Error::Binding(                                     ));\n        }\n        Ok(current)\n    }"] }, { function = "fn require_qualified(", sequence = ["&self) -> Result<(), Error> ", "{\n        if !matches!(\n            &self.evaluation.receipt().observation,\n            LearningIterationObservationV1::Evaluation {\n                disposition: LearningEvaluationDispositionV1::Qualified,\n                ..\n            }\n        ) || LearningIterationCoordinatorV1::from_snapshot(self.evaluation.snapshot().clone())?\n            .next_stage()\n            != Some(LearningIterationStageV1::Proposal)\n        {\n            return Err(Error::Ineligible);\n        }\n        Ok(())\n    }"] }, { function = "fn binding(", sequence = ["&self) -> Result<Digest32, Error> ", "{\n        let mut bytes = b                                              .to_vec();\n        for digest in [\n            self.initial_binding,\n            self.material.scope.binding(),\n            self.registration.evaluation_profile(),\n            self.material.verifier.trust_digest(),\n            self.material.verifier.scope_digest(),\n            self.material.verifier.objective_digest(),\n        ] {\n            bytes.extend_from_slice(digest.as_array());\n        }\n        let snapshot = encode_original_owner_snapshot_v1(self.evaluation.snapshot())?;\n        bytes.extend_from_slice(&(snapshot.len() as u64).to_be_bytes());\n        bytes.extend_from_slice(&snapshot);\n        for signed in self\n            .dataset\n            .attestations()\n            .iter()\n            .chain([self.training.attestation(), self.evaluation.attestation()])\n        {\n            let original = signed.signing_bytes();\n            bytes.extend_from_slice(&(original.len() as u64).to_be_bytes());\n            bytes.extend_from_slice(&original);\n            bytes.extend_from_slice(&signed.signature);\n        }\n        Ok(Digest32::of_bytes(&bytes))\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs"
++required = ["pub(super) enum Observed"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "state.execution_requested = false", "state.fenced = false", "recover_original_model(", ".execute_training(", ".execute_evaluation("]
++required_order = []
++required_function_order = [{ function = "fn observe(", sequence = ["result: Result<CellQ24ModelProposalReceiptV1, Error>) -> Result<Observed, Error> ", "{\n    match result {\n        Ok(receipt) => Ok(Observed::Completed(receipt)),\n        Err(Error::Stage(OriginalCellQ24TrainingStageErrorV1::ModelProposal(\n            CellQ24ModelProposalErrorV1::Pending,\n        ))) => Ok(Observed::Pending),\n        Err(Error::Stage(OriginalCellQ24TrainingStageErrorV1::ModelProposal(\n            CellQ24ModelProposalErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Missing),\n        ))) => Ok(Observed::Missing),\n        Err(error) => Err(error),\n    }\n}"] }, { function = "fn original_response(", sequence = ["\n        &self,\n        request: &wire::Request,\n    ) -> Result<wire::Outcome, Error> ", "{\n        let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;\n        if state.fenced {\n            return Err(Error::CommitUncertain);\n        }\n        if request.action == wire::Action::Execute && state.execution_requested {\n            return Ok(wire::Outcome::ReadbackRequired);\n        }\n        if request.action == wire::Action::Readback && state.model.is_none() {\n                                                                                \n            return Ok(wire::Outcome::ReadbackRequired);\n        }\n        let result = (|| {\n            let (original, context, before) = self.original_inputs(&mut state)?;\n            request.require_context(&context, request.nonce)?;\n            if matches!(context.require_qualified(), Err(Error::Ineligible)) {\n                return Ok(wire::Outcome::Ineligible);\n            }\n            context.require_qualified()?;\n            let current = context.authenticate(now()?)?;\n            before.require_original_model_input(\n                &context.training_cut,\n                context.training.attestation(),\n                current,\n            )?;\n            let observed = match request.action {\n                wire::Action::Execute => {\n                    if current\n                        >= context\n                            .material\n                            .initial\n                            .request\n                            .envelope\n                            .expiry_unix_seconds\n                    {\n                        return Err(Error::DeadlineExceeded);\n                    }\n                                                                               \n                                                                                 \n                    state.execution_requested = true;\n                    if self.bootstrap.cancellation.load(Ordering::Acquire) {\n                        return Err(Error::Cancelled);\n                    }\n                    let (file, witness) = state.custody.take().ok_or(Error::ReadbackRequired)?;\n                    state.model = Some(\n                        OriginalCellQ24TrainingCommandOwnerV1::create_original_model(\n                            original.as_ref(),\n                            file,\n                            witness,\n                            &context,\n                            &before,\n                        )?,\n                    );\n                    let model = state.model.as_mut().ok_or(Error::CommitUncertain)?;\n                    observe(\n                        OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(\n                            original.as_ref(),\n                            model,\n                            &context,\n                            &before,\n                        ),\n                    )?\n                }\n                wire::Action::Readback => {\n                    let model = state.model.as_mut().ok_or(Error::ReadbackRequired)?;\n                    observe(OriginalCellQ24TrainingCommandOwnerV1::read_original_model(\n                        original.as_ref(),\n                        model,\n                        &context,\n                        &before,\n                    ))?\n                }\n            };\n            let (after, material, fresh) =\n                self.current_after(&mut state, &original, &context, &before)?;\n            if observed != after {\n                return Err(Error::CommitUncertain);\n            }\n            match after {\n                Observed::Completed(receipt) => {\n                    let outcome = wire::encode_completed(&context, &receipt, material, fresh)?;\n                    let wire::Outcome::Completed { record } = &outcome else {\n                        return Err(Error::CommitUncertain);\n                    };\n                    let current = wire::decode_completed(&context, record, fresh)?;\n                    if state.retained.as_ref().is_some_and(|old| old != &current) {\n                        return Err(Error::CommitUncertain);\n                    }\n                    state.retained = Some(current);\n                    Ok(outcome)\n                }\n                Observed::Missing | Observed::Pending if state.retained.is_some() => {\n                    Err(Error::CommitUncertain)\n                }\n                Observed::Missing => Ok(wire::Outcome::Missing),\n                Observed::Pending => Ok(wire::Outcome::Pending),\n            }\n        })();\n        if result.is_err() && state.execution_requested {\n            state.fenced = true;\n        }\n        result\n    }"] }, { function = "fn current_after(", sequence = ["\n        &self,\n        state: &mut State,\n        original: &Trainer,\n        context: &Context,\n        before: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<(Observed, codex_hepta_types::Digest32, u64), Error> ", "{\n        let started = now()?;\n        let after = self.runtime.block_on(\n            state\n                .material\n                .as_ref()\n                .ok_or(Error::Unavailable)?\n                .read_current(),\n        )?;\n        if after.binding() != before.binding()\n            || after.original_evaluation() != before.original_evaluation()\n            || after.original_evaluation() != &context.evaluation\n        {\n            return Err(Error::Binding(\n                                                                ,\n            ));\n        }\n                                                                               \n                                                                            \n        let model = state.model.as_mut().ok_or(Error::ReadbackRequired)?;\n        let observed = observe(OriginalCellQ24TrainingCommandOwnerV1::read_original_model(\n            original, model, context, &after,\n        ))?;\n        let fresh = context.authenticate(started)?;\n        require_clock(started, fresh)?;\n        before.authenticate_current(fresh)?;\n        after.authenticate_current(fresh)?;\n        let input = after.require_original_model_input(\n            &context.training_cut,\n            context.training.attestation(),\n            fresh,\n        )?;\n        Ok((observed, input.material_digest(), fresh))\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"
++required = ["OriginalCellQ24TrainingCommandOwnerV1<TW, RW>"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "OriginalCellEvaluationModelMaterialClientV1", ".read_current()", ".execute_training(", ".execute_evaluation("]
++required_order = []
++required_function_order = [{ function = "fn read_original_model_training(", sequence = ["\n        &self,\n        dataset: &crate::OriginalCellQ24MaterialCommandReceiptV1,\n    ) -> Result<OriginalCellQ24TrainingCommandReceiptV1, Error> ", "{\n        if dataset.snapshot() != &self.context.dataset {\n            return Err(Error::Binding(                             ));\n        }\n        let completed =\n            SourceBoundCellQ24TrainingStageV1::readback(&self.stage, &self.context.dataset).await?;\n        Ok(super::super::wire::authenticate_receipt(\n            &self.context,\n            completed.receipt,\n            completed.attestation,\n            super::super::now()?,\n        )?)\n    }"] }, { function = "fn create_original_model(", sequence = ["\n        &self,\n        file: File,\n        witness: FileAnchorWitnessStore,\n        context: &Context,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>, Error> ", "{\n        self.require_model_context(context)?;\n        Ok(\n            SourceBoundCellQ24TrainingStageV1::create_model_from_current_evaluation(\n                &self.stage,\n                file,\n                witness,\n                &context.training_cut,\n                context.training.attestation(),\n                material,\n            )?,\n        )\n    }"] }, { function = "fn recover_original_model(", sequence = ["\n        &self,\n        file: File,\n        witness: FileAnchorWitnessStore,\n        context: &Context,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>, Error> ", "{\n        self.require_model_context(context)?;\n        Ok(\n            SourceBoundCellQ24TrainingStageV1::recover_model_from_current_evaluation(\n                &self.stage,\n                file,\n                witness,\n                &context.training_cut,\n                context.training.attestation(),\n                material,\n            )?,\n        )\n    }"] }, { function = "fn commit_original_model(", sequence = ["\n        &self,\n        model: &mut CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>,\n        context: &Context,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<CellQ24ModelProposalReceiptV1, Error> ", "{\n        self.require_model_context(context)?;\n        Ok(\n            SourceBoundCellQ24TrainingStageV1::commit_model_from_current_evaluation(\n                &self.stage,\n                model,\n                &context.training_cut,\n                context.training.attestation(),\n                material,\n            )?,\n        )\n    }"] }, { function = "fn read_original_model(", sequence = ["\n        &self,\n        model: &mut CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>,\n        context: &Context,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<CellQ24ModelProposalReceiptV1, Error> ", "{\n        self.require_model_context(context)?;\n        Ok(\n            SourceBoundCellQ24TrainingStageV1::read_model_from_current_evaluation(\n                &self.stage,\n                model,\n                &context.training_cut,\n                context.training.attestation(),\n                material,\n            )?,\n        )\n    }"] }, { function = "fn require_model_context(", sequence = ["&self, context: &Context) -> Result<(), Error> ", "{\n        if self.context.dataset != *context.dataset.snapshot()\n            || self.context.scope != context.material.scope\n            || self.context.verifier.trust_digest() != context.material.verifier.trust_digest()\n            || self.context.verifier.scope_digest() != context.material.verifier.scope_digest()\n            || self.context.verifier.objective_digest()\n                != context.material.verifier.objective_digest()\n        {\n            return Err(Error::Binding(                                      ));\n        }\n        Ok(())\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs"
++required = ["pub(in super::super) fn validate_current_material"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "OriginalCellEvaluationModelMaterialClientV1", ".read_current()", "SignedLearningEvidenceV1 {", ".execute_training(", ".execute_evaluation("]
++required_order = [["fn validate_current_material<T: AnchorWitnessStore>(\n    trainer: &mut CellQ24TrainingOwnerV1<T>,\n    dataset_cut: &LearningIterationSnapshotV1,\n    scope: Digest32,\n    owner_binding: Digest32,\n    training_cut: &LearningIterationSnapshotV1,\n    training_attestation: &SignedLearningEvidenceV1,\n    material: &OriginalCellEvaluationModelMaterialV1,\n    now: u64,\n) -> Result<Admission, Error> ", "{\n    let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(training_cut.clone())?;\n    let original = CellQ24TrainingOwnerV1::read_learning_observation(trainer, dataset_cut)?;\n    let training = training_cut\n        .receipts\n        .last()\n        .ok_or(Error::Binding(                           ))?;\n    if training_cut.request != dataset_cut.request\n        || training_cut.owners != dataset_cut.owners\n        || training_cut.receipts.len() != dataset_cut.receipts.len() + 1\n        || !training_cut.receipts.starts_with(&dataset_cut.receipts)\n        || coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)\n        || original.scope_binding() != scope\n        || original_binding(dataset_cut, &original) != owner_binding\n        || original.iteration_head() != training.predecessor\n        || original.evidence_digest() != training.evidence_digest\n        || original.observation() != &training.observation\n    {\n        return Err(Error::Binding(                                   ));\n    }\n                                                                               \n                                                                                \n                                                                       \n    let current = std::time::SystemTime::now()\n        .duration_since(std::time::UNIX_EPOCH)\n        .map_err(|_| Error::Binding(                                        ))?\n        .as_secs();\n    if current < now {\n        return Err(Error::Binding(                                      ));\n    }\n    let input = material\n        .require_original_model_input(training_cut, training_attestation, current)\n        .map_err(|error| Error::OriginalEvaluationMaterial(Box::new(error)))?;\n    let candidate = coordinator\n        .candidate()\n        .ok_or(Error::Binding(                   ))?\n        .digest()\n        .map_err(LearningIterationError::from)?;\n    if input.candidate() != candidate\n        || !matches!(&input.evaluation().observation,\n            LearningIterationObservationV1::Evaluation {\n                candidate_bundle, evaluation_profile,\n                disposition: LearningEvaluationDispositionV1::Qualified,\n            } if *candidate_bundle == candidate\n                && *evaluation_profile == training_cut.request.evaluation_profile)\n    {\n        return Err(Error::Binding(\n                                                          ,\n        ));\n    }\n    coordinator.record(\n        input.evaluation().clone(),\n        input.evaluation().observed_unix_seconds,\n    )?;\n    Ok(Admission {\n        cut: coordinator.snapshot().clone(),\n        candidate,\n        material: input.material_digest(),\n    })\n}"]]
++required_function_order = []
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs"
++required = ["impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W>"]
++forbidden = ["File::open", "File::create", "OpenOptions", "UnixStream::connect", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "RootResidentLearningEffectGateV3", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "permit_all", "if false", "unwrap_or", "OriginalCellEvaluationModelMaterialClientV1", ".read_current()", ".execute_training(", ".execute_evaluation(", ".fit_or_readback(", "self.fenced = false"]
++required_order = [["fn create_from_current_material<T: AnchorWitnessStore>(\n        file: File,\n        witness: W,\n        trainer: &mut CellQ24TrainingOwnerV1<T>,\n        dataset: LearningIterationSnapshotV1,\n        training_cut: &LearningIterationSnapshotV1,\n        training_attestation: &SignedLearningEvidenceV1,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<Self, Error> ", "{\n        let started = current_time()?;\n        let (scope, binding) = admission::owner_binding(trainer, &dataset)?;\n        if witness.current()?.is_some() {\n            return Err(Error::Binding(                                      ));\n        }\n        admission::validate_current_material(\n            trainer,\n            &dataset,\n            scope,\n            binding,\n            training_cut,\n            training_attestation,\n            material,\n            started,\n        )?;\n        let fresh = current_time()?;\n        require_material(material, started, fresh)?;\n        if fresh >= dataset.request.envelope.expiry_unix_seconds {\n            return Err(Error::Binding(                            ));\n        }\n                                                                               \n                                                                              \n        Self::create_empty_original(file, witness, dataset, scope, binding)\n    }"], ["fn recover_from_current_material<T: AnchorWitnessStore>(\n        file: File,\n        witness: W,\n        trainer: &mut CellQ24TrainingOwnerV1<T>,\n        dataset: LearningIterationSnapshotV1,\n        training_cut: &LearningIterationSnapshotV1,\n        training_attestation: &SignedLearningEvidenceV1,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<Self, Error> ", "{\n        let started = current_time()?;\n        let (scope, binding) = admission::owner_binding(trainer, &dataset)?;\n        let minimum = witness\n            .current()?\n            .ok_or(Error::Binding(                           ))?;\n        admission::validate_current_material(\n            trainer,\n            &dataset,\n            scope,\n            binding,\n            training_cut,\n            training_attestation,\n            material,\n            started,\n        )?;\n        require_material(material, started, current_time()?)?;\n        Self::recover_existing_original(file, witness, dataset, scope, binding, minimum)\n    }"], ["fn commit_current_material_or_readback<T: AnchorWitnessStore>(\n        &mut self,\n        trainer: &mut CellQ24TrainingOwnerV1<T>,\n        training_cut: &LearningIterationSnapshotV1,\n        training_attestation: &SignedLearningEvidenceV1,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<CellQ24ModelProposalReceiptV1, Error> ", "{\n        let started = self.now()?;\n        let admission = self.admit_current_material(\n            trainer,\n            training_cut,\n            training_attestation,\n            material,\n            started,\n        )?;\n        match <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(\n            &mut self.journal,\n            &admission.key(self.binding),\n        ) {\n            Ok(state) => {\n                let receipt = self.decode_current(&admission, state)?;\n                require_material(material, started, self.now()?)?;\n                return Ok(receipt);\n            }\n            Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {}\n            Err(error) => return Err(error.into()),\n        }\n        self.require_current()?;\n        let fresh = self.now()?;\n        require_material(material, started, fresh)?;\n        let payload = admission.encode(fresh)?;\n        let receipt = self.complete_admitted(&admission, &admission.key(self.binding), &payload)?;\n                                                                             \n                                                                   \n        if require_material(material, started, self.now()?).is_err() {\n            self.fenced = true;\n            return Err(Error::CommitUncertain);\n        }\n        Ok(receipt)\n    }"], ["fn read_current_material<T: AnchorWitnessStore>(\n        &mut self,\n        trainer: &mut CellQ24TrainingOwnerV1<T>,\n        training_cut: &LearningIterationSnapshotV1,\n        training_attestation: &SignedLearningEvidenceV1,\n        material: &OriginalCellEvaluationModelMaterialV1,\n    ) -> Result<CellQ24ModelProposalReceiptV1, Error> ", "{\n        let started = self.now()?;\n        let admission = self.admit_current_material(\n            trainer,\n            training_cut,\n            training_attestation,\n            material,\n            started,\n        )?;\n        let state = <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(\n            &mut self.journal,\n            &admission.key(self.binding),\n        )?;\n        let receipt = self.decode_current(&admission, state)?;\n        require_material(material, started, self.now()?)?;\n        Ok(receipt)\n    }"], ["fn admit_current_material<T: AnchorWitnessStore>(\n        &mut self,\n        trainer: &mut CellQ24TrainingOwnerV1<T>,\n        training_cut: &LearningIterationSnapshotV1,\n        training_attestation: &SignedLearningEvidenceV1,\n        material: &OriginalCellEvaluationModelMaterialV1,\n        started: u64,\n    ) -> Result<Admission, Error> ", "{\n        self.require_current()?;\n        let admission = admission::validate_current_material(\n            trainer,\n            &self.dataset_cut,\n            self.scope,\n            self.binding,\n            training_cut,\n            training_attestation,\n            material,\n            started,\n        )?;\n        self.require_current()?;\n        require_material(material, started, self.now()?)?;\n        Ok(admission)\n    }"]]
++required_function_order = [{ function = "fn current_time(", sequence = [") -> Result<u64, Error> ", "{\n    SystemTime::now()\n        .duration_since(UNIX_EPOCH)\n        .map(|value| value.as_secs())\n        .map_err(|_| Error::Binding(                                        ))\n}"] }, { function = "fn require_material(", sequence = ["\n    material: &OriginalCellEvaluationModelMaterialV1,\n    started: u64,\n    fresh: u64,\n) -> Result<(), Error> ", "{\n    if fresh < started {\n        return Err(Error::Binding(                                      ));\n    }\n    material\n        .authenticate_current(fresh)\n        .map_err(|error| Error::OriginalEvaluationMaterial(Box::new(error)))\n}"] }]
++
++# Original Evaluator host and material-export callers; exact existing behavior.
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
++required = []
++forbidden = ["SigningKey", "File::open", "File::create", "OpenOptions", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "SignedLearningEvidenceV1 {", "OriginalCellEvaluationReceiptOwnerV1::create(", "OriginalCellEvaluationReceiptOwnerV1::recover(", "attest_original_completion(", "execute_evaluation(", "commit_once(", "with_root_learning_stage_owners(", "RootResidentLearningEffectGateV3", "self.evaluator =", "self.panel =", "panel.primary =", "panel.retention.clear(", "permit_all", "if false", "unwrap_or", "FnOnce", "FnMut"]
++required_function_order = [{ function = "fn into_host_from_original_training_readback(", sequence = ["\n        self,\n        mut panel: Panel,\n        trainer: OriginalCellQ24TrainingReadbackConnectionV1,\n        dataset: OriginalCellQ24MaterialCommandReceiptV1,\n        training: OriginalCellQ24TrainingCommandReceiptV1,\n    ) -> Result<OriginalCellEvaluationHostV1, Error> ", "{\n        let mut actual = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())\n            .map_err(|_| Error::Binding(                                            ))?;\n        actual\n            .record(\n                training.receipt().clone(),\n                training.receipt().observed_unix_seconds,\n            )\n            .map_err(|_| Error::Binding(                                             ))?;\n        let (receipt, _) = OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self);\n        if panel.fenced || receipt.training != *actual.snapshot() {\n            return Err(Error::Binding(                                      ));\n        }\n        for member in std::iter::once(&panel.primary).chain(&panel.retention) {\n            let original = &member.qualification.config;\n            if original.training != *actual.snapshot()\n                || original.training_evidence != *training.attestation()\n                || original.scope != receipt.scope\n                || original.verifier.trust_digest() != receipt.signing.verifier.trust_digest()\n                || original.verifier.scope_digest() != receipt.signing.verifier.scope_digest()\n                || original.verifier.objective_digest()\n                    != receipt.signing.verifier.objective_digest()\n            {\n                return Err(Error::Binding(\n                                                                        ,\n                ));\n            }\n        }\n        let trainer = Arc::new(\n            OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(\n                trainer, dataset, training,\n            )\n            .map_err(|_| Error::Binding(                                                 ))?,\n        );\n                                                                              \n                                                                                    \n        panel.primary.trainer = Arc::clone(&trainer);\n        for member in &mut panel.retention {\n            member.trainer = Arc::clone(&trainer);\n        }\n        OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)\n    }"] }]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
++required = []
++forbidden = ["SigningKey", "File::open", "File::create", "OpenOptions", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "SignedLearningEvidenceV1 {", "OriginalCellEvaluationReceiptOwnerV1::create(", "OriginalCellEvaluationReceiptOwnerV1::recover(", "attest_original_completion(", "execute_evaluation(", "commit_once(", "with_root_learning_stage_owners(", "RootResidentLearningEffectGateV3", "self.evaluator =", "self.panel =", "panel.primary =", "panel.retention.clear(", "permit_all", "if false", "unwrap_or", "FnOnce", "FnMut"]
++required_function_order = [{ function = "fn original_model_material(", sequence = ["\n        &mut self,\n        context: &Context,\n    ) -> Result<Vec<u8>, Error> ", "{\n        let started_at = self.current_time()?;\n        let evaluation = self\n            .completion(context, super::super::wire::Action::Readback)\n            .await?;\n        let observed = self.panel.retained.clone().ok_or(Error::CommitUncertain)?;\n        let mut members = Vec::with_capacity(observed.retention().len() + 1);\n        members.push(member(\n            &self.panel.primary,\n            observed.primary(),\n            self.panel.bindings[0],\n            started_at,\n        )?);\n        for ((owner, observed), binding) in self\n            .panel\n            .retention\n            .iter()\n            .zip(observed.retention())\n            .zip(self.panel.bindings.iter().skip(1))\n        {\n            members.push(member(owner, observed, *binding, started_at)?);\n        }\n        let body = Body {\n            context: super::wire::binding(context, &evaluation, started_at)?,\n            panel: observed.binding(),\n            snapshot: encode_original_owner_snapshot_v1(evaluation.snapshot())?,\n            evaluation: learning_owner_evidence::encode(\n                &learning_iteration_receipt_signing_bytes_v1(evaluation.receipt())?,\n                evaluation.attestation(),\n            )?,\n            members,\n        };\n        let bytes = body.encode()?;\n                                                                             \n                                                                               \n                                                                              \n        let after = self.read_panel().await?;\n        if after != observed {\n            self.fenced = true;\n            return Err(Error::CommitUncertain);\n        }\n        OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(\n            &mut self.evaluator,\n            evaluation.receipt(),\n            evaluation.attestation(),\n        )?;\n        let current = self.current_time()?;\n        require_clock(started_at, current)?;\n        self.authenticate_panel(&after, current)?;\n                                                                              \n                                                                               \n        super::verify::material(context, &evaluation, &bytes, current)?;\n        Ok(bytes)\n    }"] }, { function = "fn member(", sequence = ["\n    owner: &OriginalCellEvaluationPanelMemberOwnersV1<\n        FileAnchorWitnessStore,\n        FileAnchorWitnessStore,\n        FileAnchorWitnessStore,\n        FileAnchorWitnessStore,\n    >,\n    observed: &OriginalCellEvaluationPanelMemberReadbackV1,\n    binding: Digest32,\n    current: u64,\n) -> Result<Member, Error> ", "{\n    let config = &owner.qualification.config;\n    let projection = CellEvaluationRunnerV1::original_model_commitments(\n        &owner.runner,\n        observed.evaluation(),\n        observed.qualification(),\n        &CellEvaluationQualificationRequestV1 {\n            context: &config.context,\n            evidence: &config.product_evidence,\n            timing: ProductTimingEvidenceV1::Qualification,\n            verifier: &config.verifier,\n            now: current,\n        },\n    )\n    .map_err(crate::OriginalCellEvaluationQualificationErrorV1::from)?;\n    let (cohort, freeze_payload, freeze_evidence) =\n        OriginalCircuitEvaluationCohortReadbackV1::original_model_commitment(\n            &owner.cohort,\n            &observed.cohort,\n        )\n        .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?;\n    let execution: &OriginalProductEvaluationExecutionEvidenceV1 = observed.execution_evidence();\n    let snapshots = [\n        owner\n            .candidate\n            .snapshot()\n            .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?,\n        owner\n            .fixed_expert\n            .snapshot()\n            .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?,\n    ];\n    let record = observed.qualification().comparison();\n    for ((snapshot, arm), scope) in snapshots\n        .iter()\n        .zip([&record.candidate, &record.fixed_expert])\n        .zip(&observed.scopes)\n    {\n        if snapshot\n            .digest()\n            .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?\n            != arm.snapshot_digest\n            || snapshot.manifest_digest\n                != arm\n                    .manifest\n                    .digest()\n                    .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?\n            || &snapshot.scope != scope\n        {\n            return Err(Error::Binding(                                      ));\n        }\n    }\n    Ok(Member {\n        binding,\n        execution_namespace: config.execution_namespace,\n        qualification_namespace: config.qualification_namespace,\n        metrics: u32::try_from(observed.prepared.bundle.metrics.len())\n            .map_err(|_| Error::Binding(                       ))?,\n        record: serde_json::to_vec(observed.qualification().comparison())?,\n        snapshots: serde_json::to_vec(&snapshots)?,\n        holdout: projection.holdout().to_vec(),\n        plan: projection.plan().to_vec(),\n        request: projection.request().to_vec(),\n        decision: projection.decision().to_vec(),\n        qualification: projection.qualification().to_vec(),\n        estimand: projection.estimand().to_vec(),\n        roles: projection.roles().to_vec(),\n        generator: learning_owner_evidence::encode(\n            config\n                .plan\n                .product_plan()\n                .frozen_plan\n                .plan_digest\n                .as_array(),\n            &observed.product_evidence().generator_plan,\n        )?,\n        evaluator: learning_owner_evidence::encode(\n            projection.evaluator_payload(),\n            &observed.product_evidence().evaluator_bundle,\n        )?,\n        execution: learning_owner_evidence::encode(\n            OriginalProductEvaluationExecutionEvidenceV1::signing_payload(execution),\n            execution.attestation(),\n        )?,\n        execution_record: OriginalProductEvaluationExecutionEvidenceV1::original_record(execution)\n            .to_vec(),\n        cohort,\n        freeze: learning_owner_evidence::encode(&freeze_payload, &freeze_evidence)?,\n    })\n}"] }]
+--- a/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py
++++ b/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py
+@@ -31,9 +31,9 @@
+ AUTH = AGENT + "authority_host_learning_resident_auth.rs"
+ EXPECTED = {
+     "learning_original_evaluation_host_consume": (),
+-    "learning_original_evaluation_host_profile": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
+-    "learning_original_evaluation_host_receipt_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
+-    "learning_original_evaluation_host_constructor": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",),
++    "learning_original_evaluation_host_profile": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
++    "learning_original_evaluation_host_receipt_current": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs'),
++    "learning_original_evaluation_host_constructor": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
+     "learning_original_evaluation_host_serve": (),
+     "learning_original_evaluation_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+     "learning_original_evaluation_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_evaluator_readback_source_closure.py
+@@ -0,0 +1,185 @@
++"""Pin the original Evaluator host composition and readonly material export.
++
++These checks mutate source strings in isolated temporary directories and call
++the unchanged protected-file verifier. They neither construct opaque evidence
++nor execute B, sign an Evaluation, or establish an ordinary learning loop.
++"""
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "original_evaluator_readback_source_proof", ROOT / "scripts/verify_hepta_callers.py"
++)
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++HOST = AGENT + "neuron_cell_evaluation_host_training_readback.rs"
++EXPORT = AGENT + "neuron_cell_evaluation_model_material_export.rs"
++HOST_FUNCTION = "fn into_host_from_original_training_readback("
++EXPORT_FUNCTION = "fn original_model_material("
++
++
++class OriginalEvaluatorReadbackSourceClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++        cls.rows = {}
++        for path in (HOST, EXPORT):
++            rows = [row for row in manifest["protected_file"] if row["path"] == path]
++            if len(rows) != 1:
++                raise AssertionError((path, "one audited Evaluator source row required"))
++            cls.rows[path] = rows
++        PROOF._verify_protected_files(
++            ROOT, {"protected_file": [cls.rows[path][0] for path in (HOST, EXPORT)]}
++        )
++
++    def assert_rejected(self, path, changed):
++        self.assertNotEqual(changed, (ROOT / path).read_text())
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(changed)
++            with self.assertRaises(PROOF.VerificationFailure):
++                PROOF._verify_protected_files(root, {"protected_file": self.rows[path]})
++
++    def function(self, path, function):
++        original = (ROOT / path).read_text()
++        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(original))
++        self.assertEqual(code.count(function), 1)
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        return original, start, end + 1
++
++    def mutate(self, path, function, marker, replacement=""):
++        original, start, end = self.function(path, function)
++        body = original[start:end]
++        self.assertEqual(body.count(marker), 1, (path, function, marker))
++        changed = body.replace(marker, replacement, 1)
++        self.assert_rejected(path, original[:start] + changed + original[end:])
++
++    def test_consuming_host_requires_actual_training_and_original_panel_history(self):
++        for marker, replacement in (
++            ("        self,\n", "        &self,\n"),
++            ("training.receipt().observed_unix_seconds", "0"),
++            ("panel.fenced || receipt.training != *actual.snapshot()", "false"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(HOST, HOST_FUNCTION, marker, replacement)
++
++    def test_every_member_keeps_the_full_training_attestation_scope_and_original_trust(self):
++        for marker, replacement in (
++            (".chain(&panel.retention)", ""),
++            ("original.training != *actual.snapshot()", "false"),
++            ("original.training_evidence != *training.attestation()", "false"),
++            ("original.scope != receipt.scope", "false"),
++            ("original.verifier.trust_digest() != receipt.signing.verifier.trust_digest()", "false"),
++            ("original.verifier.scope_digest() != receipt.signing.verifier.scope_digest()", "false"),
++            ("original.verifier.objective_digest()\n                    != receipt.signing.verifier.objective_digest()", "false"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(HOST, HOST_FUNCTION, marker, replacement)
++
++    def test_same_bound_trainer_arc_replaces_only_each_members_readonly_transport(self):
++        self.mutate(
++            HOST, HOST_FUNCTION,
++            "panel.primary.trainer = Arc::clone(&trainer);",
++            "panel.primary.trainer = Arc::clone(&panel.primary.trainer);",
++        )
++        self.mutate(
++            HOST, HOST_FUNCTION,
++            "member.trainer = Arc::clone(&trainer);",
++            "member.trainer = Arc::clone(&member.trainer);",
++        )
++        original = (ROOT / HOST).read_text()
++        for marker in (
++            "OriginalCellEvaluationReceiptOwnerV1::recover()",
++            "panel.retention.clear()",
++            "self.evaluator = other",
++        ):
++            with self.subTest(upgrade=marker):
++                self.assert_rejected(HOST, original + "\nfn upgrade() { " + marker + "; }\n")
++
++    def test_material_export_never_promotes_readback_to_execute(self):
++        self.mutate(
++            EXPORT, EXPORT_FUNCTION,
++            "super::super::wire::Action::Readback",
++            "super::super::wire::Action::Execute",
++        )
++        self.mutate(
++            EXPORT, EXPORT_FUNCTION,
++            "let after = self.read_panel().await?;",
++            "let after = observed.clone();",
++        )
++        self.mutate(EXPORT, EXPORT_FUNCTION, "if after != observed", "if after == observed")
++        self.mutate(EXPORT, EXPORT_FUNCTION, "self.fenced = true;", "self.fenced = false;")
++
++    def test_final_original_receipt_is_read_after_all_panel_io(self):
++        original, start, end = self.function(EXPORT, EXPORT_FUNCTION)
++        body = original[start:end]
++        receipt_read = (
++            "        OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(\n"
++            "            &mut self.evaluator,\n"
++            "            evaluation.receipt(),\n"
++            "            evaluation.attestation(),\n"
++            "        )?;"
++        )
++        self.assertEqual(body.count(receipt_read), 1)
++        self.mutate(EXPORT, EXPORT_FUNCTION, receipt_read)
++        anchor = "        let after = self.read_panel().await?;"
++        self.assertEqual(body.count(anchor), 1)
++        self.assertLess(body.index(anchor), body.index(receipt_read))
++        reordered = body.replace(receipt_read, "", 1).replace(
++            anchor, receipt_read + "\n" + anchor, 1
++        )
++        self.assert_rejected(EXPORT, original[:start] + reordered + original[end:])
++
++    def test_export_authenticates_fresh_clock_panel_and_complete_material_after_io(self):
++        for marker in (
++            "require_clock(started_at, current)?;",
++            "self.authenticate_panel(&after, current)?;",
++            "super::verify::material(context, &evaluation, &bytes, current)?;",
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(EXPORT, EXPORT_FUNCTION, marker)
++        original = (ROOT / EXPORT).read_text()
++        marker = "self.authenticate_panel(&after, current)?;"
++        changed = original.replace(marker, "", 1)
++        self.assert_rejected(
++            EXPORT, changed + "\nfn unrelated_authentication() { " + marker + " }\n"
++        )
++
++    def test_member_projection_matches_original_signed_cell_manifests_and_scopes(self):
++        for marker, replacement in (
++            ("!= arm.snapshot_digest", "== arm.snapshot_digest"),
++            ("|| &snapshot.scope != scope", "|| &snapshot.scope == scope"),
++            ("now: current,", "now: 0,"),
++            ("qualification_namespace: config.qualification_namespace,", "qualification_namespace: config.execution_namespace,"),
++            ("execution.attestation(),", "&config.product_evidence.evaluator_bundle,"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(EXPORT, "fn member(", marker, replacement)
++
++    def test_export_has_no_new_claim_signing_key_or_reconnected_owner(self):
++        original = (ROOT / EXPORT).read_text()
++        for marker in (
++            "SigningKey::generate()",
++            "owner.attest_original_completion()",
++            "owner.commit_once()",
++            'std::os::unix::net::UnixStream::connect("replacement")',
++        ):
++            with self.subTest(marker=marker):
++                self.assert_rejected(EXPORT, original + "\nfn unrelated_effect() { " + marker + "; }\n")
++
++
++if __name__ == "__main__":
++    unittest.main()
++
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_model_host_source_closure.py
+@@ -0,0 +1,319 @@
++"""Protect the audited original Model host and its five direct dependencies.
++
++Fresh Execute remains an original effect; deployment recovery remains explicit.
++The source checks do not mint opaque evidence or stand in for Rust execution.
++Six generic functions use the original file-order fallback, whose uniqueness
++and nested-definition guarantees are weaker than function-scoped verification.
++Three masked, safety-relevant literals are checked at their actual raw spans.
++"""
++import importlib.util
++from pathlib import Path
++import re
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "original_model_host_source_proof", ROOT / "scripts/verify_hepta_callers.py"
++)
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++HOST = AGENT + "cell_q24_model_command_host.rs"
++CONTEXT = AGENT + "cell_q24_model_command_context.rs"
++EFFECT = AGENT + "cell_q24_model_command_effect.rs"
++LANE = AGENT + "cell_q24_model_command_lane.rs"
++ADMISSION = AGENT + "cell_q24_model_current_admission.rs"
++OWNER = AGENT + "cell_q24_model_current_owner.rs"
++PATHS = (HOST, CONTEXT, EFFECT, LANE, ADMISSION, OWNER)
++DOMAIN = r'b"hepta.agentd.original-q24-model-command.v1\0"'
++
++
++class OriginalModelHostSourceClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++        cls.rows = {}
++        for path in PATHS:
++            rows = [row for row in manifest["protected_file"] if row["path"] == path]
++            if len(rows) != 1:
++                raise AssertionError((path, "one audited Model protected row required"))
++            cls.rows[path] = rows
++        PROOF._verify_protected_files(
++            ROOT, {"protected_file": [cls.rows[path][0] for path in PATHS]}
++        )
++
++    def assert_rejected(self, path, changed):
++        self.assertNotEqual(changed, (ROOT / path).read_text())
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(changed)
++            with self.assertRaises(PROOF.VerificationFailure):
++                PROOF._verify_protected_files(root, {"protected_file": self.rows[path]})
++
++    def function(self, path, function):
++        original = (ROOT / path).read_text()
++        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(original))
++        self.assertEqual(code.count(function), 1, (path, function))
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        return original, start, end + 1
++
++    def mutate(self, path, function, marker, replacement=""):
++        original, start, end = self.function(path, function)
++        body = original[start:end]
++        self.assertEqual(body.count(marker), 1, (path, function, marker))
++        changed = body.replace(marker, replacement, 1)
++        self.assert_rejected(path, original[:start] + changed + original[end:])
++
++    def test_host_preserves_fresh_recovered_origins_and_shared_once(self):
++        self.mutate(
++            HOST, "fn from_original_bootstrap(",
++            "if !matches!(bootstrap.origin, BootstrapOrigin::Fresh)",
++            "if matches!(bootstrap.origin, BootstrapOrigin::Fresh)",
++        )
++        self.mutate(HOST, "fn recover_original_bootstrap(", "Origin::Recovered", "Origin::Fresh")
++        for marker, replacement in (
++            ("/*new*/ true", "/*new*/ false"),
++            ("execution_requested: matches!(origin, Origin::Recovered)", "execution_requested: false"),
++            ("config.initial.request.evaluation_profile != registration.evaluation_profile()", "false"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(HOST, "fn bind(", marker, replacement)
++        for marker in ("model_host_bound.store(false, Ordering::Release)", "state.fenced = false"):
++            with self.subTest(reset=marker):
++                self.assert_rejected(HOST, (ROOT / HOST).read_text() + "\nfn reset() { " + marker + "; }\n")
++
++    def test_host_reads_actual_dataset_training_and_current_evaluator_before_retaining(self):
++        for marker, replacement in (
++            ("&self.bootstrap.dataset", "&other_dataset"),
++            ("OriginalCellQ24TrainingCommandOwnerV1::read_original_model_training", "OriginalCellQ24TrainingCommandOwnerV1::read_other_training"),
++            ("retained.binding()? != context.binding()?", "retained.binding()? == context.binding()?"),
++            ("let fresh = context.authenticate(started)?;", "let fresh = started;"),
++            ("material.authenticate_current(fresh)?;", ""),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(HOST, "fn original_inputs(", marker, replacement)
++        self.mutate(HOST, "fn recover_deployment(", "context.require_qualified()?;")
++        self.mutate(
++            HOST, "fn recover_deployment(",
++            "OriginalCellQ24TrainingCommandOwnerV1::recover_original_model",
++            "OriginalCellQ24TrainingCommandOwnerV1::create_original_model",
++        )
++
++    def test_context_preserves_actual_training_extension_and_complete_original_signatures(self):
++        self.mutate(CONTEXT, "fn from_original(", "dataset.snapshot().receipts.len() != 2", "false")
++        self.mutate(CONTEXT, "fn from_original(", "original.authenticate(started)?;")
++        for marker, replacement in (
++            ("binding != self.initial_binding", "false"),
++            ("self.evaluation.training_attestation() != self.training.attestation()", "false"),
++            ("LearningEvidenceRoleV1::Generator,", "LearningEvidenceRoleV1::Evaluator,"),
++            ("verify_signed_actor_separation(&generator, &evaluator, current)?;", ""),
++            ("require_clock(dataset_at, current)?;", ""),
++            ("coordinator.snapshot() != self.evaluation.snapshot()", "false"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(CONTEXT, "fn authenticate(", marker, replacement)
++        self.mutate(
++            CONTEXT, "fn require_qualified(",
++            "LearningEvaluationDispositionV1::Qualified", "LearningEvaluationDispositionV1::NoUpdate",
++        )
++        for marker in (
++            "self.material.verifier.trust_digest(),",
++            "self.material.verifier.scope_digest(),",
++            "self.material.verifier.objective_digest(),",
++        ):
++            with self.subTest(binding=marker):
++                self.mutate(CONTEXT, "fn binding(", marker)
++
++    def test_effect_preserves_incomplete_outcomes_once_and_readback_without_commit(self):
++        self.mutate(EFFECT, "fn observe(", "Ok(Observed::Pending)", "Ok(Observed::Missing)")
++        for marker, replacement in (
++            ("if state.fenced {", "if !state.fenced {"),
++            ("request.action == wire::Action::Execute && state.execution_requested", "false"),
++            ("request.action == wire::Action::Readback && state.model.is_none()", "false"),
++            ("state.execution_requested = true;", "state.execution_requested = false;"),
++            ("if self.bootstrap.cancellation.load(Ordering::Acquire)", "if !self.bootstrap.cancellation.load(Ordering::Acquire)"),
++            ("context.require_qualified()?;", ""),
++            ("if observed != after", "if observed == after"),
++            ("state.fenced = true;", "state.fenced = false;"),
++            ("Observed::Missing => Ok(wire::Outcome::Missing)", "Observed::Missing => Ok(wire::Outcome::Pending)"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(EFFECT, "fn original_response(", marker, replacement)
++        self.mutate(
++            EFFECT, "fn original_response(",
++            "observe(OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
++            "observe(OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(",
++        )
++
++    def test_after_read_reenters_only_original_lane_then_authenticates_both_materials(self):
++        for marker, replacement in (
++            ("after.binding() != before.binding()", "false"),
++            ("after.original_evaluation() != before.original_evaluation()", "false"),
++            ("after.original_evaluation() != &context.evaluation", "false"),
++            ("before.authenticate_current(fresh)?;", ""),
++            ("after.authenticate_current(fresh)?;", ""),
++            ("require_clock(started, fresh)?;", ""),
++            ("OriginalCellQ24TrainingCommandOwnerV1::read_original_model(", "OriginalCellQ24TrainingCommandOwnerV1::commit_original_model("),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(EFFECT, "fn current_after(", marker, replacement)
++
++    def test_original_lane_keeps_actual_context_and_purpose(self):
++        self.mutate(
++            LANE, "fn read_original_model_training(",
++            "dataset.snapshot() != &self.context.dataset", "false",
++        )
++        for function in (
++            "fn create_original_model(", "fn recover_original_model(",
++            "fn commit_original_model(", "fn read_original_model(",
++        ):
++            with self.subTest(function=function):
++                self.mutate(LANE, function, "self.require_model_context(context)?;")
++        self.mutate(
++            LANE, "fn read_original_model(",
++            "SourceBoundCellQ24TrainingStageV1::read_model_from_current_evaluation(",
++            "SourceBoundCellQ24TrainingStageV1::commit_model_from_current_evaluation(",
++        )
++        self.mutate(
++            LANE, "fn require_model_context(",
++            "self.context.verifier.objective_digest()\n                != context.material.verifier.objective_digest()",
++            "false",
++        )
++        for path in (LANE, ADMISSION, OWNER):
++            with self.subTest(callback=path):
++                self.assert_rejected(path, (ROOT / path).read_text() + "\nfn callback() { material.read_current(); }\n")
++
++    def test_admission_requires_the_actual_candidate_qualified_material_and_current_time(self):
++        for marker, replacement in (
++            ("training_cut.request != dataset_cut.request", "false"),
++            ("original_binding(dataset_cut, &original) != owner_binding", "false"),
++            ("if current < now", "if current > now"),
++            (".require_original_model_input(training_cut, training_attestation, current)", ".require_original_model_input(training_cut, training_attestation, now)"),
++            ("input.candidate() != candidate", "false"),
++            ("LearningEvaluationDispositionV1::Qualified", "LearningEvaluationDispositionV1::NoUpdate"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(ADMISSION, "fn validate_current_material<", marker, replacement)
++
++    def test_model_creation_and_explicit_recovery_preserve_original_witness_and_fresh_auth(self):
++        self.mutate(OWNER, "fn create_from_current_material<", "witness.current()?.is_some()", "witness.current()?.is_none()")
++        self.mutate(OWNER, "fn create_from_current_material<", "require_material(material, started, fresh)?;")
++        self.mutate(
++            OWNER, "fn create_from_current_material<",
++            "fresh >= dataset.request.envelope.expiry_unix_seconds",
++            "fresh > dataset.request.envelope.expiry_unix_seconds",
++        )
++        self.mutate(OWNER, "fn recover_from_current_material<", "require_material(material, started, current_time()?)?;")
++        self.mutate(OWNER, "fn recover_from_current_material<", "Self::recover_existing_original", "Self::create_empty_original")
++
++    def test_model_commit_readback_and_revalidation_cannot_silently_reset_uncertainty(self):
++        for marker, replacement in (
++            ("self.require_current()?;", ""),
++            ("require_material(material, started, fresh)?;", ""),
++            ("self.fenced = true;", "self.fenced = false;"),
++            ("return Err(Error::CommitUncertain);", "return Ok(receipt);"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(OWNER, "fn commit_current_material_or_readback<", marker, replacement)
++        self.mutate(
++            OWNER, "fn read_current_material<", "require_material(material, started, self.now()?)?;"
++        )
++        self.mutate(
++            OWNER, "fn admit_current_material<", "require_material(material, started, self.now()?)?;"
++        )
++        self.mutate(OWNER, "fn current_time(", "SystemTime::now()", "UNIX_EPOCH")
++        self.mutate(OWNER, "fn require_material(", "if fresh < started", "if fresh > started")
++        self.mutate(OWNER, "fn require_material(", ".authenticate_current(fresh)", ".authenticate_current(started)")
++
++    def assert_actual_binding_domain(self, source):
++        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
++        marker = "fn binding("
++        self.assertEqual(code.count(marker), 1)
++        start = code.index(marker)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        matches = list(re.finditer(r"\blet\s+mut\s+bytes\s*=\s*", code[start:end + 1]))
++        self.assertEqual(len(matches), 1, "one actual binding initializer")
++        expression_start = start + matches[0].end()
++        expression_end = code.index(";", expression_start, end)
++        actual = source[expression_start:expression_end].strip()
++        self.assertEqual(actual, DOMAIN + ".to_vec()", "actual original Model binding domain")
++
++    def assert_actual_module_paths(self, source):
++        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
++        for name, expected in (
++            ("effect", '"cell_q24_model_command_effect.rs"'),
++            ("service", '"cell_q24_model_command_service.rs"'),
++        ):
++            pattern = r"#\[\s*path\s*=\s*\]\s*mod\s+" + name + r"\s*;"
++            matches = list(re.finditer(pattern, code))
++            self.assertEqual(len(matches), 1, (name, "one actual original module"))
++            match = matches[0]
++            prefix = code[:match.start()]
++            self.assertEqual(prefix.count("{") - prefix.count("}"), 0)
++            raw = source[match.start():match.end()]
++            literal = re.fullmatch(
++                r'#\[\s*path\s*=\s*("(?:[^"\\]|\\.)*")\s*\]\s*mod\s+' + name + r"\s*;",
++                raw,
++            )
++            self.assertIsNotNone(literal, "actual original Model module path")
++            self.assertEqual(literal.group(1), expected, "actual original Model module path")
++
++    def assert_original_verifier_accepts_masked_literal_decoy(self, path, source):
++        # This records the unchanged verifier's exact limitation. The following
++        # actual-span QA, not a new verifier capability, rejects the decoy.
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(source)
++            PROOF._verify_protected_files(root, {"protected_file": self.rows[path]})
++
++    def test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys(self):
++        original = (ROOT / CONTEXT).read_text()
++        self.assert_actual_binding_domain(original)
++        replacement = DOMAIN.replace(".v1", ".v2")
++        self.assertEqual(len(DOMAIN), len(replacement))
++        self.assertEqual(original.count(DOMAIN), 1)
++        changed = original.replace(DOMAIN, replacement, 1)
++        for suffix in (
++            "\n// " + DOMAIN + "\n",
++            "\nconst UNUSED_MODEL_DOMAIN: &[u8] = " + DOMAIN + ";\n",
++            "\nfn unused_domain() { let mut bytes = " + DOMAIN + ".to_vec(); }\n",
++        ):
++            with self.subTest(suffix=suffix):
++                candidate = changed + suffix
++                self.assert_original_verifier_accepts_masked_literal_decoy(CONTEXT, candidate)
++                with self.assertRaisesRegex(AssertionError, "actual original Model binding domain"):
++                    self.assert_actual_binding_domain(candidate)
++
++    def test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys(self):
++        original = (ROOT / HOST).read_text()
++        self.assert_actual_module_paths(original)
++        for old, new in (
++            ('"cell_q24_model_command_effect.rs"', '"cell_q24_model_command_effecx.rs"'),
++            ('"cell_q24_model_command_service.rs"', '"cell_q24_model_command_servicx.rs"'),
++        ):
++            self.assertEqual(len(old), len(new))
++            self.assertEqual(original.count(old), 1)
++            changed = original.replace(old, new, 1)
++            for suffix in ("", "\n// #[path = " + old + "]\n", "\nconst UNUSED_MODULE_PATH: &str = " + old + ";\n"):
++                with self.subTest(path=old, suffix=suffix):
++                    candidate = changed + suffix
++                    self.assert_original_verifier_accepts_masked_literal_decoy(HOST, candidate)
++                    with self.assertRaisesRegex(AssertionError, "actual original Model module path"):
++                        self.assert_actual_module_paths(candidate)
++
++
++if __name__ == "__main__":
++    unittest.main()
++
+--- a/qa/b4-no-bypass/test_original_next_use_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_next_use_command_source_closure.py
+@@ -29,7 +29,7 @@
+     "learning_original_next_use_command_context": ("codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",),
+     "learning_original_next_use_command_owner_consume": (),
+     "learning_original_next_use_command_owner_profile": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
+-    "learning_original_next_use_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",),
++    "learning_original_next_use_command_owner_factory": ('codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs'),
+     "learning_original_next_use_command_client_create": (),
+     "learning_original_next_use_command_client_recover": (),
+     "learning_original_next_use_command_client_attest": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+--- a/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
+@@ -44,7 +44,7 @@
+     "learning_original_training_initial_connection_dataset": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+     "learning_original_training_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+     "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs'),
+-    "learning_original_selector_command_context": ("codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",),
++    "learning_original_selector_command_context": ('codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs'),
+     "learning_original_selector_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+     "learning_original_selector_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",),
+     "learning_original_next_use_command_context": ("codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",),
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_readback_host_source_closure.py
+@@ -0,0 +1,133 @@
++"""Fence the two consuming original Selector/C command-host constructors.
++
++These are source-mutation checks through the unchanged protected-file verifier.
++They do not execute a receipt owner, grant authority, or prove a full ordinary
++learning loop. Existing caller-set QA keeps its complete collection and unknown
++caller assertions; this sibling only protects the newly audited host bodies.
++"""
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "original_readback_host_source_proof", ROOT / "scripts/verify_hepta_callers.py"
++)
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++SELECTOR = AGENT + "circuit_selection_readback_host.rs"
++NEXT_USE = AGENT + "circuit_next_use_readback_host.rs"
++FUNCTION = "fn into_command_owner_from_original_readbacks("
++
++
++class OriginalReadbackHostSourceClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++        cls.rows = {}
++        for path in (SELECTOR, NEXT_USE):
++            rows = [row for row in manifest["protected_file"] if row["path"] == path]
++            if len(rows) != 1:
++                raise AssertionError((path, "one original host protected row required"))
++            cls.rows[path] = rows
++        PROOF._verify_protected_files(
++            ROOT, {"protected_file": [cls.rows[path][0] for path in (SELECTOR, NEXT_USE)]}
++        )
++
++    def assert_rejected(self, path, changed):
++        self.assertNotEqual(changed, (ROOT / path).read_text())
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(changed)
++            with self.assertRaises(PROOF.VerificationFailure):
++                PROOF._verify_protected_files(root, {"protected_file": self.rows[path]})
++
++    def mutate(self, path, marker, replacement=""):
++        original = (ROOT / path).read_text()
++        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(original))
++        self.assertEqual(code.count(FUNCTION), 1)
++        start = code.index(FUNCTION)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        body = original[start:end + 1]
++        self.assertEqual(body.count(marker), 1, (path, marker))
++        changed = body.replace(marker, replacement, 1)
++        self.assert_rejected(path, original[:start] + changed + original[end + 1:])
++
++    def test_selector_rejects_changed_cut_signature_or_observation_time(self):
++        for marker, replacement in (
++            ("actual.snapshot() != &self.config.decision", "false"),
++            ("training.attestation() != &self.config.training_evidence", "false"),
++            ("training.receipt().observed_unix_seconds", "0"),
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(SELECTOR, marker, replacement)
++
++    def test_selector_constructor_keeps_consuming_original_custody(self):
++        self.mutate(SELECTOR, "        self,\n", "        &self,\n")
++        self.mutate(
++            SELECTOR,
++            "OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training",
++            "OriginalCellQ24TrainingReadbackConnectionV1::bind_other_training",
++        )
++        original = (ROOT / SELECTOR).read_text()
++        marker = "training.attestation() != &self.config.training_evidence"
++        changed = original.replace(marker, "false", 1)
++        # A copy in unrelated code cannot replace the check in the real function.
++        self.assert_rejected(
++            SELECTOR, changed + "\nfn unrelated_signature_check() { let _ = " + marker + "; }\n"
++        )
++
++    def test_next_use_rejects_different_original_cuts_or_any_full_signature(self):
++        for marker in (
++            "actual.snapshot() != &self.config.selection",
++            "selection.snapshot() != &self.config.selection",
++            "training.attestation() != &self.config.training_evidence",
++            "selection.training_attestation() != &self.config.training_evidence",
++            "selection.attestation() != &self.config.selection_evidence",
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(NEXT_USE, marker, "false")
++        for marker in (
++            "training.receipt().observed_unix_seconds",
++            "selection.receipt().observed_unix_seconds",
++        ):
++            with self.subTest(marker=marker):
++                self.mutate(NEXT_USE, marker, "0")
++
++    def test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings(self):
++        self.mutate(
++            NEXT_USE,
++            "        self,\n        live: OriginalCircuitLearningReadClientV1,",
++            "        &self,\n        live: OriginalCircuitLearningReadClientV1,",
++        )
++        for owner, original, replacement in (
++            ("OriginalCellQ24TrainingReadbackConnectionV1", "bind_original_training", "bind_other_training"),
++            ("OriginalCircuitSelectionReadbackConnectionV1", "bind_original_selection", "bind_other_selection"),
++        ):
++            with self.subTest(owner=owner):
++                self.mutate(NEXT_USE, owner + "::" + original, owner + "::" + replacement)
++
++    def test_hosts_cannot_acquire_a_new_path_key_or_execute_a_predecessor(self):
++        for path in (SELECTOR, NEXT_USE):
++            original = (ROOT / path).read_text()
++            for marker in (
++                'std::fs::File::open("other")',
++                "SigningKey::generate()",
++                "owner.recover_from_original_stream()",
++            ):
++                with self.subTest(path=path, marker=marker):
++                    self.assert_rejected(path, original + "\nfn bypass() { " + marker + "; }\n")
++
++
++if __name__ == "__main__":
++    unittest.main()
++
+--- a/qa/b4-no-bypass/test_original_selector_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_selector_command_source_closure.py
+@@ -27,10 +27,10 @@
+ EVIDENCE = AGENT + "circuit_selection_command_evidence.rs"
+ OWNER = AGENT + "circuit_selection_receipt_owner.rs"
+ EXPECTED = {
+-    "learning_original_selector_command_context": ("codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",),
++    "learning_original_selector_command_context": ('codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs'),
+     "learning_original_selector_command_owner_consume": (),
+-    "learning_original_selector_command_owner_profile": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",),
+-    "learning_original_selector_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",),
++    "learning_original_selector_command_owner_profile": ('codex-rs/hepta-agentd/src/circuit_selection_command_service.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs'),
++    "learning_original_selector_command_owner_factory": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs'),
+     "learning_original_selector_command_client_create": (),
+     "learning_original_selector_command_client_recover": (),
+     "learning_original_selector_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+--- a/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py
++++ b/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py
+@@ -29,7 +29,7 @@
+ SERVICE = AGENT + "cell_q24_training_bootstrap_service.rs"
+ EXPECTED = {
+     "learning_original_dataset_readback_attenuation": (),
+-    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
++    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs'),
+     "learning_original_dataset_readback_context": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_host.rs'),
+     "learning_original_dataset_readback_cut": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+     "learning_original_material_connection_create": (),

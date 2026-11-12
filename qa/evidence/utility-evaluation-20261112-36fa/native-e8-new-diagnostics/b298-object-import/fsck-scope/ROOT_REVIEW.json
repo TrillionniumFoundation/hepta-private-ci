@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.utility.root-current-tip-availability-review.v1",
+  "reviewed_at": "2026-11-12T13:06:39.980972+00:00",
+  "scope": "Current snapshot object availability plus exact imported-object readback, not repair or passing reinterpretation of full-history fsck",
+  "immutable_native_payload": {
+    "operation_id": "d294acd88ce1e10bd2853f883733434f288cee5836afb2d5ef5cd7d365124275",
+    "bytes": 77411,
+    "sha256": "174a8c672993965be856dea07eed00a31aaf75a83902a126ae8d6f529f4bb0a8",
+    "github_blob": "e2c59e3f54243709beff86de231d73fddbb307e6",
+    "all_five_pages_reassembled": true
+  },
+  "original_result_blob": "55bbbbdd2a31678e40468780134a2d84dc23f9af",
+  "original_object_readbacks_blob": "21811a88e3e1536c5329ae198a644a02250b9094",
+  "all_244_native_readbacks_exactly_match_independent_canonical_packet_bytes": true,
+  "source_before_after": {
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "head_and_index_observed_unchanged": true,
+  "snapshots": {
+    "current_e8": {
+      "all_required_objects_present": true,
+      "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "gitlinks": [],
+      "missing_objects": [],
+      "paths": 16521,
+      "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+      "unique_objects": 15976
+    },
+    "fixed_726": {
+      "all_required_objects_present": true,
+      "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "gitlinks": [],
+      "missing_objects": [],
+      "paths": 16519,
+      "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+      "unique_objects": 15974
+    },
+    "fixed_b298": {
+      "all_required_objects_present": true,
+      "commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+      "gitlinks": [],
+      "missing_objects": [],
+      "paths": 16639,
+      "tree": "906546af39b07474f0b9d046a6e780b6d3342743",
+      "unique_objects": 16085
+    }
+  },
+  "availability": {
+    "missing": 0,
+    "unique": 16245
+  },
+  "original_global_fsck": {
+    "exit_code": 3,
+    "stdout_bytes": 27453910,
+    "stdout_sha256": "b17a02343f862f1425fe2ecd07669212d6ca18e3524755a1d52ebb360e5cfae9",
+    "stderr_bytes": 896,
+    "stderr_sha256": "4a562ea1cf30471f5a2fa1ce0f61f11e2c9b44db29645e9f039615cfba10ec2a",
+    "status": "failed and preserved",
+    "full_stdout_not_retrieved_by_root_yet": true,
+    "native_scope_observation": {
+      "mentioned_current_snapshot_members": {
+        "current_e8": [],
+        "fixed_726": [],
+        "fixed_b298": []
+      },
+      "mentioned_imported_objects": []
+    }
+  },
+  "independent_source_tree_basis": {
+    "e8_inventory_leaves": 14741,
+    "e8_reconstructed_root": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "b298_complete_leaves": 14842,
+    "b298_reconstructed_root": "906546af39b07474f0b9d046a6e780b6d3342743",
+    "prospective_integrated_leaves": 14851,
+    "prospective_integrated_root": "a8c41e56f1f8685444022692d1a636ec61b44e70"
+  },
+  "decision": "The required fixed b298 current tree is available and independently exact. Proceed with the already authorized isolated source preparation and original formatting/fix, preserving failed full-history fsck and the original e8 checkout. No source qualification, full repository history completeness, or production authorization is inferred."
+}

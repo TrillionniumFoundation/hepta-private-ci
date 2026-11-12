@@ -1,0 +1,69 @@
+{
+  "format": "hepta.root-nextuse-two-boundary-actual-review.v1",
+  "observed_at": "2026-11-12T12:38:09.140180+00:00",
+  "report_blob": "91adb2baa181afbf1045258f4224143fb73ee3ee",
+  "raw_blob": "85d69d639ddc69aa12b24ccd8c89003a095dcd84",
+  "runner_blob": "ebae9a0ca25a42efac398b2a6d908f5f44d8857b",
+  "gate_blob": "e05259887050855d1f68c7556030309b415d4b3c",
+  "run_result_blob": "c1d2cbe69e7a30fcd37bc864aa1b590b3e5b85a7",
+  "scope": "Both unchanged original typed boundaries and every protected row for the changed file, over all 6597 candidate Rust sources; not the original full gate.",
+  "raw_framing": "Original BEGIN marker, actual JSONL row events, then final report JSON; exact final report object independently equals the separately preserved report.",
+  "actual_boundary_results": [
+    {
+      "id": "learning_original_training_command_client_readback",
+      "status": "passed",
+      "original_result": {
+        "id": "learning_original_training_command_client_readback",
+        "symbol": "OriginalCellQ24TrainingCommandClientV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingCommandClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+        ]
+      }
+    },
+    {
+      "id": "learning_evidence_original_owner_readback",
+      "status": "passed",
+      "original_result": {
+        "id": "learning_evidence_original_owner_readback",
+        "symbol": "LearningIterationEvidenceClientV1::readback",
+        "callPattern": null,
+        "receiverType": "LearningIterationEvidenceClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+          "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ]
+      }
+    }
+  ],
+  "actual_protected_failure": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "status": "failed",
+      "error": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs:fn predecessors(: required code order missing: ['let training = match &self.profile {\\n            Profile::Legacy => {\\n                source\\n                    .trainer()\\n                    .ok_or(OwnerError::Binding(                           ))?\\n                    .readback(\\n                        source.snapshot(),\\n                        prior(&self.config, LearningIterationStageV1::Training)?,\\n                    )\\n                    .await?\\n            }\\n            Profile::Evaluated(selection) => {\\n                let (trainer, evaluator) = source\\n                    .evaluated_owners()\\n                    .ok_or(OwnerError::Binding(                              ))?;\\n                selection\\n                    .original_context()\\n                    .require_original_receipt_owners(trainer, evaluator)\\n                    .await?;\\n                self.config.training_evidence.clone()\\n            }\\n        }', 'let selector: &LearningIterationEvidenceClientV1 = source.selector();', 'let selection = selector\\n            .readback(\\n                source.snapshot(),\\n                prior(&self.config, LearningIterationStageV1::Selection)?,\\n            )\\n            .await?;', 'Ok([training, selection])']"
+    }
+  ],
+  "candidate_rust_files": 6597,
+  "physical_source_before_after_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+  "frozen_external_inputs_unchanged": true,
+  "whole_scoped_execution": {
+    "status": "failed_scoped_diagnostic",
+    "returncode": 1,
+    "timed_out": false,
+    "comparison_unknown": false
+  },
+  "approved_next_preparation": "Synchronize only the exact original row279 predecessors sequence[0] to the reviewed typed-reference source body, keeping every other condition and membership unchanged.",
+  "coverage_limit": "The newly observed evaluation-client boundary at position468 was not executed by this two-boundary run; no pass is transferred to it. Full source/caller gates and Rust tests remain not_run."
+}

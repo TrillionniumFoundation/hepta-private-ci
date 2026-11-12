@@ -1,0 +1,38 @@
+{
+  "build_job_id": "1a1cf93ac8c-2564-1a5b",
+  "build_records": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4",
+  "cargo_launched_by_this_job": false,
+  "finished_at": "2026-11-12T12:16:11.506866+00:00",
+  "qualification": false,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "stages": [
+    {
+      "name": "panel",
+      "observed_stop_signals": [
+        "SIGSEGV"
+      ],
+      "records": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-panel-stack-debug-v3",
+      "result_bytes": 6940,
+      "result_sha256": "341f2082554bb5a14150d035fe0c9c296b68ca245015b5b3b61ab84e90672747",
+      "returncode": 0,
+      "status": "first_crash_diagnostic_retained",
+      "test_started": true
+    },
+    {
+      "name": "deep",
+      "observed_stop_signals": [
+        "SIGSTOP"
+      ],
+      "records": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-deep-deadline-debug-v2",
+      "result_bytes": 6934,
+      "result_sha256": "bbf7a8d535b5f41782a030b967f0ff4dca4a2205abfbea28b095852b19416c80",
+      "returncode": 1,
+      "status": "bounded_deep_thread_diagnostic_retained",
+      "test_started": true
+    }
+  ],
+  "started_at": "2026-11-12T12:14:52.376823+00:00",
+  "status": "diagnostic_runs_retained",
+  "tests_started": true
+}

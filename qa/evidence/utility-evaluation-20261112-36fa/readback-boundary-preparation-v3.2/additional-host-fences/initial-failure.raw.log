@@ -1,0 +1,31 @@
+test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys) ... ok
+test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys) ... ok
+test_admission_requires_the_actual_candidate_qualified_material_and_current_time (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_admission_requires_the_actual_candidate_qualified_material_and_current_time) ... ok
+test_after_read_reenters_only_original_lane_then_authenticates_both_materials (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_after_read_reenters_only_original_lane_then_authenticates_both_materials) ... ok
+test_context_preserves_actual_training_extension_and_complete_original_signatures (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_context_preserves_actual_training_extension_and_complete_original_signatures) ... ok
+test_effect_preserves_incomplete_outcomes_once_and_readback_without_commit (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_effect_preserves_incomplete_outcomes_once_and_readback_without_commit) ... ok
+test_host_preserves_fresh_recovered_origins_and_shared_once (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_host_preserves_fresh_recovered_origins_and_shared_once) ... ok
+test_host_reads_actual_dataset_training_and_current_evaluator_before_retaining (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_host_reads_actual_dataset_training_and_current_evaluator_before_retaining) ... ok
+test_model_commit_readback_and_revalidation_cannot_silently_reset_uncertainty (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_model_commit_readback_and_revalidation_cannot_silently_reset_uncertainty) ... ok
+test_model_creation_and_explicit_recovery_preserve_original_witness_and_fresh_auth (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_model_creation_and_explicit_recovery_preserve_original_witness_and_fresh_auth) ... ok
+test_original_lane_keeps_actual_context_and_purpose (test_original_model_host_source_closure.OriginalModelHostSourceClosureTests.test_original_lane_keeps_actual_context_and_purpose) ... ok
+test_hosts_cannot_acquire_a_new_path_key_or_execute_a_predecessor (test_original_readback_host_source_closure.OriginalReadbackHostSourceClosureTests.test_hosts_cannot_acquire_a_new_path_key_or_execute_a_predecessor) ... ok
+test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings (test_original_readback_host_source_closure.OriginalReadbackHostSourceClosureTests.test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings) ... FAIL
+test_next_use_rejects_different_original_cuts_or_any_full_signature (test_original_readback_host_source_closure.OriginalReadbackHostSourceClosureTests.test_next_use_rejects_different_original_cuts_or_any_full_signature) ... ok
+test_selector_constructor_keeps_consuming_original_custody (test_original_readback_host_source_closure.OriginalReadbackHostSourceClosureTests.test_selector_constructor_keeps_consuming_original_custody) ... ok
+test_selector_rejects_changed_cut_signature_or_observation_time (test_original_readback_host_source_closure.OriginalReadbackHostSourceClosureTests.test_selector_rejects_changed_cut_signature_or_observation_time) ... ok
+
+======================================================================
+FAIL: test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings (test_original_readback_host_source_closure.OriginalReadbackHostSourceClosureTests.test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-original-host-fences-prep-V1f2BL/validation-source/qa/b4-no-bypass/test_original_readback_host_source_closure.py", line 107, in test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings
+    self.mutate(NEXT_USE, "        self,\n", "        &self,\n")
+  File "/tmp/hepta-original-host-fences-prep-V1f2BL/validation-source/qa/b4-no-bypass/test_original_readback_host_source_closure.py", line 61, in mutate
+    self.assertEqual(body.count(marker), 1, (path, marker))
+AssertionError: 2 != 1 : ('codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs', '        self,\n')
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.624s
+
+FAILED (failures=1)

@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.scoped-original-next-use-evaluation-readback-diagnostic.v1",
+  "status": "passed_scoped_diagnostic",
+  "full_gate_status": "not_run",
+  "cargo_tests": "not_run",
+  "full_source_tree": null,
+  "authority_granted": false,
+  "source_root": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+  "base_source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "base_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "overlay_sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+  "callers_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+  "started_at": "2026-11-12T12:37:37.988024+00:00",
+  "scope": "Only unchanged original boundary 468 over all 6597 candidate Rust sources. Prior boundaries 281/313 and protected row279 are not rerun; not the original full gate.",
+  "target_boundaries": [
+    "learning_original_evaluation_command_readback"
+  ],
+  "target_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+  "target_postimage": "467831627aaf7833f035804b3c94629739b3a981",
+  "declared_boundary_ids": [
+    "learning_original_evaluation_command_readback"
+  ],
+  "attempted_boundaries": [
+    "learning_original_evaluation_command_readback"
+  ],
+  "attempted_protected_paths": [],
+  "boundaries": [
+    {
+      "id": "learning_original_evaluation_command_readback",
+      "status": "passed",
+      "original_result": {
+        "id": "learning_original_evaluation_command_readback",
+        "symbol": "OriginalCellEvaluationCommandClientV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellEvaluationCommandClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+        ]
+      }
+    }
+  ],
+  "protected": [],
+  "errors": [],
+  "manifest_boundary_rows": 534,
+  "manifest_protected_rows": 390,
+  "target_manifest_positions_zero_based": [
+    468
+  ],
+  "prior_protected_result_not_rerun": {
+    "manifest_position_zero_based": 279,
+    "prior_run_identity": "hepta-utility-36fa-next-use-trainer-type-v1",
+    "prior_report_blob": "91adb2baa181afbf1045258f4224143fb73ee3ee",
+    "prior_status": "failed",
+    "reason": "Prior original rejection preserved; this run checks only new boundary 468."
+  },
+  "declared_protected_paths": [],
+  "unexamined_manifest_boundary_rows": 533,
+  "unexamined_manifest_protected_rows": 390,
+  "base_rust_files": 6590,
+  "base_rust_inventory_sha256": "00bd2f4f8cf41c40a3dc158249508b486073fe56ef3b7a8c94bd566b7b5fe2bf",
+  "candidate_rust_files": 6597,
+  "overlay_changed_paths": [
+    "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+    "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+    "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs"
+  ],
+  "overlay_added_paths": [
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs"
+  ],
+  "overlay_deleted_paths": [],
+  "candidate_rust_inventory_sha256": "77dd55b3d45d1f599e14387942a4e77502a7e864999a1161700da7e8b67213d5",
+  "external_frozen_inputs_unchanged": true,
+  "all_original_rust_and_verifier_inputs_unchanged": true,
+  "not_started_boundary_ids": [],
+  "unfinished_boundary_ids": [],
+  "not_started_protected_paths": [],
+  "unfinished_protected_paths": [],
+  "counts": {
+    "boundaries": {
+      "passed": 1,
+      "failed": 0,
+      "unknown": 0
+    },
+    "protected": {
+      "passed": 0,
+      "failed": 0,
+      "unknown": 0
+    }
+  },
+  "elapsed_seconds": 54.73812387580983,
+  "finished_at": "2026-11-12T12:38:32.731489+00:00"
+}

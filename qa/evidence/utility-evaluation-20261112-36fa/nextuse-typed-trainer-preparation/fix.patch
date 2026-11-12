@@ -1,0 +1,15 @@
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs
+@@ -476,9 +476,10 @@
+     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
+         let training = match &self.profile {
+             Profile::Legacy => {
+-                source
++                let trainer: &LearningIterationEvidenceClientV1 = source
+                     .trainer()
+-                    .ok_or(OwnerError::Binding("original C Trainer source"))?
++                    .ok_or(OwnerError::Binding("original C Trainer source"))?;
++                trainer
+                     .readback(
+                         source.snapshot(),
+                         prior(&self.config, LearningIterationStageV1::Training)?,

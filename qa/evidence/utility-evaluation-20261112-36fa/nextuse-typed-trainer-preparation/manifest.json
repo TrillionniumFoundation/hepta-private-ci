@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.utility.next-use-trainer-type-candidate.v1",
+  "state": "prepared_unexecuted_source_candidate",
+  "source_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+  "physical_base": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "file_blob": "bcda45ed43fc82f732c8d55c07047f3fb6e703f8"
+  },
+  "candidate_base": {
+    "commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "bytes": 23987,
+    "git_blob_sha": "821125b04b65cb63d79ac7d5d1285fbaf3155204",
+    "sha256": "eb2ec69731639bd7d6a6669024738640fd698007898ce75ce8db6189f633c088"
+  },
+  "postimage": {
+    "bytes": 24062,
+    "git_blob_sha": "467831627aaf7833f035804b3c94629739b3a981",
+    "sha256": "2d85af35c49b8dfe2d5e0958b5dc7b48d47de1d602da94eaca4f69941e034fe6"
+  },
+  "patch": {
+    "bytes": 763,
+    "git_blob_sha": "1ca8700323983cf7cc0b9cd9ec57c985f74285c7",
+    "sha256": "5218bd3eb1edb0448dbf3f973e74a9701a2341e10c6f4c5e1df6f2700d7494b8"
+  },
+  "source_refs_changed": false,
+  "physical_source_files_changed": false,
+  "published_source_head": null,
+  "actual_failure": {
+    "run": "hepta-utility-36fa-all-boundaries-overlay-v1",
+    "job_id": "1a1cf796a68-2564-1a3b",
+    "boundary": "learning_original_training_command_client_readback",
+    "progress_position_zero_based": 281,
+    "at": "2026-11-12T11:49:46.305194+00:00",
+    "error": "learning_original_training_command_client_readback: codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs: unresolved possible OriginalCellQ24TrainingCommandClientV1::readback receiver",
+    "original_partial_sdk_blob": "5f8950837972acc26efd36ea62e12e509327f33a",
+    "original_progress_range": {
+      "offset": 167111,
+      "next_offset": 185584,
+      "bytes": 18473,
+      "sha256": "5024156f5e8ff2a6aaa7ce816d6e29350975355b7f5542372a7360f9a1d45a92"
+    },
+    "scope_note": "A complete hashed byte range of the still-running progress file, not the final full diagnostic outcome."
+  },
+  "source_reasoning": [
+    "The original e8 predecessor path had an explicitly typed LearningIterationEvidenceClientV1 trainer reference.",
+    "Fixed b298 changes NextUseSources::trainer to Option<&LearningIterationEvidenceClientV1> and expresses the Legacy readback receiver as source.trainer().ok_or(...)? without a local type.",
+    "The same file also names OriginalCellQ24TrainingCommandClientV1 for a separate evaluated_owners path. The unchanged strict source verifier cannot infer the type of that chained optional Legacy receiver.",
+    "The annotation binds precisely the return type declared by NextUseSources::trainer; it does not create a training command client or broaden caller permission."
+  ],
+  "preserved": [
+    "The original source.trainer().ok_or(OwnerError::Binding(\"original C Trainer source\"))? rejection and error text.",
+    "The same .readback method call, source.snapshot(), prior(&self.config, LearningIterationStageV1::Training)?, .await? and branch return value.",
+    "The complete Profile::Evaluated branch, evaluated_owners, original_context and original receipt-owner validation bytes.",
+    "All other Rust bytes except this one exact local expression rewrite, including selector's explicit original evidence-client type.",
+    "Original verifier, CALLERS, boundaries, membership lists, authority surface and all current running diagnostic inputs."
+  ],
+  "validation": {
+    "static_replacement_unique": true,
+    "after_and_patch_github_readback_equal": true,
+    "rust_compilation": "not_run",
+    "original_boundary_diagnostic": "not_run",
+    "planned_scope": "An independent external run will use the original complete e8 Rust collector plus the exact 25-file overlay with only this postimage substituted: 6,597 Rust files, one unchanged original boundary. It will verify full physical source inventory before/after and preserve actual failure/Unknown semantics.",
+    "original_full_gate": "not_run",
+    "A_B_C_or_recovery_qualification": false
+  }
+}

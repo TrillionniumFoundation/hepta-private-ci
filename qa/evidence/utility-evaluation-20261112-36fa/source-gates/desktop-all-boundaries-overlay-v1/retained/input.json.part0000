@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.utility.all-boundaries-overlay-input.v1",
+  "state": "READY_FOR_SCOPED_READONLY_DIAGNOSTIC",
+  "run_identity": "hepta-utility-36fa-all-boundaries-overlay-v1",
+  "source_root": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "full_source_tree": null,
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "source_lock": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/SOURCE_GATES.lock",
+  "baseline_inventory": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/source-baseline.inventory.json",
+  "baseline_inventory_bytes": 5432085,
+  "baseline_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+  "original_driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "hepta_ci_exec_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+  "callers_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+  "timeout_seconds": 4800,
+  "outer_timeout_seconds": 5400,
+  "full_gate_status": "not_run",
+  "cargo_tests": "not_run",
+  "input_sha256": {
+    "wrapper.py": "8a7bd75b1d47ebcf98313c6073e5ceac17bb563541e7811e2ebb1ec07b480690",
+    "original-driver-v2.py": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "diagnostic.py": "e414552fd2673fe876099a0f89805ec463fe91ed63c12c2f84d3f81bff55109e",
+    "overlay.json": "f6335dbb2100f15a6758654d60aed526b09a5ffe403d462dfb290d8dfa818222",
+    "CALLERS.toml": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74"
+  },
+  "scope": {
+    "declared_boundaries": 534,
+    "protected_rows": 390,
+    "original_full_gate": "not_run",
+    "existing_v2_failures": "retained; CALLERS and Rust projection unchanged"
+  },
+  "wrapper_revision": "v2_preserve_unknown_for_timeout_exceptions_incomplete_rows"
+}

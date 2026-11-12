@@ -1,0 +1,40 @@
+{
+  "after": {
+    "bytes": 961,
+    "sha256": "5cc5f545d0e33c275efb563b071514e654ab0eabca9fb6938093f1a86a96fcde",
+    "text": "let training = match &self.profile {\n            Profile::Legacy => {\n                let trainer: &LearningIterationEvidenceClientV1 = source\n                    .trainer()\n                    .ok_or(OwnerError::Binding(                           ))?;\n                trainer\n                    .readback(\n                        source.snapshot(),\n                        prior(&self.config, LearningIterationStageV1::Training)?,\n                    )\n                    .await?\n            }\n            Profile::Evaluated(selection) => {\n                let (trainer, evaluator) = source\n                    .evaluated_owners()\n                    .ok_or(OwnerError::Binding(                              ))?;\n                selection\n                    .original_context()\n                    .require_original_receipt_owners(trainer, evaluator)\n                    .await?;\n                self.config.training_evidence.clone()\n            }\n        }"
+  },
+  "base_callers_v2_blob": "317da5f28fbc1cf2556fa5935bb846dce8c7c2cb",
+  "before": {
+    "bytes": 886,
+    "sha256": "5444e04478e14a1891bdc1dd3fbf2df5a841121f0da41558c8ac40de49ae0d2d",
+    "text": "let training = match &self.profile {\n            Profile::Legacy => {\n                source\n                    .trainer()\n                    .ok_or(OwnerError::Binding(                           ))?\n                    .readback(\n                        source.snapshot(),\n                        prior(&self.config, LearningIterationStageV1::Training)?,\n                    )\n                    .await?\n            }\n            Profile::Evaluated(selection) => {\n                let (trainer, evaluator) = source\n                    .evaluated_owners()\n                    .ok_or(OwnerError::Binding(                              ))?;\n                selection\n                    .original_context()\n                    .require_original_receipt_owners(trainer, evaluator)\n                    .await?;\n                self.config.training_evidence.clone()\n            }\n        }"
+  },
+  "checks": {
+    "all_masked_source_outside_sequence_exactly_equal": true,
+    "all_other_protected_fields_unmodified": true,
+    "evaluated_branch_mask_exactly_equal": true,
+    "new_sequence_unique_in_candidate_mask": true,
+    "old_sequence_unique_in_original_mask": true
+  },
+  "diagnostic_result": "pending_actual_original_boundary_and_protected_results",
+  "function": "fn predecessors(",
+  "future_sync_base_v31_blob": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+  "mask_implementation": "original _strip_cfg_test_items(_strip_rust_non_code(text))",
+  "proposed_future_scope": "Only exact synchronization of this one masked full-match sequence after actual original boundary success and original protected rejection are observed; no rules/member/forbidden/top_level relaxation.",
+  "row_position_zero_based": 279,
+  "row_v2_v31_exactly_equal": true,
+  "schema": "hepta.utility.next-use-typed-trainer-protected-body-extraction.v1",
+  "sequence_position": 0,
+  "source_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+  "source_postimage_blob": "467831627aaf7833f035804b3c94629739b3a981",
+  "source_preimage_blob": "821125b04b65cb63d79ac7d5d1285fbaf3155204",
+  "status": "prepared_static_extraction_only",
+  "verifier_sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+  "writes": {
+    "CALLERS": false,
+    "git_refs": false,
+    "production_source": false,
+    "running_diagnostic_inputs": false
+  }
+}

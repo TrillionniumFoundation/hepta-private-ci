@@ -1,0 +1,1247 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+running 1 test
+[New Thread 0x7e6d519ff6c0 (LWP 1068886)]
+[New Thread 0x7e6d511fe6c0 (LWP 1068887)]
+[New Thread 0x7e6d509fd6c0 (LWP 1068888)]
+[New Thread 0x7e6d43fff6c0 (LWP 1068889)]
+[New Thread 0x7e6d437fe6c0 (LWP 1068890)]
+[New Thread 0x7e6d42ffd6c0 (LWP 1068891)]
+[New Thread 0x7e6d427fc6c0 (LWP 1068901)]
+[New Thread 0x7e6d41ffb6c0 (LWP 1068906)]
+[New Thread 0x7e6d417fa6c0 (LWP 1068907)]
+[New Thread 0x7e6d40ff96c0 (LWP 1068909)]
+[Thread 0x7e6d41ffb6c0 (LWP 1068906) exited]
+[Thread 0x7e6d417fa6c0 (LWP 1068907) exited]
+[New Thread 0x7e6d417fa6c0 (LWP 1068910)]
+[New Thread 0x7e6d41ffb6c0 (LWP 1069120)]
+[New Thread 0x7e6d23fff6c0 (LWP 1069126)]
+[New Thread 0x7e6d237fe6c0 (LWP 1069138)]
+[New Thread 0x7e6d22ffd6c0 (LWP 1069180)]
+[New Thread 0x7e6d227fc6c0 (LWP 1069181)]
+[New Thread 0x7e6d21ffb6c0 (LWP 1069182)]
+[New Thread 0x7e6d217fa6c0 (LWP 1069183)]
+[New Thread 0x7e6d20ff96c0 (LWP 1069184)]
+[New Thread 0x7e6d03fff6c0 (LWP 1069185)]
+[New Thread 0x7e6d037fe6c0 (LWP 1069186)]
+[New Thread 0x7e6d02ffd6c0 (LWP 1069187)]
+[New Thread 0x7e6d027fc6c0 (LWP 1069188)]
+[New Thread 0x7e6d01ffb6c0 (LWP 1069189)]
+[Thread 0x7e6d027fc6c0 (LWP 1069188) exited]
+[New Thread 0x7e6d027fc6c0 (LWP 1069194)]
+[Thread 0x7e6d027fc6c0 (LWP 1069194) exited]
+[New Thread 0x7e6d027fc6c0 (LWP 1069203)]
+[Thread 0x7e6d20ff96c0 (LWP 1069184) exited]
+[Thread 0x7e6d41ffb6c0 (LWP 1069120) exited]
+[Thread 0x7e6d417fa6c0 (LWP 1068910) exited]
+[Thread 0x7e6d427fc6c0 (LWP 1068901) exited]
+[Thread 0x7e6d23fff6c0 (LWP 1069126) exited]
+[Thread 0x7e6d40ff96c0 (LWP 1068909) exited]
+[Thread 0x7e6d42ffd6c0 (LWP 1068891) exited]
+[New Thread 0x7e6d42ffd6c0 (LWP 1069853)]
+[New Thread 0x7e6d40ff96c0 (LWP 1069925)]
+[New Thread 0x7e6d23fff6c0 (LWP 1069940)]
+[New Thread 0x7e6d427fc6c0 (LWP 1069944)]
+[New Thread 0x7e6d41ffb6c0 (LWP 1069980)]
+[Thread 0x7e6d23fff6c0 (LWP 1069940) exited]
+[Thread 0x7e6d427fc6c0 (LWP 1069944) exited]
+[New Thread 0x7e6d427fc6c0 (LWP 1069982)]
+[New Thread 0x7e6d23fff6c0 (LWP 1070025)]
+[New Thread 0x7e6d417fa6c0 (LWP 1070030)]
+[New Thread 0x7e6d20ff96c0 (LWP 1070082)]
+[New Thread 0x7e6d017fa6c0 (LWP 1070085)]
+[New Thread 0x7e6d00ff96c0 (LWP 1070088)]
+[Thread 0x7e6d017fa6c0 (LWP 1070085) exited]
+[New Thread 0x7e6d017fa6c0 (LWP 1070246)]
+[New Thread 0x7e6ce3fff6c0 (LWP 1070247)]
+[New Thread 0x7e6ce37fe6c0 (LWP 1070298)]
+[New Thread 0x7e6ce2ffd6c0 (LWP 1070398)]
+[Thread 0x7e6ce37fe6c0 (LWP 1070298) exited]
+[Thread 0x7e6ce3fff6c0 (LWP 1070247) exited]
+[Thread 0x7e6d037fe6c0 (LWP 1069186) exited]
+[Thread 0x7e6d017fa6c0 (LWP 1070246) exited]
+[New Thread 0x7e6d037fe6c0 (LWP 1071484)]
+[New Thread 0x7e6d017fa6c0 (LWP 1071490)]
+[New Thread 0x7e6ce3fff6c0 (LWP 1071491)]
+
+Thread 1 "codex_hepta_age" received signal SIGSTOP, Stopped (signal).
+syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+warning: 38	../sysdeps/unix/sysv/linux/x86_64/syscall.S: 没有那个文件或目录
+Last stopped for thread 1 (Thread 0x7e6d52377b80 (LWP 1068874)).
+	Using the running image of child process 1068874.
+Program stopped at 0x7e6d51b2752d.
+It stopped with signal SIGSTOP, Stopped (signal).
+  Id   Target Id                                             Frame 
+* 1    Thread 0x7e6d52377b80 (LWP 1068874) "codex_hepta_age" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  2    Thread 0x7e6d519ff6c0 (LWP 1068886) "runtime::tests:" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  3    Thread 0x7e6d511fe6c0 (LWP 1068887) "tokio-rt-worker" 0x00007e6d51b2a2d2 in epoll_wait (epfd=..., events=..., maxevents=..., timeout=...) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  4    Thread 0x7e6d509fd6c0 (LWP 1068888) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  5    Thread 0x7e6d43fff6c0 (LWP 1068889) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  6    Thread 0x7e6d437fe6c0 (LWP 1068890) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  15   Thread 0x7e6d237fe6c0 (LWP 1069138) "tokio-rt-worker" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  16   Thread 0x7e6d22ffd6c0 (LWP 1069180) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  17   Thread 0x7e6d227fc6c0 (LWP 1069181) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  18   Thread 0x7e6d21ffb6c0 (LWP 1069182) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  19   Thread 0x7e6d217fa6c0 (LWP 1069183) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  21   Thread 0x7e6d03fff6c0 (LWP 1069185) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  23   Thread 0x7e6d02ffd6c0 (LWP 1069187) "runtime::tests:" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  25   Thread 0x7e6d01ffb6c0 (LWP 1069189) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  27   Thread 0x7e6d027fc6c0 (LWP 1069203) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  28   Thread 0x7e6d42ffd6c0 (LWP 1069853) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  29   Thread 0x7e6d40ff96c0 (LWP 1069925) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  32   Thread 0x7e6d41ffb6c0 (LWP 1069980) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  33   Thread 0x7e6d427fc6c0 (LWP 1069982) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  34   Thread 0x7e6d23fff6c0 (LWP 1070025) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  35   Thread 0x7e6d417fa6c0 (LWP 1070030) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  36   Thread 0x7e6d20ff96c0 (LWP 1070082) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  38   Thread 0x7e6d00ff96c0 (LWP 1070088) "tokio-rt-worker" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  42   Thread 0x7e6ce2ffd6c0 (LWP 1070398) "tokio-rt-worker" 0x000055eb2dce3955 in block_buffer::BlockBuffer<BlockSize,block_buffer::Eager>::len64_padding_be ()
+  43   Thread 0x7e6d037fe6c0 (LWP 1071484) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  44   Thread 0x7e6d017fa6c0 (LWP 1071490) "runtime::tests:" 0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+  45   Thread 0x7e6ce3fff6c0 (LWP 1071491) "runtime::tests:" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+
+Thread 45 (Thread 0x7e6ce3fff6c0 (LWP 1071491) "runtime::tests:"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3051ddbc in tokio::runtime::park::Inner::park ()
+#9  0x000055eb3051d2df in tokio::runtime::park::CachedParkThread::park::{{closure}} ()
+#10 0x000055eb3051d226 in tokio::runtime::park::CachedParkThread::with_current::{{closure}} ()
+#11 0x000055eb304f54a7 in std::thread::local::LocalKey<T>::try_with ()
+#12 0x000055eb3051d1fe in tokio::runtime::park::CachedParkThread::with_current ()
+#13 0x000055eb3051d269 in tokio::runtime::park::CachedParkThread::park ()
+#14 0x000055eb2c9efbe4 in tokio::runtime::park::CachedParkThread::block_on ()
+#15 0x000055eb2c6069ba in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#16 0x000055eb2ca08f86 in tokio::runtime::handle::Handle::block_on_inner::{{closure}} ()
+#17 0x000055eb2a3598f5 in tokio::runtime::context::runtime::enter_runtime ()
+#18 0x000055eb2ca07798 in tokio::runtime::handle::Handle::block_on_inner ()
+#19 0x000055eb2ca0fec7 in tokio::runtime::handle::Handle::block_on ()
+#20 0x000055eb2a232c11 in codex_hepta_agentd::learning_iteration_evidence_client::next_use_command::serving::OriginalCircuitNextUseCommandOwnerV1<W>::original_response ()
+#21 0x000055eb2a232091 in codex_hepta_agentd::learning_iteration_evidence_client::next_use_command::serving::OriginalCircuitNextUseCommandOwnerV1<W>::command_response ()
+#22 0x000055eb2a2331b5 in codex_hepta_agentd::learning_iteration_evidence_client::next_use_command::serving::OriginalCircuitNextUseCommandOwnerV1<W>::serve_command_channel::{{closure}} ()
+#23 0x000055eb2a258b5f in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#24 0x000055eb2a27186e in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#25 0x000055eb2a2330a8 in codex_hepta_agentd::learning_iteration_evidence_client::next_use_command::serving::OriginalCircuitNextUseCommandOwnerV1<W>::serve_command_channel ()
+#26 0x000055eb2ae0b24b in codex_hepta_agentd::learning_iteration_evidence_client::next_use_command::serving::command_test_support::serve::{{closure}} ()
+#27 0x000055eb2b1d5d0d in std::sys::backtrace::__rust_begin_short_backtrace ()
+#28 0x000055eb2bc97b49 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#29 0x000055eb2b0199bd in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#30 0x000055eb29c58acf in std::panicking::catch_unwind::do_call ()
+#31 0x000055eb2bd1008b in __rust_try ()
+#32 0x000055eb2bc6c3c4 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#33 0x000055eb294e9596 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#34 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#35 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#36 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 44 (Thread 0x7e6d017fa6c0 (LWP 1071490) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a25bcb1 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a276dfc in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2a5cced8 in codex_hepta_agentd::circuit_feature_current::learning_read::serving::OriginalCircuitLearningReadOwnerV1<C,S>::serve_channel ()
+#8  0x000055eb2c32225b in codex_hepta_agentd::circuit_feature_current::learning_read::fixture::serve::{{closure}} ()
+#9  0x000055eb2b1d6b9d in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000055eb2bc93889 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#11 0x000055eb2b01834d in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#12 0x000055eb29c66cf0 in std::panicking::catch_unwind::do_call ()
+#13 0x000055eb2bd1008b in __rust_try ()
+#14 0x000055eb2bc89b34 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#15 0x000055eb294e9be6 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#16 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#17 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#18 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 43 (Thread 0x7e6d037fe6c0 (LWP 1071484) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a25c769 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a272c0e in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2b45e1a8 in codex_hepta_agentd::learning_iteration_evidence_client::selection_command::serving::readonly::<impl codex_hepta_agentd::learning_iteration_evidence_client::selection_command::serving::OriginalCircuitSelectionCommandOwnerV1<W>>::serve_original_selection_readback_channel ()
+#8  0x000055eb2a0cb89b in codex_hepta_agentd::learning_iteration_evidence_client::selection_command::readonly::test_support::serve::{{closure}} ()
+#9  0x000055eb2b1d6c5d in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000055eb2bc986f9 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#11 0x000055eb2b018f4d in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#12 0x000055eb29c5d01f in std::panicking::catch_unwind::do_call ()
+#13 0x000055eb2bd1008b in __rust_try ()
+#14 0x000055eb2bc6d9e4 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#15 0x000055eb294ea496 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#16 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#17 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#18 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 42 (Thread 0x7e6ce2ffd6c0 (LWP 1070398) "tokio-rt-worker"):
+#0  0x000055eb2dce3955 in block_buffer::BlockBuffer<BlockSize,block_buffer::Eager>::len64_padding_be ()
+#1  0x000055eb2dcd7f31 in <sha2::core_api::Sha256VarCore as digest::core_api::VariableOutputCore>::finalize_variable_core ()
+#2  0x000055eb2dcd57a6 in <digest::core_api::ct_variable::CtVariableCoreWrapper<T,OutSize,O> as digest::core_api::FixedOutputCore>::finalize_fixed_core ()
+#3  0x000055eb2dcd8207 in <digest::core_api::wrapper::CoreWrapper<T> as digest::FixedOutput>::finalize_into ()
+#4  0x000055eb2dcd7528 in digest::FixedOutput::finalize_fixed ()
+#5  0x000055eb2dcd5f10 in <D as digest::digest::Digest>::finalize ()
+#6  0x000055eb2dcd5e45 in <D as digest::digest::Digest>::digest ()
+#7  0x000055eb2dcd5aa9 in codex_hepta_types::digest::Digest32::of_bytes ()
+#8  0x000055eb2d5b519b in codex_hepta_learning_artifacts::learning_iteration_digest::initial_digest ()
+#9  0x000055eb2d57f86a in codex_hepta_learning_artifacts::learning_iteration_scope::FrozenLearningScopeV2::validate_request ()
+#10 0x000055eb2d57fa0f in codex_hepta_learning_artifacts::learning_iteration_scope::FrozenLearningScopeV2::validate_snapshot ()
+#11 0x000055eb297a8723 in codex_hepta_agentd::cell_q24_dataset::remote::require_original_material_signatures ()
+#12 0x000055eb297acfb1 in codex_hepta_agentd::cell_q24_dataset::remote::<impl codex_hepta_agentd::cell_q24_dataset::OriginalCellQ24DatasetV1>::from_original_material_peer ()
+#13 0x000055eb2a23c7a2 in codex_hepta_agentd::learning_iteration_evidence_client::material::source::OriginalCellQ24RemoteMaterialClientV1::read_current::{{closure}} ()
+#14 0x000055eb2b9e6609 in codex_hepta_agentd::cell_q24_training_source::OriginalMaterialSource::read_current_material::{{closure}} ()
+#15 0x000055eb2b9e4847 in codex_hepta_agentd::cell_q24_training_source::LiveOwners::current_material::{{closure}} ()
+#16 0x000055eb2a1cfab7 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#17 0x000055eb2ca04797 in tokio::runtime::park::CachedParkThread::block_on::{{closure}} ()
+#18 0x000055eb2c9e13bc in tokio::runtime::park::CachedParkThread::block_on ()
+#19 0x000055eb2c60665a in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#20 0x000055eb2ca09586 in tokio::runtime::handle::Handle::block_on_inner::{{closure}} ()
+#21 0x000055eb2a3576e5 in tokio::runtime::context::runtime::enter_runtime ()
+#22 0x000055eb2ca07608 in tokio::runtime::handle::Handle::block_on_inner ()
+#23 0x000055eb2ca11ed8 in tokio::runtime::handle::Handle::block_on ()
+#24 0x000055eb2b9e87c9 in codex_hepta_agentd::cell_q24_training_source::OriginalCellQ24TrainingSourceV1::require_current_in_lane ()
+#25 0x000055eb2a20697b in codex_hepta_agentd::cell_composed_q24::training_plan::owner::source::<impl codex_hepta_agentd::cell_composed_q24::training_plan::owner::CellQ24TrainingOwnerV1<W>>::require_original_source_capture::{{closure}} ()
+#26 0x000055eb2c1ce7e7 in core::result::Result<T,E>::and_then ()
+#27 0x000055eb2b40817b in codex_hepta_agentd::cell_composed_q24::training_plan::owner::source::<impl codex_hepta_agentd::cell_composed_q24::training_plan::owner::CellQ24TrainingOwnerV1<W>>::require_original_source_capture ()
+#28 0x000055eb2b4077cf in codex_hepta_agentd::cell_composed_q24::training_plan::owner::source::<impl codex_hepta_agentd::cell_composed_q24::training_plan::owner::CellQ24TrainingOwnerV1<W>>::require_live_source_if_captured ()
+#29 0x000055eb2c732089 in codex_hepta_agentd::cell_q24_training_receipt_owner::stage::OriginalCellQ24TrainingStageV1<TW,RW>::in_lane::{{closure}}::{{closure}} ()
+#30 0x000055eb2abf24b8 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#31 0x000055eb2c5800c7 in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#32 0x000055eb2c55692f in tokio::runtime::task::core::Core<T,S>::poll ()
+#33 0x000055eb2beb4acb in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#34 0x000055eb2b025fbc in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#35 0x000055eb29c674af in std::panicking::catch_unwind::do_call ()
+#36 0x000055eb2a39adcb in __rust_try ()
+#37 0x000055eb2a2d5eeb in std::panic::catch_unwind ()
+#38 0x000055eb2be5744e in tokio::runtime::task::harness::poll_future ()
+#39 0x000055eb2beec32a in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#40 0x000055eb2bf44c63 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#41 0x000055eb29a972de in tokio::runtime::task::raw::poll ()
+#42 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#43 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#44 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#45 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#46 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#47 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#48 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#49 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#50 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#51 0x000055eb304f2bbb in __rust_try ()
+#52 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#53 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#54 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#55 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#56 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 38 (Thread 0x7e6d00ff96c0 (LWP 1070088) "tokio-rt-worker"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2ee5ea21 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read_until ()
+#6  0x000055eb2ee5180f in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::request::{{closure}} ()
+#7  0x000055eb2ee51438 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::request ()
+#8  0x000055eb2ae04169 in codex_hepta_agentd::learning_iteration_evidence_client::next_use_command::OriginalCircuitNextUseCommandClientV1::exchange::{{closure}}::{{closure}} ()
+#9  0x000055eb2abfdcd2 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#10 0x000055eb2c57d627 in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#11 0x000055eb2c53d86f in tokio::runtime::task::core::Core<T,S>::poll ()
+#12 0x000055eb2bead77b in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#13 0x000055eb2b01ef3c in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#14 0x000055eb29c4c860 in std::panicking::catch_unwind::do_call ()
+#15 0x000055eb2a39adcb in __rust_try ()
+#16 0x000055eb2a2fb0ab in std::panic::catch_unwind ()
+#17 0x000055eb2be61d3f in tokio::runtime::task::harness::poll_future ()
+#18 0x000055eb2beef4aa in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#19 0x000055eb2bf41863 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#20 0x000055eb29a96dae in tokio::runtime::task::raw::poll ()
+#21 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#22 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#23 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#24 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#25 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#26 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#27 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#28 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#30 0x000055eb304f2bbb in __rust_try ()
+#31 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#32 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#33 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#34 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#35 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 36 (Thread 0x7e6d20ff96c0 (LWP 1070082) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a25bcb1 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a276dfc in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2a5cced8 in codex_hepta_agentd::circuit_feature_current::learning_read::serving::OriginalCircuitLearningReadOwnerV1<C,S>::serve_channel ()
+#8  0x000055eb2c32225b in codex_hepta_agentd::circuit_feature_current::learning_read::fixture::serve::{{closure}} ()
+#9  0x000055eb2b1d6b9d in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000055eb2bc93889 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#11 0x000055eb2b01834d in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#12 0x000055eb29c66cf0 in std::panicking::catch_unwind::do_call ()
+#13 0x000055eb2bd1008b in __rust_try ()
+#14 0x000055eb2bc89b34 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#15 0x000055eb294e9be6 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#16 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#17 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#18 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 35 (Thread 0x7e6d417fa6c0 (LWP 1070030) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb3128aa57 in std::thread::functions::park ()
+#2  0x000055eb301c31b7 in flume::signal::SyncSignal::wait ()
+#3  0x000055eb2e81a398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000055eb2e8160f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000055eb2e8124ad in flume::Shared<T>::recv ()
+#6  0x000055eb2e815f48 in flume::Shared<T>::recv_sync ()
+#7  0x000055eb2e819647 in flume::Receiver<T>::recv ()
+#8  0x000055eb2e81d1cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000055eb2e841ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000055eb2e868587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb2e7d8a9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb2e830904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb2e7caca0 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb2e7e45bb in __rust_try ()
+#15 0x000055eb2e7d8606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb2e820f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 34 (Thread 0x7e6d23fff6c0 (LWP 1070025) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb3128aa57 in std::thread::functions::park ()
+#2  0x000055eb301c31b7 in flume::signal::SyncSignal::wait ()
+#3  0x000055eb2e81a398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000055eb2e8160f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000055eb2e8124ad in flume::Shared<T>::recv ()
+#6  0x000055eb2e815f48 in flume::Shared<T>::recv_sync ()
+#7  0x000055eb2e819647 in flume::Receiver<T>::recv ()
+#8  0x000055eb2e81d1cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000055eb2e841ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000055eb2e868587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb2e7d8a9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb2e830904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb2e7caca0 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb2e7e45bb in __rust_try ()
+#15 0x000055eb2e7d8606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb2e820f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 33 (Thread 0x7e6d427fc6c0 (LWP 1069982) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb3128aa57 in std::thread::functions::park ()
+#2  0x000055eb301c31b7 in flume::signal::SyncSignal::wait ()
+#3  0x000055eb2e81a398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000055eb2e8160f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000055eb2e8124ad in flume::Shared<T>::recv ()
+#6  0x000055eb2e815f48 in flume::Shared<T>::recv_sync ()
+#7  0x000055eb2e819647 in flume::Receiver<T>::recv ()
+#8  0x000055eb2e81d1cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000055eb2e841ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000055eb2e868587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb2e7d8a9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb2e830904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb2e7caca0 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb2e7e45bb in __rust_try ()
+#15 0x000055eb2e7d8606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb2e820f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 32 (Thread 0x7e6d41ffb6c0 (LWP 1069980) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb3128aa57 in std::thread::functions::park ()
+#2  0x000055eb301c31b7 in flume::signal::SyncSignal::wait ()
+#3  0x000055eb2e81a398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000055eb2e8160f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000055eb2e8124ad in flume::Shared<T>::recv ()
+#6  0x000055eb2e815f48 in flume::Shared<T>::recv_sync ()
+#7  0x000055eb2e819647 in flume::Receiver<T>::recv ()
+#8  0x000055eb2e81d1cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000055eb2e841ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000055eb2e868587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb2e7d8a9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb2e830904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb2e7caca0 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb2e7e45bb in __rust_try ()
+#15 0x000055eb2e7d8606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb2e820f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 29 (Thread 0x7e6d40ff96c0 (LWP 1069925) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb3128aa57 in std::thread::functions::park ()
+#2  0x000055eb301c31b7 in flume::signal::SyncSignal::wait ()
+#3  0x000055eb2e81a398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000055eb2e8160f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000055eb2e8124ad in flume::Shared<T>::recv ()
+#6  0x000055eb2e815f48 in flume::Shared<T>::recv_sync ()
+#7  0x000055eb2e819647 in flume::Receiver<T>::recv ()
+#8  0x000055eb2e81d1cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000055eb2e841ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000055eb2e868587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb2e7d8a9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb2e830904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb2e7caca0 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb2e7e45bb in __rust_try ()
+#15 0x000055eb2e7d8606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb2e820f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 28 (Thread 0x7e6d42ffd6c0 (LWP 1069853) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb3128aa57 in std::thread::functions::park ()
+#2  0x000055eb301c31b7 in flume::signal::SyncSignal::wait ()
+#3  0x000055eb2e81a398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000055eb2e8160f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x000055eb2e8124ad in flume::Shared<T>::recv ()
+#6  0x000055eb2e815f48 in flume::Shared<T>::recv_sync ()
+#7  0x000055eb2e819647 in flume::Receiver<T>::recv ()
+#8  0x000055eb2e81d1cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x000055eb2e841ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x000055eb2e868587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb2e7d8a9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb2e830904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb2e7caca0 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb2e7e45bb in __rust_try ()
+#15 0x000055eb2e7d8606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb2e820f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 27 (Thread 0x7e6d027fc6c0 (LWP 1069203) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3051ddbc in tokio::runtime::park::Inner::park ()
+#9  0x000055eb3051d2df in tokio::runtime::park::CachedParkThread::park::{{closure}} ()
+#10 0x000055eb3051d226 in tokio::runtime::park::CachedParkThread::with_current::{{closure}} ()
+#11 0x000055eb304f54a7 in std::thread::local::LocalKey<T>::try_with ()
+#12 0x000055eb3051d1fe in tokio::runtime::park::CachedParkThread::with_current ()
+#13 0x000055eb3051d269 in tokio::runtime::park::CachedParkThread::park ()
+#14 0x000055eb2ca020e0 in tokio::runtime::park::CachedParkThread::block_on ()
+#15 0x000055eb2c607d92 in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#16 0x000055eb2ca08728 in tokio::runtime::handle::Handle::block_on_inner::{{closure}} ()
+#17 0x000055eb2a35f75f in tokio::runtime::context::runtime::enter_runtime ()
+#18 0x000055eb2ca07cfb in tokio::runtime::handle::Handle::block_on_inner ()
+#19 0x000055eb2ca134ff in tokio::runtime::handle::Handle::block_on ()
+#20 0x000055eb2ac7b11d in codex_hepta_agentd::circuit_task::runtime::CircuitTaskRuntimeBootstrapV1::run::{{closure}}::{{closure}} ()
+#21 0x000055eb2abf8de6 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#22 0x000055eb2c57ce57 in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#23 0x000055eb2c554c26 in tokio::runtime::task::core::Core<T,S>::poll ()
+#24 0x000055eb2beb319b in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#25 0x000055eb2b017f6c in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#26 0x000055eb29c47dac in std::panicking::catch_unwind::do_call ()
+#27 0x000055eb2a39adcb in __rust_try ()
+#28 0x000055eb2a2a9466 in std::panic::catch_unwind ()
+#29 0x000055eb2be4ded9 in tokio::runtime::task::harness::poll_future ()
+#30 0x000055eb2bec888a in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#31 0x000055eb2bf4bd63 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#32 0x000055eb29a954ce in tokio::runtime::task::raw::poll ()
+#33 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#34 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#35 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#36 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#37 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#38 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#39 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#40 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#41 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#42 0x000055eb304f2bbb in __rust_try ()
+#43 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#44 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#45 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#46 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#47 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 25 (Thread 0x7e6d01ffb6c0 (LWP 1069189) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e79373 in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park_until ()
+#3  0x000055eb30e82ba9 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbe2f in parking_lot::condvar::Condvar::wait_for ()
+#7  0x000055eb304f7db7 in tokio::loom::std::parking_lot::Condvar::wait_timeout ()
+#8  0x000055eb304c612a in tokio::runtime::blocking::pool::Inner::run ()
+#9  0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#10 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#14 0x000055eb304f2bbb in __rust_try ()
+#15 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 23 (Thread 0x7e6d02ffd6c0 (LWP 1069187) "runtime::tests:"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3051ddbc in tokio::runtime::park::Inner::park ()
+#9  0x000055eb3051d2df in tokio::runtime::park::CachedParkThread::park::{{closure}} ()
+#10 0x000055eb3051d226 in tokio::runtime::park::CachedParkThread::with_current::{{closure}} ()
+#11 0x000055eb304f54a7 in std::thread::local::LocalKey<T>::try_with ()
+#12 0x000055eb3051d1fe in tokio::runtime::park::CachedParkThread::with_current ()
+#13 0x000055eb3051d269 in tokio::runtime::park::CachedParkThread::park ()
+#14 0x000055eb2c9e3025 in tokio::runtime::park::CachedParkThread::block_on ()
+#15 0x000055eb2c60a78f in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#16 0x000055eb2ca0892f in tokio::runtime::handle::Handle::block_on_inner::{{closure}} ()
+#17 0x000055eb2a35a7e6 in tokio::runtime::context::runtime::enter_runtime ()
+#18 0x000055eb2ca080a2 in tokio::runtime::handle::Handle::block_on_inner ()
+#19 0x000055eb2ca0f60b in tokio::runtime::handle::Handle::block_on ()
+#20 0x000055eb2bd4ef3d in codex_hepta_agentd::learning_iteration_evidence_client::training_command::serving::readonly::<impl codex_hepta_agentd::learning_iteration_evidence_client::training_command::serving::OriginalCellQ24TrainingCommandOwnerV1<TW,RW>>::original_training_readback_response ()
+#21 0x000055eb2a691169 in codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::serving::readonly::<impl codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1<TW,RW>>::original_training_readback_response ()
+#22 0x000055eb2993d1b8 in codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::serving::readonly::<impl codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1<TW,RW>>::serve_original_training_readback_channel::{{closure}} ()
+#23 0x000055eb2a2635ef in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#24 0x000055eb2a2794ee in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#25 0x000055eb2a691402 in codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::serving::readonly::<impl codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1<TW,RW>>::serve_original_training_readback_channel ()
+#26 0x000055eb2b0a804b in codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::original_ports::readonly::{{closure}} ()
+#27 0x000055eb2b1d59cd in std::sys::backtrace::__rust_begin_short_backtrace ()
+#28 0x000055eb2bc9d239 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#29 0x000055eb2b01f45d in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#30 0x000055eb29c52ebf in std::panicking::catch_unwind::do_call ()
+#31 0x000055eb2bd1008b in __rust_try ()
+#32 0x000055eb2bc8d664 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#33 0x000055eb294e9626 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#34 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#35 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#36 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 21 (Thread 0x7e6d03fff6c0 (LWP 1069185) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a2631f9 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a2794ee in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2a691402 in codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::serving::readonly::<impl codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1<TW,RW>>::serve_original_training_readback_channel ()
+#8  0x000055eb2b0a804b in codex_hepta_agentd::learning_iteration_evidence_client::training_command::bootstrap::original_ports::readonly::{{closure}} ()
+#9  0x000055eb2b1d59cd in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000055eb2bc9d239 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#11 0x000055eb2b01f45d in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#12 0x000055eb29c52ebf in std::panicking::catch_unwind::do_call ()
+#13 0x000055eb2bd1008b in __rust_try ()
+#14 0x000055eb2bc8d664 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#15 0x000055eb294e9626 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#16 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#17 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#18 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 19 (Thread 0x7e6d217fa6c0 (LWP 1069183) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a268701 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a272eec in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2b466907 in codex_hepta_agentd::learning_iteration_evidence_client::material::command::serving::tests::bootstrap_ports::evidence_for_original::{{closure}} ()
+#8  0x000055eb2b1d6ad6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#9  0x000055eb2bc9107c in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#10 0x000055eb2b01027a in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#11 0x000055eb29c4ed38 in std::panicking::catch_unwind::do_call ()
+#12 0x000055eb2bd1008b in __rust_try ()
+#13 0x000055eb2bc6e0ea in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#14 0x000055eb294e8f96 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#15 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#16 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#17 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 18 (Thread 0x7e6d21ffb6c0 (LWP 1069182) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a268701 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a272eec in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2b466907 in codex_hepta_agentd::learning_iteration_evidence_client::material::command::serving::tests::bootstrap_ports::evidence_for_original::{{closure}} ()
+#8  0x000055eb2b1d6ad6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#9  0x000055eb2bc9107c in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#10 0x000055eb2b01027a in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#11 0x000055eb29c4ed38 in std::panicking::catch_unwind::do_call ()
+#12 0x000055eb2bd1008b in __rust_try ()
+#13 0x000055eb2bc6e0ea in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#14 0x000055eb294e8f96 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#15 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#16 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#17 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 17 (Thread 0x7e6d227fc6c0 (LWP 1069181) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a26b191 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a2731dc in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2b46546a in codex_hepta_agentd::learning_iteration_evidence_client::material::command::serving::tests::bootstrap_ports::source_for_original::{{closure}} ()
+#8  0x000055eb2b1d6026 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#9  0x000055eb2bc9049d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#10 0x000055eb2b01312b in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#11 0x000055eb29c5ba97 in std::panicking::catch_unwind::do_call ()
+#12 0x000055eb2bd1008b in __rust_try ()
+#13 0x000055eb2bc8e904 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#14 0x000055eb294ea436 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#15 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#16 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#17 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 16 (Thread 0x7e6d22ffd6c0 (LWP 1069180) "runtime::tests:"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2a2671a1 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange_inner ()
+#6  0x000055eb2a278f8c in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::exchange ()
+#7  0x000055eb2c7ea2d3 in codex_hepta_agentd::learning_iteration_evidence_client::material::command::serving::OriginalCellQ24MaterialCommandOwnerV1<EW,DW,SW>::serve_command_channel ()
+#8  0x000055eb2c7ed374 in codex_hepta_agentd::learning_iteration_evidence_client::material::command::serving::tests::transport::connected_original::{{closure}} ()
+#9  0x000055eb2b1d6006 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000055eb2bc95d47 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#11 0x000055eb2b01b31a in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#12 0x000055eb29c489d8 in std::panicking::catch_unwind::do_call ()
+#13 0x000055eb2bd1008b in __rust_try ()
+#14 0x000055eb2bc731c0 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#15 0x000055eb294ea1b6 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#16 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#17 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#18 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 15 (Thread 0x7e6d237fe6c0 (LWP 1069138) "tokio-rt-worker"):
+#0  0x000055eb2ee544ee in rustix::backend::arch::asm::syscall5 ()
+#1  0x000055eb2ee5a113 in rustix::backend::event::syscalls::poll ()
+#2  0x000055eb2ee97a7d in rustix::event::poll::poll ()
+#3  0x000055eb2ee5f9ff in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::wait ()
+#4  0x000055eb2ee5f6d8 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read ()
+#5  0x000055eb2ee5ea21 in codex_hepta_contracts::authority_host_issuer_transport::channel::OwnerChannel::read_until ()
+#6  0x000055eb2ee5180f in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::request::{{closure}} ()
+#7  0x000055eb2ee51438 in codex_hepta_contracts::authority_host_issuer_transport::peer::HostAuthorityPeerChannel::request ()
+#8  0x000055eb2baf7b54 in codex_hepta_agentd::learning_iteration_evidence_client::training_command::readonly::OriginalTrainingReadbackV1::readback::{{closure}}::{{closure}} ()
+#9  0x000055eb2abf76c6 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#10 0x000055eb2c577887 in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#11 0x000055eb2c54898f in tokio::runtime::task::core::Core<T,S>::poll ()
+#12 0x000055eb2beb3cfa in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#13 0x000055eb2b0163dc in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#14 0x000055eb29c611af in std::panicking::catch_unwind::do_call ()
+#15 0x000055eb2a39adcb in __rust_try ()
+#16 0x000055eb2a2fefdc in std::panic::catch_unwind ()
+#17 0x000055eb2be3738f in tokio::runtime::task::harness::poll_future ()
+#18 0x000055eb2bee41ea in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#19 0x000055eb2bf42e63 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#20 0x000055eb29a960be in tokio::runtime::task::raw::poll ()
+#21 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#22 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#23 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#24 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#25 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#26 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#27 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#28 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#30 0x000055eb304f2bbb in __rust_try ()
+#31 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#32 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#33 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#34 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#35 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 6 (Thread 0x7e6d437fe6c0 (LWP 1068890) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3050e3c7 in tokio::runtime::scheduler::multi_thread::park::Inner::park_condvar ()
+#9  0x000055eb3050ec39 in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#10 0x000055eb3050f1b7 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#11 0x000055eb3050453e in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#12 0x000055eb305058c0 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#13 0x000055eb305052c7 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#14 0x000055eb30501704 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#15 0x000055eb304f85df in tokio::runtime::context::scoped::Scoped<T>::set ()
+#16 0x000055eb304ffed1 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#17 0x000055eb304f4bc6 in std::thread::local::LocalKey<T>::try_with ()
+#18 0x000055eb304f3f77 in std::thread::local::LocalKey<T>::with ()
+#19 0x000055eb304ffe12 in tokio::runtime::context::set_scheduler ()
+#20 0x000055eb3050160c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#21 0x000055eb304f9224 in tokio::runtime::context::runtime::enter_runtime ()
+#22 0x000055eb30501411 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#23 0x000055eb30502777 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#24 0x000055eb30513551 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#25 0x000055eb304a5aee in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#26 0x000055eb304a5658 in tokio::runtime::task::core::Core<T,S>::poll ()
+#27 0x000055eb304a0bee in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#28 0x000055eb304e7691 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000055eb304e80f6 in std::panicking::catch_unwind::do_call ()
+#30 0x000055eb304bf7fb in __rust_try ()
+#31 0x000055eb304beadf in std::panic::catch_unwind ()
+#32 0x000055eb304a0678 in tokio::runtime::task::harness::poll_future ()
+#33 0x000055eb304a1721 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#34 0x000055eb304a21a7 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#35 0x000055eb304bc7c0 in tokio::runtime::task::raw::poll ()
+#36 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#37 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#38 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#39 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#40 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#41 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#42 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#43 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#44 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#45 0x000055eb304f2bbb in __rust_try ()
+#46 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#47 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#48 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#49 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#50 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 5 (Thread 0x7e6d43fff6c0 (LWP 1068889) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3050e3c7 in tokio::runtime::scheduler::multi_thread::park::Inner::park_condvar ()
+#9  0x000055eb3050ec39 in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#10 0x000055eb3050f1b7 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#11 0x000055eb3050453e in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#12 0x000055eb305058c0 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#13 0x000055eb305052c7 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#14 0x000055eb30501704 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#15 0x000055eb304f85df in tokio::runtime::context::scoped::Scoped<T>::set ()
+#16 0x000055eb304ffed1 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#17 0x000055eb304f4bc6 in std::thread::local::LocalKey<T>::try_with ()
+#18 0x000055eb304f3f77 in std::thread::local::LocalKey<T>::with ()
+#19 0x000055eb304ffe12 in tokio::runtime::context::set_scheduler ()
+#20 0x000055eb3050160c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#21 0x000055eb304f9224 in tokio::runtime::context::runtime::enter_runtime ()
+#22 0x000055eb30501411 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#23 0x000055eb30502777 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#24 0x000055eb30513551 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#25 0x000055eb304a5aee in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#26 0x000055eb304a5658 in tokio::runtime::task::core::Core<T,S>::poll ()
+#27 0x000055eb304a0bee in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#28 0x000055eb304e7691 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000055eb304e80f6 in std::panicking::catch_unwind::do_call ()
+#30 0x000055eb304bf7fb in __rust_try ()
+#31 0x000055eb304beadf in std::panic::catch_unwind ()
+#32 0x000055eb304a0678 in tokio::runtime::task::harness::poll_future ()
+#33 0x000055eb304a1721 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#34 0x000055eb304a21a7 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#35 0x000055eb304bc7c0 in tokio::runtime::task::raw::poll ()
+#36 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#37 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#38 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#39 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#40 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#41 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#42 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#43 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#44 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#45 0x000055eb304f2bbb in __rust_try ()
+#46 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#47 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#48 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#49 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#50 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 4 (Thread 0x7e6d509fd6c0 (LWP 1068888) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3050e3c7 in tokio::runtime::scheduler::multi_thread::park::Inner::park_condvar ()
+#9  0x000055eb3050ec39 in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#10 0x000055eb3050f1b7 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#11 0x000055eb3050453e in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#12 0x000055eb305058c0 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#13 0x000055eb305052c7 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#14 0x000055eb30501704 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#15 0x000055eb304f85df in tokio::runtime::context::scoped::Scoped<T>::set ()
+#16 0x000055eb304ffed1 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#17 0x000055eb304f4bc6 in std::thread::local::LocalKey<T>::try_with ()
+#18 0x000055eb304f3f77 in std::thread::local::LocalKey<T>::with ()
+#19 0x000055eb304ffe12 in tokio::runtime::context::set_scheduler ()
+#20 0x000055eb3050160c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#21 0x000055eb304f9224 in tokio::runtime::context::runtime::enter_runtime ()
+#22 0x000055eb30501411 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#23 0x000055eb30502777 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#24 0x000055eb30513551 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#25 0x000055eb304a5aee in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#26 0x000055eb304a5658 in tokio::runtime::task::core::Core<T,S>::poll ()
+#27 0x000055eb304a0bee in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#28 0x000055eb304e7691 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000055eb304e80f6 in std::panicking::catch_unwind::do_call ()
+#30 0x000055eb304bf7fb in __rust_try ()
+#31 0x000055eb304beadf in std::panic::catch_unwind ()
+#32 0x000055eb304a0678 in tokio::runtime::task::harness::poll_future ()
+#33 0x000055eb304a1721 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#34 0x000055eb304a21a7 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#35 0x000055eb304bc7c0 in tokio::runtime::task::raw::poll ()
+#36 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#37 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#38 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#39 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#40 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#41 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#42 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#43 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#44 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#45 0x000055eb304f2bbb in __rust_try ()
+#46 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#47 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#48 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#49 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#50 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 3 (Thread 0x7e6d511fe6c0 (LWP 1068887) "tokio-rt-worker"):
+#0  0x00007e6d51b2a2d2 in epoll_wait (epfd=..., events=..., maxevents=..., timeout=...) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x000055eb3053122c in mio::sys::unix::selector::Selector::select ()
+#2  0x000055eb3053154e in mio::poll::Poll::poll ()
+#3  0x000055eb304abe82 in tokio::runtime::io::driver::Driver::turn ()
+#4  0x000055eb304ab6e2 in tokio::runtime::io::driver::Driver::park_timeout ()
+#5  0x000055eb304d6f4a in tokio::runtime::signal::Driver::park_timeout ()
+#6  0x000055eb3050de0a in tokio::runtime::process::Driver::park_timeout ()
+#7  0x000055eb304b6958 in tokio::runtime::driver::IoStack::park_timeout ()
+#8  0x000055eb304c4ac9 in tokio::runtime::time::Driver::park_thread_timeout ()
+#9  0x000055eb304c4989 in tokio::runtime::time::Driver::park_internal ()
+#10 0x000055eb304c4dab in tokio::runtime::time::Driver::park ()
+#11 0x000055eb304b58cf in tokio::runtime::driver::TimeDriver::park ()
+#12 0x000055eb304b67a6 in tokio::runtime::driver::Driver::park ()
+#13 0x000055eb3050dff4 in tokio::runtime::scheduler::multi_thread::park::Inner::park_driver ()
+#14 0x000055eb3050ec7a in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#15 0x000055eb3050f1b7 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#16 0x000055eb3050453e in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#17 0x000055eb305058c0 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#18 0x000055eb305052c7 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#19 0x000055eb30501704 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#20 0x000055eb304f85df in tokio::runtime::context::scoped::Scoped<T>::set ()
+#21 0x000055eb304ffed1 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#22 0x000055eb304f4bc6 in std::thread::local::LocalKey<T>::try_with ()
+#23 0x000055eb304f3f77 in std::thread::local::LocalKey<T>::with ()
+#24 0x000055eb304ffe12 in tokio::runtime::context::set_scheduler ()
+#25 0x000055eb3050160c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#26 0x000055eb304f9224 in tokio::runtime::context::runtime::enter_runtime ()
+#27 0x000055eb30501411 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#28 0x000055eb30502777 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#29 0x000055eb30513551 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#30 0x000055eb304a5aee in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#31 0x000055eb304a5658 in tokio::runtime::task::core::Core<T,S>::poll ()
+#32 0x000055eb304a0bee in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#33 0x000055eb304e7691 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#34 0x000055eb304e80f6 in std::panicking::catch_unwind::do_call ()
+#35 0x000055eb304bf7fb in __rust_try ()
+#36 0x000055eb304beadf in std::panic::catch_unwind ()
+#37 0x000055eb304a0678 in tokio::runtime::task::harness::poll_future ()
+#38 0x000055eb304a1721 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#39 0x000055eb304a21a7 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#40 0x000055eb304bc7c0 in tokio::runtime::task::raw::poll ()
+#41 0x000055eb304bce7b in tokio::runtime::task::raw::RawTask::poll ()
+#42 0x000055eb304e9fb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#43 0x000055eb304c5e16 in tokio::runtime::blocking::pool::Task::run ()
+#44 0x000055eb304c6060 in tokio::runtime::blocking::pool::Inner::run ()
+#45 0x000055eb304c74d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#46 0x000055eb304d93e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#47 0x000055eb304ecb92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#48 0x000055eb304e7551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#49 0x000055eb304e8341 in std::panicking::catch_unwind::do_call ()
+#50 0x000055eb304f2bbb in __rust_try ()
+#51 0x000055eb304ec770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#52 0x000055eb30513817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#53 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#54 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#55 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 2 (Thread 0x7e6d519ff6c0 (LWP 1068886) "runtime::tests:"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb30e79559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x000055eb30e793fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x000055eb30e82bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x000055eb30e80a19 in parking_lot_core::parking_lot::park ()
+#5  0x000055eb30e850c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000055eb304cbdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000055eb304f7e64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x000055eb3051ddbc in tokio::runtime::park::Inner::park ()
+#9  0x000055eb3051d2df in tokio::runtime::park::CachedParkThread::park::{{closure}} ()
+#10 0x000055eb3051d226 in tokio::runtime::park::CachedParkThread::with_current::{{closure}} ()
+#11 0x000055eb304f54a7 in std::thread::local::LocalKey<T>::try_with ()
+#12 0x000055eb3051d1fe in tokio::runtime::park::CachedParkThread::with_current ()
+#13 0x000055eb3051d269 in tokio::runtime::park::CachedParkThread::park ()
+#14 0x000055eb2c9fc349 in tokio::runtime::park::CachedParkThread::block_on ()
+#15 0x000055eb2c606ee5 in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#16 0x000055eb29ad1504 in tokio::runtime::scheduler::multi_thread::MultiThread::block_on::{{closure}} ()
+#17 0x000055eb2a362f7f in tokio::runtime::context::runtime::enter_runtime ()
+#18 0x000055eb29ad063d in tokio::runtime::scheduler::multi_thread::MultiThread::block_on ()
+#19 0x000055eb29d52fba in tokio::runtime::runtime::Runtime::block_on_inner ()
+#20 0x000055eb29d58b79 in tokio::runtime::runtime::Runtime::block_on ()
+#21 0x000055eb2c8c85ec in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources ()
+#22 0x000055eb2c8c8683 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources::{{closure}} ()
+#23 0x000055eb2951afa6 in core::ops::function::FnOnce::call_once ()
+#24 0x000055eb2cae091b in test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> ()
+#25 0x000055eb2caed2eb in test::run_test::{closure#0} ()
+#26 0x000055eb2cae8a04 in std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()> ()
+#27 0x000055eb2caefef2 in <std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0} ()
+#28 0x000055eb3129086f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#29 0x00007e6d51a9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#30 0x00007e6d51b29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7e6d52377b80 (LWP 1068874) "codex_hepta_age"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x000055eb312789f6 in <std::thread::thread::Thread>::park_timeout ()
+#2  0x000055eb2caedfb9 in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv::{closure#1} ()
+#3  0x000055eb2caf7fdc in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv ()
+#4  0x000055eb2cb04e84 in test::console::run_tests_console ()
+#5  0x000055eb2caf3429 in test::test_main ()
+#6  0x000055eb2caf0c7b in test::test_main_static ()
+#7  0x000055eb2b764a63 in codex_hepta_agentd::main ()
+#8  0x000055eb29507713 in core::ops::function::FnOnce::call_once ()
+#9  0x000055eb2b1d5bf6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x000055eb2b667c99 in std::rt::lang_start::{{closure}} ()
+#11 0x000055eb31285404 in std::rt::lang_start_internal ()
+#12 0x000055eb2b667c81 in std::rt::lang_start ()
+#13 0x000055eb2b916bc5 in main ()
+rax            0xfffffffffffffdfc  -516
+rbx            0x55eb5fbc9208      94469411869192
+rcx            0x7e6d51b2752d      139007987184941
+rdx            0xffffffff          4294967295
+rsi            0x89                137
+rdi            0x55eb5fbc9208      94469411869192
+rbp            0x7ffea3c96080      0x7ffea3c96080
+rsp            0x7ffea3c96038      0x7ffea3c96038
+r8             0x0                 0
+r9             0x7ffeffffffff      140733193388031
+r10            0x7ffea3c96050      140731646304336
+r11            0x246               582
+r12            0x7e6d51a2a6e0      139007986149088
+r13            0x2e835c64          780360804
+r14            0x7ffea3c96050      140731646304336
+r15            0x7e6d51b27510      139007987184912
+rip            0x7e6d51b2752d      0x7e6d51b2752d <syscall+29>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+fs_base        0x7e6d52377b80      139007995902848
+gs_base        0x0                 0
+Stack level 0, frame at 0x7ffea3c96040:
+ rip = 0x7e6d51b2752d in syscall (../sysdeps/unix/sysv/linux/x86_64/syscall.S:38); saved rip = 0x55eb312789f6
+ called by frame at 0x7ffea3c96090
+ source language asm.
+ Arglist at 0x7ffea3c96030, args: 
+ Locals at 0x7ffea3c96030, Previous frame's sp is 0x7ffea3c96040
+ Saved registers:
+  rip at 0x7ffea3c96038
+syscall + 29 in section .text of /lib/x86_64-linux-gnu/libc.so.6
+   0x7e6d51b274ed <__GI_syncfs+13>:	add    %esi,%eax
+   0x7e6d51b274ef <__GI_syncfs+15>:	(bad)
+   0x7e6d51b274f0 <__GI_syncfs+16>:	push   0x1(%rbx)
+   0x7e6d51b274f3 <__GI_syncfs+19>:	ret
+   0x7e6d51b274f4 <__GI_syncfs+20>:	mov    0xdc8fd(%rip),%rcx        # 0x7e6d51c03df8
+   0x7e6d51b274fb <__GI_syncfs+27>:	neg    %eax
+   0x7e6d51b274fd <__GI_syncfs+29>:	mov    %eax,%fs:(%rcx)
+   0x7e6d51b27500 <__GI_syncfs+32>:	or     $0xffffffffffffffff,%rax
+   0x7e6d51b27504 <__GI_syncfs+36>:	ret
+   0x7e6d51b27505:	cs nopw 0x0(%rax,%rax,1)
+   0x7e6d51b2750f:	nop
+   0x7e6d51b27510 <syscall>:	endbr64
+   0x7e6d51b27514 <syscall+4>:	mov    %rdi,%rax
+   0x7e6d51b27517 <syscall+7>:	mov    %rsi,%rdi
+   0x7e6d51b2751a <syscall+10>:	mov    %rdx,%rsi
+   0x7e6d51b2751d <syscall+13>:	mov    %rcx,%rdx
+   0x7e6d51b27520 <syscall+16>:	mov    %r8,%r10
+   0x7e6d51b27523 <syscall+19>:	mov    %r9,%r8
+   0x7e6d51b27526 <syscall+22>:	mov    0x8(%rsp),%r9
+   0x7e6d51b2752b <syscall+27>:	syscall
+=> 0x7e6d51b2752d <syscall+29>:	cmp    $0xfffffffffffff001,%rax
+   0x7e6d51b27533 <syscall+35>:	jae    0x7e6d51b27536 <syscall+38>
+   0x7e6d51b27535 <syscall+37>:	ret
+   0x7e6d51b27536 <syscall+38>:	mov    0xdc8bb(%rip),%rcx        # 0x7e6d51c03df8
+   0x7e6d51b2753d <syscall+45>:	neg    %eax
+   0x7e6d51b2753f <syscall+47>:	mov    %eax,%fs:(%rcx)
+   0x7e6d51b27542 <syscall+50>:	or     $0xffffffffffffffff,%rax
+   0x7e6d51b27546 <syscall+54>:	ret
+   0x7e6d51b27547:	nopw   0x0(%rax,%rax,1)
+   0x7e6d51b27550 <openlog_internal>:	push   %rbp
+   0x7e6d51b27551 <openlog_internal+1>:	mov    %rsp,%rbp
+   0x7e6d51b27554 <openlog_internal+4>:	push   %r15
+   0x7e6d51b27556 <openlog_internal+6>:	push   %r14
+   0x7e6d51b27558 <openlog_internal+8>:	push   %r13
+   0x7e6d51b2755a <openlog_internal+10>:	push   %r12
+   0x7e6d51b2755c <openlog_internal+12>:	push   %rbx
+   0x7e6d51b2755d <openlog_internal+13>:	sub    $0x8,%rsp
+   0x7e6d51b27561 <openlog_internal+17>:	test   %rdi,%rdi
+   0x7e6d51b27564 <openlog_internal+20>:	je     0x7e6d51b2756d <openlog_internal+29>
+   0x7e6d51b27566 <openlog_internal+22>:	mov    %rdi,0xe4ae3(%rip)        # 0x7e6d51c0c050 <LogTag>
+process 1068874
+Mapped address spaces:
+
+          Start Addr           End Addr       Size     Offset  Perms  objfile
+      0x55eb263f6000     0x55eb294e7000  0x30f1000        0x0  r--p   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x55eb294e7000     0x55eb312bb000  0x7dd4000  0x30f0000  r-xp   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x55eb312bb000     0x55eb3184b000   0x590000  0xaec3000  r--p   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x55eb3184b000     0x55eb3185c000    0x11000  0xb452000  rw-p   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x55eb3185c000     0x55eb31860000     0x4000        0x0  rw-p   
+      0x55eb5fbc8000     0x55eb5fbe9000    0x21000        0x0  rw-p   [heap]
+      0x7e6cd4000000     0x7e6cd4021000    0x21000        0x0  rw-p   
+      0x7e6cd4021000     0x7e6cd8000000  0x3fdf000        0x0  ---p   
+      0x7e6cd8000000     0x7e6cd8021000    0x21000        0x0  rw-p   
+      0x7e6cd8021000     0x7e6cdc000000  0x3fdf000        0x0  ---p   
+      0x7e6cdc000000     0x7e6cdc03a000    0x3a000        0x0  rw-p   
+      0x7e6cdc03a000     0x7e6ce0000000  0x3fc6000        0x0  ---p   
+      0x7e6ce27fd000     0x7e6ce27fe000     0x1000        0x0  ---p   
+      0x7e6ce27fe000     0x7e6ce2ffe000   0x800000        0x0  rw-p   
+      0x7e6ce2ffe000     0x7e6ce2fff000     0x1000        0x0  ---p   
+      0x7e6ce2fff000     0x7e6ce37ff000   0x800000        0x0  rw-p   
+      0x7e6ce37ff000     0x7e6ce3800000     0x1000        0x0  ---p   
+      0x7e6ce3800000     0x7e6ce4000000   0x800000        0x0  rw-p   
+      0x7e6ce4000000     0x7e6ce4021000    0x21000        0x0  rw-p   
+      0x7e6ce4021000     0x7e6ce8000000  0x3fdf000        0x0  ---p   
+      0x7e6ce8000000     0x7e6ce8021000    0x21000        0x0  rw-p   
+      0x7e6ce8021000     0x7e6cec000000  0x3fdf000        0x0  ---p   
+      0x7e6cec000000     0x7e6cec03f000    0x3f000        0x0  rw-p   
+      0x7e6cec03f000     0x7e6cf0000000  0x3fc1000        0x0  ---p   
+      0x7e6cf0000000     0x7e6cf0021000    0x21000        0x0  rw-p   
+      0x7e6cf0021000     0x7e6cf4000000  0x3fdf000        0x0  ---p   
+      0x7e6cf4000000     0x7e6cf402e000    0x2e000        0x0  rw-p   
+      0x7e6cf402e000     0x7e6cf8000000  0x3fd2000        0x0  ---p   
+      0x7e6cf8000000     0x7e6cf8021000    0x21000        0x0  rw-p   
+      0x7e6cf8021000     0x7e6cfc000000  0x3fdf000        0x0  ---p   
+      0x7e6cfc000000     0x7e6cfc021000    0x21000        0x0  rw-p   
+      0x7e6cfc021000     0x7e6d00000000  0x3fdf000        0x0  ---p   
+      0x7e6d007f9000     0x7e6d007fa000     0x1000        0x0  ---p   
+      0x7e6d007fa000     0x7e6d00ffa000   0x800000        0x0  rw-p   
+      0x7e6d00ffa000     0x7e6d00ffb000     0x1000        0x0  ---p   
+      0x7e6d00ffb000     0x7e6d017fb000   0x800000        0x0  rw-p   
+      0x7e6d017fb000     0x7e6d017fc000     0x1000        0x0  ---p   
+      0x7e6d017fc000     0x7e6d01ffc000   0x800000        0x0  rw-p   
+      0x7e6d01ffc000     0x7e6d01ffd000     0x1000        0x0  ---p   
+      0x7e6d01ffd000     0x7e6d027fd000   0x800000        0x0  rw-p   
+      0x7e6d027fd000     0x7e6d027fe000     0x1000        0x0  ---p   
+      0x7e6d027fe000     0x7e6d02ffe000   0x800000        0x0  rw-p   
+      0x7e6d02ffe000     0x7e6d02fff000     0x1000        0x0  ---p   
+      0x7e6d02fff000     0x7e6d037ff000   0x800000        0x0  rw-p   
+      0x7e6d037ff000     0x7e6d03800000     0x1000        0x0  ---p   
+      0x7e6d03800000     0x7e6d04000000   0x800000        0x0  rw-p   
+      0x7e6d04000000     0x7e6d04041000    0x41000        0x0  rw-p   
+      0x7e6d04041000     0x7e6d08000000  0x3fbf000        0x0  ---p   
+      0x7e6d08000000     0x7e6d08044000    0x44000        0x0  rw-p   
+      0x7e6d08044000     0x7e6d0c000000  0x3fbc000        0x0  ---p   
+      0x7e6d0c000000     0x7e6d0c039000    0x39000        0x0  rw-p   
+      0x7e6d0c039000     0x7e6d10000000  0x3fc7000        0x0  ---p   
+      0x7e6d10000000     0x7e6d10041000    0x41000        0x0  rw-p   
+      0x7e6d10041000     0x7e6d14000000  0x3fbf000        0x0  ---p   
+      0x7e6d14000000     0x7e6d14037000    0x37000        0x0  rw-p   
+      0x7e6d14037000     0x7e6d18000000  0x3fc9000        0x0  ---p   
+      0x7e6d18000000     0x7e6d18032000    0x32000        0x0  rw-p   
+      0x7e6d18032000     0x7e6d1c000000  0x3fce000        0x0  ---p   
+      0x7e6d1c000000     0x7e6d1c13b000   0x13b000        0x0  rw-p   
+      0x7e6d1c13b000     0x7e6d20000000  0x3ec5000        0x0  ---p   
+      0x7e6d207f9000     0x7e6d207fa000     0x1000        0x0  ---p   
+      0x7e6d207fa000     0x7e6d20ffa000   0x800000        0x0  rw-p   
+      0x7e6d20ffa000     0x7e6d20ffb000     0x1000        0x0  ---p   
+      0x7e6d20ffb000     0x7e6d217fb000   0x800000        0x0  rw-p   
+      0x7e6d217fb000     0x7e6d217fc000     0x1000        0x0  ---p   
+      0x7e6d217fc000     0x7e6d21ffc000   0x800000        0x0  rw-p   
+      0x7e6d21ffc000     0x7e6d21ffd000     0x1000        0x0  ---p   
+      0x7e6d21ffd000     0x7e6d227fd000   0x800000        0x0  rw-p   
+      0x7e6d227fd000     0x7e6d227fe000     0x1000        0x0  ---p   
+      0x7e6d227fe000     0x7e6d22ffe000   0x800000        0x0  rw-p   
+      0x7e6d22ffe000     0x7e6d22fff000     0x1000        0x0  ---p   
+      0x7e6d22fff000     0x7e6d237ff000   0x800000        0x0  rw-p   
+      0x7e6d237ff000     0x7e6d23800000     0x1000        0x0  ---p   
+      0x7e6d23800000     0x7e6d24000000   0x800000        0x0  rw-p   
+      0x7e6d24000000     0x7e6d240f4000    0xf4000        0x0  rw-p   
+      0x7e6d240f4000     0x7e6d28000000  0x3f0c000        0x0  ---p   
+      0x7e6d28000000     0x7e6d2813b000   0x13b000        0x0  rw-p   
+      0x7e6d2813b000     0x7e6d2c000000  0x3ec5000        0x0  ---p   
+      0x7e6d2c000000     0x7e6d2c0fc000    0xfc000        0x0  rw-p   
+      0x7e6d2c0fc000     0x7e6d30000000  0x3f04000        0x0  ---p   
+      0x7e6d30000000     0x7e6d300fc000    0xfc000        0x0  rw-p   
+      0x7e6d300fc000     0x7e6d34000000  0x3f04000        0x0  ---p   
+      0x7e6d34000000     0x7e6d34021000    0x21000        0x0  rw-p   
+      0x7e6d34021000     0x7e6d38000000  0x3fdf000        0x0  ---p   
+      0x7e6d38000000     0x7e6d38243000   0x243000        0x0  rw-p   
+      0x7e6d38243000     0x7e6d3c000000  0x3dbd000        0x0  ---p   
+      0x7e6d3c000000     0x7e6d3c021000    0x21000        0x0  rw-p   
+      0x7e6d3c021000     0x7e6d40000000  0x3fdf000        0x0  ---p   
+      0x7e6d407f9000     0x7e6d407fa000     0x1000        0x0  ---p   
+      0x7e6d407fa000     0x7e6d40ffa000   0x800000        0x0  rw-p   
+      0x7e6d40ffa000     0x7e6d40ffb000     0x1000        0x0  ---p   
+      0x7e6d40ffb000     0x7e6d417fb000   0x800000        0x0  rw-p   
+      0x7e6d417fb000     0x7e6d417fc000     0x1000        0x0  ---p   
+      0x7e6d417fc000     0x7e6d41ffc000   0x800000        0x0  rw-p   
+      0x7e6d41ffc000     0x7e6d41ffd000     0x1000        0x0  ---p   
+      0x7e6d41ffd000     0x7e6d427fd000   0x800000        0x0  rw-p   
+      0x7e6d427fd000     0x7e6d427fe000     0x1000        0x0  ---p   
+      0x7e6d427fe000     0x7e6d42ffe000   0x800000        0x0  rw-p   
+      0x7e6d42ffe000     0x7e6d42fff000     0x1000        0x0  ---p   
+      0x7e6d42fff000     0x7e6d437ff000   0x800000        0x0  rw-p   
+      0x7e6d437ff000     0x7e6d43800000     0x1000        0x0  ---p   
+      0x7e6d43800000     0x7e6d44000000   0x800000        0x0  rw-p   
+      0x7e6d44000000     0x7e6d44021000    0x21000        0x0  rw-p   
+      0x7e6d44021000     0x7e6d48000000  0x3fdf000        0x0  ---p   
+      0x7e6d48000000     0x7e6d48021000    0x21000        0x0  rw-p   
+      0x7e6d48021000     0x7e6d4c000000  0x3fdf000        0x0  ---p   
+      0x7e6d4c000000     0x7e6d4c0e2000    0xe2000        0x0  rw-p   
+      0x7e6d4c0e2000     0x7e6d50000000  0x3f1e000        0x0  ---p   
+      0x7e6d501fd000     0x7e6d501fe000     0x1000        0x0  ---p   
+      0x7e6d501fe000     0x7e6d509fe000   0x800000        0x0  rw-p   
+      0x7e6d509fe000     0x7e6d509ff000     0x1000        0x0  ---p   
+      0x7e6d509ff000     0x7e6d511ff000   0x800000        0x0  rw-p   
+      0x7e6d511ff000     0x7e6d51200000     0x1000        0x0  ---p   
+      0x7e6d51200000     0x7e6d51a00000   0x800000        0x0  rw-p   
+      0x7e6d51a00000     0x7e6d51a28000    0x28000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7e6d51a28000     0x7e6d51bb1000   0x189000    0x28000  r-xp   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7e6d51bb1000     0x7e6d51c00000    0x4f000   0x1b1000  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7e6d51c00000     0x7e6d51c04000     0x4000   0x1ff000  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7e6d51c04000     0x7e6d51c06000     0x2000   0x203000  rw-p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7e6d51c06000     0x7e6d51c13000     0xd000        0x0  rw-p   
+      0x7e6d51d08000     0x7e6d51d09000     0x1000        0x0  ---p   
+      0x7e6d51d09000     0x7e6d51d0b000     0x2000        0x0  rw-p   
+      0x7e6d51d0b000     0x7e6d51d0c000     0x1000        0x0  ---p   
+      0x7e6d51d0c000     0x7e6d51d0e000     0x2000        0x0  rw-p   
+      0x7e6d51d0e000     0x7e6d51d0f000     0x1000        0x0  ---p   
+      0x7e6d51d0f000     0x7e6d51d11000     0x2000        0x0  rw-p   
+      0x7e6d51d14000     0x7e6d51d15000     0x1000        0x0  ---p   
+      0x7e6d51d15000     0x7e6d51d17000     0x2000        0x0  rw-p   
+      0x7e6d51d17000     0x7e6d51d27000    0x10000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7e6d51d27000     0x7e6d51da6000    0x7f000    0x10000  r-xp   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7e6d51da6000     0x7e6d51dfe000    0x58000    0x8f000  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7e6d51dfe000     0x7e6d51dff000     0x1000    0xe7000  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7e6d51dff000     0x7e6d51e00000     0x1000    0xe8000  rw-p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7e6d51e00000     0x7e6d51eb3000    0xb3000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7e6d51eb3000     0x7e6d521e7000   0x334000    0xb3000  r-xp   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7e6d521e7000     0x7e6d522b2000    0xcb000   0x3e7000  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7e6d522b2000     0x7e6d5230e000    0x5c000   0x4b1000  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7e6d5230e000     0x7e6d52311000     0x3000   0x50d000  rw-p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7e6d52311000     0x7e6d52314000     0x3000        0x0  rw-p   
+      0x7e6d52317000     0x7e6d52318000     0x1000        0x0  ---p   
+      0x7e6d52318000     0x7e6d5231a000     0x2000        0x0  rw-p   
+      0x7e6d5231a000     0x7e6d5231b000     0x1000        0x0  ---p   
+      0x7e6d5231b000     0x7e6d5231d000     0x2000        0x0  rw-p   
+      0x7e6d5231d000     0x7e6d5231e000     0x1000        0x0  ---p   
+      0x7e6d5231e000     0x7e6d52320000     0x2000        0x0  rw-p   
+      0x7e6d52320000     0x7e6d52321000     0x1000        0x0  ---p   
+      0x7e6d52321000     0x7e6d52323000     0x2000        0x0  rw-p   
+      0x7e6d52323000     0x7e6d52324000     0x1000        0x0  ---p   
+      0x7e6d52324000     0x7e6d52326000     0x2000        0x0  rw-p   
+      0x7e6d52352000     0x7e6d52353000     0x1000        0x0  ---p   
+      0x7e6d52353000     0x7e6d52355000     0x2000        0x0  rw-p   
+      0x7e6d52355000     0x7e6d52356000     0x1000        0x0  ---p   
+      0x7e6d52356000     0x7e6d52358000     0x2000        0x0  rw-p   
+      0x7e6d52358000     0x7e6d52359000     0x1000        0x0  ---p   
+      0x7e6d52359000     0x7e6d5235b000     0x2000        0x0  rw-p   
+      0x7e6d5235b000     0x7e6d5235c000     0x1000        0x0  ---p   
+      0x7e6d5235c000     0x7e6d5235e000     0x2000        0x0  rw-p   
+      0x7e6d5235e000     0x7e6d5235f000     0x1000        0x0  ---p   
+      0x7e6d5235f000     0x7e6d52361000     0x2000        0x0  rw-p   
+      0x7e6d52361000     0x7e6d52362000     0x1000        0x0  ---p   
+      0x7e6d52362000     0x7e6d52364000     0x2000        0x0  rw-p   
+      0x7e6d52364000     0x7e6d5236c000     0x8000        0x0  rw-s   /tmp/.tmpvnFjrZ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-shm
+      0x7e6d5236c000     0x7e6d52374000     0x8000        0x0  rw-s   /tmp/.tmpvnFjrZ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/home/hepta_evidence_2.sqlite-shm
+      0x7e6d52374000     0x7e6d52375000     0x1000        0x0  ---p   
+      0x7e6d52375000     0x7e6d52377000     0x2000        0x0  rw-p   
+      0x7e6d52377000     0x7e6d5237c000     0x5000        0x0  rw-p   
+      0x7e6d5237c000     0x7e6d52380000     0x4000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7e6d52380000     0x7e6d523a4000    0x24000     0x4000  r-xp   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7e6d523a4000     0x7e6d523a8000     0x4000    0x28000  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7e6d523a8000     0x7e6d523a9000     0x1000    0x2b000  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7e6d523a9000     0x7e6d523aa000     0x1000    0x2c000  rw-p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7e6d523aa000     0x7e6d523c8000    0x1e000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7e6d523c8000     0x7e6d5242a000    0x62000    0x1e000  r-xp   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7e6d5242a000     0x7e6d52446000    0x1c000    0x80000  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7e6d52446000     0x7e6d52450000     0xa000    0x9c000  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7e6d52450000     0x7e6d52454000     0x4000    0xa6000  rw-p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7e6d52456000     0x7e6d52457000     0x1000        0x0  ---p   
+      0x7e6d52457000     0x7e6d52459000     0x2000        0x0  rw-p   
+      0x7e6d52459000     0x7e6d5245a000     0x1000        0x0  ---p   
+      0x7e6d5245a000     0x7e6d5245c000     0x2000        0x0  rw-p   
+      0x7e6d5245c000     0x7e6d5245d000     0x1000        0x0  ---p   
+      0x7e6d5245d000     0x7e6d5245f000     0x2000        0x0  rw-p   
+      0x7e6d5245f000     0x7e6d52460000     0x1000        0x0  ---p   
+      0x7e6d52460000     0x7e6d52462000     0x2000        0x0  rw-p   
+      0x7e6d52462000     0x7e6d5246a000     0x8000        0x0  rw-s   /tmp/.tmpvnFjrZ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-shm
+      0x7e6d5246a000     0x7e6d5246b000     0x1000        0x0  ---p   
+      0x7e6d5246b000     0x7e6d5246d000     0x2000        0x0  rw-p   
+      0x7e6d5246d000     0x7e6d5246e000     0x1000        0x0  ---p   
+      0x7e6d5246e000     0x7e6d52470000     0x2000        0x0  rw-p   
+      0x7e6d52470000     0x7e6d52471000     0x1000        0x0  ---p   
+      0x7e6d52471000     0x7e6d52473000     0x2000        0x0  rw-p   
+      0x7e6d52473000     0x7e6d52474000     0x1000        0x0  ---p   
+      0x7e6d52474000     0x7e6d52476000     0x2000        0x0  rw-p   
+      0x7e6d52476000     0x7e6d52477000     0x1000        0x0  ---p   
+      0x7e6d52477000     0x7e6d52479000     0x2000        0x0  rw-p   
+      0x7e6d52479000     0x7e6d5247a000     0x1000        0x0  ---p   
+      0x7e6d5247a000     0x7e6d5247c000     0x2000        0x0  rw-p   
+      0x7e6d5247c000     0x7e6d5247d000     0x1000        0x0  ---p   
+      0x7e6d5247d000     0x7e6d5247f000     0x2000        0x0  rw-p   
+      0x7e6d5247f000     0x7e6d52481000     0x2000        0x0  rw-p   
+      0x7e6d52481000     0x7e6d52485000     0x4000        0x0  r--p   [vvar]
+      0x7e6d52485000     0x7e6d52487000     0x2000        0x0  r--p   [vvar_vclock]
+      0x7e6d52487000     0x7e6d52489000     0x2000        0x0  r-xp   [vdso]
+      0x7e6d52489000     0x7e6d5248a000     0x1000        0x0  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7e6d5248a000     0x7e6d524b5000    0x2b000     0x1000  r-xp   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7e6d524b5000     0x7e6d524bf000     0xa000    0x2c000  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7e6d524bf000     0x7e6d524c1000     0x2000    0x36000  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7e6d524c1000     0x7e6d524c3000     0x2000    0x38000  rw-p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7ffea3c79000     0x7ffea3c9a000    0x21000        0x0  rw-p   [stack]
+  0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
+{"kernel_signal_info": {"number": 19, "raw": "$1 = {si_signo = 19, si_errno = 0, si_code = 0, _sifields = {_pad = {1068839, 1000, 0 <repeats 26 times>}, _kill = {si_pid = 1068839, si_uid = 1000}, _timer = {si_tid = 1068839, si_overrun = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 1068839, si_uid = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 1068839, si_uid = 1000, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x3e800104f27, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 4294968364839, si_fd = 0}, _sigsys = {_call_addr = 0x3e800104f27, _syscall = 0, _arch = 0}}}\n"}}
+{"method": "Read-only /proc thread maps plus stopped-thread registers; no inferior function call", "near_sp_and_fault_and_named_stack_mappings": [{"bytes": 135168, "contains_fault_address": false, "contains_sp": true, "end": "0x7ffea3c9a000", "line": "7ffea3c79000-7ffea3c9a000 rw-p 00000000 00:00 0                          [stack]", "start": "0x7ffea3c79000"}], "pc": "0x7e6d51b2752d", "pid": 1068874, "signal_info": {"number": 19, "raw": "$1 = {si_signo = 19, si_errno = 0, si_code = 0, _sifields = {_pad = {1068839, 1000, 0 <repeats 26 times>}, _kill = {si_pid = 1068839, si_uid = 1000}, _timer = {si_tid = 1068839, si_overrun = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 1068839, si_uid = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 1068839, si_uid = 1000, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x3e800104f27, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 4294968364839, si_fd = 0}, _sigsys = {_call_addr = 0x3e800104f27, _syscall = 0, _arch = 0}}}\n"}, "sp": "0x7ffea3c96038", "tid": 1068874}

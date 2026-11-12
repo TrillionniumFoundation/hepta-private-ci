@@ -1,0 +1,42 @@
+{
+  "format": "hepta.root-next-use-trainer-type-preparation-review.v1",
+  "observed_at": "2026-11-12T12:05:07.337530+00:00",
+  "source_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+  "preparation_manifest_blob": "3fdc9d9dfbf2b3dac660116e07f8f30df4711243",
+  "before": {
+    "bytes": 23987,
+    "sha256": "eb2ec69731639bd7d6a6669024738640fd698007898ce75ce8db6189f633c088",
+    "git_blob_sha": "821125b04b65cb63d79ac7d5d1285fbaf3155204"
+  },
+  "after": {
+    "bytes": 24062,
+    "sha256": "2d85af35c49b8dfe2d5e0958b5dc7b48d47de1d602da94eaca4f69941e034fe6",
+    "git_blob_sha": "467831627aaf7833f035804b3c94629739b3a981"
+  },
+  "patch": {
+    "bytes": 763,
+    "sha256": "5218bd3eb1edb0448dbf3f973e74a9701a2341e10c6f4c5e1df6f2700d7494b8",
+    "git_blob_sha": "1ca8700323983cf7cc0b9cd9ec57c985f74285c7"
+  },
+  "exact_single_replacement": true,
+  "original_declared_return_type": "Option<&LearningIterationEvidenceClientV1>",
+  "typed_reference_matches_original_return": true,
+  "kept": [
+    "original option rejection and original error string",
+    "same readback method and argument evaluation order",
+    "same snapshot and prior Training stage request",
+    "same await and error propagation",
+    "evaluated branch and every other source byte",
+    "original caller members and verifier"
+  ],
+  "protected_row_observation": {
+    "row_index": 279,
+    "status": "static existing full-body protection still contains old expression; actual separate diagnostic pending",
+    "policy": "retain original failure, then allow only exact audited source-body synchronization; no wildcard or verifier change"
+  },
+  "runtime_compilation": "not_run",
+  "full_project_original_boundary_diagnostic": "not_yet_observed",
+  "full_source_gate": "not_run",
+  "full_caller_gate": "not_run",
+  "ordinary_A_B_C_or_recovery": false
+}

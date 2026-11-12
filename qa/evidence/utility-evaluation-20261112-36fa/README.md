@@ -1,95 +1,113 @@
-# Utility evaluation evidence — preparation and diagnostic checkpoint
+# Utility evaluation evidence — complete diagnostics and integrated preparation
 
-Checkpoint: 2026-11-12 12:00:51 UTC. Published source remains `e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd` (tree `b607ff5f50812c5e0f932d7dae18d4c74f1269cb`), which **failed exact-head qualification**. No new source head, merge, ordinary adoption or production activation is claimed.
+Checkpoint: 2026-11-12 13:12:09 UTC. Published source and Draft PR #6203 still identify **e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd**, tree **b607ff5f50812c5e0f932d7dae18d4c74f1269cb**. That exact source **failed qualification**. The new integrated tree below is preparation awaiting native maintenance and a newly frozen commit; it has no inherited test or full-gate pass.
 
-## New preserved observations
+The preceding 556-file checkpoint is retained unchanged at [README_556FILES_E8B6_PREPARATION.md](checkpoints/README_556FILES_E8B6_PREPARATION.md). Earlier original failures, unavailable-artifact observations, source restorations, preparations and actual run records remain in this evidence history.
 
-- [Full v3 preparation](readback-caller-preparation-v3-full/final-v3-manifest.json) preserves 29 complete artifacts, its first failed mutation attempt, and its later 21 actual passing selected mutation methods. It is historical preparation with an independently reproduced literal-protection gap, not a passed whole gate.
-- [Reviewed v3.1 four-path correction](readback-caller-preparation-v3_1/v31-manifest.json) preserves that old gap and the actual 14 negative cases rejected by two new passing methods. The original verifier now receives function-scoped literal rules for two real directory joins; new source-closure QA separately checks the two real format macro first arguments. The original verifier itself is unchanged.
-- [Root independent v3.1 review](readback-caller-preparation-v3_1/root-independent-review.json) and [separate review](readback-caller-preparation-v3_1/ordinary-independent-review.json) verify the four exact preimages/postimages, unchanged 534 boundary memberships, 399 protected rows across 328 unique paths, and all 95 original functions in nine QA files. Training now uses the complete original Rust collector. Its and Selection's pure function-injection checks reuse only an invariant method-local baseline index; real file removals use fresh indexes. All 39 boundary calls remain. Three complete membership methods and the unchanged 600-second source gate remain **not run** in this preparation.
-- The frozen v2 [all-boundary diagnostic checkpoint](source-diagnostics/all-boundaries-overlay-v1/preterminal-checkpoint-114753.json) retains its original input identity and partial statuses. The later [original progress chunk](source-diagnostics/all-boundaries-overlay-v1/observations/progress-167111-185584-position281-failure.sdk.json), offsets 167111..185584, records a new real failure at position 281: `circuit_next_use_receipt_owner.rs` has an unresolved possible original Training readback receiver. Position 295 also records the known six unregistered original channel callers. The chunk ends with position 299 starting at 11:51:21 UTC. These are actual failures, not a completed full scan. A minimal explicitly typed Trainer binding is being prepared separately; the running diagnostic's source and overlay are not edited.
-- The earlier [new-build v3 preparation failed before Cargo](native-new-build-diagnostic-v3/RESULT.json) because the task target had 6,018,326,528 free bytes, below its preparation threshold. Tests executed: zero.
-- A separately labeled [v4 new diagnostic build actually started](native-new-build-diagnostic-v4/BUILD_STARTED.json) at 11:45:25 UTC using the original exact e8 source. [Actual metadata](native-new-build-diagnostic-v4/CARGO_METADATA_RESULT.json) exited 0; all eight [original prebuild records](native-new-build-diagnostic-v4/prebuild-originals-manifest.json), including complete 921,472-byte Cargo metadata, are preserved in the archive and text companion. The [11:49 compiler-log prefix](native-new-build-diagnostic-v4/observations/compiler-prefix-114923.log) is explicitly partial. This checkpoint does not include a terminal build result or any Rust test from this diagnostic. The environment delta is an explicitly recorded new target on an existing writable /data filesystem; no old target was deleted. New binaries cannot be described as the original failed run's executable.
-- [Exact native inventory byte recovery](native-inventory-exact-byte-recovery/manifest.json) retains the normalized 14,741-file inventory and byte-identical compression recovery for four observed complete historical gzip variants, with five binary parts and fully read-back base64 companions. This is byte recovery from preserved inventories and observed hashes, not a new execution or proof of continuous availability. The two unavailable maintenance/eval stage gzips remain unavailable and were not reconstructed.
+## Integrated preparation: 40 exact changes, complete source identity
 
-[Independent original-byte review](independent-review/NEW_DIAGNOSTIC_ORIGINALS_CHECKPOINT.json) verifies the full native metadata archive and the exact progress-chunk failures. All e8 native/source/caller failures below remain unchanged. Real authorized ordinary Adopt = **0**; complete evaluated NoUpdate = **0**; daemon plus Root cold-recovery qualification = **0**.
+[Manifest](integrated-fixed-b298-prepared-v1/manifest.json) and four Base64 parts contain the complete immutable preparation packet. Its source basis is fixed upstream **b29869e856d08db1bfb066116a9c443376ccc57d**, tree **906546af39b07474f0b9d046a6e780b6d3342743**. No newer upstream head was substituted.
 
-## Prior 11:34 checkpoint retained verbatim
+The packet is 4,901,225 raw bytes, SHA-256 **9efc9637c3d04a038d4bae2dee61e8ef579688341e37281d90bfd9368ed40a91**. Its 40 changes produce 14,851 complete leaf entries and prepared tree **a8c41e56f1f8685444022692d1a636ec61b44e70**:
 
-# Utility evaluation evidence — exact e8 failures preserved
+| Scope | Paths | Actual purpose |
+| --- | ---: | --- |
+| Preserved e8 changes | 12 | Retain comparison semantics, incomplete-evidence regressions and previously reviewed fixture fixes |
+| Retention checks | 2 | Require eligible retention members when the primary is eligible, after existing original-owner and full-binding checks |
+| Fixture preconditions | 4 | Preserve whole task-source bijection and correct inclusive-expiry fixture boundaries |
+| Explicit original Trainer reference | 1 | Resolve the real typed receiver without registering an incorrect caller |
+| Panel fixture future storage | 1 | Box the private construction future and remove the forwarding async frame |
+| CALLERS plus QA | 19 | Preserve original inventories and add narrowly audited caller memberships and source protections |
+| Exact blob-size exception | 1 | Preserve the full base allowlist and append only exact reviewed CALLERS content hashes |
 
-Checkpoint: 2026-11-12 11:34 UTC. Source candidate: `e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd`, tree `b607ff5f50812c5e0f932d7dae18d4c74f1269cb`. This branch carries evidence separately from source PR #6203.
+Root rebuilt the e8 tree from all 14,741 retained source leaves, reconstructed the complete fixed b298 tree with 14,842 leaves, and checked every preparation preimage. Two independent reviews reconstructed the final 1,798 tree nodes and all nine new raw tree objects; reversing all 40 changes recovered the original b298 tree. GitHub's independently created tree also matched a8c41 exactly. See [evaluation review](integrated-fixed-b298-prepared-v1/EVALUATION_INDEPENDENT_REVIEW.json), [native review](integrated-fixed-b298-prepared-v1/NATIVE_INDEPENDENT_REVIEW.json), and the root reconstruction/composition scripts under [independent-review/scripts](independent-review/scripts).
 
-## Current conclusion
+This proves the prepared bytes and their composition. Native formatting/fix, a final source commit, original source/caller gates, and Rust execution remain distinct subsequent steps. The packet creates no owner, adopts no model and changes no production deployment.
 
-**The published e8 candidate failed exact-head qualification.** Its source remains frozen and all actual failures are retained. A successor integrating fixed `b29869e856d08db1bfb066116a9c443376ccc57d` is being prepared. Prepared changes and scoped diagnostics are not passed source or native gates.
+## Actual complete 534-boundary diagnostic: failed, no missing rows
 
-| Observation | Actual result |
-| --- | --- |
-| Exact-head fix / formatting | Both exited 0; full source unchanged and clean. |
-| Complete eval library | 163 passed, 0 failed, 0 skipped. Full original fresh XML and raw output independently checked. |
-| Native focused suite | Original just test exit 100; 100 actual cases, 76 passed, 24 failed, 0 skipped. Seventeen stack-overflow SIGABRTs, three 60-second per-test timeouts, four other failures. Whole command did not time out. |
-| Mixed missing-evidence agentd regression | Actually passed in 4.587 seconds. |
-| Whole native pipeline | Failed at focused prerequisite, terminal 10:08:49 UTC. All / ordinary / Root were not started. |
-| Source closure | Exit 1, 181.765 seconds, no timeout. Original unittest says Ran 357 tests, errors=28. Raw counting: 343 explicit ok methods, 14 unique error methods, 28 error/subtest records. |
-| Caller self-test | Passed. |
-| Full caller verification | Exit 1, 1,696.925-second stage, no timeout. Unexpected original read-only Training caller requires exact registration/protection repair. |
-| External corrected-marker diagnostic | 381 protected rows passed against unchanged e8 source; only a scoped diagnostic, not full source closure or full caller acceptance. |
-| Independent old-comparator control | Four actual regression failures, zero passed, original just test exit 100. Only two production comparator files reverted; new tests retained. Ineligible versus InsufficientEvidence assertions are present in fresh XML. |
-| GitHub CI | Recorded observation returned zero e8 runs/checks. Live base advanced to b298, and a merge conflict was observed. The earlier cached-base inference is explicitly retracted. |
+The original v2 CALLERS and its original 25-file Rust projection completed with normal exit **1**, without timeout or output limit:
 
-## Readable evidence
+| Original scoped diagnostic | Passed | Failed | Unknown |
+| --- | ---: | ---: | ---: |
+| Boundaries | 519 | 15 | 0 |
+| Protected rows | 390 | 0 | 0 |
 
-- [Original full source-gate package](source-gates/desktop-e8b6fe2a-v1/README.md), including all 53 original records and seven complete source-inventory checkpoints.
-- [Actual source-gate placement manifest](source-gates/desktop-e8b6fe2a-v1/package-map.json). The producer's [original placement manifest](source-gates/desktop-e8b6fe2a-v1/PLACEMENT_ORIGINAL.json) is retained unchanged. Only destination paths gained this branch's established qa/ prefix.
-- [Native terminal result](native-e8b6fe2a-v1/RESULT.json) and [focused failure details](native-e8b6fe2a-v1/focused/FAILURE_OBSERVATION.json).
-- [Original focused JUnit](native-e8b6fe2a-v1/focused/junit.xml) and [full original focused raw output, gzip](native-e8b6fe2a-v1/focused/focused.raw.log.gz).
-- [Original helper archive](native-e8b6fe2a-v1/focused/helpers-evidence.tar.gz), including actual Cargo output, environment/manifest and helper binary. A UTF-8 base64 companion allows exact restoration through text-only transports.
-- [Original old-comparator control result](countercontrol-e8b6fe2a-v1/RESULT.json) and [fresh control JUnit](countercontrol-e8b6fe2a-v1/junit.xml). The full original control raw, actual two-file patch and all 65 before/after source inputs are attached. The earlier prepared manifest retains its original 19aa provenance; the actual RESULT and source inventories bind this execution to e8.
-- [Independent full focused/control XML review](independent-review/FOCUSED_AND_CONTROL_FRESH_JUNIT_E8B6.json).
-- [Canonical e8 alignment inventory reconstruction](canonical-e8b6fe2a-alignment-v1/ROOT_RECONSTRUCTION_REVIEW.json), including original gzip parts and full byte/hash verification.
-- [Fixed-b298 semantic merge review](integration-b298/SEMANTIC_MERGE_REVIEW.json).
-- [Exact original b298 Git-object transport manifest](canonical-b298-original-objects/manifest.json): 11 original commits, 65 trees and 168 blobs; all object identities independently checked. Transport of original source is not qualification.
-- [GitHub CI observation and cached-base retraction](github-ci/E8B6_OBSERVATION_20261112T102012Z.json).
-- [Exact e8 ordinary integration audit](ORDINARY_INTEGRATION_ADDENDUM_E8B6.md), whose source-specific claims remain at e8.
-- [Historical 103-file checkpoint README](checkpoints/README_103FILES_E8B6_RUNNING.md), preserving the earlier in-progress observation.
+All 534 boundary and 390 protected rows completed. There are no unstarted or unfinished rows. Root reconstructed all eight large original files, reconciled every one of the 1,849 progress events against the complete 873,489-byte original stdout, compared its final JSON to the full report, and verified all 36 original retained part paths. Both complete 5,432,085-byte source inventories equal the preserved exact e8 inventory, SHA-256 **a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd**. External diagnostic inputs were unchanged.
 
-## Additional unexecuted preparation
+The original failed positions are 281, 295, 313, 332, 335, 337, 338, 347, 360, 361, 365, 459, 460, 461 and 468. Twelve expose audited existing callers requiring explicit registration and protection; three expose the typed Trainer expression ambiguity.
 
-[The seven-case non-stack source audit](nonstack-focused/e8-source-audit.json) preserves the original failures, source identities and unresolved causes. Independent review confirms four fixture postimages: two command waits cross the verifier's inclusive expiry second, one controlled provider clock uses checked expiry plus one, and one original task fixture bijectively aligns whole candidate definitions with immutable source order before signing/freezing. Production checks, signatures, assertions and deadlines are unchanged. These are prepared fixes, not observed native passes; the provider timeout and NextUse transport causes remain unproved.
+[Complete original placement](source-gates/desktop-all-boundaries-overlay-v1/PLACEMENT.json) · [root independent review](source-gates/desktop-all-boundaries-overlay-v1/ROOT_REVIEW.json) · [original run result](source-gates/desktop-all-boundaries-overlay-v1/run-result.json).
 
-[Readback caller preparation v1](readback-caller-preparation-v1/REVIEW.md) remains preserved as preparation history. [Frozen preparation v2](readback-caller-preparation-v2/REVIEW.md) contains 534 exact boundaries and 390 protected rows, including both retention-composition guards. Root independently verified all 12 postimages and preserved all 95 original functions across nine existing QA modules. Three new retention-fencing mutation test methods actually passed; the nine Training readback methods had not yet executed at this checkpoint. These are source-fencing checks, not signed runtime behavior.
+This remains the failed **scoped projection diagnostic**, not an original full gate or execution of the new integrated tree.
 
-The [actual complete-Rust four-boundary diagnostic](source-diagnostics/training-readback-overlay-v1/run-result.json) exited 1 without timeout: one boundary passed, three failed, and five protected rows passed. The original collector read all 6,590 original Rust files plus seven additions; the 25-file projection and v2 manifest were immutable, and complete physical before/after inventories matched the original a307 hash. The Training readback caller set passed. The shared channel still had six unregistered artifact/Selection callers, and the Selection readback connection was absent from two original material-check caller sets. The [independent raw/report review](source-diagnostics/training-readback-overlay-v1/ROOT_INDEPENDENT_REVIEW.json) preserves the exact failures. This is not a complete gate or a source-head qualification.
+## Typed receiver diagnostics remain separate
 
-A separate [all-boundary diagnostic](source-diagnostics/all-boundaries-overlay-v1/input.json) has actually started on the independently verified read-only clone, at 11:16:56 UTC. It keeps the same complete 6,597-file Rust projection, unchanged v2 manifest, original collector and original 4,800-second execution budget. It records all 534 boundary and 390 protected-row outcomes individually; exceptions, timeouts and incomplete rows remain Unknown. Its final result is not yet observed at this checkpoint. The full original gate remains not run on the unpublished successor.
+The explicit Trainer-reference postimage is **467831627aaf7833f035804b3c94629739b3a981**. It preserves the original missing-owner error, readback arguments, await and Evaluated branch.
 
-The [Selection authority audit](readback-caller-preparation-v3/SELECTION_AUTHORITY_AUDIT.md) confirms three real original read-only seams and a further explicit remote-readback caller. It does not grant new authority. The separate [artifact authority audit](readback-caller-preparation-v3/ARTIFACT_AUTHORITY_AUDIT.json) confirms three real original channel seams. The HEAD client/service include an authorized Sign effect and must not be described as entirely read-only. Final v3 is being prepared to additionally protect the minimal native-owner, wire-purpose, current signed-source and durable-source dependency functions required for those audited routes. That preparation remains unexecuted as a full gate, and no unreviewed caller is admitted by these findings.
+The first diagnostic actually passed positions 281 and 313 and failed the original protected row 279 because that row retained the previous masked body. Its overall exit remains **1**. [Original placement](source-gates/desktop-next-use-trainer-type-v1/PLACEMENT.json) and [root review](source-gates/desktop-next-use-trainer-type-v1/ROOT_REVIEW.json) retain this result.
 
-[The fixed-b298 Rust overlay](diagnostic-preparation-fixed-b298/RUST_OVERLAY_MANIFEST.json) contains 25 exact in-memory replacements/additions over the complete e8 Rust source set, including seven new files. It is a diagnostic projection with no published source-tree identity. The physical frozen clone must remain unchanged, and the eventual complete gate will run independently on the final source head.
+A separate original diagnostic then ran position 468: **one passed, zero failed/Unknown, zero protected rows**, normal exit 0. The original Evaluation callers are only candidate-stage Evaluation and evaluated-retention context; the NextUse file is correctly excluded. This was an actual separate execution; the first two boundaries were not rerun. [Original report](source-gates/desktop-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json) · [root review](source-gates/desktop-next-use-evaluation-readback-v1/ROOT_REVIEW.json).
 
+Both runs retained the full 6,597-file Rust projection and unchanged e8 physical source. Neither supplies a final integrated-source gate result.
 
+## v3.2 source protection preparation
 
-The separate [Selection-only preparation checkpoint](readback-caller-preparation-v3-selection-only/manifest.json) contains 534 boundaries and 392 protected rows. Its [eight explicitly selected mutation methods](readback-caller-preparation-v3-selection-only/selection-mutation-qa.raw.log) actually passed, with original verifier bytes and inputs unchanged. The complete-source membership method was not run there. This intermediate source-fencing result is preserved at its own manifest identity; it is not the final artifact-inclusive v3, a full gate, or native execution.
+The final CALLERS blob is **2354abb1eb485629ecdf17a2e8952a529b8df384**, 1,255,349 bytes, SHA-256 **42f75c0b463c6793048e3b5afd50b18f57e5e770a3b7fc9e89c1c4c29b532b91**.
 
-## Source closure and retention preparation limits
+Relative to reviewed v3.1, it retains all 534 boundary IDs and contracts; exactly eight caller lists append one audited existing path each. The other 526 rows and all other top-level metadata are identical. Among the original 399 protected rows, only row 279's first predecessors sequence is synchronized to the separately reviewed typed-reference body. Ten appended rows yield **409 protected rows covering 338 distinct paths**.
 
-The original source-closure runner's 329 derived passed field is preserved verbatim; it is not substituted for the independently observed 343 explicit ok methods. All 28 errors reported two stale required-order markers in the same protected source. No PermissionError occurred; the disproved chmod hypothesis led to no driver or harness change.
+Five existing QA modules change only nine EXPECTED tuple values. All **56 existing functions remain byte-for-byte and AST-identical**. Three new source-mutation modules contain 24 methods. Two original isolated preparation runs actually passed 16 and eight methods, with unchanged inputs. The initial authored marker-selection failure is retained. These local runs are not the complete source gate; the unchanged 600-second full source budget has not yet been demonstrated for the new source.
 
-The four-path e8 preparation packet is retained as preparation history only. Fixed b298 already contains the corrected marker leaves and additional protocol rows; its full CALLERS manifest must not be overwritten by that older packet. The two independently reviewed retention guards remain separate unpublished preparation: they reject primary Eligible plus non-eligible retention without relabeling complete comparisons as missing data or fraud. No signed positive-primary/negative-retention execution fixture has yet established that branch's behavioral coverage, and no erroneous real ordinary Adopt was reproduced.
+The ten added fences cover actual consuming S/C host constructors, Model host and direct custody/effect/lane/admission/current-owner dependencies, and Evaluator Trainer-readback/material-export assembly. Fresh command hosts retain their original effects; they are not described as universally readonly. Generic fallback entries use the unchanged file-level ordering facility and are not function-uniqueness or formal system proofs.
 
-## Post-run native diagnostic source integrity
+[Full v3.2 manifest](readback-boundary-preparation-v3.2/MANIFEST.json) · [root review](readback-boundary-preparation-v3.2/ROOT_REVIEW.json) · [scope and actual executions](readback-boundary-preparation-v3.2/README.md).
 
-At a later read-only observation, the original agentd test binary was absent from both known build roots. The [full directory observation](native-e8b6fe2a-postrun-diagnostics/target-directory/OBSERVATION.json) and [root review](native-e8b6fe2a-postrun-diagnostics/target-directory/ROOT_REVIEW.json) are retained. Historical helper-build output still identifies the original artifact paths; the reason for their later disappearance is Unknown. This does not change the original recorded native failures.
+## New e8 binary diagnostics: measured evidence, no testcase qualification
 
-A subsequent [new-build diagnostic](native-e8b6fe2a-postrun-diagnostics/source-integrity/BLOCKED_NEW_BUILD_RESULT.json) was rejected by its complete-source precondition before any Cargo command started. The native review directory was missing seven tracked historical archives; read-only inventory found no byte/mode differences in the remaining tracked files. The [restoration manifest](native-e8b6fe2a-postrun-diagnostics/source-integrity/RESTORATION_MANIFEST_BEFORE.json) binds all seven original Git objects, 18,176,884 bytes. Root [cross-checked their identities](native-e8b6fe2a-postrun-diagnostics/source-integrity/ROOT_PRIOR_INVENTORY_CROSSCHECK.json) against both prior complete source inventories. Each missing path had an observed index S marker; the responsible actor and reason remain Unknown. The [actual restoration](native-e8b6fe2a-postrun-diagnostics/source-integrity/RESTORATION_RESULT.json) completed at 11:21:26 UTC: exactly those seven absent paths were created from their original blobs, all 14,741 physical file bytes/modes were checked, and HEAD plus raw index stayed unchanged. Root [independently normalized both prior complete inventories](native-e8b6fe2a-postrun-diagnostics/source-integrity/ROOT_RESTORATION_REVIEW.json) to the native five-field compact JSON schema; each yields the observed restored inventory SHA256 efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56. The old alignment JSON uses different whitespace and retains its original 29f600... digest. The retained run-wide source-before/source-after inventories, original focused raw/JUnit, pinned helper and helper archive remain preserved. Restoration and its new full verification are separate facts from the earlier test run; a clean git status alone is not accepted as proof that every source file is present. No reconstructed binary or future diagnostic will be represented as the original failed test executable.
+The original focused-run binary was later observed unavailable; its disappearance cause remains Unknown. The independent new build used the same exact e8 source, original two-package metadata strategy and original toolchain/settings, with an explicitly different **CARGO_TARGET_DIR under /data** because the /home target was unavailable and /home free space was insufficient.
 
+The actual metadata plus nextest binaries-only build completed with exit 0. **Tests executed: zero.** Root verified the complete 82,091-byte raw log and its original gzip. The pinned agentd ELF is 281,625,080 bytes, SHA-256 **03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908**.
 
+The first debugger wrapper failed before GDB or a test started because its child precheck used a seven-byte escaped ELF literal. The original failed output is preserved; no cancellation was sent. A separately identified corrected wrapper then retained:
 
-A later [preservation attempt](native-e8b6fe2a-postrun-diagnostics/preservation/PRESERVE_V2_FAILED.json) was rejected before cloning because a historical stage gzip was absent. The subsequent [separate exact e8 checkout preservation](native-e8b6fe2a-postrun-diagnostics/preservation/PRESERVE_V3_RESULT.json) completed at 11:30:12 UTC with all 14,741 files and unchanged current source. Its [availability manifest](native-e8b6fe2a-postrun-diagnostics/preservation/ORIGINAL_STAGE_AVAILABILITY.json) retains four available complete original stage gzips and explicitly marks the maintenance/eval stage gzips Unavailable; their original 237-byte summary records still exist. Missing originals are not regenerated or represented as continuously available. The later diagnostic uses its own complete before/after source snapshots.
+- A panel first SIGSEGV whose stack pointer and fault address are in the 4 KiB guard immediately below its unchanged 8 MiB thread stack.
+- A deep-case 55-second SIGSTOP and all 27 thread stacks. Thread 42 was actively hashing and validating original Material/Training source while other owner/channel threads waited.
 
-## Ordinary utility qualification remains absent
+Both internal GDB executions exited 0. The deep child wrapper exited 1 because its final success-status literal was incorrect; that real wrapper failure is preserved and was not rerun to obtain a green exit. Neither debugger case is reported as a Rust testcase PASS.
 
-Complete real authorized ordinary Adopt = **0**. Complete real evaluated NoUpdate = **0**. Complete real daemon plus Root cold-recovery qualification = **0**.
+Readonly disassembly of 39 observed main-binary frames showed five fixture/test frames allocating **8,164,824 bytes** before smaller frames. The private completed forwarding frame alone allocated 662,856 bytes. The prepared one-file boxing change preserves the entire original construction body after one indentation level, all 27 assertion macro calls and all three Tokio attributes. It has not yet been compiled or shown to fix all 17 prior overflows.
 
-Fixed b298 contains additional original evaluated Selector/FinalUse attestation/recovery and measurement-support mechanisms. It still does not supply actual ordinary startup owner assembly, independently sourced B task outcomes, complete deployable-product cost evidence, identified changed-action outcomes, final owner authorization or real new-consumer adoption. Missing original authority remains a refusal. No source, diagnostic, mechanism test or content root substitutes for those observations.
+[Diagnostic index](native-e8-new-diagnostics/INDEX.json) · [root build/boxing/deep review](native-e8-new-diagnostics/BOXING_BUILD_DEEP_ROOT_REVIEW.json) · [panel guard-page review](native-e8-new-diagnostics/PANEL_ROOT_REVIEW.json).
+
+## Deep timeout cause and positive-retention runtime coverage remain Unknown
+
+The bounded deep source review found one-row, width-two fixture inputs and two training steps. Its repeated original T/S/C readbacks and the existing 80-to-127 Material-read bounds are part of the test contract. The single active hash sample does not establish a bottleneck or deadlock. No cached receipt, removed fresh check, reduced assertion, larger stack or longer deadline was proposed. Two helper files differ between e8 and b298, explicitly recorded in the [source-pinned Unknown review](native-e8-new-diagnostics/deep/BOUNDED_SOURCE_UNKNOWN_REVIEW.json).
+
+Under the inspected real-provider deterministic policy and frozen strict-superiority plan, supported candidate and baseline estimates use the same actual logged outcome. They cannot provide the positive primary required to exercise the added positive-primary/negative-retention branches. This is a source-level finding about that construction, not a universal impossibility claim. An unrelated synthetic positive qualification cannot be transplanted into opaque original custody.
+
+The new retention branches therefore remain **runtime-uncovered**. Existing negative/Unknown fixtures and source-mutation fences are not relabeled as that missing runtime proof. [Feasibility report](RETENTION_GUARD_REGRESSION_FEASIBILITY.md) · [root check of all 27 pinned source files](independent-review/RETENTION_GUARD_REGRESSION_FEASIBILITY_ROOT.json).
+
+## Exact source availability and failed historical fsck
+
+All 244 original b298 transport objects were independently checked by bytes/type/hash and read back natively. The original repository-wide fsck then failed with exit 3; its failure remains failed.
+
+A separate readonly observation found every required object for the current e8, original 726 and fixed b298 snapshots present, with **zero missing among 16,245 unique required objects**. The original e8 physical source, HEAD and index were unchanged. Root reassembled the immutable 77,411-byte native SDK payload and compared all 244 native object readbacks against the independently verified original canonical packet.
+
+This establishes availability of the required current snapshots. It does not assert complete historical repository availability or a passing global fsck. [Original scope result](native-e8-new-diagnostics/b298-object-import/fsck-scope/RESULT.json) · [root review](native-e8-new-diagnostics/b298-object-import/fsck-scope/ROOT_REVIEW.json).
+
+## Published e8 results and ordinary utility qualification
+
+The earlier exact e8 results remain:
+
+- Original scoped fix/fmt: passed, source unchanged.
+- Full intelligence-eval lib: 163 passed.
+- Source closure: failed; 357 unittest methods, 14 unique errored methods and 28 error/subtest records. Stale formatted predicates explain those observed errors.
+- Full caller gate: failed on the original Training readback-service caller.
+- Focused original just test: 100 executed, 76 passed and 24 failed, including 17 stack-overflow aborts and three individual timeouts.
+- Independent old-comparator control: four actual regressions failed as expected.
+- Subsequent all/ordinary/Root pipeline stages: not started.
+
+No result transfers from e8 to the prepared or future source.
+
+Real authorized ordinary **Adopt = 0**; complete real evaluated **NoUpdate = 0**; complete real **daemon plus Root cold-recovery qualification = 0**. Actual original startup-owner assembly, independently sourced B outcomes, full deployable-composition/cost evidence, original final authorization, retrievable model material and new-consumer readback are still required. Missing original authority remains refusal. A source change, signed receipt or content root alone does not establish those facts.

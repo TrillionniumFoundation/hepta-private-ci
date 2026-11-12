@@ -1,0 +1,21 @@
+{
+  "method": "Read-only /proc thread maps plus stopped-thread registers; no inferior function call",
+  "near_sp_and_fault_and_named_stack_mappings": [
+    {
+      "bytes": 135168,
+      "contains_fault_address": false,
+      "contains_sp": true,
+      "end": "0x7ffea3c9a000",
+      "line": "7ffea3c79000-7ffea3c9a000 rw-p 00000000 00:00 0                          [stack]",
+      "start": "0x7ffea3c79000"
+    }
+  ],
+  "pc": "0x7e6d51b2752d",
+  "pid": 1068874,
+  "signal_info": {
+    "number": 19,
+    "raw": "$1 = {si_signo = 19, si_errno = 0, si_code = 0, _sifields = {_pad = {1068839, 1000, 0 <repeats 26 times>}, _kill = {si_pid = 1068839, si_uid = 1000}, _timer = {si_tid = 1068839, si_overrun = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 1068839, si_uid = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 1068839, si_uid = 1000, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x3e800104f27, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 4294968364839, si_fd = 0}, _sigsys = {_call_addr = 0x3e800104f27, _syscall = 0, _arch = 0}}}\n"
+  },
+  "sp": "0x7ffea3c96038",
+  "tid": 1068874
+}

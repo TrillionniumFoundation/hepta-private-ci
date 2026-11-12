@@ -1,0 +1,46 @@
+{
+  "method": "Read-only /proc thread maps plus stopped-thread registers; no inferior function call",
+  "near_sp_and_fault_and_named_stack_mappings": [
+    {
+      "bytes": 8388608,
+      "contains_fault_address": false,
+      "contains_sp": false,
+      "end": "0x7b3a2e1ff000",
+      "line": "7b3a2d9ff000-7b3a2e1ff000 rw-p 00000000 00:00 0 ",
+      "start": "0x7b3a2d9ff000"
+    },
+    {
+      "bytes": 4096,
+      "contains_fault_address": true,
+      "contains_sp": true,
+      "end": "0x7b3a2e200000",
+      "line": "7b3a2e1ff000-7b3a2e200000 ---p 00000000 00:00 0 ",
+      "start": "0x7b3a2e1ff000"
+    },
+    {
+      "bytes": 8388608,
+      "contains_fault_address": false,
+      "contains_sp": false,
+      "end": "0x7b3a2ea00000",
+      "line": "7b3a2e200000-7b3a2ea00000 rw-p 00000000 00:00 0 ",
+      "start": "0x7b3a2e200000"
+    },
+    {
+      "bytes": 135168,
+      "contains_fault_address": false,
+      "contains_sp": false,
+      "end": "0x7ffc12a04000",
+      "line": "7ffc129e3000-7ffc12a04000 rw-p 00000000 00:00 0                          [stack]",
+      "start": "0x7ffc129e3000"
+    }
+  ],
+  "pc": "0x6218009601e7",
+  "pid": 1068595,
+  "signal_info": {
+    "fault_address": "0x7b3a2e1ffd68",
+    "number": 11,
+    "raw": "$1 = {si_signo = 11, si_errno = 0, si_code = 2, _sifields = {_pad = {773848424, 31546, 0 <repeats 26 times>}, _kill = {si_pid = 773848424, si_uid = 31546}, _timer = {si_tid = 773848424, si_overrun = 31546, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 773848424, si_uid = 31546, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 773848424, si_uid = 31546, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x7b3a2e1ffd68, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 135489812168040, si_fd = 0}, _sigsys = {_call_addr = 0x7b3a2e1ffd68, _syscall = 0, _arch = 0}}}\n"
+  },
+  "sp": "0x7b3a2e1ffd30",
+  "tid": 1068598
+}

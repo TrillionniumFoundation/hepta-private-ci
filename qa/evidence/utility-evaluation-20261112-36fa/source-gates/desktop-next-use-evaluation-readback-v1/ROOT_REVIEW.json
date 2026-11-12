@@ -1,0 +1,153 @@
+{
+  "schema": "hepta.utility.root-third-typed-boundary-review.v1",
+  "reviewed_at": "2026-11-12T13:08:33.888946+00:00",
+  "status": "one_separate_scoped_boundary_passed",
+  "run_identity": "hepta-utility-36fa-next-use-evaluation-readback-v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "report_blob": "0f6aee4bc19797d30f4611355e344e33d25a5ae0",
+  "raw_blob": "735d3cf998b9ef946f986f7975dc83a9ba0cf123",
+  "run_blob": "4f49fe09bcd739a63547b492a651fbf0044ec11f",
+  "counts": {
+    "boundaries": {
+      "passed": 1,
+      "failed": 0,
+      "unknown": 0
+    },
+    "protected": {
+      "passed": 0,
+      "failed": 0,
+      "unknown": 0
+    }
+  },
+  "boundary": {
+    "id": "learning_original_evaluation_command_readback",
+    "status": "passed",
+    "original_result": {
+      "id": "learning_original_evaluation_command_readback",
+      "symbol": "OriginalCellEvaluationCommandClientV1::readback",
+      "callPattern": null,
+      "receiverType": "OriginalCellEvaluationCommandClientV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ]
+    }
+  },
+  "next_use_file_correctly_excluded": true,
+  "exit_code": 0,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "source_before_after_unchanged": true,
+  "external_inputs_unchanged": true,
+  "full_rust_projection_files": 6597,
+  "frozen_callers_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+  "frozen_overlay_sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+  "original_verifier_seconds": 54.73812387580983,
+  "wrapper_seconds": 67.56694359495305,
+  "original_sdk_all_16_files_verified": [
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/diagnostic-result.json",
+      "bytes": 5842,
+      "sha256": "89506f1ec15c640627535777b79c006180ffc4133f3a37e872c3925ccd61b873",
+      "git_blob_sha": "0f6aee4bc19797d30f4611355e344e33d25a5ae0"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.json",
+      "bytes": 980,
+      "sha256": "8b62f09be95b24bd211603ad464a5b4361e19c4756f15cd1433ecc3434325a1e",
+      "git_blob_sha": "4771a5bb52bf1140410d78955a4165b84b459449"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/next-use-evaluation-readback-scoped.log",
+      "bytes": 6491,
+      "sha256": "72ce4fce1106ae346e6d004df2dabe4e4119aadeea4b270e27f7f590070367e0",
+      "git_blob_sha": "735d3cf998b9ef946f986f7975dc83a9ba0cf123"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/gate-final.json",
+      "bytes": 1077,
+      "sha256": "7a01a2dcc7763522dc9f8ff0606c3499cb28060275389e19180fd8424e4449e6",
+      "git_blob_sha": "bd687a204cb01ced77a133a8c686a6aaebee9760"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/gate-summary.json",
+      "bytes": 1075,
+      "sha256": "5d2707931183707a58227782b196909ed4db0da4ad072c238e4dd951be9656c1",
+      "git_blob_sha": "db60d40df08cfa7dfa382d7c4a5392a186c4798f"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-terminal.json",
+      "bytes": 414,
+      "sha256": "1d4fbd2e919f03e3a5515a4496c363e18a1ba7cb9a2c195b8aee932dd8c939cd",
+      "git_blob_sha": "ed2a53f8f6f32c09e4d8c8d053b06f04424e1a54"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/execution-start.json",
+      "bytes": 785,
+      "sha256": "3336b1d87b6460e12194e51229aafd1db37626e16f517dfd7bb0d3ca83abb2c6",
+      "git_blob_sha": "48448e0a96930bd853d170a109991a1b06018632"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/dispatch.json",
+      "bytes": 970,
+      "sha256": "edfe54b4ea85c6633272c2abeb6592d82c0bdb84058bb3e9162338c9b249b983",
+      "git_blob_sha": "8204ed8a03fd5d328312584c812000eb2bd8afbc"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/row-progress.jsonl",
+      "bytes": 1069,
+      "sha256": "499c8c72984138f95189525b0505ce0b060e2c08555d0db6515206d305cfdce8",
+      "git_blob_sha": "a24818ea9c796378ed05978627c514f438817818"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-after.json",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/source-before.json",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/retained-manifest.json",
+      "bytes": 9491,
+      "sha256": "8958522951123a05d6bef7842894cff877d9bb504ac42bbdc748964d65a7ff11",
+      "git_blob_sha": "6d482df08087e5329b0dc0bf56d41515c96f365e"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/next-use-evaluation-readback-scoped/package-start.json",
+      "bytes": 70,
+      "sha256": "191fb93d5024118255fed0460c090d898a5e89863e947aa29fe46ee50cd3be24",
+      "git_blob_sha": "48af078dd82fe1103df1c83064be26313af850dc"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/run-result.json",
+      "bytes": 4039,
+      "sha256": "264cc3714914dff04605e2f16f8b61d274c55f1343dc5f14bf1c3989f77a4849",
+      "git_blob_sha": "4f49fe09bcd739a63547b492a651fbf0044ec11f"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/retained-manifest.json",
+      "bytes": 7173,
+      "sha256": "373663f3544ff61206ca6ffd33ab972f8a3391bab7cbdd4e4a992cf9c2ae59d3",
+      "git_blob_sha": "e1a6b4d262769563321abc2359db1f5e8ff7636f"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-next-use-evaluation-readback-v1/run-result-prepackage.json",
+      "bytes": 3719,
+      "sha256": "d8e137086cea01a736834239c629394595bd5984233415d9979ba17c196b4429",
+      "git_blob_sha": "4c8c238b19f04836e0ff624f2928844634bf7902"
+    }
+  ],
+  "already_completed_first_two_boundaries_rerun": false,
+  "protected_rows_run": 0,
+  "limits": [
+    "This is separate actual position468 execution, not inferred from positions281/313.",
+    "Prior two-boundary diagnostic retains its one protected-row failure.",
+    "No whole integrated source tree, full source/caller gate, Cargo runtime, A/B/C completion or recovery qualification is claimed."
+  ]
+}

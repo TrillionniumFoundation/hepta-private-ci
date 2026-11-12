@@ -1,0 +1,403 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+running 1 test
+[New Thread 0x7b3a2e9ff6c0 (LWP 1068598)]
+[New Thread 0x7b3a2e1fe6c0 (LWP 1068599)]
+[New Thread 0x7b3a2d9fd6c0 (LWP 1068600)]
+[New Thread 0x7b3a2d1fc6c0 (LWP 1068601)]
+[New Thread 0x7b3a2c9fb6c0 (LWP 1068604)]
+
+Thread 2 "runtime::tests:" received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x7b3a2e9ff6c0 (LWP 1068598)]
+0x00006218009601e7 in <flume::async::SendFut<T> as core::future::future::Future>::poll ()
+Last stopped for thread 2 (Thread 0x7b3a2e9ff6c0 (LWP 1068598)).
+	Using the running image of child process 1068595.
+Program stopped at 0x6218009601e7.
+It stopped with signal SIGSEGV, Segmentation fault.
+  Id   Target Id                                             Frame 
+  1    Thread 0x7b3a2f337b80 (LWP 1068595) "codex_hepta_age" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+* 2    Thread 0x7b3a2e9ff6c0 (LWP 1068598) "runtime::tests:" 0x00006218009601e7 in <flume::async::SendFut<T> as core::future::future::Future>::poll ()
+  3    Thread 0x7b3a2e1fe6c0 (LWP 1068599) "tokio-rt-worker" 0x00007b3a2eb2a2d2 in epoll_wait (epfd=..., events=..., maxevents=..., timeout=...) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  4    Thread 0x7b3a2d9fd6c0 (LWP 1068600) "tokio-rt-worker" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  5    Thread 0x7b3a2d1fc6c0 (LWP 1068601) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  6    Thread 0x7b3a2c9fb6c0 (LWP 1068604) "sqlx-sqlite-wor" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+
+Thread 6 (Thread 0x7b3a2c9fb6c0 (LWP 1068604) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00006218033cea57 in std::thread::functions::park ()
+#2  0x00006218023071b7 in flume::signal::SyncSignal::wait ()
+#3  0x000062180095e398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000062180095a0f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x00006218009564ad in flume::Shared<T>::recv ()
+#6  0x0000621800959f48 in flume::Shared<T>::recv_sync ()
+#7  0x000062180095d647 in flume::Receiver<T>::recv ()
+#8  0x00006218009611cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x0000621800985ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x00006218009ac587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000062180091ca9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x0000621800974904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000062180090eca0 in std::panicking::catch_unwind::do_call ()
+#14 0x00006218009285bb in __rust_try ()
+#15 0x000062180091c606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x0000621800964f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x00006218033d486f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007b3a2ea9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007b3a2eb29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 5 (Thread 0x7b3a2d1fc6c0 (LWP 1068601) "sqlx-sqlite-wor"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00006218033cea57 in std::thread::functions::park ()
+#2  0x00006218023071b7 in flume::signal::SyncSignal::wait ()
+#3  0x000062180095e398 in flume::Hook<T,flume::signal::SyncSignal>::wait_recv ()
+#4  0x000062180095a0f2 in flume::Shared<T>::recv_sync::{{closure}} ()
+#5  0x00006218009564ad in flume::Shared<T>::recv ()
+#6  0x0000621800959f48 in flume::Shared<T>::recv_sync ()
+#7  0x000062180095d647 in flume::Receiver<T>::recv ()
+#8  0x00006218009611cb in <flume::IntoIter<T> as core::iter::traits::iterator::Iterator>::next ()
+#9  0x0000621800985ca1 in sqlx_sqlite::connection::worker::ConnectionWorker::establish::{{closure}}::{{closure}} ()
+#10 0x00006218009ac587 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#11 0x000062180091ca9d in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#12 0x0000621800974904 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#13 0x000062180090eca0 in std::panicking::catch_unwind::do_call ()
+#14 0x00006218009285bb in __rust_try ()
+#15 0x000062180091c606 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#16 0x0000621800964f67 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#17 0x00006218033d486f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#18 0x00007b3a2ea9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#19 0x00007b3a2eb29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 4 (Thread 0x7b3a2d9fd6c0 (LWP 1068600) "tokio-rt-worker"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x0000621802fbd559 in parking_lot_core::thread_parker::imp::ThreadParker::futex_wait ()
+#2  0x0000621802fbd3fa in <parking_lot_core::thread_parker::imp::ThreadParker as parking_lot_core::thread_parker::ThreadParkerT>::park ()
+#3  0x0000621802fc6bc3 in parking_lot_core::parking_lot::park::{{closure}} ()
+#4  0x0000621802fc4a19 in parking_lot_core::parking_lot::park ()
+#5  0x0000621802fc90c3 in parking_lot::condvar::Condvar::wait_until_internal ()
+#6  0x000062180260fdc8 in parking_lot::condvar::Condvar::wait ()
+#7  0x000062180263be64 in tokio::loom::std::parking_lot::Condvar::wait ()
+#8  0x00006218026523c7 in tokio::runtime::scheduler::multi_thread::park::Inner::park_condvar ()
+#9  0x0000621802652c39 in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#10 0x00006218026531b7 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#11 0x000062180264853e in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#12 0x00006218026498c0 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#13 0x00006218026492c7 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#14 0x0000621802645704 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#15 0x000062180263c5df in tokio::runtime::context::scoped::Scoped<T>::set ()
+#16 0x0000621802643ed1 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#17 0x0000621802638bc6 in std::thread::local::LocalKey<T>::try_with ()
+#18 0x0000621802637f77 in std::thread::local::LocalKey<T>::with ()
+#19 0x0000621802643e12 in tokio::runtime::context::set_scheduler ()
+#20 0x000062180264560c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#21 0x000062180263d224 in tokio::runtime::context::runtime::enter_runtime ()
+#22 0x0000621802645411 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#23 0x0000621802646777 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#24 0x0000621802657551 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#25 0x00006218025e9aee in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#26 0x00006218025e9658 in tokio::runtime::task::core::Core<T,S>::poll ()
+#27 0x00006218025e4bee in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#28 0x000062180262b691 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#29 0x000062180262c0f6 in std::panicking::catch_unwind::do_call ()
+#30 0x00006218026037fb in __rust_try ()
+#31 0x0000621802602adf in std::panic::catch_unwind ()
+#32 0x00006218025e4678 in tokio::runtime::task::harness::poll_future ()
+#33 0x00006218025e5721 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#34 0x00006218025e61a7 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#35 0x00006218026007c0 in tokio::runtime::task::raw::poll ()
+#36 0x0000621802600e7b in tokio::runtime::task::raw::RawTask::poll ()
+#37 0x000062180262dfb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#38 0x0000621802609e16 in tokio::runtime::blocking::pool::Task::run ()
+#39 0x000062180260a060 in tokio::runtime::blocking::pool::Inner::run ()
+#40 0x000062180260b4d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#41 0x000062180261d3e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#42 0x0000621802630b92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#43 0x000062180262b551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#44 0x000062180262c341 in std::panicking::catch_unwind::do_call ()
+#45 0x0000621802636bbb in __rust_try ()
+#46 0x0000621802630770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#47 0x0000621802657817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#48 0x00006218033d486f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#49 0x00007b3a2ea9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#50 0x00007b3a2eb29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 3 (Thread 0x7b3a2e1fe6c0 (LWP 1068599) "tokio-rt-worker"):
+#0  0x00007b3a2eb2a2d2 in epoll_wait (epfd=..., events=..., maxevents=..., timeout=...) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x000062180267522c in mio::sys::unix::selector::Selector::select ()
+#2  0x000062180267554e in mio::poll::Poll::poll ()
+#3  0x00006218025efe82 in tokio::runtime::io::driver::Driver::turn ()
+#4  0x00006218025ef6e2 in tokio::runtime::io::driver::Driver::park_timeout ()
+#5  0x000062180261af4a in tokio::runtime::signal::Driver::park_timeout ()
+#6  0x0000621802651e0a in tokio::runtime::process::Driver::park_timeout ()
+#7  0x00006218025fa958 in tokio::runtime::driver::IoStack::park_timeout ()
+#8  0x0000621802608ac9 in tokio::runtime::time::Driver::park_thread_timeout ()
+#9  0x0000621802608989 in tokio::runtime::time::Driver::park_internal ()
+#10 0x0000621802608dab in tokio::runtime::time::Driver::park ()
+#11 0x00006218025f98cf in tokio::runtime::driver::TimeDriver::park ()
+#12 0x00006218025fa7a6 in tokio::runtime::driver::Driver::park ()
+#13 0x0000621802651ff4 in tokio::runtime::scheduler::multi_thread::park::Inner::park_driver ()
+#14 0x0000621802652c7a in tokio::runtime::scheduler::multi_thread::park::Inner::park ()
+#15 0x00006218026531b7 in tokio::runtime::scheduler::multi_thread::park::Parker::park ()
+#16 0x000062180264853e in tokio::runtime::scheduler::multi_thread::worker::Context::park_internal ()
+#17 0x00006218026498c0 in tokio::runtime::scheduler::multi_thread::worker::Context::park ()
+#18 0x00006218026492c7 in tokio::runtime::scheduler::multi_thread::worker::Context::run ()
+#19 0x0000621802645704 in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}}::{{closure}} ()
+#20 0x000062180263c5df in tokio::runtime::context::scoped::Scoped<T>::set ()
+#21 0x0000621802643ed1 in tokio::runtime::context::set_scheduler::{{closure}} ()
+#22 0x0000621802638bc6 in std::thread::local::LocalKey<T>::try_with ()
+#23 0x0000621802637f77 in std::thread::local::LocalKey<T>::with ()
+#24 0x0000621802643e12 in tokio::runtime::context::set_scheduler ()
+#25 0x000062180264560c in tokio::runtime::scheduler::multi_thread::worker::run::{{closure}} ()
+#26 0x000062180263d224 in tokio::runtime::context::runtime::enter_runtime ()
+#27 0x0000621802645411 in tokio::runtime::scheduler::multi_thread::worker::run ()
+#28 0x0000621802646777 in tokio::runtime::scheduler::multi_thread::worker::Launch::launch::{{closure}} ()
+#29 0x0000621802657551 in <tokio::runtime::blocking::task::BlockingTask<T> as core::future::future::Future>::poll ()
+#30 0x00006218025e9aee in tokio::runtime::task::core::Core<T,S>::poll::{{closure}} ()
+#31 0x00006218025e9658 in tokio::runtime::task::core::Core<T,S>::poll ()
+#32 0x00006218025e4bee in tokio::runtime::task::harness::poll_future::{{closure}} ()
+#33 0x000062180262b691 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#34 0x000062180262c0f6 in std::panicking::catch_unwind::do_call ()
+#35 0x00006218026037fb in __rust_try ()
+#36 0x0000621802602adf in std::panic::catch_unwind ()
+#37 0x00006218025e4678 in tokio::runtime::task::harness::poll_future ()
+#38 0x00006218025e5721 in tokio::runtime::task::harness::Harness<T,S>::poll_inner ()
+#39 0x00006218025e61a7 in tokio::runtime::task::harness::Harness<T,S>::poll ()
+#40 0x00006218026007c0 in tokio::runtime::task::raw::poll ()
+#41 0x0000621802600e7b in tokio::runtime::task::raw::RawTask::poll ()
+#42 0x000062180262dfb9 in tokio::runtime::task::UnownedTask<S>::run ()
+#43 0x0000621802609e16 in tokio::runtime::blocking::pool::Task::run ()
+#44 0x000062180260a060 in tokio::runtime::blocking::pool::Inner::run ()
+#45 0x000062180260b4d4 in tokio::runtime::blocking::pool::Spawner::spawn_thread::{{closure}} ()
+#46 0x000062180261d3e6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#47 0x0000621802630b92 in std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}} ()
+#48 0x000062180262b551 in <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once ()
+#49 0x000062180262c341 in std::panicking::catch_unwind::do_call ()
+#50 0x0000621802636bbb in __rust_try ()
+#51 0x0000621802630770 in std::thread::lifecycle::spawn_unchecked::{{closure}} ()
+#52 0x0000621802657817 in core::ops::function::FnOnce::call_once{{vtable.shim}} ()
+#53 0x00006218033d486f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#54 0x00007b3a2ea9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#55 0x00007b3a2eb29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 2 (Thread 0x7b3a2e9ff6c0 (LWP 1068598) "runtime::tests:"):
+#0  0x00006218009601e7 in <flume::async::SendFut<T> as core::future::future::Future>::poll ()
+#1  0x00006218009821ea in sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}} ()
+#2  0x00006218009838ba in sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}} ()
+#3  0x000062180088c251 in sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}} ()
+#4  0x000062180088d561 in sqlx_core::pool::inner::check_idle_conn::{{closure}} ()
+#5  0x000062180089741b in sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}} ()
+#6  0x0000621800878ee9 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#7  0x000062180086bd9e in <tokio::time::timeout::Timeout<T> as core::future::future::Future>::poll ()
+#8  0x00006218008798d3 in sqlx_core::rt::timeout::{{closure}} ()
+#9  0x000062180089091e in sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}} ()
+#10 0x0000621800884f5e in sqlx_core::pool::Pool<DB>::acquire::{{closure}} ()
+#11 0x00006218008849db in sqlx_core::pool::Pool<DB>::begin::{{closure}} ()
+#12 0x00006217fd5df75e in codex_hepta_memory::cognitive_store::verify_current_projection_contents::{{closure}} ()
+#13 0x00006217fd5da9db in codex_hepta_memory::cognitive_store::verify_store::{{closure}} ()
+#14 0x00006217fd5dd14b in codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}} ()
+#15 0x00006217fcbd8cca in codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}} ()
+#16 0x00006217fcbd848e in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}} ()
+#17 0x00006217fea5977d in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}} ()
+#18 0x00006217fc315c37 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#19 0x00006217fc267a8c in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}} ()
+#20 0x00006217fc269feb in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}} ()
+#21 0x00006217fc26b6ba in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} ()
+#22 0x00006217fc3146e7 in <core::pin::Pin<P> as core::future::future::Future>::poll ()
+#23 0x00006217feb4a7a6 in tokio::runtime::park::CachedParkThread::block_on::{{closure}} ()
+#24 0x00006217feb40286 in tokio::runtime::park::CachedParkThread::block_on ()
+#25 0x00006217fe74aee5 in tokio::runtime::context::blocking::BlockingRegionGuard::block_on ()
+#26 0x00006217fbc15504 in tokio::runtime::scheduler::multi_thread::MultiThread::block_on::{{closure}} ()
+#27 0x00006217fc4a6f7f in tokio::runtime::context::runtime::enter_runtime ()
+#28 0x00006217fbc1463d in tokio::runtime::scheduler::multi_thread::MultiThread::block_on ()
+#29 0x00006217fbe96fba in tokio::runtime::runtime::Runtime::block_on_inner ()
+#30 0x00006217fbe9cb79 in tokio::runtime::runtime::Runtime::block_on ()
+#31 0x00006217fc26b45c in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures ()
+#32 0x00006217fc26d4a3 in codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} ()
+#33 0x00006217fb6357f6 in core::ops::function::FnOnce::call_once ()
+#34 0x00006217fec2491b in test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> ()
+#35 0x00006217fec312eb in test::run_test::{closure#0} ()
+#36 0x00006217fec2ca04 in std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()> ()
+#37 0x00006217fec33ef2 in <std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0} ()
+#38 0x00006218033d486f in <std::sys::thread::unix::Thread>::new::thread_start ()
+#39 0x00007b3a2ea9cb84 in start_thread (arg=...) at ./nptl/pthread_create.c:447
+#40 0x00007b3a2eb29ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7b3a2f337b80 (LWP 1068595) "codex_hepta_age"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00006218033bc9f6 in <std::thread::thread::Thread>::park_timeout ()
+#2  0x00006217fec31fb9 in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv::{closure#1} ()
+#3  0x00006217fec3bfdc in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv ()
+#4  0x00006217fec48e84 in test::console::run_tests_console ()
+#5  0x00006217fec37429 in test::test_main ()
+#6  0x00006217fec34c7b in test::test_main_static ()
+#7  0x00006217fd8a8a63 in codex_hepta_agentd::main ()
+#8  0x00006217fb64b713 in core::ops::function::FnOnce::call_once ()
+#9  0x00006217fd319bf6 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#10 0x00006217fd7abc99 in std::rt::lang_start::{{closure}} ()
+#11 0x00006218033c9404 in std::rt::lang_start_internal ()
+#12 0x00006217fd7abc81 in std::rt::lang_start ()
+#13 0x00006217fda5abc5 in main ()
+rax            0x6218009601e0      107855228568032
+rbx            0x7b3a2e9fe778      135489820551032
+rcx            0x7b3a2e200430      135489812169776
+rdx            0x7b3a2e87a998      135489818962328
+rsi            0x7b3a2801ccb8      135489709526200
+rdi            0x7b3a2e200638      135489812170296
+rbp            0x7b3a2e9fe200      0x7b3a2e9fe200
+rsp            0x7b3a2e1ffd30      0x7b3a2e1ffd30
+r8             0x0                 0
+r9             0x7                 7
+r10            0x7b3a28031370      135489709609840
+r11            0x4915a80dfe0b84ff  5266300117329872127
+r12            0x6218039a3a38      107855279176248
+r13            0x7fffffffffffffff  9223372036854775807
+r14            0x3b9aca00          1000000000
+r15            0x1                 1
+rip            0x6218009601e7      0x6218009601e7 <<flume::async::SendFut<T> as core::future::future::Future>::poll+7>
+eflags         0x10206             [ PF IF RF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+fs_base        0x7b3a2e9ff6c0      135489820554944
+gs_base        0x0                 0
+Stack level 0, frame at 0x7b3a2e200360:
+ rip = 0x6218009601e7 in <flume::async::SendFut<T> as core::future::future::Future>::poll; saved rip = 0x6218009821ea
+ called by frame at 0x7b3a2e200870
+ Arglist at 0x7b3a2e1ffd28, args: 
+ Locals at 0x7b3a2e1ffd28, Previous frame's sp is 0x7b3a2e200360
+ Saved registers:
+  rip at 0x7b3a2e200358
+<flume::async::SendFut<T> as core::future::future::Future>::poll + 7 in section .text of /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+   0x6218009601a7 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+7>:	(bad)
+   0x6218009601a8 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+8>:	add    %eax,(%rax)
+   0x6218009601aa <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+10>:	add    %al,(%rax)
+   0x6218009601ac <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+12>:	je     0x6218009601be <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+30>
+   0x6218009601ae <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+14>:	mov    -0x10(%rsp),%rax
+   0x6218009601b3 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+19>:	mov    0x8(%rax),%rax
+   0x6218009601b7 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+23>:	mov    %rax,-0x8(%rsp)
+   0x6218009601bc <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+28>:	jmp    0x6218009601cc <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+44>
+   0x6218009601be <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+30>:	mov    -0x10(%rsp),%rax
+   0x6218009601c3 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+35>:	add    $0x8,%rax
+   0x6218009601c7 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+39>:	mov    %rax,-0x8(%rsp)
+   0x6218009601cc <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+44>:	mov    -0x8(%rsp),%rax
+   0x6218009601d1 <_ZN77_$LT$flume..async..OwnedOrRef$LT$T$GT$$u20$as$u20$core..ops..deref..Deref$GT$5deref17hc97e6f890b8e9783E+49>:	ret
+   0x6218009601d2:	int3
+   0x6218009601d3:	int3
+   0x6218009601d4:	int3
+   0x6218009601d5:	int3
+   0x6218009601d6:	int3
+   0x6218009601d7:	int3
+   0x6218009601d8:	int3
+   0x6218009601d9:	int3
+   0x6218009601da:	int3
+   0x6218009601db:	int3
+   0x6218009601dc:	int3
+   0x6218009601dd:	int3
+   0x6218009601de:	int3
+   0x6218009601df:	int3
+   0x6218009601e0 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE>:	sub    $0x628,%rsp
+=> 0x6218009601e7 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+7>:	mov    %rdi,0x38(%rsp)
+   0x6218009601ec <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+12>:	mov    %rdi,0x40(%rsp)
+   0x6218009601f1 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+17>:	mov    %rsi,0x48(%rsp)
+   0x6218009601f6 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+22>:	mov    %rdx,0x50(%rsp)
+   0x6218009601fb <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+27>:	movb   $0x0,0x617(%rsp)
+   0x621800960203 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+35>:	movb   $0x0,0x616(%rsp)
+   0x62180096020b <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+43>:	movb   $0x0,0x615(%rsp)
+   0x621800960213 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+51>:	lea    0x48(%rsp),%rdi
+   0x621800960218 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+56>:	call   *0x2eee7ea(%rip)        # 0x62180384ea08
+   0x62180096021e <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+62>:	mov    %rax,%rdi
+   0x621800960221 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+65>:	add    $0x10,%rdi
+   0x621800960225 <_ZN79_$LT$flume..async..SendFut$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$4poll17h2f124a5b37c018dfE+69>:	call   *0x2eee7e5(%rip)        # 0x62180384ea10
+process 1068595
+Mapped address spaces:
+
+          Start Addr           End Addr       Size     Offset  Perms  objfile
+      0x6217f853a000     0x6217fb62b000  0x30f1000        0x0  r--p   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x6217fb62b000     0x6218033ff000  0x7dd4000  0x30f0000  r-xp   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x6218033ff000     0x62180398f000   0x590000  0xaec3000  r--p   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x62180398f000     0x6218039a0000    0x11000  0xb452000  rw-p   /home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build
+      0x6218039a0000     0x6218039a4000     0x4000        0x0  rw-p   
+      0x62182cc52000     0x62182cc73000    0x21000        0x0  rw-p   [heap]
+      0x7b3a18000000     0x7b3a1820f000   0x20f000        0x0  rw-p   
+      0x7b3a1820f000     0x7b3a1c000000  0x3df1000        0x0  ---p   
+      0x7b3a1c000000     0x7b3a1c0e8000    0xe8000        0x0  rw-p   
+      0x7b3a1c0e8000     0x7b3a20000000  0x3f18000        0x0  ---p   
+      0x7b3a20000000     0x7b3a20021000    0x21000        0x0  rw-p   
+      0x7b3a20021000     0x7b3a24000000  0x3fdf000        0x0  ---p   
+      0x7b3a24000000     0x7b3a24021000    0x21000        0x0  rw-p   
+      0x7b3a24021000     0x7b3a28000000  0x3fdf000        0x0  ---p   
+      0x7b3a28000000     0x7b3a2803a000    0x3a000        0x0  rw-p   
+      0x7b3a2803a000     0x7b3a2c000000  0x3fc6000        0x0  ---p   
+      0x7b3a2c1fb000     0x7b3a2c1fc000     0x1000        0x0  ---p   
+      0x7b3a2c1fc000     0x7b3a2c9fc000   0x800000        0x0  rw-p   
+      0x7b3a2c9fc000     0x7b3a2c9fd000     0x1000        0x0  ---p   
+      0x7b3a2c9fd000     0x7b3a2d1fd000   0x800000        0x0  rw-p   
+      0x7b3a2d1fd000     0x7b3a2d1fe000     0x1000        0x0  ---p   
+      0x7b3a2d1fe000     0x7b3a2d9fe000   0x800000        0x0  rw-p   
+      0x7b3a2d9fe000     0x7b3a2d9ff000     0x1000        0x0  ---p   
+      0x7b3a2d9ff000     0x7b3a2e1ff000   0x800000        0x0  rw-p   
+      0x7b3a2e1ff000     0x7b3a2e200000     0x1000        0x0  ---p   
+      0x7b3a2e200000     0x7b3a2ea00000   0x800000        0x0  rw-p   
+      0x7b3a2ea00000     0x7b3a2ea28000    0x28000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7b3a2ea28000     0x7b3a2ebb1000   0x189000    0x28000  r-xp   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7b3a2ebb1000     0x7b3a2ec00000    0x4f000   0x1b1000  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7b3a2ec00000     0x7b3a2ec04000     0x4000   0x1ff000  r--p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7b3a2ec04000     0x7b3a2ec06000     0x2000   0x203000  rw-p   /usr/lib/x86_64-linux-gnu/libc.so.6
+      0x7b3a2ec06000     0x7b3a2ec13000     0xd000        0x0  rw-p   
+      0x7b3a2eca9000     0x7b3a2ece9000    0x40000        0x0  rw-p   
+      0x7b3a2ece9000     0x7b3a2ecf9000    0x10000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7b3a2ecf9000     0x7b3a2ed78000    0x7f000    0x10000  r-xp   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7b3a2ed78000     0x7b3a2edd0000    0x58000    0x8f000  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7b3a2edd0000     0x7b3a2edd1000     0x1000    0xe7000  r--p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7b3a2edd1000     0x7b3a2edd2000     0x1000    0xe8000  rw-p   /usr/lib/x86_64-linux-gnu/libm.so.6
+      0x7b3a2edd2000     0x7b3a2edd6000     0x4000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7b3a2edd6000     0x7b3a2edfa000    0x24000     0x4000  r-xp   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7b3a2edfa000     0x7b3a2edfe000     0x4000    0x28000  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7b3a2edfe000     0x7b3a2edff000     0x1000    0x2b000  r--p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7b3a2edff000     0x7b3a2ee00000     0x1000    0x2c000  rw-p   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7b3a2ee00000     0x7b3a2eeb3000    0xb3000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7b3a2eeb3000     0x7b3a2f1e7000   0x334000    0xb3000  r-xp   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7b3a2f1e7000     0x7b3a2f2b2000    0xcb000   0x3e7000  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7b3a2f2b2000     0x7b3a2f30e000    0x5c000   0x4b1000  r--p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7b3a2f30e000     0x7b3a2f311000     0x3000   0x50d000  rw-p   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+      0x7b3a2f311000     0x7b3a2f314000     0x3000        0x0  rw-p   
+      0x7b3a2f337000     0x7b3a2f33c000     0x5000        0x0  rw-p   
+      0x7b3a2f33c000     0x7b3a2f35a000    0x1e000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7b3a2f35a000     0x7b3a2f3bc000    0x62000    0x1e000  r-xp   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7b3a2f3bc000     0x7b3a2f3d8000    0x1c000    0x80000  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7b3a2f3d8000     0x7b3a2f3e2000     0xa000    0x9c000  r--p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7b3a2f3e2000     0x7b3a2f3e6000     0x4000    0xa6000  rw-p   /usr/lib/x86_64-linux-gnu/libssl.so.3
+      0x7b3a2f3f7000     0x7b3a2f3f8000     0x1000        0x0  ---p   
+      0x7b3a2f3f8000     0x7b3a2f3fa000     0x2000        0x0  rw-p   
+      0x7b3a2f3fa000     0x7b3a2f402000     0x8000        0x0  rw-s   /tmp/.tmp29kydK/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-shm
+      0x7b3a2f402000     0x7b3a2f403000     0x1000        0x0  ---p   
+      0x7b3a2f403000     0x7b3a2f405000     0x2000        0x0  rw-p   
+      0x7b3a2f405000     0x7b3a2f406000     0x1000        0x0  ---p   
+      0x7b3a2f406000     0x7b3a2f408000     0x2000        0x0  rw-p   
+      0x7b3a2f408000     0x7b3a2f409000     0x1000        0x0  ---p   
+      0x7b3a2f409000     0x7b3a2f40b000     0x2000        0x0  rw-p   
+      0x7b3a2f40b000     0x7b3a2f40c000     0x1000        0x0  ---p   
+      0x7b3a2f40c000     0x7b3a2f40e000     0x2000        0x0  rw-p   
+      0x7b3a2f40e000     0x7b3a2f40f000     0x1000        0x0  ---p   
+      0x7b3a2f40f000     0x7b3a2f411000     0x2000        0x0  rw-p   
+      0x7b3a2f411000     0x7b3a2f413000     0x2000        0x0  rw-p   
+      0x7b3a2f413000     0x7b3a2f417000     0x4000        0x0  r--p   [vvar]
+      0x7b3a2f417000     0x7b3a2f419000     0x2000        0x0  r--p   [vvar_vclock]
+      0x7b3a2f419000     0x7b3a2f41b000     0x2000        0x0  r-xp   [vdso]
+      0x7b3a2f41b000     0x7b3a2f41c000     0x1000        0x0  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7b3a2f41c000     0x7b3a2f447000    0x2b000     0x1000  r-xp   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7b3a2f447000     0x7b3a2f451000     0xa000    0x2c000  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7b3a2f451000     0x7b3a2f453000     0x2000    0x36000  r--p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7b3a2f453000     0x7b3a2f455000     0x2000    0x38000  rw-p   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      0x7ffc129e3000     0x7ffc12a04000    0x21000        0x0  rw-p   [stack]
+  0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
+{"kernel_signal_info": {"fault_address": "0x7b3a2e1ffd68", "number": 11, "raw": "$1 = {si_signo = 11, si_errno = 0, si_code = 2, _sifields = {_pad = {773848424, 31546, 0 <repeats 26 times>}, _kill = {si_pid = 773848424, si_uid = 31546}, _timer = {si_tid = 773848424, si_overrun = 31546, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 773848424, si_uid = 31546, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 773848424, si_uid = 31546, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x7b3a2e1ffd68, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 135489812168040, si_fd = 0}, _sigsys = {_call_addr = 0x7b3a2e1ffd68, _syscall = 0, _arch = 0}}}\n"}}
+{"method": "Read-only /proc thread maps plus stopped-thread registers; no inferior function call", "near_sp_and_fault_and_named_stack_mappings": [{"bytes": 8388608, "contains_fault_address": false, "contains_sp": false, "end": "0x7b3a2e1ff000", "line": "7b3a2d9ff000-7b3a2e1ff000 rw-p 00000000 00:00 0 ", "start": "0x7b3a2d9ff000"}, {"bytes": 4096, "contains_fault_address": true, "contains_sp": true, "end": "0x7b3a2e200000", "line": "7b3a2e1ff000-7b3a2e200000 ---p 00000000 00:00 0 ", "start": "0x7b3a2e1ff000"}, {"bytes": 8388608, "contains_fault_address": false, "contains_sp": false, "end": "0x7b3a2ea00000", "line": "7b3a2e200000-7b3a2ea00000 rw-p 00000000 00:00 0 ", "start": "0x7b3a2e200000"}, {"bytes": 135168, "contains_fault_address": false, "contains_sp": false, "end": "0x7ffc12a04000", "line": "7ffc129e3000-7ffc12a04000 rw-p 00000000 00:00 0                          [stack]", "start": "0x7ffc129e3000"}], "pc": "0x6218009601e7", "pid": 1068595, "signal_info": {"fault_address": "0x7b3a2e1ffd68", "number": 11, "raw": "$1 = {si_signo = 11, si_errno = 0, si_code = 2, _sifields = {_pad = {773848424, 31546, 0 <repeats 26 times>}, _kill = {si_pid = 773848424, si_uid = 31546}, _timer = {si_tid = 773848424, si_overrun = 31546, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 773848424, si_uid = 31546, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 773848424, si_uid = 31546, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x7b3a2e1ffd68, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 135489812168040, si_fd = 0}, _sigsys = {_call_addr = 0x7b3a2e1ffd68, _syscall = 0, _arch = 0}}}\n"}, "sp": "0x7b3a2e1ffd30", "tid": 1068598}

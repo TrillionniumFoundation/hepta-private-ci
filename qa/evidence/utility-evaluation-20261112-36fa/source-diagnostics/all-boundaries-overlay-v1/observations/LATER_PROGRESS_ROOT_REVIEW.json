@@ -1,0 +1,111 @@
+{
+  "format": "hepta.root-later-original-progress-chunks-review.v1",
+  "reviewed_at": "2026-11-12T12:38:09.142550+00:00",
+  "scope": "Independent hash and complete JSONL parsing of three observed byte ranges; not a contiguous full-file or terminal scan claim",
+  "chunks": [
+    {
+      "sdk_blob": "5dd2ba33760b952decd6757c1b091ae494f53748",
+      "offset": 224450,
+      "next_offset": 239669,
+      "bytes": 15219,
+      "sha256": "3d68bfc095bf7a2720b5ab37d2e5b9f0145b0a6d311523026991d7325e702ff4",
+      "complete_jsonl_events": 50,
+      "last_event": {
+        "at": "2026-11-12T12:08:40.495480+00:00",
+        "event": "boundary_started",
+        "id": "learning_original_no_update_stage_initial",
+        "position": 385
+      },
+      "failed": [
+        {
+          "at": "2026-11-12T12:04:15.782877+00:00",
+          "error": "learning_original_material_initial_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+          "event": "boundary_completed",
+          "id": "learning_original_material_initial_context_check",
+          "position": 360,
+          "status": "failed"
+        },
+        {
+          "at": "2026-11-12T12:04:42.349560+00:00",
+          "error": "learning_original_material_dataset_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+          "event": "boundary_completed",
+          "id": "learning_original_material_dataset_context_check",
+          "position": 361,
+          "status": "failed"
+        },
+        {
+          "at": "2026-11-12T12:05:26.200589+00:00",
+          "error": "learning_original_next_use_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs']",
+          "event": "boundary_completed",
+          "id": "learning_original_next_use_command_owner_factory",
+          "position": 365,
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "sdk_blob": "3958a9958c685926e9da31455ccc288100764f38",
+      "offset": 239669,
+      "next_offset": 259195,
+      "bytes": 19526,
+      "sha256": "7912008737a8a4c5380e99855994007244ce6d128f1ca8ec23c520692ce918f0",
+      "complete_jsonl_events": 66,
+      "last_event": {
+        "at": "2026-11-12T12:14:49.829629+00:00",
+        "event": "boundary_started",
+        "id": "root_resident_late_source_candidate",
+        "position": 418
+      },
+      "failed": []
+    },
+    {
+      "sdk_blob": "0856c09b820e7c5f56c5086e8f1c8b272ff4f098",
+      "offset": 276131,
+      "next_offset": 294900,
+      "bytes": 18769,
+      "sha256": "fd3bb4e1e4f5e6421f781d104329f5fe93962512acecd9ceba0208cfd5d42125",
+      "complete_jsonl_events": 62,
+      "last_event": {
+        "at": "2026-11-12T12:25:15.769495+00:00",
+        "event": "boundary_started",
+        "id": "learning_retained_version_host_recover",
+        "position": 477
+      },
+      "failed": [
+        {
+          "at": "2026-11-12T12:21:56.127386+00:00",
+          "error": "learning_original_evaluation_host_profile: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+          "event": "boundary_completed",
+          "id": "learning_original_evaluation_host_profile",
+          "position": 459,
+          "status": "failed"
+        },
+        {
+          "at": "2026-11-12T12:22:04.720002+00:00",
+          "error": "learning_original_evaluation_host_receipt_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs']",
+          "event": "boundary_completed",
+          "id": "learning_original_evaluation_host_receipt_current",
+          "position": 460,
+          "status": "failed"
+        },
+        {
+          "at": "2026-11-12T12:22:20.114760+00:00",
+          "error": "learning_original_evaluation_host_constructor: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+          "event": "boundary_completed",
+          "id": "learning_original_evaluation_host_constructor",
+          "position": 461,
+          "status": "failed"
+        },
+        {
+          "at": "2026-11-12T12:23:28.305625+00:00",
+          "error": "learning_original_evaluation_command_readback: codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs: unresolved possible OriginalCellEvaluationCommandClientV1::readback receiver",
+          "event": "boundary_completed",
+          "id": "learning_original_evaluation_command_readback",
+          "position": 468,
+          "status": "failed"
+        }
+      ]
+    }
+  ],
+  "full_scan_terminal_observed": false
+}

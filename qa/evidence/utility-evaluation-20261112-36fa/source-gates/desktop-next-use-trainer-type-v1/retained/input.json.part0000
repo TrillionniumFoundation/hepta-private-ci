@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.utility.next-use-trainer-type-overlay-input.v1",
+  "state": "READY_FOR_SCOPED_READONLY_DIAGNOSTIC",
+  "run_identity": "hepta-utility-36fa-next-use-trainer-type-v1",
+  "source_root": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "full_source_tree": null,
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "source_lock": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/SOURCE_GATES.lock",
+  "baseline_inventory": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/source-baseline.inventory.json",
+  "baseline_inventory_bytes": 5432085,
+  "baseline_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+  "original_driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "hepta_ci_exec_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+  "callers_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+  "timeout_seconds": 4800,
+  "outer_timeout_seconds": 5400,
+  "full_gate_status": "not_run",
+  "cargo_tests": "not_run",
+  "input_sha256": {
+    "wrapper.py": "5d604b4359c2cd33c42c5efbd962eedbd0e0fca5939b6c14616608a7852c68ee",
+    "original-driver-v2.py": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "diagnostic.py": "a8bb8d7ae1db26e89d56dfb74a89f7b4b2923c34e3819b9b8b7a7620790e81fa",
+    "overlay.json": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+    "CALLERS.toml": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74"
+  },
+  "scope": {
+    "manifest_boundaries": 534,
+    "manifest_protected_rows": 390,
+    "selected_boundary_ids": [
+      "learning_original_training_command_client_readback",
+      "learning_evidence_original_owner_readback"
+    ],
+    "same_file_protected_rows": 1,
+    "target_path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+    "target_postimage": "467831627aaf7833f035804b3c94629739b3a981",
+    "complete_candidate_rust_files": 6597,
+    "original_full_gate": "not_run",
+    "original_all534_run": "unchanged and independent",
+    "expected_current_protected_incompatibility": "Preserve original row279 rejection; never suppress it."
+  },
+  "wrapper_revision": "derived_from_all534_v2_two_original_boundaries_and_all_same_file_rows",
+  "source_candidate_manifest_blob": "3fdc9d9dfbf2b3dac660116e07f8f30df4711243"
+}

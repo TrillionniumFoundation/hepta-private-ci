@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-12T12:18:45.767386+00:00",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/next-use-trainer-type-scoped/diagnostic-result.json"
+  ],
+  "status": "entrypoint_started",
+  "timeout_seconds": 4800
+}

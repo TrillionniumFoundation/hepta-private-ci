@@ -1,0 +1,97 @@
+{
+  "actual_A_B_C_qualification": false,
+  "attempted": true,
+  "cargo_tests": "not_run",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/next-use-trainer-type-scoped/diagnostic-result.json"
+  ],
+  "comparison_unknown": false,
+  "entrypoint_started": true,
+  "execution_facts": {
+    "output_limit_exceeded": false,
+    "returncode": 1,
+    "timed_out": false
+  },
+  "execution_record_read_error": null,
+  "execution_terminal_observed": true,
+  "finished_at": "2026-11-12T12:20:31.314967+00:00",
+  "frozen_diagnostic_inputs_unchanged": true,
+  "full_gate_status": "not_run",
+  "full_source_tree": null,
+  "gate_package": {
+    "bytes": 9467,
+    "git_blob_sha": "29c54f5938b185017512b17060d7000e7e99d4e7",
+    "original_files": 14,
+    "path": "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained-manifest.json",
+    "sha256": "fc72f7580eb2d9e8b03e12e9e11cda2a40dacf46efd258dc4538113fe8ea2efd"
+  },
+  "gate_summary": {
+    "actual_A_B_C_qualification": false,
+    "after_inventory_error": null,
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "elapsed_seconds": 114.10398527281359,
+    "execution_error": null,
+    "finished_at": "2026-11-12T12:20:30.365343+00:00",
+    "gate": "next-use-trainer-type-scoped",
+    "lifecycle": {
+      "attempted": true,
+      "entrypoint_started": true,
+      "package": "completed",
+      "terminal_observed": true
+    },
+    "original_record": {
+      "bytes": 946,
+      "path": "next-use-trainer-type-scoped.json",
+      "sha256": "9c23a10c3c08bdb6b333431839ffcf1707b570605dbb1d0ed9cbc21d3d48cbcb"
+    },
+    "original_record_retained_unchanged": true,
+    "record_read_error": null,
+    "run_identity": "hepta-utility-36fa-next-use-trainer-type-v1",
+    "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+    "source_changed": false,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "failed"
+  },
+  "incomplete_rows_semantics": "Unknown; reconcile complete fsynced row-progress.jsonl lines when a checkpoint is older or execution stopped.",
+  "not_run": [],
+  "package_state": "pending",
+  "report_read_error": null,
+  "report_status": "failed_scoped_diagnostic",
+  "row_checkpoint_attempted_boundaries": 2,
+  "row_checkpoint_attempted_protected": 1,
+  "row_checkpoint_completed_boundaries": 2,
+  "row_checkpoint_completed_protected": 1,
+  "row_counts": {
+    "boundaries": {
+      "failed": 0,
+      "passed": 2,
+      "unknown": 0
+    },
+    "protected": {
+      "failed": 1,
+      "passed": 0,
+      "unknown": 0
+    }
+  },
+  "run_identity": "hepta-utility-36fa-next-use-trainer-type-v1",
+  "schema": "hepta.utility.next-use-trainer-type-overlay-run.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T12:18:36.132250+00:00",
+  "status": "failed_scoped_diagnostic",
+  "timeout_seconds": 4800,
+  "wrapper_error": null
+}

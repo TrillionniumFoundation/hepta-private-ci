@@ -1,0 +1,130 @@
+{
+  "scope": "Derived static diagnostic-wrapper analysis; no Rust source change and no GDB/native test execution",
+  "original_waiting_job": "1a1cfa61b99-2564-1a7e",
+  "unchanged_cargo_job": "1a1cf93ac8c-2564-1a5b",
+  "error": "Original child compares data[:4] with seven bytes 5c783766454c46; therefore it rejects every ELF before any GDB launch.",
+  "correction": "Only the child ELF magic becomes four bytes 7f454c46; new record directories preserve the original attempt.",
+  "code_identities": [
+    {
+      "path": "diagnostic-v1/pipeline.py",
+      "bytes": 6939,
+      "sha256": "60726a780f6dac8fd8f1ffb4cda45d9c33b4dda9d2e5f776f0d84e365275cd98",
+      "expected_blob": "7310045f2ea4c868819843e60ca52dbcefabcb92"
+    },
+    {
+      "path": "diagnostic-v1/panel-driver.py",
+      "bytes": 10585,
+      "sha256": "e841b46e5e3434f6030c7759140208e952a2aaf441ef74125264ad739d405936",
+      "expected_blob": "2d4b5ad1043fd18d416393e2b49e16490a3ca639"
+    },
+    {
+      "path": "diagnostic-v1/deep-driver.py",
+      "bytes": 11828,
+      "sha256": "258b5e8195510dd1aa2a43564087664458f83d8fa5aefb3554d3bd3ea63b5f56",
+      "expected_blob": "7eaf5a8fbffa1e29ebc76c567871babd7645650f"
+    },
+    {
+      "path": "diagnostic-v1/process-start-input.json",
+      "bytes": 33879,
+      "sha256": "f4d35544f15e1dd2fa882a255a7c5298921270aba3bd90396bbb8bbebbfc8e76",
+      "expected_blob": "0251ceddf91acbfc04ec601988aa2ce0b40d45a1"
+    },
+    {
+      "path": "diagnostic-v2/pipeline.py",
+      "bytes": 6939,
+      "sha256": "c7b6cd24c084573ce367b77f9876874e662abc720d335d0d89030ec200db1a04",
+      "expected_blob": "c368995f4498add5609edfe5f362093f2b15dad2"
+    },
+    {
+      "path": "diagnostic-v2/panel-driver.py",
+      "bytes": 10584,
+      "sha256": "b8b58eb38ddba039e9fe2b0c4a044b9b2cdb9e1b8513b5da9437a64de09434d6",
+      "expected_blob": "3a9f6a40142270424e3d4eb3aae145d6b6fa4e3c"
+    },
+    {
+      "path": "diagnostic-v2/deep-driver.py",
+      "bytes": 11827,
+      "sha256": "eb85f67e814e7129653d2d418243c97adce2a17f3a86afda81edc5f39d19b09d",
+      "expected_blob": "11e33813246dbb23a3da5859dfb2314468bfff8e"
+    }
+  ],
+  "magic_observations": [
+    {
+      "name": "old_pipeline",
+      "elf_literals": [
+        {
+          "bytes": 4,
+          "hex": "7f454c46"
+        }
+      ]
+    },
+    {
+      "name": "old_panel",
+      "elf_literals": [
+        {
+          "bytes": 7,
+          "hex": "5c783766454c46"
+        }
+      ]
+    },
+    {
+      "name": "old_deep",
+      "elf_literals": [
+        {
+          "bytes": 7,
+          "hex": "5c783766454c46"
+        }
+      ]
+    },
+    {
+      "name": "new_pipeline",
+      "elf_literals": [
+        {
+          "bytes": 4,
+          "hex": "7f454c46"
+        }
+      ]
+    },
+    {
+      "name": "new_panel",
+      "elf_literals": [
+        {
+          "bytes": 4,
+          "hex": "7f454c46"
+        }
+      ]
+    },
+    {
+      "name": "new_deep",
+      "elf_literals": [
+        {
+          "bytes": 4,
+          "hex": "7f454c46"
+        }
+      ]
+    }
+  ],
+  "embedded_gdb_python_observations": [
+    {
+      "name": "old_panel",
+      "embedded_gdb_python_blocks_parsed": 1
+    },
+    {
+      "name": "old_deep",
+      "embedded_gdb_python_blocks_parsed": 2
+    },
+    {
+      "name": "new_panel",
+      "embedded_gdb_python_blocks_parsed": 1
+    },
+    {
+      "name": "new_deep",
+      "embedded_gdb_python_blocks_parsed": 2
+    }
+  ],
+  "raw_ast_validation_stdout": "[\n  {\n    \"name\": \"old_pipeline\",\n    \"elf_literals\": [\n      {\n        \"bytes\": 4,\n        \"hex\": \"7f454c46\"\n      }\n    ],\n    \"embedded_gdb_python_blocks_parsed\": 0\n  },\n  {\n    \"name\": \"old_panel\",\n    \"elf_literals\": [\n      {\n        \"bytes\": 7,\n        \"hex\": \"5c783766454c46\"\n      }\n    ],\n    \"embedded_gdb_python_blocks_parsed\": 0\n  },\n  {\n    \"name\": \"old_deep\",\n    \"elf_literals\": [\n      {\n        \"bytes\": 7,\n        \"hex\": \"5c783766454c46\"\n      }\n    ],\n    \"embedded_gdb_python_blocks_parsed\": 0\n  },\n  {\n    \"name\": \"new_pipeline\",\n    \"elf_literals\": [\n      {\n        \"bytes\": 4,\n        \"hex\": \"7f454c46\"\n      }\n    ],\n    \"embedded_gdb_python_blocks_parsed\": 0\n  },\n  {\n    \"name\": \"new_panel\",\n    \"elf_literals\": [\n      {\n        \"bytes\": 4,\n        \"hex\": \"7f454c46\"\n      }\n    ],\n    \"embedded_gdb_python_blocks_parsed\": 0\n  },\n  {\n    \"name\": \"new_deep\",\n    \"elf_literals\": [\n      {\n        \"bytes\": 4,\n        \"hex\": \"7f454c46\"\n      }\n    ],\n    \"embedded_gdb_python_blocks_parsed\": 0\n  }\n]\n",
+  "raw_embedded_validation_stdout": "[\n  {\n    \"name\": \"old_panel\",\n    \"embedded_gdb_python_blocks_parsed\": 1\n  },\n  {\n    \"name\": \"old_deep\",\n    \"embedded_gdb_python_blocks_parsed\": 2\n  },\n  {\n    \"name\": \"new_panel\",\n    \"embedded_gdb_python_blocks_parsed\": 1\n  },\n  {\n    \"name\": \"new_deep\",\n    \"embedded_gdb_python_blocks_parsed\": 2\n  }\n]\n",
+  "per_case_timeout_seconds": 60,
+  "rust_min_stack_bytes": 8388608,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+}

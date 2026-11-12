@@ -1,0 +1,184 @@
+{
+  "binaries_build_started": true,
+  "binary": {
+    "bytes": 281625080,
+    "compiler_executable": "/data/hepta-utility-36fa-e8-diagnostic-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "label": "NEW_BUILD_DIAGNOSTIC",
+    "mtime_ns": 1794485025728584364,
+    "nextest_binary": {
+      "binary-id": "codex-hepta-agentd",
+      "binary-name": "codex_hepta_agentd",
+      "binary-path": "/data/hepta-utility-36fa-e8-diagnostic-target-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+      "build-platform": "target",
+      "kind": "lib",
+      "package-id": "path+file:///home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0"
+    },
+    "pinned_executable": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build",
+    "rust_build_meta": {
+      "base-output-directories": [
+        "debug"
+      ],
+      "build-script-out-dirs": {},
+      "linked-paths": [
+        "debug/build/aws-lc-sys-929b39f537d5c10e/out/build/artifacts",
+        "debug/build/blake3-2c33413f62d64fe0/out",
+        "debug/build/libsqlite3-sys-d2590589e5a9f50c/out",
+        "debug/build/ring-c1839cb417e5895a/out",
+        "debug/build/ring-cc32d6c6f1c51a41/out",
+        "debug/build/tree-sitter-5a0a99fcc6a5bf9b/out",
+        "debug/build/tree-sitter-bash-55fec62b004558f1/out",
+        "debug/build/tree-sitter-powershell-471cd53964ea5a5a/out",
+        "debug/build/zstd-sys-735b6f2f334491a9/out"
+      ],
+      "non-test-binaries": {},
+      "platforms": {
+        "host": {
+          "libdir": {
+            "path": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/lib",
+            "status": "available"
+          },
+          "platform": {
+            "target-features": "unknown",
+            "triple": "x86_64-unknown-linux-gnu"
+          }
+        },
+        "targets": []
+      },
+      "target-directory": "/data/hepta-utility-36fa-e8-diagnostic-target-v1",
+      "target-platform": null,
+      "target-platforms": [
+        {
+          "target-features": "unknown",
+          "triple": "x86_64-unknown-linux-gnu"
+        }
+      ]
+    },
+    "second_original_package_binary": {
+      "binary-id": "codex-hepta-intelligence-eval",
+      "binary-name": "codex_hepta_intelligence_eval",
+      "binary-path": "/data/hepta-utility-36fa-e8-diagnostic-target-v1/debug/deps/codex_hepta_intelligence_eval-3990847f24f29162",
+      "build-platform": "target",
+      "kind": "lib",
+      "package-id": "path+file:///home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-intelligence-eval#codex-hepta-intelligence-eval@0.0.0"
+    },
+    "sha256": "03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908",
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "build_started": true,
+  "command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--list-type",
+    "binaries-only",
+    "--message-format",
+    "json",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--cargo-metadata",
+    "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/cargo-metadata.json"
+  ],
+  "environment": {
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-e8-diagnostic-target-v1",
+    "CODEX_REPO_ROOT": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "HEPTA_CI_LANE": "source-head",
+    "NEXTEST_PROFILE": "local",
+    "PATH": "/home/qian-qi/hepta-learn-037c-tools/nextest-0.9.103-e999c122:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qian-qi/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTY_V8_ARCHIVE": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "RUST_MIN_STACK": "8388608",
+    "SOURCE_SHA": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "TESTED_SHA": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+  },
+  "environment_delta_from_original_focused": {
+    "CARGO_TARGET_DIR": {
+      "diagnostic": "/data/hepta-utility-36fa-e8-diagnostic-target-v1",
+      "original": "/home/qian-qi/hepta-utility-36fa-target",
+      "reason": "Original /home filesystem lacks planned build space; observed independent writable /data ext4 has 190961504256 available bytes, no existing target removed"
+    }
+  },
+  "execution": {
+    "log_bytes": 82091,
+    "log_sha256": "bd12f95f54ce857ffad7b3968b574d27660fe3df6f9815ed5976abea6ab76588",
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "timed_out": false
+  },
+  "features_added": [],
+  "finished_at": "2026-11-12T12:03:55.774075+00:00",
+  "free_bytes_before": 190409084928,
+  "historical_artifact_scope": {
+    "current_source_basis": "New full physical inventories before and after this diagnostic; independent preserved exact checkout",
+    "missing_original_gzips_reconstructed": false,
+    "retained_original_stage_gzips": 4,
+    "unavailable_original_stage_gzips": [
+      "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/source-after-maintenance.files.json.gz",
+      "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/source-after-eval.files.json.gz"
+    ]
+  },
+  "label": "NEW_BUILD_DIAGNOSTIC",
+  "metadata_started": true,
+  "metadata_strategy": "Original scoped run-nextest.py cargo metadata --no-deps strategy; Cargo still resolves/builds both requested packages and default features",
+  "original_binary_disappearance_cause": "Unknown",
+  "original_run_binary_available": false,
+  "package_selection": [
+    "codex-hepta-agentd",
+    "codex-hepta-intelligence-eval"
+  ],
+  "qualification": "Fresh controlled nextest binaries-only build/list for diagnosis; zero test execution, not the original run binary or a native full gate",
+  "source_after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T11:45:25.866777+00:00",
+  "status": "new_build_diagnostic_ready",
+  "target_state": {
+    "after": {
+      "device": 2067,
+      "inode": 20709398,
+      "mode": "0o700",
+      "mtime_ns": 1794483931424403280
+    },
+    "created_only_if_absent": true,
+    "existed_before": false,
+    "is_symlink": false,
+    "observed_at": "2026-11-12T11:45:31.407534+00:00",
+    "parent_before": {
+      "device": 2067,
+      "inode": 2,
+      "mtime_ns": 1794483394224469343
+    },
+    "path": "/data/hepta-utility-36fa-e8-diagnostic-target-v1"
+  },
+  "tests_executed": 0
+}

@@ -1,0 +1,97 @@
+{
+  "actual_A_B_C_qualification": false,
+  "attempted": true,
+  "cargo_tests": "not_run",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/all-boundaries-scoped/diagnostic-result.json"
+  ],
+  "comparison_unknown": false,
+  "entrypoint_started": true,
+  "execution_facts": {
+    "output_limit_exceeded": false,
+    "returncode": 1,
+    "timed_out": false
+  },
+  "execution_record_read_error": null,
+  "execution_terminal_observed": true,
+  "finished_at": "2026-11-12T12:33:38.576599+00:00",
+  "frozen_diagnostic_inputs_unchanged": true,
+  "full_gate_status": "not_run",
+  "full_source_tree": null,
+  "gate_package": {
+    "bytes": 9431,
+    "git_blob_sha": "269e2e728fabc29fab613662be9e2622297667e3",
+    "original_files": 14,
+    "path": "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/all-boundaries-scoped/retained-manifest.json",
+    "sha256": "b2b13abd23e4279ff5cdb3876251d0ae717f0289cf7c24cf44df27f2f55a6a7c"
+  },
+  "gate_summary": {
+    "actual_A_B_C_qualification": false,
+    "after_inventory_error": null,
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "elapsed_seconds": 4610.034438201925,
+    "execution_error": null,
+    "finished_at": "2026-11-12T12:33:37.602333+00:00",
+    "gate": "all-boundaries-scoped",
+    "lifecycle": {
+      "attempted": true,
+      "entrypoint_started": true,
+      "package": "completed",
+      "terminal_observed": true
+    },
+    "original_record": {
+      "bytes": 944,
+      "path": "all-boundaries-scoped.json",
+      "sha256": "40e2bd7cacf95abec7a5ae9cfad13992e0a56389c95dbdb8396de89a83cb2e4c"
+    },
+    "original_record_retained_unchanged": true,
+    "record_read_error": null,
+    "run_identity": "hepta-utility-36fa-all-boundaries-overlay-v1",
+    "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+    "source_changed": false,
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "status": "failed"
+  },
+  "incomplete_rows_semantics": "Unknown; reconcile complete fsynced row-progress.jsonl lines when a checkpoint is older or execution stopped.",
+  "not_run": [],
+  "package_state": "pending",
+  "report_read_error": null,
+  "report_status": "failed_scoped_diagnostic",
+  "row_checkpoint_attempted_boundaries": 534,
+  "row_checkpoint_attempted_protected": 390,
+  "row_checkpoint_completed_boundaries": 534,
+  "row_checkpoint_completed_protected": 390,
+  "row_counts": {
+    "boundaries": {
+      "failed": 15,
+      "passed": 519,
+      "unknown": 0
+    },
+    "protected": {
+      "failed": 0,
+      "passed": 390,
+      "unknown": 0
+    }
+  },
+  "run_identity": "hepta-utility-36fa-all-boundaries-overlay-v1",
+  "schema": "hepta.utility.all-boundaries-overlay-run.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T11:16:47.309338+00:00",
+  "status": "failed_scoped_diagnostic",
+  "timeout_seconds": 4800,
+  "wrapper_error": null
+}

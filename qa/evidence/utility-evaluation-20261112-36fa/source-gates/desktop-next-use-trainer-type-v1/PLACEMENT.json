@@ -1,0 +1,1023 @@
+{
+  "schema": "hepta.utility.source-diagnostic-complete-placement.v1",
+  "repository_prefix": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1",
+  "source_directory": "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1",
+  "job_id": "1a1cfb20a26-2564-1a8c",
+  "run_identity": "hepta-utility-36fa-next-use-trainer-type-v1",
+  "actual_result": {
+    "status": "failed_scoped_diagnostic",
+    "execution_facts": {
+      "output_limit_exceeded": false,
+      "returncode": 1,
+      "timed_out": false
+    },
+    "row_counts": {
+      "boundaries": {
+        "failed": 0,
+        "passed": 2,
+        "unknown": 0
+      },
+      "protected": {
+        "failed": 1,
+        "passed": 0,
+        "unknown": 0
+      }
+    },
+    "started_at": "2026-11-12T12:18:36.132250+00:00",
+    "finished_at": "2026-11-12T12:20:31.314967+00:00",
+    "elapsed_with_capture_seconds": 114.10398527281359,
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "source_changed": false,
+    "frozen_inputs_unchanged": true,
+    "comparison_unknown": false,
+    "package_state": "completed",
+    "full_gate_status": "not_run",
+    "actual_A_B_C_qualification": false
+  },
+  "scope": {
+    "physical_source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "physical_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "candidate_tree": null,
+    "overlay_sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+    "candidate_postimage_blob": "467831627aaf7833f035804b3c94629739b3a981",
+    "callers_blob": "317da5f28fbc1cf2556fa5935bb846dce8c7c2cb",
+    "candidate_rust_files": 6597,
+    "executed_boundary_positions_zero_based": [
+      281,
+      313
+    ],
+    "executed_protected_row_positions_zero_based": [
+      279
+    ],
+    "original_timeout_seconds": 4800,
+    "outer_timeout_seconds": 5400,
+    "protected_failure_preserved": "The original predecessors full-match sequence rejects the explicit trainer declaration. No protected marker was changed in this diagnostic."
+  },
+  "original_bytes_preserved": true,
+  "original_statuses_not_modified": true,
+  "raw_manifests": [
+    {
+      "relative_directory": "",
+      "git_blob_sha": "5be170b2c8273be2158480a2e02dc9b0b91fbe1d",
+      "bytes": 7173,
+      "sha256": "3cea306bf1b4c0fac38bbf035224f290770b41f85f62051a89e95101a7445af3",
+      "source_path": "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/retained-manifest.json"
+    },
+    {
+      "relative_directory": "next-use-trainer-type-scoped",
+      "git_blob_sha": "29c54f5938b185017512b17060d7000e7e99d4e7",
+      "bytes": 9467,
+      "sha256": "fc72f7580eb2d9e8b03e12e9e11cda2a40dacf46efd258dc4538113fe8ea2efd",
+      "source_path": "/home/qian-qi/hepta-utility-36fa-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained-manifest.json"
+    }
+  ],
+  "placements": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/bootstrap-result.json",
+      "relative_path": "bootstrap-result.json",
+      "git_blob_sha": "683da157b32a41babfe1b5e859dc3a21ad9434a2",
+      "bytes": 2237,
+      "sha256": "b2f0285c34b3776851131adb56a998171ec4cd547c3c9eab1572bae72a8d9417",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/bootstrap.py",
+      "relative_path": "bootstrap.py",
+      "git_blob_sha": "301d747eee97028d568cb1abccd86fe25f1afd53",
+      "bytes": 2570,
+      "sha256": "e97d558950656b54bb8eed7d58a90d08462aac021c43968f2f7d961337135de5",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/CALLERS.toml.gz.b64",
+      "relative_path": "CALLERS.toml.gz.b64",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "bytes": 234449,
+      "sha256": "37331123a990556aa6471a96b1f372b538b189d569fac282de17edae2e506b1f",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/diagnostic-attempt.json",
+      "relative_path": "diagnostic-attempt.json",
+      "git_blob_sha": "cc80f14040fd6f1e54bbfa5afaf24d9baf7cc3d9",
+      "bytes": 830,
+      "sha256": "8035c4717e96853270ea17dbb4c72153c06d27ef8dd52d625daafd0f4ef3e8b1",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/diagnostic.py",
+      "relative_path": "diagnostic.py",
+      "git_blob_sha": "646a07321ab80df9851c04f1806425f049831571",
+      "bytes": 19255,
+      "sha256": "a8bb8d7ae1db26e89d56dfb74a89f7b4b2923c34e3819b9b8b7a7620790e81fa",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/input.json",
+      "relative_path": "input.json",
+      "git_blob_sha": "d53d5d491dd85c261f88fc158a3d24fc44f179be",
+      "bytes": 2552,
+      "sha256": "97e0d4c59b5b00ddef0f3190964299568002e7e2d051c6039a23670f173007ac",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/diagnostic-result.json",
+      "relative_path": "next-use-trainer-type-scoped/diagnostic-result.json",
+      "git_blob_sha": "91adb2baa181afbf1045258f4224143fb73ee3ee",
+      "bytes": 9947,
+      "sha256": "a6c3c99f32b3498f96efe709a4552bbabc184e2ea44a04c5f8ad95a525bd85c0",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/dispatch.json",
+      "relative_path": "next-use-trainer-type-scoped/dispatch.json",
+      "git_blob_sha": "5de97b9b4224ec9c5036c09f4d5297001bfae7f0",
+      "bytes": 928,
+      "sha256": "e60d5c7597eca15a0e258850f4a89924ea7fe788124b88717147bab894734613",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/execution-start.json",
+      "relative_path": "next-use-trainer-type-scoped/execution-start.json",
+      "git_blob_sha": "189456a46a9191032fef90514d3e475c1658d43c",
+      "bytes": 750,
+      "sha256": "900d04889245a9aebac9cda5e7630ac795c7cd609f55aaf89d7a71fda05800a4",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/execution-terminal.json",
+      "relative_path": "next-use-trainer-type-scoped/execution-terminal.json",
+      "git_blob_sha": "64317b45b7f6f2d7ea70a14d8b98207c36c1e59d",
+      "bytes": 416,
+      "sha256": "0ec5f80a2def90477591fdca1aa5baeb726be0b1addf87f3f6cdfe39d6841769",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/forwarded.stdout.log",
+      "relative_path": "next-use-trainer-type-scoped/forwarded.stdout.log",
+      "git_blob_sha": "85d69d639ddc69aa12b24ccd8c89003a095dcd84",
+      "bytes": 13261,
+      "sha256": "d120ef25d4d175f2b07bd7830f71f93c60f8d492b8d44c7367b43b0bf608fbbd",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/gate-final.json",
+      "relative_path": "next-use-trainer-type-scoped/gate-final.json",
+      "git_blob_sha": "e05259887050855d1f68c7556030309b415d4b3c",
+      "bytes": 1057,
+      "sha256": "ed06065d6a58c10660e06ed51ccafb81e0cf9d4d7fd3f56dfe6fb9a83d190615",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/gate-summary.json",
+      "relative_path": "next-use-trainer-type-scoped/gate-summary.json",
+      "git_blob_sha": "f5318f9c27cba707fbd053eb496406aa64636820",
+      "bytes": 1055,
+      "sha256": "441b4ea5e8b3cc8b16fabaf987f326b2631e509abe6598efa43720cadd808e9d",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/next-use-trainer-type-scoped.json",
+      "relative_path": "next-use-trainer-type-scoped/next-use-trainer-type-scoped.json",
+      "git_blob_sha": "ebae9a0ca25a42efac398b2a6d908f5f44d8857b",
+      "bytes": 946,
+      "sha256": "9c23a10c3c08bdb6b333431839ffcf1707b570605dbb1d0ed9cbc21d3d48cbcb",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/next-use-trainer-type-scoped.log",
+      "relative_path": "next-use-trainer-type-scoped/next-use-trainer-type-scoped.log",
+      "git_blob_sha": "85d69d639ddc69aa12b24ccd8c89003a095dcd84",
+      "bytes": 13261,
+      "sha256": "d120ef25d4d175f2b07bd7830f71f93c60f8d492b8d44c7367b43b0bf608fbbd",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/package-start.json",
+      "relative_path": "next-use-trainer-type-scoped/package-start.json",
+      "git_blob_sha": "cbc03cae3e2bf016f33a6229a3d2c29aa0a2724b",
+      "bytes": 70,
+      "sha256": "f22cb7d15ed48f5b5e5ae124893a5ee538bc594eb1eb04102da488047eb6819e",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained-manifest.json",
+      "relative_path": "next-use-trainer-type-scoped/retained-manifest.json",
+      "git_blob_sha": "29c54f5938b185017512b17060d7000e7e99d4e7",
+      "bytes": 9467,
+      "sha256": "fc72f7580eb2d9e8b03e12e9e11cda2a40dacf46efd258dc4538113fe8ea2efd",
+      "mode": "100644",
+      "origin": "actual_original_retained_manifest; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/diagnostic-result.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/diagnostic-result.json.part0000",
+      "git_blob_sha": "91adb2baa181afbf1045258f4224143fb73ee3ee",
+      "bytes": 9947,
+      "sha256": "a6c3c99f32b3498f96efe709a4552bbabc184e2ea44a04c5f8ad95a525bd85c0",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/dispatch.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/dispatch.json.part0000",
+      "git_blob_sha": "5de97b9b4224ec9c5036c09f4d5297001bfae7f0",
+      "bytes": 928,
+      "sha256": "e60d5c7597eca15a0e258850f4a89924ea7fe788124b88717147bab894734613",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/execution-start.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/execution-start.json.part0000",
+      "git_blob_sha": "189456a46a9191032fef90514d3e475c1658d43c",
+      "bytes": 750,
+      "sha256": "900d04889245a9aebac9cda5e7630ac795c7cd609f55aaf89d7a71fda05800a4",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/execution-terminal.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/execution-terminal.json.part0000",
+      "git_blob_sha": "64317b45b7f6f2d7ea70a14d8b98207c36c1e59d",
+      "bytes": 416,
+      "sha256": "0ec5f80a2def90477591fdca1aa5baeb726be0b1addf87f3f6cdfe39d6841769",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/forwarded.stdout.log.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/forwarded.stdout.log.part0000",
+      "git_blob_sha": "85d69d639ddc69aa12b24ccd8c89003a095dcd84",
+      "bytes": 13261,
+      "sha256": "d120ef25d4d175f2b07bd7830f71f93c60f8d492b8d44c7367b43b0bf608fbbd",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/gate-summary.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/gate-summary.json.part0000",
+      "git_blob_sha": "f5318f9c27cba707fbd053eb496406aa64636820",
+      "bytes": 1055,
+      "sha256": "441b4ea5e8b3cc8b16fabaf987f326b2631e509abe6598efa43720cadd808e9d",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/next-use-trainer-type-scoped.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/next-use-trainer-type-scoped.json.part0000",
+      "git_blob_sha": "ebae9a0ca25a42efac398b2a6d908f5f44d8857b",
+      "bytes": 946,
+      "sha256": "9c23a10c3c08bdb6b333431839ffcf1707b570605dbb1d0ed9cbc21d3d48cbcb",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/next-use-trainer-type-scoped.log.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/next-use-trainer-type-scoped.log.part0000",
+      "git_blob_sha": "85d69d639ddc69aa12b24ccd8c89003a095dcd84",
+      "bytes": 13261,
+      "sha256": "d120ef25d4d175f2b07bd7830f71f93c60f8d492b8d44c7367b43b0bf608fbbd",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/package-start.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/package-start.json.part0000",
+      "git_blob_sha": "cbc03cae3e2bf016f33a6229a3d2c29aa0a2724b",
+      "bytes": 70,
+      "sha256": "f22cb7d15ed48f5b5e5ae124893a5ee538bc594eb1eb04102da488047eb6819e",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/row-progress.jsonl.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/row-progress.jsonl.part0000",
+      "git_blob_sha": "d6e07f99e3942a1df427ccf986faed4552b4b31a",
+      "bytes": 3998,
+      "sha256": "a82098cbea8dc5c687f8c69f4d967ad8cca7631c8fc0aaf8307124be66d55f20",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-after.inventory.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0000",
+      "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "bytes": 262144,
+      "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-after.inventory.json.part0001",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0001",
+      "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "bytes": 262144,
+      "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-after.inventory.json.part0002",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0002",
+      "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "bytes": 262144,
+      "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-after.inventory.json.part0003",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0003",
+      "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "bytes": 262144,
+      "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-after.inventory.json.part0004",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0004",
+      "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "bytes": 175515,
+      "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-after.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-after.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-before.inventory.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0000",
+      "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "bytes": 262144,
+      "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-before.inventory.json.part0001",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0001",
+      "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "bytes": 262144,
+      "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-before.inventory.json.part0002",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0002",
+      "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "bytes": 262144,
+      "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-before.inventory.json.part0003",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0003",
+      "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "bytes": 262144,
+      "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-before.inventory.json.part0004",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0004",
+      "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "bytes": 175515,
+      "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/retained/source-before.json.part0000",
+      "relative_path": "next-use-trainer-type-scoped/retained/source-before.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/row-progress.jsonl",
+      "relative_path": "next-use-trainer-type-scoped/row-progress.jsonl",
+      "git_blob_sha": "d6e07f99e3942a1df427ccf986faed4552b4b31a",
+      "bytes": 3998,
+      "sha256": "a82098cbea8dc5c687f8c69f4d967ad8cca7631c8fc0aaf8307124be66d55f20",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/source-after.json",
+      "relative_path": "next-use-trainer-type-scoped/source-after.json",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/next-use-trainer-type-scoped/source-before.json",
+      "relative_path": "next-use-trainer-type-scoped/source-before.json",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/observations/entrypoint-original-sdk.json",
+      "relative_path": "observations/entrypoint-original-sdk.json",
+      "git_blob_sha": "4d62128dfad9a35b87744f8b82666e4cfe4e98bf",
+      "bytes": 6175,
+      "sha256": "bd6debcdbbfbb2ffe54d31b445d8cafa2c1c31151620b9e251c82b4ace6e9912",
+      "mode": "100644",
+      "origin": "complete immutable original native SDK payload; exact payload SHA and all embedded original bytes verified, complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/observations/final16-original-sdk.json",
+      "relative_path": "observations/final16-original-sdk.json",
+      "git_blob_sha": "ffb154b66d10b19670c34759d756aa622a4183cf",
+      "bytes": 88747,
+      "sha256": "cccfb74d0237bdf8b5eeb24d042d8d1e0c5c6f0015f3b3fc087edd4064525390",
+      "mode": "100644",
+      "origin": "complete immutable original native SDK payload; exact payload SHA and all embedded original bytes verified, complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/observations/rest3-original-sdk.json",
+      "relative_path": "observations/rest3-original-sdk.json",
+      "git_blob_sha": "980402880404832f4163ca1a57601958e281c6eb",
+      "bytes": 2191,
+      "sha256": "6893c0d79573715c1da38ba7cceba9092f8e463a9cd3deed9580d36d41ea74e5",
+      "mode": "100644",
+      "origin": "complete immutable original native SDK payload; exact payload SHA and all embedded original bytes verified, complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/original-driver-v2.py",
+      "relative_path": "original-driver-v2.py",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/overlay-packet.json.gz.b64",
+      "relative_path": "overlay-packet.json.gz.b64",
+      "git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813",
+      "bytes": 107005,
+      "sha256": "61b0fefe0845a3e086df7453eafcc102f4e78ab52f1c87c326735c837868a8f4",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/reconstruction/source-inventory.part0000.b64",
+      "relative_path": "reconstruction/source-inventory.part0000.b64",
+      "git_blob_sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+      "bytes": 349529,
+      "sha256": "368d0661f8a7b11ba40e374dfef857c7c3f121d470bd438f3a7d3ae6691e3eec",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/reconstruction/source-inventory.part0001.b64",
+      "relative_path": "reconstruction/source-inventory.part0001.b64",
+      "git_blob_sha": "10133dd99bb121e5005b5643a419e3524828765d",
+      "bytes": 349529,
+      "sha256": "ee7fdb51c2ea10d4639e6b790837764aad067ce7f4c21226f3e0cdffe5e80a18",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/reconstruction/source-inventory.part0002.b64",
+      "relative_path": "reconstruction/source-inventory.part0002.b64",
+      "git_blob_sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+      "bytes": 349529,
+      "sha256": "532bacdf6f61d551c30c692cc77d8ec45d7fc81bb1b6adf4e28941341403e05a",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/reconstruction/source-inventory.part0003.b64",
+      "relative_path": "reconstruction/source-inventory.part0003.b64",
+      "git_blob_sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+      "bytes": 349529,
+      "sha256": "3b242fdf81662bbbedd8546e59a6497c657355acb836bd646ead18a141bbc1e9",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/reconstruction/source-inventory.part0004.b64",
+      "relative_path": "reconstruction/source-inventory.part0004.b64",
+      "git_blob_sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+      "bytes": 234021,
+      "sha256": "bbdc6c613840aabe0f115ba2e4f8078f1d9fe60f909ee822db5e72d7f34ebfb3",
+      "mode": "100644",
+      "origin": "previously archived exact inventory base64 bytes; current original before/after parts match"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained-manifest.json",
+      "relative_path": "retained-manifest.json",
+      "git_blob_sha": "5be170b2c8273be2158480a2e02dc9b0b91fbe1d",
+      "bytes": 7173,
+      "sha256": "3cea306bf1b4c0fac38bbf035224f290770b41f85f62051a89e95101a7445af3",
+      "mode": "100644",
+      "origin": "actual_original_retained_manifest; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/bootstrap-result.json.part0000",
+      "relative_path": "retained/bootstrap-result.json.part0000",
+      "git_blob_sha": "683da157b32a41babfe1b5e859dc3a21ad9434a2",
+      "bytes": 2237,
+      "sha256": "b2f0285c34b3776851131adb56a998171ec4cd547c3c9eab1572bae72a8d9417",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/bootstrap.py.part0000",
+      "relative_path": "retained/bootstrap.py.part0000",
+      "git_blob_sha": "301d747eee97028d568cb1abccd86fe25f1afd53",
+      "bytes": 2570,
+      "sha256": "e97d558950656b54bb8eed7d58a90d08462aac021c43968f2f7d961337135de5",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/CALLERS.toml.gz.b64.part0000",
+      "relative_path": "retained/CALLERS.toml.gz.b64.part0000",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "bytes": 234449,
+      "sha256": "37331123a990556aa6471a96b1f372b538b189d569fac282de17edae2e506b1f",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/CALLERS.toml.part0000",
+      "relative_path": "retained/CALLERS.toml.part0000",
+      "git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+      "bytes": 175835,
+      "sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/diagnostic-attempt.json.part0000",
+      "relative_path": "retained/diagnostic-attempt.json.part0000",
+      "git_blob_sha": "cc80f14040fd6f1e54bbfa5afaf24d9baf7cc3d9",
+      "bytes": 830,
+      "sha256": "8035c4717e96853270ea17dbb4c72153c06d27ef8dd52d625daafd0f4ef3e8b1",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/diagnostic.py.part0000",
+      "relative_path": "retained/diagnostic.py.part0000",
+      "git_blob_sha": "646a07321ab80df9851c04f1806425f049831571",
+      "bytes": 19255,
+      "sha256": "a8bb8d7ae1db26e89d56dfb74a89f7b4b2923c34e3819b9b8b7a7620790e81fa",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/input.json.part0000",
+      "relative_path": "retained/input.json.part0000",
+      "git_blob_sha": "d53d5d491dd85c261f88fc158a3d24fc44f179be",
+      "bytes": 2552,
+      "sha256": "97e0d4c59b5b00ddef0f3190964299568002e7e2d051c6039a23670f173007ac",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/original-driver-v2.py.part0000",
+      "relative_path": "retained/original-driver-v2.py.part0000",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/overlay-packet.json.gz.b64.part0000",
+      "relative_path": "retained/overlay-packet.json.gz.b64.part0000",
+      "git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813",
+      "bytes": 107005,
+      "sha256": "61b0fefe0845a3e086df7453eafcc102f4e78ab52f1c87c326735c837868a8f4",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/overlay.json.part0000",
+      "relative_path": "retained/overlay.json.part0000",
+      "git_blob_sha": "c76ef03e3ed8de2e1bde130e6c5de8c5a11e3e26",
+      "bytes": 80253,
+      "sha256": "4beff7772e0c7db5d28cbd5097cb15bf3e291e10baa494f6b5a527f3dfaf14f5",
+      "mode": "100644",
+      "origin": "exact actual gzip identity; created Git blob SHA matched; existing complete base64 companion read back and decoded/hash verified"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/run-result-prepackage.json.part0000",
+      "relative_path": "retained/run-result-prepackage.json.part0000",
+      "git_blob_sha": "afdda473d5db82d940fcea446090f762ee44b940",
+      "bytes": 3636,
+      "sha256": "e574aa8ec46545980cbede258e8e414a7724270f310f16a93079b2a4ef83ec8b",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/run-start.json.part0000",
+      "relative_path": "retained/run-start.json.part0000",
+      "git_blob_sha": "b25e17dfc0a7fce0e813a1f43119905a75985b6a",
+      "bytes": 1135,
+      "sha256": "b0a52c11d39e59dc1e002d5e1db1a3f62a26557cdda08befc7ac255875115a2d",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "relative_path": "retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/retained/wrapper.py.part0000",
+      "relative_path": "retained/wrapper.py.part0000",
+      "git_blob_sha": "9d7fbcdac5189a696d3f7aa12b147c852944c5fc",
+      "bytes": 10268,
+      "sha256": "5d604b4359c2cd33c42c5efbd962eedbd0e0fca5939b6c14616608a7852c68ee",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/run-result-prepackage.json",
+      "relative_path": "run-result-prepackage.json",
+      "git_blob_sha": "afdda473d5db82d940fcea446090f762ee44b940",
+      "bytes": 3636,
+      "sha256": "e574aa8ec46545980cbede258e8e414a7724270f310f16a93079b2a4ef83ec8b",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/run-result.json",
+      "relative_path": "run-result.json",
+      "git_blob_sha": "c1d2cbe69e7a30fcd37bc864aa1b590b3e5b85a7",
+      "bytes": 3949,
+      "sha256": "7ad756f3bb2ec361d090f250d5277bbc4e3f268fb6ffbf1f92e3efc85f1887d8",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/run-start.json",
+      "relative_path": "run-start.json",
+      "git_blob_sha": "b25e17dfc0a7fce0e813a1f43119905a75985b6a",
+      "bytes": 1135,
+      "sha256": "b0a52c11d39e59dc1e002d5e1db1a3f62a26557cdda08befc7ac255875115a2d",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/SOURCE_DIAGNOSTIC.lock",
+      "relative_path": "SOURCE_DIAGNOSTIC.lock",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644",
+      "origin": "actual typed-two original file; complete GitHub UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-next-use-trainer-type-v1/wrapper.py",
+      "relative_path": "wrapper.py",
+      "git_blob_sha": "9d7fbcdac5189a696d3f7aa12b147c852944c5fc",
+      "bytes": 10268,
+      "sha256": "5d604b4359c2cd33c42c5efbd962eedbd0e0fca5939b6c14616608a7852c68ee",
+      "mode": "100644",
+      "origin": "prepared immutable input fully read back; actual new bootstrap and final frozen-input checks confirm bytes"
+    }
+  ],
+  "reconstruct_large_originals": [
+    {
+      "original_path": "CALLERS.toml",
+      "original_bytes": 1122002,
+      "original_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 175835,
+          "git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+          "path": "retained/CALLERS.toml.part0000",
+          "sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806"
+        }
+      ]
+    },
+    {
+      "original_path": "overlay.json",
+      "original_bytes": 453820,
+      "original_sha256": "a212e4bf8ff7a5b01c1537d99a3a332bfaad8fd6175fb9e979edd5869dad288e",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 80253,
+          "git_blob_sha": "c76ef03e3ed8de2e1bde130e6c5de8c5a11e3e26",
+          "path": "retained/overlay.json.part0000",
+          "sha256": "4beff7772e0c7db5d28cbd5097cb15bf3e291e10baa494f6b5a527f3dfaf14f5"
+        }
+      ]
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/source-after.inventory.json",
+      "original_bytes": 5432085,
+      "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 262144,
+          "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+          "path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0000",
+          "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+          "path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0001",
+          "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+          "path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0002",
+          "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+          "path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0003",
+          "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+        },
+        {
+          "bytes": 175515,
+          "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+          "path": "next-use-trainer-type-scoped/retained/source-after.inventory.json.part0004",
+          "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+        }
+      ]
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/source-before.inventory.json",
+      "original_bytes": 5432085,
+      "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 262144,
+          "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+          "path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0000",
+          "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+          "path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0001",
+          "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+          "path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0002",
+          "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+          "path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0003",
+          "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+        },
+        {
+          "bytes": 175515,
+          "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+          "path": "next-use-trainer-type-scoped/retained/source-before.inventory.json.part0004",
+          "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+        }
+      ]
+    }
+  ],
+  "identity_parts": [
+    {
+      "original_path": "CALLERS.toml.gz.b64",
+      "part_path": "retained/CALLERS.toml.gz.b64.part0000",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e"
+    },
+    {
+      "original_path": "SOURCE_DIAGNOSTIC.lock",
+      "part_path": "retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "original_path": "bootstrap-result.json",
+      "part_path": "retained/bootstrap-result.json.part0000",
+      "git_blob_sha": "683da157b32a41babfe1b5e859dc3a21ad9434a2"
+    },
+    {
+      "original_path": "bootstrap.py",
+      "part_path": "retained/bootstrap.py.part0000",
+      "git_blob_sha": "301d747eee97028d568cb1abccd86fe25f1afd53"
+    },
+    {
+      "original_path": "diagnostic-attempt.json",
+      "part_path": "retained/diagnostic-attempt.json.part0000",
+      "git_blob_sha": "cc80f14040fd6f1e54bbfa5afaf24d9baf7cc3d9"
+    },
+    {
+      "original_path": "diagnostic.py",
+      "part_path": "retained/diagnostic.py.part0000",
+      "git_blob_sha": "646a07321ab80df9851c04f1806425f049831571"
+    },
+    {
+      "original_path": "input.json",
+      "part_path": "retained/input.json.part0000",
+      "git_blob_sha": "d53d5d491dd85c261f88fc158a3d24fc44f179be"
+    },
+    {
+      "original_path": "original-driver-v2.py",
+      "part_path": "retained/original-driver-v2.py.part0000",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "original_path": "overlay-packet.json.gz.b64",
+      "part_path": "retained/overlay-packet.json.gz.b64.part0000",
+      "git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813"
+    },
+    {
+      "original_path": "run-result-prepackage.json",
+      "part_path": "retained/run-result-prepackage.json.part0000",
+      "git_blob_sha": "afdda473d5db82d940fcea446090f762ee44b940"
+    },
+    {
+      "original_path": "run-start.json",
+      "part_path": "retained/run-start.json.part0000",
+      "git_blob_sha": "b25e17dfc0a7fce0e813a1f43119905a75985b6a"
+    },
+    {
+      "original_path": "wrapper.py",
+      "part_path": "retained/wrapper.py.part0000",
+      "git_blob_sha": "9d7fbcdac5189a696d3f7aa12b147c852944c5fc"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/diagnostic-result.json",
+      "part_path": "next-use-trainer-type-scoped/retained/diagnostic-result.json.part0000",
+      "git_blob_sha": "91adb2baa181afbf1045258f4224143fb73ee3ee"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/dispatch.json",
+      "part_path": "next-use-trainer-type-scoped/retained/dispatch.json.part0000",
+      "git_blob_sha": "5de97b9b4224ec9c5036c09f4d5297001bfae7f0"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/execution-start.json",
+      "part_path": "next-use-trainer-type-scoped/retained/execution-start.json.part0000",
+      "git_blob_sha": "189456a46a9191032fef90514d3e475c1658d43c"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/execution-terminal.json",
+      "part_path": "next-use-trainer-type-scoped/retained/execution-terminal.json.part0000",
+      "git_blob_sha": "64317b45b7f6f2d7ea70a14d8b98207c36c1e59d"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/forwarded.stdout.log",
+      "part_path": "next-use-trainer-type-scoped/retained/forwarded.stdout.log.part0000",
+      "git_blob_sha": "85d69d639ddc69aa12b24ccd8c89003a095dcd84"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/gate-summary.json",
+      "part_path": "next-use-trainer-type-scoped/retained/gate-summary.json.part0000",
+      "git_blob_sha": "f5318f9c27cba707fbd053eb496406aa64636820"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/next-use-trainer-type-scoped.json",
+      "part_path": "next-use-trainer-type-scoped/retained/next-use-trainer-type-scoped.json.part0000",
+      "git_blob_sha": "ebae9a0ca25a42efac398b2a6d908f5f44d8857b"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/next-use-trainer-type-scoped.log",
+      "part_path": "next-use-trainer-type-scoped/retained/next-use-trainer-type-scoped.log.part0000",
+      "git_blob_sha": "85d69d639ddc69aa12b24ccd8c89003a095dcd84"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/package-start.json",
+      "part_path": "next-use-trainer-type-scoped/retained/package-start.json.part0000",
+      "git_blob_sha": "cbc03cae3e2bf016f33a6229a3d2c29aa0a2724b"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/row-progress.jsonl",
+      "part_path": "next-use-trainer-type-scoped/retained/row-progress.jsonl.part0000",
+      "git_blob_sha": "d6e07f99e3942a1df427ccf986faed4552b4b31a"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/source-after.json",
+      "part_path": "next-use-trainer-type-scoped/retained/source-after.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    },
+    {
+      "original_path": "next-use-trainer-type-scoped/source-before.json",
+      "part_path": "next-use-trainer-type-scoped/retained/source-before.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    }
+  ],
+  "base64_companions": [
+    {
+      "binary_git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "base64_path": "reconstruction/source-inventory.part0000.b64",
+      "base64_git_blob_sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+    },
+    {
+      "binary_git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "base64_path": "reconstruction/source-inventory.part0001.b64",
+      "base64_git_blob_sha": "10133dd99bb121e5005b5643a419e3524828765d",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+    },
+    {
+      "binary_git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "base64_path": "reconstruction/source-inventory.part0002.b64",
+      "base64_git_blob_sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+    },
+    {
+      "binary_git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "base64_path": "reconstruction/source-inventory.part0003.b64",
+      "base64_git_blob_sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+    },
+    {
+      "binary_git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "base64_path": "reconstruction/source-inventory.part0004.b64",
+      "base64_git_blob_sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+      "decoded_bytes": 175515,
+      "decoded_sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+    },
+    {
+      "binary_git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+      "base64_path": "CALLERS.toml.gz.b64",
+      "base64_git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "decoded_bytes": 175835,
+      "decoded_sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806"
+    },
+    {
+      "binary_git_blob_sha": "c76ef03e3ed8de2e1bde130e6c5de8c5a11e3e26",
+      "base64_path": "overlay-packet.json.gz.b64",
+      "base64_git_blob_sha": "dce8971a7e2ccc7d6d65ea0cf46e473f5c246813",
+      "decoded_bytes": 80253,
+      "decoded_sha256": "4beff7772e0c7db5d28cbd5097cb15bf3e291e10baa494f6b5a527f3dfaf14f5"
+    }
+  ],
+  "completeness": {
+    "original_package_file_entries": 28,
+    "required_retained_part_paths": 36,
+    "all_required_retained_part_paths_placed": true,
+    "all_placed_blob_bytes_below_500000": true,
+    "placements": 72,
+    "large_originals_reconstructible": 4
+  },
+  "reconstruction": "All retained manifests are original. Read each part path relative to its manifest directory; concatenate parts in listed order; gunzip iff encoding=gzip; verify original_bytes and original_sha256. UTF-8 base64 companions have one terminal LF; decode to the exact retained binary bytes before concatenation. Direct identity originals and their retained aliases contain the same immutable blob.",
+  "inventory_reuse": "Before and after inventories are separately recorded by this actual run and both exactly match a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd. Their actual per-part identities equal the already retained five original inventory parts; this placement aliases those unchanged objects at this run's exact before/after paths.",
+  "final_state_rule": "gate-summary.json and run-result-prepackage.json are original prepackage snapshots; use gate-final.json and run-result.json for actual final package and execution status.",
+  "publication": "Prepared exact paths and immutable GitHub objects only; this agent has not created a commit or moved a ref.",
+  "limitations": [
+    "This diagnostic does not run the original complete source-closure/fullcaller entrypoints or Cargo.",
+    "The memory projection has no published candidate source tree.",
+    "This is no evidence of a real authorized A/B/C learning task or daemon/Root cold recovery.",
+    "Immutable content identity alone does not establish future availability, independent operational control, authorization or real adoption."
+  ]
+}

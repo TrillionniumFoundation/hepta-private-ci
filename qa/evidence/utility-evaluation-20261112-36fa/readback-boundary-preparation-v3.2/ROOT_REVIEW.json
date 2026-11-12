@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.utility.root-v3.2-independent-review.v1",
+  "reviewed_at": "2026-11-12T12:54:10.819829+00:00",
+  "status": "prepared_not_integrated_no_full_gate_pass",
+  "manifest_blob": "dd6141927a3d1bcc6c5174531d8e0ac5951ae1b3",
+  "packet_blob": "79d3f41e016f17815f83832c682a7ac81c2f60aa",
+  "packet_raw": {
+    "bytes": 1840348,
+    "sha256": "ff64105a74fecf7830528376f73145272157595832f5463b421ecea91e327476",
+    "git_blob_sha": "a4755acb4890184f434bd83345160908b17ebbb1"
+  },
+  "verified_files": [
+    {
+      "path": "CALLERS.toml",
+      "base": {
+        "bytes": 1198922,
+        "git_blob_sha": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+        "sha256": "9f546f6a12602286916c04c08657d35115b0fc7ffd92f47df80dc7ea74dcbf4a"
+      },
+      "post": {
+        "bytes": 1255349,
+        "git_blob_sha": "2354abb1eb485629ecdf17a2e8952a529b8df384",
+        "sha256": "42f75c0b463c6793048e3b5afd50b18f57e5e770a3b7fc9e89c1c4c29b532b91"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "base": {
+        "bytes": 15087,
+        "git_blob_sha": "0d97fec5c1bd09509ba1e70c5163e2de5fe494aa",
+        "sha256": "159db48c8a27cc4ad2e568cc8add39a7580be3529442fc1ed5f1bfa3d64c032f"
+      },
+      "post": {
+        "bytes": 15317,
+        "git_blob_sha": "50b5afdb7d083e9e5306e500a2caf9dd9c987818",
+        "sha256": "2f0b34cddde2ded67d30bb9fc7b57dabff5e9ca7e7348580e81a42c75dfec65a"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluator_readback_source_closure.py",
+      "base": null,
+      "post": {
+        "bytes": 8500,
+        "git_blob_sha": "0f15813c3f2f98f756c67e6de8374994a20fcad5",
+        "sha256": "377dd6830e00ab8e907e7b9455560283347f856117d952cdd9e367e024f57153"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_host_source_closure.py",
+      "base": null,
+      "post": {
+        "bytes": 17252,
+        "git_blob_sha": "ce3db0359b0542c7cbd010d131ea35c4f8eccd27",
+        "sha256": "fae6638fba47c7d7f0aaaf35ebb1cff5e45119b866f3c4208dc231a8e5de4a2f"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "base": {
+        "bytes": 17338,
+        "git_blob_sha": "146114bc3283bd84f1a94a5e0e8eba81834fa191",
+        "sha256": "6d18768647876c618a759b9480fe0bdb24771791fc1bf5bbf915cd85a3625dea"
+      },
+      "post": {
+        "bytes": 17400,
+        "git_blob_sha": "fcf1e765e005112828c8521231212d95b7ebcc88",
+        "sha256": "ec370739b11f9b4e6cb386ec9524db051d93fefe21648000acb66015a923f899"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "base": {
+        "bytes": 21795,
+        "git_blob_sha": "d7b81f26f22a3d2ad283a9897a79dd9d8858aaeb",
+        "sha256": "da760a85dd76269ebc561d9c09b077c8a5155da0cf08205c0d208912d48f0564"
+      },
+      "post": {
+        "bytes": 21861,
+        "git_blob_sha": "5308b6b4f2b6a926330baa07c0c262e1da4abf9d",
+        "sha256": "97dcb25500d1f6595c6fa0d0c11b23a182f2fb6ea38240cbad2ba6f881a92df6"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_readback_host_source_closure.py",
+      "base": null,
+      "post": {
+        "bytes": 6038,
+        "git_blob_sha": "1d772218970e69276b7aeea1a500d81ca26dfe48",
+        "sha256": "dcede23b192d74075cc79ce053397caa5e60ae8883678e47ee2a883c0cfc004b"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "base": {
+        "bytes": 16197,
+        "git_blob_sha": "7fcd286428c39df689adf11e935a533c20fdbe6b",
+        "sha256": "cf86624cb5da7a16b752252cfe1861de72a95164747d2ffdc7e61eb407d52295"
+      },
+      "post": {
+        "bytes": 16400,
+        "git_blob_sha": "10ebaed012f19cb7dc41efda3f1031a5b2a8a7ed",
+        "sha256": "0e05418251312c9c0b7028bd7ab6167e4e5802852221d6a15b84a0206c45e439"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "base": {
+        "bytes": 18785,
+        "git_blob_sha": "53db4eea7acc003ea0683e0b9c7592176aa5934a",
+        "sha256": "5ba2d580f2f3c6d25575389ff5d4a9c6756d9c409507b055e215804cc5d1e1d5"
+      },
+      "post": {
+        "bytes": 18845,
+        "git_blob_sha": "037473646bab83b6baa296470ca402eea3f5fdbe",
+        "sha256": "286b82aec687bc71ba6897870e9f5a0c20cbd03f1ef5366895bccc7a8175aeb7"
+      }
+    }
+  ],
+  "boundaries": {
+    "before": 534,
+    "after": 534,
+    "exact_member_additions": [
+      {
+        "index": 335,
+        "id": "learning_original_selector_command_context",
+        "added": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+      },
+      {
+        "index": 337,
+        "id": "learning_original_selector_command_owner_profile",
+        "added": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+      },
+      {
+        "index": 338,
+        "id": "learning_original_selector_command_owner_factory",
+        "added": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"
+      },
+      {
+        "index": 347,
+        "id": "learning_original_dataset_readback_current",
+        "added": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+      },
+      {
+        "index": 365,
+        "id": "learning_original_next_use_command_owner_factory",
+        "added": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"
+      },
+      {
+        "index": 459,
+        "id": "learning_original_evaluation_host_profile",
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      },
+      {
+        "index": 460,
+        "id": "learning_original_evaluation_host_receipt_current",
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"
+      },
+      {
+        "index": 461,
+        "id": "learning_original_evaluation_host_constructor",
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      }
+    ],
+    "other_526_rows_equal": true,
+    "other_top_level_metadata_equal": true
+  },
+  "protected": {
+    "before": 399,
+    "after": 409,
+    "unique_paths": 338,
+    "existing_changed_rows": [
+      279
+    ],
+    "only_change": "exact separately reviewed typed Trainer match sequence[0]",
+    "same_evaluated_branch_and_all_other_fields": true,
+    "new_rows_exact_from_original_local_qa_preparation": 10,
+    "nongeneric_function_scoped_entries": 25,
+    "generic_fallback_limit": "Existing file-level required_order is not a function uniqueness or formal proof guarantee."
+  },
+  "existing_qa": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "functions_byte_and_ast_equal": 10,
+      "changed_expected_keys": [
+        "learning_original_evaluation_host_profile",
+        "learning_original_evaluation_host_receipt_current",
+        "learning_original_evaluation_host_constructor"
+      ],
+      "only_expected_assignment_bytes_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "functions_byte_and_ast_equal": 9,
+      "changed_expected_keys": [
+        "learning_original_next_use_command_owner_factory"
+      ],
+      "only_expected_assignment_bytes_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "functions_byte_and_ast_equal": 12,
+      "changed_expected_keys": [
+        "learning_original_selector_command_context"
+      ],
+      "only_expected_assignment_bytes_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "functions_byte_and_ast_equal": 9,
+      "changed_expected_keys": [
+        "learning_original_selector_command_context",
+        "learning_original_selector_command_owner_profile",
+        "learning_original_selector_command_owner_factory"
+      ],
+      "only_expected_assignment_bytes_changed": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "functions_byte_and_ast_equal": 16,
+      "changed_expected_keys": [
+        "learning_original_dataset_readback_current"
+      ],
+      "only_expected_assignment_bytes_changed": true
+    }
+  ],
+  "original_functions_preserved": 56,
+  "new_qa": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluator_readback_source_closure.py",
+      "methods": [
+        "test_consuming_host_requires_actual_training_and_original_panel_history",
+        "test_every_member_keeps_the_full_training_attestation_scope_and_original_trust",
+        "test_same_bound_trainer_arc_replaces_only_each_members_readonly_transport",
+        "test_material_export_never_promotes_readback_to_execute",
+        "test_final_original_receipt_is_read_after_all_panel_io",
+        "test_export_authenticates_fresh_clock_panel_and_complete_material_after_io",
+        "test_member_projection_matches_original_signed_cell_manifests_and_scopes",
+        "test_export_has_no_new_claim_signing_key_or_reconnected_owner"
+      ],
+      "count": 8,
+      "git_blob_sha": "0f15813c3f2f98f756c67e6de8374994a20fcad5"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_host_source_closure.py",
+      "methods": [
+        "test_host_preserves_fresh_recovered_origins_and_shared_once",
+        "test_host_reads_actual_dataset_training_and_current_evaluator_before_retaining",
+        "test_context_preserves_actual_training_extension_and_complete_original_signatures",
+        "test_effect_preserves_incomplete_outcomes_once_and_readback_without_commit",
+        "test_after_read_reenters_only_original_lane_then_authenticates_both_materials",
+        "test_original_lane_keeps_actual_context_and_purpose",
+        "test_admission_requires_the_actual_candidate_qualified_material_and_current_time",
+        "test_model_creation_and_explicit_recovery_preserve_original_witness_and_fresh_auth",
+        "test_model_commit_readback_and_revalidation_cannot_silently_reset_uncertainty",
+        "test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys",
+        "test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys"
+      ],
+      "count": 11,
+      "git_blob_sha": "ce3db0359b0542c7cbd010d131ea35c4f8eccd27"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_readback_host_source_closure.py",
+      "methods": [
+        "test_selector_rejects_changed_cut_signature_or_observation_time",
+        "test_selector_constructor_keeps_consuming_original_custody",
+        "test_next_use_rejects_different_original_cuts_or_any_full_signature",
+        "test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings",
+        "test_hosts_cannot_acquire_a_new_path_key_or_execute_a_predecessor"
+      ],
+      "count": 5,
+      "git_blob_sha": "1d772218970e69276b7aeea1a500d81ca26dfe48"
+    }
+  ],
+  "actual_preparation_runs": [
+    {
+      "run_blob": "115d17ca972ec85169d020ec9324c8718df2372e",
+      "raw_blob": "098b3cc6ce25453a0658680516e731d42a297f88",
+      "actual_methods_run": 16,
+      "exit_code": 1,
+      "source_inputs_unchanged": true,
+      "scope": "isolated authored source-mutation preparation only"
+    },
+    {
+      "run_blob": "e8f49f7fa2694e95e99525956b861118c295dfb3",
+      "raw_blob": "7e6b74aafa4a8c726f04094ef7923d5ff04b963b",
+      "actual_methods_run": 16,
+      "exit_code": 0,
+      "source_inputs_unchanged": true,
+      "scope": "isolated authored source-mutation preparation only"
+    },
+    {
+      "run_blob": "e0ff8ad79dcece75425a9cc04d3f347dd59da50e",
+      "raw_blob": "27b6020a55a61c2da2f1ee7e144a0227866a2cc4",
+      "actual_methods_run": 8,
+      "exit_code": 0,
+      "source_inputs_unchanged": true,
+      "scope": "isolated authored source-mutation preparation only"
+    }
+  ],
+  "merged_callers_qa_paths": 19,
+  "no_change_to": [
+    "original verifier",
+    "workflow",
+    "budgets",
+    "production Rust in this delta",
+    "authority",
+    "Git refs"
+  ],
+  "not_claimed": [
+    "full source gate",
+    "full caller gate",
+    "native runtime pass",
+    "600-second source gate compliance",
+    "A/B/C qualification",
+    "adoption",
+    "cold recovery"
+  ]
+}

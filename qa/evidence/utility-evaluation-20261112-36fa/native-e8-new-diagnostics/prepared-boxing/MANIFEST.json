@@ -1,0 +1,92 @@
+{
+  "format": "hepta.native.panel-future-stack-repair.prepared.v1",
+  "status": "prepared-not-formatted-not-compiled-not-tested",
+  "base_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "equivalent_fixed_upstream_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+  "before_blob": "f23a3d8e18fddfd000d9d3deab9f01c44633cf3c",
+  "after": {
+    "name": "panel-fixture-boxing-postimage.rs",
+    "blob": "c968ff41de9cca02f5321cb2fa813ef5f8eeef6b",
+    "bytes": 9561,
+    "sha256": "6fa587f21a2f637c74d43706902e6389be02f65417479060abe33781fd0c7d32",
+    "readback_equal": true
+  },
+  "patch": {
+    "name": "panel-fixture-boxing.patch",
+    "blob": "231f726f0c826e4eb1415141bb0bb539389b467f",
+    "bytes": 4139,
+    "sha256": "09f6039b73a7187e9f7f5869d3edf7eaf3cb11edfb6f757487a1f071354d8ad2",
+    "readback_equal": true
+  },
+  "scope": "Two private fixture constructor boundaries only. Unchanged bodies and assertions except one indentation level in the boxed async move block; no production Rust, authority, deadlines, stack size, test inventory or assertion changes.",
+  "specific_change": [
+    "completed returns the completed_for_publication future directly, removing its measured 662856-byte forwarding poll frame.",
+    "completed_for_publication constructs Pin<Box<async move {...}>>, keeping its future state out of enclosing host/panel test futures."
+  ],
+  "evidence": {
+    "first_signal_raw_blob": "1fbfc1d05cdc26bf42b16d19ab57e636ff4aa34d",
+    "first_signal_stack_blob": "8b976f571432c4022ab460d2bba9d71f281f5fa5",
+    "pinned_elf_sha256": "03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908",
+    "guard_hit": true,
+    "original_stack_bytes": 8388608,
+    "observed_static_allocations": {
+      "test_entry": 1586536,
+      "test_poll": 2867912,
+      "completed_poll": 662856,
+      "completed_for_publication_poll": 1861448,
+      "preregistered_for_publication_poll": 1186072,
+      "admission_poll": 104936,
+      "memory_verify_projection_poll": 28376,
+      "memory_verify_store_poll": 33208,
+      "memory_open_poll": 11144,
+      "attach_prerequisites_poll": 5576,
+      "flume_poll": 1576
+    },
+    "five_fixture_and_test_frames_total": 8164824,
+    "static_prologues": [
+      {
+        "name": "selected-bounded-prologues.json",
+        "blob": "2309aaf393a959c3156ae3ea013aa5f5a5c51ad4",
+        "bytes": 52731,
+        "sha256": "99edec1bd4eb39a0f7511ee0e41e55a968cf492a7e9c0f15995ad9dc87425429",
+        "readback_equal": true
+      },
+      {
+        "name": "static-frames-RESULT.json",
+        "blob": "c642e4eaddb12a5cc438d2d19d92a64d9b6159c1",
+        "bytes": 4244,
+        "sha256": "3e3540f6d4acc5cad4ebcef725cde3e1e1a4eab734c40ade3065b7d7f6edd757",
+        "readback_equal": true
+      },
+      {
+        "name": "static-frames-driver.py",
+        "blob": "4e46dedb9999a6d032d97119c3934b6e9a0ec6a2",
+        "bytes": 6187,
+        "sha256": "8bcadc32184ca889539109c8a5dd2a61e576f1de46566a3ac4ff0e39a401b5c5",
+        "readback_equal": true
+      },
+      {
+        "name": "static-frames-actual-input.json",
+        "blob": "3bb4f71cb3072230bf80041f41116615b635f379",
+        "bytes": 14649,
+        "sha256": "69c0c7a5244befcb0ab8aab431eb120acfebb082e2f46bb4d5a001385bee8c85",
+        "readback_equal": true
+      }
+    ]
+  },
+  "unchanged_check": {
+    "assertion_tokens_before": 31,
+    "assertion_tokens_after": 31,
+    "tokio_test_attributes_before": 3,
+    "tokio_test_attributes_after": 3,
+    "e8_and_b298_base_blobs_equal": true,
+    "shared_desktop_source_modified": false,
+    "tests_executed_for_patch": false
+  },
+  "limits": [
+    "Static measured frame evidence is from the original e8 diagnostic ELF; the prepared change has not been compiled.",
+    "Boxing changes future storage, not the asserted owner or publication logic. Its effect on the new binary and all 17 formerly overflowing cases requires fresh exact-source testing.",
+    "The original failed e8 focused run remains failed."
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.utility.deep55-bounded-source-review.v1",
+  "status": "source_review_only_root_cause_unknown_no_fix_proposed",
+  "reviewed_at": "2026-11-12T13:02:14Z",
+  "original_observed_source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_read_for_this_review": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "original_sample": {
+    "blob": "454bd0f79d859cfc1349d60b0ccb4366cfcb4dd2",
+    "bytes": 100716,
+    "sha256": "404eb4b4f9a7eb31cb5897eccea8245b8d66aad8cacb7c9c6d894f4bbdb60669",
+    "delay_seconds": 55,
+    "thread": 42,
+    "observation": "Digest32::of_bytes -> FrozenLearningScopeV2::validate_request/validate_snapshot -> require_original_material_signatures -> from_original_material_peer -> LiveOwners::current_material -> require_current_in_lane -> original Training stage blocking lane. This is one externally stopped sample, not a profiling distribution or a completed test result."
+  },
+  "facts": [
+    {
+      "source": "circuit_model_selection_material_support_tests.rs::unstarted_material_with_profile",
+      "fact": "Fixed b298 request allows one dataset row, 128 dataset bytes, two training steps; optimizer epochs is two. This is not the 8192-row evaluation-provider fixture."
+    },
+    {
+      "source": "circuit_q24_task_test_support.rs::source/model",
+      "fact": "The actual source observation and baseline matrix input width are two."
+    },
+    {
+      "source": "cell_q24_dataset_remote.rs::decode_batch",
+      "fact": "Production decoder bounds base64 input to 1024 characters and requires rows == 1 and width in 1..=64, matching the loaded input width."
+    },
+    {
+      "source": "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "fact": "The test explicitly exercises 20 Training readbacks, six Selection readbacks and three C commands. Every Training readback brackets native/Generator CURRENT with two live captures, each reading Material twice; existing test requires at least 80 and fewer than 128 reads per relevant original Material peer."
+    },
+    {
+      "source": "cell_q24_training_source.rs::LiveOwners::current_material and cell_q24_dataset_remote.rs::from_original_material_peer",
+      "fact": "A successful capture directly invokes verify_original_evidence twice and performs two Material decodes, each invoking require_original_material_signatures twice. These six directly visible scope.validate_snapshot calls repeat pure request/scope encoding checks, but the surrounding complete signatures, original-owner RPCs and fresh-time checks cannot be removed wholesale."
+    },
+    {
+      "source": "learning_iteration_digest.rs::initial_digest",
+      "fact": "The request checkpoint encoding contains 13 IDs, nine digests (including the selected bundle digest), envelope fields and fixed budget fields. It does not traverse training samples or model tensor bytes."
+    }
+  ],
+  "conclusion": {
+    "root_cause": "Unknown",
+    "proven_safe_timeout_fix": "None identified",
+    "deadlock": "Not established by this sample. The observed thread is executing a hash while other original-owner/channel threads wait; this is not a system-wide deadlock proof or disproof.",
+    "performance": "No measurement attributes a material fraction of the 60-second budget to request hashing. The observed bounded repeated pure checks are not evidence that caching them would fix the timeout.",
+    "preserved_contract": "No owner read or signature verification removed; no cached receipt, altered deadline, increased stack, changed sample policy or weakened assertion proposed."
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "e8_blob": "218cbb06e2e078be28f48d2019cc901aee478499",
+      "b298_blob": "218cbb06e2e078be28f48d2019cc901aee478499",
+      "e8_equals_b298": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "e8_blob": "212bdf2a13005c2f9281e1772b225e508bc39d9b",
+      "b298_blob": "5752c7e3c43931277c84bcec952450bc49415af9",
+      "e8_equals_b298": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "e8_blob": "7d31e65580897127dad7beaae7344ab7cc41108d",
+      "b298_blob": "704673bda41352c26a5f464fc0b0ab75654eef22",
+      "e8_equals_b298": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "e8_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "b298_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "e8_equals_b298": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs",
+      "e8_blob": "81c2f9c54c1715bcf2e81180590c682dc82560f0",
+      "b298_blob": "81c2f9c54c1715bcf2e81180590c682dc82560f0",
+      "e8_equals_b298": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "e8_blob": "bd124d3f287e1e3b5783aec5f51e2d083d8b21d8",
+      "b298_blob": "bd124d3f287e1e3b5783aec5f51e2d083d8b21d8",
+      "e8_equals_b298": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "e8_blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+      "b298_blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+      "e8_equals_b298": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+      "b298_blob": "a702abce92903e1c8e4c411baff1fa82ad8bcdf4",
+      "e8_equivalence_checked_here": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+      "b298_blob": "9b7e8da3c7ebe9dc51cf24684945b60931028978",
+      "e8_equivalence_checked_here": false
+    }
+  ],
+  "limits": [
+    "Two fixture/helper files in the seven agentd pins differ between e8 and b298; no execution result is transferred between those versions.",
+    "Source bytes were read through GitHub and compared where stated. No new H task, debugger run, Cargo command, Rust execution or source gate was started.",
+    "No production source, preparation packet, branch or ref was changed."
+  ]
+}

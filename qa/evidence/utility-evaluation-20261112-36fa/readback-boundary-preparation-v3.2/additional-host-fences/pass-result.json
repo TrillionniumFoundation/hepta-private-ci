@@ -1,0 +1,22 @@
+{
+  "status": "passed_scoped_source_qa",
+  "returncode": 0,
+  "duration_seconds": 0.7732379760000185,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/tmp/hepta-original-host-fences-prep-V1f2BL/validation-source/qa/b4-no-bypass",
+    "-p",
+    "test_original_*_host_source_closure.py",
+    "-v"
+  ],
+  "source_inputs_unchanged": true,
+  "full_gate": "not_run",
+  "rust_tests": "not_run",
+  "raw_bytes": 3779,
+  "raw_sha256": "c171354f1f7645555a515f7d28dacdaf7c79b588ab14ee59afd2861fdf79760b"
+}

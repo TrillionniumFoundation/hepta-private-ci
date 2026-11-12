@@ -1,0 +1,160 @@
+{
+  "format": "hepta.native.e8-diagnostic-artifact-index.v1",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "source_inventory": {
+    "files": 14741,
+    "sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56"
+  },
+  "scope": "Diagnostic evidence and prepared patch only; no native qualification pass, new canonical source, or adoption claim.",
+  "statuses": {
+    "original_e8_focused": "Failed: 76 pass, 21 fail, 3 timeout; all/ordinary/Root not started.",
+    "new_build": "Succeeded metadata and nextest binaries-only compilation; zero tests.",
+    "diagnostic_v1": "Failed Python precheck before GDB/test because seven-byte ELF magic literal; no cancellation sent.",
+    "diagnostic_v2": "Panel and deep evidence retained. Panel SIGSEGV in original 8MiB guard; deep SIGSTOP requested at55s with27 threads. GDB child executions returned0, no testcase PASS/FAIL result. Deep wrapper returned1 due known final status comparison bug.",
+    "static_frames": "39 observed main-binary functions, at most first256bytes each, exact pinned ELF verified before/after; no binary execution.",
+    "boxing": "One private fixture file prepared, independently reviewed, not yet formatted/compiled/tested.",
+    "b298_import": "All244 packet objects underwent exact byte/hash Git readback and11-commit ancestry/tree checks, followed by global fsck exit3. Current-tip availability scope observation pending; overall failed fsck remains failed."
+  },
+  "binary": {
+    "label": "NEW_BUILD_DIAGNOSTIC",
+    "original_run_binary_available": false,
+    "bytes": 281625080,
+    "sha256": "03390d48c78e613c18583ddecb13709dc88306d90cfc98fc7912296a80f40908"
+  },
+  "environment_difference": {
+    "CARGO_TARGET_DIR": "New isolated /data target; all stated original toolchain/features/8MiB settings retained. Direct GDB, not original nextest execution."
+  },
+  "box_counts": {
+    "assert_string_occurrences_before_after": 31,
+    "actual_assert_macro_calls_before_after": 27,
+    "tokio_test_attributes_before_after": 3,
+    "body_byte_comparison": "Exact after removing one new indentation level; unchanged bytes outside constructor block."
+  },
+  "historical_unavailable": {
+    "reason": "Observed later loss, cause Unknown, restored source and preserved existing records separately.",
+    "stage_gzips": [
+      "source-after-maintenance.files.json.gz",
+      "source-after-eval.files.json.gz"
+    ],
+    "never_reconstructed_as_originals": true
+  },
+  "artifacts": [
+    {
+      "path": "new-build/RESULT.json",
+      "blob": "d8b054efb4eca4a952bc48ef1352972d795e0d23"
+    },
+    {
+      "path": "new-build/BINARY.json",
+      "blob": "cc87fc892d939680868eb95512f78c6918ee6623"
+    },
+    {
+      "path": "new-build/build.log",
+      "blob": "04134e8a03570038fc4e63537f4b174a96f7fac5"
+    },
+    {
+      "path": "new-build/build.log.gz",
+      "blob": "f96eff393976d08a755c8556a5b3e8af5bded4d6"
+    },
+    {
+      "path": "new-build/build.log.gz.base64",
+      "blob": "a75626cc3917e7c3a6d409fb5a96a9489ade8209"
+    },
+    {
+      "path": "diagnostics-v1/RESULT.json",
+      "blob": "f3caf4a067abca3d888810f4c6315f3ce02bb6ce"
+    },
+    {
+      "path": "diagnostics-v1/panel-RESULT.json",
+      "blob": "542f6458926b74a357fc0abc138bd1522566443e"
+    },
+    {
+      "path": "diagnostics-v1/stdout.log",
+      "blob": "ba753a49c48395dfea98e5b9b73ab87d677abecc"
+    },
+    {
+      "path": "diagnostics-v2/RESULT.json",
+      "blob": "55750ead99669a003e3e95d9483ff8f25a811483"
+    },
+    {
+      "path": "diagnostics-v2/actual-process-start-input.json",
+      "blob": "4f3912a8338b4a60b04c40f07bf0ec0aa0087b5c"
+    },
+    {
+      "path": "panel/RESULT.json",
+      "blob": "cb8bf5fcb857f629eeea507890ba7a11ed8d2ead"
+    },
+    {
+      "path": "panel/gdb.log",
+      "blob": "1fbfc1d05cdc26bf42b16d19ab57e636ff4aa34d"
+    },
+    {
+      "path": "panel/STOPPED_THREAD_STACK.json",
+      "blob": "8b976f571432c4022ab460d2bba9d71f281f5fa5"
+    },
+    {
+      "path": "deep/RESULT.json",
+      "blob": "b69442e1dbcb62c3686b041b2f9b9ff013b44101"
+    },
+    {
+      "path": "deep/gdb.log",
+      "blob": "454bd0f79d859cfc1349d60b0ccb4366cfcb4dd2"
+    },
+    {
+      "path": "deep/gdb.log.gz",
+      "blob": "6768bb5457093bc8067830968c82f8760e0d18c8"
+    },
+    {
+      "path": "deep/gdb.log.gz.base64",
+      "blob": "0cd75b185898395ad311cf51d673362ea3bec403"
+    },
+    {
+      "path": "deep/STOPPED_THREAD_STACK.json",
+      "blob": "211a49be5ba30e9427b680b392daa83d01498be0"
+    },
+    {
+      "path": "deep/TIME_BOUND_STOP.json",
+      "blob": "7e0c45b1991d6a5b0e102679fe8254518b84cfd6"
+    },
+    {
+      "path": "panel-static/RESULT.json",
+      "blob": "c642e4eaddb12a5cc438d2d19d92a64d9b6159c1"
+    },
+    {
+      "path": "panel-static/BOUNDED_PROLOGUES.txt",
+      "blob": "ab41351d1e656a354428a843c5c6a4d0d1c9a1c0"
+    },
+    {
+      "path": "panel-static/selected-originals.json",
+      "blob": "2309aaf393a959c3156ae3ea013aa5f5a5c51ad4"
+    },
+    {
+      "path": "panel-static/driver.py",
+      "blob": "4e46dedb9999a6d032d97119c3934b6e9a0ec6a2"
+    },
+    {
+      "path": "panel-static/actual-process-start-input.json",
+      "blob": "3bb4f71cb3072230bf80041f41116615b635f379"
+    },
+    {
+      "path": "prepared-boxing/MANIFEST.json",
+      "blob": "f2c47d6f75df0319d3745b0ddc3223c676101ed8"
+    },
+    {
+      "path": "prepared-boxing/panel-fixture.patch",
+      "blob": "231f726f0c826e4eb1415141bb0bb539389b467f"
+    },
+    {
+      "path": "prepared-boxing/circuit_original_evaluation_panel_tests.rs",
+      "blob": "c968ff41de9cca02f5321cb2fa813ef5f8eeef6b"
+    },
+    {
+      "path": "b298-object-import/RESULT.json",
+      "blob": "9eb09ebd5806ca99550b4cf81efde63c3ef86e0a"
+    },
+    {
+      "path": "b298-object-import/fsck.stderr.log",
+      "blob": "fe3f0c8ed9da6949fa7b45657c7f698ee493f11f"
+    }
+  ]
+}

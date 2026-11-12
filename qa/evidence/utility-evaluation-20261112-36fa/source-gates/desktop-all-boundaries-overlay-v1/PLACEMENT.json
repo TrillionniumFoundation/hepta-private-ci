@@ -1,0 +1,1052 @@
+{
+  "schema": "hepta.utility.source-diagnostic-complete-placement.v1",
+  "repository_prefix": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1",
+  "source_directory": "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1",
+  "job_id": "1a1cf796a68-2564-1a3b",
+  "run_identity": "hepta-utility-36fa-all-boundaries-overlay-v1",
+  "actual_result": {
+    "status": "failed_scoped_diagnostic",
+    "execution_facts": {
+      "output_limit_exceeded": false,
+      "returncode": 1,
+      "timed_out": false
+    },
+    "row_counts": {
+      "boundaries": {
+        "failed": 15,
+        "passed": 519,
+        "unknown": 0
+      },
+      "protected": {
+        "failed": 0,
+        "passed": 390,
+        "unknown": 0
+      }
+    },
+    "started_at": "2026-11-12T11:16:47.309338+00:00",
+    "finished_at": "2026-11-12T12:33:38.576599+00:00",
+    "elapsed_with_capture_seconds": 4610.034438201925,
+    "before_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "after_inventory_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+    "source_changed": false,
+    "frozen_inputs_unchanged": true,
+    "comparison_unknown": false,
+    "package_state": "completed",
+    "full_gate_status": "not_run",
+    "actual_A_B_C_qualification": false
+  },
+  "scope": {
+    "physical_source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "physical_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "candidate_tree": null,
+    "overlay_sha256": "f6335dbb2100f15a6758654d60aed526b09a5ffe403d462dfb290d8dfa818222",
+    "callers_blob": "317da5f28fbc1cf2556fa5935bb846dce8c7c2cb",
+    "candidate_rust_files": 6597,
+    "boundary_rows": 534,
+    "protected_rows": 390,
+    "original_timeout_seconds": 4800,
+    "outer_timeout_seconds": 5400
+  },
+  "original_bytes_preserved": true,
+  "original_statuses_not_modified": true,
+  "raw_manifests": [
+    {
+      "relative_directory": "",
+      "git_blob_sha": "b9dd3d9afcbb43c240d4f83f78f8b25ae27ed1c1",
+      "bytes": 7173,
+      "sha256": "e1262be5b6d374140bc222a2f631f95a6003c90777c093097df20ba2e6fd1bd2",
+      "source_path": "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/retained-manifest.json"
+    },
+    {
+      "relative_directory": "all-boundaries-scoped",
+      "git_blob_sha": "269e2e728fabc29fab613662be9e2622297667e3",
+      "bytes": 9431,
+      "sha256": "b2b13abd23e4279ff5cdb3876251d0ae717f0289cf7c24cf44df27f2f55a6a7c",
+      "source_path": "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/all-boundaries-scoped/retained-manifest.json"
+    }
+  ],
+  "placements": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/all-boundaries-scoped.json",
+      "relative_path": "all-boundaries-scoped/all-boundaries-scoped.json",
+      "git_blob_sha": "11763b7a8b1da082ffe9c9c32315c9a3d98822ce",
+      "bytes": 944,
+      "sha256": "40e2bd7cacf95abec7a5ae9cfad13992e0a56389c95dbdb8396de89a83cb2e4c",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/dispatch.json",
+      "relative_path": "all-boundaries-scoped/dispatch.json",
+      "git_blob_sha": "461bde8aea3c5c35505a377a52e0893ee995ce29",
+      "bytes": 926,
+      "sha256": "575255f51c5026bedf763004d5eca5e79a6163293a9629df8f52ac5d5768eb5f",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/execution-start.json",
+      "relative_path": "all-boundaries-scoped/execution-start.json",
+      "git_blob_sha": "9f74de7472c861ffa24d1c77168dcd09155ecab2",
+      "bytes": 747,
+      "sha256": "6d7e092162b3ecae6b2945800a22f90dd85ff087d0049307028661e8afdc0fc2",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/execution-terminal.json",
+      "relative_path": "all-boundaries-scoped/execution-terminal.json",
+      "git_blob_sha": "956c129b2159230e076a54d715b77c8c5d09d978",
+      "bytes": 417,
+      "sha256": "ffa44527f123259f379e7a80405f81f5ab692feb5692f2d620d97b2215022d65",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/gate-final.json",
+      "relative_path": "all-boundaries-scoped/gate-final.json",
+      "git_blob_sha": "c99887f1e30fee897efadd83bd0dc366ed3906c4",
+      "bytes": 1043,
+      "sha256": "b47d8c4c9ed2ca1b48306ced4eb361241aaab11f8a258574ab844bd1b49d6ec6",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/gate-summary.json",
+      "relative_path": "all-boundaries-scoped/gate-summary.json",
+      "git_blob_sha": "8508a3b64c70f0f411e38953500549c7356d25e4",
+      "bytes": 1041,
+      "sha256": "fd002d7487b1eb409e65dfc24e4974d7a179b47c39cbae586a1415351dd76bd7",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/package-start.json",
+      "relative_path": "all-boundaries-scoped/package-start.json",
+      "git_blob_sha": "cb0acf9dea868433edb769f2ecd163623eec6615",
+      "bytes": 70,
+      "sha256": "54527d708d6c49be05b2e10db744075b39cc18491542efcc392f9a790552d245",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained-manifest.json",
+      "relative_path": "all-boundaries-scoped/retained-manifest.json",
+      "git_blob_sha": "269e2e728fabc29fab613662be9e2622297667e3",
+      "bytes": 9431,
+      "sha256": "b2b13abd23e4279ff5cdb3876251d0ae717f0289cf7c24cf44df27f2f55a6a7c",
+      "mode": "100644",
+      "origin": "actual_original_retained_manifest; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/all-boundaries-scoped.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/all-boundaries-scoped.json.part0000",
+      "git_blob_sha": "11763b7a8b1da082ffe9c9c32315c9a3d98822ce",
+      "bytes": 944,
+      "sha256": "40e2bd7cacf95abec7a5ae9cfad13992e0a56389c95dbdb8396de89a83cb2e4c",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/all-boundaries-scoped.log.part0000",
+      "relative_path": "all-boundaries-scoped/retained/all-boundaries-scoped.log.part0000",
+      "git_blob_sha": "f344b0cbe6c45060d9c4a3c4efb3c14c703adfe8",
+      "bytes": 74978,
+      "sha256": "1b4f3a352abaf8facce61617e67b296626390fafc33b0f676df437cc0ea89ba8",
+      "mode": "100644",
+      "origin": "actual immutable retained gzip bytes; Git blob SHA matched and complete base64 companion read back and decoded/hash verified"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/diagnostic-result.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/diagnostic-result.json.part0000",
+      "git_blob_sha": "e85e7de74bb7e6e3af553157431c09de19784f70",
+      "bytes": 30457,
+      "sha256": "078e46842f22364ad09dee6b51439f9db2c9ab8328225a81c08a636db289c82f",
+      "mode": "100644",
+      "origin": "actual immutable retained gzip bytes; Git blob SHA matched and complete base64 companion read back and decoded/hash verified"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/dispatch.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/dispatch.json.part0000",
+      "git_blob_sha": "461bde8aea3c5c35505a377a52e0893ee995ce29",
+      "bytes": 926,
+      "sha256": "575255f51c5026bedf763004d5eca5e79a6163293a9629df8f52ac5d5768eb5f",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/execution-start.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/execution-start.json.part0000",
+      "git_blob_sha": "9f74de7472c861ffa24d1c77168dcd09155ecab2",
+      "bytes": 747,
+      "sha256": "6d7e092162b3ecae6b2945800a22f90dd85ff087d0049307028661e8afdc0fc2",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/execution-terminal.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/execution-terminal.json.part0000",
+      "git_blob_sha": "956c129b2159230e076a54d715b77c8c5d09d978",
+      "bytes": 417,
+      "sha256": "ffa44527f123259f379e7a80405f81f5ab692feb5692f2d620d97b2215022d65",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/forwarded.stdout.log.part0000",
+      "relative_path": "all-boundaries-scoped/retained/forwarded.stdout.log.part0000",
+      "git_blob_sha": "f344b0cbe6c45060d9c4a3c4efb3c14c703adfe8",
+      "bytes": 74978,
+      "sha256": "1b4f3a352abaf8facce61617e67b296626390fafc33b0f676df437cc0ea89ba8",
+      "mode": "100644",
+      "origin": "actual immutable retained gzip bytes; Git blob SHA matched and complete base64 companion read back and decoded/hash verified"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/gate-summary.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/gate-summary.json.part0000",
+      "git_blob_sha": "8508a3b64c70f0f411e38953500549c7356d25e4",
+      "bytes": 1041,
+      "sha256": "fd002d7487b1eb409e65dfc24e4974d7a179b47c39cbae586a1415351dd76bd7",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/package-start.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/package-start.json.part0000",
+      "git_blob_sha": "cb0acf9dea868433edb769f2ecd163623eec6615",
+      "bytes": 70,
+      "sha256": "54527d708d6c49be05b2e10db744075b39cc18491542efcc392f9a790552d245",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/row-progress.jsonl.part0000",
+      "relative_path": "all-boundaries-scoped/retained/row-progress.jsonl.part0000",
+      "git_blob_sha": "903d56a5c0b1a84986067f9b9b8b71ebf4a09141",
+      "bytes": 42102,
+      "sha256": "ef927a21e0aa05bd77688c123244d0acb9d45afeac351e3312f304c632c96daf",
+      "mode": "100644",
+      "origin": "actual immutable retained gzip bytes; Git blob SHA matched and complete base64 companion read back and decoded/hash verified"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-after.inventory.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/source-after.inventory.json.part0000",
+      "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "bytes": 262144,
+      "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-after.inventory.json.part0001",
+      "relative_path": "all-boundaries-scoped/retained/source-after.inventory.json.part0001",
+      "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "bytes": 262144,
+      "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-after.inventory.json.part0002",
+      "relative_path": "all-boundaries-scoped/retained/source-after.inventory.json.part0002",
+      "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "bytes": 262144,
+      "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-after.inventory.json.part0003",
+      "relative_path": "all-boundaries-scoped/retained/source-after.inventory.json.part0003",
+      "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "bytes": 262144,
+      "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-after.inventory.json.part0004",
+      "relative_path": "all-boundaries-scoped/retained/source-after.inventory.json.part0004",
+      "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "bytes": 175515,
+      "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-after.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/source-after.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-before.inventory.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/source-before.inventory.json.part0000",
+      "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "bytes": 262144,
+      "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-before.inventory.json.part0001",
+      "relative_path": "all-boundaries-scoped/retained/source-before.inventory.json.part0001",
+      "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "bytes": 262144,
+      "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-before.inventory.json.part0002",
+      "relative_path": "all-boundaries-scoped/retained/source-before.inventory.json.part0002",
+      "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "bytes": 262144,
+      "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-before.inventory.json.part0003",
+      "relative_path": "all-boundaries-scoped/retained/source-before.inventory.json.part0003",
+      "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "bytes": 262144,
+      "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-before.inventory.json.part0004",
+      "relative_path": "all-boundaries-scoped/retained/source-before.inventory.json.part0004",
+      "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "bytes": 175515,
+      "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/retained/source-before.json.part0000",
+      "relative_path": "all-boundaries-scoped/retained/source-before.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/source-after.json",
+      "relative_path": "all-boundaries-scoped/source-after.json",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/all-boundaries-scoped/source-before.json",
+      "relative_path": "all-boundaries-scoped/source-before.json",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981",
+      "bytes": 127,
+      "sha256": "f5fd3a41d23b5cc833abe8f1e4898a097a91d5e495a06270dc64be76aab22ca8",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/bootstrap-result.json",
+      "relative_path": "bootstrap-result.json",
+      "git_blob_sha": "bf4f98fcf2aef80a62a9842a4b7732ddc98153ad",
+      "bytes": 2231,
+      "sha256": "cda77990cc1af0ed539351a0f9994a421e487bd40319a12275b8f04d68554efd",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/bootstrap.py",
+      "relative_path": "bootstrap.py",
+      "git_blob_sha": "78ef0e84ba68a1de518907a34697cab1745446b9",
+      "bytes": 2564,
+      "sha256": "1c63095293421d1f58ed0d61e305ce9b92a4a05758b51959ad894588002354f3",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/CALLERS.toml.gz.b64",
+      "relative_path": "CALLERS.toml.gz.b64",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "bytes": 234449,
+      "sha256": "37331123a990556aa6471a96b1f372b538b189d569fac282de17edae2e506b1f",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/diagnostic-attempt.json",
+      "relative_path": "diagnostic-attempt.json",
+      "git_blob_sha": "e47bb5dd00e95d54571c51856b78e6c3e65df887",
+      "bytes": 827,
+      "sha256": "a9cb508dc77294b8ea6b8d011cb2bd1944d8005e143ce10cf9ca74dd56bf0f89",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/diagnostic.py",
+      "relative_path": "diagnostic.py",
+      "git_blob_sha": "0b2ca353c438bbca92bb4bf341b62a4f039ea700",
+      "bytes": 17675,
+      "sha256": "e414552fd2673fe876099a0f89805ec463fe91ed63c12c2f84d3f81bff55109e",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/input.json",
+      "relative_path": "input.json",
+      "git_blob_sha": "187c34303cf9bcb6b72580f41b62ac6c7d8a609a",
+      "bytes": 1985,
+      "sha256": "d14bedd52f8326b209120c4dafdee82409ada1e78d60f334c313c7eedf5ea9b4",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/observations/final12-original-sdk.json",
+      "relative_path": "observations/final12-original-sdk.json",
+      "git_blob_sha": "fdaaa97d319918ca0c5f6e88ad6ccc4ebffe9563",
+      "bytes": 39294,
+      "sha256": "bcb2c5c6773510aa8e2caa56e4ccac27dd606f2817e552db737357570e74821d",
+      "mode": "100644",
+      "origin": "complete immutable original native SDK payload; every file byte identity independently verified; GitHub full readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/original-driver-v2.py",
+      "relative_path": "original-driver-v2.py",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/overlay-packet.json.gz.b64",
+      "relative_path": "overlay-packet.json.gz.b64",
+      "git_blob_sha": "027f32baba329f8061bd6ae796019a7cad6c98ff",
+      "bytes": 106857,
+      "sha256": "df24f6d88d62eb178b055fed674572c9fe32e0b07e9e8cd3f77abc05aa582b14",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/reconstruction/source-inventory.part0000.b64",
+      "relative_path": "reconstruction/source-inventory.part0000.b64",
+      "git_blob_sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+      "bytes": 349529,
+      "sha256": "368d0661f8a7b11ba40e374dfef857c7c3f121d470bd438f3a7d3ae6691e3eec",
+      "mode": "100644",
+      "origin": "previously archived exact base64 source inventory part; full decoded part identity equals current before/after original manifests"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/reconstruction/source-inventory.part0001.b64",
+      "relative_path": "reconstruction/source-inventory.part0001.b64",
+      "git_blob_sha": "10133dd99bb121e5005b5643a419e3524828765d",
+      "bytes": 349529,
+      "sha256": "ee7fdb51c2ea10d4639e6b790837764aad067ce7f4c21226f3e0cdffe5e80a18",
+      "mode": "100644",
+      "origin": "previously archived exact base64 source inventory part; full decoded part identity equals current before/after original manifests"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/reconstruction/source-inventory.part0002.b64",
+      "relative_path": "reconstruction/source-inventory.part0002.b64",
+      "git_blob_sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+      "bytes": 349529,
+      "sha256": "532bacdf6f61d551c30c692cc77d8ec45d7fc81bb1b6adf4e28941341403e05a",
+      "mode": "100644",
+      "origin": "previously archived exact base64 source inventory part; full decoded part identity equals current before/after original manifests"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/reconstruction/source-inventory.part0003.b64",
+      "relative_path": "reconstruction/source-inventory.part0003.b64",
+      "git_blob_sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+      "bytes": 349529,
+      "sha256": "3b242fdf81662bbbedd8546e59a6497c657355acb836bd646ead18a141bbc1e9",
+      "mode": "100644",
+      "origin": "previously archived exact base64 source inventory part; full decoded part identity equals current before/after original manifests"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/reconstruction/source-inventory.part0004.b64",
+      "relative_path": "reconstruction/source-inventory.part0004.b64",
+      "git_blob_sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+      "bytes": 234021,
+      "sha256": "bbdc6c613840aabe0f115ba2e4f8078f1d9fe60f909ee822db5e72d7f34ebfb3",
+      "mode": "100644",
+      "origin": "previously archived exact base64 source inventory part; full decoded part identity equals current before/after original manifests"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained-manifest.json",
+      "relative_path": "retained-manifest.json",
+      "git_blob_sha": "b9dd3d9afcbb43c240d4f83f78f8b25ae27ed1c1",
+      "bytes": 7173,
+      "sha256": "e1262be5b6d374140bc222a2f631f95a6003c90777c093097df20ba2e6fd1bd2",
+      "mode": "100644",
+      "origin": "actual_original_retained_manifest; unchanged bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/bootstrap-result.json.part0000",
+      "relative_path": "retained/bootstrap-result.json.part0000",
+      "git_blob_sha": "bf4f98fcf2aef80a62a9842a4b7732ddc98153ad",
+      "bytes": 2231,
+      "sha256": "cda77990cc1af0ed539351a0f9994a421e487bd40319a12275b8f04d68554efd",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/bootstrap.py.part0000",
+      "relative_path": "retained/bootstrap.py.part0000",
+      "git_blob_sha": "78ef0e84ba68a1de518907a34697cab1745446b9",
+      "bytes": 2564,
+      "sha256": "1c63095293421d1f58ed0d61e305ce9b92a4a05758b51959ad894588002354f3",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/CALLERS.toml.gz.b64.part0000",
+      "relative_path": "retained/CALLERS.toml.gz.b64.part0000",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "bytes": 234449,
+      "sha256": "37331123a990556aa6471a96b1f372b538b189d569fac282de17edae2e506b1f",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/CALLERS.toml.part0000",
+      "relative_path": "retained/CALLERS.toml.part0000",
+      "git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+      "bytes": 175835,
+      "sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/diagnostic-attempt.json.part0000",
+      "relative_path": "retained/diagnostic-attempt.json.part0000",
+      "git_blob_sha": "e47bb5dd00e95d54571c51856b78e6c3e65df887",
+      "bytes": 827,
+      "sha256": "a9cb508dc77294b8ea6b8d011cb2bd1944d8005e143ce10cf9ca74dd56bf0f89",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/diagnostic.py.part0000",
+      "relative_path": "retained/diagnostic.py.part0000",
+      "git_blob_sha": "0b2ca353c438bbca92bb4bf341b62a4f039ea700",
+      "bytes": 17675,
+      "sha256": "e414552fd2673fe876099a0f89805ec463fe91ed63c12c2f84d3f81bff55109e",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/input.json.part0000",
+      "relative_path": "retained/input.json.part0000",
+      "git_blob_sha": "187c34303cf9bcb6b72580f41b62ac6c7d8a609a",
+      "bytes": 1985,
+      "sha256": "d14bedd52f8326b209120c4dafdee82409ada1e78d60f334c313c7eedf5ea9b4",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/original-driver-v2.py.part0000",
+      "relative_path": "retained/original-driver-v2.py.part0000",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/overlay-packet.json.gz.b64.part0000",
+      "relative_path": "retained/overlay-packet.json.gz.b64.part0000",
+      "git_blob_sha": "027f32baba329f8061bd6ae796019a7cad6c98ff",
+      "bytes": 106857,
+      "sha256": "df24f6d88d62eb178b055fed674572c9fe32e0b07e9e8cd3f77abc05aa582b14",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/overlay.json.part0000",
+      "relative_path": "retained/overlay.json.part0000",
+      "git_blob_sha": "2dede004a5664ecbe1ccbe8198ae185b83b98676",
+      "bytes": 80141,
+      "sha256": "a198ec10742c5be7bddcbe5c13fbdb5bd6947a0ff4ac8e7b7fe2bd5d24cb8d04",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/run-result-prepackage.json.part0000",
+      "relative_path": "retained/run-result-prepackage.json.part0000",
+      "git_blob_sha": "ff892edf47a3485bb0e158408a5fcc44a8746c2b",
+      "bytes": 3620,
+      "sha256": "4b51a61b222e43810ba742fadbd7214a88437b68ba1e559f3d86f07ceef347bd",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/run-start.json.part0000",
+      "relative_path": "retained/run-start.json.part0000",
+      "git_blob_sha": "779fb3faea6726032e2a2e5b0f1ee301ba7b3ca3",
+      "bytes": 1126,
+      "sha256": "7fdf6ebfe1a0975ea8b03400721a1f45a662ef4cde244717940f758cf31d6fdb",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "relative_path": "retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/retained/wrapper.py.part0000",
+      "relative_path": "retained/wrapper.py.part0000",
+      "git_blob_sha": "98a57397fcb2f7f47f227be5a6bc9d9d6ab99894",
+      "bytes": 10262,
+      "sha256": "8a7bd75b1d47ebcf98313c6073e5ceac17bb563541e7811e2ebb1ec07b480690",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/run-result-prepackage.json",
+      "relative_path": "run-result-prepackage.json",
+      "git_blob_sha": "ff892edf47a3485bb0e158408a5fcc44a8746c2b",
+      "bytes": 3620,
+      "sha256": "4b51a61b222e43810ba742fadbd7214a88437b68ba1e559f3d86f07ceef347bd",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/run-result.json",
+      "relative_path": "run-result.json",
+      "git_blob_sha": "d691b383779f121e7e9a001caf6a379e137ce97c",
+      "bytes": 3934,
+      "sha256": "377628b738639f6d2c1ed7574f68a2a0976bb71a1df159533b62dbd217a252b9",
+      "mode": "100644",
+      "origin": "actual all534 terminal original file; GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/run-start.json",
+      "relative_path": "run-start.json",
+      "git_blob_sha": "779fb3faea6726032e2a2e5b0f1ee301ba7b3ca3",
+      "bytes": 1126,
+      "sha256": "7fdf6ebfe1a0975ea8b03400721a1f45a662ef4cde244717940f758cf31d6fdb",
+      "mode": "100644",
+      "origin": "actual all534 pre-execution file; original GitHub full UTF-8 readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/SOURCE_DIAGNOSTIC.lock",
+      "relative_path": "SOURCE_DIAGNOSTIC.lock",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644",
+      "origin": "previously archived exact immutable bytes; current original manifest matches all identities"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/transfer/all-boundaries-scoped.log.gz.b64",
+      "relative_path": "transfer/all-boundaries-scoped.log.gz.b64",
+      "git_blob_sha": "94a33e43bb23cf7cf8ec53f2166506bb827ab709",
+      "bytes": 99973,
+      "sha256": "19cd92e8608c2e0639d533719009ff43ff57a03572310eea00f9558f2a04d12f",
+      "mode": "100644",
+      "origin": "canonical UTF-8 base64 of exact actual retained gzip part; complete GitHub readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/transfer/diagnostic-result.json.gz.b64",
+      "relative_path": "transfer/diagnostic-result.json.gz.b64",
+      "git_blob_sha": "1996ca775e28f76f17c4cedb2ca02efa6df24674",
+      "bytes": 40613,
+      "sha256": "8c8fa15a64d66341ca1a4b99e41803d4edf14e9c8810bc851fc51390ece36662",
+      "mode": "100644",
+      "origin": "canonical UTF-8 base64 of exact actual retained gzip part; complete GitHub readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/transfer/row-progress.jsonl.gz.b64",
+      "relative_path": "transfer/row-progress.jsonl.gz.b64",
+      "git_blob_sha": "ee0a3130f163f5ad888fab9c6e18b200832d4df6",
+      "bytes": 56137,
+      "sha256": "e28fad2922c5eeeb874fa065f5083cce937167c5d45c8dcf90b98137ec8b40ae",
+      "mode": "100644",
+      "origin": "canonical UTF-8 base64 of exact actual retained gzip part; complete GitHub readback"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/source-gates/desktop-all-boundaries-overlay-v1/wrapper.py",
+      "relative_path": "wrapper.py",
+      "git_blob_sha": "98a57397fcb2f7f47f227be5a6bc9d9d6ab99894",
+      "bytes": 10262,
+      "sha256": "8a7bd75b1d47ebcf98313c6073e5ceac17bb563541e7811e2ebb1ec07b480690",
+      "mode": "100644",
+      "origin": "frozen prepared input with prior complete GitHub readback; actual bootstrap and final frozen-input checks confirm these exact bytes"
+    }
+  ],
+  "reconstruct_large_originals": [
+    {
+      "original_path": "CALLERS.toml",
+      "original_bytes": 1122002,
+      "original_sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 175835,
+          "git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+          "path": "retained/CALLERS.toml.part0000",
+          "sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806"
+        }
+      ]
+    },
+    {
+      "original_path": "overlay.json",
+      "original_bytes": 451937,
+      "original_sha256": "f6335dbb2100f15a6758654d60aed526b09a5ffe403d462dfb290d8dfa818222",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 80141,
+          "git_blob_sha": "2dede004a5664ecbe1ccbe8198ae185b83b98676",
+          "path": "retained/overlay.json.part0000",
+          "sha256": "a198ec10742c5be7bddcbe5c13fbdb5bd6947a0ff4ac8e7b7fe2bd5d24cb8d04"
+        }
+      ]
+    },
+    {
+      "original_path": "all-boundaries-scoped/all-boundaries-scoped.log",
+      "original_bytes": 873489,
+      "original_sha256": "87cc2d8e37dbbe87b0ab4fbc5408e5785397c7db6180a4060449beb004933dc8",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 74978,
+          "git_blob_sha": "f344b0cbe6c45060d9c4a3c4efb3c14c703adfe8",
+          "path": "all-boundaries-scoped/retained/all-boundaries-scoped.log.part0000",
+          "sha256": "1b4f3a352abaf8facce61617e67b296626390fafc33b0f676df437cc0ea89ba8"
+        }
+      ]
+    },
+    {
+      "original_path": "all-boundaries-scoped/diagnostic-result.json",
+      "original_bytes": 457197,
+      "original_sha256": "8ef0b5045698a3229d1e38d9ec2774f3713425518c650afa495d7e66310cb79c",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 30457,
+          "git_blob_sha": "e85e7de74bb7e6e3af553157431c09de19784f70",
+          "path": "all-boundaries-scoped/retained/diagnostic-result.json.part0000",
+          "sha256": "078e46842f22364ad09dee6b51439f9db2c9ab8328225a81c08a636db289c82f"
+        }
+      ]
+    },
+    {
+      "original_path": "all-boundaries-scoped/forwarded.stdout.log",
+      "original_bytes": 873489,
+      "original_sha256": "87cc2d8e37dbbe87b0ab4fbc5408e5785397c7db6180a4060449beb004933dc8",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 74978,
+          "git_blob_sha": "f344b0cbe6c45060d9c4a3c4efb3c14c703adfe8",
+          "path": "all-boundaries-scoped/retained/forwarded.stdout.log.part0000",
+          "sha256": "1b4f3a352abaf8facce61617e67b296626390fafc33b0f676df437cc0ea89ba8"
+        }
+      ]
+    },
+    {
+      "original_path": "all-boundaries-scoped/row-progress.jsonl",
+      "original_bytes": 494603,
+      "original_sha256": "8b2cc526da4b2fe15dbd8e979eac2670d1fb4f5d38eee4ceef68f72dc8eb82d5",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 42102,
+          "git_blob_sha": "903d56a5c0b1a84986067f9b9b8b71ebf4a09141",
+          "path": "all-boundaries-scoped/retained/row-progress.jsonl.part0000",
+          "sha256": "ef927a21e0aa05bd77688c123244d0acb9d45afeac351e3312f304c632c96daf"
+        }
+      ]
+    },
+    {
+      "original_path": "all-boundaries-scoped/source-after.inventory.json",
+      "original_bytes": 5432085,
+      "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 262144,
+          "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+          "path": "all-boundaries-scoped/retained/source-after.inventory.json.part0000",
+          "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+          "path": "all-boundaries-scoped/retained/source-after.inventory.json.part0001",
+          "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+          "path": "all-boundaries-scoped/retained/source-after.inventory.json.part0002",
+          "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+          "path": "all-boundaries-scoped/retained/source-after.inventory.json.part0003",
+          "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+        },
+        {
+          "bytes": 175515,
+          "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+          "path": "all-boundaries-scoped/retained/source-after.inventory.json.part0004",
+          "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+        }
+      ]
+    },
+    {
+      "original_path": "all-boundaries-scoped/source-before.inventory.json",
+      "original_bytes": 5432085,
+      "original_sha256": "a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 262144,
+          "git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+          "path": "all-boundaries-scoped/retained/source-before.inventory.json.part0000",
+          "sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+          "path": "all-boundaries-scoped/retained/source-before.inventory.json.part0001",
+          "sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+          "path": "all-boundaries-scoped/retained/source-before.inventory.json.part0002",
+          "sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+        },
+        {
+          "bytes": 262144,
+          "git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+          "path": "all-boundaries-scoped/retained/source-before.inventory.json.part0003",
+          "sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+        },
+        {
+          "bytes": 175515,
+          "git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+          "path": "all-boundaries-scoped/retained/source-before.inventory.json.part0004",
+          "sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+        }
+      ]
+    }
+  ],
+  "identity_parts": [
+    {
+      "original_path": "CALLERS.toml.gz.b64",
+      "part_path": "retained/CALLERS.toml.gz.b64.part0000",
+      "git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e"
+    },
+    {
+      "original_path": "SOURCE_DIAGNOSTIC.lock",
+      "part_path": "retained/SOURCE_DIAGNOSTIC.lock.part0000",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "original_path": "bootstrap-result.json",
+      "part_path": "retained/bootstrap-result.json.part0000",
+      "git_blob_sha": "bf4f98fcf2aef80a62a9842a4b7732ddc98153ad"
+    },
+    {
+      "original_path": "bootstrap.py",
+      "part_path": "retained/bootstrap.py.part0000",
+      "git_blob_sha": "78ef0e84ba68a1de518907a34697cab1745446b9"
+    },
+    {
+      "original_path": "diagnostic-attempt.json",
+      "part_path": "retained/diagnostic-attempt.json.part0000",
+      "git_blob_sha": "e47bb5dd00e95d54571c51856b78e6c3e65df887"
+    },
+    {
+      "original_path": "diagnostic.py",
+      "part_path": "retained/diagnostic.py.part0000",
+      "git_blob_sha": "0b2ca353c438bbca92bb4bf341b62a4f039ea700"
+    },
+    {
+      "original_path": "input.json",
+      "part_path": "retained/input.json.part0000",
+      "git_blob_sha": "187c34303cf9bcb6b72580f41b62ac6c7d8a609a"
+    },
+    {
+      "original_path": "original-driver-v2.py",
+      "part_path": "retained/original-driver-v2.py.part0000",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "original_path": "overlay-packet.json.gz.b64",
+      "part_path": "retained/overlay-packet.json.gz.b64.part0000",
+      "git_blob_sha": "027f32baba329f8061bd6ae796019a7cad6c98ff"
+    },
+    {
+      "original_path": "run-result-prepackage.json",
+      "part_path": "retained/run-result-prepackage.json.part0000",
+      "git_blob_sha": "ff892edf47a3485bb0e158408a5fcc44a8746c2b"
+    },
+    {
+      "original_path": "run-start.json",
+      "part_path": "retained/run-start.json.part0000",
+      "git_blob_sha": "779fb3faea6726032e2a2e5b0f1ee301ba7b3ca3"
+    },
+    {
+      "original_path": "wrapper.py",
+      "part_path": "retained/wrapper.py.part0000",
+      "git_blob_sha": "98a57397fcb2f7f47f227be5a6bc9d9d6ab99894"
+    },
+    {
+      "original_path": "all-boundaries-scoped/all-boundaries-scoped.json",
+      "part_path": "all-boundaries-scoped/retained/all-boundaries-scoped.json.part0000",
+      "git_blob_sha": "11763b7a8b1da082ffe9c9c32315c9a3d98822ce"
+    },
+    {
+      "original_path": "all-boundaries-scoped/dispatch.json",
+      "part_path": "all-boundaries-scoped/retained/dispatch.json.part0000",
+      "git_blob_sha": "461bde8aea3c5c35505a377a52e0893ee995ce29"
+    },
+    {
+      "original_path": "all-boundaries-scoped/execution-start.json",
+      "part_path": "all-boundaries-scoped/retained/execution-start.json.part0000",
+      "git_blob_sha": "9f74de7472c861ffa24d1c77168dcd09155ecab2"
+    },
+    {
+      "original_path": "all-boundaries-scoped/execution-terminal.json",
+      "part_path": "all-boundaries-scoped/retained/execution-terminal.json.part0000",
+      "git_blob_sha": "956c129b2159230e076a54d715b77c8c5d09d978"
+    },
+    {
+      "original_path": "all-boundaries-scoped/gate-summary.json",
+      "part_path": "all-boundaries-scoped/retained/gate-summary.json.part0000",
+      "git_blob_sha": "8508a3b64c70f0f411e38953500549c7356d25e4"
+    },
+    {
+      "original_path": "all-boundaries-scoped/package-start.json",
+      "part_path": "all-boundaries-scoped/retained/package-start.json.part0000",
+      "git_blob_sha": "cb0acf9dea868433edb769f2ecd163623eec6615"
+    },
+    {
+      "original_path": "all-boundaries-scoped/source-after.json",
+      "part_path": "all-boundaries-scoped/retained/source-after.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    },
+    {
+      "original_path": "all-boundaries-scoped/source-before.json",
+      "part_path": "all-boundaries-scoped/retained/source-before.json.part0000",
+      "git_blob_sha": "dd17e3351cb38ea60cf9fa5e7da4bde45ba7a981"
+    }
+  ],
+  "base64_companions": [
+    {
+      "binary_git_blob_sha": "a2076f37bb1f24aac77c6b31721f8a3ce8a1082c",
+      "base64_path": "reconstruction/source-inventory.part0000.b64",
+      "base64_git_blob_sha": "25289671bd0818bff22a1231d93fe09359c0fa75",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "9b5e196009c7ea8bb53e7a366ebbcb15f88c6e53805499b3f912e01205233172"
+    },
+    {
+      "binary_git_blob_sha": "56524218ea459d78608dc2ec3c50bffbed4748cf",
+      "base64_path": "reconstruction/source-inventory.part0001.b64",
+      "base64_git_blob_sha": "10133dd99bb121e5005b5643a419e3524828765d",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "5e45ef1d8ccbe64c97f0c21fc4c3ba2e41d1beae5301ca49f6d00131b819015e"
+    },
+    {
+      "binary_git_blob_sha": "13800d89bcf21aaf11a1557154962e28bcc8cc64",
+      "base64_path": "reconstruction/source-inventory.part0002.b64",
+      "base64_git_blob_sha": "74d567623e3fe30dd7e0b36baa9ecc600b2c3a1e",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "00b26ec1c326ae618846a8369977a6f64f5293ed8a545e5774120b80f430d169"
+    },
+    {
+      "binary_git_blob_sha": "1c91d3b886e0a7ff2e98d9d5c62ceb51ccd7509e",
+      "base64_path": "reconstruction/source-inventory.part0003.b64",
+      "base64_git_blob_sha": "f038cc31c2b3e31159fca22cad5b12b8864a375a",
+      "decoded_bytes": 262144,
+      "decoded_sha256": "f01f94d342d161ad136a5e266b8ee343357411c62cb1d7026bfb35b1df8c14ac"
+    },
+    {
+      "binary_git_blob_sha": "db93dd28f8d315b4048c4c061bd0bcd75e7486fd",
+      "base64_path": "reconstruction/source-inventory.part0004.b64",
+      "base64_git_blob_sha": "64e0836d9c340c04ba2d5113593bda235aeac2c5",
+      "decoded_bytes": 175515,
+      "decoded_sha256": "84be32cf4c7fdea81f752a998b0efafac8b45c3cfa0104a79c0631e749b13aa7"
+    },
+    {
+      "binary_git_blob_sha": "679182c57e26e79b6e760060faf7bef96724debb",
+      "base64_path": "CALLERS.toml.gz.b64",
+      "base64_git_blob_sha": "c381895707a2fe633f4dda994da094c2573abd7e",
+      "decoded_bytes": 175835,
+      "decoded_sha256": "0a012460ac6fa571207d4d332cf5f7b9b066b0771879f11282e456b2ce19c806"
+    },
+    {
+      "binary_git_blob_sha": "2dede004a5664ecbe1ccbe8198ae185b83b98676",
+      "base64_path": "overlay-packet.json.gz.b64",
+      "base64_git_blob_sha": "027f32baba329f8061bd6ae796019a7cad6c98ff",
+      "decoded_bytes": 80141,
+      "decoded_sha256": "a198ec10742c5be7bddcbe5c13fbdb5bd6947a0ff4ac8e7b7fe2bd5d24cb8d04"
+    },
+    {
+      "binary_git_blob_sha": "f344b0cbe6c45060d9c4a3c4efb3c14c703adfe8",
+      "base64_path": "transfer/all-boundaries-scoped.log.gz.b64",
+      "base64_git_blob_sha": "94a33e43bb23cf7cf8ec53f2166506bb827ab709",
+      "decoded_bytes": 74978,
+      "decoded_sha256": "1b4f3a352abaf8facce61617e67b296626390fafc33b0f676df437cc0ea89ba8"
+    },
+    {
+      "binary_git_blob_sha": "e85e7de74bb7e6e3af553157431c09de19784f70",
+      "base64_path": "transfer/diagnostic-result.json.gz.b64",
+      "base64_git_blob_sha": "1996ca775e28f76f17c4cedb2ca02efa6df24674",
+      "decoded_bytes": 30457,
+      "decoded_sha256": "078e46842f22364ad09dee6b51439f9db2c9ab8328225a81c08a636db289c82f"
+    },
+    {
+      "binary_git_blob_sha": "903d56a5c0b1a84986067f9b9b8b71ebf4a09141",
+      "base64_path": "transfer/row-progress.jsonl.gz.b64",
+      "base64_git_blob_sha": "ee0a3130f163f5ad888fab9c6e18b200832d4df6",
+      "decoded_bytes": 42102,
+      "decoded_sha256": "ef927a21e0aa05bd77688c123244d0acb9d45afeac351e3312f304c632c96daf"
+    }
+  ],
+  "completeness": {
+    "original_package_file_entries": 28,
+    "required_retained_part_paths": 36,
+    "all_required_retained_part_paths_placed": true,
+    "all_placed_blob_bytes_below_500000": true,
+    "placements": 69,
+    "large_originals_reconstructible": 8
+  },
+  "reconstruction": "All retained manifests are original. Read each part path relative to its manifest directory; concatenate parts in listed order; gunzip iff encoding=gzip; verify original_bytes and original_sha256. UTF-8 base64 companions have one terminal LF; decode to the exact retained binary bytes before concatenation. Direct identity originals and their retained aliases contain the same immutable blob.",
+  "inventory_reuse": "Before and after inventories are separately recorded by this actual run and both exactly match a3077b5e249aadb856c4ec56a0cd4ef4b1bb83785a33fbd76866cf0fbd1393dd. Their actual per-part identities equal the already retained five original inventory parts; this placement aliases those unchanged objects at this run's exact before/after paths.",
+  "final_state_rule": "gate-summary.json and run-result-prepackage.json are original prepackage snapshots; use gate-final.json and run-result.json for actual final package and execution status.",
+  "publication": "Prepared exact paths and immutable GitHub objects only; this agent has not created a commit or moved a ref.",
+  "limitations": [
+    "This diagnostic does not run the original complete source-closure/fullcaller entrypoints or Cargo.",
+    "The memory projection has no published candidate source tree.",
+    "This is no evidence of a real authorized A/B/C learning task or daemon/Root cold recovery.",
+    "Immutable content identity alone does not establish future availability, independent operational control, authorization or real adoption."
+  ],
+  "original_complete_report_and_progress_verified": {
+    "report_sha256": "8ef0b5045698a3229d1e38d9ec2774f3713425518c650afa495d7e66310cb79c",
+    "progress_sha256": "8b2cc526da4b2fe15dbd8e979eac2670d1fb4f5d38eee4ceef68f72dc8eb82d5",
+    "progress_events": 1849,
+    "all_observed_incremental_prefix_bytes_equal_final": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "status": "passed_scoped_source_mutation_qa",
+  "returncode": 0,
+  "duration_seconds": 0.3177154689983581,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/tmp/hepta-evaluation-host-seams-hNv4dj/validation-source/qa/b4-no-bypass",
+    "-p",
+    "test_original_evaluator_readback_source_closure.py",
+    "-v"
+  ],
+  "source_inputs_unchanged": true,
+  "full_source_gate": "not_run",
+  "full_caller_gate": "not_run",
+  "rust_tests": "not_run",
+  "raw_bytes": 1998,
+  "raw_sha256": "24a68196dd508c6a63ab3f8d6b4b085e52b9b8674e4ebfa4ea88e6f52cb594b1"
+}

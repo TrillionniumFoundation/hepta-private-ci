@@ -1,0 +1,37 @@
+{
+  "format": "hepta.root-nextuse-readback-host-source-review.v1",
+  "observed_at": "2026-11-12T12:32:23.041808+00:00",
+  "fixed_source": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "source_inputs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+      "git_blob": "f8cb73a2b9f87e1c866e74771ba10678ef168f90",
+      "bytes": 3072,
+      "sha256": "e882fd75ef43d769b935cce46342880b05b03bee0179349b982a40d046056adc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "git_blob": "01b1f7d02600b16eba09c581e1dab831b7c9e248",
+      "bytes": 10673,
+      "sha256": "6e647333a42e14fc5b5be36ae3ae414574ffd64d2774371901af2068fbc17413"
+    }
+  ],
+  "boundary": "learning_original_next_use_command_owner_factory",
+  "actual_unregistered_caller": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+  "independent_source_findings": [
+    "The consuming self is the original NextUse receipt owner; it does not construct a fresh owner.",
+    "Actual Dataset snapshot is extended with the exact Training and Selection receipts at their original observed timestamps.",
+    "Both resulting snapshots and all original Training/Selection attestations are compared to the held owner configuration.",
+    "Original Trainer and Selector purpose-fixed readback connections are separately consumed and bound to these same opaque receipts.",
+    "The same self, live task client and two bound predecessor clients move into the original command-owner factory.",
+    "The already protected factory retains the original private Fresh/Recovered brand and revalidates initial, actor, trust, scope and objective for both clients; execution_requested is initialized from readback_only."
+  ],
+  "recommended_delta": "One exact product_caller membership and one source protection row for the consuming host function; preserve existing factory row 281 and original owner/context constraints.",
+  "limits": [
+    "The product is the existing original C command owner; this constructor is not C execution, a grant, or an entirely read-only actor.",
+    "No runtime test or complete caller gate is claimed by this source review.",
+    "The separate typed Trainer expression and row279 repair retain their separate actual diagnostic identity."
+  ],
+  "source_mutations": 0,
+  "authority_granted": false
+}

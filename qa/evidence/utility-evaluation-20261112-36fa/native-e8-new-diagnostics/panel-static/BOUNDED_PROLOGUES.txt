@@ -1,0 +1,2066 @@
+
+===== frame 0 <flume::async::SendFut<T> as core::future::future::Future>::poll () RVA 0x84261e7 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000084261e0 <<flume::async::SendFut<T> as core::future::future::Future>::poll>:
+ 84261e0:	sub    $0x628,%rsp
+ 84261e7:	mov    %rdi,0x38(%rsp)
+ 84261ec:	mov    %rdi,0x40(%rsp)
+ 84261f1:	mov    %rsi,0x48(%rsp)
+ 84261f6:	mov    %rdx,0x50(%rsp)
+ 84261fb:	movb   $0x0,0x617(%rsp)
+ 8426203:	movb   $0x0,0x616(%rsp)
+ 842620b:	movb   $0x0,0x615(%rsp)
+ 8426213:	lea    0x48(%rsp),%rdi
+ 8426218:	call   *0x2eee7ea(%rip)        # b314a08 <_DYNAMIC+0xd91d0>
+ 842621e:	mov    %rax,%rdi
+ 8426221:	add    $0x10,%rdi
+ 8426225:	call   *0x2eee7e5(%rip)        # b314a10 <_DYNAMIC+0xd91d8>
+ 842622b:	mov    %rax,0x58(%rsp)
+ 8426230:	mov    0x58(%rsp),%rdx
+ 8426235:	mov    $0x1,%eax
+ 842623a:	xor    %ecx,%ecx
+ 842623c:	cmp    $0x0,%rdx
+ 8426240:	cmove  %rcx,%rax
+ 8426244:	test   $0x1,%rax
+ 842624a:	je     8426269 <<flume::async::SendFut<T> as core::future::future::Future>::poll+0x89>
+ 842624c:	mov    0x58(%rsp),%rdx
+ 8426251:	xor    %eax,%eax
+ 8426253:	mov    $0x1,%ecx
+ 8426258:	cmpq   $0x3,0x50(%rdx)
+ 842625d:	cmove  %rcx,%rax
+ 8426261:	test   $0x1,%rax
+ 8426267:	jne    84262b6 <<flume::async::SendFut<T> as core::future::future::Future>::poll+0xd6>
+ 8426269:	lea    0x48(%rsp),%rdi
+ 842626e:	call   *0x2eee7a4(%rip)        # b314a18 <_DYNAMIC+0xd91e0>
+ 8426274:	mov    %rax,%rsi
+ 8426277:	add    $0x10,%rsi
+ 842627b:	movb   $0x1,0x615(%rsp)
+ 8426283:	lea    0x3a8(%rsp),%rdi
+ 842628b:	call   *0x2eee687(%rip)        # b314918 <_DYNAMIC+0xd90e0>
+ 8426291:	mov    $0x1,%eax
+ 8426296:	xor    %ecx,%ecx
+ 8426298:	cmpq   $0x4,0x3f8(%rsp)
+ 84262a1:	cmove  %rcx,%rax
+ 84262a5:	test   $0x1,%rax
+ 84262ab:	jne    842653d <<flume::async::SendFut<T> as core::future::future::Future>::poll+0x35d>
+ 84262b1:	jmp    8426559 <<flume::async::SendFut<T> as core::future::future::Future>::poll+0x379>
+ 84262b6:	mov    0x58(%rsp),%rdi
+ 84262bb:	mov    %rdi,0x30(%rsp)
+ 84262c0:	call   *0x2eea382(%rip)        # b310648 <_DYNAMIC+0xd4e10>
+ 84262c6:	mov    %rax,%rdi
+ 84262c9:	call   *0x2eee569(%rip)        # b314838 <_DYNAMIC+0xd9000>
+ 84262cf:	test   $0x1,%al
+ 84262d1:	jne    84262ff <<flume::async::SendFut<T> as core::future::future::Future>::poll+0x11f>
+ 84262d3:	lea    0x48(%rsp),%rdi
+ 84262d8:	call   *0x2eee72a(%rip)        # b314a08 <_DYNAMIC+0xd91d0>
+ 84262de:	rex.W
+ 84262df:	.byte 0x89
+
+===== frame 1 sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}} () RVA 0x84481ea =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000008447f30 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}>:
+ 8447f30:	sub    $0x508,%rsp
+ 8447f37:	mov    %rsi,0x40(%rsp)
+ 8447f3c:	mov    %rdi,0x48(%rsp)
+ 8447f41:	mov    %rdi,0x50(%rsp)
+ 8447f46:	mov    %rdx,0x60(%rsp)
+ 8447f4b:	movzbl 0xa(%rsi),%eax
+ 8447f4f:	mov    %rax,0x58(%rsp)
+ 8447f54:	mov    0x58(%rsp),%rcx
+ 8447f59:	lea    -0x673203c(%rip),%rax        # 1d15f24 <deadpool::util::CPU_COUNT+0x9bee4>
+ 8447f60:	movslq (%rax,%rcx,4),%rcx
+ 8447f64:	add    %rcx,%rax
+ 8447f67:	jmp    *%rax
+ 8447f69:	ud2
+ 8447f6b:	mov    0x40(%rsp),%rax
+ 8447f70:	movb   $0x0,0x9(%rax)
+ 8447f74:	movb   $0x0,0x8(%rax)
+ 8447f78:	mov    (%rax),%rcx
+ 8447f7b:	mov    %rcx,0x28(%rsp)
+ 8447f80:	movb   $0x1,0x9(%rax)
+ 8447f84:	mov    0x2ecef95(%rip),%rax        # b316f20 <_DYNAMIC+0xdb6e8>
+ 8447f8b:	call   *%rax
+ 8447f8d:	mov    %rdx,0x30(%rsp)
+ 8447f92:	mov    %rax,0x38(%rsp)
+ 8447f97:	jmp    8447ff7 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0xc7>
+ 8447f99:	xor    %eax,%eax
+ 8447f9b:	test   $0x1,%al
+ 8447f9d:	jne    8447f99 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x69>
+ 8447f9f:	jmp    8448188 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x258>
+ 8447fa4:	xor    %eax,%eax
+ 8447fa6:	test   $0x1,%al
+ 8447fa8:	jne    8447fa4 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x74>
+ 8447faa:	jmp    8448195 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x265>
+ 8447faf:	mov    0x60(%rsp),%rax
+ 8447fb4:	mov    %rax,0x60(%rsp)
+ 8447fb9:	jmp    8448172 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x242>
+ 8447fbe:	mov    0x60(%rsp),%rax
+ 8447fc3:	mov    %rax,0x60(%rsp)
+ 8447fc8:	jmp    8448454 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x524>
+ 8447fcd:	mov    0x40(%rsp),%rax
+ 8447fd2:	testb  $0x1,0x9(%rax)
+ 8447fd6:	jne    8448610 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x6e0>
+ 8447fdc:	jmp    84485f6 <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x6c6>
+ 8447fe1:	mov    %rax,%rcx
+ 8447fe4:	mov    %edx,%eax
+ 8447fe6:	mov    %rcx,0x440(%rsp)
+ 8447fee:	mov    %eax,0x448(%rsp)
+ 8447ff5:	jmp    8447fcd <sqlx_sqlite::connection::worker::ConnectionWorker::oneshot_cmd::{{closure}}+0x9d>
+ 8447ff7:	mov    0x40(%rsp),%rax
+ 8447ffc:	mov    0x30(%rsp),%rcx
+ 8448001:	mov    0x38(%rsp),%rdx
+ 8448006:	movb   $0x1,0x8(%rax)
+ 844800a:	mov    %rdx,0x68(%rsp)
+ 844800f:	mov    %rcx,0x10(%rax)
+ 8448013:	movb   $0x0,0x9(%rax)
+ 8448017:	movb   $0x0,0x8(%rax)
+ 844801b:	mov    0x68(%rsp),%rsi
+ 8448020:	mov    0x2ecef01(%rip),%rax        # b316f28 <_DYNAMIC+0xdb6f0>
+ 8448027:	lea    0x260(%rsp),%rdi
+ 844802f:	.byte 0xff
+
+===== frame 2 sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}} () RVA 0x84498ba =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000008449770 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}>:
+ 8449770:	sub    $0x1e8,%rsp
+ 8449777:	mov    %rsi,0x8(%rsp)
+ 844977c:	mov    %rdi,0x10(%rsp)
+ 8449781:	mov    %rdi,0x18(%rsp)
+ 8449786:	mov    %rdx,0x28(%rsp)
+ 844978b:	movzbl 0xa8(%rsi),%eax
+ 8449792:	mov    %rax,0x20(%rsp)
+ 8449797:	mov    0x20(%rsp),%rcx
+ 844979c:	lea    -0x6733843(%rip),%rax        # 1d15f60 <deadpool::util::CPU_COUNT+0x9bf20>
+ 84497a3:	movslq (%rax,%rcx,4),%rcx
+ 84497a7:	add    %rcx,%rax
+ 84497aa:	jmp    *%rax
+ 84497ac:	ud2
+ 84497ae:	mov    0x8(%rsp),%rax
+ 84497b3:	mov    (%rax),%rsi
+ 84497b6:	mov    0x2ecd753(%rip),%rax        # b316f10 <_DYNAMIC+0xdb6d8>
+ 84497bd:	lea    0xd0(%rsp),%rdi
+ 84497c5:	call   *%rax
+ 84497c7:	jmp    844981a <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0xaa>
+ 84497c9:	xor    %eax,%eax
+ 84497cb:	test   $0x1,%al
+ 84497cd:	jne    84497c9 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0x59>
+ 84497cf:	jmp    8449859 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0xe9>
+ 84497d4:	xor    %eax,%eax
+ 84497d6:	test   $0x1,%al
+ 84497d8:	jne    84497d4 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0x64>
+ 84497da:	jmp    8449866 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0xf6>
+ 84497df:	mov    0x28(%rsp),%rax
+ 84497e4:	mov    %rax,0x28(%rsp)
+ 84497e9:	jmp    844984a <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0xda>
+ 84497eb:	mov    0x8(%rsp),%rax
+ 84497f0:	movb   $0x2,0xa8(%rax)
+ 84497f7:	mov    0x1d8(%rsp),%rdi
+ 84497ff:	call   aec49f0 <_Unwind_Resume@plt>
+ 8449804:	mov    %rax,%rcx
+ 8449807:	mov    %edx,%eax
+ 8449809:	mov    %rcx,0x1d8(%rsp)
+ 8449811:	mov    %eax,0x1e0(%rsp)
+ 8449818:	jmp    84497eb <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0x7b>
+ 844981a:	mov    0x2ecd74f(%rip),%rax        # b316f70 <_DYNAMIC+0xdb738>
+ 8449821:	lea    0x30(%rsp),%rdi
+ 8449826:	lea    0xd0(%rsp),%rsi
+ 844982e:	call   *%rax
+ 8449830:	jmp    8449832 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0xc2>
+ 8449832:	mov    0x8(%rsp),%rdi
+ 8449837:	add    $0x8,%rdi
+ 844983b:	lea    0x30(%rsp),%rsi
+ 8449840:	mov    $0xa0,%edx
+ 8449845:	call   aec49e0 <memcpy@plt>
+ 844984a:	mov    0x8(%rsp),%rax
+ 844984f:	add    $0x8,%rax
+ 8449853:	mov    %rax,(%rsp)
+ 8449857:	jmp    84498a0 <sqlx_sqlite::connection::worker::ConnectionWorker::ping::{{closure}}+0x130>
+ 8449859:	lea    0x2c748a8(%rip),%rdi        # b0be108 <codex_state::sqlite_recovery::descriptor_io::io_failure::__CALLSITE::META+0x4bb8>
+ 8449860:	call   *0x2df42f2(%rip)        # b23db58 <_DYNAMIC+0x2320>
+ 8449866:	lea    0x2c7489b(%rip),%rdi        # b0be108 <codex_state::sqlite_recovery::descriptor_io::io_failure::__CALLSITE::META+0x4bb8>
+ 844986d:	.byte 0xff
+ 844986e:	.byte 0x15
+ 844986f:	in     (%dx),%eax
+
+===== frame 3 sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}} () RVA 0x8352251 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000083520f0 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}>:
+ 83520f0:	sub    $0x218,%rsp
+ 83520f7:	mov    %rsi,0x18(%rsp)
+ 83520fc:	mov    %rdi,0x20(%rsp)
+ 8352101:	mov    %rdi,0x28(%rsp)
+ 8352106:	mov    %rdx,0x38(%rsp)
+ 835210b:	movzbl 0xb8(%rsi),%eax
+ 8352112:	mov    %rax,0x30(%rsp)
+ 8352117:	mov    0x30(%rsp),%rcx
+ 835211c:	lea    -0x6640d7f(%rip),%rax        # 1d113a4 <deadpool::util::CPU_COUNT+0x97364>
+ 8352123:	movslq (%rax,%rcx,4),%rcx
+ 8352127:	add    %rcx,%rax
+ 835212a:	jmp    *%rax
+ 835212c:	ud2
+ 835212e:	mov    0x18(%rsp),%rax
+ 8352133:	mov    (%rax),%rdi
+ 8352136:	mov    0x2fbbf33(%rip),%rax        # b30e070 <_DYNAMIC+0xd2838>
+ 835213d:	call   *%rax
+ 835213f:	mov    %rax,0x10(%rsp)
+ 8352144:	jmp    8352197 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0xa7>
+ 8352146:	xor    %eax,%eax
+ 8352148:	test   $0x1,%al
+ 835214a:	jne    8352146 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0x56>
+ 835214c:	jmp    83521ef <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0xff>
+ 8352151:	xor    %eax,%eax
+ 8352153:	test   $0x1,%al
+ 8352155:	jne    8352151 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0x61>
+ 8352157:	jmp    83521fc <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0x10c>
+ 835215c:	mov    0x38(%rsp),%rax
+ 8352161:	mov    %rax,0x38(%rsp)
+ 8352166:	jmp    83521df <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0xef>
+ 8352168:	mov    0x18(%rsp),%rax
+ 835216d:	movb   $0x2,0xb8(%rax)
+ 8352174:	mov    0x208(%rsp),%rdi
+ 835217c:	call   aec49f0 <_Unwind_Resume@plt>
+ 8352181:	mov    %rax,%rcx
+ 8352184:	mov    %edx,%eax
+ 8352186:	mov    %rcx,0x208(%rsp)
+ 835218e:	mov    %eax,0x210(%rsp)
+ 8352195:	jmp    8352168 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0x78>
+ 8352197:	mov    0x10(%rsp),%rsi
+ 835219c:	mov    0x2fbbf1d(%rip),%rax        # b30e0c0 <_DYNAMIC+0xd2888>
+ 83521a3:	lea    0xf0(%rsp),%rdi
+ 83521ab:	call   *%rax
+ 83521ad:	jmp    83521af <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0xbf>
+ 83521af:	mov    0x2fbbf12(%rip),%rax        # b30e0c8 <_DYNAMIC+0xd2890>
+ 83521b6:	lea    0x40(%rsp),%rdi
+ 83521bb:	lea    0xf0(%rsp),%rsi
+ 83521c3:	call   *%rax
+ 83521c5:	jmp    83521c7 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0xd7>
+ 83521c7:	mov    0x18(%rsp),%rdi
+ 83521cc:	add    $0x8,%rdi
+ 83521d0:	lea    0x40(%rsp),%rsi
+ 83521d5:	mov    $0xb0,%edx
+ 83521da:	call   aec49e0 <memcpy@plt>
+ 83521df:	mov    0x18(%rsp),%rax
+ 83521e4:	add    $0x8,%rax
+ 83521e8:	mov    %rax,0x8(%rsp)
+ 83521ed:	jmp    8352236 <sqlx_core::pool::connection::Floating<DB,sqlx_core::pool::connection::Idle<DB>>::ping::{{closure}}+0x146>
+ 83521ef:	rex.W
+
+===== frame 4 sqlx_core::pool::inner::check_idle_conn::{{closure}} () RVA 0x8353561 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000083532e0 <sqlx_core::pool::inner::check_idle_conn::{{closure}}>:
+ 83532e0:	sub    $0x1000,%rsp
+ 83532e7:	movq   $0x0,(%rsp)
+ 83532ef:	sub    $0xb8,%rsp
+ 83532f6:	mov    %rsi,0x308(%rsp)
+ 83532fe:	mov    %rdi,0x310(%rsp)
+ 8353306:	mov    %rdi,0x318(%rsp)
+ 835330e:	mov    %rdx,0x328(%rsp)
+ 8353316:	movzbl 0x110(%rsi),%eax
+ 835331d:	mov    %rax,0x320(%rsp)
+ 8353325:	mov    0x320(%rsp),%rcx
+ 835332d:	lea    -0x6641f58(%rip),%rax        # 1d113dc <deadpool::util::CPU_COUNT+0x9739c>
+ 8353334:	movslq (%rax,%rcx,4),%rcx
+ 8353338:	add    %rcx,%rax
+ 835333b:	jmp    *%rax
+ 835333d:	ud2
+ 835333f:	mov    0x308(%rsp),%rsi
+ 8353347:	movb   $0x0,0x111(%rsi)
+ 835334e:	movb   $0x1,0x111(%rsi)
+ 8353355:	mov    %rsi,%rdi
+ 8353358:	add    $0x58,%rdi
+ 835335c:	mov    $0x50,%edx
+ 8353361:	call   aec49e0 <memcpy@plt>
+ 8353366:	mov    0x308(%rsp),%rax
+ 835336e:	mov    0x50(%rax),%rcx
+ 8353372:	mov    %rcx,0xa8(%rax)
+ 8353379:	mov    0xa8(%rax),%rax
+ 8353380:	testb  $0x1,0x90(%rax)
+ 8353387:	jne    8353450 <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0x170>
+ 835338d:	jmp    835340e <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0x12e>
+ 835338f:	xor    %eax,%eax
+ 8353391:	test   $0x1,%al
+ 8353393:	jne    835338f <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0xaf>
+ 8353395:	jmp    83534f3 <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0x213>
+ 835339a:	xor    %eax,%eax
+ 835339c:	test   $0x1,%al
+ 835339e:	jne    835339a <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0xba>
+ 83533a0:	jmp    8353500 <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0x220>
+ 83533a5:	mov    0x328(%rsp),%rax
+ 83533ad:	mov    %rax,0x328(%rsp)
+ 83533b5:	jmp    83534db <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0x1fb>
+ 83533ba:	mov    0x328(%rsp),%rax
+ 83533c2:	mov    %rax,0x328(%rsp)
+ 83533ca:	jmp    8353ebf <sqlx_core::pool::inner::check_idle_conn::{{closure}}+0xbdf>
+ 83533cf:	mov    0x328(%rsp),%rax
+ 83533d7:	mov    %rax,0x328(%rsp)
+ 83533df:	.byte 0xe9
+
+===== frame 5 sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}} () RVA 0x835d41b =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000835cd00 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}>:
+ 835cd00:	sub    $0x1000,%rsp
+ 835cd07:	movq   $0x0,(%rsp)
+ 835cd0f:	sub    $0x398,%rsp
+ 835cd16:	mov    %rsi,0x148(%rsp)
+ 835cd1e:	mov    %rdi,0x150(%rsp)
+ 835cd26:	mov    %rdi,0x158(%rsp)
+ 835cd2e:	mov    %rdx,0x168(%rsp)
+ 835cd36:	movzbl 0x62(%rsi),%eax
+ 835cd3a:	mov    %rax,0x160(%rsp)
+ 835cd42:	mov    0x160(%rsp),%rcx
+ 835cd4a:	lea    -0x664b7d5(%rip),%rax        # 1d1157c <deadpool::util::CPU_COUNT+0x9753c>
+ 835cd51:	movslq (%rax,%rcx,4),%rcx
+ 835cd55:	add    %rcx,%rax
+ 835cd58:	jmp    *%rax
+ 835cd5a:	ud2
+ 835cd5c:	mov    0x148(%rsp),%rax
+ 835cd64:	movb   $0x0,0x61(%rax)
+ 835cd68:	movb   $0x0,0x60(%rax)
+ 835cd6c:	movb   $0x0,0x127f(%rsp)
+ 835cd74:	jmp    835cdd4 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0xd4>
+ 835cd76:	xor    %eax,%eax
+ 835cd78:	test   $0x1,%al
+ 835cd7a:	jne    835cd76 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x76>
+ 835cd7c:	jmp    835cdf6 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0xf6>
+ 835cd7e:	xor    %eax,%eax
+ 835cd80:	test   $0x1,%al
+ 835cd82:	jne    835cd7e <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x7e>
+ 835cd84:	jmp    835ce03 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x103>
+ 835cd86:	mov    0x168(%rsp),%rax
+ 835cd8e:	mov    %rax,0x168(%rsp)
+ 835cd96:	jmp    835ce10 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x110>
+ 835cd98:	mov    0x168(%rsp),%rax
+ 835cda0:	mov    %rax,0x168(%rsp)
+ 835cda8:	jmp    835ce29 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x129>
+ 835cdaa:	mov    0x168(%rsp),%rax
+ 835cdb2:	mov    %rax,0x168(%rsp)
+ 835cdba:	jmp    835ce42 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x142>
+ 835cdbf:	mov    0x168(%rsp),%rax
+ 835cdc7:	mov    %rax,0x168(%rsp)
+ 835cdcf:	jmp    835d6aa <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x9aa>
+ 835cdd4:	mov    0x148(%rsp),%rax
+ 835cddc:	mov    0x50(%rax),%rsi
+ 835cde0:	mov    0x2fb13a9(%rip),%rax        # b30e190 <_DYNAMIC+0xd2958>
+ 835cde7:	lea    0x310(%rsp),%rdi
+ 835cdef:	call   *%rax
+ 835cdf1:	jmp    835cfda <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}::{{closure}}+0x2da>
+ 835cdf6:	lea    0x2d5c5ab(%rip),%rdi        # b0b93a8 <codex_hepta_evidence::store::MIGRATOR+0x22930>
+ 835cdfd:	.byte 0xff
+ 835cdfe:	.byte 0x15
+ 835cdff:	push   %rbp
+
+===== frame 6 <core::pin::Pin<P> as core::future::future::Future>::poll () RVA 0x833eee9 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000833eeb0 <<core::pin::Pin<P> as core::future::future::Future>::poll>:
+ 833eeb0:	sub    $0x28,%rsp
+ 833eeb4:	mov    %rdx,0x18(%rsp)
+ 833eeb9:	mov    %rsi,0x8(%rsp)
+ 833eebe:	mov    %rdi,%rax
+ 833eec1:	mov    0x8(%rsp),%rdi
+ 833eec6:	mov    %rax,0x10(%rsp)
+ 833eecb:	mov    %rax,0x20(%rsp)
+ 833eed0:	call   *0x2fce352(%rip)        # b30d228 <_DYNAMIC+0xd19f0>
+ 833eed6:	mov    0x10(%rsp),%rdi
+ 833eedb:	mov    0x18(%rsp),%rdx
+ 833eee0:	mov    %rax,%rsi
+ 833eee3:	call   *0x2fce687(%rip)        # b30d570 <_DYNAMIC+0xd1d38>
+ 833eee9:	mov    0x20(%rsp),%rax
+ 833eeee:	add    $0x28,%rsp
+ 833eef2:	ret
+
+===== frame 7 <tokio::time::timeout::Timeout<T> as core::future::future::Future>::poll () RVA 0x8331d9e =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000008331d40 <<tokio::time::timeout::Timeout<T> as core::future::future::Future>::poll>:
+ 8331d40:	sub    $0xf8,%rsp
+ 8331d47:	mov    %rdx,0x28(%rsp)
+ 8331d4c:	mov    %rsi,(%rsp)
+ 8331d50:	mov    %rdi,%rax
+ 8331d53:	mov    (%rsp),%rdi
+ 8331d57:	mov    %rax,0x8(%rsp)
+ 8331d5c:	mov    %rax,0x10(%rsp)
+ 8331d61:	call   *0x2fdab89(%rip)        # b30c8f0 <_DYNAMIC+0xd10b8>
+ 8331d67:	mov    %rax,0x20(%rsp)
+ 8331d6c:	mov    %rdx,0x18(%rsp)
+ 8331d71:	call   *0x2f12f99(%rip)        # b244d10 <_DYNAMIC+0x94d8>
+ 8331d77:	mov    $0x1,%esi
+ 8331d7c:	movzbl %al,%edi
+ 8331d7f:	call   *0x2fdab5b(%rip)        # b30c8e0 <_DYNAMIC+0xd10a8>
+ 8331d85:	mov    0x20(%rsp),%rsi
+ 8331d8a:	mov    0x28(%rsp),%rdx
+ 8331d8f:	mov    %al,0x37(%rsp)
+ 8331d93:	lea    0x38(%rsp),%rdi
+ 8331d98:	call   *0x2fdab92(%rip)        # b30c930 <_DYNAMIC+0xd10f8>
+ 8331d9e:	xor    %eax,%eax
+ 8331da0:	mov    $0x1,%ecx
+ 8331da5:	cmpl   $0x4,0x38(%rsp)
+ 8331daa:	cmove  %rcx,%rax
+ 8331dae:	test   $0x1,%rax
+ 8331db4:	je     8331de9 <<tokio::time::timeout::Timeout<T> as core::future::future::Future>::poll+0xa9>
+ 8331db6:	mov    0x28(%rsp),%rdx
+ 8331dbb:	mov    0x18(%rsp),%rsi
+ 8331dc0:	mov    0x37(%rsp),%al
+ 8331dc4:	movzbl %al,%edi
+ 8331dc7:	and    $0x1,%edi
+ 8331dca:	mov    0x2f1301f(%rip),%rax        # b244df0 <_DYNAMIC+0x95b8>
+ 8331dd1:	call   *%rax
+ 8331dd3:	mov    0x8(%rsp),%rdi
+ 8331dd8:	movzbl %al,%esi
+ 8331ddb:	and    $0x1,%esi
+ 8331dde:	mov    0x2fdab53(%rip),%rax        # b30c938 <_DYNAMIC+0xd1100>
+ 8331de5:	call   *%rax
+ 8331de7:	jmp    8331e2b <<tokio::time::timeout::Timeout<T> as core::future::future::Future>::poll+0xeb>
+ 8331de9:	lea    0x78(%rsp),%rdi
+ 8331dee:	lea    0x38(%rsp),%rsi
+ 8331df3:	mov    $0x40,%edx
+ 8331df8:	call   aec49e0 <memcpy@plt>
+ 8331dfd:	lea    0xb8(%rsp),%rdi
+ 8331e05:	lea    0x78(%rsp),%rsi
+ 8331e0a:	mov    $0x40,%edx
+ 8331e0f:	call   aec49e0 <memcpy@plt>
+ 8331e14:	mov    0x8(%rsp),%rdi
+ 8331e19:	lea    0xb8(%rsp),%rsi
+ 8331e21:	mov    $0x40,%edx
+ 8331e26:	call   aec49e0 <memcpy@plt>
+ 8331e2b:	mov    0x10(%rsp),%rax
+ 8331e30:	add    $0xf8,%rsp
+ 8331e37:	ret
+
+===== frame 8 sqlx_core::rt::timeout::{{closure}} () RVA 0x833f8d3 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000833f5d0 <sqlx_core::rt::timeout::{{closure}}>:
+ 833f5d0:	sub    $0x928,%rsp
+ 833f5d7:	mov    %rsi,0x58(%rsp)
+ 833f5dc:	mov    %rdi,0x60(%rsp)
+ 833f5e1:	mov    %rdi,0x68(%rsp)
+ 833f5e6:	mov    %rdx,0x78(%rsp)
+ 833f5eb:	movzbl 0x3c0(%rsi),%eax
+ 833f5f2:	mov    %rax,0x70(%rsp)
+ 833f5f7:	mov    0x70(%rsp),%rcx
+ 833f5fc:	lea    -0x662e4db(%rip),%rax        # 1d11128 <deadpool::util::CPU_COUNT+0x970e8>
+ 833f603:	movslq (%rax,%rcx,4),%rcx
+ 833f607:	add    %rcx,%rax
+ 833f60a:	jmp    *%rax
+ 833f60c:	ud2
+ 833f60e:	mov    0x58(%rsp),%rsi
+ 833f613:	movb   $0x0,0x3c1(%rsi)
+ 833f61a:	mov    (%rsi),%rax
+ 833f61d:	mov    %rax,0x28(%rsp)
+ 833f622:	mov    0x8(%rsi),%eax
+ 833f625:	mov    %eax,0x34(%rsp)
+ 833f629:	add    $0x10,%rsi
+ 833f62d:	lea    0x80(%rsp),%rdi
+ 833f635:	mov    %rdi,0x38(%rsp)
+ 833f63a:	mov    $0x338,%edx
+ 833f63f:	mov    %rdx,0x48(%rsp)
+ 833f644:	mov    0x2efc455(%rip),%rax        # b23baa0 <memcpy@GLIBC_2.14>
+ 833f64b:	mov    %rax,0x40(%rsp)
+ 833f650:	call   *%rax
+ 833f652:	mov    0x38(%rsp),%rsi
+ 833f657:	mov    0x48(%rsp),%rdx
+ 833f65c:	mov    0x40(%rsp),%rax
+ 833f661:	lea    0x588(%rsp),%rdi
+ 833f669:	call   *%rax
+ 833f66b:	mov    0x48(%rsp),%rsi
+ 833f670:	mov    $0x8,%edi
+ 833f675:	call   833b2c0 <alloc::boxed::box_new_uninit>
+ 833f67a:	mov    %rax,0x50(%rsp)
+ 833f67f:	jmp    833f6c8 <sqlx_core::rt::timeout::{{closure}}+0xf8>
+ 833f681:	mov    %rax,%rcx
+ 833f684:	mov    %edx,%eax
+ 833f686:	mov    %rcx,0x918(%rsp)
+ 833f68e:	mov    %eax,0x920(%rsp)
+ 833f695:	mov    0x2fcc214(%rip),%rax        # b30b8b0 <_DYNAMIC+0xd0078>
+ 833f69c:	lea    0x588(%rsp),%rdi
+ 833f6a4:	call   *%rax
+ 833f6a6:	jmp    833f6ae <sqlx_core::rt::timeout::{{closure}}+0xde>
+ 833f6a8:	call   *0x2efc462(%rip)        # b23bb10 <_DYNAMIC+0x2d8>
+ 833f6ae:	mov    0x918(%rsp),%rax
+ 833f6b6:	mov    %rax,0x18(%rsp)
+ 833f6bb:	mov    0x920(%rsp),%eax
+ 833f6c2:	mov    %eax,0x24(%rsp)
+ 833f6c6:	jmp    833f726 <sqlx_core::rt::timeout::{{closure}}+0x156>
+ 833f6c8:	mov    0x50(%rsp),%rdi
+ 833f6cd:	rex.W
+ 833f6ce:	.byte 0x8d
+ 833f6cf:	.byte 0xb4
+
+===== frame 9 sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}} () RVA 0x835691e =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000008356570 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}>:
+ 8356570:	sub    $0x1000,%rsp
+ 8356577:	movq   $0x0,(%rsp)
+ 835657f:	sub    $0x1000,%rsp
+ 8356586:	movq   $0x0,(%rsp)
+ 835658e:	sub    $0xc38,%rsp
+ 8356595:	mov    %rsi,0xc88(%rsp)
+ 835659d:	mov    %rdi,0xc90(%rsp)
+ 83565a5:	mov    %rdi,0xc98(%rsp)
+ 83565ad:	mov    %rdx,0xca8(%rsp)
+ 83565b5:	movzbl 0x3f8(%rsi),%eax
+ 83565bc:	mov    %rax,0xca0(%rsp)
+ 83565c4:	mov    0xca0(%rsp),%rcx
+ 83565cc:	lea    -0x664517f(%rip),%rax        # 1d11454 <deadpool::util::CPU_COUNT+0x97414>
+ 83565d3:	movslq (%rax,%rcx,4),%rcx
+ 83565d7:	add    %rcx,%rax
+ 83565da:	jmp    *%rax
+ 83565dc:	ud2
+ 83565de:	mov    0xc88(%rsp),%rax
+ 83565e6:	mov    (%rax),%rcx
+ 83565e9:	mov    %rcx,0x8(%rax)
+ 83565ed:	mov    0x8(%rax),%rdi
+ 83565f1:	mov    0x2fb75a0(%rip),%rax        # b30db98 <_DYNAMIC+0xd2360>
+ 83565f8:	call   *%rax
+ 83565fa:	mov    %rax,0xc80(%rsp)
+ 8356602:	jmp    8356661 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0xf1>
+ 8356604:	xor    %eax,%eax
+ 8356606:	test   $0x1,%al
+ 8356608:	jne    8356604 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0x94>
+ 835660a:	jmp    83568b3 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0x343>
+ 835660f:	xor    %eax,%eax
+ 8356611:	test   $0x1,%al
+ 8356613:	jne    835660f <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0x9f>
+ 8356615:	jmp    83568c0 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0x350>
+ 835661a:	mov    0xca8(%rsp),%rax
+ 8356622:	mov    %rax,0xca8(%rsp)
+ 835662a:	jmp    8356861 <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0x2f1>
+ 835662f:	mov    0xc88(%rsp),%rax
+ 8356637:	movb   $0x2,0x3f8(%rax)
+ 835663e:	mov    0x2780(%rsp),%rdi
+ 8356646:	call   aec49f0 <_Unwind_Resume@plt>
+ 835664b:	mov    %rax,%rcx
+ 835664e:	mov    %edx,%eax
+ 8356650:	mov    %rcx,0x2780(%rsp)
+ 8356658:	mov    %eax,0x2788(%rsp)
+ 835665f:	jmp    835662f <sqlx_core::pool::inner::PoolInner<DB>::acquire::{{closure}}+0xbf>
+ 8356661:	mov    0xc80(%rsp),%rdi
+ 8356669:	mov    0x2fb7b00(%rip),%rax        # b30e170 <_DYNAMIC+0xd2938>
+
+===== frame 10 sqlx_core::pool::Pool<DB>::acquire::{{closure}} () RVA 0x834af5e =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000834ae20 <sqlx_core::pool::Pool<DB>::acquire::{{closure}}>:
+ 834ae20:	sub    $0x948,%rsp
+ 834ae27:	mov    %rsi,0x8(%rsp)
+ 834ae2c:	mov    %rdi,0x10(%rsp)
+ 834ae31:	mov    %rdi,0x18(%rsp)
+ 834ae36:	mov    %rdx,0x28(%rsp)
+ 834ae3b:	movzbl 0x408(%rsi),%eax
+ 834ae42:	mov    %rax,0x20(%rsp)
+ 834ae47:	mov    0x20(%rsp),%rcx
+ 834ae4c:	lea    -0x6639cb3(%rip),%rax        # 1d111a0 <deadpool::util::CPU_COUNT+0x97160>
+ 834ae53:	movslq (%rax,%rcx,4),%rcx
+ 834ae57:	add    %rcx,%rax
+ 834ae5a:	jmp    *%rax
+ 834ae5c:	ud2
+ 834ae5e:	mov    0x8(%rsp),%rsi
+ 834ae63:	mov    0x2fc2d06(%rip),%rax        # b30db70 <_DYNAMIC+0xd2338>
+ 834ae6a:	lea    0x430(%rsp),%rdi
+ 834ae72:	call   *%rax
+ 834ae74:	jmp    834aebe <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0x9e>
+ 834ae76:	xor    %eax,%eax
+ 834ae78:	test   $0x1,%al
+ 834ae7a:	jne    834ae76 <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0x56>
+ 834ae7c:	jmp    834aefd <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0xdd>
+ 834ae7e:	xor    %eax,%eax
+ 834ae80:	test   $0x1,%al
+ 834ae82:	jne    834ae7e <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0x5e>
+ 834ae84:	jmp    834af0a <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0xea>
+ 834ae89:	mov    0x28(%rsp),%rax
+ 834ae8e:	mov    %rax,0x28(%rsp)
+ 834ae93:	jmp    834aeee <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0xce>
+ 834ae95:	mov    0x8(%rsp),%rdi
+ 834ae9a:	mov    0x2fc08c7(%rip),%rax        # b30b768 <_DYNAMIC+0xcff30>
+ 834aea1:	call   *%rax
+ 834aea3:	jmp    834b05e <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0x23e>
+ 834aea8:	mov    %rax,%rcx
+ 834aeab:	mov    %edx,%eax
+ 834aead:	mov    %rcx,0x8f0(%rsp)
+ 834aeb5:	mov    %eax,0x8f8(%rsp)
+ 834aebc:	jmp    834ae95 <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0x75>
+ 834aebe:	mov    0x2fc2cb3(%rip),%rax        # b30db78 <_DYNAMIC+0xd2340>
+ 834aec5:	lea    0x30(%rsp),%rdi
+ 834aeca:	lea    0x430(%rsp),%rsi
+ 834aed2:	call   *%rax
+ 834aed4:	jmp    834aed6 <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0xb6>
+ 834aed6:	mov    0x8(%rsp),%rdi
+ 834aedb:	add    $0x8,%rdi
+ 834aedf:	lea    0x30(%rsp),%rsi
+ 834aee4:	mov    $0x400,%edx
+ 834aee9:	call   aec49e0 <memcpy@plt>
+ 834aeee:	mov    0x8(%rsp),%rax
+ 834aef3:	add    $0x8,%rax
+ 834aef7:	mov    %rax,(%rsp)
+ 834aefb:	jmp    834af44 <sqlx_core::pool::Pool<DB>::acquire::{{closure}}+0x124>
+ 834aefd:	lea    0x2d6e08c(%rip),%rdi        # b0b8f90 <codex_hepta_evidence::store::MIGRATOR+0x22518>
+ 834af04:	call   *0x2ef2c4e(%rip)        # b23db58 <_DYNAMIC+0x2320>
+ 834af0a:	lea    0x2d6e07f(%rip),%rdi        # b0b8f90 <codex_hepta_evidence::store::MIGRATOR+0x22518>
+ 834af11:	call   *0x2ef2c49(%rip)        # b23db60 <_DYNAMIC+0x2328>
+ 834af17:	mov    0x8(%rsp),%rdi
+ 834af1c:	add    $0x8,%rdi
+
+===== frame 11 sqlx_core::pool::Pool<DB>::begin::{{closure}} () RVA 0x834a9db =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000834a880 <sqlx_core::pool::Pool<DB>::begin::{{closure}}>:
+ 834a880:	sub    $0xb38,%rsp
+ 834a887:	mov    %rsi,0x38(%rsp)
+ 834a88c:	mov    %rdi,0x40(%rsp)
+ 834a891:	mov    %rdi,0x48(%rsp)
+ 834a896:	mov    %rdx,0x58(%rsp)
+ 834a89b:	movzbl 0x8(%rsi),%eax
+ 834a89f:	mov    %rax,0x50(%rsp)
+ 834a8a4:	mov    0x50(%rsp),%rcx
+ 834a8a9:	lea    -0x6639724(%rip),%rax        # 1d1118c <deadpool::util::CPU_COUNT+0x9714c>
+ 834a8b0:	movslq (%rax,%rcx,4),%rcx
+ 834a8b4:	add    %rcx,%rax
+ 834a8b7:	jmp    *%rax
+ 834a8b9:	ud2
+ 834a8bb:	mov    0x38(%rsp),%rax
+ 834a8c0:	mov    (%rax),%rsi
+ 834a8c3:	mov    0x2efd056(%rip),%rax        # b247920 <_DYNAMIC+0xc0e8>
+ 834a8ca:	lea    0x4b0(%rsp),%rdi
+ 834a8d2:	call   *%rax
+ 834a8d4:	jmp    834a933 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0xb3>
+ 834a8d6:	xor    %eax,%eax
+ 834a8d8:	test   $0x1,%al
+ 834a8da:	jne    834a8d6 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0x56>
+ 834a8dc:	jmp    834a979 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0xf9>
+ 834a8e1:	xor    %eax,%eax
+ 834a8e3:	test   $0x1,%al
+ 834a8e5:	jne    834a8e1 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0x61>
+ 834a8e7:	jmp    834a986 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0x106>
+ 834a8ec:	mov    0x58(%rsp),%rax
+ 834a8f1:	mov    %rax,0x58(%rsp)
+ 834a8f6:	jmp    834a969 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0xe9>
+ 834a8f8:	mov    0x58(%rsp),%rax
+ 834a8fd:	mov    %rax,0x58(%rsp)
+ 834a902:	jmp    834ac3c <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0x3bc>
+ 834a907:	mov    0x38(%rsp),%rax
+ 834a90c:	movb   $0x2,0x8(%rax)
+ 834a910:	mov    0xab0(%rsp),%rdi
+ 834a918:	call   aec49f0 <_Unwind_Resume@plt>
+ 834a91d:	mov    %rax,%rcx
+ 834a920:	mov    %edx,%eax
+ 834a922:	mov    %rcx,0xab0(%rsp)
+ 834a92a:	mov    %eax,0xab8(%rsp)
+ 834a931:	jmp    834a907 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0x87>
+ 834a933:	mov    0x2efcfee(%rip),%rax        # b247928 <_DYNAMIC+0xc0f0>
+ 834a93a:	lea    0xa0(%rsp),%rdi
+ 834a942:	lea    0x4b0(%rsp),%rsi
+ 834a94a:	call   *%rax
+ 834a94c:	jmp    834a94e <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0xce>
+ 834a94e:	mov    0x38(%rsp),%rdi
+ 834a953:	add    $0x10,%rdi
+ 834a957:	lea    0xa0(%rsp),%rsi
+ 834a95f:	mov    $0x410,%edx
+ 834a964:	call   aec49e0 <memcpy@plt>
+ 834a969:	mov    0x38(%rsp),%rax
+ 834a96e:	add    $0x10,%rax
+ 834a972:	mov    %rax,0x30(%rsp)
+ 834a977:	jmp    834a9c0 <sqlx_core::pool::Pool<DB>::begin::{{closure}}+0x140>
+ 834a979:	lea    0x2d6e5e0(%rip),%rdi        # b0b8f60 <codex_hepta_evidence::store::MIGRATOR+0x224e8>
+
+===== frame 12 codex_hepta_memory::cognitive_store::verify_current_projection_contents::{{closure}} () RVA 0x50a575e =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000050a5340 <codex_hepta_memory::cognitive_store::verify_current_projection_contents::{{closure}}>:
+ 50a5340:	sub    $0x1000,%rsp
+ 50a5347:	movq   $0x0,(%rsp)
+ 50a534f:	sub    $0x1000,%rsp
+ 50a5356:	movq   $0x0,(%rsp)
+ 50a535e:	sub    $0x1000,%rsp
+ 50a5365:	movq   $0x0,(%rsp)
+ 50a536d:	sub    $0x1000,%rsp
+ 50a5374:	movq   $0x0,(%rsp)
+ 50a537c:	sub    $0x1000,%rsp
+ 50a5383:	movq   $0x0,(%rsp)
+ 50a538b:	sub    $0x1000,%rsp
+ 50a5392:	movq   $0x0,(%rsp)
+ 50a539a:	sub    $0xed8,%rsp
+ 50a53a1:	mov    %rsi,0x6b0(%rsp)
+ 50a53a9:	mov    %rdi,0x6b8(%rsp)
+ 50a53b1:	mov    %rdi,0x6c0(%rsp)
+ 50a53b9:	mov    %rdx,0x6d0(%rsp)
+ 50a53c1:	movzbl 0x3c4(%rsi),%eax
+ 50a53c8:	mov    %rax,0x6c8(%rsp)
+ 50a53d0:	mov    0x6c8(%rsp),%rcx
+ 50a53d8:	lea    -0x34d3ef7(%rip),%rax        # 1bd14e8 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x8d7b0>
+ 50a53df:	movslq (%rax,%rcx,4),%rcx
+ 50a53e3:	add    %rcx,%rax
+ 50a53e6:	jmp    *%rax
+ 50a53e8:	ud2
+ 50a53ea:	mov    0x6b0(%rsp),%rax
+ 50a53f2:	movb   $0x0,0x3c3(%rax)
+ 50a53f9:	movb   $0x0,0x3c2(%rax)
+ 50a5400:	movb   $0x0,0x63ce(%rsp)
+ 50a5408:	movb   $0x0,0x63cf(%rsp)
+ 50a5410:	movb   $0x0,0x3c1(%rax)
+ 50a5417:	movb   $0x0,0x63ca(%rsp)
+ 50a541f:	movb   $0x0,0x63cb(%rsp)
+ 50a5427:	movb   $0x0,0x63cc(%rsp)
+ 50a542f:	movb   $0x0,0x63cd(%rsp)
+ 50a5437:	movb   $0x0,0x3c0(%rax)
+ 50a543e:	.byte 0xc6
+ 50a543f:	.byte 0x84
+
+===== frame 13 codex_hepta_memory::cognitive_store::verify_store::{{closure}} () RVA 0x50a09db =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000509c0d0 <codex_hepta_memory::cognitive_store::verify_store::{{closure}}>:
+ 509c0d0:	mov    %rsp,%r11
+ 509c0d3:	sub    $0x8000,%r11
+ 509c0da:	sub    $0x1000,%rsp
+ 509c0e1:	movq   $0x0,(%rsp)
+ 509c0e9:	cmp    %r11,%rsp
+ 509c0ec:	jne    509c0da <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0xa>
+ 509c0ee:	sub    $0x1b8,%rsp
+ 509c0f5:	mov    %rsi,0x260(%rsp)
+ 509c0fd:	mov    %rdi,0x268(%rsp)
+ 509c105:	mov    %rdi,0x270(%rsp)
+ 509c10d:	mov    %rdx,0x280(%rsp)
+ 509c115:	movzbl 0x128(%rsi),%eax
+ 509c11c:	mov    %rax,0x278(%rsp)
+ 509c124:	mov    0x278(%rsp),%rcx
+ 509c12c:	lea    -0x34cad07(%rip),%rax        # 1bd142c <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x8d6f4>
+ 509c133:	movslq (%rax,%rcx,4),%rcx
+ 509c137:	add    %rcx,%rax
+ 509c13a:	jmp    *%rax
+ 509c13c:	ud2
+ 509c13e:	mov    0x260(%rsp),%rax
+ 509c146:	movb   $0x0,0x7abf(%rsp)
+ 509c14e:	movb   $0x0,0x7abe(%rsp)
+ 509c156:	movb   $0x0,0x7abd(%rsp)
+ 509c15e:	movb   $0x0,0x7abb(%rsp)
+ 509c166:	movb   $0x0,0x7abc(%rsp)
+ 509c16e:	mov    (%rax),%rcx
+ 509c171:	mov    %rcx,0x10(%rax)
+ 509c175:	mov    0x8(%rax),%rcx
+ 509c179:	mov    %rcx,0x18(%rax)
+ 509c17d:	lea    -0x34c5189(%rip),%rsi        # 1bd6ffb <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x932c3>
+ 509c184:	mov    0x61ab8cd(%rip),%rax        # b247a58 <_DYNAMIC+0xc220>
+ 509c18b:	lea    0x3a8(%rsp),%rdi
+ 509c193:	mov    $0x15,%edx
+ 509c198:	call   *%rax
+ 509c19a:	jmp    509c38b <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0x2bb>
+ 509c19f:	xor    %eax,%eax
+ 509c1a1:	test   $0x1,%al
+ 509c1a3:	jne    509c19f <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0xcf>
+ 509c1a5:	jmp    509c406 <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0x336>
+ 509c1aa:	xor    %eax,%eax
+ 509c1ac:	test   $0x1,%al
+ 509c1ae:	jne    509c1aa <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0xda>
+ 509c1b0:	jmp    509c413 <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0x343>
+ 509c1b5:	mov    0x280(%rsp),%rax
+ 509c1bd:	mov    %rax,0x280(%rsp)
+ 509c1c5:	jmp    509c3ee <codex_hepta_memory::cognitive_store::verify_store::{{closure}}+0x31e>
+ 509c1ca:	rex.W
+ 509c1cb:	.byte 0x8b
+ 509c1cc:	test   %ah,(%rax,%rax,4)
+ 509c1cf:	.byte 0x2
+
+===== frame 14 codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}} () RVA 0x50a314b =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000050a1e50 <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}>:
+ 50a1e50:	sub    $0x1000,%rsp
+ 50a1e57:	movq   $0x0,(%rsp)
+ 50a1e5f:	sub    $0x1000,%rsp
+ 50a1e66:	movq   $0x0,(%rsp)
+ 50a1e6e:	sub    $0xb88,%rsp
+ 50a1e75:	mov    %rsi,0xd8(%rsp)
+ 50a1e7d:	mov    %rdi,0xe0(%rsp)
+ 50a1e85:	mov    %rdi,0xe8(%rsp)
+ 50a1e8d:	mov    %rdx,0xf8(%rsp)
+ 50a1e95:	movzbl 0x5b(%rsi),%eax
+ 50a1e99:	mov    %rax,0xf0(%rsp)
+ 50a1ea1:	mov    0xf0(%rsp),%rcx
+ 50a1ea9:	lea    -0x34d0a10(%rip),%rax        # 1bd14a0 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x8d768>
+ 50a1eb0:	movslq (%rax,%rcx,4),%rcx
+ 50a1eb4:	add    %rcx,%rax
+ 50a1eb7:	jmp    *%rax
+ 50a1eb9:	ud2
+ 50a1ebb:	mov    0xd8(%rsp),%rax
+ 50a1ec3:	movb   $0x0,0x5a(%rax)
+ 50a1ec7:	movb   $0x0,0x59(%rax)
+ 50a1ecb:	movb   $0x0,0x58(%rax)
+ 50a1ecf:	movb   $0x0,0x291e(%rsp)
+ 50a1ed7:	movb   $0x0,0x291f(%rsp)
+ 50a1edf:	mov    0x50(%rax),%rcx
+ 50a1ee3:	mov    %rcx,(%rax)
+ 50a1ee6:	mov    (%rax),%rdi
+ 50a1ee9:	mov    0x61a04f8(%rip),%rax        # b2423e8 <_DYNAMIC+0x6bb0>
+ 50a1ef0:	call   *%rax
+ 50a1ef2:	mov    %rdx,0xc8(%rsp)
+ 50a1efa:	mov    %rax,0xd0(%rsp)
+ 50a1f02:	jmp    50a1fa0 <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0x150>
+ 50a1f07:	xor    %eax,%eax
+ 50a1f09:	test   $0x1,%al
+ 50a1f0b:	jne    50a1f07 <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0xb7>
+ 50a1f0d:	jmp    50a270f <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0x8bf>
+ 50a1f12:	xor    %eax,%eax
+ 50a1f14:	test   $0x1,%al
+ 50a1f16:	jne    50a1f12 <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0xc2>
+ 50a1f18:	jmp    50a271c <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0x8cc>
+ 50a1f1d:	mov    0xf8(%rsp),%rax
+ 50a1f25:	mov    %rax,0xf8(%rsp)
+ 50a1f2d:	jmp    50a2672 <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0x822>
+ 50a1f32:	mov    0xf8(%rsp),%rax
+ 50a1f3a:	mov    %rax,0xf8(%rsp)
+ 50a1f42:	jmp    50a2997 <codex_hepta_memory::cognitive_store::CognitiveStore::open::{{closure}}+0xb47>
+ 50a1f47:	mov    0xf8(%rsp),%rax
+ 50a1f4f:	rex.W
+
+===== frame 15 codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}} () RVA 0x469ecca =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000469eb60 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}>:
+ 469eb60:	sub    $0x1000,%rsp
+ 469eb67:	movq   $0x0,(%rsp)
+ 469eb6f:	sub    $0x5c8,%rsp
+ 469eb76:	mov    %rdi,0x20(%rsp)
+ 469eb7b:	mov    %rsi,0x30(%rsp)
+ 469eb80:	movzbl 0x988(%rdi),%eax
+ 469eb87:	mov    %rax,0x28(%rsp)
+ 469eb8c:	mov    0x28(%rsp),%rcx
+ 469eb91:	lea    -0x2afdb88(%rip),%rax        # 1ba1010 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x5d2d8>
+ 469eb98:	movslq (%rax,%rcx,4),%rcx
+ 469eb9c:	add    %rcx,%rax
+ 469eb9f:	jmp    *%rax
+ 469eba1:	ud2
+ 469eba3:	mov    0x20(%rsp),%rax
+ 469eba8:	movb   $0x0,0x154f(%rsp)
+ 469ebb0:	mov    (%rax),%rcx
+ 469ebb3:	mov    %rcx,0x8(%rax)
+ 469ebb7:	mov    0x8(%rax),%rsi
+ 469ebbb:	add    $0xf0,%rsi
+ 469ebc2:	mov    0x6ba2577(%rip),%rax        # b241140 <_DYNAMIC+0x5908>
+ 469ebc9:	lea    0xa20(%rsp),%rdi
+ 469ebd1:	call   *%rax
+ 469ebd3:	jmp    469ec2e <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0xce>
+ 469ebd5:	xor    %eax,%eax
+ 469ebd7:	test   $0x1,%al
+ 469ebd9:	jne    469ebd5 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0x75>
+ 469ebdb:	jmp    469ec70 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0x110>
+ 469ebe0:	xor    %eax,%eax
+ 469ebe2:	test   $0x1,%al
+ 469ebe4:	jne    469ebe0 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0x80>
+ 469ebe6:	jmp    469ec7d <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0x11d>
+ 469ebeb:	mov    0x30(%rsp),%rax
+ 469ebf0:	mov    %rax,0x30(%rsp)
+ 469ebf5:	jmp    469ec60 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0x100>
+ 469ebf7:	mov    0x20(%rsp),%rax
+ 469ebfc:	movb   $0x0,0x154f(%rsp)
+ 469ec04:	movb   $0x2,0x988(%rax)
+ 469ec0b:	mov    0x1550(%rsp),%rdi
+ 469ec13:	call   aec49f0 <_Unwind_Resume@plt>
+ 469ec18:	mov    %rax,%rcx
+ 469ec1b:	mov    %edx,%eax
+ 469ec1d:	mov    %rcx,0x1550(%rsp)
+ 469ec25:	mov    %eax,0x1558(%rsp)
+ 469ec2c:	jmp    469ebf7 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0x97>
+ 469ec2e:	lea    0xa8(%rsp),%rdi
+ 469ec36:	lea    0xa20(%rsp),%rsi
+ 469ec3e:	call   5295ba0 <<F as core::future::into_future::IntoFuture>::into_future>
+ 469ec43:	jmp    469ec45 <codex_hepta_agentd::runtime::tests::attach_runtime_prerequisites::{{closure}}+0xe5>
+ 469ec45:	mov    0x20(%rsp),%rdi
+ 469ec4a:	add    $0x10,%rdi
+ 469ec4e:	lea    0xa8(%rsp),%rsi
+ 469ec56:	mov    $0x978,%edx
+ 469ec5b:	call   aec49e0 <memcpy@plt>
+
+===== frame 16 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}} () RVA 0x469e48e =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000469de10 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}>:
+ 469de10:	mov    %rsp,%r11
+ 469de13:	sub    $0x19000,%r11
+ 469de1a:	sub    $0x1000,%rsp
+ 469de21:	movq   $0x0,(%rsp)
+ 469de29:	cmp    %r11,%rsp
+ 469de2c:	jne    469de1a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0xa>
+ 469de2e:	sub    $0x9e8,%rsp
+ 469de35:	mov    %rsi,0x68(%rsp)
+ 469de3a:	mov    %rdi,0x70(%rsp)
+ 469de3f:	mov    %rdi,0x78(%rsp)
+ 469de44:	mov    %rdx,0x88(%rsp)
+ 469de4c:	movzbl 0x3db0(%rsi),%eax
+ 469de53:	mov    %rax,0x80(%rsp)
+ 469de5b:	mov    0x80(%rsp),%rcx
+ 469de63:	lea    -0x2afce6e(%rip),%rax        # 1ba0ffc <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x5d2c4>
+ 469de6a:	movslq (%rax,%rcx,4),%rcx
+ 469de6e:	add    %rcx,%rax
+ 469de71:	jmp    *%rax
+ 469de73:	ud2
+ 469de75:	mov    0x68(%rsp),%rdi
+ 469de7a:	movb   $0x0,0x15917(%rsp)
+ 469de82:	movb   $0x0,0x15916(%rsp)
+ 469de8a:	movb   $0x0,0x15915(%rsp)
+ 469de92:	movb   $0x0,0x15914(%rsp)
+ 469de9a:	movb   $0x0,0x15913(%rsp)
+ 469dea2:	mov    (%rdi),%rcx
+ 469dea5:	mov    0x8(%rdi),%rax
+ 469dea9:	mov    %rcx,0x10(%rdi)
+ 469dead:	mov    %rax,0x18(%rdi)
+ 469deb1:	add    $0x20,%rdi
+ 469deb5:	call   464dd90 <codex_hepta_agentd::runtime::tests::runtime_fixture>
+ 469deba:	jmp    469df2b <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0x11b>
+ 469debc:	xor    %eax,%eax
+ 469debe:	test   $0x1,%al
+ 469dec0:	jne    469debc <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0xac>
+ 469dec2:	jmp    469e436 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0x626>
+ 469dec7:	xor    %eax,%eax
+ 469dec9:	test   $0x1,%al
+ 469decb:	jne    469dec7 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0xb7>
+ 469decd:	jmp    469e443 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0x633>
+ 469ded2:	mov    0x88(%rsp),%rax
+ 469deda:	mov    %rax,0x88(%rsp)
+ 469dee2:	jmp    469e398 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0x588>
+ 469dee7:	mov    0x88(%rsp),%rax
+ 469deef:	mov    %rax,0x88(%rsp)
+ 469def7:	jmp    469e8e2 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission::{{closure}}+0xad2>
+ 469defc:	mov    0x68(%rsp),%rax
+ 469df01:	movb   $0x2,0x3db0(%rax)
+ 469df08:	mov    0x197c0(%rsp),%rdi
+
+===== frame 17 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}} () RVA 0x651f77d =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000651f5c0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}>:
+ 651f5c0:	mov    %rsp,%r11
+ 651f5c3:	sub    $0x121000,%r11
+ 651f5ca:	sub    $0x1000,%rsp
+ 651f5d1:	movq   $0x0,(%rsp)
+ 651f5d9:	cmp    %r11,%rsp
+ 651f5dc:	jne    651f5ca <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0xa>
+ 651f5de:	sub    $0x918,%rsp
+ 651f5e5:	mov    %rsi,0x198(%rsp)
+ 651f5ed:	mov    %rdi,0x1a0(%rsp)
+ 651f5f5:	mov    %rdi,0x1a8(%rsp)
+ 651f5fd:	mov    %rdx,0x1b8(%rsp)
+ 651f605:	movzbl 0x1(%rsi),%eax
+ 651f609:	mov    %rax,0x1b0(%rsp)
+ 651f611:	mov    0x1b0(%rsp),%rcx
+ 651f619:	lea    -0x48dfdec(%rip),%rax        # 1c3f834 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0xfbafc>
+ 651f620:	movslq (%rax,%rcx,4),%rcx
+ 651f624:	add    %rcx,%rax
+ 651f627:	jmp    *%rax
+ 651f629:	ud2
+ 651f62b:	mov    0x198(%rsp),%rax
+ 651f633:	movb   $0x0,0x3(%rax)
+ 651f637:	movb   $0x0,0xf14a7(%rsp)
+ 651f63f:	mov    (%rax),%cl
+ 651f641:	mov    %cl,0x2(%rax)
+ 651f644:	lea    -0x49d63eb(%rip),%rsi        # 1b49260 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x5528>
+ 651f64b:	lea    0x87c8(%rsp),%rdi
+ 651f653:	mov    $0x20,%edx
+ 651f658:	call   469ddf0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::support::admission>
+ 651f65d:	jmp    651f6cf <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x10f>
+ 651f65f:	xor    %eax,%eax
+ 651f661:	test   $0x1,%al
+ 651f663:	jne    651f65f <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x9f>
+ 651f665:	jmp    651f71a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x15a>
+ 651f66a:	xor    %eax,%eax
+ 651f66c:	test   $0x1,%al
+ 651f66e:	jne    651f66a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0xaa>
+ 651f670:	jmp    651f727 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x167>
+ 651f675:	mov    0x1b8(%rsp),%rax
+ 651f67d:	mov    %rax,0x1b8(%rsp)
+ 651f685:	jmp    651f704 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0x144>
+ 651f687:	mov    0x1b8(%rsp),%rax
+ 651f68f:	mov    %rax,0x1b8(%rsp)
+ 651f697:	jmp    65203ec <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}+0xe2c>
+ 651f69c:	mov    0x198(%rsp),%rax
+ 651f6a4:	movb   $0x0,0x3(%rax)
+ 651f6a8:	movb   $0x2,0x1(%rax)
+ 651f6ac:	mov    0x108568(%rsp),%rdi
+ 651f6b4:	call   aec49f0 <_Unwind_Resume@plt>
+ 651f6b9:	mov    %rax,%rcx
+ 651f6bc:	mov    %edx,%eax
+ 651f6be:	rex.W
+ 651f6bf:	.byte 0x89
+
+===== frame 18 <core::pin::Pin<P> as core::future::future::Future>::poll () RVA 0x3ddbc37 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003ddbc00 <<core::pin::Pin<P> as core::future::future::Future>::poll>:
+ 3ddbc00:	sub    $0x28,%rsp
+ 3ddbc04:	mov    %rdx,0x18(%rsp)
+ 3ddbc09:	mov    %rsi,0x8(%rsp)
+ 3ddbc0e:	mov    %rdi,%rax
+ 3ddbc11:	mov    0x8(%rsp),%rdi
+ 3ddbc16:	mov    %rax,0x10(%rsp)
+ 3ddbc1b:	mov    %rax,0x20(%rsp)
+ 3ddbc20:	call   5330990 <<alloc::boxed::Box<T,A> as core::ops::deref::DerefMut>::deref_mut>
+ 3ddbc25:	mov    0x10(%rsp),%rdi
+ 3ddbc2a:	mov    0x18(%rsp),%rdx
+ 3ddbc2f:	mov    %rax,%rsi
+ 3ddbc32:	call   651f5c0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication::{{closure}}>
+ 3ddbc37:	mov    0x20(%rsp),%rax
+ 3ddbc3c:	add    $0x28,%rsp
+ 3ddbc40:	ret
+
+===== frame 19 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}} () RVA 0x3d2da8c =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d2d800 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}>:
+ 3d2d800:	mov    %rsp,%r11
+ 3d2d803:	sub    $0x1c6000,%r11
+ 3d2d80a:	sub    $0x1000,%rsp
+ 3d2d811:	movq   $0x0,(%rsp)
+ 3d2d819:	cmp    %r11,%rsp
+ 3d2d81c:	jne    3d2d80a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0xa>
+ 3d2d81e:	sub    $0x748,%rsp
+ 3d2d825:	mov    %rsi,0x190(%rsp)
+ 3d2d82d:	mov    %rdi,0x198(%rsp)
+ 3d2d835:	mov    %rdi,0x1a0(%rsp)
+ 3d2d83d:	mov    %rdx,0x1b0(%rsp)
+ 3d2d845:	movzbl 0x170ca(%rsi),%eax
+ 3d2d84c:	mov    %rax,0x1a8(%rsp)
+ 3d2d854:	mov    0x1a8(%rsp),%rcx
+ 3d2d85c:	lea    -0x21ca99b(%rip),%rax        # 1b62ec8 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x1f190>
+ 3d2d863:	movslq (%rax,%rcx,4),%rcx
+ 3d2d867:	add    %rcx,%rax
+ 3d2d86a:	jmp    *%rax
+ 3d2d86c:	ud2
+ 3d2d86e:	mov    0x190(%rsp),%rax
+ 3d2d876:	movb   $0x0,0x170c9(%rax)
+ 3d2d87d:	movb   $0x0,0x16cdaf(%rsp)
+ 3d2d885:	movb   $0x0,0x16cdae(%rsp)
+ 3d2d88d:	movb   $0x0,0x16cdad(%rsp)
+ 3d2d895:	mov    0x170cb(%rax),%cl
+ 3d2d89b:	mov    %cl,0x170c8(%rax)
+ 3d2d8a1:	movzbl 0x170cc(%rax),%esi
+ 3d2d8a8:	lea    0x17278(%rsp),%rdi
+ 3d2d8b0:	call   651f5b0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered_for_publication>
+ 3d2d8b5:	jmp    3d2d961 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x161>
+ 3d2d8ba:	xor    %eax,%eax
+ 3d2d8bc:	test   $0x1,%al
+ 3d2d8be:	jne    3d2d8ba <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0xba>
+ 3d2d8c0:	jmp    3d2da26 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x226>
+ 3d2d8c5:	xor    %eax,%eax
+ 3d2d8c7:	test   $0x1,%al
+ 3d2d8c9:	jne    3d2d8c5 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0xc5>
+ 3d2d8cb:	jmp    3d2da33 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x233>
+ 3d2d8d0:	mov    0x1b0(%rsp),%rax
+ 3d2d8d8:	mov    %rax,0x1b0(%rsp)
+ 3d2d8e0:	jmp    3d2da0e <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x20e>
+ 3d2d8e5:	mov    0x1b0(%rsp),%rax
+ 3d2d8ed:	mov    %rax,0x1b0(%rsp)
+ 3d2d8f5:	jmp    3d2deda <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication::{{closure}}+0x6da>
+ 3d2d8fa:	rex.W
+ 3d2d8fb:	.byte 0x8b
+ 3d2d8fc:	test   %ah,(%rax,%rsi,4)
+ 3d2d8ff:	.byte 0x1
+
+===== frame 20 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}} () RVA 0x3d2ffeb =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d2feb0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}>:
+ 3d2feb0:	mov    %rsp,%r11
+ 3d2feb3:	sub    $0xa1000,%r11
+ 3d2feba:	sub    $0x1000,%rsp
+ 3d2fec1:	movq   $0x0,(%rsp)
+ 3d2fec9:	cmp    %r11,%rsp
+ 3d2fecc:	jne    3d2feba <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0xa>
+ 3d2fece:	sub    $0xd48,%rsp
+ 3d2fed5:	mov    %rsi,(%rsp)
+ 3d2fed9:	mov    %rdi,0x8(%rsp)
+ 3d2fede:	mov    %rdi,0x10(%rsp)
+ 3d2fee3:	mov    %rdx,0x20(%rsp)
+ 3d2fee8:	movzbl 0x1fb38(%rsi),%eax
+ 3d2feef:	mov    %rax,0x18(%rsp)
+ 3d2fef4:	mov    0x18(%rsp),%rcx
+ 3d2fef9:	lea    -0x21cd000(%rip),%rax        # 1b62f00 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x1f1c8>
+ 3d2ff00:	movslq (%rax,%rcx,4),%rcx
+ 3d2ff04:	add    %rcx,%rax
+ 3d2ff07:	jmp    *%rax
+ 3d2ff09:	ud2
+ 3d2ff0b:	mov    (%rsp),%rax
+ 3d2ff0f:	movzbl 0x1fb39(%rax),%esi
+ 3d2ff16:	lea    0x1fb60(%rsp),%rdi
+ 3d2ff1e:	xor    %edx,%edx
+ 3d2ff20:	call   3d2d7d0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed_for_publication>
+ 3d2ff25:	jmp    3d2ff71 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0xc1>
+ 3d2ff27:	xor    %eax,%eax
+ 3d2ff29:	test   $0x1,%al
+ 3d2ff2b:	jne    3d2ff27 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0x77>
+ 3d2ff2d:	jmp    3d2ff9a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0xea>
+ 3d2ff2f:	xor    %eax,%eax
+ 3d2ff31:	test   $0x1,%al
+ 3d2ff33:	jne    3d2ff2f <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0x7f>
+ 3d2ff35:	jmp    3d2ffa7 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0xf7>
+ 3d2ff37:	mov    0x20(%rsp),%rax
+ 3d2ff3c:	mov    %rax,0x20(%rsp)
+ 3d2ff41:	jmp    3d2ff98 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0xe8>
+ 3d2ff43:	mov    (%rsp),%rax
+ 3d2ff47:	movb   $0x2,0x1fb38(%rax)
+ 3d2ff4e:	mov    0xa1d38(%rsp),%rdi
+ 3d2ff56:	call   aec49f0 <_Unwind_Resume@plt>
+ 3d2ff5b:	mov    %rax,%rcx
+ 3d2ff5e:	mov    %edx,%eax
+ 3d2ff60:	mov    %rcx,0xa1d38(%rsp)
+ 3d2ff68:	mov    %eax,0xa1d40(%rsp)
+ 3d2ff6f:	jmp    3d2ff43 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0x93>
+ 3d2ff71:	lea    0x28(%rsp),%rdi
+ 3d2ff76:	lea    0x1fb60(%rsp),%rsi
+ 3d2ff7e:	call   3d84340 <<F as core::future::into_future::IntoFuture>::into_future>
+ 3d2ff83:	jmp    3d2ff85 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0xd5>
+ 3d2ff85:	mov    (%rsp),%rdi
+ 3d2ff89:	lea    0x28(%rsp),%rsi
+ 3d2ff8e:	mov    $0x1fb38,%edx
+ 3d2ff93:	call   aec49e0 <memcpy@plt>
+ 3d2ff98:	jmp    3d2ffd5 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}+0x125>
+ 3d2ff9a:	lea    0x720024f(%rip),%rdi        # af301f0 <starlark::values::types::ellipsis::_::__CTOR+0x693a8>
+ 3d2ffa1:	call   *0x750dbb1(%rip)        # b23db58 <_DYNAMIC+0x2320>
+ 3d2ffa7:	lea    0x7200242(%rip),%rdi        # af301f0 <starlark::values::types::ellipsis::_::__CTOR+0x693a8>
+ 3d2ffae:	.byte 0xff
+ 3d2ffaf:	.byte 0x15
+
+===== frame 21 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} () RVA 0x3d316ba =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d314e0 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}>:
+ 3d314e0:	mov    %rsp,%r11
+ 3d314e3:	sub    $0x2bc000,%r11
+ 3d314ea:	sub    $0x1000,%rsp
+ 3d314f1:	movq   $0x0,(%rsp)
+ 3d314f9:	cmp    %r11,%rsp
+ 3d314fc:	jne    3d314ea <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0xa>
+ 3d314fe:	sub    $0x2c8,%rsp
+ 3d31505:	mov    %rdi,0x388(%rsp)
+ 3d3150d:	mov    %rsi,0x398(%rsp)
+ 3d31515:	movzbl 0x349a1(%rdi),%eax
+ 3d3151c:	mov    %rax,0x390(%rsp)
+ 3d31524:	mov    0x390(%rsp),%rcx
+ 3d3152c:	lea    -0x21ce60f(%rip),%rax        # 1b62f24 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x1f1ec>
+ 3d31533:	movslq (%rax,%rcx,4),%rcx
+ 3d31537:	add    %rcx,%rax
+ 3d3153a:	jmp    *%rax
+ 3d3153c:	ud2
+ 3d3153e:	mov    0x388(%rsp),%rax
+ 3d31546:	movb   $0x0,0x349a0(%rax)
+ 3d3154d:	lea    0x51240(%rsp),%rdi
+ 3d31555:	xor    %esi,%esi
+ 3d31557:	call   3d2fe90 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed>
+ 3d3155c:	jmp    3d31604 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x124>
+ 3d31561:	xor    %eax,%eax
+ 3d31563:	test   $0x1,%al
+ 3d31565:	jne    3d31561 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x81>
+ 3d31567:	jmp    3d31654 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x174>
+ 3d3156c:	xor    %eax,%eax
+ 3d3156e:	test   $0x1,%al
+ 3d31570:	jne    3d3156c <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x8c>
+ 3d31572:	jmp    3d31661 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x181>
+ 3d31577:	mov    0x398(%rsp),%rax
+ 3d3157f:	mov    %rax,0x398(%rsp)
+ 3d31587:	jmp    3d3163c <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x15c>
+ 3d3158c:	mov    0x398(%rsp),%rax
+ 3d31594:	mov    %rax,0x398(%rsp)
+ 3d3159c:	jmp    3d31984 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x4a4>
+ 3d315a1:	mov    0x398(%rsp),%rax
+ 3d315a9:	mov    %rax,0x398(%rsp)
+ 3d315b1:	jmp    3d32ab5 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x15d5>
+ 3d315b6:	mov    0x398(%rsp),%rax
+ 3d315be:	mov    %rax,0x398(%rsp)
+ 3d315c6:	jmp    3d3313c <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}+0x1c5c>
+ 3d315cb:	mov    0x388(%rsp),%rax
+ 3d315d3:	movb   $0x0,0x349a0(%rax)
+ 3d315da:	.byte 0xc6
+ 3d315db:	.byte 0x80
+ 3d315dc:	.byte 0xa1
+ 3d315dd:	add    (%r8),%rax
+
+===== frame 22 <core::pin::Pin<P> as core::future::future::Future>::poll () RVA 0x3dda6e7 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003dda6d0 <<core::pin::Pin<P> as core::future::future::Future>::poll>:
+ 3dda6d0:	push   %rax
+ 3dda6d1:	mov    %rsi,(%rsp)
+ 3dda6d5:	call   3f81470 <<&mut T as core::ops::deref::DerefMut>::deref_mut>
+ 3dda6da:	mov    (%rsp),%rsi
+ 3dda6de:	mov    %rax,%rdi
+ 3dda6e1:	mov    0x18(%rdx),%rax
+ 3dda6e5:	call   *%rax
+ 3dda6e7:	pop    %rcx
+ 3dda6e8:	ret
+
+===== frame 23 tokio::runtime::park::CachedParkThread::block_on::{{closure}} () RVA 0x66107a6 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000006610790 <tokio::runtime::park::CachedParkThread::block_on::{{closure}}>:
+ 6610790:	push   %rax
+ 6610791:	mov    %rsi,(%rsp)
+ 6610795:	call   3dbd830 <<&mut T as core::ops::deref::DerefMut>::deref_mut>
+ 661079a:	mov    (%rsp),%rsi
+ 661079e:	mov    %rax,%rdi
+ 66107a1:	call   3dda6d0 <<core::pin::Pin<P> as core::future::future::Future>::poll>
+ 66107a6:	pop    %rcx
+ 66107a7:	ret
+
+===== frame 24 tokio::runtime::park::CachedParkThread::block_on () RVA 0x6606286 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000006605fe0 <tokio::runtime::park::CachedParkThread::block_on>:
+ 6605fe0:	sub    $0x148,%rsp
+ 6605fe7:	mov    %rdi,0x60(%rsp)
+ 6605fec:	mov    %rsi,0x68(%rsp)
+ 6605ff1:	mov    %rdx,0x70(%rsp)
+ 6605ff6:	movb   $0x0,0x107(%rsp)
+ 6605ffe:	movb   $0x1,0x107(%rsp)
+ 6606006:	mov    0x4c497cb(%rip),%rax        # b24f7d8 <_DYNAMIC+0x13fa0>
+ 660600d:	call   *%rax
+ 660600f:	mov    %rdx,0x78(%rsp)
+ 6606014:	mov    %rax,0x80(%rsp)
+ 660601c:	jmp    6606047 <tokio::runtime::park::CachedParkThread::block_on+0x67>
+ 660601e:	testb  $0x1,0x107(%rsp)
+ 6606026:	jne    66063d4 <tokio::runtime::park::CachedParkThread::block_on+0x3f4>
+ 660602c:	jmp    66063c7 <tokio::runtime::park::CachedParkThread::block_on+0x3e7>
+ 6606031:	mov    %rax,%rcx
+ 6606034:	mov    %edx,%eax
+ 6606036:	mov    %rcx,0x108(%rsp)
+ 660603e:	mov    %eax,0x110(%rsp)
+ 6606045:	jmp    660601e <tokio::runtime::park::CachedParkThread::block_on+0x3e>
+ 6606047:	mov    0x78(%rsp),%rsi
+ 660604c:	mov    0x80(%rsp),%rdi
+ 6606054:	mov    0x4c49785(%rip),%rax        # b24f7e0 <_DYNAMIC+0x13fa8>
+ 660605b:	call   *%rax
+ 660605d:	mov    %rdx,0x50(%rsp)
+ 6606062:	mov    %rax,0x58(%rsp)
+ 6606067:	jmp    6606069 <tokio::runtime::park::CachedParkThread::block_on+0x89>
+ 6606069:	mov    0x50(%rsp),%rax
+ 660606e:	mov    0x58(%rsp),%rcx
+ 6606073:	mov    %rcx,0xa8(%rsp)
+ 660607b:	mov    %rax,0xb0(%rsp)
+ 6606083:	mov    0xa8(%rsp),%rdx
+ 660608b:	xor    %eax,%eax
+ 660608d:	mov    $0x1,%ecx
+ 6606092:	cmp    $0x0,%rdx
+ 6606096:	cmove  %rcx,%rax
+ 660609a:	test   $0x1,%rax
+ 66060a0:	je     66060c1 <tokio::runtime::park::CachedParkThread::block_on+0xe1>
+ 66060a2:	lea    0x4a3b0cf(%rip),%rdi        # b041178 <starlark::values::types::ellipsis::_::__CTOR+0x17a330>
+ 66060a9:	mov    0x4c49768(%rip),%rax        # b24f818 <_DYNAMIC+0x13fe0>
+ 66060b0:	call   *%rax
+ 66060b2:	mov    %rdx,0x40(%rsp)
+ 66060b7:	mov    %rax,0x48(%rsp)
+ 66060bc:	jmp    6606391 <tokio::runtime::park::CachedParkThread::block_on+0x3b1>
+ 66060c1:	mov    0xa8(%rsp),%rcx
+ 66060c9:	mov    0xb0(%rsp),%rax
+ 66060d1:	mov    %rcx,0x98(%rsp)
+ 66060d9:	rex.W
+ 66060da:	.byte 0x89
+ 66060db:	test   %ah,(%rax,%riz,4)
+	...
+
+===== frame 25 tokio::runtime::context::blocking::BlockingRegionGuard::block_on () RVA 0x6210ee5 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000006210e90 <tokio::runtime::context::blocking::BlockingRegionGuard::block_on>:
+ 6210e90:	sub    $0x38,%rsp
+ 6210e94:	mov    %rsi,0x10(%rsp)
+ 6210e99:	mov    %rdx,0x18(%rsp)
+ 6210e9e:	movb   $0x0,0x27(%rsp)
+ 6210ea3:	movb   $0x1,0x27(%rsp)
+ 6210ea8:	mov    0x503e519(%rip),%rax        # b24f3c8 <_DYNAMIC+0x13b90>
+ 6210eaf:	call   *%rax
+ 6210eb1:	jmp    6210ecc <tokio::runtime::context::blocking::BlockingRegionGuard::block_on+0x3c>
+ 6210eb3:	testb  $0x1,0x27(%rsp)
+ 6210eb8:	jne    6210f08 <tokio::runtime::context::blocking::BlockingRegionGuard::block_on+0x78>
+ 6210eba:	jmp    6210efe <tokio::runtime::context::blocking::BlockingRegionGuard::block_on+0x6e>
+ 6210ebc:	mov    %rax,%rcx
+ 6210ebf:	mov    %edx,%eax
+ 6210ec1:	mov    %rcx,0x28(%rsp)
+ 6210ec6:	mov    %eax,0x30(%rsp)
+ 6210eca:	jmp    6210eb3 <tokio::runtime::context::blocking::BlockingRegionGuard::block_on+0x23>
+ 6210ecc:	mov    0x18(%rsp),%rdx
+ 6210ed1:	mov    0x10(%rsp),%rsi
+ 6210ed6:	movb   $0x0,0x27(%rsp)
+ 6210edb:	lea    0x26(%rsp),%rdi
+ 6210ee0:	call   6605fe0 <tokio::runtime::park::CachedParkThread::block_on>
+ 6210ee5:	mov    %rdx,(%rsp)
+ 6210ee9:	mov    %rax,0x8(%rsp)
+ 6210eee:	jmp    6210ef0 <tokio::runtime::context::blocking::BlockingRegionGuard::block_on+0x60>
+ 6210ef0:	mov    (%rsp),%rdx
+ 6210ef4:	mov    0x8(%rsp),%rax
+ 6210ef9:	add    $0x38,%rsp
+ 6210efd:	ret
+ 6210efe:	mov    0x28(%rsp),%rdi
+ 6210f03:	call   aec49f0 <_Unwind_Resume@plt>
+ 6210f08:	jmp    6210efe <tokio::runtime::context::blocking::BlockingRegionGuard::block_on+0x6e>
+
+===== frame 26 tokio::runtime::scheduler::multi_thread::MultiThread::block_on::{{closure}} () RVA 0x36db504 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000036db4f0 <tokio::runtime::scheduler::multi_thread::MultiThread::block_on::{{closure}}>:
+ 36db4f0:	push   %rax
+ 36db4f1:	mov    %rdx,(%rsp)
+ 36db4f5:	mov    %rsi,%rdx
+ 36db4f8:	mov    %rdi,%rsi
+ 36db4fb:	mov    (%rsp),%rdi
+ 36db4ff:	call   6210e90 <tokio::runtime::context::blocking::BlockingRegionGuard::block_on>
+ 36db504:	mov    %rax,%rdi
+ 36db507:	mov    %rdx,%rsi
+ 36db50a:	lea    -0x1b7ec01(%rip),%rdx        # 1b5c910 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x18bd8>
+ 36db511:	mov    $0x15,%ecx
+ 36db516:	lea    0x781670b(%rip),%r8        # aef1c28 <starlark::values::types::ellipsis::_::__CTOR+0x2ade0>
+ 36db51d:	call   *0x7b6472d(%rip)        # b23fc50 <_DYNAMIC+0x4418>
+ 36db523:	pop    %rcx
+ 36db524:	ret
+
+===== frame 27 tokio::runtime::context::runtime::enter_runtime () RVA 0x3f6cf7f =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003f6cec0 <tokio::runtime::context::runtime::enter_runtime>:
+ 3f6cec0:	sub    $0x98,%rsp
+ 3f6cec7:	mov    %r8,0x20(%rsp)
+ 3f6cecc:	mov    %rcx,0x28(%rsp)
+ 3f6ced1:	mov    %rdx,0x30(%rsp)
+ 3f6ced6:	mov    %rdi,%rcx
+ 3f6ced9:	mov    %sil,%al
+ 3f6cedc:	and    $0x1,%al
+ 3f6cede:	mov    %al,0x3f(%rsp)
+ 3f6cee2:	movb   $0x0,0x87(%rsp)
+ 3f6ceea:	movb   $0x1,0x87(%rsp)
+ 3f6cef2:	lea    0x6fc9bd7(%rip),%rsi        # af36ad0 <starlark::values::types::ellipsis::_::__CTOR+0x6fc88>
+ 3f6cef9:	lea    0x40(%rsp),%rdi
+ 3f6cefe:	lea    0x3f(%rsp),%rdx
+ 3f6cf03:	call   4b7c5c0 <std::thread::local::LocalKey<T>::with>
+ 3f6cf08:	jmp    3f6cf33 <tokio::runtime::context::runtime::enter_runtime+0x73>
+ 3f6cf0a:	testb  $0x1,0x87(%rsp)
+ 3f6cf12:	jne    3f6d018 <tokio::runtime::context::runtime::enter_runtime+0x158>
+ 3f6cf18:	jmp    3f6d00b <tokio::runtime::context::runtime::enter_runtime+0x14b>
+ 3f6cf1d:	mov    %rax,%rcx
+ 3f6cf20:	mov    %edx,%eax
+ 3f6cf22:	mov    %rcx,0x88(%rsp)
+ 3f6cf2a:	mov    %eax,0x90(%rsp)
+ 3f6cf31:	jmp    3f6cf0a <tokio::runtime::context::runtime::enter_runtime+0x4a>
+ 3f6cf33:	mov    $0x1,%eax
+ 3f6cf38:	xor    %ecx,%ecx
+ 3f6cf3a:	cmpq   $0x3,0x40(%rsp)
+ 3f6cf40:	cmove  %rcx,%rax
+ 3f6cf44:	test   $0x1,%rax
+ 3f6cf4a:	je     3f6cf86 <tokio::runtime::context::runtime::enter_runtime+0xc6>
+ 3f6cf4c:	mov    0x28(%rsp),%rsi
+ 3f6cf51:	mov    0x30(%rsp),%rdi
+ 3f6cf56:	movups 0x40(%rsp),%xmm0
+ 3f6cf5b:	movups 0x50(%rsp),%xmm1
+ 3f6cf60:	movaps %xmm1,0x70(%rsp)
+ 3f6cf65:	movaps %xmm0,0x60(%rsp)
+ 3f6cf6a:	movb   $0x0,0x87(%rsp)
+ 3f6cf72:	lea    0x80(%rsp),%rdx
+ 3f6cf7a:	call   36db4f0 <tokio::runtime::scheduler::multi_thread::MultiThread::block_on::{{closure}}>
+ 3f6cf7f:	mov    %rax,0x18(%rsp)
+ 3f6cf84:	jmp    3f6cfcc <tokio::runtime::context::runtime::enter_runtime+0x10c>
+ 3f6cf86:	lea    -0x23e40d4(%rip),%rdi        # 1b88eb9 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0x45181>
+ 3f6cf8d:	mov    $0xc1,%esi
+ 3f6cf92:	call   59e0960 <core::fmt::Arguments::from_str>
+ 3f6cf97:	mov    %rdx,0x8(%rsp)
+ 3f6cf9c:	mov    %rax,0x10(%rsp)
+ 3f6cfa1:	jmp    3f6cfef <tokio::runtime::context::runtime::enter_runtime+0x12f>
+ 3f6cfa3:	mov    0x72d6a86(%rip),%rax        # b243a30 <_DYNAMIC+0x81f8>
+ 3f6cfaa:	lea    0x60(%rsp),%rdi
+ 3f6cfaf:	call   *%rax
+ 3f6cfb1:	jmp    3f6cf0a <tokio::runtime::context::runtime::enter_runtime+0x4a>
+ 3f6cfb6:	mov    %rax,%rcx
+ 3f6cfb9:	mov    %edx,%eax
+ 3f6cfbb:	rex.W
+ 3f6cfbc:	.byte 0x89
+ 3f6cfbd:	mov    %fs,(%rax,%rcx,4)
+
+===== frame 28 tokio::runtime::scheduler::multi_thread::MultiThread::block_on () RVA 0x36da63d =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000036da620 <tokio::runtime::scheduler::multi_thread::MultiThread::block_on>:
+ 36da620:	push   %rax
+ 36da621:	mov    %rsi,(%rsp)
+ 36da625:	mov    %rdi,%rax
+ 36da628:	mov    (%rsp),%rdi
+ 36da62c:	mov    $0x1,%esi
+ 36da631:	lea    0x78175d8(%rip),%r8        # aef1c10 <starlark::values::types::ellipsis::_::__CTOR+0x2adc8>
+ 36da638:	call   3f6cec0 <tokio::runtime::context::runtime::enter_runtime>
+ 36da63d:	pop    %rcx
+ 36da63e:	ret
+
+===== frame 29 tokio::runtime::runtime::Runtime::block_on_inner () RVA 0x395cfba =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000395cf30 <tokio::runtime::runtime::Runtime::block_on_inner>:
+ 395cf30:	sub    $0x68,%rsp
+ 395cf34:	mov    %rsi,%rax
+ 395cf37:	mov    %rdi,%rsi
+ 395cf3a:	mov    %rsi,0x10(%rsp)
+ 395cf3f:	mov    %rax,0x18(%rsp)
+ 395cf44:	mov    %rdx,0x20(%rsp)
+ 395cf49:	mov    %rcx,0x28(%rsp)
+ 395cf4e:	movb   $0x0,0x57(%rsp)
+ 395cf53:	movb   $0x1,0x57(%rsp)
+ 395cf58:	mov    0x78e3e69(%rip),%rax        # b240dc8 <_DYNAMIC+0x5590>
+ 395cf5f:	lea    0x38(%rsp),%rdi
+ 395cf64:	call   *%rax
+ 395cf66:	jmp    395cf88 <tokio::runtime::runtime::Runtime::block_on_inner+0x58>
+ 395cf68:	testb  $0x1,0x57(%rsp)
+ 395cf6d:	jne    395d052 <tokio::runtime::runtime::Runtime::block_on_inner+0x122>
+ 395cf73:	jmp    395d048 <tokio::runtime::runtime::Runtime::block_on_inner+0x118>
+ 395cf78:	mov    %rax,%rcx
+ 395cf7b:	mov    %edx,%eax
+ 395cf7d:	mov    %rcx,0x58(%rsp)
+ 395cf82:	mov    %eax,0x60(%rsp)
+ 395cf86:	jmp    395cf68 <tokio::runtime::runtime::Runtime::block_on_inner+0x38>
+ 395cf88:	mov    0x10(%rsp),%rax
+ 395cf8d:	testq  $0x1,(%rax)
+ 395cf94:	je     395cfc1 <tokio::runtime::runtime::Runtime::block_on_inner+0x91>
+ 395cf96:	mov    0x20(%rsp),%rcx
+ 395cf9b:	mov    0x18(%rsp),%rdx
+ 395cfa0:	mov    0x10(%rsp),%rsi
+ 395cfa5:	mov    %rsi,%rdi
+ 395cfa8:	add    $0x8,%rdi
+ 395cfac:	add    $0x30,%rsi
+ 395cfb0:	movb   $0x0,0x57(%rsp)
+ 395cfb5:	call   36da620 <tokio::runtime::scheduler::multi_thread::MultiThread::block_on>
+ 395cfba:	mov    %rax,0x8(%rsp)
+ 395cfbf:	jmp    395d02c <tokio::runtime::runtime::Runtime::block_on_inner+0xfc>
+ 395cfc1:	mov    0x28(%rsp),%r8
+ 395cfc6:	mov    0x20(%rsp),%rcx
+ 395cfcb:	mov    0x18(%rsp),%rdx
+ 395cfd0:	mov    0x10(%rsp),%rsi
+ 395cfd5:	mov    %rsi,%rdi
+ 395cfd8:	add    $0x8,%rdi
+ 395cfdc:	add    $0x30,%rsi
+ 395cfe0:	movb   $0x0,0x57(%rsp)
+ 395cfe5:	call   661e6f0 <tokio::runtime::scheduler::current_thread::CurrentThread::block_on>
+ 395cfea:	mov    %rax,(%rsp)
+ 395cfee:	jmp    395d013 <tokio::runtime::runtime::Runtime::block_on_inner+0xe3>
+ 395cff0:	mov    0x78e04e9(%rip),%rax        # b23d4e0 <_DYNAMIC+0x1ca8>
+ 395cff7:	lea    0x38(%rsp),%rdi
+ 395cffc:	call   *%rax
+ 395cffe:	jmp    395cf68 <tokio::runtime::runtime::Runtime::block_on_inner+0x38>
+ 395d003:	mov    %rax,%rcx
+ 395d006:	mov    %edx,%eax
+ 395d008:	mov    %rcx,0x58(%rsp)
+ 395d00d:	mov    %eax,0x60(%rsp)
+ 395d011:	jmp    395cff0 <tokio::runtime::runtime::Runtime::block_on_inner+0xc0>
+ 395d013:	mov    (%rsp),%rax
+ 395d017:	mov    %rax,0x30(%rsp)
+ 395d01c:	mov    0x78e04bd(%rip),%rax        # b23d4e0 <_DYNAMIC+0x1ca8>
+ 395d023:	lea    0x38(%rsp),%rdi
+ 395d028:	call   *%rax
+ 395d02a:	jmp    395d038 <tokio::runtime::runtime::Runtime::block_on_inner+0x108>
+ 395d02c:	rex.W
+ 395d02d:	.byte 0x8b
+ 395d02e:	rex.R
+ 395d02f:	.byte 0x24
+
+===== frame 30 tokio::runtime::runtime::Runtime::block_on () RVA 0x3962b79 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003962a60 <tokio::runtime::runtime::Runtime::block_on>:
+ 3962a60:	sub    $0x88,%rsp
+ 3962a67:	mov    %rdi,0x30(%rsp)
+ 3962a6c:	mov    %rsi,0x38(%rsp)
+ 3962a71:	mov    %rdx,0x40(%rsp)
+ 3962a76:	mov    %rcx,0x48(%rsp)
+ 3962a7b:	movb   $0x0,0x67(%rsp)
+ 3962a80:	movb   $0x0,0x66(%rsp)
+ 3962a85:	movb   $0x0,0x65(%rsp)
+ 3962a8a:	movb   $0x1,0x67(%rsp)
+ 3962a8f:	jmp    3962ab5 <tokio::runtime::runtime::Runtime::block_on+0x55>
+ 3962a91:	testb  $0x1,0x67(%rsp)
+ 3962a96:	jne    3962c34 <tokio::runtime::runtime::Runtime::block_on+0x1d4>
+ 3962a9c:	jmp    3962c2a <tokio::runtime::runtime::Runtime::block_on+0x1ca>
+ 3962aa1:	mov    0x2c(%rsp),%eax
+ 3962aa5:	mov    0x20(%rsp),%rcx
+ 3962aaa:	mov    %rcx,0x68(%rsp)
+ 3962aaf:	mov    %eax,0x70(%rsp)
+ 3962ab3:	jmp    3962a91 <tokio::runtime::runtime::Runtime::block_on+0x31>
+ 3962ab5:	mov    $0x10,%eax
+ 3962aba:	cmp    $0x800,%rax
+ 3962ac0:	ja     3962ae1 <tokio::runtime::runtime::Runtime::block_on+0x81>
+ 3962ac2:	mov    0x48(%rsp),%rsi
+ 3962ac7:	movb   $0x0,0x67(%rsp)
+ 3962acc:	movb   $0x1,0x65(%rsp)
+ 3962ad1:	mov    0x78de2f8(%rip),%rax        # b240dd0 <_DYNAMIC+0x5598>
+ 3962ad8:	mov    $0x10,%edi
+ 3962add:	call   *%rax
+ 3962adf:	jmp    3962b5b <tokio::runtime::runtime::Runtime::block_on+0xfb>
+ 3962ae1:	movb   $0x0,0x67(%rsp)
+ 3962ae6:	mov    $0x8,%edi
+ 3962aeb:	mov    $0x10,%esi
+ 3962af0:	call   52baaf0 <alloc::boxed::box_new_uninit>
+ 3962af5:	mov    %rax,0x18(%rsp)
+ 3962afa:	jmp    3962b27 <tokio::runtime::runtime::Runtime::block_on+0xc7>
+ 3962afc:	mov    %rax,%rcx
+ 3962aff:	mov    %edx,%eax
+ 3962b01:	mov    %rcx,0x78(%rsp)
+ 3962b06:	mov    %eax,0x80(%rsp)
+ 3962b0d:	mov    0x78(%rsp),%rax
+ 3962b12:	mov    %rax,0x20(%rsp)
+ 3962b17:	mov    0x80(%rsp),%eax
+ 3962b1e:	mov    %eax,0x2c(%rsp)
+ 3962b22:	jmp    3962aa1 <tokio::runtime::runtime::Runtime::block_on+0x41>
+ 3962b27:	mov    0x18(%rsp),%rax
+ 3962b2c:	mov    0x40(%rsp),%rcx
+ 3962b31:	mov    0x38(%rsp),%rdx
+ 3962b36:	mov    %rdx,(%rax)
+ 3962b39:	mov    %rcx,0x8(%rax)
+ 3962b3d:	jmp    3962ba1 <tokio::runtime::runtime::Runtime::block_on+0x141>
+ 3962b3f:	testb  $0x1,0x65(%rsp)
+ 3962b44:	jne    3962b9c <tokio::runtime::runtime::Runtime::block_on+0x13c>
+ 3962b46:	jmp    3962a91 <tokio::runtime::runtime::Runtime::block_on+0x31>
+ 3962b4b:	mov    %rax,%rcx
+ 3962b4e:	mov    %edx,%eax
+ 3962b50:	mov    %rcx,0x68(%rsp)
+ 3962b55:	mov    %eax,0x70(%rsp)
+ 3962b59:	jmp    3962b3f <tokio::runtime::runtime::Runtime::block_on+0xdf>
+ 3962b5b:	mov    0x48(%rsp),%rcx
+
+===== frame 31 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures () RVA 0x3d3145c =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d31310 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures>:
+ 3d31310:	mov    %rsp,%r11
+ 3d31313:	sub    $0x183000,%r11
+ 3d3131a:	sub    $0x1000,%rsp
+ 3d31321:	movq   $0x0,(%rsp)
+ 3d31329:	cmp    %r11,%rsp
+ 3d3132c:	jne    3d3131a <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xa>
+ 3d3132e:	sub    $0x568,%rsp
+ 3d31335:	movb   $0x0,0x349b9(%rsp)
+ 3d3133d:	lea    0xc19f0(%rsp),%rdi
+ 3d31345:	lea    0x18(%rsp),%rsi
+ 3d3134a:	mov    $0xc19d8,%edx
+ 3d3134f:	call   aec49e0 <memcpy@plt>
+ 3d31354:	jmp    3d3137e <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x6e>
+ 3d31356:	lea    0xc19f0(%rsp),%rdi
+ 3d3135e:	call   3281510 <core::ptr::drop_in_place<codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}>>
+ 3d31363:	jmp    3d314d3 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x1c3>
+ 3d31368:	mov    %rax,%rcx
+ 3d3136b:	mov    %edx,%eax
+ 3d3136d:	mov    %rcx,0x183558(%rsp)
+ 3d31375:	mov    %eax,0x183560(%rsp)
+ 3d3137c:	jmp    3d31356 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x46>
+ 3d3137e:	mov    0x750db53(%rip),%rax        # b23eed8 <_DYNAMIC+0x36a0>
+ 3d31385:	lea    0x183468(%rsp),%rdi
+ 3d3138d:	call   *%rax
+ 3d3138f:	jmp    3d31391 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x81>
+ 3d31391:	lea    0x71fef38(%rip),%rdx        # af302d0 <starlark::values::types::ellipsis::_::__CTOR+0x69488>
+ 3d31398:	mov    0x750db41(%rip),%rax        # b23eee0 <_DYNAMIC+0x36a8>
+ 3d3139f:	lea    0x183468(%rsp),%rdi
+ 3d313a7:	mov    $0x2,%esi
+ 3d313ac:	call   *%rax
+ 3d313ae:	mov    %rax,0x10(%rsp)
+ 3d313b3:	jmp    3d313de <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xce>
+ 3d313b5:	mov    0x750cc1c(%rip),%rax        # b23dfd8 <_DYNAMIC+0x27a0>
+ 3d313bc:	lea    0x183468(%rsp),%rdi
+ 3d313c4:	call   *%rax
+ 3d313c6:	jmp    3d31356 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0x46>
+ 3d313c8:	mov    %rax,%rcx
+ 3d313cb:	mov    %edx,%eax
+ 3d313cd:	mov    %rcx,0x183558(%rsp)
+ 3d313d5:	mov    %eax,0x183560(%rsp)
+ 3d313dc:	jmp    3d313b5 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xa5>
+ 3d313de:	mov    0x10(%rsp),%rdi
+ 3d313e3:	mov    0x750cbe6(%rip),%rax        # b23dfd0 <_DYNAMIC+0x2798>
+ 3d313ea:	call   *%rax
+ 3d313ec:	mov    %rax,0x8(%rsp)
+ 3d313f1:	jmp    3d313f3 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xe3>
+ 3d313f3:	mov    0x8(%rsp),%rsi
+ 3d313f8:	mov    0x750cbe1(%rip),%rax        # b23dfe0 <_DYNAMIC+0x27a8>
+ 3d313ff:	lea    0x183418(%rsp),%rdi
+ 3d31407:	call   *%rax
+ 3d31409:	jmp    3d3140b <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures+0xfb>
+ 3d3140b:	rex.W
+ 3d3140c:	.byte 0x8d
+ 3d3140d:	.byte 0x15
+ 3d3140e:	popf
+ 3d3140f:	.byte 0x25
+
+===== frame 32 codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}} () RVA 0x3d334a3 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d33490 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}>:
+ 3d33490:	sub    $0x18,%rsp
+ 3d33494:	mov    %rdi,0x8(%rsp)
+ 3d33499:	mov    %rdi,0x10(%rsp)
+ 3d3349e:	call   3d31310 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures>
+ 3d334a3:	mov    0x8(%rsp),%rdi
+ 3d334a8:	mov    %rax,%rsi
+ 3d334ab:	call   3f213c0 <test::assert_test_result>
+ 3d334b0:	mov    0x10(%rsp),%rax
+ 3d334b5:	add    $0x18,%rsp
+ 3d334b9:	ret
+
+===== frame 33 core::ops::function::FnOnce::call_once () RVA 0x30fb7f6 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000030fb7e0 <core::ops::function::FnOnce::call_once>:
+ 30fb7e0:	sub    $0x28,%rsp
+ 30fb7e4:	mov    %rdi,%rax
+ 30fb7e7:	mov    %rax,0x8(%rsp)
+ 30fb7ec:	lea    0x16(%rsp),%rsi
+ 30fb7f1:	call   3d33490 <codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}>
+ 30fb7f6:	jmp    30fb812 <core::ops::function::FnOnce::call_once+0x32>
+ 30fb7f8:	mov    0x18(%rsp),%rdi
+ 30fb7fd:	call   aec49f0 <_Unwind_Resume@plt>
+ 30fb802:	mov    %rax,%rcx
+ 30fb805:	mov    %edx,%eax
+ 30fb807:	mov    %rcx,0x18(%rsp)
+ 30fb80c:	mov    %eax,0x20(%rsp)
+ 30fb810:	jmp    30fb7f8 <core::ops::function::FnOnce::call_once+0x18>
+ 30fb812:	mov    0x8(%rsp),%rax
+ 30fb817:	add    $0x28,%rsp
+ 30fb81b:	ret
+
+===== frame 34 test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> () RVA 0x66ea91b =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000066ea910 <test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>>>:
+ 66ea910:	push   %rbp
+ 66ea911:	mov    %rsp,%rbp
+ 66ea914:	push   %rbx
+ 66ea915:	push   %rax
+ 66ea916:	mov    %rdi,%rbx
+ 66ea919:	call   *%rsi
+ 66ea91b:	add    $0x8,%rsp
+ 66ea91f:	pop    %rbx
+ 66ea920:	pop    %rbp
+ 66ea921:	ret
+
+===== frame 35 test::run_test::{closure#0} () RVA 0x66f72eb =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000066f6c00 <test::run_test::{closure#0}>:
+ 66f6c00:	push   %rbp
+ 66f6c01:	mov    %rsp,%rbp
+ 66f6c04:	push   %r15
+ 66f6c06:	push   %r14
+ 66f6c08:	push   %r13
+ 66f6c0a:	push   %r12
+ 66f6c0c:	push   %rbx
+ 66f6c0d:	sub    $0x608,%rsp
+ 66f6c14:	mov    %rdi,%rbx
+ 66f6c17:	movzbl 0x118(%rdi),%eax
+ 66f6c1e:	mov    0x110(%rdi),%rcx
+ 66f6c25:	mov    %rcx,-0x40(%rbp)
+ 66f6c29:	mov    %al,-0x29(%rbp)
+ 66f6c2c:	cmp    $0x1,%al
+ 66f6c2e:	jne    66f6e0c <test::run_test::{closure#0}+0x20c>
+ 66f6c34:	movups 0x70(%rbx),%xmm0
+ 66f6c38:	movaps %xmm0,-0x100(%rbp)
+ 66f6c3f:	movups 0x60(%rbx),%xmm0
+ 66f6c43:	movaps %xmm0,-0x110(%rbp)
+ 66f6c4a:	movups 0x50(%rbx),%xmm0
+ 66f6c4e:	movaps %xmm0,-0x120(%rbp)
+ 66f6c55:	movups 0x40(%rbx),%xmm0
+ 66f6c59:	movaps %xmm0,-0x130(%rbp)
+ 66f6c60:	movups (%rbx),%xmm0
+ 66f6c63:	movups 0x10(%rbx),%xmm1
+ 66f6c67:	movups 0x20(%rbx),%xmm2
+ 66f6c6b:	movups 0x30(%rbx),%xmm3
+ 66f6c6f:	movaps %xmm3,-0x140(%rbp)
+ 66f6c76:	movaps %xmm2,-0x150(%rbp)
+ 66f6c7d:	movaps %xmm1,-0x160(%rbp)
+ 66f6c84:	movaps %xmm0,-0x170(%rbp)
+ 66f6c8b:	movzbl 0x119(%rbx),%eax
+ 66f6c92:	mov    %al,-0x58(%rbp)
+ 66f6c95:	mov    0x100(%rbx),%eax
+ 66f6c9b:	mov    %eax,-0x38(%rbp)
+ 66f6c9e:	mov    0x80(%rbx),%r12
+ 66f6ca5:	mov    0x88(%rbx),%r15
+ 66f6cac:	mov    0xb8(%rbx),%rax
+ 66f6cb3:	mov    %rax,-0x188(%rbp)
+ 66f6cba:	mov    0xc0(%rbx),%eax
+ 66f6cc0:	mov    %eax,-0x98(%rbp)
+ 66f6cc6:	mov    0xd8(%rbx),%rax
+ 66f6ccd:	mov    %rax,-0x180(%rbp)
+ 66f6cd4:	mov    0xe0(%rbx),%eax
+ 66f6cda:	mov    %eax,-0x94(%rbp)
+ 66f6ce0:	mov    0xf8(%rbx),%rax
+ 66f6ce7:	mov    %rax,-0x178(%rbp)
+ 66f6cee:	movzbl 0x108(%rbx),%eax
+ 66f6cf5:	mov    %al,-0x2a(%rbp)
+ 66f6cf8:	movzbl 0x11a(%rbx),%r13d
+
+===== frame 36 std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()> () RVA 0x66f2a04 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000066f2970 <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>>:
+ 66f2970:	push   %rbp
+ 66f2971:	mov    %rsp,%rbp
+ 66f2974:	push   %r15
+ 66f2976:	push   %r14
+ 66f2978:	push   %r12
+ 66f297a:	push   %rbx
+ 66f297b:	sub    $0x130,%rsp
+ 66f2982:	mov    %rdi,%rbx
+ 66f2985:	mov    %rdi,-0x28(%rbp)
+ 66f2989:	lea    0x10(%rdi),%r14
+ 66f298d:	mov    $0x1,%ecx
+ 66f2992:	xor    %eax,%eax
+ 66f2994:	lock cmpxchg %ecx,0x10(%rdi)
+ 66f2999:	jne    66f2a4e <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0xde>
+ 66f299f:	mov    0x4b5b51a(%rip),%r12        # b24dec0 <_DYNAMIC+0x12688>
+ 66f29a6:	mov    (%r12),%rax
+ 66f29aa:	shl    $1,%rax
+ 66f29ad:	test   %rax,%rax
+ 66f29b0:	jne    66f2a5c <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0xec>
+ 66f29b6:	xor    %r15d,%r15d
+ 66f29b9:	movzbl 0x14(%rbx),%eax
+ 66f29bd:	test   %al,%al
+ 66f29bf:	jne    66f2a75 <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0x105>
+ 66f29c5:	mov    0x18(%rbx),%rax
+ 66f29c9:	movq   $0x3,0x18(%rbx)
+ 66f29d1:	cmp    $0x3,%rax
+ 66f29d5:	je     66f2aac <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0x13c>
+ 66f29db:	lea    0x20(%rbx),%rsi
+ 66f29df:	mov    %rax,-0x148(%rbp)
+ 66f29e6:	lea    -0x140(%rbp),%rdi
+ 66f29ed:	mov    $0x118,%edx
+ 66f29f2:	call   *0x4b490a8(%rip)        # b23baa0 <memcpy@GLIBC_2.14>
+ 66f29f8:	lea    -0x148(%rbp),%rdi
+ 66f29ff:	call   66f6c00 <test::run_test::{closure#0}>
+ 66f2a04:	test   %r15b,%r15b
+ 66f2a07:	jne    66f2a20 <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0xb0>
+ 66f2a09:	movabs $0x7fffffffffffffff,%rax
+ 66f2a13:	mov    (%r12),%rcx
+ 66f2a17:	test   %rax,%rcx
+ 66f2a1a:	jne    66f2ac9 <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0x159>
+ 66f2a20:	xor    %eax,%eax
+ 66f2a22:	xchg   %eax,(%r14)
+ 66f2a25:	cmp    $0x2,%eax
+ 66f2a28:	je     66f2abb <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0x14b>
+ 66f2a2e:	lock decq (%rbx)
+ 66f2a32:	jne    66f2a3e <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0xce>
+ 66f2a34:	lea    -0x28(%rbp),%rdi
+ 66f2a38:	call   *0x4b5deda(%rip)        # b250918 <_DYNAMIC+0x150e0>
+ 66f2a3e:	add    $0x130,%rsp
+ 66f2a45:	pop    %rbx
+ 66f2a46:	pop    %r12
+ 66f2a48:	pop    %r14
+ 66f2a4a:	pop    %r15
+ 66f2a4c:	pop    %rbp
+ 66f2a4d:	ret
+ 66f2a4e:	mov    %r14,%rdi
+ 66f2a51:	call   *0x4b4df79(%rip)        # b2409d0 <_DYNAMIC+0x5198>
+ 66f2a57:	jmp    66f299f <std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()>+0x2f>
+ 66f2a5c:	call   *0x4b5b466(%rip)        # b24dec8 <_DYNAMIC+0x12690>
+ 66f2a62:	mov    %eax,%r15d
+ 66f2a65:	xor    $0x1,%r15b
+ 66f2a69:	movzbl 0x14(%rbx),%eax
+ 66f2a6d:	test   %al,%al
+ 66f2a6f:	.byte 0xf
+
+===== frame 37 <std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0} () RVA 0x66f9ef2 =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000066f9eb0 <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}>:
+ 66f9eb0:	push   %rbp
+ 66f9eb1:	mov    %rsp,%rbp
+ 66f9eb4:	push   %r15
+ 66f9eb6:	push   %r14
+ 66f9eb8:	push   %r13
+ 66f9eba:	push   %r12
+ 66f9ebc:	push   %rbx
+ 66f9ebd:	sub    $0x48,%rsp
+ 66f9ec1:	mov    %rdi,%rbx
+ 66f9ec4:	mov    0x28(%rdi),%r15
+ 66f9ec8:	movups 0x10(%rdi),%xmm0
+ 66f9ecc:	movaps %xmm0,-0x60(%rbp)
+ 66f9ed0:	movups (%rdi),%xmm0
+ 66f9ed3:	movaps %xmm0,-0x70(%rbp)
+ 66f9ed7:	lea    -0x50(%rbp),%r12
+ 66f9edb:	mov    %r15,-0x50(%rbp)
+ 66f9edf:	lea    -0x70(%rbp),%rdi
+ 66f9ee3:	call   *0x4b56a3f(%rip)        # b250928 <_DYNAMIC+0x150f0>
+ 66f9ee9:	mov    %r15,%rdi
+ 66f9eec:	call   *0x4b56a3e(%rip)        # b250930 <_DYNAMIC+0x150f8>
+ 66f9ef2:	xor    %r14d,%r14d
+ 66f9ef5:	mov    0x20(%rbx),%r13
+ 66f9ef9:	cmpq   $0x0,0x18(%r13)
+ 66f9efe:	je     66f9f34 <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0x84>
+ 66f9f00:	mov    0x20(%r13),%r12
+ 66f9f04:	test   %r12,%r12
+ 66f9f07:	je     66f9f34 <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0x84>
+ 66f9f09:	mov    0x28(%r13),%r15
+ 66f9f0d:	mov    (%r15),%rax
+ 66f9f10:	test   %rax,%rax
+ 66f9f13:	je     66f9f1e <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0x6e>
+ 66f9f15:	add    $0x20,%rbx
+ 66f9f19:	mov    %r12,%rdi
+ 66f9f1c:	call   *%rax
+ 66f9f1e:	mov    0x8(%r15),%rsi
+ 66f9f22:	test   %rsi,%rsi
+ 66f9f25:	je     66f9f34 <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0x84>
+ 66f9f27:	mov    0x10(%r15),%rdx
+ 66f9f2b:	mov    %r12,%rdi
+ 66f9f2e:	call   *0x4b54d0c(%rip)        # b24ec40 <_DYNAMIC+0x13408>
+ 66f9f34:	movq   $0x1,0x18(%r13)
+ 66f9f3c:	mov    %r14,0x20(%r13)
+ 66f9f40:	mov    -0x30(%rbp),%rax
+ 66f9f44:	mov    %rax,0x28(%r13)
+ 66f9f48:	mov    %r13,-0x40(%rbp)
+ 66f9f4c:	lock decq 0x0(%r13)
+ 66f9f51:	jne    66f9f5d <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0xad>
+ 66f9f53:	lea    -0x40(%rbp),%rdi
+ 66f9f57:	call   *0x4b569ab(%rip)        # b250908 <_DYNAMIC+0x150d0>
+ 66f9f5d:	add    $0x48,%rsp
+ 66f9f61:	pop    %rbx
+ 66f9f62:	pop    %r12
+ 66f9f64:	pop    %r13
+ 66f9f66:	pop    %r14
+ 66f9f68:	pop    %r15
+ 66f9f6a:	pop    %rbp
+ 66f9f6b:	ret
+ 66f9f6c:	mov    %rax,-0x38(%rbp)
+ 66f9f70:	mov    0x8(%r15),%rsi
+ 66f9f74:	test   %rsi,%rsi
+ 66f9f77:	je     66f9f86 <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0xd6>
+ 66f9f79:	mov    0x10(%r15),%rdx
+ 66f9f7d:	mov    %r12,%rdi
+ 66f9f80:	call   *0x4b54cba(%rip)        # b24ec40 <_DYNAMIC+0x13408>
+ 66f9f86:	movq   $0x1,0x18(%r13)
+ 66f9f8e:	mov    %r14,0x20(%r13)
+ 66f9f92:	mov    -0x30(%rbp),%rax
+ 66f9f96:	mov    %rax,0x28(%r13)
+ 66f9f9a:	lock decq 0x0(%r13)
+ 66f9f9f:	jne    66f9faa <<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}+0xfa>
+ 66f9fa1:	mov    %rbx,%rdi
+ 66f9fa4:	call   *0x4b5695e(%rip)        # b250908 <_DYNAMIC+0x150d0>
+ 66f9faa:	mov    -0x38(%rbp),%rdi
+ 66f9fae:	.byte 0xe8
+ 66f9faf:	.byte 0x3d
+
+===== frame 38 <std::sys::thread::unix::Thread>::new::thread_start () RVA 0xae9a86f =====
+
+/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/bin/codex_hepta_agentd-new-build：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000ae9a720 <<std::sys::thread::unix::Thread>::new::thread_start>:
+ ae9a720:	push   %rbp
+ ae9a721:	mov    %rsp,%rbp
+ ae9a724:	push   %r15
+ ae9a726:	push   %r14
+ ae9a728:	push   %r12
+ ae9a72a:	push   %rbx
+ ae9a72b:	sub    $0x30,%rsp
+ ae9a72f:	mov    (%rdi),%r12
+ ae9a732:	lock incq (%r12)
+ ae9a737:	jle    ae9a89c <<std::sys::thread::unix::Thread>::new::thread_start+0x17c>
+ ae9a73d:	mov    %rdi,%rbx
+ ae9a740:	mov    %r12,-0x40(%rbp)
+ ae9a744:	mov    %fs:0x0,%rax
+ ae9a74d:	lea    -0x10(%rax),%rax
+ ae9a754:	cmpq   $0x0,(%rax)
+ ae9a758:	jne    ae9a77f <<std::sys::thread::unix::Thread>::new::thread_start+0x5f>
+ ae9a75a:	mov    %rax,%r14
+ ae9a75d:	mov    %fs:0x0,%rax
+ ae9a766:	lea    -0x8(%rax),%rax
+ ae9a76d:	mov    (%rax),%rdx
+ ae9a770:	mov    0x10(%r12),%rcx
+ ae9a775:	test   %rdx,%rdx
+ ae9a778:	je     ae9a7b0 <<std::sys::thread::unix::Thread>::new::thread_start+0x90>
+ ae9a77a:	cmp    %rcx,%rdx
+ ae9a77d:	je     ae9a7b3 <<std::sys::thread::unix::Thread>::new::thread_start+0x93>
+ ae9a77f:	mov    %r12,-0x50(%rbp)
+ ae9a783:	lea    -0x8f2d687(%rip),%rsi        # 1f6d103 <serde_core::de::impls::<impl serde_core::de::Deserialize for core::time::Duration>::deserialize::check_overflow::NANOS_PER_SEC+0x3beb>
+ ae9a78a:	lea    -0x21(%rbp),%rdi
+ ae9a78e:	mov    $0xab,%edx
+ ae9a793:	call   aea35b0 <<std::sys::stdio::unix::Stderr as std::io::Write>::write_fmt>
+ ae9a798:	mov    %rax,-0x40(%rbp)
+ ae9a79c:	test   %rax,%rax
+ ae9a79f:	je     ae9a7aa <<std::sys::thread::unix::Thread>::new::thread_start+0x8a>
+ ae9a7a1:	lea    -0x40(%rbp),%rdi
+ ae9a7a5:	call   ae65570 <core::ptr::drop_in_place::<std::io::error::Error>>
+ ae9a7aa:	call   *0x3b2d98(%rip)        # b24d548 <_DYNAMIC+0x11d10>
+ ae9a7b0:	mov    %rcx,(%rax)
+ ae9a7b3:	call   ae96cf0 <std::sys::thread_local::guard::key::enable>
+ ae9a7b8:	lea    0x10(%r12),%rax
+ ae9a7bd:	mov    %rax,(%r14)
+ ae9a7c0:	mov    0x18(%r12),%rsi
+ ae9a7c5:	test   %rsi,%rsi
+ ae9a7c8:	je     ae9a7dd <<std::sys::thread::unix::Thread>::new::thread_start+0xbd>
+ ae9a7ca:	mov    0x20(%r12),%rax
+ ae9a7cf:	xorps  %xmm0,%xmm0
+ ae9a7d2:	movaps %xmm0,-0x40(%rbp)
+ ae9a7d6:	dec    %rax
+ ae9a7d9:	jne    ae9a801 <<std::sys::thread::unix::Thread>::new::thread_start+0xe1>
+ ae9a7db:	jmp    ae9a818 <<std::sys::thread::unix::Thread>::new::thread_start+0xf8>
+ ae9a7dd:	mov    0x5cf24c(%rip),%rcx        # b469a30 <std::thread::main_thread::MAIN>
+ ae9a7e4:	test   %rcx,%rcx
+ ae9a7e7:	je     ae9a833 <<std::sys::thread::unix::Thread>::new::thread_start+0x113>
+ ae9a7e9:	cmp    (%rax),%rcx
+ ae9a7ec:	jne    ae9a833 <<std::sys::thread::unix::Thread>::new::thread_start+0x113>
+ ae9a7ee:	xorps  %xmm0,%xmm0
+ ae9a7f1:	movaps %xmm0,-0x40(%rbp)
+ ae9a7f5:	lea    -0x938c4fb(%rip),%rsi        # 1b0e301 <anon.7ea8f39e5e12beda3ac7db3be8e24ce2.1.llvm.6753819891364470339+0x163c1>
+ ae9a7fc:	mov    $0x4,%eax
+ ae9a801:	cmp    $0xf,%rax
+ ae9a805:	mov    $0xf,%edx
+ ae9a80a:	cmovb  %rax,%rdx
+ ae9a80e:	lea    -0x40(%rbp),%rdi
+ ae9a812:	call   *0x3a1288(%rip)        # b23baa0 <memcpy@GLIBC_2.14>
+ ae9a818:	movaps -0x40(%rbp),%xmm0
+ ae9a81c:	movaps %xmm0,-0x50(%rbp)

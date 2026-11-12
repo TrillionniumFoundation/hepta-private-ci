@@ -1,0 +1,306 @@
+{
+  "format": "hepta.original-host-source-fence-preparation-manifest.v1",
+  "status": "prepared_not_integrated_not_v32_final",
+  "base_callers_blob": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+  "source_tree": null,
+  "published_source": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "fixed_upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "authority_audit": "90bd73ca6ec54d4b435cd515e4e0bfa53b647567",
+  "source_inputs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+      "blob": "4a46b73bb8200bd61a6eb43a6338f3695d80ee04",
+      "bytes": 2169
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+      "blob": "0418a532daa7460954bec6d421d608c7aa1f16ee",
+      "bytes": 9119
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+      "blob": "7674650c6a44bdd48c32fbb64ce18c1eac483a3d",
+      "bytes": 8293
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+      "blob": "db91e21a0238144c0b0f75dd3b32288fde78d42b",
+      "bytes": 7635
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "blob": "d32eb1681ce8e51b823ed483955d69257a25d981",
+      "bytes": 7004
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs",
+      "blob": "333208cd3f9e2001445289e999409bd7417e4a57",
+      "bytes": 4666
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs",
+      "blob": "3d6a689e30f8b82607ef051490deb91239cf1498",
+      "bytes": 4002
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+      "blob": "f8cb73a2b9f87e1c866e74771ba10678ef168f90",
+      "bytes": 3072
+    }
+  ],
+  "structure": {
+    "format": "hepta.original-host-fence-fragments.v1",
+    "status": "preparation_only_not_v32_final",
+    "base_callers_blob": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+    "caller_membership_changes": 0,
+    "existing_protected_rows_preserved": 399,
+    "new_protected_rows": 8,
+    "protected_rows": 407,
+    "unique_paths": 336,
+    "nongeneric_function_checks": 22,
+    "generic_file_order_fallbacks": 6,
+    "source_scope": [
+      "circuit_selection_readback_host.rs",
+      "cell_q24_model_command_host.rs",
+      "cell_q24_model_command_context.rs",
+      "cell_q24_model_command_effect.rs",
+      "cell_q24_model_current_owner.rs",
+      "cell_q24_model_command_lane.rs",
+      "cell_q24_model_current_admission.rs",
+      "circuit_next_use_readback_host.rs"
+    ],
+    "verifier": {
+      "verify_hepta_callers.py": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "hepta_typed_callers.py": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    },
+    "full_gate_status": "not_run",
+    "full_membership_status": "not_run_no_complete_source_tree",
+    "rust_tests": "not_run",
+    "rows": {
+      "bytes": 45251,
+      "sha256": "2947a6182e5d929eaa9058f89a49944eb49996d664c2d40f2f6bcb4d5cb6848e",
+      "blob": "a89cc1e96c447be9eca90768f37b6884c548ca64"
+    },
+    "validation_callers": {
+      "bytes": 1244174,
+      "sha256": "5956d78fedb30be7490f129630242b93ebd13a7a6b2823d68bd7c074ff802e50",
+      "blob": "dad23d3d1cc0a769c2dde5ef9159c30683285181"
+    }
+  },
+  "tests": {
+    "methods": {
+      "test_original_model_host_source_closure.py": [
+        "test_host_preserves_fresh_recovered_origins_and_shared_once",
+        "test_host_reads_actual_dataset_training_and_current_evaluator_before_retaining",
+        "test_context_preserves_actual_training_extension_and_complete_original_signatures",
+        "test_effect_preserves_incomplete_outcomes_once_and_readback_without_commit",
+        "test_after_read_reenters_only_original_lane_then_authenticates_both_materials",
+        "test_original_lane_keeps_actual_context_and_purpose",
+        "test_admission_requires_the_actual_candidate_qualified_material_and_current_time",
+        "test_model_creation_and_explicit_recovery_preserve_original_witness_and_fresh_auth",
+        "test_model_commit_readback_and_revalidation_cannot_silently_reset_uncertainty",
+        "test_actual_binding_domain_rejects_same_length_mutation_with_old_text_decoys",
+        "test_actual_module_paths_reject_same_length_mutations_and_old_text_decoys"
+      ],
+      "test_original_readback_host_source_closure.py": [
+        "test_selector_rejects_changed_cut_signature_or_observation_time",
+        "test_selector_constructor_keeps_consuming_original_custody",
+        "test_next_use_rejects_different_original_cuts_or_any_full_signature",
+        "test_next_use_keeps_distinct_consuming_trainer_and_selector_bindings",
+        "test_hosts_cannot_acquire_a_new_path_key_or_execute_a_predecessor"
+      ]
+    },
+    "actual_attempts": [
+      {
+        "status": "failed_scoped_source_qa",
+        "returncode": 1,
+        "duration_seconds": 0.8198144750003848,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "/tmp/hepta-original-host-fences-prep-V1f2BL/validation-source/qa/b4-no-bypass",
+          "-p",
+          "test_original_*_host_source_closure.py",
+          "-v"
+        ],
+        "source_inputs_unchanged": true,
+        "full_gate": "not_run",
+        "rust_tests": "not_run",
+        "raw_bytes": 4806,
+        "raw_sha256": "59a24ddb565826682599a9845413d0d2f45c0d78ab04da73b9c5b01f1d66c6b9"
+      },
+      {
+        "status": "passed_scoped_source_qa",
+        "returncode": 0,
+        "duration_seconds": 0.7732379760000185,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "/tmp/hepta-original-host-fences-prep-V1f2BL/validation-source/qa/b4-no-bypass",
+          "-p",
+          "test_original_*_host_source_closure.py",
+          "-v"
+        ],
+        "source_inputs_unchanged": true,
+        "full_gate": "not_run",
+        "rust_tests": "not_run",
+        "raw_bytes": 3779,
+        "raw_sha256": "c171354f1f7645555a515f7d28dacdaf7c79b588ab14ee59afd2861fdf79760b"
+      }
+    ],
+    "scope": "Only the original protected-file verifier on the eight supplied source paths, plus new actual-span literal QA. This preparation has no complete Rust collector. No full source gate/caller gate/Rust test was run."
+  },
+  "literal_scope": {
+    "byte_domain": "Context::binding actual let-mut-bytes initializer raw span",
+    "module_routes": [
+      "actual top-level #[path] mod effect;",
+      "actual top-level #[path] mod service;"
+    ],
+    "original_literal_calls_applicable": false,
+    "new_qa_cases": 9,
+    "original_masked_verifier_accepts_same_length_with_decoys": true,
+    "new_actual_span_qa_rejects_them": true,
+    "error_strings": "not pinned"
+  },
+  "generic_fallback": "Six generic functions use unchanged file-level required_order; no claim of unique real-function or nested-function masking equivalence. Existing row381 is untouched.",
+  "entrypoint": {
+    "original_workflow_blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+    "glob": "*source_closure.py",
+    "new_filenames_match": true,
+    "budget_seconds": 600,
+    "modified": false
+  },
+  "files": [
+    {
+      "path": "prepare-host-fences.py",
+      "bytes": 12403,
+      "sha256": "f5297c4f2b0a3dd4680b44405df32842215e390404c3361f3573ac00e48b01fe",
+      "git_blob_sha": "8f73a97d0e20062e4c4cdc8c9b614362c326ab8b"
+    },
+    {
+      "path": "preparation-summary.json",
+      "bytes": 1398,
+      "sha256": "f20e958f5ca056ec367cfdbaf2c8c9afdf0826d5f2393aa768cc80bd2c8667aa",
+      "git_blob_sha": "ede96565eb39aaf76f28e53b753d07f3795bc6e0"
+    },
+    {
+      "path": "protected-row-fragments.toml",
+      "bytes": 45251,
+      "sha256": "2947a6182e5d929eaa9058f89a49944eb49996d664c2d40f2f6bcb4d5cb6848e",
+      "git_blob_sha": "a89cc1e96c447be9eca90768f37b6884c548ca64"
+    },
+    {
+      "path": "protected-row-fragments.json",
+      "bytes": 48080,
+      "sha256": "b60b33c64ba395468765201fcead347021c69d79916ff7f1d88ec9a8035e52c6",
+      "git_blob_sha": "b852949c03972f6999db92a737e81034440923d3"
+    },
+    {
+      "path": "protected-functions.json",
+      "bytes": 44302,
+      "sha256": "7562ff96050b95e0b102e00ede4f1d7cc5047fb77734203dfb03e33e794b221d",
+      "git_blob_sha": "f05cdb5443284c87d7e7db50bc1a9ae75cb72425"
+    },
+    {
+      "path": "readback-qa-attempt1.py",
+      "bytes": 5891,
+      "sha256": "21bc3376e94fe932fb98967df27952241f01028c206d08219c6ee23793ad3d84",
+      "git_blob_sha": "0703b9a1ef4157e913a6c57125c9792d1f05cc0c"
+    },
+    {
+      "path": "scoped-tests-attempt1.raw.log",
+      "bytes": 4806,
+      "sha256": "59a24ddb565826682599a9845413d0d2f45c0d78ab04da73b9c5b01f1d66c6b9",
+      "git_blob_sha": "098b3cc6ce25453a0658680516e731d42a297f88"
+    },
+    {
+      "path": "scoped-tests-attempt1-result.json",
+      "bytes": 608,
+      "sha256": "283cd8190c3d0ff01617cef0328f7d6cd486a374e8fc76d8ed6897855fbb8b3d",
+      "git_blob_sha": "115d17ca972ec85169d020ec9324c8718df2372e"
+    },
+    {
+      "path": "scoped-tests-attempt1-before.json",
+      "bytes": 2291,
+      "sha256": "27dc2e75e50a6423078a4be654873a4d9f24af2a42f13bcbe9e345d9fd555491",
+      "git_blob_sha": "a3fd98ab3baf5c5c7003ff6e08e318d52c914870"
+    },
+    {
+      "path": "scoped-tests-attempt1-after.json",
+      "bytes": 2291,
+      "sha256": "27dc2e75e50a6423078a4be654873a4d9f24af2a42f13bcbe9e345d9fd555491",
+      "git_blob_sha": "a3fd98ab3baf5c5c7003ff6e08e318d52c914870"
+    },
+    {
+      "path": "scoped-tests-attempt2.raw.log",
+      "bytes": 3779,
+      "sha256": "c171354f1f7645555a515f7d28dacdaf7c79b588ab14ee59afd2861fdf79760b",
+      "git_blob_sha": "7e6b74aafa4a8c726f04094ef7923d5ff04b963b"
+    },
+    {
+      "path": "scoped-tests-attempt2-result.json",
+      "bytes": 608,
+      "sha256": "8696499ac5b2d1943b69bf457420c52164c1df02bceb15a6ac84d83dc0b20c10",
+      "git_blob_sha": "e8f49f7fa2694e95e99525956b861118c295dfb3"
+    },
+    {
+      "path": "scoped-tests-attempt2-before.json",
+      "bytes": 2291,
+      "sha256": "4fe5c9588b386fc503d5fc31d0286500f549e419e8e782ae2a5874bc3a6fb009",
+      "git_blob_sha": "a7451fffbec8645b0cb4df606e04a2f9d20d98a4"
+    },
+    {
+      "path": "scoped-tests-attempt2-after.json",
+      "bytes": 2291,
+      "sha256": "4fe5c9588b386fc503d5fc31d0286500f549e419e8e782ae2a5874bc3a6fb009",
+      "git_blob_sha": "a7451fffbec8645b0cb4df606e04a2f9d20d98a4"
+    },
+    {
+      "path": "validation-source/qa/b4-no-bypass/test_original_model_host_source_closure.py",
+      "bytes": 17252,
+      "sha256": "fae6638fba47c7d7f0aaaf35ebb1cff5e45119b866f3c4208dc231a8e5de4a2f",
+      "git_blob_sha": "ce3db0359b0542c7cbd010d131ea35c4f8eccd27"
+    },
+    {
+      "path": "validation-source/qa/b4-no-bypass/test_original_readback_host_source_closure.py",
+      "bytes": 6038,
+      "sha256": "dcede23b192d74075cc79ce053397caa5e60ae8883678e47ee2a883c0cfc004b",
+      "git_blob_sha": "1d772218970e69276b7aeea1a500d81ca26dfe48"
+    }
+  ],
+  "packet_encoded": {
+    "bytes": 40513,
+    "sha256": "6b31d9a3495c750d6d63b7f6a42cda25b4dc4a43ef3d5f03d19a0de8d031e409",
+    "git_blob_sha": "404f293d19b303e367cc86a45115aafc7810fbc4"
+  },
+  "packet_raw": {
+    "bytes": 212739,
+    "sha256": "78875ecbe88e5d73f29528f64d04f5d0c1a961bf3ba45eb0c63f570d0e243f37",
+    "git_blob_sha": "0751125c7c9bfbb59eeb104e91cfdbff3327e732"
+  },
+  "pending": [
+    "all534 original diagnostic terminal observations",
+    "new459/460/461 authority audit",
+    "five earlier exact caller membership additions",
+    "all affected existing QA EXPECTED declaration updates",
+    "row279 exact typed-mask synchronization with original failed evidence",
+    "final aggregate source gates"
+  ],
+  "not_modified": [
+    "production Rust",
+    "original verifier",
+    "existing QA functions or EXPECTED declarations",
+    "Git refs",
+    "native sources",
+    "workflow",
+    "budgets"
+  ]
+}

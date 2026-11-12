@@ -1,0 +1,266 @@
+{
+  "format": "hepta.retention-guard-regression-feasibility.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "published_integration_context": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "target_report_path": "qa/evidence/utility-evaluation-20261112-36fa/RETENTION_GUARD_REGRESSION_FEASIBILITY.md",
+  "target_manifest_path": "qa/evidence/utility-evaluation-20261112-36fa/RETENTION_GUARD_REGRESSION_FEASIBILITY.json",
+  "report": {
+    "bytes": 19530,
+    "sha256": "473f3297bce42371089e834f1aa6dfb2f384fd6bf190f2f1c492f140712b6865",
+    "blob": "5212e8b816cf932c74be6fd21190cbabbfecb5dd",
+    "full_github_text_readback_equal": true
+  },
+  "status": "source_level_blocker_confirmed_runtime_branch_coverage_unavailable",
+  "conclusions": [
+    "Under the examined original provider's deterministic action-support contract, supported candidate and baseline arms evaluate the same actual outcomes.",
+    "The fixed primary task-success DR strict-superiority contract cannot turn equal supported arm outcomes into Eligible; larger synthetic sample size or cost declarations do not close this input gap.",
+    "The existing synthetic positive computes and signs a legitimate member-level test result but does not supply the matching opaque original cohort capability.",
+    "No detached production aggregation API was found among the inspected original provider/panel/qualification/material layers that accepts those synthetic qualifications independently of the original custody.",
+    "No synthetic predicate duplicate, widened fixture visibility, forged opaque cohort/seal, changed genuine negative fixture, or new Rust patch is prepared.",
+    "Both new positive-primary/negative-retention guard branches remain runtime uncovered by this preparation."
+  ],
+  "semantics": {
+    "positive_primary_negative_retention": "existing Binding error; preserve complete member comparisons; no Qualified aggregate/material",
+    "complete_negative_primary": "new conditional does not block it; original honest NoUpdate and all pre-existing authentication/currentness checks retained",
+    "insufficient_or_invalid_member": "prior Unknown/invalid-evidence rejection remains; never relabel as complete negative or fraud"
+  },
+  "guarded_preparations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "base_blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5",
+      "post_blob": "8a779085dd02536a646415406abcaa471b097c10",
+      "bytes": 9008,
+      "sha256": "ddd7d18e56bda77b1c7976228ea9496f108380eecd7185c78f58d765b02e0598",
+      "added_lines": 14,
+      "modified_by_this_preparation": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "base_blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+      "post_blob": "aea0027ad5f6e51825469b5d8fb8b14d202da575",
+      "bytes": 10690,
+      "sha256": "eb4f7b9865098868c06cfdc7e4ec46282666511ecab03f2c1c0aacad614f73c2",
+      "added_lines": 8,
+      "modified_by_this_preparation": false
+    }
+  ],
+  "source_verification": {
+    "method": "immutable GitHub git/blobs UTF-8 retrieval; independently compute SHA-1 of canonical Git blob framing and compare exact expected Git identity and byte length; record SHA-256",
+    "verified_source_count": 27,
+    "total_verified_source_bytes": 344630,
+    "source_inputs": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        "blob": "3f4ec659e2e28ae5c32fddd4d8c338420ce8ffa7",
+        "bytes": 18164,
+        "sha256": "7776b35f96ae5f74ad83235ee644fe8cf25394cd7f8f0f5682ded08e8eee6289",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs",
+        "blob": "4be0fc89cceacb42570a09609f110b730c537e85",
+        "bytes": 7663,
+        "sha256": "fdfe988679fe89f0052b96292d1e45d92dedc6808f355013c82af49887d734eb",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+        "blob": "86ab44215e5ea3a5c0134221ccf1be8d2100917a",
+        "bytes": 10101,
+        "sha256": "6941df39f181a8790f112f4901ba9877bd3dc4310db3f98052932d74b22c42ee",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+        "bytes": 16766,
+        "sha256": "cadff53b207810423e0125e419093ff8ff84deee2f7a5aa66b857ceedbbb184c",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_plan_support_tests.rs",
+        "blob": "0fa5696050c70b84956609ecc415a2a9ea5443bd",
+        "bytes": 5914,
+        "sha256": "5247327182961559147f42c8c73008a334c084ecbe06730806a7d35c7bc94ae2",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+        "blob": "0e7f3c909fcc97742e228eb4ad189bd074727604",
+        "bytes": 11410,
+        "sha256": "6001097fb8a403067d9687cf0c6aaf6afbd1bad0c3f0c1ff89e763218f5776d1",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+        "blob": "f23a3d8e18fddfd000d9d3deab9f01c44633cf3c",
+        "bytes": 9151,
+        "sha256": "f0d8fb55cd597f686a3f6dc5ba6a0f30f179f83c86cbdf33f9bb438bf8f623e4",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+        "blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+        "bytes": 15931,
+        "sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+        "blob": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+        "bytes": 12053,
+        "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_observations.rs",
+        "blob": "95cc2c732e067249f255e2d39b7daf6cec7cbc35",
+        "bytes": 9863,
+        "sha256": "ed227bb024c0af69229de24de915052a933257e5cae2716481638efe5b678e7f",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+        "blob": "a8f88c86b32ff9c99e80a94f7184658fcb52b024",
+        "bytes": 12352,
+        "sha256": "3d96e12927c2aa6b1e559c4470fdb9a8c3930a813aabf45b5804ebb10703ba81",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+        "blob": "5ede1c00140028683d537fa1ce7bb1b19493101b",
+        "bytes": 32708,
+        "sha256": "0a8f325ade1fe5df690e7315e24249761baab07bfe2dbdc9926c8e4bc20b5f2a",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_evaluation_support_tests.rs",
+        "blob": "25364b385f04ef8439136a3a3baf3da98a25f7ac",
+        "bytes": 19380,
+        "sha256": "61d2e582103c5c515b552bf2ac9d75611b34564bae980d7e1cfdf86dcb77de01",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "blob": "7916d8905db13c6d8d374152c79f6786781d8ecd",
+        "bytes": 17941,
+        "sha256": "8bc024a5a54a2367f68f6440c93c8c3261c13203090b092af6785c4533f63a55",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+        "blob": "ea8b12aebdfb2441c09efa56830ff9e6417be6ae",
+        "bytes": 6536,
+        "sha256": "4498d4c2d918feee5a82304037d5cf6d9bf2c5f2a7139459e0354d4c3d45ed13",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "blob": "162325dfed6dbb61b749806f34c71f95bf4a6f9b",
+        "bytes": 7129,
+        "sha256": "4e4a5c402948d6aa85490727a85652434788e096a97a3e93e20a18a5e6c6cb65",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+        "blob": "c0c67017117f71982a9d294b5b6d61e37844da6d",
+        "bytes": 5940,
+        "sha256": "0b51a44ac006db18ae4b67a31040fcb0704cc5bb13e312c919cdfb0f50ed0efe",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+        "blob": "b7f4bf79795381a21f77680498cb4431895e673b",
+        "bytes": 11139,
+        "sha256": "245a9bb534a97c630d4381e4e346304b551102e057e0df9bdb55a23c25d080a9",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+        "blob": "31c97708e059d1e1a68bc512cd6728cf6df2970c",
+        "bytes": 4122,
+        "sha256": "15576c387f84a0a94528749fd28e16359f5e251683209ad78f29f665e4fb0b15",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+        "blob": "a9136612ec334f2d91ac3864193a5b23f9260673",
+        "bytes": 6365,
+        "sha256": "15f72e88853a2db8642581ddbe5fe5f327ee28023adc3e706d9f94cd29695afc",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+        "blob": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+        "bytes": 11022,
+        "sha256": "b6928800b4a9192745c4f1942b5de17c08ce8b2550b3ffa890defba5b1332b46",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+        "blob": "8768614e0da009a3ea5deba932c4a62e6694d79b",
+        "bytes": 7347,
+        "sha256": "e2c9a3665d67019763846fa2b9a290bdea0c6bcbace77ddd73f543eef3a3c2db",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+        "blob": "d1dedb4b386ac822833e265ecd3192e000848730",
+        "bytes": 20112,
+        "sha256": "090a5a485aa4b6c01be9cdf516292c1bef5099c88f0d63e71a0b0a546d6daee1",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+        "blob": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+        "bytes": 6034,
+        "sha256": "7dab4ab4b46422a14042761a1f9769c61bdf0d8f3711dd3f80a2ff0492c5c4cb",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+        "bytes": 39047,
+        "sha256": "19d794ead41cbf3d230255a2bfdd96c5e793f1f86600d4404d8c6ca8b97350af",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+        "blob": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+        "bytes": 7419,
+        "sha256": "1f28dc1117ccac21171ee3fa526cb3dbb7f9509e98bec21630314f345c922e28",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+        "blob": "52fb8b882012f2561c65a95639a63da8e2c12ff4",
+        "bytes": 13021,
+        "sha256": "3976536d9059563ca9b5c36db8f128dddcbc0f5bf574ed664299138cc892cf0d",
+        "source_ref": "b29869e856d08db1bfb066116a9c443376ccc57d"
+      }
+    ]
+  },
+  "execution": {
+    "rust_tests_started": 0,
+    "cargo_or_just_started": 0,
+    "desktop_jobs_started": 0,
+    "source_files_modified": 0,
+    "fixture_assertions_modified": 0,
+    "refs_updated": 0,
+    "new_rust_tests_added": 0,
+    "full_gates_run": 0,
+    "positive_primary_negative_retention_panel_guard": "not_run_input_capability_unavailable",
+    "positive_primary_negative_retention_material_guard": "not_run_input_capability_unavailable",
+    "existing_negative_and_unknown_tests": "source_inspected_only_no_new_execution_claim",
+    "source_mutation_fences": "separate existing source-level evidence; not Rust branch execution"
+  },
+  "prohibited_substitutions": [
+    "changing current original provider propensity/critic/plan contract in order to obtain a passing fixture",
+    "changing the existing complete original negative assertions to positive",
+    "transplanting a positive qualification into a different original cohort or re-signing incompatible inputs",
+    "constructing/exposing opaque custody or qualification seals",
+    "treating source condition checks as runtime or ordinary closed-loop validation",
+    "synthesizing aggregate NoUpdate/fraud from a rejected positive-primary/negative-retention combination"
+  ]
+}
