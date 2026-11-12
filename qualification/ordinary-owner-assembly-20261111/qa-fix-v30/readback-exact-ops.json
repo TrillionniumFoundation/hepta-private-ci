@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.exact-source-delta.v1",
+  "base": {
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "reason": "Retarget the existing read-only source handoff deletion mutant to its actual UFCS spelling in the same original channel function.",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "preimage": {
+        "git_blob": "9c93ced86e71b2faccdb559c42fb0d911efdfb36",
+        "bytes": 11500,
+        "sha256": "ae332da50320d01baaaf283d6074f538cd0452c07adfe78301f93079988051c9"
+      },
+      "postimage": {
+        "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+        "bytes": 11528,
+        "sha256": "cc65d676a2f7de668e05838d421d3caeda005a0545f7a8229aa156875a27644e"
+      },
+      "operations": [
+        {
+          "before": "\"source.readback()\"",
+          "after": "\"DurableCircuitTaskSourceV1::readback(&source)\"",
+          "expected_occurrences": 1
+        }
+      ]
+    }
+  ],
+  "invariants": {
+    "tests_before": 13,
+    "tests_after": 13,
+    "target_test": "test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+    "function_marker_unchanged": "fn circuit_q24_task_channel_v1<",
+    "samples_before": [
+      "\"identity.spawn_generation == 0\"",
+      "\"published.require_bundle(&profile.bundle)?\"",
+      "\"CellQ24FeatureWorkerV1::new(\"",
+      "\"DurableCircuitTaskSourceV1::recover(\"",
+      "\"published.open_cell(\"",
+      "\"published\\n        .control(\"",
+      "\"cell.writer()\"",
+      "\"circuit_task_channel_v1(\"",
+      "\"source.readback()\""
+    ],
+    "samples_after": [
+      "\"identity.spawn_generation == 0\"",
+      "\"published.require_bundle(&profile.bundle)?\"",
+      "\"CellQ24FeatureWorkerV1::new(\"",
+      "\"DurableCircuitTaskSourceV1::recover(\"",
+      "\"published.open_cell(\"",
+      "\"published\\n        .control(\"",
+      "\"cell.writer()\"",
+      "\"circuit_task_channel_v1(\"",
+      "\"DurableCircuitTaskSourceV1::readback(&source)\""
+    ],
+    "rejects_helper_byte_identical": true,
+    "assertRaises_VerificationFailure_byte_identical": true,
+    "production_files_changed": 0,
+    "callers_changes": 0,
+    "checker_changes": 0,
+    "ignore_changes": 0,
+    "skip_catch_changes": 0,
+    "forward_reverse_exact": true
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.b4-original-learning-source-marker-independent-review.v1",
+  "reviewer": "runtime_access",
+  "source": {
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "verdict": "No confirmed static blocker in the exact one-string QA marker correction. It restores the existing deletion mutant against the actual original readback call; it does not relax a source guard or constitute an executed QA pass.",
+  "reviewed_artifacts": {
+    "author_manifest": {
+      "git_blob": "52a147db2b8802b1c81fb2ba8e9b105b8767fe1c",
+      "bytes": 5583,
+      "sha256": "6913e53e415b093ff7b7ffb31044e3889fae0393f83317c6b85dd8f8dba2d8a3"
+    },
+    "exact_operations": {
+      "git_blob": "29d096eb5ae8b72bea773c8d32e93293e7ac9e37",
+      "bytes": 2373,
+      "sha256": "4640df635ca4c909eba687e6d2c7e46a91d32598ff44a79819335bc50fb400f5"
+    },
+    "preimage": {
+      "git_blob": "9c93ced86e71b2faccdb559c42fb0d911efdfb36",
+      "bytes": 11500,
+      "sha256": "ae332da50320d01baaaf283d6074f538cd0452c07adfe78301f93079988051c9"
+    },
+    "postimage": {
+      "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+      "bytes": 11528,
+      "sha256": "cc65d676a2f7de668e05838d421d3caeda005a0545f7a8229aa156875a27644e"
+    }
+  },
+  "original_failure": {
+    "log": {
+      "git_blob": "15f19a1c30f69cfb595732292bbc17754daf1dd1",
+      "bytes": 67215,
+      "sha256": "3154d7e5e0ccf8d4f06b5cb9bdc918d8f92020adc650b96b86f1649b428abbe3"
+    },
+    "observed": "211 tests in 14.508s; 199 original '... ok' lines and 12 ERROR blocks; FAILED (errors=12).",
+    "addressed_test": "OriginalLearningOwnerClosureTests.test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+    "addressed_subtest": "source.readback()",
+    "actual_exception": "ValueError: substring not found at rejects -> source.index(marker, start, end + 1), before baseline/mutant verifier assertions.",
+    "scope": "Only this one error is addressed. The other 11 RootAdmin setUp errors require the separately owned late-startup required_order correction."
+  },
+  "source_evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "git_blob": "eccc3de46f610576ee47b072da10d0f53daf5739",
+      "bytes": 7865,
+      "sha256": "4ee9b0ff4a842f3867ba65ebee6e83eea9ad33389685efbcf6ddc84e1cf35161",
+      "fact": "Fixed 0081 function circuit_q24_task_channel_v1<SW, CW> contains exactly one DurableCircuitTaskSourceV1::readback(&source), at original source line 195, after the original circuit_task_channel_v1 call and before Ok(CircuitQ24TaskRuntimeV1). No source.readback() remains."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "git_blob": "00746463d49ea655658ff7ba88210cb00c278cf3",
+      "bytes": 1849,
+      "sha256": "e0d49fdceddddd5c621130ee4df527b0c582090d006196756c1c13b4cf10cf26",
+      "fact": "The original pub fn readback(&self) returns CircuitTaskSourceReadbackV1<W> backed by the same original source; its writer traits are not added by this patch."
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+      "bytes": 668746,
+      "sha256": "7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152",
+      "fact": "The exact existing protected_file row already requires DurableCircuitTaskSourceV1::readback(&source) between circuit_task_channel_v1( and Ok(CircuitQ24TaskRuntimeV1. The registry is not changed."
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "fact": "The original required-order verifier remains unchanged. Its missing/out-of-order literal branch raises VerificationFailure. Removing the one actual protected readback marker leaves that required literal absent."
+    }
+  ],
+  "exact_patch_checks": {
+    "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+    "before_literal": "\"source.readback()\"",
+    "after_literal": "\"DurableCircuitTaskSourceV1::readback(&source)\"",
+    "unique_before_occurrences": 1,
+    "unique_after_occurrences": 1,
+    "exact_forward_replay": true,
+    "exact_reverse_replay": true,
+    "every_other_file_byte_identical": true,
+    "tests_before_after": [
+      13,
+      13
+    ],
+    "test_method_names_identical": [
+      "test_original_sealed_request_cannot_be_replaced_by_caller_bytes",
+      "test_claim_and_witness_must_precede_signing_and_saved_readback",
+      "test_recovered_evidence_must_match_original_key_actor_and_identity",
+      "test_constructor_checks_registered_signer_without_probe_signature",
+      "test_registered_controller_revocation_and_role_are_required",
+      "test_feature_dispatch_must_receive_original_durable_cell_admission",
+      "test_native_control_fences_unknown_execution_and_persists_before_return",
+      "test_source_pending_and_readback_cannot_become_new_work",
+      "test_observer_views_cannot_gain_original_writer_capabilities",
+      "test_published_task_keeps_original_profile_and_distinct_successor",
+      "test_retirement_and_next_use_recheck_source_and_actual_cell",
+      "test_historical_read_never_reactivates_or_repairs_previous_owner",
+      "test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel"
+    ],
+    "target_samples_before_after": [
+      9,
+      9
+    ],
+    "sample_delta": "Only the ninth marker changes to the actual protected UFCS spelling; all other markers and the same fn circuit_q24_task_channel_v1< locator are unchanged.",
+    "rejects_function_byte_identical": true,
+    "assertion_call_sequence_unchanged": [
+      "self.assertIsNotNone(",
+      "self.assertTrue(",
+      "self.assertRaises(",
+      "self.assertRaises("
+    ],
+    "baseline_check_preserved": "The helper writes the unmodified source and calls original _verify_protected_files before deleting the marker.",
+    "negative_check_preserved": "The helper removes exactly that marker, writes the mutant and still requires self.assertRaises(PROOF.VerificationFailure).",
+    "production_changes": 0,
+    "registry_changes": 0,
+    "checker_changes": 0,
+    "skip_ignore_catch_changes": 0
+  },
+  "independent_method": "Fetched the original log and all five original source/registry/checker files at the exact 0081 contents ref. Recomputed all Git/SHA-256/byte pins. Fetched the proposed manifest/delta/postimage, replayed and reversed the exact operation in V8, inspected the actual protected row and original verifier implementation, and compared test methods/samples/assertion calls/rejects bytes.",
+  "limits": {
+    "not_run": [
+      "Python AST or unittest",
+      "original caller checker",
+      "h/PTY or remote process",
+      "Cargo/native/Root tests"
+    ],
+    "no_mutation": "No source worktree/ref, original evidence, permissions, policy, test skip or count was changed by this review.",
+    "expected_behavior": "The corrected sample can now locate and remove the actual protected call. Whether the fixed candidate passes the original QA and full gates remains for Root's exclusive execution."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.v30-root-exact-delta-review.v1",
+  "base": {
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "c_qa": {
+    "manifest": "52a147db2b8802b1c81fb2ba8e9b105b8767fe1c",
+    "ops": "29d096eb5ae8b72bea773c8d32e93293e7ac9e37",
+    "review": "b1be9e8f74771b864871b64e9f2f288d67994bf7",
+    "forward_reverse_exact": true,
+    "changes": "Exactly one existing mutant marker string retargeted to actual UFCS call in the same original function; original negative assertion retained."
+  },
+  "cli_qa": {
+    "manifest": "c3e5d11692cad36a3931efffcf2738adffce54c4",
+    "ops": "4945829d980f453381ae876e288880f78acb54e1",
+    "forward_reverse_exact": true,
+    "changed_blocks": [
+      {
+        "i": 914,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "kind": "[[protected_file]]"
+      },
+      {
+        "i": 915,
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "kind": "[[protected_file]]"
+      }
+    ],
+    "unchanged_boundary_blocks": 504,
+    "protected_rows": 366,
+    "new_methods": 10,
+    "new_mutation_cases": 22,
+    "original_checker_unchanged": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "sensitive_literal_calls": [
+      "Some(\"late-writer\")",
+      "required_path(\"CODEX_HOME\")"
+    ],
+    "diagnostic_label_limit": "Raw spelling is retained but no actual literal-span guarantee is claimed for four formatting-only path labels; exact actual/expected path operands and error propagation remain function code-order requirements."
+  },
+  "production_rust_changed": 0,
+  "allowlist": {
+    "before": "19b0e24323f596b4c16757e73265b087d9a393fa",
+    "after": "504fe528aa7f2e879752d4e888f050c52fcd4fca",
+    "only_exact_replacement": {
+      "before": "sha256:7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152 CALLERS.toml",
+      "after": "sha256:1b222ab62ddf5f3a808a18a922f5f0b9d804c49ff606956bfd8e2b1d1a9233e9 CALLERS.toml"
+    },
+    "global_size_limit_unchanged": true
+  },
+  "original_failure": {
+    "source": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "qa_log": "15f19a1c30f69cfb595732292bbc17754daf1dd1",
+    "qa_tests": 211,
+    "qa_errors": 12,
+    "ordinary_native_packages_reached": false,
+    "root_suite_reached": false,
+    "final_source_clean": true
+  },
+  "execution": "No Python, caller verifier, QA or native execution for this new source yet; previous source results not inherited.",
+  "counts": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0
+  }
+}

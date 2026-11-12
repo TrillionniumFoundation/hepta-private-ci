@@ -1,0 +1,303 @@
+{
+  "schema": "hepta-late-writer-protected-literals-fix.v1",
+  "prepared_date_utc": "2026-11-12",
+  "status": "static-candidate-unexecuted",
+  "base": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "observed_original_failure": {
+    "log": {
+      "git_blob": "15f19a1c30f69cfb595732292bbc17754daf1dd1",
+      "bytes": 67215,
+      "sha256": "3154d7e5e0ccf8d4f06b5cb9bdc918d8f92020adc650b96b86f1649b428abbe3"
+    },
+    "test_methods_run": 211,
+    "passed_reported": 199,
+    "errors": 12,
+    "root_admin_setup_errors": 11,
+    "separate_source_readback_error": 1,
+    "elapsed_seconds": 14.508
+  },
+  "changes": {
+    "production_rust_files": 0,
+    "checker_files": 0,
+    "existing_test_files_modified": 0,
+    "source_paths": 2,
+    "callers_exact_replacements": 4,
+    "added_qa_files": 1,
+    "boundaries_before": 504,
+    "boundaries_after": 504,
+    "protected_rows_before": 366,
+    "protected_rows_after": 366,
+    "root_parent_count_unchanged": 17,
+    "caller_inventory_unchanged": true,
+    "ignored_paths_unchanged": true
+  },
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "before": {
+        "git_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+        "bytes": 668746,
+        "sha256": "7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152",
+        "reported_sha": "7ec4df7edcb28c8ebef0037711d6c8f404eef014"
+      },
+      "after": {
+        "git_blob": "e6dcf7d4a71061772c720c9ba355ed646d1cc88e",
+        "bytes": 669111,
+        "sha256": "1b222ab62ddf5f3a808a18a922f5f0b9d804c49ff606956bfd8e2b1d1a9233e9"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "git_blob": "a09ec96ea064b35216e43b17dd4726d3a36afc7e",
+        "bytes": 6674,
+        "sha256": "4b7a1453784b1304bba8062e4854e8fcf4de9b99cd35c55eb2d701517462f7ef"
+      }
+    }
+  ],
+  "exact_operations": {
+    "git_blob": "4945829d980f453381ae876e288880f78acb54e1",
+    "bytes": 14787,
+    "sha256": "880ab9861719929d7fe596741df26cfe60a98a871dd2585c06dc3ca23b7da1ed"
+  },
+  "report": {
+    "git_blob": "37e3df3eb75065e6c735e9c16643c08f132f0d08",
+    "bytes": 4552,
+    "sha256": "0d82dd5dd4af5389ed4830ff8f40b10d5947938ffca77eb302889478cd10a946"
+  },
+  "read_only_source_pins": [
+    {
+      "label": "checker",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "reported_sha": "7a6709691c372504ca11b5d2a74e14ba819fca8f"
+    },
+    {
+      "label": "typed",
+      "path": "scripts/hepta_typed_callers.py",
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    {
+      "label": "late_startup",
+      "git_blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+      "bytes": 3013,
+      "sha256": "717ced5a05fbd931822528fcd103891060ed86dcb21bf98fbf7519b2c06b1e31",
+      "reported_sha": "db398aa05e688dc9c455bacb8c7e065184fdbaf9"
+    },
+    {
+      "label": "identity",
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "git_blob": "2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7",
+      "bytes": 4059,
+      "sha256": "9de575c8ca63823dccfc2074456a84f2db48b35557209a12bed936fc9709a999"
+    },
+    {
+      "label": "root_admin_qa",
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "git_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+      "bytes": 4867,
+      "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+    }
+  ],
+  "quote_marker_audit": {
+    "scope_paths": [
+      "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "codex-rs/hepta-fleet/src/registry.rs",
+      "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+    ],
+    "protected_rows": 8,
+    "function_rows": 13,
+    "findings": [
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "function": "fn run(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "function": "fn receive_original_late_writer(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "function": "fn prepare_original_late_writer_inputs(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "function": "fn consume_original_late_writer_inputs(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "function": "fn require_late_owner(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "function": "fn select_original_startup_entry(",
+        "quoted_sequence_markers": [
+          "Some(\"late-writer\")"
+        ],
+        "literal_calls": [
+          "Some(\"late-writer\")"
+        ],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "function": "fn prepare_original_late_writer_startup(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "function": "fn receive_original_late_writer_startup(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "function": "fn read_original_late_writer_starting_identity(",
+        "quoted_sequence_markers": [
+          "required_path(\"CODEX_HOME\")"
+        ],
+        "literal_calls": [
+          "required_path(\"CODEX_HOME\")"
+        ],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "function": "fn read_expected_starting_identity(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "function": "fn from_process_environment(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "function": "fn receive(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+        "function": "fn read_existing_snapshot(",
+        "quoted_sequence_markers": [],
+        "literal_calls": [],
+        "unregistered_quoted_markers": []
+      }
+    ],
+    "method": "Static parsing of the frozen CLI-related inline TOML marker arrays in V8; this is not execution of the original Python verifier."
+  },
+  "new_mutation_tests": {
+    "methods": 10,
+    "cases": 22,
+    "roster": [
+      {
+        "method": "test_entry_value_cannot_change",
+        "cases": 1
+      },
+      {
+        "method": "test_entry_value_cannot_be_supplied_by_comment",
+        "cases": 1
+      },
+      {
+        "method": "test_entry_value_comparison_cannot_reverse",
+        "cases": 1
+      },
+      {
+        "method": "test_duplicate_entry_cannot_drop_its_rejection",
+        "cases": 1
+      },
+      {
+        "method": "test_codex_home_key_cannot_change_or_hide_in_comment",
+        "cases": 2
+      },
+      {
+        "method": "test_codex_home_read_cannot_drop_error_propagation",
+        "cases": 1
+      },
+      {
+        "method": "test_path_guards_cannot_be_replaced_by_comments",
+        "cases": 4
+      },
+      {
+        "method": "test_path_guards_cannot_change_the_checked_actual_path",
+        "cases": 4
+      },
+      {
+        "method": "test_path_guards_cannot_change_the_expected_path",
+        "cases": 3
+      },
+      {
+        "method": "test_path_guards_cannot_drop_error_propagation",
+        "cases": 4
+      }
+    ],
+    "original_python_verifier_used_by_tests": true,
+    "executed": false
+  },
+  "static_verification": {
+    "exact_mutation_preconditions": {
+      "cases": 22,
+      "methods": 10,
+      "all_unique": true
+    },
+    "boundary_blocks_identical": 504,
+    "protected_before": 366,
+    "protected_after": 366,
+    "exact_forward_and_reverse": true,
+    "python_verifier_executed": false,
+    "python_tests_executed": false,
+    "full_gate_executed": false
+  },
+  "limitations": {
+    "diagnostic_labels": "Raw required strings do not prove actual-code diagnostic label spans; no false claim of rejecting a changed diagnostic label plus comment is made. Actual checked paths, expected operands and propagation order remain real-code guards.",
+    "sensitive_literals": "Some(\"late-writer\") and required_path(\"CODEX_HOME\") are each exact actual-code literal_calls.",
+    "local_process": "A Python version probe failed before process creation: exec-server rejected request (-32603), No such file or directory (os error 2). No Python test or verifier executed.",
+    "no_remote_execution": true,
+    "no_native": true,
+    "no_refs_changed": true,
+    "no_shared_source_written": true,
+    "full_gate_status": "not_executed_for_candidate"
+  },
+  "ordinary_counts": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0
+  }
+}
