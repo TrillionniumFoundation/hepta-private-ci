@@ -1,0 +1,32 @@
+diff --git a/scripts/ndu_real_runtime/episodic_retrieval.py b/scripts/ndu_real_runtime/episodic_retrieval.py
+index 1bef36bdae2..be954951942 100644
+--- a/scripts/ndu_real_runtime/episodic_retrieval.py
++++ b/scripts/ndu_real_runtime/episodic_retrieval.py
+@@ -248,9 +248,7 @@ def read_memory(
+             # the live authority work or turn a revoked read into a valid control.
+             if selected:
+                 if store.namespace != namespace or store.path != authority_path:
+-                    raise ValueError(
+-                        "memory authority changed before context delivery"
+-                    )
++                    raise ValueError("memory authority changed before context delivery")
+                 current = store.view()
+                 authorized, _ = authorized_source_closure(
+                     current["records"], source_ids
+@@ -268,14 +266,11 @@ def read_memory(
+                         )
+                     )
+                     or any(
+-                        r["namespace"] != namespace
+-                        or by_id.get(r["record_id"]) != r
++                        r["namespace"] != namespace or by_id.get(r["record_id"]) != r
+                         for r in selected
+                     )
+                 ):
+-                    raise ValueError(
+-                        "memory authority changed before context delivery"
+-                    )
++                    raise ValueError("memory authority changed before context delivery")
+             bounded_context, bounded_records, dropped = assemble_context(
+                 selected, max_context_bytes
+             )
