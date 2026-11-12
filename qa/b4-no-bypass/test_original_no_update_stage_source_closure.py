@@ -128,7 +128,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             "Duration::from_millis(500)",
             "let admitted_at = Instant::now()",
             "let end = admitted_at.checked_add(lifetime)",
-            "completion.check_peer_lifetime()",
+            "completion\n        .check_peer_lifetime()",
             "auth::require_clock(started_at, fresh)?",
             "if Instant::now() >= end",
             "root: None",
@@ -149,7 +149,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
         self.rejects(CORE, "fn install_fresh_resident_gate(", "self.origin != Origin::Fresh || self.root.is_some()")
         for marker in (
             "self.origin != Origin::Fresh",
-            "self.root.as_ref().ok_or(",
+            "self\n            .root\n            .as_ref()\n            .ok_or(",
             "let before_readback =",
             "before_readback?",
             "let before_dispatch =",
@@ -223,7 +223,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             ("fn ensure_trainer(", "self.trainer_initial.take()"),
             ("fn ensure_selector(", "self.selector_initial.take()"),
             ("fn ensure_next_use(", "self.next_use_initial.take()"),
-            ("fn ensure_readiness(", "self.readiness_initial.take()"),
+            ("fn ensure_readiness(", "self\n                .readiness_initial\n                .take()"),
         ):
             self.rejects(STATE, function, marker)
 
@@ -246,14 +246,14 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
 
     def test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity(self):
         for marker in (
-            ".take().ok_or(Error::Unavailable)?",
+            ".take()\n            .ok_or(Error::Unavailable)?",
             "!(1..=128).contains(&channel.next_request_id)",
             "channel.peer.request(&bytes)?",
-            "response.request.require_context(",
+            "response\n            .request\n            .require_context(",
             "channel.peer.check_peer_lifetime()?",
             "let fresh = now()?",
             "fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding",
-            "retained.as_ref().is_some_and(|prior| current.as_ref() != Some(prior))",
+            "retained\n                .as_ref()\n                .is_some_and(|prior| current.as_ref() != Some(prior))",
             "*retained = Some(ready.clone())",
         ):
             self.rejects(READINESS, "fn read_current(", marker)
@@ -277,7 +277,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             self.rejects(STATE, function, marker)
         for marker in (
             "receipt.observed_unix_seconds != signature.issued_at",
-            "material.verifier.verify(",
+            "material\n        .verifier\n        .verify(",
             "learning_iteration_receipt_signing_bytes_v1(receipt)?",
         ):
             self.rejects(AUTH, "fn verify_receipt(", marker)
