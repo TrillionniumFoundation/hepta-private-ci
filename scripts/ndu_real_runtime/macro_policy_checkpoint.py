@@ -127,42 +127,58 @@ def read_checkpoint(
     ):
         raise ValueError("Invalid frozen denominators or input identities")
     for head in data["probability_heads"].values():
+        required = {
+            "labelled",
+            "positive",
+            "weights",
+            "constant",
+            "status",
+            "supported_actions",
+        }
         if (
             type(head) is not dict
-            or set(head)
-            - {
-                "labelled",
-                "positive",
-                "weights",
-                "constant",
-                "status",
-                "supported_actions",
-                "labelled_source_groups",
-            }
             or any(type(head.get(k)) is not int for k in ("labelled", "positive"))
             or not 0 <= head["positive"] <= head["labelled"] <= counts["fit"]
+            or set(head)
+            != required | ({"labelled_source_groups"} if head["labelled"] else set())
             or head.get("supported_actions") != (["READ"] if head["labelled"] else [])
         ):
             raise ValueError("Invalid frozen probability evidence counts")
-        if head.get("weights") is not None:
+        if not head["labelled"]:
+            if (
+                head["status"] != "unobserved"
+                or head["weights"] is not None
+                or head["constant"] is not None
+            ):
+                raise ValueError("Unknown labels cannot imply an observed probability")
+            continue
+        source_count = head["labelled_source_groups"]
+        if type(source_count) is not int or not 1 <= source_count <= min(
+            head["labelled"], len(groups[0])
+        ):
+            raise ValueError("Invalid probability source denominator")
+        if head["weights"] is not None:
             values = head["weights"]
             if (
                 head.get("status") != "two_class_logistic"
+                or not 0 < head["positive"] < head["labelled"]
                 or head.get("constant") is not None
                 or type(values) is not list
                 or len(values) != width + 1
                 or any(not _finite(x) or abs(x) > 1e12 for x in values)
             ):
                 raise ValueError("Invalid probability coefficients")
-        elif head["labelled"]:
+        else:
+            expected = (int(head["positive"] > 0) * source_count + 1) / (
+                source_count + 2
+            )
             if (
                 head.get("status") != "single_class_smoothed_base_rate"
+                or head["positive"] not in {0, head["labelled"]}
                 or not _finite(head.get("constant"))
-                or not 0 <= head["constant"] <= 1
+                or head["constant"] != expected
             ):
                 raise ValueError("Invalid probability base rate")
-        elif head.get("status") != "unobserved" or head.get("constant") is not None:
-            raise ValueError("Unknown labels cannot imply an observed probability")
     cal = data["calibration"]
     if (
         type(cal) is not dict

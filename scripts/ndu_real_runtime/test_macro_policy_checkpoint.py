@@ -75,10 +75,52 @@ class MacroCheckpointTests(unittest.TestCase):
                 self.read(data)
 
     def test_unobserved_probability_cannot_become_success(self):
-        data = deepcopy(self.data)
-        data["probability_heads"]["acquired"]["constant"] = 0.99
-        with self.assertRaises(ValueError):
+        for mutation in (
+            lambda h: h.update(constant=0.99),
+            lambda h: h.update(status="two_class_logistic", weights=[20.0] + [0.0] * 5),
+            lambda h: h.pop("weights"),
+            lambda h: h.update(labelled_source_groups=1),
+        ):
+            data = deepcopy(self.data)
+            mutation(data["probability_heads"]["acquired"])
+            with self.subTest(head=data["probability_heads"]["acquired"]):
+                with self.assertRaises(ValueError):
+                    self.read(data)
+
+    def test_probability_state_agrees_with_measured_classes_and_sources(self):
+        positive = {
+            "labelled": 4,
+            "positive": 4,
+            "weights": None,
+            "constant": 0.75,
+            "status": "single_class_smoothed_base_rate",
+            "supported_actions": ["READ"],
+            "labelled_source_groups": 2,
+        }
+        mixed = {
+            **positive,
+            "positive": 2,
+            "weights": [0.0] * 6,
+            "constant": None,
+            "status": "two_class_logistic",
+        }
+        for head in (positive, mixed):
+            data = deepcopy(self.data)
+            data["probability_heads"]["acquired"] = head
             self.read(data)
+        for changed in (
+            {**positive, "positive": 2},
+            {**positive, "constant": 1.0},
+            {**positive, "labelled_source_groups": True},
+            {**positive, "labelled_source_groups": 3},
+            {**mixed, "positive": 0},
+            {**mixed, "positive": 4},
+            {key: value for key, value in mixed.items() if key != "constant"},
+        ):
+            data = deepcopy(self.data)
+            data["probability_heads"]["acquired"] = changed
+            with self.subTest(head=changed), self.assertRaises(ValueError):
+                self.read(data)
 
     def test_invalid_calibration_rank_and_future_fields_rejected(self):
         for mutation in (
