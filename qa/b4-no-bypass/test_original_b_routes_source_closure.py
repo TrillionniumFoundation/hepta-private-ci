@@ -19,6 +19,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 
 EXPECTED = {
+    "capture_connection": ("production_post_a_q24",),
     "register": ("authority_host_post_a_learning",),
     "reopen": ("authority_host_post_a_learning",),
     "route": ("authority_host_post_a_learning",),

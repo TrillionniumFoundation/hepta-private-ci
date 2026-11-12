@@ -11,25 +11,25 @@ impl RootGenerationPublicationConnectionV1 {
     pub(crate) fn capture_original_b_connection(
         &self,
     ) -> Result<OriginalRootBEvaluationConnectionV1, AgentdError> {
-        self.require_original_publication_session()?;
+        RootGenerationPublicationConnectionV1::require_original_publication_session(self)?;
         let original = RootGenerationPublicationConnectionV1 {
             original: self.original.clone(),
             identity: self.identity.clone(),
             authority: self.authority.clone(),
             verifier: Arc::clone(&self.verifier),
         };
-        original.require_original_publication_session()?;
+        RootGenerationPublicationConnectionV1::require_original_publication_session(&original)?;
         Ok(OriginalRootBEvaluationConnectionV1 { original })
     }
 }
 
 impl OriginalRootBEvaluationConnectionV1 {
     pub(crate) fn require_original(&self) -> Result<(), AgentdError> {
-        self.original.require_original_publication_session()
+        RootGenerationPublicationConnectionV1::require_original_publication_session(&self.original)
     }
     pub(crate) fn original_launch_binding(
         &self,
     ) -> (&HostAuthorityPublicBootstrapV1, &AgentdIdentity) {
-        self.original.original_launch_binding()
+        RootGenerationPublicationConnectionV1::original_launch_binding(&self.original)
     }
 }
