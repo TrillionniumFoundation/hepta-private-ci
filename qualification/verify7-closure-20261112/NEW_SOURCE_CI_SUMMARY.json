@@ -1,0 +1,45 @@
+{
+  "scope": "exact source-specific macOS logs; other platforms/blocking not established",
+  "records": [
+    {
+      "job_id": 130997532588,
+      "source_head": "3c2a347969291b2fbd99198140fbe608f3e4425d",
+      "source_seen": true,
+      "test_summaries": [
+        "2026-11-12T05:39:20.4919240Z test_later_free_ack_can_explain_all_apparent_paid_information (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_later_free_ack_can_explain_all_apparent_paid_information) ... ok",
+        "2026-11-12T05:39:20.4921040Z test_paid_presence_adds_information_conditionally_on_same_acks (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_paid_presence_adds_information_conditionally_on_same_acks) ... ok",
+        "2026-11-12T05:39:20.4924910Z test_post_audit_read_is_bounded_before_hash_or_allocation (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_post_audit_read_is_bounded_before_hash_or_allocation) ... ok",
+        "2026-11-12T05:39:20.4931050Z test_post_audit_symlink_is_not_read (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_post_audit_symlink_is_not_read) ... ok",
+        "2026-11-12T05:39:20.4936110Z test_refuse_saved_records_changed_after_audit (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_refuse_saved_records_changed_after_audit) ... ok",
+        "2026-11-12T05:39:20.4938400Z test_refuse_unknown_duplicate_alias_and_cross_phase_sources (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_refuse_unknown_duplicate_alias_and_cross_phase_sources) ... ok",
+        "2026-11-12T05:39:20.5325880Z test_row_generator_stops_before_unbounded_materialization (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_row_generator_stops_before_unbounded_materialization) ... ok",
+        "2026-11-12T05:39:20.5327270Z test_source_weighting_differs_from_pooled_task_resolution (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_source_weighting_differs_from_pooled_task_resolution) ... ok",
+        "2026-11-12T05:39:26.2057640Z Ran 269 tests in 16.456s",
+        "2026-11-12T05:39:26.2058130Z OK",
+        "2026-11-12T05:39:43.7722820Z \u001b[36;1mpython -B -m experiments.verification_cell_verify1.observation_attribution --input \"$VERIFY5_OBSERVATION_OUTPUT\" --output \"$VERIFY1_RECORDS/observation-attribution.json\"\u001b[0m",
+        "2026-11-12T05:39:46.5353430Z CONSISTENT_COMPLETE_RECORDS"
+      ],
+      "log_chars": 96894
+    },
+    {
+      "job_id": 130997619406,
+      "source_head": "e23e343243c52608db5a59cf9a75e96591b31bb8",
+      "source_seen": true,
+      "test_summaries": [
+        "2026-11-12T05:39:55.6628330Z test_later_free_ack_can_explain_all_apparent_paid_information (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_later_free_ack_can_explain_all_apparent_paid_information) ... ok",
+        "2026-11-12T05:39:55.6630200Z test_paid_presence_adds_information_conditionally_on_same_acks (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_paid_presence_adds_information_conditionally_on_same_acks) ... ok",
+        "2026-11-12T05:39:55.6648640Z test_post_audit_read_is_bounded_before_hash_or_allocation (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_post_audit_read_is_bounded_before_hash_or_allocation) ... ok",
+        "2026-11-12T05:39:55.6666390Z test_post_audit_symlink_is_not_read (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_post_audit_symlink_is_not_read) ... ok",
+        "2026-11-12T05:39:55.6670300Z test_refuse_saved_records_changed_after_audit (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_refuse_saved_records_changed_after_audit) ... ok",
+        "2026-11-12T05:39:55.6672070Z test_refuse_unknown_duplicate_alias_and_cross_phase_sources (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_refuse_unknown_duplicate_alias_and_cross_phase_sources) ... ok",
+        "2026-11-12T05:39:55.7281040Z test_row_generator_stops_before_unbounded_materialization (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_row_generator_stops_before_unbounded_materialization) ... ok",
+        "2026-11-12T05:39:55.7283620Z test_source_weighting_differs_from_pooled_task_resolution (experiments.verification_cell_verify1.test_observation_attribution.ObservationAttributionTests.test_source_weighting_differs_from_pooled_task_resolution) ... ok",
+        "2026-11-12T05:40:01.6014800Z Ran 284 tests in 20.479s",
+        "2026-11-12T05:40:01.6015200Z OK",
+        "2026-11-12T05:40:18.8504020Z \u001b[36;1mpython -B -m experiments.verification_cell_verify1.observation_attribution --input \"$VERIFY5_OBSERVATION_OUTPUT\" --output \"$VERIFY1_RECORDS/observation-attribution.json\"\u001b[0m",
+        "2026-11-12T05:40:21.5676870Z CONSISTENT_COMPLETE_RECORDS"
+      ],
+      "log_chars": 101074
+    }
+  ]
+}
