@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.mem12.provider-evidence.v1",
+  "tested_local_commit": "83e88f62205bf60da5f631d41677355c9ead99e2",
+  "tested_tree": "2bfe5efbef91c6a9a005766698bed5dd613f516a",
+  "formatted_local_commit": "071416a8803c93ffbe8017a892e041383ae9bf16",
+  "formatted_tree": "facd1b8698ff03b05d21de42e515cd151e3ca19f",
+  "software_controls": {
+    "passed": 122,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_seconds": 30.13814334900053,
+    "overlap_with_earlier_tests": true
+  },
+  "format": {
+    "exit_code": 0,
+    "python_asts_unchanged": 3,
+    "tests_repeated_after_format": false
+  },
+  "replay_counterexamples": {
+    "before_accepted": 4,
+    "after_rejected": 4,
+    "new_provider_executions": 0
+  },
+  "original_v3_recovery": {
+    "returned_generations": 1,
+    "new_executions": 0,
+    "new_memory_benefit_episodes": 0,
+    "outer_job_identity": "UNKNOWN",
+    "different_source_from_new_candidate": true,
+    "independent_checks_passed": 26
+  },
+  "source_composition_pr": 6142,
+  "codespell_job": {
+    "original_failure": 131004935178,
+    "composed_success": 131012707569
+  },
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false,
+  "archive": {
+    "bytes": 68324,
+    "sha256": "145885c53e46d20af6711f2fb134571ab76a70605c3cce4a1d12de7d66ffc73d",
+    "indexed_members": 50
+  },
+  "published_source_commit": "69bf5c1fea699b74bc91d5f24604a479b2f61638"
+}
