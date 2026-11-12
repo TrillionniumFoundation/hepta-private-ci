@@ -183,6 +183,131 @@
     "sha256": "611c3e57b4ea32fd4674e5be6e9860743c24131a4bf9744b03e7308752b4199e",
     "git_blob": "305f726b8147021acaafe3add3962c117890555a"
   },
+  "additional_final_cross_platform_logs": [
+    {
+      "job_id": 131460489270,
+      "bytes": 1015689,
+      "sha256": "b3209037bf76518c0a8e9b7b620283febdad6710aecdc6ce06ee1959111dafc1",
+      "git_blob": "c3b0bcedda5039953a60d070a33812a42a2e7d9f",
+      "parts": 5,
+      "all_original_parts_equal_original": true
+    },
+    {
+      "job_id": 131460489183,
+      "bytes": 1231190,
+      "sha256": "49b16a016b4a1e507441bae915736e3928cdb27b95522671f356ce644e786a5a",
+      "git_blob": "1f617ac71de87fb2f346a7a5d4089c71dc0a99c4",
+      "parts": 6,
+      "all_original_parts_equal_original": true
+    },
+    {
+      "job_id": 131460489235,
+      "bytes": 762000,
+      "sha256": "3063947ba62712e317408f6684cbcd19077adefbce7967fe46bdb568a85057ea",
+      "git_blob": "997b69d2eeccfabdc1f8b4fdeb9ad9f311d809c2",
+      "parts": 4,
+      "all_original_parts_equal_original": true
+    }
+  ],
+  "additional_native_full_log_and_roster": {
+    "schema": "hepta.source53.native-root-full-log-and-roster.v1",
+    "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+    "job_id": 131459876749,
+    "full_log": {
+      "bytes": 3842011,
+      "sha256": "2fa1c1754d8e5e3ff600915650bc17e09d7a71ce41795ffcf3f1b58f2c7b3529",
+      "git_blob": "d65c69055773436a43f0a065a34d68fba6c36608"
+    },
+    "parts": 14,
+    "all_original_parts_equal_original_log": true,
+    "unique_methods": 1783,
+    "counts": {
+      "PASS": 1768,
+      "SIGABRT": 4,
+      "FAIL": 10,
+      "TIMEOUT": 1
+    },
+    "all_recorded_status_lines_verified_against_full_original": true,
+    "source_closure": {
+      "methods": 506,
+      "passed": 506,
+      "failed": 0,
+      "elapsed_seconds": 131.592
+    },
+    "parser": {
+      "methods": 16,
+      "passed": 16,
+      "failed": 0,
+      "elapsed_seconds": 0.129
+    },
+    "ordinary": {
+      "selected_methods": 1783,
+      "passed": 1768,
+      "failed_assertion_or_error": 10,
+      "sigabrt_stack_overflow": 4,
+      "timed_out": 1,
+      "nextest_failed_including_abort": 14,
+      "nextest_skipped_outside_selection": 100,
+      "retries": 0,
+      "test_elapsed_seconds": 711.029,
+      "wrapper_elapsed_seconds": 955.246614195,
+      "command_exit_code": 100
+    },
+    "source_identity": {
+      "before_after_clean": true,
+      "tracked_inventory_files": 15294,
+      "inventory_sha256": "45a9d14ed88566179a5792e1a980d9dec3dc129c9d7fb0073a63853b7406c09e",
+      "full_inventory_payload_independently_downloaded": false
+    },
+    "root_suite": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+    "junit_xml_separately_downloaded": false,
+    "all_blockers_closed": false,
+    "owner_decision": null
+  },
+  "additional_shared_full_log_and_roster": {
+    "schema": "hepta.source53.shared-root-full-log-and-roster.v1",
+    "source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+    "job_id": 131459875770,
+    "full_log": {
+      "bytes": 487357,
+      "sha256": "bfc700d24ab03a6013958e45c6d569cef9f68e3b2cab371400e4e2fc1a58f2ff",
+      "git_blob": "bd0c7d1a519ef832991cf1719379252bc465b417"
+    },
+    "parts": 2,
+    "unique_methods": 1447,
+    "counts": {
+      "PASS": 1432,
+      "SIGABRT": 4,
+      "FAIL": 10,
+      "TIMEOUT": 1
+    },
+    "all_original_status_line_occurrences_verified": true,
+    "same_15_nonpassing_identity_set_as_native": true,
+    "attempts": "Original failing methods have TRY1 and TRY2; retain original attempts, do not infer daemon retry0 or independent observations.",
+    "scoped": {
+      "testcases": 1447,
+      "passed": 1432,
+      "ordinary_fail": 10,
+      "sigabrt": 4,
+      "timed_out": 1,
+      "excluded_tests": 98,
+      "test_elapsed_seconds": 1224.028,
+      "wrapper_elapsed_seconds": 1512.831266916,
+      "command_exit_code": 100,
+      "observed_attempts_for_failing_methods": 2,
+      "retry_note": "Original shared workflow command did not supply --retries 0; the original log records TRY 1 and TRY 2. Do not reuse the daemon lane's retries=0 or count attempts as independent methods."
+    },
+    "source_identity": {
+      "same_source_and_tree_before_after": true,
+      "git_dirty_false": true,
+      "source_unchanged_step": "success",
+      "full_file_inventory_payload_downloaded": false
+    },
+    "all_blockers_closed": false,
+    "owner_decision": null
+  },
   "separately_verified_complete_archives": [
     {
       "path": "../evaluated-current-read-20261112/source84-e0616-ci/MANIFEST.json",
@@ -205,6 +330,6 @@
       "full_original_logs": 1
     }
   ],
-  "total_complete_original_logs_in_this_verification_set": 27,
+  "total_complete_original_logs_in_this_verification_set": 32,
   "note": "Earlier upstream374 source/shared originals are independently retained in the 96-object import verification, not added to this log set."
 }

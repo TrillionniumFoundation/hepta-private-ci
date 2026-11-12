@@ -1,4 +1,4 @@
-# Blocker 闭合清单与当前证据（2026-11-12 20:40:41 UTC）
+# Blocker 闭合清单与当前证据（2026-11-12 20:53:37 UTC）
 
 **整体 HOLD；12 个完整科学／权限门仍 OPEN，owner_decision=null，all_blockers_closed=false。**
 
@@ -8,7 +8,7 @@
 
 最新11路径修复由实际84ee失败驱动：2个 cfg(test) 文件通过原拥有模块取得同一 WeakSender；字段仍私有、弱引用升级／队列／await 生命周期不变；8路径应用原Rustfmt打印的11个修改；1个源码守卫更新为真实6,107字节服务的SHA256，校验本身不删除。
 
-准确53源码的源码保护检查、learning-owner解析及同源helper步骤已实际success。完整 Rustfmt 与 GNU Clippy 原日志也success，执行checkout7302的tree实核等于发布tree。以上关闭对应具体源码、格式和编译缺口；普通原生、Root、caller和跨平台资格仍分别核验，方法分母不从静态清单或旧源码预填。
+准确53源码的源码保护506／506、learning-owner解析16／16及同源helper已从完整原件确认success。完整 Rustfmt 与 GNU Clippy 原日志也success，执行checkout7302的tree实核等于发布tree。普通原生实际1,783＝1,768PASS＋10FAIL＋4SIGABRT＋1TIMEOUT；因此Root及后续maintenance未到达。caller与shared仍分别观察，旧源码结果不转移。
 
 Selection／NextUse组合各6／9个语义CURRENT检查槽，首尾2次真实物理CURRENT读取；同一实际Cell／Task、Purpose位置与Refused先于step约束保留。CALLERS静态628边界／628清单、429保护行／355路径、1,349函数顺序行；当前实际caller仍运行。
 
@@ -20,12 +20,14 @@ Selection／NextUse组合各6／9个语义CURRENT检查槽，首尾2次真实物
 
 | 准确源码／范围 | 实际记录与边界 |
 | --- | --- |
-| 53 native / caller / shared | native进入ordinary／Root／maintenance步骤；caller完整验证及shared所选库运行。没有完整终态或方法分母，Root未证明。 |
+| 53 native | 20:38:16实际failure；source506／506、parser16／16、同源helper通过。普通1,783方法＝1,768PASS＋10FAIL＋4栈溢出SIGABRT＋1TIMEOUT，100过滤、0重试，711.029s。JUnit15失败＝10＋4＋1；Root／fix／fmt未到达。 |
+| 53 shared | 原job20:44:16 failure；1,447＝1,432PASS＋10FAIL＋4SIGABRT＋1TIMEOUT，98过滤。与daemon同15失败身份；原日志含每失败TRY1／TRY2，保留两attempt，不套用daemon的零重试，也不相加为独立分母。 |
+| 53 caller | 原作业继续；不以native的前置成功或其他源码结果代替其完整终态。 |
 | 53 Windows private | 整个job于20:32:28实际success；其自身专项36／36通过，597过滤，0失败／错误／XMLskip／重试，原collector exact覆盖。其他15／2／3／2／12各自通过，不相加为唯一分母。完整原log376,162字节；XML产物未另下载。 |
 | 53 Rustfmt／GNU Clippy | 各自完整原日志成功，执行tree与发布tree一致；不是普通测试或研究效益通过。 |
 | 53 GNU／musl Bazel | 原目标7／8分片失败，汇总300.1s；每份打印含17个不同显式FAILED。重复／缓存／后续单目标输出保留，未称完整普通方法分母或独立重复。GNU原23／583、musl2／583目标执行；各415通过、1失败、167跳过含缓存。 |
-| 53 Windows | Clippy、release、native-path wrapper原件成功。shard1因旧RestrictedToken入口原拒绝失败；shard3原TUI恢复测试路径D盘形式与\\?\形式不一致而失败，原3次attempt单独保留。其他分片以各自观察时刻为准。 |
-| 53 macOS | Intel原作业进行；4个ARM相关job取消，无实际方法执行声明。 |
+| 53 Windows | Clippy、release、native-path wrapper原件成功。四测试分片均失败并保留各自原log；shard1含旧RestrictedToken原拒绝，shard3原TUI恢复路径表示不一致，原3次attempt单独保留。 |
+| 53 macOS | Intel整个job失败；其中hepta-neuron目标原汇总PASSED252.6s且未带cached标签，成功方法stdout未打印，不称独立核全209方法。此目标成功早于未发布的成本修复，不能归功于候选。4个ARM相关job取消，无实际方法执行声明。 |
 | 84 source | 506不同方法＝505OK＋1FAIL、0ERROR，205.440s；唯一失败是服务旧checksum。后续parser/native跳过。 |
 | 84 compile／format | GNU Clippy／GNU／musl／shared实际E0616；shared just test在方法执行前exit101。原格式11hunks／8路径失败。 |
 | 84 Windows private | 原36／36所选方法通过，597过滤、0重试；整个job仍因格式失败，后续包含两个原攻击的acquisition步骤跳过。完整XML没有另取。 |
@@ -38,7 +40,7 @@ Selection／NextUse组合各6／9个语义CURRENT检查槽，首尾2次真实物
 
 ## 尚未闭合的具体工程阻塞
 
-1. **准确source的完整ordinary／Root／caller。** 等原作业完整方法清单、失败类别、实际拒绝和原owner结果；不以job正在执行或某step成功代替完整资格。
+1. **准确source的ordinary15个非通过与Root／caller。** 普通及shared完整清单已取得且失败身份一致；四栈溢出、两CURRENT RPC精确计数4对旧预期3、七个S/C/remote的原Trainer不可用、一个Version cold原positive-generator128耗尽、一个Model材料超时分别处理。positive-generator是原fixture角色；不直接套生产Trainer128推导，也不把600ms耗时自动解释为帧耗尽。Root未到达，caller等原结果。
 2. **真实同连接请求预算。** 原Version-held evaluator Arc安装在Bound B组合时，Q＝70＋10R次T/B pair读取，仅其B内部Trainer读即3Q＝210＋30R，超过真实client和server的128请求上限。R是完成的完整六切Root读取次数。只有Root B与Version B实际同host才可用更强244＋36R；相同receipt字节不证明host别名。默认Individual PublicationFixture不属于此组合。静态需求不能充当此前600ms失败原因。
 3. **预算降读设计尚不充分。** 局部A/B设计仍留下Version-only128＋20R、同host152＋24R；未实现，也未称预算关闭。不扩大128／500ms／300s，不引入跨请求缓存或可信布尔值；完整同次调用proof接口仍在审。
 4. **macOS成本账本热点。** 固定127批历史提交反复全量校验已有cost，存在可证重复工作；并有真实fsync／witness成本，唯一超时原因未证明。候选把对应旧历史entry检查8,191,128降至256,032，增加一次至多4,096entry临时clone；原错误顺序、成功prefix、persist事务和127／4096边界测试不变。2生产＋2测试文件、4新增回归目前仅静态候选，未发布／fmt／运行，未称超时解决。
@@ -49,7 +51,7 @@ Selection／NextUse组合各6／9个语义CURRENT检查槽，首尾2次真实物
 
 ## 证据检查点
 
-本轮导入286个资格路径、283个不同Git blob，共26,695,109引用字节，全部由根代理按完整字节／SHA256／Git身份复核。仅qualification文件；源码后像不进入本证据分支。9cbd四个原索引快照按原字节保留。本轮日志核验集合含27份完整原job日志；更早374原件另有已验证记录。未取得的原XML／source inventory／产物不登记为已取得。
+本轮导入343个资格路径、340个不同Git blob，共35,249,483引用字节，全部由根代理按完整字节／SHA256／Git身份复核。仅qualification文件；源码后像不进入本证据分支。9cbd四个原索引快照按原字节保留。本轮日志核验集合含32份完整原job日志；更早374原件另有已验证记录。未取得的原XML／source inventory／产物不登记为已取得。
 
 [导入对象逐字节映射](evidence/terminal-20261112/IMPORT_MAPPING_SOURCE53.json) · [完整原日志重组](evidence/terminal-20261112/ROOT_LOG_REASSEMBLY_SOURCE53.json) · [主job观察](evidence/terminal-20261112/SOURCE53_JOB_OBSERVATION.json) · [9cbd原清单](evidence/history-20261112/BLOCKER_CLOSURE_NEXT-9cbd.md)。
 
@@ -101,7 +103,7 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 | 来源／暴露认证 | OPEN；字节／split／source ID 一致性已核对，REPORT 的24 fit、18 cal、16 eval来源名互斥。 | 原来源 owner 的 acquisition/receipt/exposure 链、历史隔离／quarantine；名字互斥不能证明真实来源独立。 |
 | 真实时钟 | OPEN；四个时间量与 Q24 已分开。 | 真实动作、信息可用、结果与更新时刻的原 owner 记录；clock domain／boot、跨恢复锚点和误差界。 |
 | 持久 cadence／CAS | OPEN；当前时间 gate 仍无状态／参考。 | 原 LearningOwnerJournal/CURRENT 权限上的跨进程、并发、崩溃和回滚验证；机会只消费一次，pending不重派发。 |
-| 原 owner bridge | OPEN；原edaf普通方法1,730/1,738及caller结果保留。d397／374／e403／a4a1已整合发布；当前53源码／parser／helper、格式及Clippy已通过，完整native／Root／caller与原独立custody仍待各自证据。 | 同一准确tree的原StageOwner→verifier→S→FinalUse→CURRENT、真实独立custody、完整递归预算与普通Root/cold执行；源码或历史CI均不替代。 |
+| 原 owner bridge | OPEN；原edaf普通方法1,730/1,738及caller结果保留。d397／374／e403／a4a1已整合发布；当前53源码／parser／helper、格式及Clippy已通过，native完整1,783方法终态已取得但15非通过，Root未到达，caller及原独立custody仍待各自证据。 | 同一准确tree的原StageOwner→verifier→S→FinalUse→CURRENT、真实独立custody、完整递归预算与普通Root/cold执行；源码或历史CI均不替代。 |
 | T 时间教学效益 | OPEN；数值／路由机制已验。 | 同完整向量、可用时刻与预算下正确／打乱路由及 eligibility，真实训练、强普通基线、独立效益与旧能力门。 |
 | R 独立情景／技能回放 | OPEN；ACT bb8 的 1＋5 方法、格式与完整原产物已过门；MEM 仍仅 1 次未评分生成。 | 同一真实任务 E/S 2×2 与另一个等总预算面板；统一池／普通基线、MEM 禁用后 ACT 独立路径、真实效果与成本。 |
 | V 感知／检查效益 | OPEN；上游576次完整开发面板，conditional未READ；wrapper B/C四个固定宏执行均COMPLETED、均STOP、质量0。 | 校准覆盖问题解决后的独立冻结试验、强基线、同信息循环／付费观察／独立checker分别比较、真实净效益。 |
