@@ -25,6 +25,8 @@ mod post_a_launch;
 mod post_a_owner;
 #[path = "ordinary_q24_post_a_plan_tests.rs"]
 mod post_a_plan;
+#[path = "ordinary_q24_post_a_selection_tests.rs"]
+mod post_a_selection;
 #[path = "ordinary_q24_post_a_trust_tests.rs"]
 mod post_a_trust;
 #[path = "ordinary_q24_process_recovery_tests.rs"]
