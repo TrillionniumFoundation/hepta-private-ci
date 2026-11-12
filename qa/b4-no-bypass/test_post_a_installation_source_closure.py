@@ -83,7 +83,8 @@ def require_structure(path, source):
                        "publication::serve_original_material("):
             at_depth(body, marker, 1)
         begin, end = route.original.span(body, "publication::serve_original_material(")
-        at_depth(body, "super::super::learning::serve_optional_until(", 2)
+        at_depth(body, "crate::authority_host_runtime::serve_independent_b_until(", 2)
+        at_depth(body, "super::super::learning::serve_optional_until(", 3)
         if not begin < body.index("super::super::learning::serve_optional_until(") < end:
             raise PROOF.VerificationFailure("original learning serve escaped the joined material worker")
 

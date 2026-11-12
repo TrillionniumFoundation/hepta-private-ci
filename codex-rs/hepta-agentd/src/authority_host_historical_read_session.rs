@@ -19,7 +19,34 @@ impl PreparedHostAuthoritySession {
         root_pidfd: OwnedFd,
         publication: Option<(&Path, UnixDatagram)>,
     ) -> io::Result<()> {
+        Self::enable_original_post_a_learning_with_independent_b(
+            self,
+            path,
+            learning_handoff,
+            model_handoff,
+            root_pidfd,
+            publication,
+            None,
+        )
+    }
+
+    /// The full ordinary path retains a separate original B deployment and
+    /// datagram before any learning work. Legacy callers keep the former entry.
+    pub fn enable_original_post_a_learning_with_independent_b(
+        &mut self,
+        path: &Path,
+        learning_handoff: UnixDatagram,
+        model_handoff: UnixDatagram,
+        root_pidfd: OwnedFd,
+        publication: Option<(&Path, UnixDatagram)>,
+        independent_evaluation: Option<(&Path, UnixDatagram)>,
+    ) -> io::Result<()> {
         original_root()?;
+        if independent_evaluation.is_some() && publication.is_none() {
+            return Err(io::Error::other(
+                "original independent B requires the original publication route",
+            ));
+        }
         if self.learning.is_some() || self.publication.is_some() {
             return Err(io::Error::other(
                 "post-A owners cannot replace eager learning",
@@ -69,6 +96,7 @@ impl PreparedHostAuthoritySession {
                     self.config.peer_uid,
                     self.config.peer_gid,
                     publication.as_ref().map(|(path, _)| *path),
+                    independent_evaluation.as_ref().map(|(path, _)| *path),
                 )?;
                 runtime.metadata.require_metadata_unchanged()?;
                 RootHistoricalLearningTrustV1::revalidate(
@@ -84,6 +112,7 @@ impl PreparedHostAuthoritySession {
             model_handoff,
             root_pidfd,
             publication.map(|(_, handoff)| handoff),
+            independent_evaluation.map(|(_, handoff)| handoff),
         )?;
         runtime.post_a = Some(plan);
         runtime.post_a_worker = Some(worker);
