@@ -53,6 +53,7 @@ pub use training_command::OriginalCellQ24ModelCommandReceiptV1;
 pub(crate) use training_command::OriginalCellQ24ModelReadV1;
 pub(crate) use training_command::OriginalCellQ24ModelReadCompletionV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;
+pub use training_command::OriginalCellQ24TrainingBootstrapConfigV2;
 pub use training_command::OriginalCellQ24TrainingBootstrapCustodyV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapErrorV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapOwnerV1;

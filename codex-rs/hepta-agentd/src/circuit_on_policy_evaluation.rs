@@ -10,6 +10,7 @@
 //! before release. Cached material is never a source of rows on a later call.
 
 use std::collections::BTreeMap;
+use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -31,6 +32,15 @@ use codex_hepta_intelligence_eval::TemporalComparisonInputsV1;
 
 #[path = "circuit_on_policy_evaluation_binding.rs"]
 mod binding;
+#[path = "circuit_on_policy_evaluation_policy.rs"]
+mod policy;
+#[path = "circuit_on_policy_evaluation_policy_config.rs"]
+mod policy_config;
+pub use policy::OriginalCircuitOnPolicyComparisonPolicyV2;
+pub use policy::OriginalCircuitOnPolicyEvaluationPolicyInputV2;
+pub use policy::OriginalCircuitOnPolicyEvaluationPolicyV2;
+pub use policy::OriginalCircuitOnPolicyPanelPolicyV2;
+pub use policy_config::OriginalCircuitOnPolicyCohortConfigV2;
 #[path = "circuit_on_policy_evaluation_contract.rs"]
 mod contract;
 #[path = "circuit_on_policy_evaluation_readback.rs"]
@@ -77,6 +87,7 @@ pub struct OriginalCircuitOnPolicyCohortV1 {
     owners: OriginalCircuitEvaluationSourceOwnersV1,
     config: OriginalCircuitOnPolicyCohortConfigV1,
     rule_digest: Digest32,
+    policy: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>,
     manifest: Option<Digest32>,
     dataset: Option<DatasetSnapshotReceiptV3>,
     pairing: Option<OnPolicyPairingContractV1>,
@@ -99,11 +110,29 @@ impl OriginalCircuitOnPolicyCohortV1 {
         config: OriginalCircuitOnPolicyCohortConfigV1,
         clock: impl FnMut() -> Result<u64, Error>,
     ) -> Result<Self, Error> {
-        let rule_digest = binding::validate_configuration(&owners, &config)?;
+        Self::read_with_policy(owners, config, /*policy*/ None, clock)
+    }
+
+    /// Explicit V2 input. The original T must already commit this full policy.
+    pub fn read_original_v2(
+        owners: OriginalCircuitEvaluationSourceOwnersV1,
+        config: OriginalCircuitOnPolicyCohortConfigV2,
+    ) -> Result<Self, Error> {
+        Self::read_with_policy(owners, config.original, Some(config.policy), now)
+    }
+
+    fn read_with_policy(
+        owners: OriginalCircuitEvaluationSourceOwnersV1,
+        config: OriginalCircuitOnPolicyCohortConfigV1,
+        policy: Option<Arc<OriginalCircuitOnPolicyPanelPolicyV2>>,
+        clock: impl FnMut() -> Result<u64, Error>,
+    ) -> Result<Self, Error> {
+        let rule_digest = binding::validate_configuration(&owners, &config, policy.as_deref())?;
         let mut owner = Self {
             owners,
             config,
             rule_digest,
+            policy,
             manifest: None,
             dataset: None,
             pairing: None,
@@ -138,6 +167,8 @@ impl OriginalCircuitOnPolicyCohortV1 {
         self,
         plan: CellEvaluationPlanV1,
     ) -> Result<OriginalCircuitOnPolicyFinalHoldoutProviderV1, Error> {
+        // Legacy V1 remains readable, but cannot acquire V2 release eligibility.
+        crate::OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self)?;
         binding::require_plan(&self, &plan)?;
         Ok(OriginalCircuitOnPolicyFinalHoldoutProviderV1 {
             original: self,
@@ -188,6 +219,22 @@ impl OriginalCircuitOnPolicyCohortV1 {
         }
         self.fenced = false;
         Ok(observed)
+    }
+
+    pub(crate) fn original_pre_b_policy(
+        &self,
+    ) -> Result<(&OriginalCircuitOnPolicyEvaluationPolicyV2, &codex_hepta_learning_artifacts::LearningIterationSnapshotV1), Error> {
+        let panel = self.policy.as_ref()
+            .ok_or(Error::Binding("legacy paired V1 has no V2 pre-B policy"))?;
+        crate::OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(panel, &self.config.training)?;
+        let policy = panel.member(&self.config.rule.plan_id)?;
+        crate::OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule(policy, &self.config.rule, &self.owners.ledger)?;
+        Ok((policy, &self.config.training))
+    }
+
+    pub(crate) fn require_original_pre_b_plan(&self, plan: &CellEvaluationPlanV1) -> Result<(), Error> {
+        crate::OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(self)?;
+        binding::require_plan(self, plan)
     }
 
     pub fn authority(&self) -> AuthorityPosture {
@@ -269,6 +316,7 @@ impl OriginalCircuitOnPolicyFinalHoldoutProviderV1 {
         // Consume before receipt validation or physical I/O. A caller cannot
         // retry a failed release or classify an uncertain response as NoUpdate.
         self.release_attempted = true;
+        crate::OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan).map_err(provider_error)?;
         let plan = &self.plan.product_plan().frozen_plan;
         let used = &receipt.use_receipt;
         if self.original.pairing.as_ref() != Some(pairing)

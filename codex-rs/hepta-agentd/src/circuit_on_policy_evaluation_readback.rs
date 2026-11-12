@@ -93,7 +93,13 @@ impl OriginalCircuitOnPolicyCohortReadbackV1 {
                 "same original cohort and frozen evaluation plan",
             ));
         }
+        // V1 history keeps its exact original bytes. Only an explicit V2
+        // owner carries the full precommitted policy in the new domain.
         let mut bytes = b"hepta.circuit.original-on-policy-cohort-current.v1\0".to_vec();
+        if self.original.policy.is_some() {
+            crate::OriginalCircuitOnPolicyCohortV1::require_original_pre_b_plan(&self.original, &self.plan)?;
+            bytes = b"hepta.circuit.original-on-policy-cohort-current.v2\0".to_vec();
+        }
         for digest in [
             frozen.plan_digest,
             material.manifest,
@@ -122,6 +128,12 @@ impl OriginalCircuitOnPolicyCohortReadbackV1 {
         }
         bytes.extend_from_slice(&(material.freeze_payload.len() as u64).to_be_bytes());
         bytes.extend_from_slice(&material.freeze_payload);
+        if self.original.policy.is_some() {
+            let (policy, _) = crate::OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(&self.original)?;
+            let full_policy = policy.canonical_commitment_bytes()?;
+            bytes.extend_from_slice(&(full_policy.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(&full_policy);
+        }
         let observed = OriginalCircuitOnPolicyCohortCurrentV1 {
             binding: Digest32::of_bytes(&bytes),
             manifest: material.manifest,

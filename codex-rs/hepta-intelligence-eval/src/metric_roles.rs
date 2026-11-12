@@ -29,22 +29,31 @@ pub struct MetricRoleContractV2 {
     pub role: MetricRoleV2,
 }
 
+/// Pure validated hashes for the original V2 role-bound plan; no receipt seal.
+pub(crate) fn cross_fold_plan_v2_commitments(
+    plan: &mut CrossFoldPlanV1,
+    metric_roles: &mut [MetricRoleContractV2],
+) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {
+    let mut contracts = plan.metric_contracts.clone();
+    let contract_digest = digest_role_contracts(&mut contracts, metric_roles)?;
+    let original = cross_fold_plan_commitments(plan)?;
+    let mut bytes = b"hepta.intelligence-eval.cross-fold-plan.v3".to_vec();
+    bytes.extend_from_slice(original.plan_digest.as_array());
+    bytes.extend_from_slice(contract_digest.as_array());
+    Ok(CrossFoldPlanCommitmentsV2 {
+        metric_contract_digest: contract_digest,
+        plan_digest: Digest32::of_bytes(&bytes),
+    })
+}
+
 /// Freeze an ordinary cross-fold plan together with its complete metric roles.
 /// The returned receipt can use the existing final-holdout registry and journal.
 pub fn freeze_cross_fold_plan_v2(
-    plan: CrossFoldPlanV1,
+    mut plan: CrossFoldPlanV1,
     mut metric_roles: Vec<MetricRoleContractV2>,
 ) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {
-    let mut contracts = plan.metric_contracts.clone();
-    let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;
-    let mut receipt = freeze_cross_fold_plan(plan)?;
-    let mut bytes = b"hepta.intelligence-eval.cross-fold-plan.v3".to_vec();
-    bytes.extend_from_slice(receipt.plan_digest.as_array());
-    bytes.extend_from_slice(contract_digest.as_array());
-    receipt.plan_digest = Digest32::of_bytes(&bytes);
-    receipt.metric_contract_digest = contract_digest;
-    receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);
-    Ok(receipt)
+    let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;
+    frozen_plan_from_commitments(plan, commitments)
 }
 
 /// Evaluate using the exact roles frozen by [`freeze_cross_fold_plan_v2`].
@@ -109,7 +118,7 @@ pub(crate) fn evaluation_role_commitment_bytes(
     role_contract_commitment_bytes(&mut metric_contracts(&bundle.metrics), &mut roles.to_vec())
 }
 
-fn role_contract_commitment_bytes(
+pub(crate) fn role_contract_commitment_bytes(
     contracts: &mut [MetricContractV1],
     metric_roles: &mut [MetricRoleContractV2],
 ) -> Result<Vec<u8>, EvaluationClosureError> {

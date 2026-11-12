@@ -20,9 +20,21 @@ use crate::CellEvaluationPlanV1;
 pub(super) fn validate_configuration(
     owners: &OriginalCircuitEvaluationSourceOwnersV1,
     config: &OriginalCircuitOnPolicyCohortConfigV1,
+    policy: Option<&super::OriginalCircuitOnPolicyPanelPolicyV2>,
 ) -> Result<Digest32, Error> {
     let rule = &config.rule;
-    let digest = rule.canonical_digest()?;
+    let digest = match policy {
+        Some(panel) => {
+            crate::OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training(panel, &config.training)?;
+            if panel.registration() != &config.registration {
+                return Err(Error::Binding("same complete V2 registration"));
+            }
+            let member = panel.member(&rule.plan_id)?;
+            crate::OriginalCircuitOnPolicyEvaluationPolicyV2::require_original_rule(member, rule, &owners.ledger)?;
+            member.cohort_rule_digest()?
+        }
+        None => rule.canonical_digest()?,
+    };
     let member = std::iter::once(config.registration.primary())
         .chain(config.registration.retention())
         .find(|member| member.plan_id == rule.plan_id)
@@ -105,17 +117,14 @@ pub(super) fn authenticate_training(
         &learning_iteration_receipt_signing_bytes_v1(receipt)?,
         current,
     )?;
-    let candidate = candidate
-        .digest()
+    let candidate = codex_hepta_learning_artifacts::CellCompatibilityBundleV1::digest(candidate)
         .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-    let baseline = config
-        .training
-        .request
-        .selected_bundle
-        .digest()
+    let baseline = codex_hepta_learning_artifacts::CellCompatibilityBundleV1::digest(
+        &config.training.request.selected_bundle,
+    )
         .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
     if candidate == baseline
-        || config.candidate.bundle().digest().map_err(codex_hepta_learning_artifacts::LearningIterationError::from)? != candidate
+        || codex_hepta_learning_artifacts::CellCompatibilityBundleV1::digest(config.candidate.bundle()).map_err(codex_hepta_learning_artifacts::LearningIterationError::from)? != candidate
         || config.candidate.receipt() != receipt
         || config.candidate.attestation() != &config.training_evidence
         || config.candidate.model().components() != &config.candidate.bundle().components
@@ -170,6 +179,43 @@ pub(super) fn require_plan(
             "actual frozen Cell plan, cohort and original candidate",
         ));
     }
+    if original.policy.is_some() {
+        let (policy, snapshot) = crate::OriginalCircuitOnPolicyCohortV1::original_pre_b_policy(original)?;
+        let comparison = policy.comparison(
+            snapshot,
+            record.candidate.manifest.evolution.structure,
+            record.fixed_expert.manifest.evolution.structure,
+        )?;
+        let expected_record = crate::CellEvaluationRecordV1 {
+            cost_scope: crate::CellEvaluationCostScopeV1::TaskLedgersBeforeFinalHoldout,
+            original_estimand: policy.product().input().base_estimand_digest,
+            learning_evaluation_profile: Some(snapshot.request.evaluation_profile.into_array()),
+            comparison,
+            candidate: record.candidate.clone(),
+            fixed_expert: record.fixed_expert.clone(),
+        };
+        let pairing = policy.pairing(snapshot)?;
+        let encoded = serde_json::to_vec(&expected_record)
+            .map_err(|_| Error::Binding("complete original Cell comparison encoding"))?;
+        let expected = codex_hepta_intelligence_eval::ProductEvaluationPolicyV2::instantiate(
+            policy.product(),
+            &codex_hepta_intelligence_eval::ProductEvaluationPolicyBindingsV2 {
+                candidate_id: record.comparison.candidate.participant_id.clone(),
+                dataset_digest: dataset.snapshot.dataset_digest,
+                final_holdout_digest: original.observed_manifest_digest()?,
+                cell_estimand_digest: Digest32::of_parts(&[
+                    b"hepta.agentd.cell-paired-on-policy-estimand.v1\0", &encoded,
+                ]),
+            },
+            &pairing,
+        ).map_err(|_| Error::Binding("exact original V2 Product policy reconstruction"))?;
+        if record != &expected_record
+            || original.observed_pairing_contract()? != &pairing
+            || product != &expected
+        {
+            return Err(Error::Binding("whole preregistered V2 Cell and Product plan"));
+        }
+    }
     // These two existing Cell task cost cuts are not an aggregate cost claim
     // about every historical/held-out member in the cohort.
     Ok(())
@@ -222,7 +268,7 @@ pub(super) fn pairing_contract(
     }
     pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));
     let pairing = OnPolicyPairingContractV1 { pairs };
-    pairing.digest().map_err(|_| Error::Binding("complete frozen paired comparison contract"))?;
+    codex_hepta_intelligence_eval::OnPolicyPairingContractV1::digest(&pairing).map_err(|_| Error::Binding("complete frozen paired comparison contract"))?;
     Ok(pairing)
 }
 

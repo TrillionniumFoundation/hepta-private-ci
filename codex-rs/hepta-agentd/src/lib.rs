@@ -429,6 +429,8 @@ pub use learning_iteration_evidence_client::OriginalCellQ24RemoteMaterialClientV
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapConfigV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapConfigV2;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapCustodyV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapErrorV1;
@@ -554,6 +556,8 @@ pub use cell_q24_dataset::CellQ24DatasetRuleV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetV1;
 pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialCompletionV1;
 pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptConfigV2;
 pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptErrorV1;
 pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptFilesV1;
 pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptOwnersV1;
@@ -1557,6 +1561,16 @@ pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyAdmissionV1;
 #[cfg(target_os = "linux")]
 pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortConfigV1;
 #[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortConfigV2;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyComparisonPolicyV2;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyEvaluationPolicyInputV2;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyEvaluationPolicyV2;
+#[cfg(target_os = "linux")]
+pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyPanelPolicyV2;
+#[cfg(target_os = "linux")]
 pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortCurrentV1;
 #[cfg(target_os = "linux")]
 pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyCohortReadbackV1;
@@ -1573,3 +1587,5 @@ pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyPairV1;
 #[cfg(target_os = "linux")]
 pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyProtocolV1;
 pub use neuron_cell_evaluation::freeze_paired_cell_learning_evaluation_plan_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation::freeze_paired_cell_learning_evaluation_plan_v2;

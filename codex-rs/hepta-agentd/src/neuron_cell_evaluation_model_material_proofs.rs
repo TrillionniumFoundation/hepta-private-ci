@@ -14,6 +14,13 @@ use super::*;
 
 #[path = "neuron_cell_evaluation_on_policy_proofs.rs"]
 mod paired;
+#[path = "neuron_cell_evaluation_on_policy_policy.rs"]
+mod paired_policy;
+
+pub(in super::super) struct Cohort {
+    pub(in super::super) binding: Digest32,
+    pub(in super::super) policy_bound: bool,
+}
 
 pub(super) fn execution(
     member: &Member,
@@ -201,7 +208,7 @@ pub(in super::super) fn cohort(
     task: &crate::OriginalCellEvaluationPanelTaskV1,
     generator: &VerifiedLearningEvidenceV1,
     current: u64,
-) -> Result<Digest32, Error> {
+) -> Result<Cohort, Error> {
     let (payload, signed) = learning_owner_evidence::decode(&member.freeze)?;
     let evaluator = context.verifier.verify(
         LearningEvidenceRoleV1::Evaluator,
@@ -214,8 +221,13 @@ pub(in super::super) fn cohort(
     }
     verify_signed_actor_separation(generator, &evaluator, current)?;
     let mut proof = Reader::new(&member.cohort);
+    let paired_v2 = member.cohort.starts_with(b"hepta.circuit.original-on-policy-cohort-current.v2\0");
     if paired::is_paired(member) {
-        proof.literal(b"hepta.circuit.original-on-policy-cohort-current.v1\0")?;
+        if paired_v2 {
+            proof.literal(b"hepta.circuit.original-on-policy-cohort-current.v2\0")?;
+        } else {
+            proof.literal(b"hepta.circuit.original-on-policy-cohort-current.v1\0")?;
+        }
     } else {
         proof.literal(b"hepta.circuit.original-evaluation-cohort-current.v1\0")?;
     }
@@ -239,7 +251,8 @@ pub(in super::super) fn cohort(
             "same registered B rule, panel, Training and scope",
         ));
     }
-    if proof.digest()?.is_zero() || proof.digest()?.is_zero() {
+    let ledger_binding = proof.digest()?;
+    if ledger_binding.is_zero() || proof.digest()?.is_zero() {
         return Err(Error::Binding(
             "original independent B ledger and trust distribution",
         ));
@@ -260,6 +273,16 @@ pub(in super::super) fn cohort(
     if proof.u64()? != payload.len() as u64 || proof.take(payload.len())? != payload {
         return Err(Error::Binding("same original B freeze payload"));
     }
+    let policy_preimage = if paired_v2 {
+        let length = usize::try_from(proof.u64()?)
+            .map_err(|_| Error::Binding("bounded full V2 policy length"))?;
+        if length == 0 || length > 131_072 {
+            return Err(Error::Binding("bounded full V2 policy preimage"));
+        }
+        Some(proof.take(length)?)
+    } else {
+        None
+    };
     proof.finish()?;
     let mut freeze = Reader::new(&payload);
     freeze.literal(b"hepta.learning-ledger.dataset-freeze-plan.v2")?;
@@ -302,7 +325,7 @@ pub(in super::super) fn cohort(
     verify_dataset_snapshot_receipt_v3(
         &DatasetSnapshotReceiptV3 {
             snapshot: DatasetSnapshotV2 {
-                snapshot_id,
+                snapshot_id: snapshot_id.clone(),
                 ledger_head_digest: head,
                 objective_digest: objective,
                 eligible_frontier,
@@ -321,7 +344,16 @@ pub(in super::super) fn cohort(
         current,
     )
     .map_err(|_| Error::Binding("same self-verifying original B Dataset"))?;
-    Ok(Digest32::of_bytes(&member.cohort))
+    if let Some(preimage) = policy_preimage {
+        paired_policy::verify_pre_b_policy(member, checked, context, task, ledger_binding,
+            &snapshot_id, outcome_watermark, preimage)?;
+    }
+    Ok(Cohort {
+        binding: Digest32::of_bytes(&member.cohort),
+        // Shared history retains its existing policy. A legacy paired V1
+        // observation stays readable but never inherits V2 adoption eligibility.
+        policy_bound: !paired::is_paired(member) || paired_v2,
+    })
 }
 
 pub(super) fn publication(

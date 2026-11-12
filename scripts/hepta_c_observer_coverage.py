@@ -458,7 +458,25 @@ PAIRED_PRODUCT_CASES = (
     "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible",
 )
 
+PRE_B_PRODUCT_POLICY_CASES = (
+    "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value",
+    "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected",
+    "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata",
+    "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data",
+    "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes",
+    "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections",
+    "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact",
+)
+PRE_B_AGENTD_POLICY_CASES = (
+    "circuit_on_policy_evaluation::policy::tests::v2_full_comparison_and_pair_policy_roundtrip_is_canonical",
+    "circuit_on_policy_evaluation::policy::tests::v2_panel_profile_commits_every_comparison_and_real_pair_identity",
+    "circuit_on_policy_evaluation::policy::tests::v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity",
+    "circuit_on_policy_evaluation::policy::tests::v2_declaration_rejects_known_impossible_complete_policy_contribution",
+)
+
 OWNER_GROUPS = (
+    ("original_pre_b_product_policy_v2", "codex-hepta-intelligence-eval", PRE_B_PRODUCT_POLICY_CASES),
+    ("original_pre_b_agentd_policy_v2", PACKAGE, PRE_B_AGENTD_POLICY_CASES),
     ("original_paired_product_domain", "codex-hepta-intelligence-eval", PAIRED_PRODUCT_CASES),
     ("original_artifact_head", PACKAGE, ORIGINAL_ARTIFACT_HEAD_CASES),
     ("original_artifact_preparation", "codex-hepta-learning-artifacts", ORIGINAL_ARTIFACT_PREPARATION_CASES),

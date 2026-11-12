@@ -140,6 +140,13 @@ pub(super) fn holdout(member: &Member, bundle: &Bundle) -> Result<(), Error> {
     Ok(())
 }
 
+pub(super) fn pairing(member: &Member) -> Result<OnPolicyPairingContractV1, Error> {
+    let mut plan = Reader::new(&member.plan);
+    plan.literal(PLAN)?;
+    for _ in 0..5 { plan.digest()?; }
+    contract(plan.bytes()?)
+}
+
 pub(super) fn require_pairing(
     member: &Member,
     context: &Context,

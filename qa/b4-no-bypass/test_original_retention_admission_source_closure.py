@@ -85,8 +85,9 @@ class OriginalRetentionAdmissionClosureTests(unittest.TestCase):
                 self.rejects(VERIFY, "fn material(", marker)
 
     def test_all_verified_members_govern_admission_without_rewriting_primary_observation(self):
-        marker = "let qualified = checked_members.iter().all(|member| member.qualified)"
+        marker = "let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified)"
         for replacement in (
+            "let qualified = checked_members.iter().all(|member| member.qualified)",
             "let qualified = primary.qualified",
             "let qualified = true",
             "let qualified = checked_members.iter().any(|member| member.qualified)",

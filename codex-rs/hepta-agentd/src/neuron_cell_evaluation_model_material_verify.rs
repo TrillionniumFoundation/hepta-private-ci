@@ -73,6 +73,7 @@ pub(super) fn material(
     let mut namespaces = BTreeSet::new();
     let mut checked_members = Vec::with_capacity(body.members.len());
     let mut model_material = None;
+    let mut all_policies_bound = true;
     for (index, (raw, task)) in body
         .members
         .iter()
@@ -83,6 +84,7 @@ pub(super) fn material(
     {
         let checked = member::verify(raw, context, task, &generator, current)?;
         let cohort = member::cohort(raw, &checked, context, task, &generator, current)?;
+        all_policies_bound &= cohort.policy_bound;
         if !namespaces.insert(raw.execution_namespace)
             || !namespaces.insert(raw.qualification_namespace)
         {
@@ -175,7 +177,7 @@ pub(super) fn material(
         }
         for value in [
             raw.binding,
-            cohort,
+            cohort.binding,
             cuts[0],
             cuts[1],
             checked.execution,
@@ -226,7 +228,7 @@ pub(super) fn material(
     // The original Evaluation signature records the primary Product verdict.
     // Admission additionally requires every authenticated retention verdict;
     // a known Ineligible result remains observable and is never a retention pass.
-    let qualified = checked_members.iter().all(|member| member.qualified);
+    let qualified = all_policies_bound && checked_members.iter().all(|member| member.qualified);
     let disposition = if primary.qualified {
         LearningEvaluationDispositionV1::Qualified
     } else {

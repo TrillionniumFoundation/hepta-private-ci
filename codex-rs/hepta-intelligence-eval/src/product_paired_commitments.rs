@@ -59,17 +59,38 @@ pub(in super::super) fn plan(
     plan: &ProductFrozenEvaluationPlanV1,
     pairing: &OnPolicyPairingContractV1,
 ) -> Result<Vec<u8>, ProductEvaluationError> {
+    plan_fields(
+        plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,
+        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,
+        plan.baseline_temporal_plan_digest, pairing, &plan.metric_contracts,
+        &plan.metric_roles, &plan.metric_sources,
+    )
+}
+
+/// Raw metadata encoder shared with pre-B PolicyV2; accepts no receipt seal.
+#[allow(clippy::too_many_arguments)]
+pub(in super::super) fn plan_fields(
+    plan_digest: Digest32,
+    metric_contract_digest: Digest32,
+    base_estimand_digest: Digest32,
+    candidate_temporal_plan_digest: Digest32,
+    baseline_temporal_plan_digest: Digest32,
+    pairing: &OnPolicyPairingContractV1,
+    metric_contracts: &[crate::MetricContractV1],
+    metric_roles: &[crate::MetricRoleContractV2],
+    metric_sources: &[super::super::ProductMetricSourceContractV1],
+) -> Result<Vec<u8>, ProductEvaluationError> {
     let paired = pairing.canonical_commitment_bytes()?;
     let mut bytes = b"hepta.intelligence-eval.product-frozen-paired-on-policy.v1".to_vec();
-    for digest in [plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,
-        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,
-        plan.baseline_temporal_plan_digest] {
+    for digest in [plan_digest, metric_contract_digest,
+        base_estimand_digest, candidate_temporal_plan_digest,
+        baseline_temporal_plan_digest] {
         bytes.extend_from_slice(digest.as_array());
     }
     count(&mut bytes, paired.len())?;
     bytes.extend_from_slice(&paired);
-    count(&mut bytes, plan.metric_contracts.len())?;
-    for contract in &plan.metric_contracts {
+    count(&mut bytes, metric_contracts.len())?;
+    for contract in metric_contracts {
         id(&mut bytes, &contract.metric_id);
         bytes.push(match contract.direction {
             EvaluationDirectionV1::Maximize => 0,
@@ -83,8 +104,8 @@ pub(in super::super) fn plan(
             None => bytes.push(0),
         }
     }
-    count(&mut bytes, plan.metric_roles.len())?;
-    for role in &plan.metric_roles {
+    count(&mut bytes, metric_roles.len())?;
+    for role in metric_roles {
         id(&mut bytes, &role.metric_id);
         match role.role {
             MetricRoleV2::PrimarySuperiority { minimum_improvement } => {
@@ -98,8 +119,8 @@ pub(in super::super) fn plan(
             MetricRoleV2::AbsoluteConstraint => bytes.push(2),
         }
     }
-    count(&mut bytes, plan.metric_sources.len())?;
-    for source in &plan.metric_sources {
+    count(&mut bytes, metric_sources.len())?;
+    for source in metric_sources {
         id(&mut bytes, &source.metric_id);
         bytes.push(source.source.tag());
     }
@@ -112,19 +133,33 @@ pub(in super::super) fn estimand(
     let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {
         return Err(ProductEvaluationError::Binding("paired estimand mode"));
     };
-    if plan.base_estimand_digest.is_zero()
-        || plan.candidate_temporal_plan_digest.is_zero()
-        || plan.baseline_temporal_plan_digest.is_zero()
+    estimand_fields(
+        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,
+        plan.baseline_temporal_plan_digest, pairing, &plan.metric_sources,
+    )
+}
+
+/// Raw metadata encoder shared with pre-B PolicyV2; accepts no receipt seal.
+pub(in super::super) fn estimand_fields(
+    base_estimand_digest: Digest32,
+    candidate_temporal_plan_digest: Digest32,
+    baseline_temporal_plan_digest: Digest32,
+    pairing: &OnPolicyPairingContractV1,
+    metric_sources: &[super::super::ProductMetricSourceContractV1],
+) -> Result<Vec<u8>, ProductEvaluationError> {
+    if base_estimand_digest.is_zero()
+        || candidate_temporal_plan_digest.is_zero()
+        || baseline_temporal_plan_digest.is_zero()
     {
         return Err(ProductEvaluationError::Binding("paired estimand source"));
     }
     let mut bytes = b"hepta.intelligence-eval.product-paired-on-policy-estimand.v1".to_vec();
-    for digest in [plan.base_estimand_digest, plan.candidate_temporal_plan_digest,
-        plan.baseline_temporal_plan_digest, pairing.digest()?] {
+    for digest in [base_estimand_digest, candidate_temporal_plan_digest,
+        baseline_temporal_plan_digest, pairing.digest()?] {
         bytes.extend_from_slice(digest.as_array());
     }
-    count(&mut bytes, plan.metric_sources.len())?;
-    for source in &plan.metric_sources {
+    count(&mut bytes, metric_sources.len())?;
+    for source in metric_sources {
         id(&mut bytes, &source.metric_id);
         bytes.push(source.source.tag());
     }

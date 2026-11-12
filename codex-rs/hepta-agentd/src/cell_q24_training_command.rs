@@ -44,6 +44,7 @@ pub use readonly::OriginalCellQ24TrainingReadbackConnectionV1;
 #[path = "cell_q24_training_bootstrap.rs"]
 mod bootstrap;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV1;
+pub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV2;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapCustodyV1;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapErrorV1;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1;

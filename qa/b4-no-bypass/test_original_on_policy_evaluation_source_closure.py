@@ -77,6 +77,7 @@ OWNED_RULES = [
         "functions": [
             "fn read_original(",
             "fn read_original_with_clock(",
+            "fn read_with_policy(",
             "fn into_final_holdout_provider(",
             "fn read_current_with_clock(",
             "fn authority(",
