@@ -1,0 +1,136 @@
+{
+  "source_commit": "2420fb01d7d26d7c851f48dd24ad2f9385272259",
+  "remote_same_tree": "d8b03c34ecdf324e5f0ff5345789e510571763c1",
+  "archive_bytes": 37936,
+  "archive_sha256": "7854716ab428dcb311a4976b6b73752d7859df87dfbd4dff2a84756bca2ea69a",
+  "attempts": [
+    {
+      "name": "integration-2420fb01-cloud",
+      "source": {
+        "sha": "2420fb01d7d26d7c851f48dd24ad2f9385272259",
+        "tree": "24c507b1536b4dd7d92a87525f1adf13fa455b54",
+        "status": ""
+      },
+      "started_utc": "2026-11-12T08:30:38.436498+00:00",
+      "finished_utc": "2026-11-12T08:31:32.946898+00:00",
+      "helper_exit_code": 1,
+      "elapsed_seconds": 54.20108684699994,
+      "native_test_count": 0
+    },
+    {
+      "name": "integration-2420fb01-cloud-cmake2",
+      "source": {
+        "sha": "2420fb01d7d26d7c851f48dd24ad2f9385272259",
+        "tree": "24c507b1536b4dd7d92a87525f1adf13fa455b54",
+        "status": ""
+      },
+      "started_utc": "2026-11-12T08:36:55.558042+00:00",
+      "finished_utc": "2026-11-12T08:36:59.768541+00:00",
+      "helper_exit_code": 1,
+      "elapsed_seconds": 3.788085002000116,
+      "native_test_count": 0
+    }
+  ],
+  "members": [
+    {
+      "path": "integration-2420fb01-cloud/driver.json",
+      "bytes": 1649,
+      "sha256": "33c8719090dda8ba322acc342c52d191b2df5dca6c4b6e68f2c692d1094d70d9"
+    },
+    {
+      "path": "integration-2420fb01-cloud/exception.log",
+      "bytes": 254,
+      "sha256": "0131cf11a052aef613917d8a63ba5812c47741b71907c0927022597bfa37c3f2"
+    },
+    {
+      "path": "integration-2420fb01-cloud/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 143404,
+      "sha256": "d04ff3d1e341f5e9efd1db2713d53145ac21cdd770e4363f3475570092369e37"
+    },
+    {
+      "path": "integration-2420fb01-cloud/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 44154,
+      "sha256": "762d7fde1b1fc51546f568a5f581a27c1ef4440ce1bb555d744a8fb2b5f8009d"
+    },
+    {
+      "path": "integration-2420fb01-cloud/helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "integration-2420fb01-cloud/helpers/manifest.json",
+      "bytes": 1222,
+      "sha256": "5bf08ab6e018cdceb7768fddf41e595b3fb8047371428392d5c30e3f83d7d2ba"
+    },
+    {
+      "path": "integration-2420fb01-cloud/helpers-build/command.log",
+      "bytes": 204,
+      "sha256": "45906efaca34fb196c435fff1126562a962cf3115d4395f4bf37d024d4df9054"
+    },
+    {
+      "path": "integration-2420fb01-cloud/helpers-build/run.json",
+      "bytes": 993,
+      "sha256": "f8449d98212af8cf388693ad60ae295cbb75880be85ffd895f322f291ed57e34"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/driver.json",
+      "bytes": 1656,
+      "sha256": "d207f83a46af3f62a10b35ace9d424e2a98626319afe960b92af123449224d13"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/exception.log",
+      "bytes": 261,
+      "sha256": "915fc039a420c3f0aac4740bbe92ef930ef91b35ef5858a074d66b7dfd026bbc"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 146885,
+      "sha256": "2fe1c17f97d75c9f2097787e41b9f67fa0063061fb66561f450b081660984074"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 20075,
+      "sha256": "6f7a159b9129d4593bd89227c90e5e36e58ba228fa7970bf1a84fc8933a9ce2b"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/helpers/manifest.json",
+      "bytes": 1236,
+      "sha256": "58247765cb57ba27d732adf0e6de9433bd351425efe52bdbd74446dc2f4b010b"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/helpers-build/command.log",
+      "bytes": 211,
+      "sha256": "344a431bd0b39a0bb7eb88e052417dca978387c6940890b02ef1f18811f61588"
+    },
+    {
+      "path": "integration-2420fb01-cloud-cmake2/helpers-build/run.json",
+      "bytes": 1000,
+      "sha256": "ec050cd39fc647b42ad4b922d181f10e8dacba48a37028398cc77bcb501a0ed8"
+    },
+    {
+      "path": "harness/run_integration_2420_cloud.py",
+      "bytes": 7171,
+      "sha256": "738650b7e814ef60b0538bbfc8582522914e49c02dbcad99818b73a279df2206"
+    },
+    {
+      "path": "harness/run_integration_2420_cloud_cmake2.py",
+      "bytes": 7178,
+      "sha256": "566df8ccd454213d8c7becb887ba51dcaf270fee02bc741ce86ec1802093aaca"
+    },
+    {
+      "path": "harness/cmake-install.json",
+      "bytes": 1032,
+      "sha256": "5adc6eca407e767cabd0480b40454097c093eedad9b4b5ae59100294e781a574"
+    },
+    {
+      "path": "harness/bindgen-headers.json",
+      "bytes": 799,
+      "sha256": "950d4467098287b0d831d8dafe656db3bbd871e4eab62c27db1b573517feb186"
+    }
+  ]
+}
