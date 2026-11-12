@@ -55,7 +55,7 @@ fn root_source_handoff_recovery_never_promotes_missing_pending_or_fenced() -> an
     // matching Source data pin, which this store-only fixture never creates.
     retained.acknowledge()?;
     assert!(RootHistoricalSourceHandoffV1::open_finalized(root.clone(), &original.target).is_err());
-    retained.finalize_after_verified_context()?;
+    retained.finalize_after_verified_context(|| Ok(()))?;
     let mut acknowledged = original.clone();
     acknowledged.phase = HandoffPhase::Finalized;
     let mut recovered = RootHistoricalSourceHandoffV1::open_record(root.clone(), &original.target)?;
@@ -129,5 +129,39 @@ fn root_source_handoff_recovery_rejects_peer_ack_without_context_finalization() 
     assert!(RootHistoricalSourceHandoffV1::open_finalized(root.clone(), &original.target).is_err());
     assert!(RootHistoricalSourceHandoffV1::create_pending(root, original).is_err());
     assert_eq!(reopened.store.load(&reopened.owner)?, peer_ack);
+    Ok(())
+}
+
+#[test]
+#[ignore = "actual UID0 and original Root-owned directory custody"]
+fn root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recoverable()
+-> anyhow::Result<()> {
+    original_root()?;
+    let directory = tempfile::Builder::new()
+        .prefix("source-handoff-postcheck-")
+        .tempdir_in("/run")?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let root = RootAuthorityDirectory::open(directory.path())?;
+    let original = pending()?;
+    let mut retained =
+        RootHistoricalSourceHandoffV1::create_pending(root.clone(), original.clone())?;
+    retained.acknowledge()?;
+    assert!(
+        retained
+            .finalize_after_verified_context(|| {
+                Err(io::Error::other(
+                    "component original-context postcheck failed",
+                ))
+            })
+            .is_err()
+    );
+    let mut physically_finalized = original.clone();
+    physically_finalized.phase = HandoffPhase::Finalized;
+    assert_eq!(retained.store.load(&retained.owner)?, physically_finalized);
+    drop(retained);
+    // Even a physically valid Finalized primary cannot finish the unfinished
+    // independent arm. No synthetic fixture closure is a real Root receipt.
+    assert!(RootHistoricalSourceHandoffV1::open_record(root.clone(), &original.target).is_err());
+    assert!(RootHistoricalSourceHandoffV1::open_finalized(root, &original.target).is_err());
     Ok(())
 }
