@@ -1,0 +1,110 @@
+{
+  "schema": "hcsn-initial-amplitude-vjp-qualified-scope-v1",
+  "status": "PASS_DISCLOSED_SMALL_INITIAL_AMPLITUDE_SCOPE_GLOBAL_HOLD",
+  "all_closed": false,
+  "base_commit": "a385c0fe6fafc513da8539799338182176a1a9f8",
+  "tested_native_source_commit": "372d84ed9a04cab0e1d873f9cdd534a33689b485",
+  "preexecution_intent_commit": "7fd5d823b9366b14ee54b9a1036e6cecee01129e",
+  "input_domain": "Finite nonnegative unnormalized active/phase probability amplitudes and arbitrary independent signed contents; ambient VJP of the signed-amplitude linear extension. Positive-amplitude local tests. Physical simplex/content binding is an explicit client softmax and probability-times-conditional-mark graph.",
+  "fixed": [
+    "physical parameters",
+    "geometry",
+    "query times",
+    "phase support",
+    "delay",
+    "migration"
+  ],
+  "geometries": [
+    {
+      "kind": "uniform",
+      "intervals": 7
+    },
+    {
+      "kind": "graded-v2",
+      "intervals": 12
+    }
+  ],
+  "fields": 7,
+  "times": [
+    0,
+    0.13,
+    0.29,
+    0.53
+  ],
+  "numpy_development": {
+    "precommitted": false,
+    "before_after_guard": true,
+    "coordinate_fd_comparisons": 3480,
+    "steps": [
+      0.0002,
+      0.0001
+    ],
+    "gate_failures": 0,
+    "basis_ode_calls": 2,
+    "direct_ode_calls": 42
+  },
+  "native": {
+    "host": "desktop",
+    "job_id": "1a1cefd297d-2564-194e",
+    "state": "succeeded",
+    "exit_code": 0,
+    "complete_durable_terminal": true,
+    "source_guarded_files": 13,
+    "api_and_basis_forward_calls": 39,
+    "independent_uniform_cascade_forward_calls": 2,
+    "raw_input_vjp_coordinates": 69,
+    "results": [
+      {
+        "full_vjp_maximum_error": 1.5543122344752192e-15,
+        "geometry": "uniform",
+        "normal_and_unsafe_guards_all_four_inputs": true,
+        "normalized_client_graph_gradcheck": true,
+        "normalized_native_graph_vjp_maximum_error": 4.197447944775945e-11,
+        "old_physical_only_rejects_trainable_prior": true,
+        "primal_maximum_error": 7.268016050110404e-12,
+        "raw_gradcheck": true,
+        "uniform_native_graph_vjp_maximum_error": 1.3119794139981877e-10
+      },
+      {
+        "full_vjp_maximum_error": 3.8413716652030416e-13,
+        "geometry": "graded",
+        "primal_maximum_error": 6.536535852516567e-11,
+        "raw_gradcheck": true
+      }
+    ],
+    "optimizer_updates": 0
+  },
+  "format": {
+    "guarded_sources": 13,
+    "all_full_normalized_ast_equal": true,
+    "no_local_model_runs_after_format": true
+  },
+  "recovery": {
+    "all9_manifest_members_size_sha_match": true,
+    "full_original_archive_reproduced_exactly": true,
+    "size": 145125,
+    "sha256": "6d95ecb448ad3cf5afb1f2b5a11bae314c8d6f4ff12f4634582648c6513f6dd1",
+    "readback_model_calls": 0
+  },
+  "limits": [
+    "Directional/projected initial derivative checks, not an exhaustive initial Jacobian certificate",
+    "No raw normalized-client gradient arrays; actual program assertions and reported maximum retained",
+    "N<=32, K<=8, C<=4, at most three small basis forwards; not n512 adjoint/scalability",
+    "First-order amplitude AD only; no physical/support/delay/migration/checkpoint/filter/network AD",
+    "No independent tasks, model training, energy or adoption qualification"
+  ],
+  "optimizer_updates_total": 0,
+  "hosted_ci": "Future new-source run separately accounted; not a transfer of native evidence.",
+  "independent_review": {
+    "receipt_blob": "78576ce1d5d041994df15e97c9ac8c722236ca64",
+    "original_archive_blob": "53742d455e5710fa477b13143835b0342d1a835f",
+    "original_archive_size": 11321,
+    "original_archive_sha256": "788f18e1244b0b5790bc8c6e5cd60ca7033f23b18d2592f0394a76357bc245f3",
+    "native_input_gradient_coordinates_recomputed": 69,
+    "directional_fd_output_comparisons": 3480,
+    "failures": 0,
+    "inspector_runs": 2,
+    "inspector_ode_kernel_torch_optimizer_calls": 0,
+    "normalized_comparison": "Derived through retained raw linear VJPs and explicit client softmax/mark chain; no separate raw normalized native gradient vectors."
+  }
+}
