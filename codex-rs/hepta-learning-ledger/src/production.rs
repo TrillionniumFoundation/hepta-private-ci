@@ -646,14 +646,7 @@ impl LedgerWriter {
     ) -> Result<(), ProductionLedgerError> {
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
         let ledger = self.backend.core()?;
-        for digest in &receipt.snapshot.source_record_digests {
-            if ledger.active_record_by_digest(digest)?.is_none() {
-                return Err(ProductionLedgerError::Binding(
-                    "dataset source revoked, corrected or unavailable",
-                ));
-            }
-        }
-        Ok(())
+        LearningLedger::require_active_dataset_sources(ledger, receipt)
     }
 
     /// Resolve only the bounded frozen dataset through the replay-built digest
@@ -672,18 +665,7 @@ impl LedgerWriter {
         }
         self.revalidate_dataset_snapshot(receipt, now)?;
         let ledger = self.backend.core()?;
-        let mut records = receipt
-            .snapshot
-            .source_record_digests
-            .iter()
-            .map(|digest| {
-                ledger
-                    .active_record_by_digest(digest)?
-                    .ok_or(ProductionLedgerError::Binding("dataset source unavailable"))
-            })
-            .collect::<Result<Vec<_>, ProductionLedgerError>>()?;
-        records.sort_unstable_by_key(|record| record.sequence);
-        Ok(records)
+        LearningLedger::resolve_active_dataset_records(ledger, receipt)
     }
 
     /// Build a dataset receipt from the current anchored ledger. Source records,

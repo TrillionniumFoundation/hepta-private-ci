@@ -8,7 +8,10 @@
 use std::sync::Mutex;
 
 use super::*;
+use crate::DatasetSnapshotReceiptV3;
 use crate::LedgerWitnessFrontier;
+use crate::ProductionLedgerError;
+use crate::verify_dataset_snapshot_receipt_v3;
 use crate::witness::inspect_ordinary_witness;
 
 #[path = "durable_read_only_file.rs"]
@@ -175,5 +178,34 @@ impl ReadOnlyLedgerViewV1 {
         state.expected = ExpectedCut::Retained(cut);
         state.poisoned = false;
         Ok(LedgerReadOnlyObservationV1 { cut, snapshot })
+    }
+
+    /// Resolve owned records from a fresh physical replay, using the writer's
+    /// same active indexes and source sequence ordering. The second observation
+    /// must still match before returning. This validates receipt data only;
+    /// the actual recipient must separately verify its current Evaluator's
+    /// signature and hold the original Root admission around the whole action.
+    pub fn read_dataset_records(
+        &self,
+        receipt: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<Vec<LedgerRecord>, ProductionLedgerError> {
+        if receipt.snapshot.source_record_digests.len() > 4096 {
+            return Err(ProductionLedgerError::Binding(
+                "dataset materialization bound",
+            ));
+        }
+        verify_dataset_snapshot_receipt_v3(receipt, now)?;
+        let before = self.observe()?;
+        let ledger = LearningLedger::from_snapshot(before.snapshot.clone())?;
+        LearningLedger::require_active_dataset_sources(&ledger, receipt)?;
+        let records = LearningLedger::resolve_active_dataset_records(&ledger, receipt)?
+            .into_iter()
+            .cloned()
+            .collect();
+        if self.observe()? != before {
+            return Err(DurableLedgerError::Indeterminate.into());
+        }
+        Ok(records)
     }
 }
