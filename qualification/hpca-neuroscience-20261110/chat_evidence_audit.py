@@ -15,6 +15,14 @@ ORIGIN_HEAD = "4669280bd92804e6b5357ec0d8a27197858a5b6a"
 ORIGIN_TREE = "d78b935a2f5abe1273dced958460c7a3e23ddea6"
 PLAN_SHA = "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043"
 AUTHORITY = "DENY_ALL_HOLD_NO_GO"
+# Original frozen published receipt bytes, independently read back in RECHECK_T6
+# and EVIDENCE_SHA256.txt. These are neither supplied by the candidate RESULT
+# nor a model-origin signature. Keep frozen outputs and labels unchanged.
+ORIGINAL_RECEIPT_SHA256 = {
+    "result": "93bb1be598d8f5964ce4de890a34a48bfd606be130c2a383b5b9c962dd6c58de",
+    "preexecution": "10a68d75e5608b494977eb8d2d923fe908fa74c18e2e0ebd40cb93f39c839d3e",
+    "journal": "9c4dc311c45b22a179d000edbb7f994b58bd9e3e9c1246a60f26303861a19ef7",
+}
 EXPECTED_SOURCES = {
     "BASE_OUTPUT_PLAN.json": "ae4b53e867380d5cd582679612ed0a0970fe89d36eadef19ae7a2b243000b555",
     "CHAT_WRAPPER_PLAN.json": "5ab417097980e4f878d77288d932319bbb6ea31605acd1ca3b801227aeb33f95",
@@ -157,7 +165,15 @@ def audit(result_bytes, pre_bytes, journal_bytes, plan_bytes):
                "correct": sum(r["correct"] for r in rows),
                "first_eos": sum(r["first_eos"] for r in rows), "independent_future": 0}
     require(exact(result.get("summary"), summary), "summary arithmetic or types")
+    # Run the detailed semantic checks first, preserving their specific
+    # diagnostics. Only then enforce *immutable original* archive identities:
+    # a self-consistent rewrite of rows and hashes is not historical evidence.
+    for name, raw in (("result", result_bytes), ("preexecution", pre_bytes),
+                      ("journal", journal_bytes)):
+        require(digest(raw) == ORIGINAL_RECEIPT_SHA256[name],
+                "immutable original " + name + " receipt changed")
     return {"schema": "hpca-chat-recorded-evidence-audit-v1", "authority": AUTHORITY,
+            "immutable_recorded_receipts": True,
             "status": "RECORDED_BYTE_CONSISTENCY_PASS", "summary": summary,
             "run_id": run_id, "journal_events": len(journal),
             "result_sha256": digest(result_bytes), "preexecution_sha256": digest(pre_bytes),
