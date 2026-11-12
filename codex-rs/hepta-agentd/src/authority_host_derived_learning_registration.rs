@@ -63,7 +63,7 @@ impl HostAuthorityService {
         // Includes the actual writer/pidfd/lease/revocation postchecks above.
         require_original_end(end)?;
         Ok(RegisteredHostLearningCheckpointV1 {
-            backend,
+            backend: std::sync::Arc::new(backend),
             profile,
             socket_path,
             q24_model: None,
