@@ -7,7 +7,9 @@ with 800 intervals through `0.5`, and near960/1024 with 960 intervals through
 The auditor reads every probability posterior from all twelve original
 journals, checks their identities against the original root SUMMARY, and
 joins every one of the 14,336 positions to the published original reference
-array by arm and visit index. The primary gate remains the original 1%
+array by arm and visit index. Arm indices retain the original root SUMMARY's
+completion order, as the published sidecar adapter and continuation auditor
+did; they are not sorted lexically. The primary gate remains the original 1%
 scaled continuation error against that published reference. A new 80-digit
 round-trip-decimal closed-form reference is independently compared to the
 original. It retains the actual journal physics, including

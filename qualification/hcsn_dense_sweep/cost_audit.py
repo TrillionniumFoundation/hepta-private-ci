@@ -117,9 +117,13 @@ def main():
     if published.shape != (14336, 11) or not np.isfinite(published).all():
         raise ValueError("complete published 14336-reference corpus required")
     roster = {(seed, arm) for seed in (11, 23, 37) for arm in ("c0_b0", "c0_b1", "c1_b0", "c1_b1")}
-    runs = sorted(summary["runs"], key=lambda r: (r["seed"], r["arm"]))
+    # Published arm_index inherits the original completion order: the pinned
+    # fa258 audit_training_domain.py uses runs=summary["runs"], for run in
+    # runs, then appends arms; 62f audit_continuation.py enumerates those arms.
+    # Sorting the root SUMMARY would silently change the identity mapping.
+    runs = summary["runs"]
     grid = summary["configuration"]["grid"]
-    if (runs != summary["runs"] or len(runs) != 12 or {(r["seed"], r["arm"]) for r in runs} != roster
+    if (len(runs) != 12 or {(r["seed"], r["arm"]) for r in runs} != roster
             or summary["source_before"] != summary["source_after"]
             or grid != {"active_cells": 16, "endpoint": 4.8, "phase_cells": 8,
                         "refractory": 0.2, "tail_rate": 1.0, "quadrature_order": 16,
@@ -276,6 +280,7 @@ def main():
         "training_executions": 0, "filter_replays": 0, "dde_rollouts": 0,
         "original_scaled_continuation_gate": LIMIT, "threshold_unchanged": True,
         "primary_gate_reference": "original published #6189 exact62f corpus, hash checked and arm/visit joined",
+        "arm_order_semantics": "Original root SUMMARY completion order, inherited by fa25828fc4faee625c10db1f70add43f0074ff41 audit_training_domain.py (Git blob04a650c5f676692f7ea316351bcbc3037f5cebcb) and enumerated by62f392a0ed953f2d04e9c62b4b243f5cceed2a98 audit_continuation.py. No lexical reordering.",
         "maximum_new_vs_published_reference_difference": maximum_reference_difference,
         "decomposition": "D-A=(D-C operator/reset)+(C-B migration)+(B-A upper nonreturning truncation); absolute sum prevents cancellation",
         "C_semantics": "Finite continuum evaluated on the migrated initial law, retaining the same unquantized deterministic reset as B. Only initial-law lift is applied in C.",
