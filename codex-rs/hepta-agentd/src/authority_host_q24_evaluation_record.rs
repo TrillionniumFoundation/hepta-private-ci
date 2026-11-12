@@ -45,6 +45,7 @@ pub(super) struct OriginalBEnrollment {
     pub(super) original_generation: u64,
     pub(super) original_lease: [u8; 32],
     pub(super) heads: Option<OriginalBOutputHeads>,
+    pub(super) cell_images: Option<Vec<[u8; 32]>>,
     pub(super) realized_training_head: Option<[u8; 32]>,
     pub(super) realized_plan: Option<[u8; 32]>,
     pub(super) completed_receipt: Option<[u8; 32]>,
@@ -117,6 +118,7 @@ impl OriginalBRecord {
             || enrollment.registered_at_seconds >= enrollment.expires_at_seconds
             || enrollment.expires_at_seconds != initial.request.envelope.expiry_unix_seconds
             || enrollment.heads.is_some()
+            || enrollment.cell_images.is_some()
             || enrollment.realized_plan.is_some()
             || enrollment.realized_training_head.is_some()
             || enrollment.completed_receipt.is_some()
@@ -201,6 +203,7 @@ impl OriginalBRecord {
                 .as_ref()
                 .ok_or_else(|| io::Error::other("original B registration missing"))?;
             immutable.heads = original.heads.clone();
+            immutable.cell_images = original.cell_images.clone();
             immutable.realized_training_head = original.realized_training_head;
             immutable.realized_plan = original.realized_plan;
             immutable.completed_receipt = original.completed_receipt;

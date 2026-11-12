@@ -248,6 +248,16 @@ impl OriginalBFile {
         Ok(std::mem::replace(&mut self.file, readonly))
     }
 
+    /// Reopening an acknowledged component for observation relinquishes this
+    /// loader's unused write descriptor. It never opens or repairs a journal.
+    pub(super) fn relinquish_writer_for_observation(&mut self) -> io::Result<()> {
+        self.require_original()?;
+        if matches!(self.access, OriginalBFileAccess::OwnerWriter) {
+            drop(self.take_original_writer()?);
+        }
+        self.require_original()
+    }
+
     pub(super) fn original_readonly(&self) -> io::Result<File> {
         self.require_original()?;
         if !matches!(self.access, OriginalBFileAccess::ReadOnly) {
