@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "source_commit": "4b1d48f36683a3fbbd81d6a438249c958382ad70",
+  "source_tree": "8dfe442e1641439eab7909d9bc3787baef595e13",
+  "base": "3268f67ba4d095339036cffe1ef774cd486de4e7",
+  "reason": "Require strict monotone C and acceptance refusal attempts across the second actual query, so cloning the first DATA response cannot pass. All complete cuts and immutable primary data remain equal.",
+  "review": "CI independently found the non-strict comparison counterexample and checked that between-query observers do not perform Root business actions.",
+  "checks": {
+    "just_fmt_exit": 0,
+    "git_diff_check_exit": 0,
+    "native_executed": false,
+    "whole_cold_qualified": false
+  },
+  "backup_initial_attempt": "git bundle using two raw SHA endpoints refused an empty ref set; repeated with the already verified HEAD ref, not a source change."
+}
