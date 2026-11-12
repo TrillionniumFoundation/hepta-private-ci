@@ -365,8 +365,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let historical_offer = match (historical_deployment, historical_handoff) {
             (Some(path), Some(handoff)) => {
-                prepared.enable_original_historical_task_read_from_deployment(&path)?;
-                Some((handoff, prepared.seal_original_historical_task_read()?))
+                codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)?;
+                Some((handoff, codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?))
             }
             (None, None) => None,
             _ => {

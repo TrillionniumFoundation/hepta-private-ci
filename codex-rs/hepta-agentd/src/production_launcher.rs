@@ -267,15 +267,18 @@ impl AgentdProductionStartup {
                     .finish(&root)?
                     .with_root_bound_sockets(control, app_server)?;
                 let historical_read = if let Some(historical) = historical {
-                    let connection = root.take_historical_task_read_connection()?;
-                    let client = historical
-                        .connect_original(
-                            connection,
-                            remaining(deadline)?.min(Duration::from_millis(500)),
-                            session_end,
-                        )
-                        .await?;
-                    client.require_same_original_session(&root.session)?;
+                    let connection =
+                        AgentdRootProductionInputs::take_historical_task_read_connection(
+                            &mut root,
+                        )?;
+                    let client = crate::RootHistoricalTaskReadHandoffV1::connect_original(
+                        historical,
+                        connection,
+                        remaining(deadline)?.min(Duration::from_millis(500)),
+                        session_end,
+                    )
+                    .await?;
+                    crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1::require_same_original_session(&client, &root.session)?;
                     Some(client)
                 } else {
                     None
@@ -351,7 +354,7 @@ impl AgentdProductionLaunch {
         let client = self.historical_read.take().ok_or_else(|| {
             AgentdError::GenerationFenced("original historical read absent or already taken".into())
         })?;
-        client.require_same_original_session(&self.root.session)?;
+        crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1::require_same_original_session(&client, &self.root.session)?;
         Ok(client)
     }
 

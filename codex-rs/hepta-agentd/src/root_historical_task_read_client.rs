@@ -147,14 +147,14 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         client: &Arc<RootHistoricalTaskReadClientV1>,
         session: &AgentdRootAuthoritySession,
     ) -> Result<(), AgentdError> {
-        self.client.require_same_original_session(session)?;
+        RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)?;
         if !Arc::ptr_eq(&self.client, client) {
             self.client.fence();
             return Err(AgentdError::GenerationFenced(
                 "historical receipt belongs to another actual Root client".into(),
             ));
         }
-        self.client.require_same_original_session(session)
+        RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)
     }
 
     pub(crate) fn initial_snapshot(&self) -> &LearningIterationSnapshotV1 {

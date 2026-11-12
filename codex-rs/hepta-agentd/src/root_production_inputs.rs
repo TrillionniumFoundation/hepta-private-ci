@@ -65,14 +65,16 @@ impl AgentdRootProductionInputs {
     pub fn take_generation_publication_connection(
         &mut self,
     ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {
-        self.publication_connection.take_original_connection()
+        RootGenerationPublicationSlot::take_original_connection(&mut self.publication_connection)
     }
 
     pub(crate) fn take_historical_task_read_connection(
         &mut self,
     ) -> Result<RootHistoricalTaskReadConnectionV1, AgentdError> {
-        self.historical_read_connection
-            .take_original_connection(&self.session)
+        RootHistoricalTaskReadSlot::take_original_connection(
+            &mut self.historical_read_connection,
+            &self.session,
+        )
     }
 }
 
