@@ -30,6 +30,7 @@ impl CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> {
         published: PublishedCircuitFeatureTaskV1,
         inputs: OriginalCellQ24TaskLedgerInputsV1,
     ) -> Result<AgentdQ24LearningTaskRuntimeV1, AgentdError> {
+        let config = config.with_original_source_close(Arc::clone(&self.invocation))?;
         let producer = Arc::new(
             OriginalCellQ24TaskLedgerProducerV1::open_original(
                 inputs,

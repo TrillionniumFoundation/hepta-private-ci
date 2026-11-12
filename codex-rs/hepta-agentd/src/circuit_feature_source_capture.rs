@@ -15,6 +15,8 @@ impl PublishedCircuitFeatureTaskV1 {
         session: &AgentdRootAuthoritySession,
         identity: &AgentdIdentity,
     ) -> Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError> {
-        self.0.current.original_initial_source_current(session, identity)
+        self.0
+            .current
+            .original_initial_source_current(session, identity)
     }
 }

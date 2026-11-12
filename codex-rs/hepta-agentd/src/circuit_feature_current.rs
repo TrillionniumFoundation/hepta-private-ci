@@ -35,9 +35,6 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
 #[path = "circuit_feature_current_control.rs"]
 mod control;
-#[cfg(target_os = "linux")]
-#[path = "circuit_feature_source_capture.rs"]
-mod source_capture;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
 #[path = "circuit_feature_learning_source.rs"]
@@ -50,6 +47,9 @@ mod publication;
 mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
+#[cfg(target_os = "linux")]
+#[path = "circuit_feature_source_capture.rs"]
+mod source_capture;
 pub use control::PublishedCircuitFeatureControlV1;
 pub use learning_source::OriginalCircuitFeatureIngressV1;
 pub use learning_source::OriginalCircuitFeatureLearningSourcesV1;

@@ -12,10 +12,7 @@ pub(crate) struct OriginalControlJoinedV1 {
     _private: (),
 }
 
-pub(super) fn original_control_join_v1() -> (
-    OriginalControlCompletionV1,
-    OriginalControlJoinV1,
-) {
+pub(super) fn original_control_join_v1() -> (OriginalControlCompletionV1, OriginalControlJoinV1) {
     let (sender, receiver) = oneshot::channel();
     (
         OriginalControlCompletionV1(sender),

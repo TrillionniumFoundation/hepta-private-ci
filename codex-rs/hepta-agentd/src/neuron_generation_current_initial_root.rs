@@ -91,7 +91,8 @@ impl NeuronGenerationCurrentOwnerV1 {
         session: &crate::AgentdRootAuthoritySession,
         identity: &crate::AgentdIdentity,
     ) -> Result<(), AgentdError> {
-        self.store.original_source_capture_client()?
+        self.store
+            .original_source_capture_client()?
             .require_source_capture_session(session, identity)
     }
 
@@ -99,7 +100,8 @@ impl NeuronGenerationCurrentOwnerV1 {
         &self,
         closed: crate::circuit_task::OriginalCircuitSourceClosedV1,
     ) -> Result<(), AgentdError> {
-        self.store.original_source_capture_client()?
+        self.store
+            .original_source_capture_client()?
             .capture_source_after_quiescence(closed)
     }
 
