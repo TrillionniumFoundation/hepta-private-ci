@@ -3,6 +3,8 @@ name: Hepta CTRL critic and candidate contracts
 on:
   pull_request:
     paths:
+      - scripts/ctrl_macro*.py
+      - scripts/test_ctrl_macro*.py
       - .github/workflows/hepta-ctrl-critic-contracts.yml
       - scripts/ndu_real_runtime/actor.py
       - scripts/ndu_real_runtime/episode.py
@@ -109,6 +111,11 @@ jobs:
               -- uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 --with pillow==11.3.0 \
               python -m unittest -v "$module" || status=1
           done <<'CASES'
+          6 test_ctrl_macro_study
+          7 test_ctrl_macro_content
+          5 test_ctrl_macro_analysis
+          7 test_ctrl_macro_factorial
+          8 ndu_real_runtime.test_macro_attribution
           1 ndu_real_runtime.test_critic_context
           14 ndu_real_runtime.test_metacontrol
           7 ndu_real_runtime.test_metacontrol_study
@@ -118,7 +125,7 @@ jobs:
           2 ndu_real_runtime.test_macro_wire_delivery_admission
           4 ndu_real_runtime.test_macro_result_binding
           13 ndu_real_runtime.test_macro_realization
-          13 ndu_real_runtime.test_macro_cohort
+          17 ndu_real_runtime.test_macro_cohort
           7 ndu_real_runtime.test_macro_policy_checkpoint
           17 ndu_real_runtime.test_macro_policy
           6 ndu_real_runtime.test_macro_actor
@@ -140,6 +147,8 @@ jobs:
         run: |
           set -euo pipefail
           files=(scripts/ndu_real_runtime/{critic_context,test_critic_context,metacontrol,metacontrol_checkpoint,metacontrol_study,test_metacontrol,test_metacontrol_study,test_metacontrol_reporting,test_metacontrol_context,metacontrol_value_gate,test_metacontrol_value_gate,metacontrol_macro_contract,test_macro_pair_fixtures,test_macro_wire_delivery_admission,test_macro_result_binding,macro_realization,test_macro_realization,macro_cohort,test_macro_cohort,macro_policy_checkpoint,test_macro_policy_checkpoint,macro_policy,test_macro_policy,macro_actor,test_macro_actor,macro_public_state,test_macro_public_state,test_macro_native,macro_execution_plan,test_macro_execution_plan,macro_execution,test_macro_execution,metacontrol_native_pairs,test_metacontrol_native_pairs,test_macro_training_fixtures,macro_training_pairs,test_macro_training_pairs,candidate_coverage,test_candidate_coverage,candidate_expansion,test_candidate_expansion,candidate_coverage_legacy,test_candidate_coverage_legacy,candidate_gap_diagnostic,test_candidate_gap_diagnostic}.py)
+          files+=(scripts/ctrl_macro*.py scripts/test_ctrl_macro*.py)
+          files+=(scripts/ndu_real_runtime/{macro_attribution,test_macro_attribution}.py)
           uv run --frozen --project scripts --python 3.12.14 ruff format --diff "${files[@]}" || true
           uv run --frozen --project scripts --python 3.12.14 ruff format --check "${files[@]}"
           uv run --frozen --project scripts --python 3.12.14 ruff check --select E9,F63,F7,F82 "${files[@]}"
