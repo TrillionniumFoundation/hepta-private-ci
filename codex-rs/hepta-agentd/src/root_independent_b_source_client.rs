@@ -215,3 +215,7 @@ fn require_process(life: &CognitiveCheckpointPeerLifetime) -> io::Result<()> {
 fn refused(message: &str) -> AgentdError {
     AgentdError::GenerationFenced(message.into())
 }
+
+#[cfg(test)]
+#[path = "root_independent_b_source_tests.rs"]
+mod tests;
