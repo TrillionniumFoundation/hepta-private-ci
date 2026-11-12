@@ -86,12 +86,15 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     /// Execute the actual embedded-host operation under the same original
     /// owner lane. Dropping this future engages that lane's permanent fence;
     /// no independent blocking task can outlive it as an unfenced publisher.
-    pub(crate) async fn with_original_publication<T: Send + 'static>(
+    pub(crate) async fn with_original_publication<T>(
         &self,
         snapshot: LearningIterationSnapshotV1,
         manifest: Option<CellBackendManifestV2>,
         work: impl FnOnce() -> Result<T, crate::OriginalCellQ24PublicationErrorV1> + Send + 'static,
-    ) -> Result<T, crate::OriginalCellQ24PublicationErrorV1> {
+    ) -> Result<T, crate::OriginalCellQ24PublicationErrorV1>
+    where
+        T: Send + 'static,
+    {
         self.inner.require_snapshot(&snapshot)?;
         let adopts = matches!(snapshot.receipts.last().map(|receipt| &receipt.observation),
             Some(LearningIterationObservationV1::LocalDecisionV2(decision))
@@ -152,12 +155,15 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         }
     }
 
-    async fn with_original_root_publication<T: Send + 'static>(
+    async fn with_original_root_publication<T>(
         &self,
         snapshot: LearningIterationSnapshotV1,
         manifest: Option<CellBackendManifestV2>,
         work: impl FnOnce() -> Result<T, crate::OriginalCellQ24PublicationErrorV1> + Send + 'static,
-    ) -> Result<T, crate::OriginalCellQ24PublicationErrorV1> {
+    ) -> Result<T, crate::OriginalCellQ24PublicationErrorV1>
+    where
+        T: Send + 'static,
+    {
         let inner = Arc::clone(&self.inner);
         let started = Arc::new(AtomicBool::new(false));
         let effect_started = Arc::clone(&started);

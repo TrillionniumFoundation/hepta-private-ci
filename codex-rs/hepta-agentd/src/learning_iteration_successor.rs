@@ -55,10 +55,13 @@ impl OriginalQ24SuccessorContext {
         self.session.require_current_successor_session()
     }
 
-    pub(crate) async fn with_current_successor_operation<T: Send + 'static>(
+    pub(crate) async fn with_current_successor_operation<T>(
         self: &Arc<Self>,
         work: impl FnOnce() -> Result<T, AgentdError> + Send + 'static,
-    ) -> Result<T, AgentdError> {
+    ) -> Result<T, AgentdError>
+    where
+        T: Send + 'static,
+    {
         if matches!(self.source, OriginalSuccessorSourceV1::Historical(_)) {
             return self
                 .owners
