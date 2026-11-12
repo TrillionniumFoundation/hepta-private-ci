@@ -3,6 +3,7 @@
 //! witnesses dispatch; prior Pending permits only the original Root readback.
 
 use std::fs::File;
+use std::sync::Mutex;
 use std::time::Instant;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
@@ -22,6 +23,9 @@ pub(crate) struct RegisteredHistoricalLearningSourceV1 {
     prepared: Arc<CellQ24PreparedLearningV1>,
     identity: AgentdIdentity,
     end: Instant,
+    terminal_acceptance: Mutex<
+        Option<crate::root_completed_learning_history::OriginalCompletedLearningAcceptanceV1>,
+    >,
 }
 
 impl RegisteredHistoricalLearningSourceV1 {
@@ -54,11 +58,16 @@ impl RegisteredHistoricalLearningSourceV1 {
         if receipt.initial_snapshot().request.agent_id.as_str() != identity.agent_id.as_str() {
             return Err(refused("original recipient agent differs"));
         }
+        let terminal_acceptance =
+            RootHistoricalTaskReadClientV1::retain_original_completed_acceptance(
+                client, session, &identity,
+            )?;
         let source: Arc<RegisteredHistoricalLearningSourceV1> = Arc::new(Self {
             receipt,
             prepared,
             identity,
             end,
+            terminal_acceptance: Mutex::new(Some(terminal_acceptance)),
         });
         source.require_current_historical_source(&source.identity)?;
         source.receipt.require_original_client(client, session)?;
@@ -93,6 +102,43 @@ impl RegisteredHistoricalLearningSourceV1 {
 
     pub(crate) fn request(&self) -> &LearningIterationRequestV1 {
         &self.prepared.initial().request
+    }
+
+    async fn accept_original_terminal(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        state: &AgentdState,
+    ) -> Result<(), AgentdError> {
+        require_complete(self, snapshot)?;
+        require_ready(state)?;
+        if state.identity() != &self.identity || Instant::now() >= self.end {
+            return Err(refused("original terminal recipient or deadline differs"));
+        }
+        let original = self
+            .terminal_acceptance
+            .try_lock()
+            .map_err(|_| refused("original terminal acceptance busy"))?
+            .take()
+            .ok_or_else(|| refused("original terminal acceptance already consumed"))?;
+        // This owned job is awaited without cancellation detaching it. Root's
+        // existing frame and original session deadlines still bound the call.
+        let accepted = tokio::task::spawn_blocking(move || {
+            crate::root_completed_learning_history::OriginalCompletedLearningAcceptanceV1::accept(
+                original,
+            )
+        })
+        .await
+        .map_err(refused)??;
+        require_ready(state)?;
+        if state.identity() != &self.identity
+            || Instant::now() >= self.end
+            || accepted.initial != self.prepared.initial().head_digest.to_string()
+            || accepted.frozen_scope != self.prepared.scope().binding().to_string()
+            || accepted.terminal_head != snapshot.head_digest.to_string()
+        {
+            return Err(refused("original terminal Root acceptance differs"));
+        }
+        Ok(())
     }
 }
 
@@ -305,6 +351,9 @@ impl OriginalHistoricalLearningDeliveryV1 {
         require_complete(&self.source, &snapshot)?;
         self.source
             .require_current_historical_source(state.identity())?;
+        self.source
+            .accept_original_terminal(&snapshot, &state)
+            .await?;
         cancellation.cancelled().await;
         Ok(())
     }
