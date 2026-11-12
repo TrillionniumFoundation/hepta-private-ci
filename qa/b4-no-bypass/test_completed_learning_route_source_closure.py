@@ -131,7 +131,7 @@ class CompletedLearningRouteSourceClosure(unittest.TestCase):
         self.reject("learning_iteration_historical_source",
                     "RootHistoricalTaskReadClientV1::retain_original_completed_acceptance(")
         for marker in (
-            "require_complete(self, snapshot)?;", "require_ready(state)?;",
+            "require_complete(self, snapshot)?;", "require_ready(state).map_err(refused)?;",
             "state.identity() != &self.identity || Instant::now() >= self.end",
             "try_lock()", "take()", "OriginalCompletedLearningAcceptanceV1::accept(",
             "accepted.initial != self.prepared.initial().head_digest.to_string()",
@@ -143,6 +143,14 @@ class CompletedLearningRouteSourceClosure(unittest.TestCase):
         self.reject("learning_iteration_historical_source", ".accept_original_terminal(&snapshot, &state)")
         self.reject("learning_iteration_terminal_acceptance", "use super::*;",
                     "use super::*; fn detach(read: &OriginalPreparedReadV1<'_>) {}")
+
+    def test_ready_postcheck_and_private_derived_scope_are_preserved(self):
+        self.reject("learning_iteration_terminal_acceptance",
+                    ".map_err(refused)??;\n        require_ready(state).map_err(refused)?;",
+                    ".map_err(refused)??;")
+        self.reject("authority_host_post_a_derive",
+                    "pub(in super::super) fn with_original_derived_profile<T>(",
+                    "pub(crate) fn with_original_derived_profile<T>(")
 
     def test_actual_new_and_old_closed_calls_are_in_inventory(self):
         selected = [r for r in PROOF._boundary_rows(self.manifest) if r.identifier in NEW + UNIONS]

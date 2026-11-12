@@ -10,7 +10,7 @@ impl RegisteredHistoricalLearningSourceV1 {
         state: &AgentdState,
     ) -> Result<(), AgentdError> {
         require_complete(self, snapshot)?;
-        require_ready(state)?;
+        require_ready(state).map_err(refused)?;
         if state.identity() != &self.identity || Instant::now() >= self.end {
             return Err(refused("original terminal recipient or deadline differs"));
         }
@@ -29,7 +29,7 @@ impl RegisteredHistoricalLearningSourceV1 {
         })
         .await
         .map_err(refused)??;
-        require_ready(state)?;
+        require_ready(state).map_err(refused)?;
         if state.identity() != &self.identity
             || Instant::now() >= self.end
             || accepted.initial != self.prepared.initial().head_digest.to_string()
