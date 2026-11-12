@@ -2,6 +2,7 @@
 
 use super::data::*;
 use super::files::OriginalFile;
+use super::input_data::PublicationInputData;
 use crate::AgentdGenerationSelectionFilesV1;
 use crate::RootArtifactPublicationInputsV1;
 use crate::RootGenerationJournalInputsV1;
@@ -39,7 +40,7 @@ impl OriginalInputs {
 
     pub(super) fn enrollment_inputs(
         &self,
-        data: &DeploymentData,
+        data: &PublicationInputData,
         material: &LateMaterial,
         consumer_uid: u32,
     ) -> io::Result<(RootGenerationPublicationEnrollmentV1, Vec<OriginalFile>)> {
