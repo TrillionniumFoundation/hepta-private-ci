@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "source_sha": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+  "source_tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+  "attempt": "ordinary-cbf6ca7-seven-final-v21",
+  "session_id": "dpty-560277fedc3c77059024458257fbea0e96ceca48f98f8f83c299d486cfd6774e",
+  "status": "RUNNING_AS_OF_RECORDED_PROGRESS",
+  "last_recorded_stage": "caller-full-verify",
+  "actual_same_run_qa": {
+    "passed": 236,
+    "failed": 0,
+    "suites": [
+      {
+        "name": "b4-no-bypass",
+        "passed": 221
+      },
+      {
+        "name": "fault-matrix",
+        "passed": 5
+      },
+      {
+        "name": "performance",
+        "passed": 5
+      },
+      {
+        "name": "vertical-slice",
+        "passed": 5
+      }
+    ],
+    "evidence": "qa/*.execution.json and actual original qa/*.launch.log"
+  },
+  "full_caller_result": null,
+  "ordinary_seven_package_result": null,
+  "root17_result": null,
+  "cleanup_result": null,
+  "original_harness_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "original_checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "original_typed_helper_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "retries": 0,
+  "request_deadline_ms": 500,
+  "request_start": "original request_started_ns",
+  "known_failure_exemptions": false,
+  "predecessor_results_used": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "predecessor_v45": {
+    "source_sha": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+    "status": "FAILED",
+    "ordinary_passed": 1988,
+    "ordinary_failed": 9,
+    "root_passed": 16,
+    "root_failed": 1,
+    "not_reclassified": true
+  }
+}

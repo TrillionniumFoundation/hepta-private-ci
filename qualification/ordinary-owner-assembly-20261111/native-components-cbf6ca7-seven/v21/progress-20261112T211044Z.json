@@ -1,0 +1,692 @@
+{
+  "after_maintenance": {
+    "head": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "status": "",
+    "tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350"
+  },
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "cleanup": [],
+  "current_stage": "caller-full-verify",
+  "errors": [],
+  "execution_records": [
+    {
+      "name": "operator-toolchain",
+      "passed": true,
+      "record": {
+        "bytes": 1441,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/operator-toolchain.execution.json",
+        "sha256": "b3d51567b263e7b129b1852c8e86dda893fe4f575794bf45a3039641c4e15ca0"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "fmt-before",
+      "passed": true,
+      "record": {
+        "bytes": 1462,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fmt-before.execution.json",
+        "sha256": "e46532490b46ccead08ae47a760889dd884a35047a25f0a8fc3394f3782783c9"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "fix-seven-crates",
+      "passed": true,
+      "record": {
+        "bytes": 1729,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fix-seven-crates.execution.json",
+        "sha256": "e7e2084e444ac5548559dfc36e266168ba6d9a7b408333e40ba3e97ae3853a3e"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "fmt-after",
+      "passed": true,
+      "record": {
+        "bytes": 1460,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fmt-after.execution.json",
+        "sha256": "079d44cfdb5d55154a32579138bf3997f2f15f7aa57d5ff1559e01b0b6516040"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "bins-check",
+      "passed": true,
+      "record": {
+        "bytes": 1748,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/bins-check.execution.json",
+        "sha256": "066aaff26b34f0d4027d157ee1a7fe8646b1c14b4427a50217331d1d70d512be"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-b4-no-bypass",
+      "passed": true,
+      "record": {
+        "bytes": 1524,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-b4-no-bypass.execution.json",
+        "sha256": "6329fc73bf973ad6f6caa5356e035f451c68fb0a5cc6f21e8ccc2fb13960933b"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-fault-matrix",
+      "passed": true,
+      "record": {
+        "bytes": 1522,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-fault-matrix.execution.json",
+        "sha256": "53d14b3657c769bc12cd275b9c81dd51d26cb32a92f32a1f0cb9ba6d20325688"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-performance",
+      "passed": true,
+      "record": {
+        "bytes": 1520,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-performance.execution.json",
+        "sha256": "5f9bbfad27d23c36208f63544f13f99d61aca61b5d4f4fbb44ff03343af6bb13"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "qa-vertical-slice",
+      "passed": true,
+      "record": {
+        "bytes": 1526,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-vertical-slice.execution.json",
+        "sha256": "ff7fda300e46bbc37183c98e1dea5b4c37e31947b6be3ad6023ece2d1b422719"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "caller-self-test",
+      "passed": true,
+      "record": {
+        "bytes": 1456,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/caller-self-test.execution.json",
+        "sha256": "22b9b89f31eb450a9f5ea666b34bf61e45b5ca12362d6fc7cea378f7fc7bcb34"
+      },
+      "required_uid": 1000
+    }
+  ],
+  "expected_root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+    "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+    "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+    "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+    "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+    "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+    "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+  ],
+  "external_tools_before": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+  "independent_consumer_accepted": false,
+  "known_failure_exemptions": false,
+  "operator_euid": 1000,
+  "operator_gid": 1000,
+  "operator_uid": 1000,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "ordinary_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-fleet"
+  ],
+  "physical_daemon_root_restart_accepted": false,
+  "positive_adoption_chains": 0,
+  "predecessor_results_used": false,
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+  "root_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-contracts"
+  ],
+  "schema": "hepta.final-ordinary-root-native.v2",
+  "source_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+  "source_sha": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+  "source_tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+  "status": "running",
+  "steps": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.03307067579589784,
+      "exit_code": 0,
+      "launcher_pid": 1925816,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-hardlinks",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.8214882200118154,
+      "exit_code": 0,
+      "launcher_pid": 1925842,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/isolated-clone.launch.log",
+        "sha256": "5748545b15f33267fde8168a3deb1e1985711fb3fc9caf1769decd91bc98866d"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 13.248322080122307,
+      "exit_code": 0,
+      "launcher_pid": 1925903,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fetch-exact-source.launch.log",
+        "sha256": "f76c600048661d3d5bd540b9a381becd8b5523b56107b98735b19b9411f64c8f"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+        "checkout",
+        "--detach",
+        "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.5713774880860001,
+      "exit_code": 0,
+      "launcher_pid": 1925944,
+      "log": {
+        "bytes": 211,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/checkout-exact-source.launch.log",
+        "sha256": "7516c44543699e10b95972f2ef7783c7061425a4c7b710fc3a3e0a9c123705d2"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+        "merge-base",
+        "--is-ancestor",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+        "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.0047311128582805395,
+      "exit_code": 0,
+      "launcher_pid": 1925945,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "60",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/operator-toolchain.execution.json",
+        "--",
+        "/home/qq/.cargo/bin/rustc",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/codex-rs",
+      "elapsed_seconds": 0.46537558594718575,
+      "exit_code": 0,
+      "launcher_pid": 1926003,
+      "log": {
+        "bytes": 1505,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/operator-toolchain.launch.log",
+        "sha256": "eb8ffd6a88c673f82c0b3442372dfb490c1fcd19781f4c4209e69d5336de7239"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fmt-before.execution.json",
+        "--",
+        "just",
+        "fmt",
+        "--base",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 3.5694332378916442,
+      "exit_code": 0,
+      "launcher_pid": 1926109,
+      "log": {
+        "bytes": 1322,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fmt-before.launch.log",
+        "sha256": "f7d4618420fcff1cf66a8dae6fccd27f2c51b2d7048e7bb6bb872609e300e765"
+      },
+      "name": "fmt-before",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "7200",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fix-seven-crates.execution.json",
+        "--",
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-fleet"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 127.75935324793682,
+      "exit_code": 0,
+      "launcher_pid": 1929185,
+      "log": {
+        "bytes": 73458,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fix-seven-crates.launch.log",
+        "sha256": "7c5c2aedafd63d45289708cc8bf60a314baab64531730a9a0ccc4003723dd0eb"
+      },
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fmt-after.execution.json",
+        "--",
+        "just",
+        "fmt",
+        "--base",
+        "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 3.5694225870538503,
+      "exit_code": 0,
+      "launcher_pid": 1930891,
+      "log": {
+        "bytes": 1320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/fmt-after.launch.log",
+        "sha256": "f41aa1ac0a6880a0e01c16a1cb6e671dfbc8d7b13ca6b7f483a098dec3e34342"
+      },
+      "name": "fmt-after",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "3600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/bins-check.execution.json",
+        "--",
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-fleet",
+        "--bins"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/codex-rs",
+      "elapsed_seconds": 67.57052332884632,
+      "exit_code": 0,
+      "launcher_pid": 1934014,
+      "log": {
+        "bytes": 41052,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/bins-check.launch.log",
+        "sha256": "d19fb0f50b9b993e246117b6c6124abe202f9bba94c4b816a16937dd7063315f"
+      },
+      "name": "bins-check",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-b4-no-bypass.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 19.78401753399521,
+      "exit_code": 0,
+      "launcher_pid": 1935328,
+      "log": {
+        "bytes": 45149,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-b4-no-bypass.launch.log",
+        "sha256": "005665b0d0fc6b5cb89d6f4665156afe81bf03f755c45c1b84cf1a2f9227a735"
+      },
+      "name": "qa-b4-no-bypass",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-fault-matrix.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/fault-matrix",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 0.11487156501971185,
+      "exit_code": 0,
+      "launcher_pid": 1935454,
+      "log": {
+        "bytes": 2166,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-fault-matrix.launch.log",
+        "sha256": "0100774fb974ee2e20bd81f10d93fd42705ede1618c5b51e98bd1eb6b2dd88d1"
+      },
+      "name": "qa-fault-matrix",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-performance.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/performance",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 0.11430557281710207,
+      "exit_code": 0,
+      "launcher_pid": 1935551,
+      "log": {
+        "bytes": 2154,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-performance.launch.log",
+        "sha256": "fe2d09dacdb0ad80df441cf26d3c2093c3a7c7f9c36c8cf6daefa5dd6f2089d1"
+      },
+      "name": "qa-performance",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-vertical-slice.execution.json",
+        "--",
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/vertical-slice",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 0.1142993331886828,
+      "exit_code": 0,
+      "launcher_pid": 1935648,
+      "log": {
+        "bytes": 2168,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/qa-vertical-slice.launch.log",
+        "sha256": "d2a1e32b39f926cd552a075b2f740c55c1f2cdd91204598dbc73e36e4cc54526"
+      },
+      "name": "qa-vertical-slice",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "300",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/caller-self-test.execution.json",
+        "--",
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "elapsed_seconds": 0.1144732479006052,
+      "exit_code": 0,
+      "launcher_pid": 1935745,
+      "log": {
+        "bytes": 1368,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/caller-self-test.launch.log",
+        "sha256": "3d4abec0aae777ed3a94c37494baf86ca06d5b49246f21744a6ab2c1ca47ee1c"
+      },
+      "name": "caller-self-test",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "python3",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source/scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "3600",
+        "--minimum-tests",
+        "0",
+        "--output",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/records/caller-full-verify.execution.json",
+        "--",
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/source",
+      "name": "caller-full-verify",
+      "state": "running"
+    }
+  ]
+}

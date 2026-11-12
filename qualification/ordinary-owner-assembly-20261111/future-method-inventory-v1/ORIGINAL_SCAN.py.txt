@@ -1,0 +1,32 @@
+import sys,subprocess,hashlib,json,re,os
+from pathlib import Path
+q=json.loads(sys.argv[1]);root=Path("/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/source")
+head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
+tree=subprocess.check_output(["git","rev-parse","HEAD^{tree}"],cwd=root,text=True).strip()
+assert head==q["source_sha"] and tree==q["source_tree"]
+entries={}
+for item in subprocess.check_output(["git","ls-tree","-r","-z",head,"--","codex-rs"],cwd=root).split(b"\0"):
+    if not item:continue
+    meta,name=item.split(b"\t",1);mode,kind,blob=meta.decode().split();name=name.decode()
+    if name.endswith(".rs"):assert kind=="blob";entries[name]=blob
+assert len(entries)==6533
+names=q["method_names"];assert len(set(names))==len(names) and all(re.fullmatch(r"[A-Za-z_]\w*",x) for x in names)
+pattern=re.compile(r"\b("+ "|".join(re.escape(x) for x in names) +r")\s*(?:\(|::<)")
+hits={n:[] for n in names};files=[]
+for name,expected in sorted(entries.items()):
+    data=(root/name).read_bytes();actual=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+    assert actual==expected,(name,expected,actual)
+    content=data.decode("utf-8");matches=list(pattern.finditer(content))
+    if not matches:continue
+    files.append({"path":name,"git_blob":actual,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()})
+    for match in matches:
+        line=content.count("\n",0,match.start())+1
+        start=content.rfind("\n",0,match.start())+1;end=content.find("\n",match.end())
+        if end<0:end=len(content)
+        hits[match.group(1)].append({"path":name,"line":line,"text":content[start:end]})
+assert subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()==head
+report={"schema_version":1,"source_sha":head,"source_tree":tree,"scope":"Every tracked codex-rs .rs at the exact fixed commit; each full file Git blob independently recomputed against git ls-tree","tracked_rust_files":len(entries),"verified_physical_files":len(entries),"tracked_paths_sha256":hashlib.sha256(("\n".join(sorted(entries))+"\n").encode()).hexdigest(),"query":q,"raw_hits_by_name":hits,"matched_sources":files,"source_modified":False,"tests_run":False,"checker_run":False,"refs_changed":False,"qualification":False}
+raw=(json.dumps(report,sort_keys=True,indent=2)+"\n").encode();assert len(raw)<1024*1024
+path=root.parent/"terminal-archive-v1"/"original-method-homonyms.json"
+with path.open("xb") as f:f.write(raw);f.flush();os.fsync(f.fileno())
+print(json.dumps({"path":str(path),"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"tracked_rust_files":len(entries),"verified_physical_files":len(entries),"names":len(names),"zero_raw_names":[n for n in names if not hits[n]],"nonzero_raw_counts":{n:len(hits[n]) for n in names if hits[n]},"matched_files":len(files)},sort_keys=True),flush=True)
