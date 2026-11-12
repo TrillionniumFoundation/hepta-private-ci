@@ -1,0 +1,188 @@
+name: HCSN visit-897 branch-bound source-tree static successor
+on:
+  push:
+    branches:
+      - research/hcsn-visit897-source-tree-static-branchfix-successor-20261112-c06d
+permissions:
+  contents: read
+concurrency:
+  group: hcsn-original-visit897-source-tree-static-branchfix-successor-clear-20261112-c06d-001
+  cancel-in-progress: false
+jobs:
+  branch-bound-source-tree-static-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CANDIDATE_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: ./.github/actions/setup-ci-tools
+      - name: Bind pinned just provenance
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/source-tree-static-branchfix"
+          mkdir "$output"
+          just_path="$(command -v just)"
+          test -n "$just_path"
+          test "${just_path#/}" != "$just_path"
+          version="$(just --version)"
+          test "$version" = 'just 1.51.0'
+          executable_sha256="$(sha256sum "$just_path" | cut -d' ' -f1)"
+          setup_action_sha256="$(sha256sum .github/actions/setup-ci-tools/action.yml | cut -d' ' -f1)"
+          test "$setup_action_sha256" = c3cd9dbcbe45215f172f76ecb827ca90db329e76c6caffed7b3c156565d4587d
+          JUST_PATH="$just_path" \
+          JUST_VERSION="$version" \
+          JUST_SHA256="$executable_sha256" \
+          SETUP_ACTION_SHA256="$setup_action_sha256" \
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          result = {
+              'version': os.environ['JUST_VERSION'],
+              'executable_path': os.environ['JUST_PATH'],
+              'executable_sha256': os.environ['JUST_SHA256'],
+              'setup_action_path': '.github/actions/setup-ci-tools/action.yml',
+              'setup_action_sha256': os.environ['SETUP_ACTION_SHA256'],
+              'installer_action': (
+                  'taiki-e/install-action@'
+                  '44c6d64aa62cd779e873306675c7a58e86d6d532'
+              ),
+              'installer_release': 'v2.62.49',
+              'tool_spec': 'just@1.51.0',
+              'candidate_imports': 0,
+              'model_forwards': 0,
+              'adjoints': 0,
+              'optimizer_updates': 0,
+          }
+          output = Path(os.environ['RUNNER_TEMP']) / 'source-tree-static-branchfix'
+          (output / 'JUST-PROVENANCE.json').write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n'
+          )
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Bind exact parent and successor source trees
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          package = Path('qualification/hcsn_source_tree_static_branchfix_successor')
+          original_parent_package = Path(
+              'qualification/hcsn_source_migration_vjp_n128_successor'
+          )
+          prior_successor_package = Path(
+              'qualification/hcsn_source_tree_static_just_successor'
+          )
+          request = json.loads((package / 'REQUEST.json').read_text())
+          source = json.loads((package / 'SOURCE.json').read_text())
+          original_parent_source = json.loads(
+              (original_parent_package / 'SOURCE.json').read_text()
+          )
+          prior_successor_source = json.loads(
+              (prior_successor_package / 'SOURCE.json').read_text()
+          )
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert head == os.environ['CANDIDATE_COMMIT']
+          assert request['identity'] == source['identity']
+          original_parent_hashes = {
+              name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              for name in original_parent_source['source_sha256']
+          }
+          prior_successor_hashes = {
+              name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              for name in prior_successor_source['source_sha256']
+          }
+          successor_hashes = {
+              name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              for name in source['source_sha256']
+          }
+          assert len(original_parent_hashes) == 27
+          assert len(prior_successor_hashes) == 7
+          assert original_parent_hashes == original_parent_source['source_sha256']
+          assert prior_successor_hashes == prior_successor_source['source_sha256']
+          assert successor_hashes == source['source_sha256']
+          result = {
+              'source_commit': head,
+              'request_identity': request['identity'],
+              'idempotency_key': request['idempotency_key'],
+              'original_parent_manifest_files': len(original_parent_hashes),
+              'prior_successor_manifest_files': len(prior_successor_hashes),
+              'successor_manifest_files': len(successor_hashes),
+              'prior_successor_inventory_sha256': hashlib.sha256(
+                  (prior_successor_package / 'SOURCE.json').read_bytes()
+              ).hexdigest(),
+              'successor_source_inventory_sha256': hashlib.sha256(
+                  (package / 'SOURCE.json').read_bytes()
+              ).hexdigest(),
+              'candidate_imports': 0,
+              'model_forwards': 0,
+              'adjoints': 0,
+              'optimizer_updates': 0,
+              'numerical_execution_authorized': False,
+          }
+          output = Path(os.environ['RUNNER_TEMP']) / 'source-tree-static-branchfix'
+          (output / 'SOURCE-BIND.json').write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n'
+          )
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Apply exact repository format gate
+        run: |
+          cd codex-rs
+          just fmt --base c53211b70163c217d79bf3c218c7a7dd883ee2af
+          cd ..
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Independent zero-execution AST and hash review
+        run: |
+          python -B qualification/hcsn_source_tree_static_branchfix_successor/static_review.py \
+            --root . \
+            --provenance "$RUNNER_TEMP/source-tree-static-branchfix/JUST-PROVENANCE.json" \
+            --output "$RUNNER_TEMP/source-tree-static-branchfix/STATIC-REVIEW.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          result = json.loads(
+              (
+                  Path(os.environ['RUNNER_TEMP'])
+                  / 'source-tree-static-branchfix'
+                  / 'STATIC-REVIEW.json'
+              ).read_text()
+          )
+          assert result['status'] == 'CLEAR_SOURCE_TREE_STATIC_ONLY'
+          assert result['original_parent_manifest_files'] == 27
+          assert result['prior_successor_manifest_files'] == 7
+          assert result['runtime_closure_files'] == 11
+          assert result['candidate_imports'] == 0
+          assert result['model_forwards'] == 0
+          assert result['adjoints'] == 0
+          assert result['optimizer_updates'] == 0
+          assert result['numerical_execution_authorized'] is False
+          PY
+      - name: Confirm checkout remained immutable
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: visit897-source-tree-static-branchfix-successor
+          path: ${{ runner.temp }}/source-tree-static-branchfix
+          if-no-files-found: error
