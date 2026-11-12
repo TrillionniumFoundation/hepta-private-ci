@@ -14,12 +14,15 @@ impl CellQ24PreparedLearningV1 {
         &self,
         action: impl for<'read> FnOnce(&OriginalPreparedReadV1<'read>) -> Result<T, E>,
     ) -> Result<Result<T, E>, Error> {
-        Ok(self.batch.with_original_dataset_operation(|operation| {
-            action(&OriginalPreparedReadV1 {
-                prepared: self,
-                operation,
-            })
-        })?)
+        Ok(CellQ24TrainingBatchV1::with_original_dataset_operation(
+            &self.batch,
+            |operation| {
+                action(&OriginalPreparedReadV1 {
+                    prepared: self,
+                    operation,
+                })
+            },
+        )?)
     }
 }
 
@@ -35,7 +38,10 @@ impl OriginalPreparedReadV1<'_> {
     }
 
     pub(crate) fn revalidate_source(&self) -> Result<(), Error> {
-        Ok(self.operation.require_batch(&self.prepared.batch)?)
+        Ok(OriginalDatasetOperationV1::require_original_batch(
+            self.operation,
+            &self.prepared.batch,
+        )?)
     }
 
     pub(crate) fn read_validated_facts(&self) -> Result<CellQ24PreparedLearningFactsV1, Error> {

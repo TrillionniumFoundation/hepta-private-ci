@@ -73,8 +73,8 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
     def test_each_operation_checks_complete_batch_on_both_sides(self):
         for occurrence in (0, 1):
             self.reject_removal(OPERATION, "fn with_original_dataset_operation<T, E>(",
-                                ".require_batch(self)", occurrence)
-        self.check_markers(OPERATION, "fn require_batch(", (
+                                ".require_original_batch(self)", occurrence)
+        self.check_markers(OPERATION, "fn require_original_batch(", (
             "match (&source.ledger, &self.kind)", "source.materialize_live(ledger)?",
             "source.materialize_historical_in_operation(ledger, self)?",
             "OriginalDatasetLedgerV1::Live(_), DatasetOperationKind::Historical(_)",
@@ -84,11 +84,11 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
     def test_borrowed_prepared_facts_keep_actual_owner_and_full_validation(self):
         self.check_markers(PREPARED, "fn with_original_prepared_operation<T, E>(", (
             "for<'read> FnOnce(&OriginalPreparedReadV1<'read>)",
-            "self.batch.with_original_dataset_operation(", "prepared: self", "operation,"))
+            "CellQ24TrainingBatchV1::with_original_dataset_operation(", "prepared: self", "operation,"))
         self.check_markers(PREPARED, "fn require_prepared(", (
             "!std::ptr::eq(self.prepared, prepared)", "return Err(", "self.revalidate_source()"))
         self.check_markers(PREPARED, "fn revalidate_source(", (
-            "self.operation.require_batch(&self.prepared.batch)?",))
+            "OriginalDatasetOperationV1::require_original_batch(", "self.operation", "&self.prepared.batch",))
         for occurrence in (0, 1):
             self.reject_removal(PREPARED, "fn read_validated_facts(",
                                 "self.revalidate_source()?", occurrence)

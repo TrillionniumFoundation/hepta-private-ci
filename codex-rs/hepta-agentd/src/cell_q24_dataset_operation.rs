@@ -64,7 +64,10 @@ impl OriginalDatasetOperationV1<'_> {
         OriginalHistoricalOperationV1::read_for(read, &ledger.trust, &ledger.receipt, action)
     }
 
-    pub(crate) fn require_batch(&self, batch: &CellQ24TrainingBatchV1) -> Result<(), Error> {
+    pub(crate) fn require_original_batch(
+        &self,
+        batch: &CellQ24TrainingBatchV1,
+    ) -> Result<(), Error> {
         let source = batch
             .source
             .as_ref()
@@ -99,11 +102,11 @@ impl CellQ24TrainingBatchV1 {
             .ok_or(Error::Binding("original Dataset capability absent"))?;
         let result = source.ledger.with_original_ledger_operation(|operation| {
             operation
-                .require_batch(self)
+                .require_original_batch(self)
                 .map_err(OperationError::Source)?;
             let result = action(operation).map_err(OperationError::Work);
             operation
-                .require_batch(self)
+                .require_original_batch(self)
                 .map_err(OperationError::Source)?;
             result
         })?;

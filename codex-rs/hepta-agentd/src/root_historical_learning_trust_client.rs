@@ -165,7 +165,9 @@ impl OriginalHistoricalLearningTrustV1 {
             u64,
         ) -> io::Result<T>,
     ) -> io::Result<T> {
-        self.with_original_operation(|operation| operation.read_for(self, &self.receipt, action))?
+        OriginalHistoricalLearningTrustV1::with_original_operation(self, |operation| {
+            OriginalHistoricalOperationV1::read_for(operation, self, &self.receipt, action)
+        })?
     }
 
     fn require_same_activation(
