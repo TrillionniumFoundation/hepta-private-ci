@@ -1,0 +1,83 @@
+{
+  "cases": [
+    {
+      "first_hit": [
+        {
+          "continuum_halfline": 1.9367990970040437e-23,
+          "ctmc": 4.0258038596278504e-17,
+          "relative_error": 2078585.191957237,
+          "time": 0.01,
+          "upper_reach_probability_bound": 4.775335692287433e-198
+        },
+        {
+          "continuum_halfline": 0.0019850919213766746,
+          "ctmc": 0.0019871358933324875,
+          "relative_error": 0.0010296611123152832,
+          "time": 0.1,
+          "upper_reach_probability_bound": 1.1559855968678395e-21
+        }
+      ],
+      "geometry": {
+        "delay": 0.2,
+        "endpoint": 2.0,
+        "grading": 1.0,
+        "left_intervals": 32,
+        "right_grading": 0.0,
+        "right_intervals": 32
+      },
+      "minimum_down": 2.736355555555556,
+      "minimum_up": 0.17635555555555568,
+      "negative_drift_low_noise_accepted": true,
+      "nodal_law_rows": 64,
+      "phase_rows_available_under_current_native_cap": 0
+    },
+    {
+      "first_hit": [
+        {
+          "continuum_halfline": 1.9367990970040437e-23,
+          "ctmc": 1.5574113082154263e-17,
+          "relative_error": 804115.0854652002,
+          "time": 0.01,
+          "upper_reach_probability_bound": 4.775335692287433e-198
+        },
+        {
+          "continuum_halfline": 0.0019850919213766746,
+          "ctmc": 0.0019743033913152954,
+          "relative_error": -0.005434776065129099,
+          "time": 0.1,
+          "upper_reach_probability_bound": 1.1559855968678395e-21
+        }
+      ],
+      "geometry": {
+        "delay": 0.2,
+        "endpoint": 2.0,
+        "grading": 0.0,
+        "left_intervals": 32,
+        "right_grading": 0.0,
+        "right_intervals": 32
+      },
+      "minimum_down": 2.736355555555556,
+      "minimum_up": 0.17635555555555568,
+      "negative_drift_low_noise_accepted": true,
+      "nodal_law_rows": 64,
+      "phase_rows_available_under_current_native_cap": 0
+    }
+  ],
+  "common_candidate_pass_changed": false,
+  "exploratory_only": true,
+  "operator_source_modified": false,
+  "original_f934_counterexamples_preserved": true,
+  "probe_sha256": "5ffe188b656feaa5ede015f4aabd3e58998a736d784513cb680b0101c4102a30",
+  "qualification_threshold_added_or_relaxed": false,
+  "schema": "hcsn-two-declared-split-mesh-review-v1",
+  "source_sha256": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+    "qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+    "qualification/hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+    "qualification/hcsn_joint_dde/state_io.py": "43aafa029d1cbcb2bacfad936ee2f9e9496ae7e7a85f3139bf5eab5b10f5d446",
+    "qualification/hcsn_reset_aligned/mesh.py": "9b2d57a70ee677e9d71a18d16ec555b15bc18b3dca636cbaa3b7afd5941bf3a8",
+    "qualification/hcsn_split_mesh/mesh.py": "ee5388d804938d50930789d6879969d1c89913e70fb42661f2fc8459b2198aa0"
+  },
+  "torch_adapter_for_split_candidate": false
+}
