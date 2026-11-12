@@ -101,11 +101,19 @@ pub(super) fn compose(
         &verifier,
     )
     .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    // The consuming registration and role bundle carry independent private
+    // origins. Refuse either mismatch before creating a queue or admitting
+    // the original vacant-to-initial CAS; the later gate check still applies.
+    let readonly = owner.authority.readonly();
+    if ResidentOriginalStageOwnersV3::original_resident_readback_only(&stages) != readonly {
+        return Err(AgentdError::Invalid(
+            "resident registration and original role origins differ".into(),
+        ));
+    }
     let authorization_binding = owner
         .authority
         .authorization_binding()
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-    let readonly = owner.authority.readonly();
     let (sender, receiver) = mpsc::channel(capacity);
     let handle = RootResidentLearningHandleV3 {
         sender,

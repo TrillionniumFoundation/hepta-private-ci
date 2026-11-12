@@ -3,6 +3,16 @@ use codex_hepta_contracts::SystemAuthorityClock;
 use ed25519_dalek::Verifier;
 use pretty_assertions::assert_eq;
 
+impl DeploymentFinalUseIssuer {
+    /// Observe the original durable counter without issuing a sentinel grant.
+    pub(crate) fn fixture_original_issuance_sequence(&self) -> io::Result<u64> {
+        self.store
+            .load(STATE_OWNER)
+            .map(|state| state.sequence)
+            .map_err(io::Error::other)
+    }
+}
+
 fn policy() -> DeploymentGrantPolicy {
     DeploymentGrantPolicy {
         subject_id: "agent.local".into(),

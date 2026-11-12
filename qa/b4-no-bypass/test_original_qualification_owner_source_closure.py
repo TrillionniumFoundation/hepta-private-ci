@@ -33,11 +33,11 @@ FUNCTIONS = {
         "fn decision_bytes(", "fn clock_time(", "fn new_work_time(", "fn now(",
     },
     SOURCES: {
-        "fn read_original(", "fn read_trainer(", "fn prepare(", "fn verify_current(",
+        "fn read_original(", "fn read_trainer(", "fn prepare(", "fn prepare_with_training(", "fn verify_current(",
     },
     PERSIST: {"fn persist_original(", "fn persist("},
     READBACK: {
-        "fn readback(", "fn read_completed(", "fn finish_readback(",
+        "fn readback(", "fn read_completed(", "fn finish_readback(", "fn finish_readback_with_training(",
         "fn read_original(", "fn persist(",
     },
 }

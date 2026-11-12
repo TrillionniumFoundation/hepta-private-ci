@@ -87,6 +87,12 @@ fn specs() -> Vec<CellJournalPartitionV1> {
         .collect()
 }
 
+impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
+    pub(crate) fn locked_bytes_for_test(&mut self) -> Vec<u8> {
+        journal_bytes(self)
+    }
+}
+
 fn journal_bytes<W: AnchorWitnessStore>(journal: &mut CellOwnerJournalV1<W>) -> Vec<u8> {
     let position = checked(journal.file.stream_position());
     checked(journal.file.rewind());

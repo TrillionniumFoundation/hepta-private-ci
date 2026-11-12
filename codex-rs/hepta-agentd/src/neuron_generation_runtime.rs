@@ -85,6 +85,10 @@ pub(crate) enum GenerationCommand {
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
+    #[cfg(test)]
+    QualificationJournalBytes(Response<std::io::Result<Vec<u8>>>),
+    #[cfg(test)]
+    QualificationDurableBytes(Response<std::io::Result<[Vec<u8>; 3]>>),
     #[cfg(unix)]
     LearningRead {
         request: Box<GenerationLearningReadV1>,

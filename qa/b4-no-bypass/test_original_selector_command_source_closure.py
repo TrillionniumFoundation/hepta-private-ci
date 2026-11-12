@@ -30,7 +30,7 @@ EXPECTED = {
     "learning_original_selector_command_context": ("codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",),
     "learning_original_selector_command_owner_consume": (),
     "learning_original_selector_command_owner_profile": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",),
-    "learning_original_selector_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",),
+    "learning_original_selector_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",),
     "learning_original_selector_command_client_create": (),
     "learning_original_selector_command_client_recover": (),
     "learning_original_selector_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),

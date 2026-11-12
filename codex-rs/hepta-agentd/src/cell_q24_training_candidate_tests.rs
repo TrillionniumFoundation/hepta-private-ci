@@ -8,6 +8,7 @@ use super::*;
 use crate::OriginalCellQ24CandidateMaterialErrorV1 as MaterialCandidateError;
 use crate::OriginalCellQ24CandidateReadbackErrorV1 as CandidateError;
 use crate::OriginalCellQ24TrainingCommandConnectionErrorV1 as ConnectionError;
+use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_types::AuthorityPosture;
 use ed25519_dalek::Signer;
 use pretty_assertions::assert_eq;
@@ -430,23 +431,35 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         command_now()?,
     )?;
     assert_ne!(renewed.attestation(), run.training.attestation());
-    assert!(
+    // Signed evidence includes its expires_at second. The renewed fixture
+    // expires one second later, at the first invalid instant for the original.
+    let first_expired = renewed.attestation().expires_at;
+    assert_eq!(
         wire::authenticate_receipt(
             &context,
             run.training.receipt().clone(),
             run.training.attestation().clone(),
             run.training.attestation().expires_at,
-        )
-        .is_err()
+        )?,
+        run.training
     );
-    assert!(
+    assert!(matches!(
+        wire::authenticate_receipt(
+            &context,
+            run.training.receipt().clone(),
+            run.training.attestation().clone(),
+            first_expired,
+        ),
+        Err(CommandError::Evidence(SignedEvidenceError::ValidityWindow))
+    ));
+    assert_eq!(
         wire::authenticate_receipt(
             &context,
             renewed.receipt().clone(),
             renewed.attestation().clone(),
-            run.training.attestation().expires_at,
-        )
-        .is_ok()
+            first_expired,
+        )?,
+        renewed
     );
     let (connection, peer) = page_peer(
         Arc::clone(&run.owner),

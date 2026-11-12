@@ -31,17 +31,29 @@ pub(super) struct HostFixture {
 }
 pub(super) type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
 
+enum TrainingComposition {
+    Fixture,
+    Original {
+        connection: crate::OriginalCellQ24TrainingReadbackConnectionV1,
+        dataset: crate::OriginalCellQ24MaterialCommandReceiptV1,
+        training: crate::OriginalCellQ24TrainingCommandReceiptV1,
+    },
+}
+
 impl HostFixture {
-    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
+    // Return heap ownership so callers and cleanup retain the fixture indirectly.
+    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Box<Self>> {
         let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
         Self::from_panel(panel, pending_claim)
     }
 
-    pub(super) async fn before_adoption() -> anyhow::Result<Self> {
+    pub(super) async fn before_adoption() -> anyhow::Result<Box<Self>> {
         Box::pin(Self::before_publication(PublicationMode::RetainOriginalA)).await
     }
 
-    pub(super) async fn before_publication(publication: PublicationMode) -> anyhow::Result<Self> {
+    pub(super) async fn before_publication(
+        publication: PublicationMode,
+    ) -> anyhow::Result<Box<Self>> {
         let panel = Box::pin(PanelFixture::completed_for_publication(
             TrainingPeer::Original,
             publication,
@@ -50,7 +62,15 @@ impl HostFixture {
         Self::from_panel(panel, /*pending_claim*/ false)
     }
 
-    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
+    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Box<Self>> {
+        Self::from_panel_with_training(panel, pending_claim, TrainingComposition::Fixture)
+    }
+
+    fn from_panel_with_training(
+        panel: PanelFixture,
+        pending_claim: bool,
+        training: TrainingComposition,
+    ) -> anyhow::Result<Box<Self>> {
         let PanelFixture {
             panel,
             original,
@@ -74,7 +94,7 @@ impl HostFixture {
             },
         };
         let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
-        let mut fixture = Self {
+        let mut fixture = Box::new(Self {
             host: None,
             original,
             primary_b,
@@ -84,7 +104,7 @@ impl HostFixture {
             config,
             at,
             directory,
-        };
+        });
         let (file, witness) = fixture.files(/*create*/ true)?;
         let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
             file,
@@ -95,7 +115,15 @@ impl HostFixture {
         if pending_claim {
             evaluator.fixture_pending_original_host()?;
         }
-        let mut host = evaluator.into_original_evaluation_host(panel)?;
+        let mut host = match training {
+            TrainingComposition::Fixture => evaluator.into_original_evaluation_host(panel)?,
+            TrainingComposition::Original {
+                connection,
+                dataset,
+                training,
+            } => evaluator
+                .into_host_from_original_training_readback(panel, connection, dataset, training)?,
+        };
         host.fixture_original_clock(at)?;
         fixture.host = Some(Arc::new(host));
         Ok(fixture)
@@ -174,7 +202,7 @@ impl HostFixture {
         Ok(())
     }
 
-    pub(super) async fn finish(mut self) -> anyhow::Result<[usize; 2]> {
+    pub(super) async fn finish(mut self: Box<Self>) -> anyhow::Result<[usize; 2]> {
         drop(self.host.take());
         let counts = [self.primary.finish()?, self.retention.finish()?];
         drop(self.primary_b);
@@ -192,3 +220,6 @@ pub(super) fn finish(
     peer.join()
         .map_err(|_| anyhow::anyhow!("original Evaluation command peer panicked"))?
 }
+
+#[path = "circuit_original_evaluation_training_read_support_tests.rs"]
+mod training_read_support;

@@ -245,7 +245,9 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
                             heads,
                         } => (offset, total, heads),
                         candidate_wire::MaterialResult::Current { .. } => {
-                            return Err(Error::Binding("Page response cannot be Candidate Current"));
+                            return Err(Error::Binding(
+                                "Page response cannot be Candidate Current",
+                            ));
                         }
                         candidate_wire::MaterialResult::NoCandidate => {
                             return Err(Error::NoCandidate);

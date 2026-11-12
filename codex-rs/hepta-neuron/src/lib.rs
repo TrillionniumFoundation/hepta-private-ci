@@ -71,6 +71,8 @@ mod plasticity;
 mod population_v2;
 mod protocol;
 mod qualification;
+#[cfg(any(test, feature = "qualification-file-observation"))]
+mod qualification_file_observation;
 mod runtime;
 mod runtime_types;
 mod sparse;

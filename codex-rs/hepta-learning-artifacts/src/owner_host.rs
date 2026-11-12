@@ -1615,6 +1615,39 @@ mod tests {
     use crate::test_support::FixtureError;
     use crate::test_support::FixtureValue;
 
+    impl LearningArtifactOwnerHost {
+        pub(crate) fn qualification_writer_fence_bytes_for_test(
+            &mut self,
+        ) -> std::io::Result<Vec<u8>> {
+            use std::io::Read;
+            use std::io::Seek;
+            use std::io::SeekFrom;
+
+            const LIMIT: u64 = 8 * 1024 * 1024;
+            if self.writer_fence.metadata()?.len() > LIMIT {
+                return Err(std::io::Error::other(
+                    "writer fence observation exceeds limit",
+                ));
+            }
+            let position = self.writer_fence.stream_position()?;
+            let read = (|| {
+                self.writer_fence.rewind()?;
+                let mut bytes = Vec::new();
+                (&mut self.writer_fence)
+                    .take(LIMIT + 1)
+                    .read_to_end(&mut bytes)?;
+                if bytes.len() as u64 > LIMIT {
+                    return Err(std::io::Error::other(
+                        "writer fence observation exceeds limit",
+                    ));
+                }
+                Ok(bytes)
+            })();
+            self.writer_fence.seek(SeekFrom::Start(position))?;
+            read
+        }
+    }
+
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
     struct TestDir(PathBuf);

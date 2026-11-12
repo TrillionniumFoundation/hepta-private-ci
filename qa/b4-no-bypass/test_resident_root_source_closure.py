@@ -110,6 +110,7 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "authority_host_service::resident::authority::tests::origin::resident_root_consuming_origins_match_before_cas_issuance_and_dispatch",
 ]
 ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
@@ -408,14 +409,20 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             '#[path = "authority_host_learning_resident_retention_auth_tests.rs"]\nmod retention_auth;',
             roots,
         )
+        origin = (ROOT / (AGENT + "authority_host_learning_resident_origin_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_origin_tests.rs"]\nmod origin;',
+            roots,
+        )
         for name in ROOT_CASES:
-            source = retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
+            source = origin if "::origin::" in name else retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
         self.assertEqual(
             roots.count('#[ignore = "explicit actual Root')
             + evaluation.count('#[ignore = "explicit actual Root')
             + model.count('#[ignore = "explicit actual Root')
-            + retention.count('#[ignore = "explicit actual Root'),
+            + retention.count('#[ignore = "explicit actual Root')
+            + origin.count('#[ignore = "explicit actual Root'),
             len(ROOT_CASES),
         )
         for marker in (

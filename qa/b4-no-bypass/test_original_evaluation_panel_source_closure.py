@@ -145,8 +145,13 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         for marker in (
             "let before = self.read_cells()?",
             "self.qualification.completed_bytes()?",
-            "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?",
-            ".finish_readback(",
+            "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(\n"
+            "            &mut sources,\n"
+            "            &self.qualification.config,\n"
+            "            started_at,\n"
+            "            training,\n"
+            "        )\n        .await?",
+            "OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(",
             "drop(sources)",
             "let after = self.read_cells()?",
             "if before != after",
@@ -159,11 +164,16 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
 
     def test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms(self):
         self.rejects(CORE, "fn read_current(", "self.read_current_with_clock(original::now).await")
-        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock).await"):
-            self.rejects(CORE, "fn read_current_with_clock(", marker)
+        self.rejects(
+            CORE,
+            "fn read_current_with_clock(",
+            "self.read_current_with_training(&mut clock, &mut OriginalPanelTrainingReadV1::Individual)",
+        )
+        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock, training).await"):
+            self.rejects(CORE, "fn read_current_with_training(", marker)
         for marker in (
-            "let before = self.read_members(clock).await?",
-            "let after = self.read_members(clock).await?",
+            "let before = self.read_members(clock, training).await?",
+            "let after = self.read_members(clock, training).await?",
             "if before != after",
             "self.require_observed_panel(&after)?",
             "let current = clock()?",

@@ -44,6 +44,17 @@ impl ResidentOriginalStageOwnersV3 {
         }
     }
 
+    pub(super) fn original_resident_readback_only(&self) -> bool {
+        match self {
+            Self::NoUpdate(stages) => {
+                OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(stages)
+            }
+            Self::Candidate(stages) => {
+                OriginalCellQ24CandidateStageOwnersV1::original_resident_readback_only(stages)
+            }
+        }
+    }
+
     pub(super) fn install_fresh_resident_gate(
         &mut self,
         gate: Arc<RootResidentLearningEffectGateV3>,

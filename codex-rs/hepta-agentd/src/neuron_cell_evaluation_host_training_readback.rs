@@ -9,6 +9,7 @@ use codex_hepta_neuron::FileAnchorWitnessStore;
 
 use super::Error;
 use super::OriginalCellEvaluationHostV1;
+use super::OriginalPanelTrainingSourceV1;
 use super::Panel;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -65,6 +66,15 @@ impl OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore> {
         for member in &mut panel.retention {
             member.trainer = Arc::clone(&trainer);
         }
-        OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
+        let training_source = OriginalPanelTrainingSourceV1::from_original_training_readback(
+            trainer,
+            &panel.primary.qualification.config,
+        );
+        let mut host = OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)?;
+        host.owners
+            .get_mut()
+            .map_err(|_| Error::Unavailable)?
+            .training_source = training_source;
+        Ok(host)
     }
 }

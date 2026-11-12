@@ -1,6 +1,12 @@
 //! Explicit same-process transport fixture. Public bootstraps still refuse
 //! this custody. Native owners and both journals in the caller are actual.
 
+#[path = "cell_q24_training_panel_read_peer_tests.rs"]
+mod panel_read_peer;
+pub(crate) use panel_read_peer::PanelReadControl;
+pub(crate) use panel_read_peer::PanelReadTrace;
+pub(crate) use panel_read_peer::panel_readonly;
+
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;

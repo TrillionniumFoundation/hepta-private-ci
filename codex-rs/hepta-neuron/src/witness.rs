@@ -144,6 +144,15 @@ impl FileAnchorWitnessStore {
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    fn qualification_file_bytes(&mut self, maximum_bytes: u64) -> std::io::Result<Vec<u8>> {
+        let file = self
+            .file
+            .get_mut()
+            .map_err(|_| std::io::Error::other("witness observation mutex is poisoned"))?;
+        crate::qualification_file_observation::read(file, maximum_bytes)
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.poisoned.load(Ordering::Acquire) {
             return Err(WitnessStoreError::Poisoned);

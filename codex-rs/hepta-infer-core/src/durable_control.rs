@@ -194,6 +194,13 @@ impl Drop for DurableInferenceControl {
 }
 
 impl DurableInferenceControl {
+    /// Qualification-only physical bytes from this owner's locked file.
+    /// The read is bounded, restores the cursor and never releases the lock.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    pub fn qualification_file_bytes(&mut self, maximum_bytes: u64) -> std::io::Result<Vec<u8>> {
+        crate::qualification_file_observation::read(&mut self.file, maximum_bytes)
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);

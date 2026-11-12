@@ -195,6 +195,15 @@ impl std::error::Error for CellGenerationErrorV2 {}
 /// publish output. Readback inspects only this original request, never submits
 /// another computation. An error or missing receipt does not prove no contact.
 pub trait CellGenerationControlPortV2 {
+    /// Qualification-only observation; implementations without an owned file refuse.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    fn qualification_file_bytes(&mut self, _maximum_bytes: u64) -> std::io::Result<Vec<u8>> {
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "this owner has no physical file observation",
+        ))
+    }
+
     fn execute_generation(
         &mut self,
         manifest: &CellBackendManifestV2,

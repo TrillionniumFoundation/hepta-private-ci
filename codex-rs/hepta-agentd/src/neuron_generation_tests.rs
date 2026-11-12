@@ -22,6 +22,23 @@ fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
     }
 }
 
+impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerationOwnerV2<W, P> {
+    pub(crate) fn qualification_journal_bytes_for_test(&mut self) -> std::io::Result<Vec<u8>> {
+        self.journal
+            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
+    }
+
+    pub(crate) fn qualification_durable_bytes_for_test(&mut self) -> std::io::Result<[Vec<u8>; 3]> {
+        Ok([
+            self.qualification_journal_bytes_for_test()?,
+            self.journal
+                .qualification_witness_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)?,
+            self.inference_control
+                .qualification_file_bytes(/*_maximum_bytes*/ 8 * 1024 * 1024)?,
+        ])
+    }
+}
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture(PathBuf);
 impl Fixture {
@@ -306,24 +323,30 @@ fn expiration_during_admission_settles_known_no_contact_without_calling_model() 
     );
     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = checked(owner.qualification_journal_bytes_for_test());
     assert_eq!(
         checked(owner.step(req.clone(), || panic!(
             "exact replay must not sample a clock"
         ))),
         receipt
     );
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(
+        checked(owner.qualification_journal_bytes_for_test()),
+        journal_bytes
+    );
     assert!(checked(owner.drain()));
     drop(owner);
     let mut owner = fixture.owner(model.clone());
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = checked(owner.qualification_journal_bytes_for_test());
     assert_eq!(
         checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
         receipt
     );
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(
+        checked(owner.qualification_journal_bytes_for_test()),
+        journal_bytes
+    );
     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
 }
 

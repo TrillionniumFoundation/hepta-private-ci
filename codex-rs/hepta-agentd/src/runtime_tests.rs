@@ -643,7 +643,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("logical request");
     let fixture_started = std::time::Instant::now();
     let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
-    let expires_at = minted_at.as_secs() + 1;
+    // Expiry is stored in whole seconds. Round up before adding the setup
+    // second; rounding down can leave only milliseconds for the H7 writes.
+    // The original two-second real wait below still observes actual expiry.
+    let expires_at = minted_at.as_secs() + u64::from(minted_at.subsec_nanos() != 0) + 1;
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
             .duration_since(UNIX_EPOCH)

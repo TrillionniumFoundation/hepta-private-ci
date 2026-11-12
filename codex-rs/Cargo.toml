@@ -643,6 +643,17 @@ debug = "limited"
 [profile.dev.package.matrix-sdk-store-encryption]
 opt-level = 3
 
+# The passphrase import calls PBKDF2<HMAC<SHA-256>> in these dependencies.
+# Keep their separately compiled work optimized with the Matrix caller.
+[profile.dev.package."pbkdf2:0.13.0"]
+opt-level = 3
+
+[profile.dev.package."hmac:0.13.0"]
+opt-level = 3
+
+[profile.dev.package."sha2:0.11.1"]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0

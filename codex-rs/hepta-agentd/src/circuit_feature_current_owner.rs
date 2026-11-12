@@ -9,6 +9,7 @@ use codex_hepta_neuron::CellScopeV1;
 use codex_hepta_neuron::CellStateOwnerV1;
 use codex_hepta_neuron::CellStateProposalV1;
 
+use super::current_read::OriginalPublishedReadCurrent;
 use super::*;
 
 /// Read-only Observer view. It deliberately does not implement CellStateOwner:
@@ -101,7 +102,16 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         &self,
         source: &CircuitTaskSourcePublicationV1,
     ) -> Result<CellDecisionReceiptV1, AgentdError> {
-        self.task.require_current()?;
+        let mut current = OriginalPublishedReadCurrent::individual(self);
+        self.committed_with_current(source, &mut current)
+    }
+
+    pub(super) fn committed_with_current(
+        &self,
+        source: &CircuitTaskSourcePublicationV1,
+        current: &mut OriginalPublishedReadCurrent<'_, W>,
+    ) -> Result<CellDecisionReceiptV1, AgentdError> {
+        OriginalPublishedReadCurrent::require(current, self)?;
         let input = source.input();
         if input != &source_input(self.task.source(), input.operation_id.clone())
             || source.bundle_digest() != self.task.definition().bundle_digest
@@ -139,7 +149,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
                 "original Feature checkpoint differs from committed source",
             ));
         }
-        self.task.require_current()?;
+        OriginalPublishedReadCurrent::require(current, self)?;
         Ok(decision)
     }
 }

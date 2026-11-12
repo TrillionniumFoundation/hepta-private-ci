@@ -280,13 +280,18 @@ class EvaluatedPublishedReadClosureTests(unittest.TestCase):
     def test_actual_source_and_cell_surround_each_read_and_five_cut_c_result(self):
         for function, markers in (
             ("from_original_profile", ("owner.require_task_input_current()?", "cell.read_learning_selection(&coordinator)?", "owner.require_original_selection(&observed)?", "owner.context.binding(fresh)? != binding")),
-            ("require_task_input_current", ("self.cell.task.require_current()?", "let request = &self.context.prefix().request;", "source.require_original_input(&self.identity, input)?")),
-            ("read_original", ("self.require_task_input_current()?", "cell.read_learning_selection(&coordinator)?", "circuit_feature_task_digest_v1(", "wire::Mode::Selection => (selection.clone(), None)", "cell.read_learning_next_use(", "before.publication_digest()", "cell.read_learning_selection(&coordinator)? != selection")),
+            ("require_task_input_current_with_current", ("OriginalPublishedReadCurrent::require(current, &self.cell)?", "let request = &self.context.prefix().request;", "source.require_original_input(&self.identity, input)?")),
+            ("read_original", ("self.require_task_input_current_with_current(&mut current)?", "cell.read_learning_selection_with_current(&coordinator, &mut current)?", "circuit_feature_task_digest_v1(", "wire::Mode::Selection => (selection.clone(), None)", "cell.read_learning_next_use_with_current(", "before.publication_digest()", "cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection")),
             ("response", ("self.context.require_request(&request, self.binding, request_id)?", "self.read_original()?", "self.context.binding(fresh)? != self.binding")),
         ):
             for marker in markers:
                 self.rejects(SERVICE, function, marker)
         self.rejects(SERVICE, "require_original_selection", "&& self.context.selection()? != observed", "|| self.context.selection()? != observed")
+        self.rejects(SERVICE, "require_task_input_current", "OriginalPublishedReadCurrent::individual(&self.cell)")
+        self.rejects(SERVICE, "require_task_input_current", "self.require_task_input_current_with_current(&mut current)")
+        self.rejects(SERVICE, "read_original", "OriginalPublishedReadCurrent::finish(current)?")
+        self.rejects_unused_body(SERVICE, "require_task_input_current")
+        self.rejects_unused_body(SERVICE, "require_task_input_current_with_current")
         self.rejects_unused_body(SERVICE, "read_original")
         self.rejects_unused_body(SERVICE, "response")
 

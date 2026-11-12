@@ -4,6 +4,7 @@ use codex_hepta_intelligence_eval::ProductEvaluationExecutionRequestV1;
 use codex_hepta_intelligence_eval::ProductProviderErrorV1;
 use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
 
+use super::training_read_proof::OriginalPanelTrainingReadV1;
 use super::*;
 use crate::CellEvaluationJournalsV1;
 use crate::LearningIterationEvidenceClientV1;
@@ -82,8 +83,22 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore>
         config: &OriginalCellEvaluationQualificationConfigV1,
         started_at: u64,
     ) -> Result<Prepared, Error> {
+        self.prepare_with_training(
+            config,
+            started_at,
+            &mut OriginalPanelTrainingReadV1::Individual,
+        )
+        .await
+    }
+
+    pub(super) async fn prepare_with_training(
+        &mut self,
+        config: &OriginalCellEvaluationQualificationConfigV1,
+        started_at: u64,
+        training: &mut OriginalPanelTrainingReadV1<'_>,
+    ) -> Result<Prepared, Error> {
         let before = self.read_original(config)?;
-        self.read_trainer(config).await?;
+        OriginalPanelTrainingReadV1::read(training, self, config).await?;
         let after = self.read_original(config)?;
         if before != after {
             return Err(Error::CommitUncertain);

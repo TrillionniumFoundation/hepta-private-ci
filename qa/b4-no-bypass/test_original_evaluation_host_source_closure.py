@@ -32,7 +32,7 @@ AUTH = AGENT + "authority_host_learning_resident_auth.rs"
 EXPECTED = {
     "learning_original_evaluation_host_consume": (),
     "learning_original_evaluation_host_profile": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
-    "learning_original_evaluation_host_receipt_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
+    "learning_original_evaluation_host_receipt_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"),
     "learning_original_evaluation_host_constructor": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
     "learning_original_evaluation_host_serve": (),
     "learning_original_evaluation_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
@@ -115,12 +115,12 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
         ):
             self.rejects(HOST, "fn from_original_receipt_owner(", marker)
         for marker in (
-            "let before = self.read_panel().await?",
+            "let before = self.read_panel_with_training(&mut training).await?",
             "before.training_evidence() != &context.training_evidence",
             "qualification: before.primary().qualification()",
             "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
             "OriginalCellEvaluationReceiptOwnerV1::readback(",
-            "let after = self.read_panel().await?", "if before != after",
+            "let after = self.read_panel_with_training(&mut training).await?", "if before != after",
             "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
             "self.authenticate_panel(&after, current)?",
             "config.signing.verifier.require_signer_binding(",

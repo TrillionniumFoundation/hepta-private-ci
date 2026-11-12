@@ -391,6 +391,27 @@ crate.annotation(
     rustc_flags = ["-Copt-level=3"],
     version = "0.19.1",
 )
+
+# The same bounded-startup import calls these full-strength KDF dependencies.
+# Optimize their compiled work as well as the Matrix caller in fastbuild.
+crate.annotation(
+    crate = "pbkdf2",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.13.0",
+)
+crate.annotation(
+    crate = "hmac",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.13.0",
+)
+crate.annotation(
+    crate = "sha2",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.11.1",
+)
 crate.annotation(
     # The build script only validates embedded source/version metadata.
     crate = "rustc_apfloat",

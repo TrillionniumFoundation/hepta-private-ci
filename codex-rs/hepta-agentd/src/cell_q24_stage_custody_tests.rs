@@ -102,7 +102,10 @@ fn cancelling_a_polled_future_returns_mutated_state_without_its_channel() -> Res
     let resumed = AtomicBool::new(/*v*/ false);
     let mut operation = Box::pin(async {
         let mut lease = slot.try_lease()?;
-        address.store(std::ptr::from_ref(lease.value()?) as usize, Ordering::SeqCst);
+        address.store(
+            std::ptr::from_ref(lease.value()?) as usize,
+            Ordering::SeqCst,
+        );
         let state = lease.value_mut()?;
         state.failed = true;
         state.selection_requested = true;
@@ -115,7 +118,10 @@ fn cancelling_a_polled_future_returns_mutated_state_without_its_channel() -> Res
         Ok::<(), Error>(())
     });
     let mut context = Context::from_waker(Waker::noop());
-    assert!(matches!(operation.as_mut().poll(&mut context), Poll::Pending));
+    assert!(matches!(
+        operation.as_mut().poll(&mut context),
+        Poll::Pending
+    ));
     assert!(matches!(slot.try_lease(), Err(Error::QueueFull)));
     drop(operation);
     let lease = slot.try_lease()?;
@@ -195,14 +201,16 @@ impl Drop for ReleaseProbe {
         if let Some(slot) = self.slot.upgrade()
             && slot.admission.available_permits() != 0
         {
-            self.admission_released_early.store(/*val*/ true, Ordering::SeqCst);
+            self.admission_released_early
+                .store(/*val*/ true, Ordering::SeqCst);
         }
         self.dropped.fetch_add(/*val*/ 1, Ordering::SeqCst);
     }
 }
 
 #[test]
-fn an_internal_restore_conflict_retires_both_values_before_releasing_admission() -> Result<(), Error> {
+fn an_internal_restore_conflict_retires_both_values_before_releasing_admission() -> Result<(), Error>
+{
     let dropped = Arc::new(AtomicUsize::new(/*v*/ 0));
     let admission_released_early = Arc::new(AtomicBool::new(/*v*/ false));
     let slot = Arc::new(OriginalStageSlot::new(ReleaseProbe {

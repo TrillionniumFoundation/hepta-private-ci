@@ -29,7 +29,7 @@ EXPECTED = {
     "learning_original_next_use_command_context": ("codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",),
     "learning_original_next_use_command_owner_consume": (),
     "learning_original_next_use_command_owner_profile": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",),
-    "learning_original_next_use_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",),
+    "learning_original_next_use_command_owner_factory": ("codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"),
     "learning_original_next_use_command_client_create": (),
     "learning_original_next_use_command_client_recover": (),
     "learning_original_next_use_command_client_attest": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),

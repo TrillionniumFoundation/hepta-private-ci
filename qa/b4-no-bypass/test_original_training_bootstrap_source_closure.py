@@ -29,7 +29,7 @@ BUILD = AGENT + "cell_q24_training_bootstrap_build.rs"
 SERVICE = AGENT + "cell_q24_training_bootstrap_service.rs"
 EXPECTED = {
     "learning_original_dataset_readback_attenuation": (),
-    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs'),
     "learning_original_dataset_readback_context": ("codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs",),
     "learning_original_dataset_readback_cut": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
     "learning_original_material_connection_create": (),

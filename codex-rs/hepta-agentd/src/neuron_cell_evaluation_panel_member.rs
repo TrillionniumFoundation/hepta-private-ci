@@ -13,6 +13,7 @@ use codex_hepta_types::Digest32;
 use super::super::OriginalCellEvaluationQualificationErrorV1;
 use super::super::OriginalCellEvaluationQualificationOwnerV1;
 use super::super::OriginalCellEvaluationQualificationSourcesV1;
+use super::super::training_read_proof::OriginalPanelTrainingReadV1;
 use super::Error;
 use super::OriginalCellEvaluationPanelMemberReadbackV1;
 use super::OriginalCellEvaluationPanelTaskV1;
@@ -50,6 +51,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         &mut self,
         task: &OriginalCellEvaluationPanelTaskV1,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
+        training: &mut OriginalPanelTrainingReadV1<'_>,
     ) -> Result<OriginalCellEvaluationPanelMemberReadbackV1, Error> {
         // The original Qualification owns its internal SystemTime checks.
         // The panel's final common clock reauthenticates every window later.
@@ -69,17 +71,22 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             trainer: self.trainer.as_ref(),
         };
         let bytes = self.qualification.completed_bytes()?;
-        let prepared = sources
-            .prepare(&self.qualification.config, started_at)
-            .await?;
-        let qualification = self
-            .qualification
-            .finish_readback(
+        let prepared = OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(
+            &mut sources,
+            &self.qualification.config,
+            started_at,
+            training,
+        )
+        .await?;
+        let qualification =
+            OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(
+                &mut self.qualification,
                 &mut sources,
                 &prepared,
                 &bytes,
                 started_at,
                 /*new_publication*/ false,
+                training,
             )
             .await?;
         drop(sources);

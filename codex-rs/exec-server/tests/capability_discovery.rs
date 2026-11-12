@@ -3,7 +3,7 @@ mod common;
 #[path = "common/fake_bwrap.rs"]
 mod fake_bwrap;
 
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use anyhow::Context as _;
 use codex_exec_server::CAPABILITY_ROOTS_DISCOVER_METHOD;
 use codex_exec_server::CapabilityRootDiscovery;
@@ -235,7 +235,9 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
     };
     #[cfg(not(target_os = "linux"))]
     let mut server = exec_server().await?;
-    initialize(&mut server).await?;
+    initialize(&mut server)
+        .await
+        .context("capability batch test: initial initialize")?;
     let response = discover_roots(
         &mut server,
         vec![
@@ -251,7 +253,8 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
             },
         ],
     )
-    .await?;
+    .await
+    .context("capability batch test: shared-permission discovery")?;
     assert_eq!(
         response
             .roots
@@ -307,7 +310,8 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
                 },
             ],
         )
-        .await?;
+        .await
+        .context("capability batch test: existing separate-root fallback")?;
         assert_eq!(
             fallback
                 .roots
@@ -323,7 +327,9 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
 
         server.shutdown().await?;
         server = exec_server().await?;
-        initialize(&mut server).await?;
+        initialize(&mut server)
+            .await
+            .context("capability batch test: initialize after fallback")?;
     }
 
     let read_first_root = FileSystemSandboxEntry::new(
@@ -365,7 +371,8 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
             },
         ],
     )
-    .await?;
+    .await
+    .context("capability batch test: separate-permission discovery")?;
     assert_eq!(
         response
             .roots

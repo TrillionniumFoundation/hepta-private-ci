@@ -5,6 +5,7 @@ mod relay_support;
 
 use std::collections::HashMap;
 
+use anyhow::Context as _;
 use anyhow::Result;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -77,7 +78,10 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 network_proxy: None,
             }),
         )
-        .await??;
+        .await
+        .with_context(|| {
+            format!("forward exec phase timed out (expected exit {expected_exit})")
+        })??;
         let (output, exit_code) = timeout(TEST_TIMEOUT, async {
             let mut output = Vec::new();
             let mut after_seq = None;
@@ -101,7 +105,10 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 after_seq = response.next_seq.checked_sub(1);
             }
         })
-        .await??;
+        .await
+        .with_context(|| {
+            format!("forward output phase timed out (expected exit {expected_exit})")
+        })??;
         assert_eq!(
             (String::from_utf8(output)?.replace("\r\n", "\n"), exit_code),
             (format!("{expected_output}\n"), Some(expected_exit))
@@ -121,7 +128,8 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
             sandbox: None,
         }),
     )
-    .await??;
+    .await
+    .context("forward large-file write phase timed out")??;
     // A following request must still arrive as its own complete message.
     let read_response = client
         .fs_read_file(FsReadFileParams {
@@ -134,7 +142,9 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     connection.assert_encrypted()?;
     connection.close().await;
     let _ = shutdown_tx.send(());
-    timeout(TEST_TIMEOUT, forwarder).await???;
+    timeout(TEST_TIMEOUT, forwarder)
+        .await
+        .context("forward shutdown phase timed out")???;
     destination.shutdown().await?;
     Ok(())
 }

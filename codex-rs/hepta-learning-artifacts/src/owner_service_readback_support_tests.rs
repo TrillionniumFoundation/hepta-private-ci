@@ -138,22 +138,44 @@ impl OriginalPublicationReadbackFixture {
         }
     }
 
-    pub(super) fn bytes(&self) -> BTreeMap<std::path::PathBuf, Vec<u8>> {
-        fn visit(root: &Path, at: &Path, out: &mut BTreeMap<std::path::PathBuf, Vec<u8>>) {
+    pub(super) fn bytes(&mut self) -> BTreeMap<std::path::PathBuf, Vec<u8>> {
+        fn visit(
+            root: &Path,
+            at: &Path,
+            writer_fence: &[u8],
+            out: &mut BTreeMap<std::path::PathBuf, Vec<u8>>,
+        ) {
             for entry in fs::read_dir(at).fixture("original files") {
                 let path = entry.fixture("original entry").path();
                 if path.is_dir() {
-                    visit(root, &path, out);
+                    visit(root, &path, writer_fence, out);
                 } else {
-                    out.insert(
-                        path.strip_prefix(root).fixture("owned path").to_owned(),
-                        fs::read(&path).fixture("original bytes"),
-                    );
+                    let relative = path.strip_prefix(root).fixture("owned path");
+                    let bytes = if relative == Path::new("writer/owner.lock") {
+                        writer_fence.to_vec()
+                    } else {
+                        fs::read(&path).fixture("original bytes")
+                    };
+                    out.insert(relative.to_owned(), bytes);
                 }
             }
         }
+        let writer_fence = self
+            .service
+            .host
+            .qualification_writer_fence_bytes_for_test()
+            .fixture("original locked writer fence bytes");
         let mut result = BTreeMap::new();
-        visit(&self.directory.0, &self.directory.0, &mut result);
+        visit(
+            &self.directory.0,
+            &self.directory.0,
+            &writer_fence,
+            &mut result,
+        );
+        assert_eq!(
+            result.get(Path::new("writer/owner.lock")),
+            Some(&writer_fence)
+        );
         result
     }
 

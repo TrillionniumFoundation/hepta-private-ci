@@ -23,7 +23,7 @@ type ReadOwner = OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, File
 mod next_use_command_tests;
 
 struct ActualCommand {
-    f: PublicationFixture,
+    f: Box<PublicationFixture>,
     c: support::Session,
     trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,
     evaluator: Arc<OriginalCellEvaluationCommandClientV1>,

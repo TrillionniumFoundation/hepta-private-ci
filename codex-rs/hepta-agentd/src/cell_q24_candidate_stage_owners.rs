@@ -21,8 +21,8 @@ use super::Error;
 use super::Origin;
 use super::OriginalCellQ24NoUpdatePeerStreamV1;
 use super::OriginalCellQ24NoUpdateStageOwnersV1;
-use super::custody::OriginalStageSlot;
 use super::OriginalCellQ24NoUpdateStageStreamsV1;
+use super::custody::OriginalStageSlot;
 use crate::LearningIterationOwnerFutureV1;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::LoadedCellQ24ModelV1;
@@ -114,6 +114,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::DeadlineExceeded);
         }
         Ok(())
+    }
+
+    pub(crate) fn original_resident_readback_only(&self) -> bool {
+        OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)
     }
 
     pub(crate) fn install_fresh_resident_gate(
