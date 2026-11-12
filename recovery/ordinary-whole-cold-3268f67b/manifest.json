@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "base": "c13ceeb3f7d32bc4211560840efef7e42632d718",
+  "head": "3268f67ba4d095339036cffe1ef774cd486de4e7",
+  "tree": "e193e6b5f1e9821668a2680391e1d12f450cdb92",
+  "commits": [
+    {
+      "sha": "ed200e8979db33f21f3fff7460cd67463f91b184",
+      "tree": "c9c9453c59cf1893148e6afe452134a8a9b4e46e",
+      "subject": "Retain a same-session one-shot terminal acceptance request"
+    },
+    {
+      "sha": "14845a260a8ecac5d097ae89f7601fd7ecf30b4a",
+      "tree": "0fe604c86cb19f0f6994268fdcd945d4afa082bc",
+      "subject": "Guard retained terminal acceptance against retries and raw construction"
+    },
+    {
+      "sha": "5d193f7d42ffbbae08d2440f7a815309da549cfb",
+      "tree": "5573c38bceac02d2c6783eb4b712727f1af3f049",
+      "subject": "Observe immutable first Root completion data before cold recovery"
+    },
+    {
+      "sha": "6a742f346f283be25d6fe2868735b61dda0ac54b",
+      "tree": "c186f98b86233e1c1a24d61f18f859bab4a50b61",
+      "subject": "Launch explicit completed-history recovery with only original Root lanes"
+    },
+    {
+      "sha": "1650404ff90cd074d5874d5656dcfcb6a7402669",
+      "tree": "a2b8872137f11b1ad25536b36b6046029e73a33b",
+      "subject": "Wait for actual first terminal acceptance before retiring ordinary processes"
+    },
+    {
+      "sha": "3268f67ba4d095339036cffe1ef774cd486de4e7",
+      "tree": "e193e6b5f1e9821668a2680391e1d12f450cdb92",
+      "subject": "Qualify whole daemon and Root cold history with real retired processes"
+    }
+  ],
+  "native": "not run",
+  "whole_cold": "not run",
+  "source_qa": {
+    "methods": 46,
+    "passed": 46,
+    "failed": 0,
+    "errors": 0,
+    "exact_sha": "3268f67ba4d095339036cffe1ef774cd486de4e7",
+    "first_failure_raw_retained": true
+  },
+  "qualification_dependencies": [
+    "ordinary 5937 completed acceptance DATA/Root fixed seven-file provider",
+    "ordinary 5fae completed deployment schema and e05 fresh fixture",
+    "ordinary c596 first actual terminal acceptance before process shutdown",
+    "CI 031 original successor data-cut digest helper"
+  ],
+  "whole_cold_exact_id": "neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_completed_c_after_actual_daemon_and_root_retirement",
+  "harness": {
+    "seconds": 480,
+    "serial_group": "hepta_durable_capacity",
+    "retries": 0,
+    "product_or_signature_extensions": false
+  },
+  "raw_files": [
+    {
+      "path": "completed-acceptance-ed200-first/result.json",
+      "bytes": 515,
+      "sha256": "204e5cd14b89b50fdf2b22ef419c334d8204df023023ace3c85f221d47285b31"
+    },
+    {
+      "path": "completed-acceptance-ed200-first/source-qa.log",
+      "bytes": 76450,
+      "sha256": "d22c03ebda726dcda3fa257bf6577198e6f9be530c4019e473742a64060f9804"
+    },
+    {
+      "path": "completed-acceptance-ed200-successor/result.json",
+      "bytes": 515,
+      "sha256": "93e0270d26eb574c2801bcadc84acb1ec0d9204ee4b7b184e7fb3f28a7de9d01"
+    },
+    {
+      "path": "completed-acceptance-ed200-successor/source-qa.log",
+      "bytes": 10059,
+      "sha256": "81d792ceba5df6466e03e96fec97d6dbfe96822ce400fe34db53cfa8278f0629"
+    },
+    {
+      "path": "completed-client-3268f67b-exact/result.json",
+      "bytes": 164081,
+      "sha256": "44683e3e67f3a80c4540d99e4f498201e0036f9e60bd1a9866c1c65bedd23885"
+    },
+    {
+      "path": "completed-client-3268f67b-exact/source-qa.log",
+      "bytes": 10059,
+      "sha256": "38ed42cd74c92448c0f867ee74a0caa939352fd78d600a9386c2fe3217239656"
+    }
+  ],
+  "files": [
+    {
+      "name": "source.bundle",
+      "bytes": 18095,
+      "sha256": "fb742d78ed31191ba6f1b31bec3d078b348b71ce392b8c42b703259c58998eea",
+      "git_blob": "0d05ad0f8452b8e273dfe32ba22102fe27289727"
+    },
+    {
+      "name": "qa-raw.tar.gz",
+      "bytes": 66228,
+      "sha256": "be3fbea7e7739feb6b71c7db144a37067d635fdbd6d2d8cb93df4db3f09752ae",
+      "git_blob": "7eaa92da5b6164f1a777cccd904de31c01f65499"
+    },
+    {
+      "name": "bundle-verify.log",
+      "bytes": 317,
+      "sha256": "af29cbec3ec103062eb2536e0a152cf2e8a59ef590bc359bf1dee948027c2837",
+      "git_blob": "5f325d18027e896c445e5558dce4f036ebfa1d59"
+    }
+  ]
+}
