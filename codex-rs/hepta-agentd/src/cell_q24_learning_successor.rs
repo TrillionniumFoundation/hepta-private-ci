@@ -33,11 +33,14 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             .await
     }
 
-    pub(crate) async fn with_original_successor_read<T: Send + 'static>(
+    pub(crate) async fn with_original_successor_read<T>(
         &self,
         context: Arc<crate::learning_iteration::OriginalQ24SuccessorContext>,
         work: impl FnOnce() -> Result<T, crate::AgentdError> + Send + 'static,
-    ) -> Result<T, Error> {
+    ) -> Result<T, Error>
+    where
+        T: Send + 'static,
+    {
         if !std::ptr::eq(self, context.owners().as_ref()) {
             return Err(Error::WrongScope);
         }

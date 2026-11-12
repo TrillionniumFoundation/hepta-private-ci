@@ -5,7 +5,7 @@ use super::*;
 use crate::cell_composed_q24::OriginalPreparedReadV1;
 
 impl Q24StageState {
-    pub(super) async fn in_original_prepared_lane<T: Send + 'static>(
+    pub(super) async fn in_original_prepared_lane<T>(
         self: &Arc<Self>,
         work: impl for<'read> FnOnce(
             &mut Q24StageOwners,
@@ -14,7 +14,10 @@ impl Q24StageState {
         ) -> Result<T, Error>
         + Send
         + 'static,
-    ) -> Result<T, Error> {
+    ) -> Result<T, Error>
+    where
+        T: Send + 'static,
+    {
         if self.cancelled.load(Ordering::Acquire) {
             return Err(Error::CommitUncertain);
         }
