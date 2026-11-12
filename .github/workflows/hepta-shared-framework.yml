@@ -7,6 +7,8 @@ on:
       - codex/shared-cell-framework-followup-20261109-a60a
   pull_request:
     paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/**"
