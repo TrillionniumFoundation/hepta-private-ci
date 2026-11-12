@@ -23,7 +23,7 @@ class OrdinaryInitialQ24SourceTests(unittest.TestCase):
         self.assertEqual(rows["ordinary_initial_q24_assembly"]["product_callers"],
                          [AGENT + "main.rs"])
         for identifier in ("root_initial_artifact_authorities",
-                           "root_initial_original_connection_until",
+                           "root_initial_ready_connection",
                            "root_initial_executable_feature_prepare",
                            "root_initial_actual_feature_publish"):
             self.assertEqual(rows[identifier]["product_callers"],
@@ -35,7 +35,7 @@ class OrdinaryInitialQ24SourceTests(unittest.TestCase):
             self.reject_removal("production_initial_q24.rs", function,
                                 "self.require_original_initial_q24_session(config.identity())?",
                                 occurrence)
-        for marker in (".connect_until(", "self.session_end,",
+        for marker in (".connect_ready_until(", "self.session_end,",
                        ".open_original_artifact_authorities(&self.root, artifacts)?",
                        "clock::require_source_deadline(&target.source)?",
                        "original.prepare_feature(authorities, selected, target)?",

@@ -30,7 +30,7 @@ CALLERS = {
     "root_initial_run_start_enable": (A + "bin/hepta-authority-host.rs",),
     "root_initial_run_start_fixed_files": (A + "authority_host_historical_read.rs", A + "authority_host_post_a_provider.rs"),
     "root_initial_run_start_original_files": (INPUTS, CONTEXT),
-    "root_initial_run_start_register": (A + "authority_host_generation_initial_runtime.rs",),
+    "root_initial_run_start_register": (A + "authority_host_initial_enrollment_runtime.rs",),
     "root_initial_run_start_live_retain": (TRANSPORT,),
     "root_initial_run_start_original_pin": (STORE,),
     "root_initial_run_start_original_observe": (CONTEXT, STORE),
@@ -367,7 +367,7 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
         for identifier, caller in (
             ("ordinary_initial_run_start_select", "production_initial_q24.rs"),
             ("ordinary_initial_run_start_before_execution", "objective_submission.rs"),
-            ("root_initial_run_start_register", "authority_host_generation_initial_runtime.rs"),
+            ("root_initial_run_start_register", "authority_host_initial_enrollment_runtime.rs"),
             ("root_initial_run_start_live_retain", "authority_host_run_start_transport.rs"),
         ):
             self.assertEqual(rows[identifier]["product_callers"], [A + caller])

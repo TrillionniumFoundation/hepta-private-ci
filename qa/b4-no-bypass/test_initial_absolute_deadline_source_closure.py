@@ -59,7 +59,7 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
 
     def test_initial_file_connect_and_worker_keep_same_absolute_end(self):
         filename = "root_generation_initial_inputs.rs"
-        function = "fn connect_until("
+        function = "fn connect_original_until("
         for occurrence in (0, 1, 2, 3):
             self.reject(filename, function, "remaining_until(end)?", occurrence)
         self.reject(filename, function, "OriginalPublicationStream::from_stream_until(")
@@ -84,7 +84,8 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
 
     def test_new_constructors_have_exact_actual_callers(self):
         boundaries = {r["id"]: r for r in self.manifest["boundary"]}
-        self.assertEqual(boundaries["root_initial_original_connection_until"]["product_callers"],
+        self.assertEqual(boundaries["root_initial_original_connection_until"]["product_callers"], [])
+        self.assertEqual(boundaries["root_initial_ready_connection"]["product_callers"],
                          [AGENT + "production_initial_q24.rs"])
         self.assertEqual(boundaries["root_original_publication_stream_until"]["product_callers"],
                          [AGENT + "root_generation_initial_inputs.rs",
