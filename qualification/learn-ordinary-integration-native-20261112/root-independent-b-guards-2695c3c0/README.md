@@ -1,0 +1,9 @@
+# Original B caller and custody guard candidate
+
+The source bundle preserves four small commits on exact integrated base 11fa8d83. The first makes actual receivers explicit, with real rustfmt output; the subsequent commits register product callers, guard Root registration and refusal, independent fixed roles, original signed source retention, concrete holdout release, owned socket drain and same Generator plan signing, then repair the actual Root B connection receiver found by the independent scan.
+
+The final five focused source suites ran 40 tests and passed. They include unexpected/deleted caller controls and deletion/comment mutations of actual custody guards. This is a local source subset proof, not a whole repository closed-set or native result. The all-Rust index scan was not started to avoid concurrent memory pressure during the parent's actual compiler run. No native tests executed and the whole positive, NoUpdate and daemon plus Root cold restart counts remain 0/0/0.
+
+Original preceding source failures are preserved, including eight unresolved/missing receiver boundaries, exact formatter locator mismatches, and three overly short guard markers caught by removal mutations. The first dirty candidate is retained as its original patch and new test. Other intermediate locator-only worktrees were not separately frozen and are not represented as exact Git snapshots.
+
+The archive also retains actual task-local formatter installation verification: official DotSlash 0.5.7 asset size and release digest, then the repository-pinned buildifier binary size and SHA-256. Only a completed Cargo incremental cache was retired after acquiring the actual target lock; all source, evidence, dependency/build caches and other worktrees were retained. These tooling outcomes grant no project qualification.

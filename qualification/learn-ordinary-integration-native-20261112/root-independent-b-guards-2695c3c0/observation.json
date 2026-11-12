@@ -1,0 +1,163 @@
+{
+  "head": "2695c3c07dcbf0a6f5ed5b27ed6fd9eef15ec7c0",
+  "tree": "394d40007f6eb3ee0cde6086393cbdb1cdb67342",
+  "base": "11fa8d83b36e049e6886d5409a0f602513c926cd",
+  "clean": true,
+  "commits": [
+    {
+      "head": "f526e43350caddc69d63be6b97efa321a69e1aa0",
+      "tree": "9dd6b29a12125580ada51a51e6ccc6361ad3405d",
+      "subject": "Make original independent B production receivers explicit"
+    },
+    {
+      "head": "daa912ef989f2ad197b50eabc70c3e82e0caa7c1",
+      "tree": "07f1030dd657819d24939f735116abe84373395f",
+      "subject": "Close actual independent B product entrypoints and preserve source checks"
+    },
+    {
+      "head": "81456ed5a2a197b9028cab20d6286c249bb91bbe",
+      "tree": "0a8c3f66dfe2a90c18b7339219a30161f47957de",
+      "subject": "Guard original B registration refusal and signed source release"
+    },
+    {
+      "head": "2695c3c07dcbf0a6f5ed5b27ed6fd9eef15ec7c0",
+      "tree": "394d40007f6eb3ee0cde6086393cbdb1cdb67342",
+      "subject": "Bind independent B connection reads to the original Root session"
+    }
+  ],
+  "bundle_sha256": "5f8f2cfb2f8e08996bf0c2d7117910ae28d0a843688ee16e43e9ae374fd786ae",
+  "bundle_bytes": 24852,
+  "source_qa": {
+    "tests": 40,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 8.278,
+    "scope": "Five focused source suites; 35 new boundary rows checked against their definition/caller fixture source set; no global Rust index scan"
+  },
+  "native_tests": 0,
+  "full_caller": "not started; deferred to avoid memory concurrency with actual compile",
+  "whole_chain": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "failed_predecessors": "Original raw logs retained. First failure source has exact dirty patch and new test; other transient source guard marker edits are not separately frozen Git trees.",
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 54131,
+    "sha256": "1df8ae38ca8f3f275380249d687e81ffc52784cc837c7f240c4e0bf63c37d972",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "candidate/bundle-verify.log",
+      "bytes": 279,
+      "sha256": "f09bbcd344d03d1fa69349c3c9f16a77fa48f5804c6d6ec10cde4b5191910590"
+    },
+    {
+      "path": "candidate/source-manifest.json",
+      "bytes": 1818,
+      "sha256": "0b1b5960bc9f1092860dd1f84d1b0b2ad431cf7e615ec470954af90a78fd6eb0"
+    },
+    {
+      "path": "candidate/source.bundle",
+      "bytes": 24852,
+      "sha256": "5f8f2cfb2f8e08996bf0c2d7117910ae28d0a843688ee16e43e9ae374fd786ae"
+    },
+    {
+      "path": "source-qa/b-boundary-first-qa.log",
+      "bytes": 34559,
+      "sha256": "241323980e9cc19f4259f9e3bd42c95b6e33c25122ce80f6d35d3969b2afb42e"
+    },
+    {
+      "path": "source-qa/b-boundary-second-qa.log",
+      "bytes": 4223,
+      "sha256": "aa30e6fc707698350c572fe40cf1c9abc113c6cd146d962ced073575391306c5"
+    },
+    {
+      "path": "source-qa/b-boundary-current-qa.log",
+      "bytes": 624,
+      "sha256": "98d0c7091a733e7fbc4ba7fcf825474aeaf9897b27aac7908016a08c94a4a6f1"
+    },
+    {
+      "path": "source-qa/b-boundary-combined-qa.log",
+      "bytes": 22442,
+      "sha256": "7f39d51446d4d9e019c8b3c0fc36f1df64711599c30706b78264c63d4f8b58c5"
+    },
+    {
+      "path": "source-qa/b-boundary-combined-final-qa.log",
+      "bytes": 22604,
+      "sha256": "587d7ec68945b0a015aee0151a6b8bd6a5803ce32f7dc43185102db880e6d868"
+    },
+    {
+      "path": "source-qa/b-boundary-combined-final2-qa.log",
+      "bytes": 8429,
+      "sha256": "c35f92e57366e6300c38f62b32c650fdcab672c724a0889b74dae2ab30a8de88"
+    },
+    {
+      "path": "source-qa/b-custody-first-qa.log",
+      "bytes": 3774,
+      "sha256": "3dc10aa55f5fd61aece29729114fe2f9efd00bf80d8b74d19724744992d2ce2c"
+    },
+    {
+      "path": "source-qa/b-custody-final-qa.log",
+      "bytes": 444,
+      "sha256": "f7fb76d29a9cd607cb7a1e0c8a4065d650046c41d15508e6235d621301fb120f"
+    },
+    {
+      "path": "source-qa/b-guards-final-qa.log",
+      "bytes": 8775,
+      "sha256": "52bf5bb569a43550e99027ff4b085ad2fcf433111640cfbd32b3d24fd0aaf18b"
+    },
+    {
+      "path": "source-qa/b-guards-connected-final-qa.log",
+      "bytes": 8775,
+      "sha256": "892d66e9faad6e8e225d0de015d92b319f22207745f39245a8f266b57b0ba1e9"
+    },
+    {
+      "path": "first-failure/candidate.patch",
+      "bytes": 98887,
+      "sha256": "36af89c2c114c29f343417dc6f32bd00dec17e3ca5f6592cc74be70423b97060"
+    },
+    {
+      "path": "first-failure/manifest.json",
+      "bytes": 263,
+      "sha256": "b14edb035934582c7598376aee47d0b59d582b2ad2f9a755387c0c843bf60bef"
+    },
+    {
+      "path": "first-failure/new-test.py",
+      "bytes": 5707,
+      "sha256": "0445007b4497761fba25349651b4f8ef6aa568f05b04a05dede4e95605267724"
+    },
+    {
+      "path": "first-failure/source-qa.log",
+      "bytes": 34559,
+      "sha256": "241323980e9cc19f4259f9e3bd42c95b6e33c25122ce80f6d35d3969b2afb42e"
+    },
+    {
+      "path": "tooling/buildifier-install/dotslash-release.json",
+      "bytes": 37612,
+      "sha256": "2461fccb054a7ba2826999b635e3b49f6272ca93dfb8acf8f5c84c0256d3d1eb"
+    },
+    {
+      "path": "tooling/buildifier-install/dotslash-install.json",
+      "bytes": 436,
+      "sha256": "d614d7f0afbfdf88c19e3e53d9a571dad8d2bb9f266e297060ac229587f37874"
+    },
+    {
+      "path": "tooling/buildifier-install/buildifier-verified.json",
+      "bytes": 442,
+      "sha256": "59b2cd789df367baf96c2f71af69e56b1402dd34f4a2842f193802e7230aae34"
+    },
+    {
+      "path": "tooling/native-incremental-retirement/before.json",
+      "bytes": 520,
+      "sha256": "9c56857a11433e60d69c8e5e710b8cf05e3835155d97ba7cb291b616360a129c"
+    },
+    {
+      "path": "tooling/native-incremental-retirement/result.json",
+      "bytes": 573,
+      "sha256": "a929c2a2be93704d58befe5100293ae114a63e7c505cf3ab6f7356079b2c7507"
+    }
+  ]
+}
