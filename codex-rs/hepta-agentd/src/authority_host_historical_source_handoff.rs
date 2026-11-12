@@ -100,16 +100,19 @@ impl RootHistoricalSourceHandoffV1 {
         let (refusal, registration) =
             HistoricalSourceRefusalV1::register_original(Arc::clone(&root), &owner)?;
         if !matches!(registration, historical_source_refusal::Registration::New) {
-            return Err(io::Error::other("original handoff registration already exists"));
+            return Err(io::Error::other(
+                "original handoff registration already exists",
+            ));
         }
         // No prior record, including an incomplete ACK, can be reused.
-        let store = match HostAuthorityFrontierStore::initialize(root, owner.clone(), expected.clone()) {
-            Ok(store) => store,
-            Err(error) => {
-                HistoricalSourceRefusalV1::refuse(&refusal)?;
-                return Err(io::Error::other(error));
-            }
-        };
+        let store =
+            match HostAuthorityFrontierStore::initialize(root, owner.clone(), expected.clone()) {
+                Ok(store) => store,
+                Err(error) => {
+                    HistoricalSourceRefusalV1::refuse(&refusal)?;
+                    return Err(io::Error::other(error));
+                }
+            };
         HistoricalSourceRefusalV1::complete_original_registration(&refusal)?;
         let mut retained = Self {
             store,

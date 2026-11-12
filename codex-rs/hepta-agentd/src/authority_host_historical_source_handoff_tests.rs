@@ -139,7 +139,8 @@ fn root_source_handoff_restored_primary_stays_refused_in_fresh_process() -> anyh
     if let Some(path) = std::env::var_os("HEPTA_COLD_HANDOFF_COMPONENT_ROOT") {
         let root = RootAuthorityDirectory::open(std::path::Path::new(&path))?;
         let original = pending()?;
-        if let Ok(mut reopened) = RootHistoricalSourceHandoffV1::open_record(root, &original.target) {
+        if let Ok(mut reopened) = RootHistoricalSourceHandoffV1::open_record(root, &original.target)
+        {
             assert!(reopened.require_finalized().is_err());
         }
         println!("HEPTA_COLD_HANDOFF_CHILD_REFUSED");
@@ -175,7 +176,9 @@ fn root_source_handoff_restored_primary_stays_refused_in_fresh_process() -> anyh
     drop(retained);
     drop(root);
     let thread = std::thread::current();
-    let test_name = thread.name().ok_or_else(|| anyhow::anyhow!("test name missing"))?;
+    let test_name = thread
+        .name()
+        .ok_or_else(|| anyhow::anyhow!("test name missing"))?;
     let output = std::process::Command::new(std::env::current_exe()?)
         .args(["--exact", test_name, "--ignored", "--nocapture"])
         .env("HEPTA_COLD_HANDOFF_COMPONENT_ROOT", directory.path())
@@ -195,15 +198,16 @@ fn root_source_handoff_restored_primary_stays_refused_in_fresh_process() -> anyh
 fn root_source_handoff_refuses_legacy_primary_without_admitting_a_clear_companion()
 -> anyhow::Result<()> {
     original_root()?;
-    let directory = tempfile::Builder::new().prefix("source-legacy-").tempdir_in("/run")?;
+    let directory = tempfile::Builder::new()
+        .prefix("source-legacy-")
+        .tempdir_in("/run")?;
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let root = RootAuthorityDirectory::open(directory.path())?;
     let mut original = pending()?;
     original.phase = HandoffPhase::Finalized;
     let owner = owner(&original.target)?;
-    let legacy = HostAuthorityFrontierStore::initialize(
-        root.clone(), owner.clone(), original.clone(),
-    )?;
+    let legacy =
+        HostAuthorityFrontierStore::initialize(root.clone(), owner.clone(), original.clone())?;
     assert!(RootHistoricalSourceHandoffV1::open_record(root.clone(), &original.target).is_err());
     assert!(RootHistoricalSourceHandoffV1::create_pending(root.clone(), pending()?).is_err());
     assert!(RootHistoricalSourceHandoffV1::open_record(root.clone(), &original.target).is_err());
@@ -216,11 +220,14 @@ fn root_source_handoff_refuses_legacy_primary_without_admitting_a_clear_companio
 #[ignore = "actual UID0 and original Root-owned directory custody"]
 fn root_source_handoff_wrong_target_cannot_poison_original_registration() -> anyhow::Result<()> {
     original_root()?;
-    let directory = tempfile::Builder::new().prefix("source-target-").tempdir_in("/run")?;
+    let directory = tempfile::Builder::new()
+        .prefix("source-target-")
+        .tempdir_in("/run")?;
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let root = RootAuthorityDirectory::open(directory.path())?;
     let original = pending()?;
-    let mut retained = RootHistoricalSourceHandoffV1::create_pending(root.clone(), original.clone())?;
+    let mut retained =
+        RootHistoricalSourceHandoffV1::create_pending(root.clone(), original.clone())?;
     retained.acknowledge()?;
     retained.finalize_after_verified_context()?;
     let mut wrong = serde_json::to_value(&original.target)?;
@@ -234,16 +241,22 @@ fn root_source_handoff_wrong_target_cannot_poison_original_registration() -> any
 
 #[test]
 #[ignore = "actual UID0 and original Root-owned directory custody"]
-fn root_source_refusal_incomplete_registration_never_reopens_or_reinitializes()
--> anyhow::Result<()> {
+fn root_source_refusal_incomplete_registration_never_reopens_or_reinitializes() -> anyhow::Result<()>
+{
     original_root()?;
-    let directory = tempfile::Builder::new().prefix("source-pending-").tempdir_in("/run")?;
+    let directory = tempfile::Builder::new()
+        .prefix("source-pending-")
+        .tempdir_in("/run")?;
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let root = RootAuthorityDirectory::open(directory.path())?;
     let original = pending()?;
     let owner = owner(&original.target)?;
-    let (pending, registration) = HistoricalSourceRefusalV1::register_original(root.clone(), &owner)?;
-    assert!(matches!(registration, historical_source_refusal::Registration::New));
+    let (pending, registration) =
+        HistoricalSourceRefusalV1::register_original(root.clone(), &owner)?;
+    assert!(matches!(
+        registration,
+        historical_source_refusal::Registration::New
+    ));
     assert!(HistoricalSourceRefusalV1::open_existing(root.clone(), &owner).is_err());
     drop(pending);
     assert!(HistoricalSourceRefusalV1::register_original(root, &owner).is_err());

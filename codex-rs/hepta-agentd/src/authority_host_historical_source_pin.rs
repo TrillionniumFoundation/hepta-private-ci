@@ -139,15 +139,14 @@ impl RootHistoricalSourcePinV1 {
                 return Err(io::Error::other(error));
             }
         };
-        if expected.fenced
-            || expected.pin.schema != 1
-            || expected.pin.purpose != PIN_PURPOSE
-        {
+        if expected.fenced || expected.pin.schema != 1 || expected.pin.purpose != PIN_PURPOSE {
             HistoricalSourceRefusalV1::refuse(&refusal)?;
             return Err(io::Error::other("original historical source pin differs"));
         }
         if &expected.pin.target != target {
-            return Err(io::Error::other("original historical source target differs"));
+            return Err(io::Error::other(
+                "original historical source target differs",
+            ));
         }
         HistoricalSourceRefusalV1::require_open(&refusal)?;
         Ok(Self {
@@ -218,7 +217,9 @@ impl RootHistoricalSourcePinV1 {
         let store = match registration {
             historical_source_refusal::Registration::New => {
                 match HostAuthorityFrontierStore::initialize(
-                    Arc::clone(&root), owner.clone(), expected.clone(),
+                    Arc::clone(&root),
+                    owner.clone(),
+                    expected.clone(),
                 ) {
                     Ok(store) => {
                         HistoricalSourceRefusalV1::complete_original_registration(&refusal)?;
@@ -232,14 +233,15 @@ impl RootHistoricalSourcePinV1 {
                     }
                 }
             }
-            historical_source_refusal::Registration::Existing =>
+            historical_source_refusal::Registration::Existing => {
                 match HostAuthorityFrontierStore::open(root, owner.clone()) {
                     Ok(store) => store,
                     Err(error) => {
                         HistoricalSourceRefusalV1::refuse(&refusal)?;
                         return Err(io::Error::other(error));
                     }
-                },
+                }
+            }
         };
         // A different newly proposed capture must not poison the original pin.
         // Only an admitted handle's changed physical record triggers refusal.

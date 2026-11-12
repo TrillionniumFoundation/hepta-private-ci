@@ -146,8 +146,7 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
 
 #[test]
 #[ignore = "actual UID0 and original Root-owned directory custody"]
-fn root_source_pin_restored_primary_stays_refused_in_fresh_process()
--> anyhow::Result<()> {
+fn root_source_pin_restored_primary_stays_refused_in_fresh_process() -> anyhow::Result<()> {
     original_root()?;
     if let Some(path) = std::env::var_os("HEPTA_COLD_PIN_COMPONENT_ROOT") {
         let root = RootAuthorityDirectory::open(std::path::Path::new(&path))?;
@@ -223,7 +222,9 @@ fn root_source_pin_restored_primary_stays_refused_in_fresh_process()
     drop(retained);
     drop(root);
     let thread = std::thread::current();
-    let test_name = thread.name().ok_or_else(|| anyhow::anyhow!("test name missing"))?;
+    let test_name = thread
+        .name()
+        .ok_or_else(|| anyhow::anyhow!("test name missing"))?;
     let output = std::process::Command::new(std::env::current_exe()?)
         .args(["--exact", test_name, "--ignored", "--nocapture"])
         .env("HEPTA_COLD_PIN_COMPONENT_ROOT", directory.path())

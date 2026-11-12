@@ -39,15 +39,18 @@ impl HistoricalSourceRefusalV1 {
     ) -> io::Result<(Self, Registration)> {
         original_root()?;
         let owner = Self::owner(primary);
-        let (store, registration) =
-            match HostAuthorityFrontierStore::initialize(Arc::clone(&root), owner.clone(), RefusalState::Pending) {
-                Ok(store) => (store, Registration::New),
-                Err(codex_hepta_contracts::AuthorityTrustError::Conflict) => (
-                    HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?,
-                    Registration::Existing,
-                ),
-                Err(error) => return Err(io::Error::other(error)),
-            };
+        let (store, registration) = match HostAuthorityFrontierStore::initialize(
+            Arc::clone(&root),
+            owner.clone(),
+            RefusalState::Pending,
+        ) {
+            Ok(store) => (store, Registration::New),
+            Err(codex_hepta_contracts::AuthorityTrustError::Conflict) => (
+                HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?,
+                Registration::Existing,
+            ),
+            Err(error) => return Err(io::Error::other(error)),
+        };
         let retained = Self { store, owner };
         if matches!(registration, Registration::Existing) {
             HistoricalSourceRefusalV1::require_open(&retained)?;
@@ -80,8 +83,9 @@ impl HistoricalSourceRefusalV1 {
         original_root()?;
         match self.store.load(&self.owner) {
             Ok(RefusalState::Open) => Ok(()),
-            Ok(RefusalState::Pending | RefusalState::Refused) =>
-                Err(io::Error::other("original historical data not admitted")),
+            Ok(RefusalState::Pending | RefusalState::Refused) => {
+                Err(io::Error::other("original historical data not admitted"))
+            }
             Err(error) => Err(io::Error::other(error)),
         }
     }
@@ -92,11 +96,16 @@ impl HistoricalSourceRefusalV1 {
         if observed == RefusalState::Refused {
             return Ok(());
         }
-        match self.store.compare_and_set(&self.owner, &observed, &RefusalState::Refused) {
+        match self
+            .store
+            .compare_and_set(&self.owner, &observed, &RefusalState::Refused)
+        {
             Ok(()) => Ok(()),
             Err(codex_hepta_contracts::AuthorityTrustError::Conflict)
-                if self.store.load(&self.owner)
-                    == Ok(RefusalState::Refused) => Ok(()),
+                if self.store.load(&self.owner) == Ok(RefusalState::Refused) =>
+            {
+                Ok(())
+            }
             Err(error) => Err(io::Error::other(error)),
         }
     }
