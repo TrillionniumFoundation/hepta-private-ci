@@ -46,7 +46,7 @@ impl HostAuthorityPeerChannel {
         if self.stream.is_none() {
             return Err(HostIssuerTransportError::Closed);
         }
-        let result = self.owner.limit_original_end(end);
+        let result = OwnerChannel::limit_original_end(&mut self.owner, end);
         if result.is_err()
             && let Some(stream) = self.stream.take()
         {
