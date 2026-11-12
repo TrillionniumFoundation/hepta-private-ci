@@ -45,6 +45,7 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-notes-seed/source.txt"
           sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/act2-notes-seed/lock.sha256"
           git config --global credential.helper '!gh auth git-credential'
+          git fetch --no-tags --depth=1 origin 9db98207bdb1ec36e2ba9ac0cf0356bf243821ab
           sudo apt-get update
           sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
