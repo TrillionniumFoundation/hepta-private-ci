@@ -164,3 +164,7 @@ impl RootOriginalSuccessorFilesV1 {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "authority_host_successor_deployment_files_tests.rs"]
+mod tests;
