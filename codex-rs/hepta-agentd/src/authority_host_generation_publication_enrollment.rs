@@ -99,6 +99,7 @@ impl HostAuthorityService {
         owner: &OwnedFd,
         learning: &RegisteredHostLearningCheckpointV1,
         inputs: RootGenerationPublicationEnrollmentV1,
+        version: PublicationVersion,
     ) -> io::Result<RegisteredGenerationPublication> {
         original_root()?;
         self.with_learning_profile(
@@ -152,7 +153,8 @@ impl HostAuthorityService {
                     ));
                 }
                 let profile_owner = format!(
-                    "generation-publication/{}",
+                    "{}/{}",
+                    version.owner_prefix(),
                     Digest32::of_bytes(decision.operation.as_str().as_bytes(),)
                 );
                 let recovered = if inputs.mode == RootGenerationPublicationModeV1::Recover {
@@ -203,14 +205,16 @@ impl HostAuthorityService {
                     .to_string(),
                     selector_trust: inputs.artifacts.selector.trust_digest().to_string(),
                 };
-                if let Some((_, record)) = &recovered
-                    && (record.profile.artifacts != artifact_pin
-                        || record.profile.decision != decision.snapshot.head_digest.to_string()
-                        || record.profile.initial != initial.head_digest.to_string()
-                        || record.profile.scope != scope.binding().to_string()
-                        || record.profile.writer != proof)
-                {
-                    return Err(io::Error::other("original recovery configuration differs"));
+                if let Some((_, record)) = &recovered {
+                    let original = record.profile.original_for_version(version)?;
+                    if original.artifacts != artifact_pin
+                        || original.decision != decision.snapshot.head_digest.to_string()
+                        || original.initial != initial.head_digest.to_string()
+                        || original.scope != scope.binding().to_string()
+                        || version == PublicationVersion::LegacyV1 && original.writer != proof
+                    {
+                        return Err(io::Error::other("original recovery configuration differs"));
+                    }
                 }
 
                 if inputs.mode == RootGenerationPublicationModeV1::Reserve
@@ -272,7 +276,11 @@ impl HostAuthorityService {
                 };
                 if let Some((store, record)) = &recovered
                     && selected.observation().digest().into_array()
-                        != record.profile.intent.selection
+                        != record
+                            .profile
+                            .original_for_version(version)?
+                            .intent
+                            .selection
                 {
                     fence_record(store, &profile_owner)?;
                     return Err(io::Error::other(
@@ -421,7 +429,7 @@ impl HostAuthorityService {
                     ));
                 }
                 let mut profile = PublicationProfile {
-                    purpose: PURPOSE.into(),
+                    purpose: version.purpose().into(),
                     learning_operation: initial.request.operation_id.to_string(),
                     initial: initial.head_digest.to_string(),
                     scope: scope.binding().to_string(),
@@ -441,28 +449,34 @@ impl HostAuthorityService {
                     binding: String::new(),
                 };
                 profile.binding = profile.digest()?;
-                let profile_store = match recovered {
+                let (profile_store, reserved) = match recovered {
                     Some((store, record)) => {
-                        if record.profile != profile {
+                        if record.profile.require_live_profile(&profile).is_err() {
                             fence_record(&store, &profile_owner)?;
                             return Err(io::Error::other(
                                 "original complete publication profile differs",
                             ));
                         }
-                        store
+                        (store, record.profile)
                     }
-                    None => HostAuthorityFrontierStore::initialize(
-                        inputs.current_directory,
-                        profile_owner.clone(),
-                        PublicationRecord {
-                            profile: profile.clone(),
-                            fenced: false,
-                        },
-                    )
-                    .map_err(io::Error::other)?,
+                    None => {
+                        let reserved =
+                            ReservedPublicationProfile::retain_original(profile.clone())?;
+                        let store = HostAuthorityFrontierStore::initialize(
+                            inputs.current_directory,
+                            profile_owner.clone(),
+                            PublicationRecord {
+                                profile: reserved.clone(),
+                                fenced: false,
+                            },
+                        )
+                        .map_err(io::Error::other)?;
+                        (store, reserved)
+                    }
                 };
                 let enrolled = RegisteredGenerationPublication {
                     profile,
+                    reserved,
                     profile_store,
                     profile_owner,
                     decision: decision.snapshot,

@@ -103,6 +103,7 @@ impl HostAuthorityService {
         owner: OwnedFd,
         original_end: Option<Instant>,
     ) -> io::Result<()> {
+        let version = PublicationVersion::from_purpose(&slot.profile.purpose)?;
         let mut sequence = 1;
         let pin = owner.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
@@ -134,8 +135,8 @@ impl HostAuthorityService {
                         }
                         let request: Request =
                             serde_json::from_slice(bytes).map_err(io::Error::other)?;
-                        if request.schema != 1
-                            || request.purpose != PURPOSE
+                        if request.schema != version.schema()
+                            || request.purpose != version.purpose()
                             || request.request_id != sequence
                             || (request.profile != slot.profile.binding
                                 && !(sequence == 1
@@ -261,8 +262,8 @@ impl HostAuthorityService {
                             }
                         }
                         let response = Response {
-                            schema: 1,
-                            purpose: PURPOSE.into(),
+                            schema: version.schema(),
+                            purpose: version.purpose().into(),
                             request_id: request.request_id,
                             profile: slot.profile.clone(),
                             head: after.clone(),

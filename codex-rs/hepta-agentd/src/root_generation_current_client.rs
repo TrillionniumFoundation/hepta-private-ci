@@ -7,8 +7,8 @@ use std::sync::atomic::Ordering;
 
 use crate::AgentdError;
 use crate::authority_host_service::generation_publication::Command;
-use crate::authority_host_service::generation_publication::PURPOSE;
 use crate::authority_host_service::generation_publication::PublicationProfile;
+use crate::authority_host_service::generation_publication::PublicationVersion;
 use crate::authority_host_service::generation_publication::Request;
 use crate::authority_host_service::generation_publication::Response;
 use crate::authority_host_service::generation_publication::head_digest;
@@ -26,6 +26,7 @@ struct Lane {
 
 pub(crate) struct RootGenerationCurrentClient {
     profile: PublicationProfile,
+    version: PublicationVersion,
     connection: crate::RootGenerationPublicationConnectionV1,
     lane: Mutex<Option<Lane>>,
     fenced: AtomicBool,
@@ -49,9 +50,10 @@ impl RootGenerationCurrentClient {
         connection: crate::RootGenerationPublicationConnectionV1,
     ) -> Result<Self, AgentdError> {
         connection.require_original_publication_session()?;
+        let version = PublicationVersion::from_purpose(&bootstrap.purpose)?;
         let request = Request {
-            schema: 1,
-            purpose: PURPOSE.into(),
+            schema: version.schema(),
+            purpose: version.purpose().into(),
             request_id: 1,
             profile: String::new(),
             command: Command::Observe,
@@ -61,10 +63,10 @@ impl RootGenerationCurrentClient {
             .map_err(AgentdError::Io)?;
         let response: Response = serde_json::from_slice(&raw)?;
         let profile = &response.profile;
-        if response.schema != 1
-            || response.purpose != PURPOSE
+        if response.schema != version.schema()
+            || response.purpose != version.purpose()
             || response.request_id != 1
-            || profile.purpose != PURPOSE
+            || profile.purpose != version.purpose()
             || profile.initial != bootstrap.initial
             || profile.scope != bootstrap.scope
             || profile.writer != bootstrap.writer
@@ -90,6 +92,7 @@ impl RootGenerationCurrentClient {
         connection.require_original_publication_session()?;
         Ok(Self {
             profile: response.profile,
+            version,
             connection,
             lane: Mutex::new(Some(Lane {
                 stream,
@@ -234,8 +237,8 @@ impl RootGenerationCurrentClient {
         let request_id = lane.sequence;
         lane.sequence = request_id.checked_add(1).ok_or_else(uncertain)?;
         let request = Request {
-            schema: 1,
-            purpose: PURPOSE.into(),
+            schema: self.version.schema(),
+            purpose: self.version.purpose().into(),
             request_id,
             profile: self.profile.binding.clone(),
             command,
@@ -245,8 +248,8 @@ impl RootGenerationCurrentClient {
             .exchange(&serde_json::to_vec(&request).map_err(|_| uncertain())?)
             .map_err(|_| uncertain())?;
         let response: Response = serde_json::from_slice(&raw).map_err(|_| uncertain())?;
-        if response.schema != 1
-            || response.purpose != PURPOSE
+        if response.schema != self.version.schema()
+            || response.purpose != self.version.purpose()
             || response.request_id != request_id
             || response.profile != self.profile
             || self.fenced.load(Ordering::Acquire)

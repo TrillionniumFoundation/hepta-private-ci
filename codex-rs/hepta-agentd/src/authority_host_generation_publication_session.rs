@@ -12,9 +12,8 @@ use std::time::Duration;
 use std::time::Instant;
 
 use super::*;
-use crate::authority_host_service::generation_publication::PURPOSE;
 use crate::authority_host_service::generation_publication::PublicationBootstrap;
-use crate::authority_host_service::generation_publication::SOCKET;
+use crate::authority_host_service::generation_publication::PublicationVersion;
 
 #[path = "authority_host_generation_publication_runtime.rs"]
 mod runtime;
@@ -45,6 +44,7 @@ pub(super) struct PublicationRuntime {
     receiver: Mutex<mpsc::Receiver<Submission>>,
     phase: Arc<AtomicU8>,
     socket: PathBuf,
+    version: PublicationVersion,
 }
 
 /// A consumed original Root registration acknowledgement. The digest is a
@@ -71,6 +71,7 @@ pub struct RootGenerationPublicationEnrollmentCapabilityV1 {
     process_start_ticks: u64,
     lifetime: Duration,
     original_end: Option<Instant>,
+    version: PublicationVersion,
 }
 
 impl RootGenerationPublicationEnrollmentCapabilityV1 {
@@ -158,6 +159,7 @@ impl PreparedHostAuthoritySession {
             &self.owner_pidfd,
             learning,
             None,
+            PublicationVersion::LegacyV1,
         )?;
         self.publication = Some(runtime);
         Ok((capability, offer))

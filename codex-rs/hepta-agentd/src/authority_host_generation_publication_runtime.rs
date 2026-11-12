@@ -161,6 +161,7 @@ fn serve_optional_with_end(
                 owner,
                 learning,
                 submission.inputs,
+                publication.runtime.version,
             );
             let slot = match slot {
                 Ok(slot) => {

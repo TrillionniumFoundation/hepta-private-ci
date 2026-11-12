@@ -38,6 +38,7 @@ use crate::authority_host_service::OriginalDerivedLearningMode;
 use crate::authority_host_service::RegisteredHostLearningCheckpointV1;
 use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalCompleteTaskObservationV1;
 use crate::authority_host_service::generation_initial::original_root;
+use crate::authority_host_service::generation_publication::PublicationVersion;
 
 #[path = "authority_host_post_a_derive.rs"]
 mod derive;
@@ -178,6 +179,7 @@ impl PostALearningRuntime {
                                 owner,
                                 &learning,
                                 Some(session_end),
+                                PublicationVersion::DurableV2,
                             )?;
                             let deployment = OriginalPostAPublicationFiles::attach_original_route(
                                 files, initial, capability,

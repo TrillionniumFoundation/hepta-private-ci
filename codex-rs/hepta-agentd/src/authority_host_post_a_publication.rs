@@ -123,6 +123,7 @@ impl OriginalPostAPublicationFiles {
         self.require_original_files()?;
         if self.initial != initial.head_digest.to_string()
             || self.uid != capability.consumer_uid
+            || capability.version != super::super::PublicationVersion::DurableV2
             || capability.original_end.is_none()
             || std::process::id() != capability.root_pid
             || capability.phase.load(Ordering::Acquire) != PREPARED
