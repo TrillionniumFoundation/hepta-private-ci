@@ -5,6 +5,25 @@
 use super::*;
 
 impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
+    pub(crate) fn attest_experience_in_operation(
+        &mut self,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
+        if self.config.stage != OriginalCellQ24SourceStageV1::Experience {
+            return Err(binding("original Experience owner"));
+        }
+        let prepared = Arc::clone(&self.prepared);
+        self.attest_at(prepared.initial(), read)
+    }
+
+    pub(crate) fn attest_dataset_in_operation(
+        &mut self,
+        experience: &mut OriginalCellQ24SourceReceiptOwnerV1<impl AnchorWitnessStore>,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
+        self.with_original_experience_in_operation(experience, read, Self::attest_at)
+    }
+
     pub(crate) fn read_experience_in_operation(
         &mut self,
         read: &OriginalPreparedReadV1<'_>,

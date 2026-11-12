@@ -32,6 +32,8 @@ use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
 
+#[path = "cell_q24_source_receipt_construction.rs"]
+mod construction;
 #[path = "cell_q24_source_owner_files.rs"]
 mod files;
 #[path = "cell_q24_source_receipt_operation.rs"]
@@ -141,19 +143,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
             return Err(binding("original source handoff operation and stage"));
         }
         self.prepared.with_original_prepared_operation(|read| {
-            if validate_config(&self.prepared, &self.config, &self.key, read)? != self.saved
-                || validate_config(prepared, &self.config, &self.key, read)? != self.saved
-            {
-                return Err(binding("original source handoff capability changed"));
-            }
-            let original_facts = OriginalPreparedReadV1::read_validated_facts(read)?;
-            let retained_facts = OriginalPreparedReadV1::read_validated_facts(read)?;
-            if original_facts != retained_facts {
-                return Err(binding("original source handoff facts changed"));
-            }
-            OriginalPreparedReadV1::require_prepared(read, &self.prepared)?;
-            OriginalPreparedReadV1::require_prepared(read, prepared)?;
-            Ok(())
+            self.require_prepared_in_operation(prepared, stage, read)
         })?
     }
 
@@ -164,20 +154,18 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         config: OriginalCellQ24SourceSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let (saved, journal) =
-            prepared.with_original_prepared_operation(|read| -> Result<_, Error> {
-                let saved = validate_config(&prepared, &config, &key, read)?;
-                let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-                OriginalPreparedReadV1::require_prepared(read, &prepared)?;
-                Ok((saved, journal))
-            })??;
-        Ok(Self {
-            journal,
-            prepared,
-            config,
-            key,
-            saved,
-        })
+        let original = Arc::clone(&prepared);
+        original.with_original_prepared_operation(|read| {
+            Self::open_original_source_in_operation(
+                file,
+                witness,
+                prepared,
+                config,
+                key,
+                crate::OriginalCellQ24LearningOpenV1::Create,
+                read,
+            )
+        })?
     }
 
     /// Reopen the original journal and witness. Pending stays unresolved, and
@@ -189,29 +177,24 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         config: OriginalCellQ24SourceSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let (saved, journal) =
-            prepared.with_original_prepared_operation(|read| -> Result<_, Error> {
-                let saved = validate_config(&prepared, &config, &key, read)?;
-                let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-                OriginalPreparedReadV1::require_prepared(read, &prepared)?;
-                Ok((saved, journal))
-            })??;
-        Ok(Self {
-            journal,
-            prepared,
-            config,
-            key,
-            saved,
-        })
+        let original = Arc::clone(&prepared);
+        original.with_original_prepared_operation(|read| {
+            Self::open_original_source_in_operation(
+                file,
+                witness,
+                prepared,
+                config,
+                key,
+                crate::OriginalCellQ24LearningOpenV1::Recover,
+                read,
+            )
+        })?
     }
 
     pub fn attest_experience(&mut self) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
-        if self.config.stage != OriginalCellQ24SourceStageV1::Experience {
-            return Err(binding("original Experience owner"));
-        }
         let prepared = Arc::clone(&self.prepared);
         prepared
-            .with_original_prepared_operation(|read| self.attest_at(prepared.initial(), read))?
+            .with_original_prepared_operation(|read| self.attest_experience_in_operation(read))?
     }
 
     pub fn read_experience(&mut self) -> Result<OriginalCellQ24SourceCompletionV1, Error> {

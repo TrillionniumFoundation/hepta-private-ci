@@ -3,6 +3,8 @@
 
 use codex_hepta_neuron::FileAnchorWitnessStore;
 
+use crate::OriginalCellQ24LearningOpenV1 as Mode;
+
 use super::*;
 
 pub struct OriginalCellQ24SourceJournalV1 {
@@ -19,12 +21,6 @@ pub struct OriginalCellQ24SourceFilesV1 {
 }
 
 type Source = OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>;
-
-#[derive(Clone, Copy)]
-enum Mode {
-    Create,
-    Recover,
-}
 
 impl OriginalCellQ24SourceFilesV1 {
     /// Both signers are validated against the original source before the first
@@ -53,22 +49,34 @@ impl OriginalCellQ24SourceFilesV1 {
         verifier: LearningEvidenceVerifierV1,
         mode: Mode,
     ) -> Result<(Source, Source), Error> {
+        let original = Arc::clone(&prepared);
+        original.with_original_prepared_operation(|read| {
+            self.open_original_source_files_in_operation(prepared, verifier, mode, read)
+        })?
+    }
+
+    pub(crate) fn open_original_source_files_in_operation(
+        self,
+        prepared: Arc<CellQ24PreparedLearningV1>,
+        verifier: LearningEvidenceVerifierV1,
+        mode: Mode,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<(Source, Source), Error> {
         let experience = self
             .experience
             .config(OriginalCellQ24SourceStageV1::Experience, verifier.clone());
         let dataset = self
             .dataset
             .config(OriginalCellQ24SourceStageV1::Dataset, verifier);
-        CellQ24PreparedLearningV1::with_original_prepared_operation(&prepared, |read| {
-            validate_config(&prepared, &experience, &self.experience.key, read)?;
-            validate_config(&prepared, &dataset, &self.dataset.key, read)?;
-            Ok::<_, Error>(())
-        })??;
+        validate_config(&prepared, &experience, &self.experience.key, read)?;
+        validate_config(&prepared, &dataset, &self.dataset.key, read)?;
         let experience = self
             .experience
-            .open(Arc::clone(&prepared), experience, mode)?;
-        let dataset = self.dataset.open(Arc::clone(&prepared), dataset, mode)?;
-        prepared.revalidate_source()?;
+            .open(Arc::clone(&prepared), experience, mode, read)?;
+        let dataset = self
+            .dataset
+            .open(Arc::clone(&prepared), dataset, mode, read)?;
+        OriginalPreparedReadV1::require_prepared(read, &prepared)?;
         Ok((experience, dataset))
     }
 }
@@ -92,22 +100,16 @@ impl OriginalCellQ24SourceJournalV1 {
         prepared: Arc<CellQ24PreparedLearningV1>,
         config: OriginalCellQ24SourceSigningConfigV1,
         mode: Mode,
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<Source, Error> {
-        match mode {
-            Mode::Create => OriginalCellQ24SourceReceiptOwnerV1::create(
-                self.journal,
-                self.witness,
-                prepared,
-                config,
-                self.key,
-            ),
-            Mode::Recover => OriginalCellQ24SourceReceiptOwnerV1::recover(
-                self.journal,
-                self.witness,
-                prepared,
-                config,
-                self.key,
-            ),
-        }
+        OriginalCellQ24SourceReceiptOwnerV1::open_original_source_in_operation(
+            self.journal,
+            self.witness,
+            prepared,
+            config,
+            self.key,
+            mode,
+            read,
+        )
     }
 }
