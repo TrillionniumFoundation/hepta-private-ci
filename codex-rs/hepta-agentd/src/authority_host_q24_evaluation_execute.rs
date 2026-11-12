@@ -98,6 +98,10 @@ impl OriginalBExecution {
                 if enrollment.completed_receipt.is_some() || enrollment.released_source.is_some() {
                     return Err(io::Error::other("original B completion must use readback"));
                 }
+                let admitted = enrollment.admitted_source.as_ref().ok_or_else(|| {
+                    io::Error::other("original independent B signed source has not been admitted")
+                })?;
+                admitted.require_original(files)?;
                 let mut provider = OriginalBProvider::new(
                     files,
                     authorities,
@@ -106,6 +110,7 @@ impl OriginalBExecution {
                     protocol.unit_profile(),
                     enrollment.registered_at_seconds,
                     clock,
+                    admitted,
                 );
                 let execution = self
                     .observers

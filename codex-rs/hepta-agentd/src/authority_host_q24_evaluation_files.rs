@@ -288,6 +288,12 @@ impl OriginalBFile {
     /// Only the private Root caller that has verified the original Generator
     /// plan uses this once-only input. An existing statement is never rewritten.
     pub(super) fn write_original_plan_once(&self, bytes: &[u8]) -> io::Result<()> {
+        self.write_original_signed_input_once(bytes)
+    }
+
+    /// The private original ingress first authenticates the fixed role and
+    /// complete statement. This writer only retains those exact signed bytes.
+    pub(super) fn write_original_signed_input_once(&self, bytes: &[u8]) -> io::Result<()> {
         self.require_original()?;
         if !matches!(self.access, OriginalBFileAccess::OwnerWriter)
             || bytes.is_empty()

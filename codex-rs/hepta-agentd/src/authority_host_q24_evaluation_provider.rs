@@ -26,6 +26,19 @@ pub(super) struct OriginalBReleasedSource {
 }
 
 impl OriginalBReleasedSource {
+    /// Hashes of already authenticated data, not a release capability.
+    pub(super) fn from_original_digests(
+        source: Digest32,
+        observed: Digest32,
+        policy: Digest32,
+    ) -> Self {
+        Self {
+            source: source.into_array(),
+            observed: observed.into_array(),
+            policy: policy.into_array(),
+        }
+    }
+
     pub(super) fn require_original(&self, files: &OriginalBInputs) -> io::Result<()> {
         files
             .source
@@ -48,6 +61,7 @@ pub(super) struct OriginalBProvider<'a> {
     unit_profile: Digest32,
     registered_at: u64,
     clock: &'a dyn Fn() -> io::Result<u64>,
+    admitted: &'a OriginalBReleasedSource,
     released: Option<OriginalBReleasedSource>,
     attempted: bool,
 }
@@ -61,6 +75,7 @@ impl<'a> OriginalBProvider<'a> {
         unit_profile: Digest32,
         registered_at: u64,
         clock: &'a dyn Fn() -> io::Result<u64>,
+        admitted: &'a OriginalBReleasedSource,
     ) -> Self {
         Self {
             files,
@@ -70,6 +85,7 @@ impl<'a> OriginalBProvider<'a> {
             unit_profile,
             registered_at,
             clock,
+            admitted,
             released: None,
             attempted: false,
         }
@@ -104,6 +120,7 @@ impl FinalHoldoutProviderV1 for OriginalBProvider<'_> {
             }
             let result = (|| {
                 self.files.require_original_files()?;
+                self.admitted.require_original(self.files)?;
                 let admitted = self.authorities.require_source(
                     &self.files.source,
                     &self.files.observed_statement,
@@ -131,6 +148,11 @@ impl FinalHoldoutProviderV1 for OriginalBProvider<'_> {
                     policy: admitted.policy_digest.into_array(),
                 };
                 original.require_original(self.files)?;
+                if &original != self.admitted {
+                    return Err(io::Error::other(
+                        "released B source differs from original admission",
+                    ));
+                }
                 self.files.require_original_files()?;
                 self.released = Some(original);
                 Ok(inputs)
