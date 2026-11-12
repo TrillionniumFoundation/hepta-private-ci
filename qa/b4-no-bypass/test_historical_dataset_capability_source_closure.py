@@ -12,6 +12,8 @@ MATERIALIZER = AGENT + "cell_q24_dataset_materializer.rs"
 OPERATION = AGENT + "cell_q24_dataset_operation.rs"
 PREPARED = AGENT + "cell_q24_prepared_operation.rs"
 SOURCE = AGENT + "cell_q24_source_receipt_owner.rs"
+CONSTRUCTION = AGENT + "cell_q24_source_receipt_construction.rs"
+MATERIAL = AGENT + "cell_q24_prepared_training_material.rs"
 SIGNATURE = AGENT + "cell_q24_source_signature.rs"
 SOURCE_OPERATION = AGENT + "cell_q24_source_receipt_operation.rs"
 
@@ -99,12 +101,20 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
         self.assertEqual(rows["q24_original_source_receipt_signature"]["product_callers"], [SOURCE])
         self.assertIn(SOURCE, rows["q24_original_prepared_operation"]["product_callers"])
         self.assertEqual(rows["q24_original_prepared_operation_owner"]["product_callers"],
-                         [AGENT + "cell_q24_learning_historical_operation.rs",
-                          AGENT + "cell_q24_prepared_learning.rs", SOURCE_OPERATION, SOURCE])
-        self.check_markers(SOURCE, "fn require_prepared(", (
+                          [
+                              AGENT + "cell_q24_learning_historical_operation.rs",
+                              AGENT + "cell_q24_learning_operation_lane.rs",
+                              AGENT + "cell_q24_learning_owner_initialization.rs",
+                              AGENT + "cell_q24_prepared_learning.rs",
+                              AGENT + "cell_q24_prepared_training_material.rs",
+                              AGENT + "cell_q24_source_owner_files.rs",
+                              AGENT + "cell_q24_source_receipt_construction.rs",
+                              AGENT + "cell_q24_source_receipt_operation.rs",
+                              AGENT + "cell_q24_source_receipt_owner.rs",
+                          ])
+        self.check_markers(CONSTRUCTION, "fn require_prepared_in_operation(", (
             "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",
             "self.prepared.scope() != prepared.scope()", "!std::ptr::eq(self.prepared.as_ref(), prepared)",
-            "self.prepared.with_original_prepared_operation(",
             "validate_config(&self.prepared, &self.config, &self.key, read)? != self.saved",
             "validate_config(prepared, &self.config, &self.key, read)? != self.saved",
             "original_facts != retained_facts",
@@ -113,16 +123,20 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
 
     def test_both_real_signers_are_checked_before_either_original_file_is_opened(self):
         self.check_markers(AGENT + "cell_q24_source_owner_files.rs", "fn open_original_source_files(", (
-            "CellQ24PreparedLearningV1::with_original_prepared_operation(&prepared, |read|",
+            "original.with_original_prepared_operation(|read|",
+            "self.open_original_source_files_in_operation(prepared, verifier, mode, read)"))
+        self.check_markers(AGENT + "cell_q24_source_owner_files.rs", "fn open_original_source_files_in_operation(", (
             "validate_config(&prepared, &experience, &self.experience.key, read)?",
             "validate_config(&prepared, &dataset, &self.dataset.key, read)?",
-            ".open(Arc::clone(&prepared), experience, mode)?",
-            "self.dataset.open(Arc::clone(&prepared), dataset, mode)?",
-            "prepared.revalidate_source()?"))
+            ".open(Arc::clone(&prepared), experience, mode, read)?",
+            ".open(Arc::clone(&prepared), dataset, mode, read)?",
+            "OriginalPreparedReadV1::require_prepared(read, &prepared)?"))
 
     def test_training_material_is_compared_within_the_same_prepared_borrow(self):
         self.check_markers(AGENT + "cell_q24_prepared_learning.rs", "fn training_material(", (
             "self.with_original_prepared_operation(|read|",
+            "self.training_material_in_operation(dataset, scope, read)"))
+        self.check_markers(MATERIAL, "fn training_material_in_operation(", (
             "OriginalPreparedReadV1::read_validated_facts(read)?",
             "scope != self.scope", "dataset.request != self.initial.request",
             "dataset.owners != self.initial.owners", "dataset.receipts.len() != 2",

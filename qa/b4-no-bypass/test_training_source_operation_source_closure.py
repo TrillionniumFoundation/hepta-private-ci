@@ -105,8 +105,10 @@ class TrainingSourceOperationTests(unittest.TestCase):
     def test_existing_public_compute_keeps_original_owner_reads(self):
         self.check_markers(TRAINING, "fn fit(", (
             "self.fit_with_original_source(batch, rule, cancellation, &OriginalQ24OwnerReadV1)",))
-        self.check_markers(TRAINING, "fn validate_fit_input(", (
-            "self.validate_fit_input_with_source(batch, rule, &OriginalQ24OwnerReadV1)",))
+        self.check_markers(OWNER, "fn create(", (
+            "CellQ24TrainingOwnerV1::create_with_source(\n            file,\n            witness,\n            plan,\n            batch,\n            rule,\n            &OriginalQ24OwnerReadV1,\n        )",))
+        self.check_markers(OWNER, "fn recover(", (
+            "CellQ24TrainingOwnerV1::recover_with_source(\n            file,\n            witness,\n            plan,\n            batch,\n            rule,\n            &OriginalQ24OwnerReadV1,\n        )",))
 
     def test_full_preflight_still_checks_source_before_baseline_and_rule(self):
         self.check_markers(TRAINING, "fn validate_fit_input_with_source(", (
