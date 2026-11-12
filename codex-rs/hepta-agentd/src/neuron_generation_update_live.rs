@@ -118,6 +118,25 @@ impl LiveGenerationCurrent {
         Ok(Arc::clone(&self.current))
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) fn read_original_initial_learning_trust(
+        &self,
+        session: &crate::AgentdRootAuthoritySession,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<crate::OriginalRootInitialLearningTrustV1, AgentdError> {
+        if !matches!(&self.publication, RetainedPublication::Initial(_)) {
+            return Err(invalid("original Initial learning trust required"));
+        }
+        self.check_current(self.publication.target())
+            .map_err(invalid)?;
+        let trust = self
+            .current
+            .read_original_initial_learning_trust(session, identity)?;
+        self.check_current(self.publication.target())
+            .map_err(invalid)?;
+        Ok(trust)
+    }
+
     pub(crate) fn new(
         current: Arc<NeuronGenerationCurrentOwnerV1>,
         authorities: AgentdGenerationUpdateAuthoritiesV1,
