@@ -1,6 +1,7 @@
 //! Synthetic paired mechanism data. The identities, keys and outcomes below
 //! are unit fixtures, not deployed B tasks, original Source custody or efficacy.
 use super::super::*;
+use pretty_assertions::assert_eq;
 use crate::OnPolicyArmBindingV1;
 use crate::OnPolicyArmProvenanceV1;
 use crate::OnPolicyEvaluationArmInputsV1;
