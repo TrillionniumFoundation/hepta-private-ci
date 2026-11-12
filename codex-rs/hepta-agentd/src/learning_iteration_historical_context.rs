@@ -27,17 +27,23 @@ impl OriginalHistoricalStageContextV1 {
         bootstrap
             .require_identity(state.identity())
             .map_err(|_| LearningIterationRuntimeErrorV1::WrongScope)?;
-        let original = bootstrap.original_q24.as_ref().ok_or(
-            LearningIterationRuntimeErrorV1::OwnerUnavailable("actual historical Q24 aggregate"),
-        )?;
-        let checkpoint = bootstrap.original_q24_checkpoint.as_ref().ok_or(
-            LearningIterationRuntimeErrorV1::OwnerUnavailable("same original Q24 Root checkpoint"),
-        )?;
+        let original: &Arc<OriginalCellQ24LearningStageOwnersV1> = bootstrap
+            .original_q24
+            .as_ref()
+            .ok_or(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "actual historical Q24 aggregate",
+            ))?;
+        let checkpoint: &Arc<OriginalRootQ24CheckpointV1> = bootstrap
+            .original_q24_checkpoint
+            .as_ref()
+            .ok_or(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "same original Q24 Root checkpoint",
+            ))?;
         let source = bootstrap
             .historical_source
             .as_ref()
             .ok_or(LearningIterationRuntimeErrorV1::WrongScope)?;
-        let prepared = original.prepared();
+        let prepared = OriginalCellQ24LearningStageOwnersV1::prepared(original);
         bootstrap.require_frozen_scope(&prepared.initial().request)?;
         if !bootstrap.enforce_circuit_admission
             || bootstrap.retained_source.is_some()
@@ -50,7 +56,7 @@ impl OriginalHistoricalStageContextV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
-        checkpoint.require_original_owners(original)?;
+        OriginalRootQ24CheckpointV1::require_original_owners(checkpoint, original)?;
         Ok(Arc::new(Self {
             state,
             original: Arc::clone(original),
@@ -60,14 +66,14 @@ impl OriginalHistoricalStageContextV1 {
         }))
     }
 
-    pub(crate) fn require_original_owners(
+    pub(crate) fn require_original_aggregate(
         &self,
         original: &OriginalCellQ24LearningStageOwnersV1,
     ) -> Result<(), LearningIterationRuntimeErrorV1> {
         if !std::ptr::eq(self.original.as_ref(), original) {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
-        self.checkpoint.require_original_owners(&self.original)
+        OriginalRootQ24CheckpointV1::require_original_owners(&self.checkpoint, &self.original)
     }
 
     pub(crate) fn require_in_operation(
@@ -75,7 +81,7 @@ impl OriginalHistoricalStageContextV1 {
         read: &OriginalPreparedReadV1<'_>,
         admission: OriginalHistoricalStageAdmissionV1,
     ) -> Result<(), LearningIterationRuntimeErrorV1> {
-        self.require_original_owners(self.original.as_ref())?;
+        self.require_original_aggregate(self.original.as_ref())?;
         self.current_time()?;
         historical_source::RegisteredHistoricalLearningSourceV1::require_original_stage_operation(
             &self.source,
@@ -114,20 +120,18 @@ impl OriginalHistoricalStageContextV1 {
         &self.verifier
     }
 
-    pub(crate) async fn restore_original(
+    pub(crate) async fn restore_checkpoint(
         &self,
         request: &LearningIterationRequestV1,
     ) -> Result<Option<LearningIterationSnapshotV1>, LearningIterationRuntimeErrorV1> {
-        self.checkpoint.restore_original(request).await
+        OriginalRootQ24CheckpointV1::restore_original(&self.checkpoint, request).await
     }
 
-    pub(crate) async fn checkpoint_original(
+    pub(crate) async fn commit_checkpoint(
         &self,
         previous: Digest32,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<Digest32, LearningIterationRuntimeErrorV1> {
-        self.checkpoint
-            .checkpoint_original(previous, snapshot)
-            .await
+        OriginalRootQ24CheckpointV1::checkpoint_original(&self.checkpoint, previous, snapshot).await
     }
 }

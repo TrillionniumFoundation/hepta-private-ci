@@ -99,7 +99,8 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
         self.assertEqual(rows["q24_original_source_receipt_signature"]["product_callers"], [SOURCE])
         self.assertIn(SOURCE, rows["q24_original_prepared_operation"]["product_callers"])
         self.assertEqual(rows["q24_original_prepared_operation_owner"]["product_callers"],
-                         [AGENT + "cell_q24_prepared_learning.rs", SOURCE_OPERATION, SOURCE])
+                         [AGENT + "cell_q24_learning_historical_operation.rs",
+                          AGENT + "cell_q24_prepared_learning.rs", SOURCE_OPERATION, SOURCE])
         self.check_markers(SOURCE, "fn require_prepared(", (
             "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",
             "self.prepared.scope() != prepared.scope()", "!std::ptr::eq(self.prepared.as_ref(), prepared)",
