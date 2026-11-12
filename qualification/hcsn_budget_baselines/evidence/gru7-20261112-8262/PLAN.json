@@ -1,0 +1,78 @@
+{
+  "adoption": false,
+  "body": "PyTorch GRU input4 hidden7 plus learned Linear7->9",
+  "clip_norm": 1.0,
+  "clock": "same log1p(dt) input feature; event-indexed GRU, no physical-time decay",
+  "co_tenant": "/dev/shm/hepta-hcsn-full-002",
+  "comparison": "common parameter/state ceilings and update opportunities, not equal occupancy or tuned strongest baseline",
+  "confirmation": false,
+  "cost_scope": "whole process includes imports and constructing shared HCSN interfaces; trace sizes differ and all writes are charged",
+  "inherited_plan": {
+    "boundary": "raw_log_boundary only; fixed absolute initial/reset locations",
+    "budget_semantics": "equal training forward opportunities; actual backward/FLOPs and wall costs differ",
+    "content": "write_gate, content_proposal, state_embedding",
+    "development_per_task": 8,
+    "formal_confirmation": false,
+    "grid": {
+      "active_cells": 16,
+      "endpoint": 4.8,
+      "initial_log_std": 0.08,
+      "phase_cells": 8,
+      "quadrature_order": 16,
+      "refractory": 0.2,
+      "tail_rate": 1.0
+    },
+    "learning_rate": 0.003,
+    "likelihood_learning": false,
+    "numerical_admission": false,
+    "readout_learning": false,
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "train_per_task": 4,
+    "updates": 32,
+    "wall_seconds": 1200.0,
+    "width": 4
+  },
+  "inputs": {
+    "DATA.json": {
+      "bytes": 910670,
+      "path": "/workspace/scratch/8262eeaa059c/hcsn-local-full-001/DATA.json",
+      "sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427"
+    },
+    "PLAN.json": {
+      "bytes": 737,
+      "path": "/workspace/scratch/8262eeaa059c/hcsn-local-full-001/PLAN.json",
+      "sha256": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55"
+    }
+  },
+  "interfaces": "same seed's exact frozen 21->4 frontend and 9->8 readout",
+  "optimizer": "Adam",
+  "output_device": 38,
+  "output_path": "/dev/shm/hepta-hcsn-gru-001",
+  "predeclared_before_all_factorial_terminal_results": true,
+  "projection_caveat": "trainable projection adds readout flexibility; no attribution to recurrence alone",
+  "retrospective_baseline_stage": true,
+  "schema": "hcsn-budget-gru-plan-v1",
+  "selection": "one declared baseline, no configuration search",
+  "source": {
+    "qualification/hcsn_boundary_factorial/__init__.py": "f1e11f73d06c23dad7cfc3de70695360fbbe6ea1c14b2416c49aa125946f951c",
+    "qualification/hcsn_boundary_factorial/run.py": "346be64443e31097ab5b8d4d262bd1606a523c1504628b16d08c2ae1aca06c79",
+    "qualification/hcsn_boundary_factorial/test_run.py": "5c48bfe0718dca3d4e56fe1578de039e79e3e29ef67aa4a71a9e048f4b32038a",
+    "qualification/hcsn_budget_baselines/__init__.py": "d23532e95ec3c977d328835f646be3afa15c7b545fd5e6bc2b00a159cb85da88",
+    "qualification/hcsn_budget_baselines/model.py": "3d2ae5009897acfcd7eaea75badbd537d1fa026b5e7602c5dad63c50994ae3b9",
+    "qualification/hcsn_budget_baselines/run.py": "e1bd2e924d14db9c80ae3b18a2c7852ffee98cc545a51a267c543027a1dac981",
+    "qualification/hcsn_budget_baselines/test_baseline.py": "6b36d44f43e8f3395b83884ad209f80dca47b5b79664eb5dc2ff9b1e80399b05",
+    "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "qualification/hcsn_memory_controls/generate.py": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d"
+  },
+  "started_utc": "2026-11-12T00:42:29.800702+00:00",
+  "state_scope": "7 FP64 recurrent values; excludes inputs, clocks, weights, optimizer and temporary training memory"
+}

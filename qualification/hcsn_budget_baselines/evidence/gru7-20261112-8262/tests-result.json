@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/tmp/perc-runtime-e11c/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "qualification.hcsn_budget_baselines.test_baseline",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/8262eeaa059c/hcsn-boundary-work",
+  "returncode": 0,
+  "wall_seconds": 3.959286914000586,
+  "source_sha256": {
+    "qualification/hcsn_budget_baselines/__init__.py": "d23532e95ec3c977d328835f646be3afa15c7b545fd5e6bc2b00a159cb85da88",
+    "qualification/hcsn_budget_baselines/model.py": "3d2ae5009897acfcd7eaea75badbd537d1fa026b5e7602c5dad63c50994ae3b9",
+    "qualification/hcsn_budget_baselines/run.py": "896ebdca8c8760c13237648f0617130f98dafcd39fc2b8f485f4f24962f911c5",
+    "qualification/hcsn_budget_baselines/test_baseline.py": "6b36d44f43e8f3395b83884ad209f80dca47b5b79664eb5dc2ff9b1e80399b05"
+  },
+  "source_unchanged": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "3f2c5cefbe8176f35733a88e45df38e1d3f37a63fedef18dc2745b2a5e536f96",
+  "scope": "Actual local Torch CPU tests; not hosted CI; numerical/model superiority not claimed"
+}

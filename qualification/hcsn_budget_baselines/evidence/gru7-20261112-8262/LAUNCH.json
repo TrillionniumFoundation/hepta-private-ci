@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/tmp/perc-runtime-e11c/bin/python",
+    "-B",
+    "-m",
+    "qualification.hcsn_budget_baselines.run",
+    "--factorial-output",
+    "/workspace/scratch/8262eeaa059c/hcsn-local-full-001",
+    "--output",
+    "/dev/shm/hepta-hcsn-gru-001",
+    "--co-tenant",
+    "/dev/shm/hepta-hcsn-full-002"
+  ],
+  "cwd": "/workspace/scratch/8262eeaa059c/hcsn-boundary-work",
+  "started_utc": "2026-11-12T00:42:27.678490+00:00",
+  "input_identity": {
+    "DATA.json": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427",
+    "PLAN.json": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55"
+  },
+  "source_sha256": {
+    "qualification/hcsn_budget_baselines/__init__.py": "d23532e95ec3c977d328835f646be3afa15c7b545fd5e6bc2b00a159cb85da88",
+    "qualification/hcsn_budget_baselines/model.py": "3d2ae5009897acfcd7eaea75badbd537d1fa026b5e7602c5dad63c50994ae3b9",
+    "qualification/hcsn_budget_baselines/run.py": "e1bd2e924d14db9c80ae3b18a2c7852ffee98cc545a51a267c543027a1dac981",
+    "qualification/hcsn_budget_baselines/test_baseline.py": "6b36d44f43e8f3395b83884ad209f80dca47b5b79664eb5dc2ff9b1e80399b05"
+  },
+  "output_medium": "/dev/shm tmpfs; same medium as HCSN full002",
+  "scope": "3 real fresh CPU fits; all local parent/source and failed prior HCSN attempts retain separate identities"
+}
