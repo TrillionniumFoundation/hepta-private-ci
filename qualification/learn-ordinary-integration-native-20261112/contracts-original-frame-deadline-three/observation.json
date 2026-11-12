@@ -1,0 +1,65 @@
+{
+  "source": "33223635dbfa35447d087f43c51033462cc0af01",
+  "tree": "6212e951e05dbae1833ee48cc5dfb81ea0a5c1c3",
+  "source_unchanged_clean": true,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "-E",
+    "test(authority_host_issuer_transport::peer::deadline_tests::durable_handler_receives_the_original_clamped_frame_deadline) | test(authority_host_issuer_transport::peer::deadline_tests::durable_handler_cannot_emit_success_after_the_shared_frame_deadline) | test(authority_host_issuer_transport::peer::deadline_tests::durable_handler_is_not_entered_for_an_invalid_original_frame)",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--test-threads",
+    "2",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "tests": 3,
+  "passed": 3,
+  "skipped": 0,
+  "retries": 0,
+  "elapsed_seconds": 45.94466479000039,
+  "profile_override": null,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 3822,
+    "sha256": "a088d6358f509a330819d19707a1b74bdba2f011ca67c121304fd70ef304b082",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "junit-0.xml",
+      "bytes": 1041,
+      "sha256": "012974f950050d62c1471fc01f6f379c0d9b6b9e3165caba9ea9092d686925f6"
+    },
+    {
+      "path": "native.log",
+      "bytes": 5263,
+      "sha256": "62233cbbf9b70091ae48b483636aa38110a5f5fd5d05c5ddf92aea432d2617bc"
+    },
+    {
+      "path": "run.json",
+      "bytes": 2984,
+      "sha256": "79621820b18eb2822d4b56c8c799941aa1ebe6ce6b195a975be4e304baab578b"
+    },
+    {
+      "path": "run_contracts_frame_native.py",
+      "bytes": 4736,
+      "sha256": "cb48159972866f3f09afc38879563f4321f65e9ae04e996872f0b5237b298394"
+    }
+  ]
+}
