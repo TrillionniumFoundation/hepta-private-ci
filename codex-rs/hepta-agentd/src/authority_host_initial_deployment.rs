@@ -129,6 +129,21 @@ impl RootGenerationInitialDeploymentFilesV1 {
         &self.deployment
     }
 
+    /// Historical Source custody belongs to the same actual Root directory as
+    /// this Initial CURRENT. This preflight grants no registration capability.
+    pub fn require_original_historical_root(&self, state_dir: &Path) -> io::Result<()> {
+        crate::authority_host_service::generation_initial::original_root()?;
+        self.require_original_initial_files()?;
+        let same_directory = self.data.current_directory == state_dir;
+        self.require_original_initial_files()?;
+        if !same_directory {
+            return Err(io::Error::other(
+                "Initial CURRENT and historical Source require the same Root directory",
+            ));
+        }
+        Ok(())
+    }
+
     fn require_original_initial_files(&self) -> io::Result<()> {
         self.descriptor.require_metadata_unchanged()?;
         for directory in &self.directories {
