@@ -120,7 +120,10 @@ pub(in super::super) fn serve_optional(
                         return Ok(());
                     };
                     let (slot, run_start) =
-                        peer_ready::register_original_peer(&context, deployment, &stream)?;
+                        peer_ready::register_original_peer(&context, deployment, &stream)
+                            .inspect_err(|error| {
+                                eprintln!("original Initial readiness worker failed: {error}");
+                            })?;
                     (slot, run_start, Some(stream))
                 } else {
                     let receiver = initial
