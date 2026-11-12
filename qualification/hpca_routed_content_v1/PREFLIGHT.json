@@ -1,0 +1,40 @@
+{
+  "decision": "HOLD_NO_GO",
+  "format_ASTs_unchanged": true,
+  "just_fmt": "exit0 after materializing repository formatter scaffold; qualification Python has no formatter owner, explicit Ruff format used",
+  "local_prior_source_archive_sha256": "2d3d0601fcb0c814a4fb180189d073af93d067ae636d6d4aff2e8bea3701feae",
+  "native_base_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "native_runtime": {
+    "python": "3.14.4",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "native_runtime_preflight_job": "1a1ce765903-2564-1693",
+  "native_tokenizer_markers": {
+    "No": [
+      5230
+    ],
+    "Yes": [
+      10539
+    ]
+  },
+  "new_model_generations": 0,
+  "review_fixes": [
+    "label bytes hash distinct from parse/use",
+    "completed generations distinct from attempts",
+    "cold and main use same durable per-attempt journal and fixed denominators"
+  ],
+  "schema": "hpca-routed-content-source-preflight-v1",
+  "skipped": 0,
+  "source_sha256": {
+    "EVAL_LABELS.json": "7eb030572f8dccc0b9728966dc29307efed00d4424104e02aea916851018bdb1",
+    "PLAN.json": "07fcd797ac02f47739c96de341d19135244b65f85ad4ca7e0d044ec68f3cfce4",
+    "TASKS.json": "087dd447e0e4f3c2dcd3788635786fc6711eb1a6758b4507335b3bdf167bb8c7",
+    "TRAIN_FEEDBACK.json": "6eb1856e01ad94462b44d1fdcc6ee2a32d93801da45652eaef642d3d2e756de7",
+    "build_data.py": "c3e84019a5f0048dfb23b6364b81f3ee8344eb7e8de55563cae69e245a79d54d",
+    "credit.py": "551e5a07ef22a0da0710223af163feb97ee6cb16055229a4584ba98b9be7684b",
+    "run.py": "cbb81cee166ce42c5caac5f560521945dfb7feefd7e480deb735255335e80cde"
+  },
+  "tests": 5,
+  "tests_after_format": false
+}
