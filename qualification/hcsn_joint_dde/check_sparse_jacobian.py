@@ -32,29 +32,38 @@ def main():
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     start = time.perf_counter()
-    sources = [Path(__file__), Path(inspect.getfile(sensitivities)),
-               Path(inspect.getfile(solve_graded_partials)),
-               Path(inspect.getfile(GradedJointModel)),
-               Path(inspect.getfile(GradedSpatialGenerator)),
-               Path(inspect.getfile(GradedJointModel.solve)),
-               Path(inspect.getfile(Packet))]
+    sources = [
+        Path(__file__),
+        Path(inspect.getfile(sensitivities)),
+        Path(inspect.getfile(solve_graded_partials)),
+        Path(inspect.getfile(GradedJointModel)),
+        Path(inspect.getfile(GradedSpatialGenerator)),
+        Path(inspect.getfile(GradedJointModel.solve)),
+        Path(inspect.getfile(Packet)),
+    ]
+
     def hashes():
         return {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
+
     before = hashes()
-    model = GradedJointModel(GradedSpatialGenerator(16, 2., -.12, .5, 4.), .53, .2, .15)
+    model = GradedJointModel(
+        GradedSpatialGenerator(16, 2.0, -0.12, 0.5, 4.0), 0.53, 0.2, 0.15
+    )
     active = np.zeros(17)
-    active[8] = .6
-    content = np.column_stack([2*active, -3*active, .7*active, -.2*active])
-    phase = (Packet("atom0", Fraction(0), Fraction(0), Fraction(1,10), (1,-2,3,-4)),
-             Packet("source", Fraction(0), Fraction(1,20), Fraction(3,10), (-2,3,-4,5)))
+    active[8] = 0.6
+    content = np.column_stack([2 * active, -3 * active, 0.7 * active, -0.2 * active])
+    phase = (
+        Packet("atom0", Fraction(0), Fraction(0), Fraction(1, 10), (1, -2, 3, -4)),
+        Packet("source", Fraction(0), Fraction(1, 20), Fraction(3, 10), (-2, 3, -4, 5)),
+    )
     arrays, cases = {}, []
 
     def capture(rhs, span, initial, **options):
-        if span != (0., .02) or "jac" not in options:
+        if span != (0.0, 0.02) or "jac" not in options:
             raise AssertionError("expected exact-Jacobian first segment")
-        state = initial + .01*np.sin(np.arange(len(initial)))
+        state = initial + 0.01 * np.sin(np.arange(len(initial)))
         arrays["state"] = state
-        for index, time in enumerate((0., .007, .019)):
+        for index, time in enumerate((0.0, 0.007, 0.019)):
             exact = options["jac"](time, state).toarray()
             arrays[f"time{index}_jacobian"] = exact
             for label, step in (("coarse", 2e-6), ("fine", 1e-6)):
@@ -63,31 +72,54 @@ def main():
                     high, low = state.copy(), state.copy()
                     high[column] += step
                     low[column] -= step
-                    differences[:,column] = (rhs(time, high)-rhs(time,low))/(2*step)
+                    differences[:, column] = (rhs(time, high) - rhs(time, low)) / (
+                        2 * step
+                    )
                 arrays[f"time{index}_{label}_fd"] = differences
-                ratio = abs(exact-differences)/(1e-7+1e-8*abs(differences))
-                cases.append(dict(time=time, step=step, shape=list(exact.shape),
-                    coordinates=exact.size, nonzeros=int(np.count_nonzero(exact)),
-                    maximum_absolute_error=float(np.max(abs(exact-differences))),
-                    maximum_gate_ratio=float(np.max(ratio)),
-                    gate_failures=int(np.count_nonzero(ratio>1))))
+                ratio = abs(exact - differences) / (1e-7 + 1e-8 * abs(differences))
+                cases.append(
+                    dict(
+                        time=time,
+                        step=step,
+                        shape=list(exact.shape),
+                        coordinates=exact.size,
+                        nonzeros=int(np.count_nonzero(exact)),
+                        maximum_absolute_error=float(np.max(abs(exact - differences))),
+                        maximum_gate_ratio=float(np.max(ratio)),
+                        gate_failures=int(np.count_nonzero(ratio > 1)),
+                    )
+                )
         raise CapturedSegment
 
     with patch.object(sensitivities, "solve_ivp", capture):
         try:
-            solve_graded_partials(model,[0.,.02],active,content,phase)
+            solve_graded_partials(model, [0.0, 0.02], active, content, phase)
         except CapturedSegment:
             pass
         else:
             raise AssertionError("RHS capture did not run")
-    np.savez_compressed(args.output/"ARRAYS.npz",**arrays)
-    passed = before == hashes() and len(cases)==6 and not any(c["gate_failures"] for c in cases)
-    report = dict(status="PASS" if passed else "HOLD",cases=cases,
-        source_sha256=before,source_unchanged=before==hashes(),
-        arrays_sha256=hashlib.sha256((args.output/"ARRAYS.npz").read_bytes()).hexdigest(),
-        wall_seconds=time.perf_counter()-start,ode_solves=0,optimizer_updates=0,
-        scope="Actual first-segment augmented RHS at one n16 marked fixture, not flow or continuum qualification")
-    (args.output/"RESULT.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
+    np.savez_compressed(args.output / "ARRAYS.npz", **arrays)
+    passed = (
+        before == hashes()
+        and len(cases) == 6
+        and not any(c["gate_failures"] for c in cases)
+    )
+    report = dict(
+        status="PASS" if passed else "HOLD",
+        cases=cases,
+        source_sha256=before,
+        source_unchanged=before == hashes(),
+        arrays_sha256=hashlib.sha256(
+            (args.output / "ARRAYS.npz").read_bytes()
+        ).hexdigest(),
+        wall_seconds=time.perf_counter() - start,
+        ode_solves=0,
+        optimizer_updates=0,
+        scope="Actual first-segment augmented RHS at one n16 marked fixture, not flow or continuum qualification",
+    )
+    (args.output / "RESULT.json").write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n"
+    )
     print(json.dumps(report))
     if not passed:
         raise SystemExit(1)

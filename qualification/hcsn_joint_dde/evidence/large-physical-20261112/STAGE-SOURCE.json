@@ -1,66 +1,58 @@
 {
-  "schema": "hcsn-large-physical-stage-v2",
-  "status": "HOLD_LARGE_PHYSICAL_GATE_OPEN",
-  "base_commit": "d4e7ecd239988790936f21407be1ba05c318c6d8",
-  "candidate_prior_freeze": "d3722803590428997ceccaa6776d253f13c63832",
-  "checks": {
-    "captured_actual_rhs": {
-      "times": [
-        0,
-        0.007,
-        0.019
-      ],
-      "state_fd_steps": [
-        0.000002,
-        0.000001
-      ],
-      "matrix_shape": [
-        630,
-        630
-      ],
-      "coordinate_comparisons": 2381400,
-      "failures": 0,
-      "maximum_absolute_error": 1.3477698335151445e-7,
-      "maximum_gate_ratio": 0.9366462559447425,
-      "wall_seconds": 0.6666450720000512,
-      "ode_solves": 0,
-      "optimizer_updates": 0
-    },
-    "regression": {
-      "tests": 8,
-      "success": true,
-      "wall_seconds": 25.85,
-      "warning": "SciPy BDF invalid value encountered in subtract at bdf.py:416; full stderr retained. Returned finite guards and physical FD checks passed."
-    }
+  "schema": "hcsn-large-fixed-prior-physical-checks-v1",
+  "status": "PASS_BOUNDED_ORIGINAL_PROFILE_GLOBAL_HOLD",
+  "all_closed": false,
+  "numerical_candidate": "New sparse exact instantaneous Jacobian; fixed v2 geometry and original migrated relative prior/content/phase.",
+  "input_migration_baseline": "4bb30c1687b320fb37709732e8001b31baef07ec",
+  "input_recovery": {
+    "pr": 6223,
+    "commit": "676a1ec677b64e1970e8079aaa799e513d59e5d6",
+    "original_artifact_id": 13904346161,
+    "journal_sha256": "2a9fc79e38311147451511c5b6ecc17449faa544cc38bcaab567e4f9cbe08517",
+    "lost_json_restored": false,
+    "two_npz_match_previous_recorded_bytes": true
   },
-  "source_budget": {
-    "augmented_state_scalars_max": 32768,
-    "dense_coefficient_conservative_scalars": "20*(N+5)^2 <= 12000000",
-    "instantaneous_support_nonzeros_max": 2000000,
-    "snapshot_scalars_max": 2000000,
-    "maximum_rss_guaranteed": false,
-    "nonzeros_reporting": "instantaneous_jacobian_nonzeros is the sparsity support upper bound, not callback.nnz at any chosen time"
+  "bounded_checks": {
+    "captured_rhs_coordinate_comparisons": 2381400,
+    "regression_tests": 8,
+    "original_fixed_posterior_physical_coordinates": 16250,
+    "two_step_fd_comparisons": 32500,
+    "gate_failures": 0,
+    "stability_failures": 0,
+    "original_grids": [
+      128,
+      512
+    ],
+    "interval": 0.02,
+    "delay": 0.2,
+    "large_mesh_second_cycle_feedback_qualified": false,
+    "rare_tail_relative_qualified": false
   },
-  "execution_incident": {
-    "original_numeric_pattern_n128": {
-      "exit_code": 137,
-      "result_produced": false,
-      "cause": "Unknown; no authoritative OOM evidence"
-    },
-    "subsequent_environment": "Executor became unavailable; after reconnect original scratch directory was absent. Original first-attempt local receipt/input exports were lost. Only previously observed tool outputs and committed source summaries survive.",
-    "exact_callback_large_grid": "NOT_EXECUTED"
+  "diagnostic_cost": {
+    "known_completed_profile_variational_flows": 4,
+    "known_completed_profile_primal_flows": 84,
+    "profile_wall_seconds_after_imports": 92.62454449500001,
+    "diagnostic_optimizer_calls": 0,
+    "unknown_killed137_cost_separate": true,
+    "hosted_CI_optimizer_cost": "Future hosted small-grid runs must be recorded separately."
   },
-  "raw_archive": {
-    "sha256": "44a52f91e1e46dff2681c518a8a1216bb256be6b54ee465f85a738f7a9705a0d",
-    "size": 214317,
-    "members": 17
+  "original_archive": {
+    "parts": 5,
+    "size": 2605845,
+    "sha256": "4c5bda002c175acdfb416b24356d6b91d1bbc1b1b94a779de8833cbf62a66e51",
+    "members": 105,
+    "exact_tested_sources": 14,
+    "all_format_AST_equivalent": true
   },
-  "format": "Not yet final-formatted. Exact tested sources and complete stdout/stderr are in STAGE-ORIGINALS.tar.gz. Large fixed-prior physical qualification still OPEN.",
-  "scope": "Fixed relative initial law/content/phase of this finite discrete model; no migration derivative, original historical replay, continuum rare-tail accuracy, full-network AD, training or production qualification.",
-  "next": [
-    "Reconstruct original exported fixed-prior inputs from hash-bound original journal/sidecar, disclose new identity if bytes differ.",
-    "Run all five physical partials with two central FD steps at n128 and preserve original arrays/cost.",
-    "Only after n128 passes, qualify n512 independently.",
-    "Final format with pre/post AST receipt, source freeze and independent review."
+  "independent_array_review_blob": "6e01af3f7d6fb3b1fa83a4d18989ccecf417262d",
+  "unclosed": [
+    "all original laws and parameter snapshots",
+    "multi-cycle large-mesh physical flows",
+    "v3 or other geometry",
+    "migration/episode/filter/network gradients",
+    "large-mesh Torch training",
+    "continuum rare-phase relative precision",
+    "full original training replay",
+    "matched quality/cost and adoption"
   ]
 }

@@ -1,0 +1,7 @@
+{
+  "schema": "hcsn-independent-reviewer-red-v1",
+  "status": "REVIEWER_ASSUMPTION_FAILED",
+  "reason": "Read-only checker wrongly expected initial active/content transient-only arrays. Actual migration input includes both boundary nodes, shapeN+1. Candidate output/primal arrays remain transient-only plus6compartments. No candidate kernel, Torch or optimizer was executed.",
+  "exception": "ValueError: input shapes",
+  "next_attempt": "Correct inspector shape toN+1; preserve raw candidate data unchanged."
+}

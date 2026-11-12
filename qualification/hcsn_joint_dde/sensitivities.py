@@ -208,11 +208,14 @@ def _solve_variational(
             # each method-of-steps segment, not instantaneous state couplings.
             # The remaining primal-to-partial coupling is d(linear)/dtheta,
             # plus the two explicitly overwritten discounted integrators.
-            cross_support = dl[j-1] != 0
-            cross_support[n+3, :n] = ((derivative_lower[j-1] != 0)
-                | ((dq[j-1] != 0) & (lower != 0)))
-            cross_support[n+4, :n+1] = dq[j-1] != 0
-            blocks[j][0] = block_diag([csr_matrix(cross_support)]*channels, format="csr")
+            cross_support = dl[j - 1] != 0
+            cross_support[n + 3, :n] = (derivative_lower[j - 1] != 0) | (
+                (dq[j - 1] != 0) & (lower != 0)
+            )
+            cross_support[n + 4, : n + 1] = dq[j - 1] != 0
+            blocks[j][0] = block_diag(
+                [csr_matrix(cross_support)] * channels, format="csr"
+            )
     sparsity = bmat(blocks, format="csr")
     if sparsity.nnz > 2_000_000:
         raise ValueError("declared actual sparse-Jacobian nonzero budget exceeded")
@@ -220,19 +223,21 @@ def _solve_variational(
     def instantaneous_jacobian(time, unused_state):
         exponential = math.exp(-model.discount * time)
         current_linear = linear.copy()
-        current_linear[n+3, :n] = exponential * lower
-        current_linear[n+4, :n+1] = exponential
-        diagonal = block_diag([csr_matrix(current_linear)]*channels, format="csr")
-        values = [[None]*6 for _ in range(6)]
+        current_linear[n + 3, :n] = exponential * lower
+        current_linear[n + 4, : n + 1] = exponential
+        diagonal = block_diag([csr_matrix(current_linear)] * channels, format="csr")
+        values = [[None] * 6 for _ in range(6)]
         for j in range(6):
             values[j][j] = diagonal
             if j:
-                coupling = dl[j-1].copy()
-                coupling[n+3, :n] = exponential * (
-                    derivative_lower[j-1] - time*dq[j-1]*lower
+                coupling = dl[j - 1].copy()
+                coupling[n + 3, :n] = exponential * (
+                    derivative_lower[j - 1] - time * dq[j - 1] * lower
                 )
-                coupling[n+4, :n+1] = -time*dq[j-1]*exponential
-                values[j][0] = block_diag([csr_matrix(coupling)]*channels, format="csr")
+                coupling[n + 4, : n + 1] = -time * dq[j - 1] * exponential
+                values[j][0] = block_diag(
+                    [csr_matrix(coupling)] * channels, format="csr"
+                )
         result = bmat(values, format="csr")
         if not np.all(np.isfinite(result.data)):
             raise ArithmeticError("instantaneous Jacobian is nonfinite")
@@ -343,7 +348,7 @@ def _solve_variational(
         fixed_initial_relative_law=True,
         episode_prior_gradients=False,
         reset_semantics="piecewise_affine_fixed_stencil",
-        augmented_state_scalars=6*channels*size,
+        augmented_state_scalars=6 * channels * size,
         instantaneous_jacobian_nonzeros=int(sparsity.nnz),
         instantaneous_jacobian_shape=list(sparsity.shape),
         rtol=rtol,
