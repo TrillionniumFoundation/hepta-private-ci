@@ -105,6 +105,24 @@ impl BoundLearning {
         Ok(bound)
     }
 
+    pub(super) fn bind_original_independent_b(
+        &self,
+        runtime: crate::authority_host_runtime::RootIndependentBEvaluationRuntimeV1,
+        config: &HostAuthorityServiceConfig,
+    ) -> io::Result<crate::authority_host_runtime::BoundRootIndependentBEvaluationV1> {
+        crate::authority_host_runtime::RootIndependentBEvaluationRuntimeV1::bind_original(
+            runtime,
+            config,
+            &self.learning.socket_path,
+            self.model
+                .as_ref()
+                .map(super::q24_model::BoundFactory::path),
+            self.publication
+                .as_ref()
+                .map(super::generation_publication::BoundPublication::path),
+        )
+    }
+
     pub(super) fn contains_path(&self, path: &Path) -> bool {
         self.publication
             .as_ref()

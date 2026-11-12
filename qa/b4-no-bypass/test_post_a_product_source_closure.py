@@ -20,7 +20,8 @@ DERIVE = A + "authority_host_post_a_derive.rs"
 PROVIDER = A + "authority_host_post_a_provider.rs"
 PREPARED, RUNTIME, CLI = route.PREPARED, route.RUNTIME, route.CLI
 CALLERS = {
-    "root_post_a_enable": (CLI,),
+    "root_post_a_enable": (),
+    "root_post_a_independent_b_enable": (CLI,),
     "root_post_a_fixed_plan": (PREPARED,),
     "root_post_a_derive_profile": (PLAN,),
     "root_post_a_prepare_installation": (PROVIDER,),
@@ -83,7 +84,7 @@ def require_structure(path, source, rows):
             if not action[0] < body.index(marker) < action[1]:
                 raise PROOF.VerificationFailure("original installation escaped the actual derived profile")
             install.at_depth(body, marker, 2)
-        register = route.original.span(body, "if self.register")
+        register = route.original.span(body, "if self.register {\n                    service.reserve_q24_model_factory_v2_for_profile(")
         reserve = body.index("service.reserve_q24_model_factory_v2_for_profile(")
         if not action[0] < register[0] < reserve < register[1] < action[1]:
             raise PROOF.VerificationFailure("reopening cannot reserve a missing factory")
@@ -100,7 +101,7 @@ def require_structure(path, source, rows):
         install.at_depth(body, "let result = action(profile)?", 2)
     if path == PREPARED:
         body, _ = body_without_nested_functions(source,
-            "fn enable_original_post_a_learning_from_deployment(")
+            "fn enable_original_post_a_learning_with_independent_b(")
         context = route.original.span(body, "|initial, proof| {")
         require_returned(body, context[1])
         if not context[0] < body.index("post_a::PostALearningRuntime::retain_original_plan(") < context[1]:
@@ -129,7 +130,7 @@ def require_structure(path, source, rows):
             raise PROOF.VerificationFailure("the actual option must select the protected Root plan")
         for marker, depth in (("if post_a_deployment.is_some()", 2),
                               ("if let Some(post_a_path) = post_a_deployment.as_deref()", 4),
-                              ("enable_original_post_a_learning_from_deployment(", 5)):
+                              ("enable_original_post_a_learning_with_independent_b(", 5)):
             install.at_depth(body, marker, depth)
 
 
@@ -184,18 +185,18 @@ class PostAProductSourceTests(unittest.TestCase):
                         PROOF._verify_boundary(ROOT, replace(row, product_callers=declared), self.sources, ())
 
     def test_prepared_route_requires_original_phase_custody_and_empty_slots(self):
-        self.check(PREPARED, "enable_original_post_a_learning_from_deployment", (
+        self.check(PREPARED, "enable_original_post_a_learning_with_independent_b", (
             "original_root()?", "self.learning.is_some() || self.publication.is_some()",
             "self.historical_read.as_mut()", "runtime.phase.load(Ordering::Acquire) != PREPARED",
             "runtime.post_a.is_some()", "runtime.post_a_worker.is_some()",
             "runtime.post_a_submitter.get_mut()", "let plan = self.service.with_learning_profile(",
             "HistoricalTaskReadProfileV1::require_original_context(", "expected != initial",
             "post_a::PostALearningRuntime::retain_original_plan(", "self.config.peer_uid",
-            "self.config.peer_gid", "post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd, publication.map(|(_, handoff)| handoff),)?",
+            "self.config.peer_gid", "post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd, publication.map(|(_, handoff)| handoff), independent_evaluation.map(|(_, handoff)| handoff),)?",
             "runtime.post_a = Some(plan)", "runtime.post_a_worker = Some(worker)"))
         for marker in ("runtime.metadata.require_metadata_unchanged()?", "RootHistoricalLearningTrustV1::revalidate("):
             for occurrence in (0, 1):
-                self.reject(PREPARED, "enable_original_post_a_learning_from_deployment", marker, occurrence)
+                self.reject(PREPARED, "enable_original_post_a_learning_with_independent_b", marker, occurrence)
 
     def test_provider_reads_actual_task_inside_the_original_unfrozen_context(self):
         self.check(PROVIDER, "install_original_frozen_learning", (
@@ -265,7 +266,7 @@ class PostAProductSourceTests(unittest.TestCase):
             "historical_deployment.is_none()", "learning_handoff.is_none()", "model_handoff.is_none()",
             "learning_profile.is_some()", "model_reservation.is_some()",
             "if let Some(post_a_path) = post_a_deployment.as_deref()", "learning_handoff.take()",
-            "model_handoff.take()", "enable_original_post_a_learning_from_deployment("))
+            "model_handoff.take()", "enable_original_post_a_learning_with_independent_b("))
         # The first occurrence belongs to the separate eager Initial guard.
         self.reject(CLI, "main", "publication_handoff.is_some()", 1)
         self.mutate(CLI, lambda s: s.replace('"--post-a-learning-deployment"',

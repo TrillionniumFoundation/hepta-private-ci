@@ -153,6 +153,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let post_a_deployment = options
             .remove(std::ffi::OsStr::new("--post-a-learning-deployment"))
             .map(PathBuf::from);
+        let independent_b_deployment = options
+            .remove(std::ffi::OsStr::new(
+                "--post-a-independent-evaluation-deployment",
+            ))
+            .map(PathBuf::from);
+        let independent_b_handoff = options.remove(std::ffi::OsStr::new(
+            "--root-independent-b-evaluation-handoff-fd",
+        ));
         let post_a_publication_deployment = options
             .remove(std::ffi::OsStr::new("--post-a-publication-deployment"))
             .map(PathBuf::from);
@@ -242,6 +250,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         {
             return Err("publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd".into());
         }
+        if independent_b_deployment.is_some() != independent_b_handoff.is_some()
+            || independent_b_deployment.is_some() && post_a_deployment.is_none()
+            || post_a_deployment.is_some()
+                && (independent_b_deployment.is_none()
+                    || post_a_publication_deployment.is_none()
+                    || publication_handoff.is_none())
+        {
+            return Err("ordinary post-A requires its original independent B deployment and purpose handoff beside its original publication route".into());
+        }
         // Claim every numeric inherited FD before any clone/open/runtime can
         // reuse a missing number. One slot owns each FD and closes the original.
         let mut claimed = std::collections::BTreeSet::new();
@@ -258,6 +275,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
         let mut model_handoff = model_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let mut independent_b_handoff = independent_b_handoff
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
@@ -424,13 +445,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         (None, None) => None,
                         _ => return Err("original post-A publication inputs differ".into()),
                     };
-                    codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_post_a_learning_from_deployment(
+                    let independent_evaluation = match (
+                        independent_b_deployment.as_deref(),
+                        independent_b_handoff.take(),
+                    ) {
+                        (Some(path), Some(handoff)) => {
+                            Some((path, std::os::unix::net::UnixDatagram::from(handoff)))
+                        }
+                        _ => {
+                            return Err(
+                                "original independent B inputs are missing or already consumed"
+                                    .into(),
+                            );
+                        }
+                    };
+                    codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_post_a_learning_with_independent_b(
                         &mut prepared,
                         post_a_path,
                         std::os::unix::net::UnixDatagram::from(learning),
                         std::os::unix::net::UnixDatagram::from(model),
                         root,
                         publication,
+                        independent_evaluation,
                     )?;
                 }
                 Some((handoff, codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?))

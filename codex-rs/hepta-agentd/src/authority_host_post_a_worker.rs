@@ -46,6 +46,7 @@ struct OriginalInputs {
     learning_handoff: UnixDatagram,
     model_handoff: UnixDatagram,
     publication_handoff: Option<UnixDatagram>,
+    independent_b_handoff: Option<UnixDatagram>,
     root_pidfd: OwnedFd,
     receiver: mpsc::Receiver<Submission>,
 }
@@ -65,6 +66,7 @@ pub(super) fn prepare(
     model_handoff: UnixDatagram,
     root_pidfd: OwnedFd,
     publication_handoff: Option<UnixDatagram>,
+    independent_b_handoff: Option<UnixDatagram>,
 ) -> io::Result<(PostALearningSubmitter, PostALearningWorker)> {
     original_root()?;
     let gate = Arc::new(InstallationGate {
@@ -87,6 +89,7 @@ pub(super) fn prepare(
                 learning_handoff,
                 model_handoff,
                 publication_handoff,
+                independent_b_handoff,
                 root_pidfd,
                 receiver,
             })),
@@ -261,6 +264,7 @@ fn run_installation(
         publication_offer,
         publication_deployment,
         frozen_scope,
+        independent_b,
     } = submission.installation;
     if learning.q24_model.is_none()
         || learning
@@ -282,7 +286,22 @@ fn run_installation(
             "original post-A publication inputs differ",
         ));
     }
+    if independent_b.is_some() != inputs.independent_b_handoff.is_some() {
+        return Err(io::Error::other(
+            "original independent B installation inputs differ",
+        ));
+    }
     let bound = super::super::learning::BoundLearning::bind(learning, config, publication)?;
+    let (independent_b, independent_b_offer) = match independent_b {
+        Some(prepared) => {
+            let (runtime, offer) = crate::authority_host_runtime::PreparedRootIndependentBEvaluationV1::into_original_parts(prepared);
+            let original = super::super::learning::BoundLearning::bind_original_independent_b(
+                &bound, runtime, config,
+            )?;
+            (Some(original), Some(offer))
+        }
+        None => (None, None),
+    };
     gate.require_original(end)?;
     owner_alive(owner, end)?;
     let timeout = Duration::from_millis(config.timeout_ms);
@@ -319,6 +338,15 @@ fn run_installation(
         )
         .map_err(io::Error::other)?;
     }
+    if let (Some(handoff), Some(offer)) = (inputs.independent_b_handoff, independent_b_offer) {
+        crate::send_root_independent_b_evaluation_handoff(
+            handoff,
+            offer,
+            &inputs.root_pidfd,
+            remaining()?,
+        )
+        .map_err(io::Error::other)?;
+    }
     gate.require_original(end)?;
     verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
     gate.phase
@@ -332,20 +360,30 @@ fn run_installation(
         .map_err(|_| io::Error::other("original post-A installation acknowledgement lost"))?;
     gate.require_original(end)?;
     publication::serve_original_material(publication_deployment, gate, || {
-        super::super::learning::serve_optional_until(
-            Some(&bound),
+        crate::authority_host_runtime::serve_independent_b_until(
+            independent_b.as_ref(),
             service,
             config,
             registration,
             owner,
             session_end,
             || {
-                while gate.phase.load(Ordering::Acquire) != CLOSED {
-                    gate.require_original(session_end)?;
-                    owner_alive(owner, session_end)?;
-                    std::thread::sleep(Duration::from_millis(5));
-                }
-                Ok(())
+                super::super::learning::serve_optional_until(
+                    Some(&bound),
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    session_end,
+                    || {
+                        while gate.phase.load(Ordering::Acquire) != CLOSED {
+                            gate.require_original(session_end)?;
+                            owner_alive(owner, session_end)?;
+                            std::thread::sleep(Duration::from_millis(5));
+                        }
+                        Ok(())
+                    },
+                )
             },
         )
     })

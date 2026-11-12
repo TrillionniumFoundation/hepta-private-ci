@@ -34,6 +34,8 @@ use crate::HostAuthorityRegistration;
 use crate::HostAuthorityService;
 use crate::HostAuthorityServiceConfig;
 use crate::RootQ24ModelFactoryOfferV1;
+use crate::authority_host_runtime::OriginalRootIndependentBEvaluationFilesV1;
+use crate::authority_host_runtime::PreparedRootIndependentBEvaluationV1;
 use crate::authority_host_service::OriginalDerivedLearningMode;
 use crate::authority_host_service::RegisteredHostLearningCheckpointV1;
 use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalCompleteTaskObservationV1;
@@ -86,6 +88,7 @@ pub(super) struct PostALearningRuntime {
     baseline: PostABaselineFiles,
     freeze: PostAFreezeFiles,
     publication: Option<Arc<OriginalPostAPublicationFiles>>,
+    independent_evaluation_path: Option<PathBuf>,
     plan: PostALearningPlan,
 }
 
@@ -99,6 +102,7 @@ pub(super) struct PostALearningInstallation {
     pub(super) publication_offer: Option<crate::RootGenerationPublicationOfferV1>,
     pub(super) publication_deployment: Option<OriginalPostAPublicationDeployment>,
     pub(super) frozen_scope: String,
+    pub(super) independent_b: Option<PreparedRootIndependentBEvaluationV1>,
 }
 
 impl PostALearningRuntime {
@@ -152,7 +156,7 @@ impl PostALearningRuntime {
                     )?;
                 }
                 require_end(end)?;
-                let mut factory = service.open_q24_model_factory_v2(
+                let factory = service.open_q24_model_factory_v2(
                     config,
                     registration,
                     owner,
@@ -160,15 +164,63 @@ impl PostALearningRuntime {
                     &self.reservation_path,
                     end,
                 )?;
+                learning.q24_model = Some(factory);
+                let independent_b = match &self.independent_evaluation_path {
+                    Some(path) => {
+                        let files = if self.register {
+                            OriginalRootIndependentBEvaluationFilesV1::register_original_b(
+                                path,
+                                initial,
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                &learning,
+                                end,
+                                session_end,
+                            )?
+                        } else {
+                            OriginalRootIndependentBEvaluationFilesV1::reopen_original_b(
+                                path,
+                                initial,
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                &learning,
+                                end,
+                                session_end,
+                            )?
+                        };
+                        let prepared =
+                            OriginalRootIndependentBEvaluationFilesV1::prepare_original_b(
+                                &files,
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                &learning,
+                                end,
+                            )?;
+                        RegisteredHostLearningCheckpointV1::attach_original_model_b(
+                            &mut learning,
+                            prepared.original_custodian(),
+                        )?;
+                        Some(prepared)
+                    }
+                    None => None,
+                };
                 let learning_bootstrap =
                     service.seal_learning_checkpoint(config, registration, owner, &learning)?;
                 let model_offer = service.seal_q24_model_factory_offer(
                     config,
                     registration,
                     owner,
-                    &mut factory,
+                    learning
+                        .q24_model
+                        .as_mut()
+                        .ok_or_else(|| io::Error::other("original post-A Model factory missing"))?,
                 )?;
-                learning.q24_model = Some(factory);
                 let (publication, publication_offer, publication_deployment) =
                     match &self.publication {
                         Some(files) => {
@@ -201,6 +253,7 @@ impl PostALearningRuntime {
                     publication_offer,
                     publication_deployment,
                     frozen_scope,
+                    independent_b,
                 })
             },
         )
@@ -213,6 +266,7 @@ impl PostALearningRuntime {
         peer_uid: u32,
         peer_gid: u32,
         publication_path: Option<&Path>,
+        independent_evaluation_path: Option<&Path>,
     ) -> io::Result<Self> {
         original_root()?;
         let (metadata, bytes) = MetadataFile::open_metadata(path)?;
@@ -297,6 +351,7 @@ impl PostALearningRuntime {
             baseline,
             freeze,
             publication,
+            independent_evaluation_path: independent_evaluation_path.map(Path::to_path_buf),
             plan: PostALearningPlan {
                 snapshot_id: StableId::new(data.snapshot_id).map_err(io::Error::other)?,
                 head,
