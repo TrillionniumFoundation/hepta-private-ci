@@ -1,0 +1,268 @@
+{
+  "scope": "Original exact65 fullCLI PASS and failed initial QA; original exact31 two complete QA files PASS. Each source remains separate. No native or full-chain pass.",
+  "sources": [
+    {
+      "head": "65c32e639e99912fc5a437afe5dd128271ec05ae",
+      "tree": "ae158ee0f2e611a6b9fd5f01e07728102811dd17",
+      "status": "",
+      "tracked_files": 15492,
+      "tracked_bytes": 234345681,
+      "tracked_sha256": "d2575d6c4f5e8051a1816b4e0d49a157bcfab368aaa8051336e3f99fadd09ba1",
+      "callers_sha256": "0abbaf3c3ea1f96ebaa6a290a093c36b25a2afb3577497afa1c98312ba772991"
+    },
+    {
+      "head": "31a67f4782d5279034d4c90786d3b944d5da629d",
+      "tree": "c6b3a1a7cc5471bab3c8afc9782ea338dfc6afed",
+      "status": "",
+      "tracked_files": 15492,
+      "tracked_bytes": 234346436,
+      "tracked_sha256": "fb581f3938fdfa54c96d735ffa00c91c8f71531057ffb1f368f843666945a840",
+      "callers_sha256": "0abbaf3c3ea1f96ebaa6a290a093c36b25a2afb3577497afa1c98312ba772991"
+    }
+  ],
+  "commands": [
+    [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify",
+      "--root",
+      "/workspace/scratch/ff41dfc0f7bf/hepta-retirement-barrier-cloud"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_ordinary_original_callers_source_closure.py",
+      "-v"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_file_test_cfg_source_closure.py",
+      "-v"
+    ]
+  ],
+  "files": [
+    {
+      "path": "exact65/candidate-fields-commit.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/candidate-fields-commit.json",
+      "bytes": 859,
+      "sha256": "46771fb98b5346ee9765669b35e3140114fff04339261e9866ba7d568e822091",
+      "git_blob": "1bed9dac563ab3d184a777a53b3d921707fcd061"
+    },
+    {
+      "path": "exact65/candidate-full-fields-qa.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/candidate-full-fields-qa.json",
+      "bytes": 1241,
+      "sha256": "d7dcfc9a2bb6ce80037acd2bb84fb81405336ce974a771773b593c79c1e3047e",
+      "git_blob": "ab360bc779df7e8be21e6fe477203b3b247eacb0"
+    },
+    {
+      "path": "exact65/candidate-full-fields-qa.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/candidate-full-fields-qa.stderr.log",
+      "bytes": 905,
+      "sha256": "ab94b0a0a507308b849a96bfcbccfd199dd9c20e128d36b42aea26b03eef5966",
+      "git_blob": "cbe049deb257afa5417cce89ce0e5bcae21c3c14"
+    },
+    {
+      "path": "exact65/candidate-full-fields-qa.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/candidate-full-fields-qa.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "exact65/file-test-cfg-qa.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/file-test-cfg-qa.json",
+      "bytes": 1609,
+      "sha256": "d5db9d826aed5c2b858313bef0ad5e24f973043f79e8fcdd54262c7ff8ccf8a5",
+      "git_blob": "bf49c49232959da4a5fd8899230afa739f350d50"
+    },
+    {
+      "path": "exact65/file-test-cfg-qa.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/file-test-cfg-qa.stderr.log",
+      "bytes": 1006,
+      "sha256": "67df9f6335e526b3f301f417eb005731bf837489bbe8432fb0a8692084062d90",
+      "git_blob": "d68d0cb8f960e081348b19dac3ad65ead9103a44"
+    },
+    {
+      "path": "exact65/file-test-cfg-qa.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/file-test-cfg-qa.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "exact65/fullcallers.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/fullcallers.json",
+      "bytes": 1593,
+      "sha256": "f40f38df3a4ffdd5c46821a56a7858ad1e6ad156ba0b015da0142b60d265d06c",
+      "git_blob": "ce8413ea2845530d54cabd1269c4027278b31718"
+    },
+    {
+      "path": "exact65/fullcallers.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/fullcallers.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "exact65/fullcallers.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/fullcallers.stdout.log",
+      "bytes": 530550,
+      "sha256": "52f50102d3ac152a17b15e1b4ed824cafacc2f40e890476e8788bcec7b5b8956",
+      "git_blob": "92a5af32c3987036fcda1f7c42d553d87fb31972"
+    },
+    {
+      "path": "exact65/ordinary-callers-full-fields-candidate.patch",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/ordinary-callers-full-fields-candidate.patch",
+      "bytes": 2152,
+      "sha256": "88b7b2dea90ad78982b9c9fd290bd8aacf8ce58915d4a34ee61edde20936b1e3",
+      "git_blob": "5fd9cac685497667a7b6887102737524f62d84db"
+    },
+    {
+      "path": "exact65/ordinary-callers-full-fields-candidate.py",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/ordinary-callers-full-fields-candidate.py",
+      "bytes": 10044,
+      "sha256": "815f62ee145fa9f812526c31a89ec875c14600f59caffaa4a820acb8119f5b5d",
+      "git_blob": "9c1ede75983de9f9c9264d5ba5620e84ed86f862"
+    },
+    {
+      "path": "exact65/ordinary-callers-qa.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/ordinary-callers-qa.json",
+      "bytes": 1630,
+      "sha256": "f13a9df0dad6b1b4ff597b7b0e8dd62b0349e02ed5bc43391ce10f248e300c72",
+      "git_blob": "b7071f672901237af1c5d7d56617fc0a49ee2190"
+    },
+    {
+      "path": "exact65/ordinary-callers-qa.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/ordinary-callers-qa.stderr.log",
+      "bytes": 6649,
+      "sha256": "a2905f80670c6dd27c48474f07d8a420e71b8abe69cdd1dcbbef5a4c62af7f10",
+      "git_blob": "db303c5741af4d77504094a317e6e3b4631334df"
+    },
+    {
+      "path": "exact65/ordinary-callers-qa.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/ordinary-callers-qa.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "exact65/repair.patch",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/repair.patch",
+      "bytes": 4738,
+      "sha256": "af97b8de46d8b95c6e1c5ee1afd7555faf9df2c282d8812ea2db79cbea3cdbfa",
+      "git_blob": "412a2b8473b34079638bf78c1d06f370c262eef2"
+    },
+    {
+      "path": "exact65/result.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/result.json",
+      "bytes": 6712,
+      "sha256": "208b98d659f5910cd33daa7724fe6969f1c35128d218d9e594a5d80e1328589f",
+      "git_blob": "7c90f89f25c3939d326fa0382b4091a57a387219"
+    },
+    {
+      "path": "exact65/review.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/review.json",
+      "bytes": 1807,
+      "sha256": "3798455256168fac6c845d89f7cbf6155d0a488cbb88729f54d0db64e28308b6",
+      "git_blob": "bb18e71d1d1be7a60dc285a533c10f2b8ba8a604"
+    },
+    {
+      "path": "exact65/source-before.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-cfg-repair-v1/source-before.json",
+      "bytes": 359,
+      "sha256": "ce7c31dd8e0e787ac7e04c81e9bbe24807d0df5c28419d21475855e1299f0830",
+      "git_blob": "8f8f7b0c935423678955511d9da2019e4842663d"
+    },
+    {
+      "path": "exact31/checkout.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/checkout.json",
+      "bytes": 357,
+      "sha256": "f2f1a95ce39af3e0fb8782fc8b33c0b76fb48ddd0744c2faeb22a2e59d3648fe",
+      "git_blob": "b392af1017b373c40ed849489069b55fdec28af8"
+    },
+    {
+      "path": "exact31/file-test-cfg-qa.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/file-test-cfg-qa.json",
+      "bytes": 1609,
+      "sha256": "5c65bdd13bcce739c4e07b0df8f2379ba0c9036f86f4f51f1ca4c037df5d8cea",
+      "git_blob": "931f408a66b41335ae57636af53ac779bd9b6a3f"
+    },
+    {
+      "path": "exact31/file-test-cfg-qa.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/file-test-cfg-qa.stderr.log",
+      "bytes": 1006,
+      "sha256": "67df9f6335e526b3f301f417eb005731bf837489bbe8432fb0a8692084062d90",
+      "git_blob": "d68d0cb8f960e081348b19dac3ad65ead9103a44"
+    },
+    {
+      "path": "exact31/file-test-cfg-qa.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/file-test-cfg-qa.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "exact31/ordinary-callers-qa.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/ordinary-callers-qa.json",
+      "bytes": 1627,
+      "sha256": "92a556b6e65107218ad973b858e3c965a24dc04c7b4e72394a9407ced3cf3e29",
+      "git_blob": "33872f72a2baf25c9fd30607eb3a6c213a3540f2"
+    },
+    {
+      "path": "exact31/ordinary-callers-qa.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/ordinary-callers-qa.stderr.log",
+      "bytes": 965,
+      "sha256": "7b251ebd37e0c193e680c2b14944fffc2dd9680baca5b0d5950f8545929f6932",
+      "git_blob": "b60d6822c49e517405ed35bf69aa2f33870026bb"
+    },
+    {
+      "path": "exact31/ordinary-callers-qa.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/ordinary-callers-qa.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "exact31/result.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/result.json",
+      "bytes": 4941,
+      "sha256": "8b7d990c593096afa4f517274ea8e59b3cabfa83f3e4e41adac67c338e6f7ec6",
+      "git_blob": "51c0e4077df498d09a606b15a3f9731be7102494"
+    },
+    {
+      "path": "exact31/source-before.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-generation-fixture-full-fields-31a67f47-v1/source-before.json",
+      "bytes": 359,
+      "sha256": "c98028c544af1b15a093a77cfbb272cd38c22534a6f0d47ff24810eeacc6b2ef",
+      "git_blob": "50ffbad29695a18ad3fbbe544d5e3e162bcfacdd"
+    },
+    {
+      "path": "drivers/run_root_65c32e63_fixture_scope_gates_v1.py",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/run_root_65c32e63_fixture_scope_gates_v1.py",
+      "bytes": 6090,
+      "sha256": "b157e5f8b23f3c2161b3e67ae0f8ea98a22d1cdc2430166512c999a69ca802e8",
+      "git_blob": "79d152c01e1bcf5d12775054907011736463bf93"
+    },
+    {
+      "path": "drivers/run_root_31a67f47_complete_fixture_qa_v1.py",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/run_root_31a67f47_complete_fixture_qa_v1.py",
+      "bytes": 6009,
+      "sha256": "461e0842b346a30bfcf340c891b92afc2c41daf3083c38ac52bca1de8285a5ce",
+      "git_blob": "96ee2d28d9a6110a9434b41b81433ca45e105dd9"
+    }
+  ],
+  "file_count": 30,
+  "input_bytes": 594817
+}
