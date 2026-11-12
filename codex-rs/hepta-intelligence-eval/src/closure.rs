@@ -247,10 +247,12 @@ fn decide_with_metric_contract(
         }
     }
 
-    let disposition = if !failed_metrics.is_empty() {
-        IndependentEvaluationDispositionV1::Ineligible
-    } else if insufficient {
+    // Keep diagnostic failures, but incomplete evidence cannot establish a
+    // completed negative evaluation that downstream owners could call NoUpdate.
+    let disposition = if insufficient {
         IndependentEvaluationDispositionV1::InsufficientEvidence
+    } else if !failed_metrics.is_empty() {
+        IndependentEvaluationDispositionV1::Ineligible
     } else {
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     };

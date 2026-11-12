@@ -27,6 +27,8 @@ use crate::CellEvaluationRunnerV1;
 pub enum CellLearningEvaluationErrorV1 {
     #[error("learning evaluation binding: {0}")]
     Binding(&'static str),
+    #[error("original evaluation has insufficient evidence for a learning decision")]
+    InsufficientEvidence,
     #[error("learning iteration: {0}")]
     Iteration(#[from] LearningIterationError),
     #[error("Cell evaluation: {0}")]
@@ -39,6 +41,8 @@ pub enum CellLearningEvaluationErrorV1 {
 /// and clock, then bind its decision to the exact Training predecessor. No
 /// caller-supplied disposition, candidate digest or new observation time is
 /// accepted. Repeating this read at a later valid clock returns the same bytes.
+/// Insufficient evidence remains an error without an Evaluation receipt; only
+/// a complete, ineligible evaluation can advance the unchanged model as NoUpdate.
 ///
 /// The observation time is the original evaluator signature's issue time.
 /// Recovery may revalidate after the work deadline; this does not renew that
@@ -125,9 +129,11 @@ pub fn prepare_cell_learning_evaluation_v1(
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
             LearningEvaluationDispositionV1::Qualified
         }
-        IndependentEvaluationDispositionV1::Ineligible
-        | IndependentEvaluationDispositionV1::InsufficientEvidence => {
+        IndependentEvaluationDispositionV1::Ineligible => {
             LearningEvaluationDispositionV1::NoUpdate
+        }
+        IndependentEvaluationDispositionV1::InsufficientEvidence => {
+            return Err(CellLearningEvaluationErrorV1::InsufficientEvidence);
         }
     };
     let prepared = LearningIterationReceiptV1 {

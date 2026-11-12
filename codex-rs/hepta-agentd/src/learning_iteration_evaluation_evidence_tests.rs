@@ -27,6 +27,8 @@ use codex_hepta_neuron::WitnessStoreError;
 use codex_hepta_types::Generation;
 use ed25519_dalek::SigningKey;
 
+#[path = "learning_iteration_evaluation_insufficient_tests.rs"]
+mod insufficient;
 #[path = "learning_iteration_evaluation_recovery_tests.rs"]
 mod recovery;
 
@@ -116,7 +118,6 @@ async fn current_signed_qualification_reads_original_stage_evidence_for_all_deci
     for disposition in [
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
         IndependentEvaluationDispositionV1::Ineligible,
-        IndependentEvaluationDispositionV1::InsufficientEvidence,
     ] {
         let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
         let fixture = LearningFixture::new_at(disposition, now);
@@ -304,7 +305,6 @@ async fn original_evaluation_receipt_signs_actual_qualification_and_recovers_ori
     for disposition in [
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
         IndependentEvaluationDispositionV1::Ineligible,
-        IndependentEvaluationDispositionV1::InsufficientEvidence,
     ] {
         let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
         let mut fixture = LearningFixture::new_at(disposition, now);
