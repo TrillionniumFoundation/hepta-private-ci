@@ -1,0 +1,750 @@
+{
+  "status": "Uncommitted guard specification retained from working candidate; not a full CALLERS postimage; latest six source QA result unknown because cloud exec disconnected before log read",
+  "source_head": "9b25264b46739148f907ed4cac2adae72ae0d2d2",
+  "paths": {
+    "store": "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs",
+    "context": "codex-rs/hepta-agentd/src/authority_host_publication_grant_context.rs",
+    "grant": "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+    "issuer": "codex-rs/hepta-agentd/src/deployment_publication.rs",
+    "client": "codex-rs/hepta-agentd/src/root_generation_current_grant.rs",
+    "current": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+    "backend": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+    "prepared": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+    "aggregate": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs",
+    "worker": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+    "handoff": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+    "continuation": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+    "transport": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+    "registration": "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
+  },
+  "boundaries": [
+    {
+      "id": "root_c_grant_enroll",
+      "symbol": "RegisteredPublicationGrant::enroll",
+      "receiver_type": "RegisteredPublicationGrant",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs",
+      "definition_markers": [
+        "fn enroll("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_begin",
+      "symbol": "RegisteredPublicationGrant::begin",
+      "receiver_type": "RegisteredPublicationGrant",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs",
+      "definition_markers": [
+        "fn begin("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_finish",
+      "symbol": "RegisteredPublicationGrant::finish",
+      "receiver_type": "RegisteredPublicationGrant",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs",
+      "definition_markers": [
+        "fn finish("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_context",
+      "symbol": "HostAuthorityService::with_generation_grant_context",
+      "receiver_type": "HostAuthorityService",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_publication_grant_context.rs",
+      "definition_markers": [
+        "fn with_generation_grant_context<T>("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_dispatch",
+      "symbol": "HostAuthorityService::issue_generation_publication_grant",
+      "receiver_type": "HostAuthorityService",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+      "definition_markers": [
+        "fn issue_generation_publication_grant("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_issuer_admission",
+      "symbol": "DeploymentFinalUseIssuer::issue_original_publication_final_use",
+      "receiver_type": "DeploymentFinalUseIssuer",
+      "definition_path": "codex-rs/hepta-agentd/src/deployment_publication.rs",
+      "definition_markers": [
+        "fn issue_original_publication_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_sealed_parts",
+      "symbol": "RootPreparedPublicationGrantV1::into_original_parts",
+      "receiver_type": "RootPreparedPublicationGrantV1",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+      "definition_markers": [
+        "fn into_original_parts("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/deployment_publication.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_registered_issuer",
+      "symbol": "DeploymentFinalUseIssuer::issue_registered_final_use",
+      "receiver_type": "DeploymentFinalUseIssuer",
+      "definition_path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "definition_markers": [
+        "fn issue_registered_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs",
+        "codex-rs/hepta-agentd/src/deployment_publication.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_joint_tokens",
+      "symbol": "DeploymentFinalUseIssuer::with_live_issuer_and_writer",
+      "receiver_type": "DeploymentFinalUseIssuer",
+      "definition_path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "definition_markers": [
+        "fn with_live_issuer_and_writer<T>("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant_context.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_client",
+      "symbol": "RootGenerationCurrentClient::issue_original_prepared_final_use",
+      "receiver_type": "RootGenerationCurrentClient",
+      "definition_path": "codex-rs/hepta-agentd/src/root_generation_current_grant.rs",
+      "definition_markers": [
+        "fn issue_original_prepared_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_store_dispatch",
+      "symbol": "CurrentStore::issue_original_prepared_final_use",
+      "receiver_type": "CurrentStore",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "definition_markers": [
+        "fn issue_original_prepared_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_current_owner",
+      "symbol": "NeuronGenerationCurrentOwnerV1::issue_original_prepared_final_use",
+      "receiver_type": "NeuronGenerationCurrentOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+      "definition_markers": [
+        "fn issue_original_prepared_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_update.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_c_grant_prepared_owner",
+      "symbol": "PreparedAgentdGenerationUpdateV1::issue_original_root_final_use",
+      "receiver_type": "PreparedAgentdGenerationUpdateV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "definition_markers": [
+        "fn issue_original_root_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "q24_successor_original_root_sign",
+      "symbol": "OriginalCellQ24PreparedPublicationV1::issue_original_successor_final_use",
+      "receiver_type": "OriginalCellQ24PreparedPublicationV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs",
+      "definition_markers": [
+        "fn issue_original_successor_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "q24_successor_root_signed_finish",
+      "symbol": "OriginalQ24PreparedSuccessorV1::publish_from_original_root",
+      "receiver_type": "OriginalQ24PreparedSuccessorV1",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "definition_markers": [
+        "fn publish_from_original_root("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+      ],
+      "caller_markers": []
+    }
+  ],
+  "protecteds": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs",
+      "required": [
+        "attempted: AtomicBool,",
+        "#[serde(tag = \"phase\"",
+        "GrantPhase::Attempted {}"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "unwrap_or_default",
+        "Duration::from",
+        "Instant::now() +",
+        "pub original:",
+        "pub(crate) original:",
+        "loop {",
+        "RemoveFile",
+        "remove_file("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn enroll(",
+          "sequence": [
+            "ReservedPublicationProfile::original_for_version(",
+            "PublicationVersion::DurableV2",
+            "profile.learning_operation.as_bytes()",
+            "match mode",
+            "RootGenerationPublicationModeV1::Reserve => HostAuthorityFrontierStore::initialize(",
+            "state: GrantPhase::Available {}",
+            "RootGenerationPublicationModeV1::Recover => {",
+            "HostAuthorityFrontierStore::open(root, owner.clone())",
+            "attempted: AtomicBool::new(false)",
+            "retained.require_exact()?"
+          ]
+        },
+        {
+          "function": "fn begin(",
+          "sequence": [
+            "self.mode != RootGenerationPublicationModeV1::Reserve",
+            "self.attempted.swap(true, Ordering::AcqRel)",
+            "let before = self.load_original()?",
+            "before.state != (GrantPhase::Available {})",
+            "attempted.state = GrantPhase::Attempted {}",
+            "compare_and_set(&self.owner, &before, &attempted)",
+            "self.load_original()? != attempted"
+          ]
+        },
+        {
+          "function": "fn finish(",
+          "sequence": [
+            "self.mode != RootGenerationPublicationModeV1::Reserve",
+            "!self.attempted.load(Ordering::Acquire)",
+            "self.require_binding(signed)?",
+            "let before = self.load_original()?",
+            "before.state != (GrantPhase::Attempted {})",
+            "issued.state = GrantPhase::Issued",
+            "signed: signed.clone()",
+            "compare_and_set(&self.owner, &before, &issued)",
+            "self.load_original()? != issued"
+          ]
+        },
+        {
+          "function": "fn require_exact(",
+          "sequence": [
+            "self.load_original()?",
+            "match record.state",
+            "GrantPhase::Attempted {} => Err(",
+            "GrantPhase::Issued { signed } => self.require_binding(&signed)"
+          ]
+        },
+        {
+          "function": "fn load_original(",
+          "sequence": [
+            "self.store.load(&self.owner)",
+            "record.schema != 1",
+            "record.purpose !=",
+            "record.original != self.original",
+            "return Err(",
+            "Ok(record)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_grant_context.rs",
+      "required": [],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "unwrap_or_default",
+        "Duration::from",
+        "Instant::now() +",
+        "with_learning_profile(",
+        "registration.with_live(",
+        ".with_dispatch_boundary("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn with_generation_grant_context<T>(",
+          "sequence": [
+            "refusal::require_end(end)?",
+            "config.required_bind.verify()?",
+            "RootAuthorityDirectory::open(&config.state_dir)",
+            "config.schema_version != 1",
+            "registration.schema_version != 1",
+            "config.peer_uid == 0",
+            "config.peer_gid == 0",
+            "!(1..=500).contains(&config.timeout_ms)",
+            "!(1..=300_000).contains(&config.lifetime_ms)",
+            "starts_with(&config.required_bind.mountpoint)",
+            "registration.registered_identity.identity()? != self.identity",
+            "verify_pinned_process(",
+            "self.check_logind_lifetime()?",
+            "config.writer.as_ref() != Some(&writer.registration)",
+            "with_live_issuer_and_writer(&writer.registration, |issuer_lease| {",
+            "retained_writer_authorization(&writer.registration)?",
+            "!= writer.proof",
+            "learning.profile.require_binding(&self.identity, &proof)?",
+            "let before = self.issuer.revocations()?",
+            "validate_observation_lease(issuer_lease, &before, now)?",
+            "&writer.registration.authority_lease,",
+            "&before,",
+            "now,",
+            "refusal::require_end(end)?",
+            "issuer_lease",
+            "expires_at_unix_ms",
+            "min(writer.registration.authority_lease.expires_at_unix_ms)",
+            "let result = action(initial, proof, &writer.registration, &writer.proof, expiry);",
+            "self.issuer.revocations()? != before",
+            "retained_writer_authorization(&writer.registration)?",
+            "!= writer.proof",
+            "validate_observation_lease(issuer_lease, &before, after)?",
+            "&writer.registration.authority_lease,",
+            "&before,",
+            "after,",
+            "self.check_logind_lifetime()?",
+            "verify_pinned_process(",
+            "end)?",
+            "refusal::require_end(end)?",
+            "result"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+      "required": [
+        "pub(crate) struct RootPreparedPublicationGrantV1<'a>",
+        "registration: &'a HostAuthorityWriterRegistration,",
+        "proof: &'a HostSignedWriterAuthorizationV1,"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "unwrap_or_default",
+        "Duration::from",
+        "Instant::now() +",
+        "pub binding:",
+        "pub(crate) binding:",
+        "Serialize",
+        "Deserialize",
+        "impl Clone",
+        "self.issuer.issue(",
+        "HostAuthorityFrontierStore",
+        "signed: &SignedFinalUseGrant"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn require_grant_cut(",
+          "sequence": [
+            "PublicationVersion::from_purpose(&self.profile.purpose)? != PublicationVersion::DurableV2",
+            "self.profile.intent.supersedes.is_some()",
+            "NeuronGenerationPredecessorCompletionV1::OwnerDrained",
+            "NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel",
+            "self.require_profile()?",
+            "self.require_history(learning, scope)?",
+            "self.require_previous()?",
+            "self.require_genesis()?",
+            "self.require_selection(now)?",
+            "original_broker_head()",
+            "head.current != self.profile.intent.previous",
+            "head.prepared.as_ref() != Some(&self.profile.intent)",
+            "Ok(head)"
+          ]
+        },
+        {
+          "function": "fn issue_generation_publication_grant(",
+          "sequence": [
+            "refusal::require_end(end)?",
+            "Command::IssueFinalUse { expected, intent }",
+            "request.schema != version.schema()",
+            "request.purpose != version.purpose()",
+            "request.profile != slot.profile.binding",
+            "request.request_id != *sequence",
+            "sequence.checked_add(1)",
+            "slot.grant.as_ref()",
+            "learning.profile.original_initial_data()?",
+            "learning.profile.require_cell_scope(&initial_data)?",
+            "let issued = self.with_generation_grant_context(",
+            "|initial, proof, writer, writer_proof, lease_expiry| {",
+            "initial != initial_data",
+            "slot.profile.initial != initial.head_digest.to_string()",
+            "slot.profile.scope != scope.binding().to_string()",
+            "slot.profile.writer != proof",
+            "slot.profile.identity",
+            "neuron_generation_process_identity_digest_v1(&self.identity)",
+            "let head = slot.require_grant_cut(",
+            "checked_mul(1000)",
+            "min(lease_expiry)",
+            "*expected != head_digest(&head)?",
+            "*intent !=",
+            "slot.profile.intent.digest()",
+            "now >= expiry",
+            "before = Some(head.clone())",
+            "RegisteredPublicationGrant::begin(grant)?",
+            "RootPreparedPublicationGrantV1 {",
+            "binding: slot.profile.intent.binding()",
+            "registration: writer,",
+            "proof: writer_proof,",
+            "expiry,",
+            "let result = self.issuer.issue_original_publication_final_use(admitted);",
+            "let after = slot.require_grant_cut(",
+            "after != head",
+            "refusal::require_end(end)?",
+            "result?.ok_or_else(",
+            "let after = slot.require_grant_cut(",
+            "verify_pinned_process(",
+            "refusal::require_end(end)?",
+            "before.as_ref() != Some(&after)",
+            "let signed = issued?",
+            "signed.grant.expires_at_unix_ms",
+            "let response = Response {",
+            "grant: Some(signed.clone())",
+            "serde_json::to_vec(&response)",
+            "raw.len() > 16 * 1024",
+            "RegisteredPublicationGrant::finish(grant, &signed)?",
+            "let final_time = self",
+            "slot.require_grant_cut(learning, &scope, final_time)? != after",
+            "final_time >= signed.grant.expires_at_unix_ms",
+            "verify_pinned_process(",
+            "refusal::require_end(end)?",
+            "Ok(raw)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_publication.rs",
+      "required": [],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "unwrap_or_default",
+        "Duration::from",
+        "Instant::now() +",
+        "pub fn",
+        "&FinalUseBinding",
+        "with_binding("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn issue_original_publication_final_use(",
+          "sequence": [
+            "admitted: RootPreparedPublicationGrantV1<'_>",
+            "admitted.into_original_parts()",
+            "self.issue_registered_final_use(&binding, registration, proof, expiry)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "required": [
+        "IssueFinalUse {",
+        "pub(crate) grant: Option<SignedFinalUseGrant>,"
+      ],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn serve_generation_publication_with_end(",
+          "sequence": [
+            "exchange_with_original_deadline(|bytes, end| {",
+            "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {",
+            "serde_json::from_slice(bytes)",
+            "matches!(&request.command, Command::IssueFinalUse { .. })",
+            "return Self::issue_generation_publication_grant(",
+            "&mut sequence,",
+            "end,",
+            "let mut successor_observed = None",
+            "self.with_learning_profile(",
+            "grant: None",
+            "Ok(raw)",
+            "let _ = slot.refuse();"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs",
+      "required": [],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn enroll_generation_publication(",
+          "sequence": [
+            "PublicationRefusal::enroll(",
+            "|refusal| {",
+            "self.enroll_armed_generation_publication(",
+            "if version == PublicationVersion::DurableV2",
+            "enrolled.grant = Some(RegisteredPublicationGrant::enroll(",
+            "Arc::clone(&root)",
+            "&enrolled.reserved",
+            "mode,",
+            "enrolled.require_profile()?",
+            "verify_pinned_process(",
+            "require_end(end)?"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_grant.rs",
+      "required": [],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "unwrap_or_default",
+        "Duration::from",
+        "Instant::now() +",
+        "SignedFinalUseGrant {",
+        "RootAuthorityDirectory",
+        "File::",
+        "UnixStream::",
+        "connect(",
+        "sleep(",
+        "loop {"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn issue_original_prepared_final_use(",
+          "sequence": [
+            "let result = (|| {",
+            "self.grant_attempted.swap(true, Ordering::AcqRel)",
+            "self.version != PublicationVersion::DurableV2",
+            "intent != &self.profile.intent",
+            "let before = self.observe()?",
+            "before.current != intent.previous || before.prepared.as_ref() != Some(intent)",
+            "self.exchange_response(Command::IssueFinalUse {",
+            "expected: head_digest(&before)?",
+            "intent: intent.digest()?.to_string()",
+            "response.head != before || response.successor.is_some()",
+            "response.grant.ok_or_else(uncertain)?",
+            "signed.grant.binding != intent.binding()?",
+            "signed.grant.signing_bytes()",
+            "self.connection.require_original_publication_session()?",
+            "Ok(signed)",
+            "if result.is_err()",
+            "self.fence()",
+            "result"
+          ],
+          "top_level": [
+            "let result = (|| {",
+            "if result.is_err()"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+      "required": [
+        "grant_attempted: AtomicBool,",
+        "grant_attempted: AtomicBool::new(false)"
+      ],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn from_original_stream(",
+          "sequence": [
+            "response.successor.is_some()",
+            "response.grant.is_some()",
+            "validate_head(profile, &response.head)?"
+          ]
+        },
+        {
+          "function": "fn exchange(",
+          "sequence": [
+            "response.successor.is_some() || response.grant.is_some()",
+            "self.fence()"
+          ]
+        },
+        {
+          "function": "fn read_original_completed_successor(",
+          "sequence": [
+            "self.exchange_response(command)?",
+            "response.head.current != self.profile.intent.target || response.grant.is_some()",
+            "response.successor.ok_or_else(uncertain)?"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "required": [],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn issue_original_prepared_final_use(",
+          "sequence": [
+            "match &self.store",
+            "Store::Root(client) =>",
+            "RootGenerationCurrentClient::issue_original_prepared_final_use(client, intent)",
+            "_ => Err(invalid("
+          ],
+          "top_level": [
+            "match &self.store"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+      "required": [],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn issue_original_prepared_final_use(",
+          "sequence": [
+            "prepared: &PreparedNeuronGenerationUpdateV1",
+            "CurrentStore::issue_original_prepared_final_use(&self.store, &prepared.intent)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "required": [],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn issue_original_root_final_use(",
+          "sequence": [
+            "NeuronGenerationCurrentOwnerV1::issue_original_prepared_final_use(",
+            "&self.current,",
+            "&self.prepared,"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs",
+      "required": [],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "unwrap_or_default",
+        "Duration::from",
+        "Instant::now() +",
+        "Deserialize",
+        "Serialize",
+        "tokio::spawn",
+        "SignedFinalUseGrant {",
+        "request_grant("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn issue_original_successor_final_use(",
+          "sequence": [
+            "self.original.decision.require_new_work()?",
+            "require_successor_admission(&state, &identity)?",
+            "Arc::clone(&self.original.owners)",
+            "self.original.decision.snapshot.clone()",
+            "self.original.manifest.clone()",
+            "with_original_publication(snapshot, manifest, move || {",
+            "self.original.decision.require_new_work()?",
+            "require_successor_admission(&state, &identity)?",
+            "slot.require_installation_open()",
+            "let issued =",
+            "PreparedAgentdGenerationUpdateV1::issue_original_root_final_use(&self.prepared)",
+            "require_successor_admission(&state, &identity)?",
+            "slot.require_installation_open()",
+            "Ok((self, issued?))",
+            ".await"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "required": [],
+      "forbidden": [],
+      "required_function_order": [
+        {
+          "function": "fn finish_original_worker(",
+          "sequence": [
+            "let requested = tokio::select!",
+            "self.slot.closed.cancelled()",
+            "tokio::time::timeout(",
+            "require_current_successor_publication()",
+            "let issued = match requested",
+            "OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, signed))",
+            "OriginalSuccessorGrant::OriginalRoot =>",
+            "issue_original_successor_final_use(",
+            "Arc::clone(&state)",
+            "self.context.identity().clone()",
+            "Arc::clone(&self.slot)",
+            "require_current_successor_publication()",
+            "let (prepared, signed) = issued?",
+            "self.slot",
+            "require_open()",
+            "require_successor_admission(",
+            "let task = prepared",
+            "publish_successor_current("
+          ]
+        }
+      ]
+    }
+  ]
+}
