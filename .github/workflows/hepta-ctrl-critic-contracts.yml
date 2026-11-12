@@ -118,6 +118,7 @@ jobs:
           13 ndu_real_runtime.test_macro_realization
           13 ndu_real_runtime.test_macro_cohort
           7 ndu_real_runtime.test_macro_policy_checkpoint
+          17 ndu_real_runtime.test_macro_policy
           12 ndu_real_runtime.test_candidate_coverage
           7 ndu_real_runtime.test_candidate_expansion
           5 ndu_real_runtime.test_candidate_coverage_legacy
@@ -130,7 +131,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          files=(scripts/ndu_real_runtime/{critic_context,test_critic_context,metacontrol,metacontrol_checkpoint,metacontrol_study,test_metacontrol,test_metacontrol_study,test_metacontrol_reporting,test_metacontrol_context,metacontrol_value_gate,test_metacontrol_value_gate,metacontrol_macro_contract,test_macro_pair_fixtures,test_macro_wire_delivery_admission,test_macro_result_binding,macro_realization,test_macro_realization,macro_cohort,test_macro_cohort,macro_policy_checkpoint,test_macro_policy_checkpoint,candidate_coverage,test_candidate_coverage,candidate_expansion,test_candidate_expansion,candidate_coverage_legacy,test_candidate_coverage_legacy,candidate_gap_diagnostic,test_candidate_gap_diagnostic}.py)
+          files=(scripts/ndu_real_runtime/{critic_context,test_critic_context,metacontrol,metacontrol_checkpoint,metacontrol_study,test_metacontrol,test_metacontrol_study,test_metacontrol_reporting,test_metacontrol_context,metacontrol_value_gate,test_metacontrol_value_gate,metacontrol_macro_contract,test_macro_pair_fixtures,test_macro_wire_delivery_admission,test_macro_result_binding,macro_realization,test_macro_realization,macro_cohort,test_macro_cohort,macro_policy_checkpoint,test_macro_policy_checkpoint,macro_policy,test_macro_policy,candidate_coverage,test_candidate_coverage,candidate_expansion,test_candidate_expansion,candidate_coverage_legacy,test_candidate_coverage_legacy,candidate_gap_diagnostic,test_candidate_gap_diagnostic}.py)
           uv run --frozen --project scripts --python 3.12.14 ruff format --diff "${files[@]}" || true
           uv run --frozen --project scripts --python 3.12.14 ruff format --check "${files[@]}"
           uv run --frozen --project scripts --python 3.12.14 ruff check --select E9,F63,F7,F82 "${files[@]}"
