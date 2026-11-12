@@ -133,7 +133,7 @@ impl OriginalJournal {
 }
 
 impl SigningFilesData {
-    fn open_original(
+    pub(super) fn open_original(
         &self,
         files: &mut OriginalFiles,
         signer: &TrustedLearningSignerV1,
