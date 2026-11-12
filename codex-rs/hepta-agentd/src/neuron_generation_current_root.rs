@@ -7,6 +7,21 @@ use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use super::*;
 
 impl NeuronGenerationCurrentOwnerV1 {
+    pub(crate) fn read_original_completed_successor(
+        &self,
+        original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+        capture_retired: bool,
+    ) -> Result<
+        crate::authority_host_service::generation_publication::RootCompletedSuccessorDataV1,
+        AgentdError,
+    > {
+        store::CurrentStore::read_original_completed_successor(
+            &self.store,
+            original_a,
+            capture_retired,
+        )
+    }
+
     pub(crate) fn require_original_root_historical_receipt(
         &self,
         original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,

@@ -98,6 +98,24 @@ pub(crate) struct LiveGenerationCurrent {
 }
 
 impl LiveGenerationCurrent {
+    pub(crate) fn original_historical_successor_current(
+        &self,
+        original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+    ) -> Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError> {
+        if !matches!(&self.publication, RetainedPublication::Update(_)) {
+            return Err(invalid("original published successor required"));
+        }
+        self.check_current(self.publication.target())
+            .map_err(invalid)?;
+        NeuronGenerationCurrentOwnerV1::require_original_root_historical_receipt(
+            &self.current,
+            original_a,
+        )?;
+        self.check_current(self.publication.target())
+            .map_err(invalid)?;
+        Ok(Arc::clone(&self.current))
+    }
+
     #[cfg(target_os = "linux")]
     pub(crate) fn original_initial_source_current(
         &self,

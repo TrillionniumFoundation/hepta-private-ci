@@ -30,6 +30,14 @@ pub(crate) struct RootHistoricalTaskPublicationDataV1 {
 }
 
 impl RootHistoricalTaskPublicationDataV1 {
+    /// Pure canonical data projection for the same-Root successor receipt.
+    /// The closed actual client separately supplies current admission/custody.
+    pub(crate) fn decode_original_successor_data(
+        &self,
+    ) -> Result<(CircuitTaskSourcePublicationV1, CellDecisionReceiptV1), Error> {
+        self.decode_data()
+    }
+
     pub(crate) fn from_original_observation(
         observed: &HistoricalCircuitTaskSourceObservationV1,
         cell: &CellDecisionReceiptV1,

@@ -81,6 +81,7 @@ impl RootGenerationCurrentClient {
                 .to_string()
             || profile.digest()? != profile.binding
             || profile.intent.supersedes.is_some()
+            || response.successor.is_some()
             || !matches!(
                 profile.intent.completion,
                 crate::NeuronGenerationPredecessorCompletionV1::OwnerDrained
@@ -219,6 +220,52 @@ impl RootGenerationCurrentClient {
     }
 
     fn exchange(&self, command: Command) -> Result<CurrentHead, AgentdError> {
+        let response = self.exchange_response(command)?;
+        if response.successor.is_some() {
+            self.fence();
+            return Err(uncertain());
+        }
+        Ok(response.head)
+    }
+
+    pub(crate) fn read_original_completed_successor(
+        &self,
+        original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+        capture_retired: bool,
+    ) -> Result<
+        crate::authority_host_service::generation_publication::RootCompletedSuccessorDataV1,
+        AgentdError,
+    > {
+        let result = (|| {
+            self.require_original_historical_receipt(original_a)?;
+            if self.version != PublicationVersion::DurableV2 {
+                return Err(uncertain());
+            }
+            let command = if capture_retired {
+                Command::CaptureRetiredTask {}
+            } else {
+                Command::ReadFinalizedTask {}
+            };
+            let response = self.exchange_response(command)?;
+            if response.head.current != self.profile.intent.target {
+                return Err(uncertain());
+            }
+            let data = response.successor.ok_or_else(uncertain)?;
+            let digest: codex_hepta_types::Digest32 =
+                data.record_digest.parse().map_err(|_| uncertain())?;
+            if digest.is_zero() || digest.to_string() != data.record_digest {
+                return Err(uncertain());
+            }
+            self.require_original_historical_receipt(original_a)?;
+            Ok(data)
+        })();
+        if result.is_err() {
+            self.fence();
+        }
+        result
+    }
+
+    fn exchange_response(&self, command: Command) -> Result<Response, AgentdError> {
         if self.fenced.load(Ordering::Acquire) {
             return Err(uncertain());
         }
@@ -269,7 +316,7 @@ impl RootGenerationCurrentClient {
             return Err(uncertain());
         }
         *held = Some(lane);
-        Ok(response.head)
+        Ok(response)
     }
 }
 

@@ -30,6 +30,21 @@ enum Store {
 }
 
 impl CurrentStore {
+    #[cfg(target_os = "linux")]
+    pub(super) fn read_original_completed_successor(
+        &self,
+        original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+        capture_retired: bool,
+    ) -> Result<
+        crate::authority_host_service::generation_publication::RootCompletedSuccessorDataV1,
+        AgentdError,
+    > {
+        match &self.store {
+            Store::Root(client) => crate::root_generation_current_client::RootGenerationCurrentClient::read_original_completed_successor(client, original_a, capture_retired),
+            _ => Err(invalid("completed successor requires actual Root publication client")),
+        }
+    }
+
     pub(super) fn initialize(
         root: Arc<RootAuthorityDirectory>,
         head: CurrentHead,
