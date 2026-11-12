@@ -31,6 +31,7 @@ mod inputs;
 #[path = "root_historical_learning_trust_client.rs"]
 mod learning_trust;
 pub(crate) use learning_trust::OriginalHistoricalLearningTrustV1;
+pub(crate) use learning_trust::OriginalHistoricalStageAuthoritiesV1;
 
 #[path = "root_post_a_learning_client.rs"]
 mod post_a;
