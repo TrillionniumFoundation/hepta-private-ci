@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.original-native-training-work-source.v1",
+  "source_head": "fdf20565786ed55b3569b51b231a442564d38769",
+  "source_tree": "1ad1ed9caf424e0eb06ef0b00b39f8e52311ac6d",
+  "source_clean": true,
+  "bundle_prerequisite": "280f82cdfd2c9f75e018c1506a33029353916f78",
+  "commits": [
+    "5597b3deea7bbbd7e0d95bfb872b89f03c0a577b",
+    "f25bb676d40d7009308b30eeae08af81eed8e200",
+    "9fa1898d00eb476e8a474c4f1e82fedebb1f7479",
+    "dab97e4fe7cf6679450d81b7ec5c5694537f99c5",
+    "fdf20565786ed55b3569b51b231a442564d38769"
+  ],
+  "source_qa": {
+    "tests": 23,
+    "exit": 0,
+    "scope": "three named source-closure modules; not full repository scan"
+  },
+  "native_tests_executed": 0,
+  "whole_chain": {
+    "positive": 0,
+    "evaluated_no_update": 0,
+    "daemon_root_cold": 0
+  },
+  "files": [
+    {
+      "path": "initial-guard-check.json",
+      "bytes": 1473,
+      "sha256": "4c7d22056c119850285cfa777800bef778bdaf57d566835b449a87adf5f12981"
+    },
+    {
+      "path": "source-final.patch",
+      "bytes": 118597,
+      "sha256": "3da0adce9c78f8767315e231f5b2ac9687b5b098ba8b44b07295dbb2b8645efd"
+    },
+    {
+      "path": "source-qa-final.json",
+      "bytes": 1710,
+      "sha256": "06703c2adad8664a2f04e00e94084d0571de1ac494187cec56a4f024024c46e4"
+    },
+    {
+      "path": "source-qa-final.log",
+      "bytes": 4852,
+      "sha256": "f1d25ba7fbce722a0e8b91ebcd0d8eb63cc66835b0faa6cc51c0dcb1c8f19164"
+    },
+    {
+      "path": "source-qa-v1.json",
+      "bytes": 1349,
+      "sha256": "265470158110097651a22942d0f802e2cbf1908354347855d5e17695b512b939"
+    },
+    {
+      "path": "source-qa-v1.log",
+      "bytes": 7182,
+      "sha256": "5a34c3fa021fc3146a4cf4879493b0a9afa1fee956d9bb486012dce1bc336253"
+    },
+    {
+      "path": "source-qa-v2.log",
+      "bytes": 2009,
+      "sha256": "78642f5cf92d9b2f8927c3658fb84712cd480ea95f33a1038da5b585fae9bb5b"
+    },
+    {
+      "path": "source.bundle",
+      "bytes": 28863,
+      "sha256": "7f27b5b69a0a7987e92ee5441ce0b9c78e1f3774e75876a6d9dd69a8921f6b97"
+    }
+  ]
+}

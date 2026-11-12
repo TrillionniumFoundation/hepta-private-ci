@@ -1,0 +1,32 @@
+{
+  "observed_utc": "2026-11-12T18:48:19.152783+00:00",
+  "source": "/workspace/scratch/ff41dfc0f7bf/hepta-b-evaluate-fixture-cloud",
+  "parent_head": "dab97e4fe7cf6679450d81b7ec5c5694537f99c5",
+  "candidate_tree": "1ad1ed9caf424e0eb06ef0b00b39f8e52311ac6d",
+  "dirty": "M  .github/blob-size-allowlist.txt\nM  CALLERS.toml\nM  codex-rs/hepta-agentd/src/authority_host_q24_evaluation_benchmark.rs\nM  codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execution.rs\nM  codex-rs/hepta-agentd/src/authority_host_q24_evaluation_model_data.rs\nM  codex-rs/hepta-agentd/src/authority_host_q24_evaluation_prepare.rs\nM  codex-rs/hepta-agentd/src/cell_composed_q24_training_work.rs\nM  codex-rs/hepta-agentd/src/cell_q24_training_stage_operation.rs\nA  qa/b4-no-bypass/test_original_training_work_source_closure.py\nM  qa/b4-no-bypass/test_q24_training_plan_source_closure.py\nM  qa/b4-no-bypass/test_root_learning_scope_source_closure.py\n",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_original_training_work_source_closure",
+    "test_q24_training_plan_source_closure",
+    "test_root_learning_scope_source_closure"
+  ],
+  "env_overrides": {
+    "PYTHONPATH": "/workspace/scratch/ff41dfc0f7bf/hepta-b-evaluate-fixture-cloud/qa/b4-no-bypass"
+  },
+  "exit": 0,
+  "seconds": 3.0490484120018664,
+  "source_before": {
+    "files": 15409,
+    "sha256": "072230dcc2465fc106296dccbbd14127802b3255e3422e46d1c521a06c0bf5b2"
+  },
+  "source_after": {
+    "files": 15409,
+    "sha256": "072230dcc2465fc106296dccbbd14127802b3255e3422e46d1c521a06c0bf5b2"
+  },
+  "log_bytes": 4852,
+  "log_sha256": "f1d25ba7fbce722a0e8b91ebcd0d8eb63cc66835b0faa6cc51c0dcb1c8f19164",
+  "native_executed": false
+}

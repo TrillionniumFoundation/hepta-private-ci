@@ -1,0 +1,31 @@
+{
+  "observed_utc": "2026-11-12T18:45:25.252707+00:00",
+  "source": "/workspace/scratch/ff41dfc0f7bf/hepta-b-evaluate-fixture-cloud",
+  "head": "dab97e4fe7cf6679450d81b7ec5c5694537f99c5",
+  "tree": "ee62cab2b4ba02268ca7e35f54ff32f922f0343f",
+  "dirty": " M .github/blob-size-allowlist.txt\n M CALLERS.toml\n M codex-rs/hepta-agentd/src/authority_host_q24_evaluation_benchmark.rs\n M codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execution.rs\n M codex-rs/hepta-agentd/src/authority_host_q24_evaluation_model_data.rs\n M codex-rs/hepta-agentd/src/authority_host_q24_evaluation_prepare.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage_operation.rs\n?? qa/b4-no-bypass/test_original_training_work_source_closure.py\n",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_original_training_work_source_closure.py",
+    "-v"
+  ],
+  "exit": 1,
+  "seconds": 1.4521369720023358,
+  "source_before": {
+    "files": 15409,
+    "sha256": "dfaf974cbe28f7456b7a50f841132b17a5d50c1034f130c6b89415605cdfcf02"
+  },
+  "source_after": {
+    "files": 15409,
+    "sha256": "dfaf974cbe28f7456b7a50f841132b17a5d50c1034f130c6b89415605cdfcf02"
+  },
+  "log_bytes": 7182,
+  "log_sha256": "5a34c3fa021fc3146a4cf4879493b0a9afa1fee956d9bb486012dce1bc336253",
+  "native_executed": false
+}
