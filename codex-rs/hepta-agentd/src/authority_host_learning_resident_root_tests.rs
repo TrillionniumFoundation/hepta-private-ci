@@ -29,46 +29,80 @@ use support::ResidentRootFixture;
 fn resident_root_formatter_and_original_registration_pin_both_scopes() -> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
     let fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
     let canonical = RootResidentLearningProfileV3::admission_binding(
-        &metadata.initial, &metadata.scope, &metadata.verifier,
+        &metadata.initial,
+        &metadata.scope,
+        &metadata.verifier,
     )?;
     assert_eq!(canonical, fixture.profile.intent.grant.binding);
     let changed_scope = FrozenLearningScopeV2::freeze(
-        &metadata.initial.request, &metadata.initial.owners, LearningUpdateScopeV2::Cell,
+        &metadata.initial.request,
+        &metadata.initial.owners,
+        LearningUpdateScopeV2::Cell,
         digest("different-resident-frozen-rule"),
     )?;
     let changed = RootResidentLearningProfileV3::admission_binding(
-        &metadata.initial, &changed_scope, &metadata.verifier,
+        &metadata.initial,
+        &changed_scope,
+        &metadata.verifier,
     )?;
     assert_ne!(changed, canonical);
-    assert!(RootResidentLearningProfileV3::new(
-        metadata.initial.clone(), changed_scope, &metadata.verifier,
-        fixture.profile.intent.clone(), fixture.profile.lease.clone(),
-    ).is_err());
+    assert!(
+        RootResidentLearningProfileV3::new(
+            metadata.initial.clone(),
+            changed_scope,
+            &metadata.verifier,
+            fixture.profile.intent.clone(),
+            fixture.profile.lease.clone(),
+        )
+        .is_err()
+    );
     let other_verifier = metadata.other_evidence_scope()?;
-    assert_eq!(other_verifier.objective_digest(), metadata.verifier.objective_digest());
-    assert_ne!(other_verifier.scope_digest(), metadata.verifier.scope_digest());
+    assert_eq!(
+        other_verifier.objective_digest(),
+        metadata.verifier.objective_digest()
+    );
+    assert_ne!(
+        other_verifier.scope_digest(),
+        metadata.verifier.scope_digest()
+    );
     // The original initial trust is retained. A real changed-scope verifier
     // also has a different trust digest; do not forge an impossible verifier.
-    assert!(RootResidentLearningProfileV3::admission_binding(
-        &metadata.initial, &metadata.scope, &other_verifier,
-    ).is_err());
+    assert!(
+        RootResidentLearningProfileV3::admission_binding(
+            &metadata.initial,
+            &metadata.scope,
+            &other_verifier,
+        )
+        .is_err()
+    );
     assert!(fixture.profile.require_verifier(&other_verifier).is_err());
     let mut request = metadata.initial.request.clone();
     request.envelope.expiry_unix_seconds += 1;
-    let changed_initial = LearningIterationCoordinatorV1::new(
-        request, metadata.initial.owners.clone(),
-    )?.snapshot().clone();
+    let changed_initial =
+        LearningIterationCoordinatorV1::new(request, metadata.initial.owners.clone())?
+            .snapshot()
+            .clone();
     let changed_rule_scope = FrozenLearningScopeV2::freeze(
-        &changed_initial.request, &changed_initial.owners, LearningUpdateScopeV2::Cell,
+        &changed_initial.request,
+        &changed_initial.owners,
+        LearningUpdateScopeV2::Cell,
         digest("resident-fixture-frozen-rule"),
     )?;
-    assert!(RootResidentLearningProfileV3::new(
-        changed_initial, changed_rule_scope, &metadata.verifier,
-        fixture.profile.intent.clone(), fixture.profile.lease.clone(),
-    ).is_err());
+    assert!(
+        RootResidentLearningProfileV3::new(
+            changed_initial,
+            changed_rule_scope,
+            &metadata.verifier,
+            fixture.profile.intent.clone(),
+            fixture.profile.lease.clone(),
+        )
+        .is_err()
+    );
     Ok(())
 }
 
@@ -77,23 +111,38 @@ fn resident_root_formatter_and_original_registration_pin_both_scopes() -> anyhow
 fn resident_root_reissued_intent_cannot_create_another_operation_namespace() -> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
     let fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
-    let registration = fixture.registration.as_ref().expect("original registration");
+    let registration = fixture
+        .registration
+        .as_ref()
+        .expect("original registration");
     let authority = &registration.owner.authority;
-    let reissued = authority.issuer.issue(&fixture.profile.intent.grant.binding)?
+    let reissued = authority
+        .issuer
+        .issue(&fixture.profile.intent.grant.binding)?
         .ok_or_else(|| anyhow::anyhow!("explicit original reissued intent"))?;
     let rebound = RootResidentLearningProfileV3::new(
-        metadata.initial, metadata.scope, &metadata.verifier,
-        reissued, fixture.profile.lease.clone(),
+        metadata.initial,
+        metadata.scope,
+        &metadata.verifier,
+        reissued,
+        fixture.profile.lease.clone(),
     )?;
     assert_eq!(fixture.profile.owner_id(), rebound.owner_id());
     assert_ne!(fixture.profile.binding(), rebound.binding());
     let root = RootAuthorityDirectory::open(&fixture.config.state_dir)?;
-    assert!(RootResidentLearningRegistrationV3::register_original_root(
-        Arc::clone(&root), Arc::clone(&authority.issuer), Arc::clone(&authority.registry),
-        rebound.clone(),
-    ).is_err());
+    assert!(
+        RootResidentLearningRegistrationV3::register_original_root(
+            Arc::clone(&root),
+            Arc::clone(&authority.issuer),
+            Arc::clone(&authority.registry),
+            rebound.clone(),
+        )
+        .is_err()
+    );
     assert!(ResidentCheckpointV3::recover(root, rebound).is_err());
     assert!(registration.owner.checkpoint.read()?.snapshot.is_none());
     Ok(())
@@ -104,41 +153,69 @@ fn resident_root_reissued_intent_cannot_create_another_operation_namespace() -> 
 fn resident_root_only_actual_vacant_cas_creates_one_live_continuation() -> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
     let fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
     // Exercise the actual generic store contract too: an equal next value
     // cannot turn a stale expected value into another successful CAS.
     let root = RootAuthorityDirectory::open(&fixture.config.state_dir)?;
     let strict = HostAuthorityFrontierStore::initialize(
-        Arc::clone(&root), "resident-strict-cas-fixture".into(), 0_u64,
+        Arc::clone(&root),
+        "resident-strict-cas-fixture".into(),
+        0_u64,
     )?;
     strict.compare_and_set("resident-strict-cas-fixture", &0, &1)?;
     assert!(matches!(
         strict.compare_and_set("resident-strict-cas-fixture", &0, &1),
         Err(codex_hepta_contracts::AuthorityTrustError::Conflict),
     ));
-    assert!(HostAuthorityFrontierStore::initialize(
-        root, "resident-strict-cas-fixture".into(), 1_u64,
-    ).is_err());
-    let original = &fixture.registration.as_ref().expect("original registration").owner;
-    let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+    assert!(
+        HostAuthorityFrontierStore::initialize(root, "resident-strict-cas-fixture".into(), 1_u64,)
+            .is_err()
+    );
+    let original = &fixture
+        .registration
+        .as_ref()
+        .expect("original registration")
+        .owner;
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
     runtime.block_on(async {
         let cancellation = CancellationToken::new();
         assert!(original.read(&cancellation).await?.0.snapshot.is_none());
-        let continuation = original.admit(&cancellation).await?
+        let continuation = original
+            .admit(&cancellation)
+            .await?
             .ok_or_else(|| anyhow::anyhow!("actual first CAS did not admit"))?;
         let gate = Arc::clone(&continuation.gate);
-        assert_eq!(original.read(&cancellation).await?.0.snapshot, Some(metadata.initial.clone()));
+        assert_eq!(
+            original.read(&cancellation).await?.0.snapshot,
+            Some(metadata.initial.clone())
+        );
         assert!(original.admit(&cancellation).await?.is_none());
-        gate.begin(&metadata.initial, LearningIterationStageV1::Experience).await?;
-        gate.require_current(&metadata.initial, &metadata.scope).await?;
+        gate.begin(&metadata.initial, LearningIterationStageV1::Experience)
+            .await?;
+        gate.require_current(&metadata.initial, &metadata.scope)
+            .await?;
         let pending = original.read(&cancellation).await?.0;
         assert!(pending.dispatch_pending);
         drop(continuation);
-        assert!(gate.training_cancellation().load(std::sync::atomic::Ordering::Acquire));
-        assert!(gate.require_current(&metadata.initial, &metadata.scope).await.is_err());
+        assert!(
+            gate.training_cancellation()
+                .load(std::sync::atomic::Ordering::Acquire)
+        );
+        assert!(
+            gate.require_current(&metadata.initial, &metadata.scope)
+                .await
+                .is_err()
+        );
         assert!(original.admit(&cancellation).await?.is_none());
-        assert_eq!(original.read(&cancellation).await?.0.snapshot, pending.snapshot);
+        assert_eq!(
+            original.read(&cancellation).await?.0.snapshot,
+            pending.snapshot
+        );
         Ok::<_, anyhow::Error>(())
     })
 }
@@ -148,21 +225,58 @@ fn resident_root_only_actual_vacant_cas_creates_one_live_continuation() -> anyho
 fn resident_root_same_epoch_grant_revocation_fences_the_pending_effect() -> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
     let fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
-    let original = &fixture.registration.as_ref().expect("original registration").owner;
-    let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+    let original = &fixture
+        .registration
+        .as_ref()
+        .expect("original registration")
+        .owner;
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
     runtime.block_on(async {
-        let continuation = original.admit(&CancellationToken::new()).await?
+        let continuation = original
+            .admit(&CancellationToken::new())
+            .await?
             .ok_or_else(|| anyhow::anyhow!("actual first CAS"))?;
-        continuation.gate.begin(&metadata.initial, LearningIterationStageV1::Experience).await?;
+        continuation
+            .gate
+            .begin(&metadata.initial, LearningIterationStageV1::Experience)
+            .await?;
         let before = original.authority.registry.frontier()?;
-        let revoked = original.authority.issuer.revoke(&fixture.profile.intent.grant.grant_id)?;
-        assert_eq!(revoked.authority_epoch, fixture.profile.intent.grant.authority_epoch);
-        assert_eq!(original.authority.registry.frontier()?.authority_epoch, before.authority_epoch);
-        assert!(revoked.revoked_grant_ids.contains(&fixture.profile.intent.grant.grant_id));
-        assert!(continuation.gate.require_current(&metadata.initial, &metadata.scope).await.is_err());
-        assert!(continuation.gate.training_cancellation().load(std::sync::atomic::Ordering::Acquire));
+        let revoked = original
+            .authority
+            .issuer
+            .revoke(&fixture.profile.intent.grant.grant_id)?;
+        assert_eq!(
+            revoked.authority_epoch,
+            fixture.profile.intent.grant.authority_epoch
+        );
+        assert_eq!(
+            original.authority.registry.frontier()?.authority_epoch,
+            before.authority_epoch
+        );
+        assert!(
+            revoked
+                .revoked_grant_ids
+                .contains(&fixture.profile.intent.grant.grant_id)
+        );
+        assert!(
+            continuation
+                .gate
+                .require_current(&metadata.initial, &metadata.scope)
+                .await
+                .is_err()
+        );
+        assert!(
+            continuation
+                .gate
+                .training_cancellation()
+                .load(std::sync::atomic::Ordering::Acquire)
+        );
         assert!(original.checkpoint.read()?.dispatch_pending);
         Ok::<_, anyhow::Error>(())
     })
@@ -173,20 +287,40 @@ fn resident_root_same_epoch_grant_revocation_fences_the_pending_effect() -> anyh
 fn resident_root_exact_lease_revocation_fences_without_restarting_dispatch() -> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
     let fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
-    let original = &fixture.registration.as_ref().expect("original registration").owner;
-    let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+    let original = &fixture
+        .registration
+        .as_ref()
+        .expect("original registration")
+        .owner;
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
     runtime.block_on(async {
         let cancellation = CancellationToken::new();
-        let continuation = original.admit(&cancellation).await?
+        let continuation = original
+            .admit(&cancellation)
+            .await?
             .ok_or_else(|| anyhow::anyhow!("actual first CAS"))?;
-        continuation.gate.begin(&metadata.initial, LearningIterationStageV1::Experience).await?;
+        continuation
+            .gate
+            .begin(&metadata.initial, LearningIterationStageV1::Experience)
+            .await?;
         original.authority.registry.revoke(
-            &fixture.profile.lease.lease_id, fixture.profile.lease.revision,
+            &fixture.profile.lease.lease_id,
+            fixture.profile.lease.revision,
             *digest("resident-original-lease-withdrawal").as_array(),
         )?;
-        assert!(continuation.gate.require_current(&metadata.initial, &metadata.scope).await.is_err());
+        assert!(
+            continuation
+                .gate
+                .require_current(&metadata.initial, &metadata.scope)
+                .await
+                .is_err()
+        );
         assert!(original.admit(&cancellation).await.is_err());
         assert!(original.checkpoint.read()?.dispatch_pending);
         Ok::<_, anyhow::Error>(())
@@ -195,14 +329,23 @@ fn resident_root_exact_lease_revocation_fences_without_restarting_dispatch() -> 
 
 #[test]
 #[ignore = "explicit actual Root and pre-existing protected bind qualification"]
-fn resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent() -> anyhow::Result<()> {
+fn resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent() -> anyhow::Result<()>
+{
     let metadata = ResidentMetadata::new()?;
     let mut fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
-    let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
     runtime.block_on(async {
-        let original = &fixture.registration.as_ref().expect("original registration").owner;
+        let original = &fixture
+            .registration
+            .as_ref()
+            .expect("original registration")
+            .owner;
         // Actual Root CAS occurred, but no token or admission reply was retained.
         let unobserved = original.admit(&CancellationToken::new()).await?;
         assert!(unobserved.is_some());
@@ -211,7 +354,11 @@ fn resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent() -
     })?;
     fixture.recover()?;
     runtime.block_on(async {
-        let recovered = &fixture.registration.as_ref().expect("readback registration").owner;
+        let recovered = &fixture
+            .registration
+            .as_ref()
+            .expect("readback registration")
+            .owner;
         assert!(recovered.authority.readonly());
         assert_eq!(
             recovered.read(&CancellationToken::new()).await?.0.snapshot,
@@ -222,25 +369,35 @@ fn resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent() -
         Ok::<_, anyhow::Error>(())
     })?;
     fixture.registration.take();
-    assert!(crate::register_host_resident_learning_v3(
-        &fixture.config_file, fixture.profile.clone(),
-    ).is_err());
+    assert!(
+        crate::register_host_resident_learning_v3(&fixture.config_file, fixture.profile.clone(),)
+            .is_err()
+    );
     fixture.recover()?;
     Ok(())
 }
 
 #[test]
 #[ignore = "explicit actual Root and pre-existing protected bind qualification"]
-fn resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel() -> anyhow::Result<()> {
+fn resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel()
+-> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
-    let fixture = ResidentRootFixture::new(
-        metadata.initial, metadata.scope, &metadata.verifier,
-    )?;
+    let fixture = ResidentRootFixture::new(metadata.initial, metadata.scope, &metadata.verifier)?;
     super::super::transport::test_support::queued_admit_cancellation(
-        fixture.profile.clone(), metadata.verifier,
+        fixture.profile.clone(),
+        metadata.verifier,
     )?;
-    assert!(fixture.registration.as_ref().expect("original registration")
-        .owner.checkpoint.read()?.snapshot.is_none());
+    assert!(
+        fixture
+            .registration
+            .as_ref()
+            .expect("original registration")
+            .owner
+            .checkpoint
+            .read()?
+            .snapshot
+            .is_none()
+    );
     Ok(())
 }
 
@@ -249,10 +406,15 @@ fn resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel()
 fn resident_root_structured_uncertain_allows_only_same_operation_readback() -> anyhow::Result<()> {
     let metadata = ResidentMetadata::new()?;
     let fixture = ResidentRootFixture::new(
-        metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
+        metadata.initial.clone(),
+        metadata.scope.clone(),
+        &metadata.verifier,
     )?;
     let (completed, signatures) = metadata.completed_metadata()?;
     super::super::transport::test_support::uncertain_then_readback(
-        fixture.profile, metadata.verifier, completed, signatures,
+        fixture.profile,
+        metadata.verifier,
+        completed,
+        signatures,
     )
 }
