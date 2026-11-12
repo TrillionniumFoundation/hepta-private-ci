@@ -1,0 +1,58 @@
+{
+  "base": "2e807cc1cf152c24715f2b3fc15cc63c4527f687",
+  "head": "d6843116131d094c918cf698cbb842938dc0e747",
+  "tree": "0e10b706a9e488cdd77075437415db968db05566",
+  "commits": [
+    {
+      "commit": "c1503f30ba38ba1dfc525916282199daa54df229",
+      "tree": "b99c858e4bc05dae3baa31fe179f8645f562bc9b",
+      "message": "test(agentd): disambiguate original factory cold assertion macros",
+      "changed_lines": 2,
+      "paths": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_cold_child_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_cold_phase_tests.rs"
+      ]
+    },
+    {
+      "commit": "00c9cff11f7661482caa015837f9d4706a5594f4",
+      "tree": "9dfb644de53c9d162a7a179d12bd721dd43a3441",
+      "message": "fix(agentd): identify actual C grant receiver calls explicitly",
+      "changed_lines": 20,
+      "paths": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "commit": "2d2d8a639e29c6c55453bd6fecb52dee641d1d0a",
+      "tree": "e20aa61173caaa404a0277a4f5123ddf373978f8",
+      "message": "guard(agentd): close C grant signing and preserve original publication checks",
+      "changed_lines": 336,
+      "paths": [
+        "CALLERS.toml",
+        ".github/blob-size-allowlist.txt",
+        "qa/b4-no-bypass/test_publication_refusal_source_closure.py",
+        "qa/b4-no-bypass/test_root_historical_capture_source_closure.py",
+        "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+        "qa/b4-no-bypass/test_post_a_c_recovery_source_closure.py"
+      ]
+    },
+    {
+      "commit": "d6843116131d094c918cf698cbb842938dc0e747",
+      "tree": "0e10b706a9e488cdd77075437415db968db05566",
+      "message": "test(agentd): reject C grant signing and consumer boundary bypasses",
+      "changed_lines": 466,
+      "paths": [
+        "qa/b4-no-bypass/test_original_c_grant_source_closure.py",
+        "qa/b4-no-bypass/test_original_c_grant_consumer_source_closure.py"
+      ]
+    }
+  ],
+  "bytes": 27242,
+  "sha256": "6b42ce5673ae476a03d70dddf08db16655b4de27eb3967a612e246f83173d8ba",
+  "git_blob": "05dca62583c4b38ad788db3d7387f0164904037e",
+  "fmt": "actual exit 0",
+  "diff_check": "actual exit 0",
+  "native": "not run; cold macro correction responds to CI actual E0659",
+  "qualification": "exact new committed source QA and selected caller scan pending"
+}
