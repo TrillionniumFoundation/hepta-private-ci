@@ -22,7 +22,10 @@ PLAN = A + "authority_host_post_a_learning.rs"
 PROVIDER = A + "authority_host_post_a_provider.rs"
 CLI = route.CLI
 CALLERS = {
-    "root_post_a_publication_files": (PLAN,),
+    "root_post_a_publication_files": (
+        PLAN,
+        A + "authority_host_completed_publication_deployment.rs",
+    ),
     "root_post_a_publication_attach": (PLAN,),
     "root_post_a_publication_register": (SERVE,),
     "root_post_a_publication_serve": (WORKER,),

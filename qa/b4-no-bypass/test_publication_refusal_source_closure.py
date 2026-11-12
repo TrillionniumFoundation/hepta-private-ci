@@ -25,8 +25,12 @@ CALLERS = {
     "root_generation_publication_original_registration": (RUNTIME,),
     "root_publication_armed_registration": (REGISTRATION,),
     "root_publication_original_initial_data": (
-        "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_completed_deployment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_completed_provider.rs",
+        "codex-rs/hepta-agentd/src/authority_host_completed_record.rs",
         "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs",
     ),
     "root_publication_refusal_binding": (REGISTRATION,),
     "root_publication_refusal_enroll": (REGISTRATION,),
