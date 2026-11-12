@@ -24,7 +24,7 @@ HOST = ARTIFACT + "owner_host_readback.rs"
 SERVICE = ARTIFACT + "owner_service_readback.rs"
 EXPECTED = {
     "learning_artifact_original_publication_host_readback": (SERVICE,),
-    "learning_artifact_original_publication_service_readback": ('codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs',),
+    "learning_artifact_original_publication_service_readback": ('codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs', 'codex-rs/hepta-agentd/src/circuit_model_version_artifact.rs',),
 }
 
 

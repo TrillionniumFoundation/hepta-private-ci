@@ -82,7 +82,7 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
             wire::binding(&self.context, original, started_at)?;
         }
         let transfer = channel.next;
-        let cancellation = Cancelled(Arc::new(AtomicBool::new(false)));
+        let cancellation = Cancelled(Arc::new(AtomicBool::new(/*v*/ false)));
         let cancelled = Arc::clone(&cancellation.0);
         let binding = self.binding;
         let result = tokio::task::spawn_blocking(move || {

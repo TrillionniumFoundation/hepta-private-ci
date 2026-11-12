@@ -83,7 +83,7 @@ impl OriginalCircuitModelTaskInputsV1 {
         context: &Context,
         intent: Digest32,
     ) -> Result<(ModelVersionInstalledTaskV1, AgentdConfig), Error> {
-        let coordinator = context.authenticate(super::now()?, true)?;
+        let coordinator = context.authenticate(super::now()?, /*new_work*/ true)?;
         let candidate = coordinator.candidate().ok_or(Error::Binding("actual selected Candidate"))?.clone();
         if self.model.components() != &candidate.components {
             return Err(Error::Binding("actual loaded C Model equals the complete candidate"));
@@ -135,7 +135,7 @@ impl OriginalCircuitModelTaskInputsV1 {
                 "original completed A changed during C factory",
             ));
         }
-        context.authenticate(super::now()?, true)?;
+        context.authenticate(super::now()?, /*new_work*/ true)?;
         Ok((installed, actual.config))
     }
 }
@@ -144,10 +144,10 @@ impl ModelVersionInstalledTaskV1 {
         &self,
         context: &Context,
     ) -> Result<OriginalCircuitModelVersionReadbackV1, Error> {
-        let coordinator = context.authenticate(super::now()?, false)?;
+        let coordinator = context.authenticate(super::now()?, /*new_work*/ false)?;
         let candidate = coordinator.candidate().ok_or(Error::Binding("original changed Model"))?;
         let task = &self.cell.task;
-        super::super::binding::require_published(context, task, false)?;
+        super::super::binding::require_published(context, task, /*new_work*/ false)?;
         task.require_current()?;
         CircuitTaskSourceReadbackV1::require_original_input(
             self.source.as_ref(),

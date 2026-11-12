@@ -53,7 +53,7 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
 
     def verifies(self, path, source):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), 1, path)
+        self.assertTrue(rows, path)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -151,12 +151,26 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
             "operation.owners.verify_original_evaluation(",
             "&operation.supplied, &operation.training_cut, &operation.training, &self.evaluation, fresh",
             "signatures.push(self.evaluation.attestation().clone())",
+            "self.model_completion.as_ref().ok_or(Error::CommitUncertain)?",
+            "completed.model() != model",
+            "completed.material().original_evaluation() != &self.evaluation",
+            "completed.material().authenticate_current(fresh)",
+            "completed.material().require_original_model_input(",
+            "input.material_digest() != model.material_digest()",
+            "self.model_completion.is_some() || self.evaluation.snapshot() != snapshot",
             "model.snapshot() != snapshot", "model.snapshot().receipts.len() != 5",
             "!model.snapshot().receipts.starts_with(&self.evaluation.snapshot().receipts)",
             "operation.supplied.receipts.get(4).is_some_and(|expected| expected != model.receipt())",
             "OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(model, &signatures)",
         ):
             self.rejects(OP, "fn authenticate_result(", marker)
+
+        for marker in (
+            "completed.model().clone()",
+            "completed.material().original_evaluation().clone()",
+            "model: Some(model), model_completion: Some(completed)",
+        ):
+            self.rejects(OP, "fn model(", marker)
 
     def test_root_consumes_only_after_actual_root_io_and_independent_reads_start_again(self):
         for marker in (

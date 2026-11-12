@@ -33,7 +33,7 @@ MODEL_READ = AGENT + "neuron_cell_evaluation_model_read_operation.rs"
 EXPECTED = {
     "learning_original_evaluation_operation_begin": (HOST,),
     "learning_original_evaluation_operation_finish": (HOST, EXPORT),
-    "learning_original_evaluation_operation_member": (MEMBER,),
+    "learning_original_evaluation_operation_member": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",),
     "learning_original_evaluation_operation_qualification": (SOURCE,),
     "learning_original_evaluation_operation_receipt": (RECEIPT,),
     "learning_original_evaluation_receipt_operation_attest": (OWNER, HOST),
@@ -41,8 +41,8 @@ EXPECTED = {
     "learning_original_evaluation_panel_operation_current": (HOST,),
     "learning_original_evaluation_shared_training_host": (),
     "learning_original_evaluation_model_read_begin": ('codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs'),
-    "learning_original_evaluation_model_read_finish": ('codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs',),
-    "learning_original_evaluation_model_read_borrow": ('codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs'),
+    "learning_original_evaluation_model_read_finish": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
+    "learning_original_evaluation_model_read_borrow": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
 }
 
 
@@ -85,7 +85,7 @@ class OriginalEvaluationOperationClosureTests(unittest.TestCase):
                         self.assertIsNotNone(end)
                         cursor = start
                         for token in rule["sequence"][:index + 1]:
-                            at = source.index(token, cursor, end + 1)
+                            at = code.index(token, cursor, end + 1)
                             cursor = at + len(token)
                         self.reject_change(path, source[:at] + source[cursor:])
 

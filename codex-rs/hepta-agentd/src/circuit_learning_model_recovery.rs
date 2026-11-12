@@ -61,9 +61,9 @@ where
     let observation = model.begin_original_model_read().await?;
     let context = predecessors.with_original_model(observation.model().clone())?;
     observation.require_current(started)?;
-    context.authenticate_material(observation.material(), started, false)?;
+    context.authenticate_material(observation.material(), started, /*new_work*/ false)?;
     let (context, task) = tokio::task::spawn_blocking(move || {
-        let coordinator = context.authenticate(started, false)?;
+        let coordinator = context.authenticate(started, /*new_work*/ false)?;
         let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
         let selected = load_original_selection(&original.authorities, original.selection)?;
         let ready = crate::recover_agentd_generation_update_v1(
@@ -83,7 +83,7 @@ where
             original.original_source.as_ref(),
             &original.original_identity,
         )?;
-        binding::require_published(&context, &task, false)?;
+        binding::require_published(&context, &task, /*new_work*/ false)?;
         Ok::<_, Error>((context, task))
     }).await.map_err(uncertain)??;
     let completed = observation.finish().await?;
@@ -91,9 +91,9 @@ where
         return Err(Error::Binding("same complete original Model during recovery"));
     }
     let (context, task) = tokio::task::spawn_blocking(move || {
-        binding::require_published(&context, &task, false)?;
+        binding::require_published(&context, &task, /*new_work*/ false)?;
         Ok::<_, Error>((context, task))
     }).await.map_err(uncertain)??;
-    context.authenticate_material(completed.material(), started, false)?;
+    context.authenticate_material(completed.material(), started, /*new_work*/ false)?;
     Ok(OriginalCircuitModelPublicationV1 { context, task })
 }

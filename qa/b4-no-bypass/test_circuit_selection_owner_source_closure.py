@@ -82,7 +82,7 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             row.identifier,
             self.manifest["privileged_inventory"]["required_boundary_ids"],
         )
-        self.assertEqual(row.product_callers, ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs",))
+        self.assertEqual(row.product_callers, ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
             for path in (row.definition_path, *row.product_callers)

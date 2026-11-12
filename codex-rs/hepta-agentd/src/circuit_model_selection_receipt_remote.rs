@@ -27,14 +27,14 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         if self.readback_only {
             return Err(OwnerError::Binding("recovered original Model Selector is readback only").into());
         }
-        self.remote_result(source, true).await
+        self.remote_result(source, /*execute*/ true).await
     }
 
     pub(crate) async fn readback_remote(
         &mut self,
         source: OriginalCircuitModelSelectionRemoteSourcesV1<'_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.remote_result(source, false).await
+        self.remote_result(source, /*execute*/ false).await
     }
 
     async fn remote_result(
@@ -104,7 +104,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
                 binding::new_work_time(config, started, issued_at)?;
                 operation.require_current(started)
                     .map_err(|_| OwnerError::Binding("same original Model operation before signing"))?;
-                let expiry = context.authenticate_material(operation.material(), issued_at, true)
+                let expiry = context.authenticate_material(operation.material(), issued_at, /*new_work*/ true)
                     .map_err(|_| OwnerError::Binding("current complete original Model panel"))?
                     .min(config.decision.request.envelope.expiry_unix_seconds)
                     .min(binding::signature_expiry(config, issued_at)?);

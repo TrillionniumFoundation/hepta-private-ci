@@ -22,15 +22,15 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 EXPECTED = {
-    "learning_positive_published_context_model": (),
-    "learning_positive_published_context_selection": ("codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs",),
+    "learning_positive_published_context_model": ("codex-rs/hepta-agentd/src/circuit_model_version_service.rs",),
+    "learning_positive_published_context_selection": ("codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",),
     "learning_positive_published_client_bind": (),
     "learning_positive_published_client_create": (),
-    "learning_positive_published_client_current": ("codex-rs/hepta-agentd/src/circuit_candidate_next_use_receipt_sources.rs",),
-    "learning_positive_published_client_context": ("codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs",),
-    "learning_positive_published_owner_create": (),
+    "learning_positive_published_client_current": ("codex-rs/hepta-agentd/src/circuit_candidate_next_use_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",),
+    "learning_positive_published_client_context": ("codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",),
+    "learning_positive_published_owner_create": ("codex-rs/hepta-agentd/src/circuit_model_version_service.rs",),
     "learning_positive_published_owner_serve": (),
-    "learning_positive_published_version_serve": (),
+    "learning_positive_published_version_serve": ("codex-rs/hepta-agentd/src/circuit_model_version_service.rs",),
     "learning_positive_c_readiness_bind": (),
     "learning_positive_c_readiness_current": (),
     "learning_positive_c_readiness_serve": (),
