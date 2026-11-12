@@ -22,9 +22,8 @@ async fn preregistered() -> anyhow::Result<(
     BFixture,
     crate::OriginalCellEvaluationPanelRegistrationV1,
 )> {
-    let preview = support::admission("original-B-profile-preview").await?;
+    let preview = support::admission("positive-source-envelope-request").await?;
     let objective = support::source(&preview, [Q, Q / 4])?.objective_digest;
-    drop(preview);
     let at = now()?;
     let primary = BFixture::new("original-B", objective, at)?;
     let retention = BFixture::new("original-retention", objective, at)?;
@@ -33,7 +32,7 @@ async fn preregistered() -> anyhow::Result<(
         vec![retention.task()?],
     )?;
     let original =
-        PositiveFixture::ready_with_profile(registration.evaluation_profile(), at).await?;
+        PositiveFixture::ready_with_admission(registration.evaluation_profile(), at, preview).await?;
     assert_eq!(
         original.config.decision.request.envelope.objective_digest,
         objective
