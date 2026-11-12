@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "original_manifest_unchanged": true,
+  "original_manifest_blob": "c4a132f4c08654187c2632499adb33703bf1a66d",
+  "original_leaf_count": 34,
+  "materialized_manifest_paths": 33,
+  "large_original_job_log": {
+    "original": {
+      "path": "qualification/notes-seed-profile-20261112/hosted-bb8-success-20261112/JOB_LOG.txt",
+      "blob": "a96e92e22196fe9dac57055a208e2e9e78efdf35",
+      "bytes": 641661,
+      "sha256": "e1ab15cd17fdf611f06618516ecb6d4bb7c560d7362c281b009becea767082b4",
+      "representation": "original decoded hosted job log"
+    },
+    "same_full_bytes_split_into": [
+      {
+        "path": "qualification/notes-seed-profile-20261112/hosted-bb8-native-success-20261112/job131229238631.decoded.log.part-000.bin",
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "da599a03ec8ed66dc52c0f4ba14d01ef61ebb430aa1c439069efcbdf59d3599f",
+        "git_blob": "64b7e84b5eca6a85aaa6439663c694eb7fbb69de"
+      },
+      {
+        "path": "qualification/notes-seed-profile-20261112/hosted-bb8-native-success-20261112/job131229238631.decoded.log.part-001.bin",
+        "offset": 350000,
+        "bytes": 291661,
+        "sha256": "6254812ea8a45de70398212e290d19e18fe6b9ba19e3d3c56c9317cfe0c1e50f",
+        "git_blob": "0953726ca7d618a73978c85a19ec81a54e13d053"
+      }
+    ],
+    "full_bytes": 641661,
+    "sha256": "e1ab15cd17fdf611f06618516ecb6d4bb7c560d7362c281b009becea767082b4",
+    "git_blob": "a96e92e22196fe9dac57055a208e2e9e78efdf35"
+  },
+  "artifact_root_readback": "pending at staging commit",
+  "source_validation_not_changed": true
+}

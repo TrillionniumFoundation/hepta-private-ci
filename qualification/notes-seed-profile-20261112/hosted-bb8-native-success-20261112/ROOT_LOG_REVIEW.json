@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.act-bb8.hosted-root-log-review.v1",
+  "source": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+  "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+  "run": 43231943175,
+  "job": 131229238631,
+  "status": "completed",
+  "conclusion": "success",
+  "completed_at": "2026-11-12T14:30:30Z",
+  "original_log": {
+    "bytes": 641661,
+    "sha256": "e1ab15cd17fdf611f06618516ecb6d4bb7c560d7362c281b009becea767082b4",
+    "representation": "Original decoded GitHub job log, unchanged UTF8 including timestamps/BOM/ANSI.",
+    "parts": [
+      {
+        "path": "qualification/notes-seed-profile-20261112/hosted-bb8-native-success-20261112/job131229238631.decoded.log.part-000.bin",
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "da599a03ec8ed66dc52c0f4ba14d01ef61ebb430aa1c439069efcbdf59d3599f",
+        "git_blob": "64b7e84b5eca6a85aaa6439663c694eb7fbb69de"
+      },
+      {
+        "path": "qualification/notes-seed-profile-20261112/hosted-bb8-native-success-20261112/job131229238631.decoded.log.part-001.bin",
+        "offset": 350000,
+        "bytes": 291661,
+        "sha256": "6254812ea8a45de70398212e290d19e18fe6b9ba19e3d3c56c9317cfe0c1e50f",
+        "git_blob": "0953726ca7d618a73978c85a19ec81a54e13d053"
+      }
+    ]
+  },
+  "source_bound_stages": [
+    {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 497.73876744899997,
+      "source": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+      "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 0,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 75335,
+      "raw_inner_log_sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
+      "original_artifact_member_pending": true
+    },
+    {
+      "command": [
+        "env",
+        "--chdir=codex-rs",
+        "rustup",
+        "run",
+        "1.96.0",
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-notes-thread-seed"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 571.5873344160001,
+      "source": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+      "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 0,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 104315,
+      "raw_inner_log_sha256": "bac01a23ba8604c54f0708caf08be212fda5b688b8baa471f1ad93181e435233",
+      "original_artifact_member_pending": true
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "notes_thread_seed_product",
+        "-E",
+        "test(launcher_seeds_one_unused_original_thread_without_model_contact)",
+        "--status-level",
+        "all"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 261.7285159170001,
+      "source": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+      "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 1,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 34959,
+      "raw_inner_log_sha256": "8a390cdddcf1537d8bfd9120168de3f46fdad502e0814ee7bbfcaebe46bbc648",
+      "original_artifact_member_pending": true
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--test",
+        "notes_thread_seed_product",
+        "-E",
+        "test(original_notes_seed_profile_) | test(seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state) | test(standard_profile_rejects_original_notes_seed_before_model_contact)",
+        "--status-level",
+        "all"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 54.55519755699993,
+      "source": "bb8ac6fe22d1314c36643b0cab95eb031cd86832",
+      "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 5,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 177117,
+      "raw_inner_log_sha256": "6db18899024a4116eb974816273af9f5641d9ea00f1c04484f8d51ba6950b938",
+      "original_artifact_member_pending": true
+    }
+  ],
+  "exact_named_pass_lines": [
+    "        PASS [   0.692s] codex-hepta-agentd::notes_thread_seed_product launcher_seeds_one_unused_original_thread_without_model_contact",
+    "        PASS [   0.133s] codex-hepta-agentd app_runtime::tests::seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state",
+    "        PASS [   0.018s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_does_not_supply_notes_execution_owners",
+    "        PASS [   0.029s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_rechecks_files_before_runtime",
+    "        PASS [   0.047s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_rejects_mixed_configurations_in_both_orders",
+    "        PASS [   0.580s] codex-hepta-agentd::notes_thread_seed_product standard_profile_rejects_original_notes_seed_before_model_contact"
+  ],
+  "strict_receipt_and_fmt_step": "success",
+  "all_job_steps_success": true,
+  "selected_cases": 6,
+  "filter_exclusions": {
+    "launcher_phase": 1,
+    "regression_phase": 792
+  },
+  "explicit_retries_flag_in_hosted_test_records": false,
+  "actual_retry_pass_rows": 0,
+  "artifact": {
+    "id": 13951889769,
+    "bytes": 58747,
+    "sha256": "c1ca84e7e1ccdcfae1515c4e6f5efe50ac0b07d86adbc219bcdb6fc8d08a1c66",
+    "members_reported": 18,
+    "original_members_root_readback": false
+  },
+  "old_failures_preserved": true,
+  "owner_decision": null,
+  "scientific_or_production_qualification": false
+}
