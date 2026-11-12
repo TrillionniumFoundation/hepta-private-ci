@@ -88,7 +88,8 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
                          [AGENT + "production_initial_q24.rs"])
         self.assertEqual(boundaries["root_original_publication_stream_until"]["product_callers"],
                          [AGENT + "root_generation_initial_inputs.rs",
-                          AGENT + "root_historical_task_read_inputs.rs"])
+                          AGENT + "root_historical_task_read_inputs.rs",
+                          AGENT + "root_generation_publication_inputs.rs"])
 
 
 if __name__ == "__main__":

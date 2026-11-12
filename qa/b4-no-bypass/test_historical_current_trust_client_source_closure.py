@@ -24,7 +24,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertEqual(rows["root_historical_current_trust_capsule"]["product_callers"], [AGENT + "production_post_a_q24.rs"])
         self.assertEqual(rows["root_historical_current_trust_read"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs"])
-        self.assertEqual(rows["root_historical_current_trust_receipt"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs", AGENT + "cell_q24_dataset_operation.rs"])
+        self.assertEqual(rows["root_historical_current_trust_receipt"]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs", AGENT + "cell_q24_dataset_operation.rs", AGENT + "production_post_a_continuation.rs"])
         self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST, AGENT + "root_post_a_learning_client.rs"])
         self.assertEqual(rows["root_historical_recipient_trust_reply"]["product_callers"], [CLIENT])
 
