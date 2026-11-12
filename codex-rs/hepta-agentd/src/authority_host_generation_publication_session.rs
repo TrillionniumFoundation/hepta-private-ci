@@ -41,6 +41,7 @@ const CLOSED: u8 = 3;
 struct Submission {
     inputs: crate::RootGenerationPublicationEnrollmentV1,
     acknowledgement: mpsc::SyncSender<Result<String, String>>,
+    end: Instant,
 }
 
 pub(super) struct PublicationRuntime {
@@ -117,6 +118,7 @@ impl RootGenerationPublicationEnrollmentCapabilityV1 {
             .try_send(Submission {
                 inputs,
                 acknowledgement,
+                end,
             })
             .map_err(|_| io::Error::other("original publication enrollment channel unavailable"))?;
         let remaining = end

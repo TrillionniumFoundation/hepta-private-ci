@@ -113,8 +113,9 @@ impl HostAuthorityService {
                 .map_err(io::Error::other)?;
         }
         while channel
-            .exchange(|bytes| {
-                self.with_learning_profile(
+            .exchange_with_original_deadline(|bytes, end| {
+                PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {
+                    let (raw, expected) = self.with_learning_profile(
                     config,
                     registration,
                     &pin,
@@ -339,9 +340,47 @@ impl HostAuthorityService {
                                 "original publication completion uncertain",
                             ));
                         }
-                        Ok(raw)
+                        Ok((raw, after))
                     },
-                )
+                )?;
+                    // Do not clear the durable arm until the complete actual Root
+                    // writer context has returned and the exact physical cut is read
+                    // again under this frame's original absolute deadline.
+                    slot.require_profile()?;
+                    slot.require_previous()?;
+                    slot.require_selection(
+                        self.clock
+                            .refresh_projection()
+                            .map_err(io::Error::other)?
+                            .observed_unix_ms,
+                    )?;
+                    if slot
+                        .current
+                        .original_broker_head()
+                        .map_err(io::Error::other)?
+                        != expected
+                    {
+                        return Err(io::Error::other(
+                            "original CURRENT changed after writer postchecks",
+                        ));
+                    }
+                    if expected.current == slot.profile.intent.target {
+                        slot.target.observe().map_err(io::Error::other)?;
+                    } else {
+                        slot.target
+                            .require_original_unwritten_or_genesis()
+                            .map_err(io::Error::other)?;
+                    }
+                    crate::authority_host_runtime::verify_pinned_process(
+                        registration,
+                        config.peer_uid,
+                        config.peer_gid,
+                        &pin,
+                        end,
+                    )?;
+                    refusal::require_end(end)?;
+                    Ok(raw)
+                })
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
             })
             .map_err(io::Error::other)?
