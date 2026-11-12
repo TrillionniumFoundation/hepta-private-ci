@@ -2332,3 +2332,32 @@ required_order = [
     "validate_receipt_digest(&provider.receipt_digest)?;",
   ],
 ]
+
+# The pre-seed selector only removes capability. It is not a privileged owner.
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_notes_seed.rs"
+required = ["pub fn with_original_notes_seed_profile(","pub(crate) fn original_notes_seed_profile(","!matches!(&self.sockets, AgentdSocketInputs::Bind)","self.authbus_trust_file.is_some()","self.authbus_checkpoint_file.is_some()","self.evidence_trust_file.is_some()","self.evidence_recovery_frontier_file.is_some()","self.evidence_recovery_frontier_trust_file.is_some()","self.automation_effect_host_file.is_some()","self.objective_profile_file.is_some()","self.cognitive_ranker.is_some()","self.production_operations.is_some()","self.production_writer_host.is_some()","self.notes_objective.is_some()","self.desktop_objective.is_some()","self.notes_ui.is_some()","self.notes_thread_tools.is_some()","self.desktop_thread_tools.is_some()","self.cognitive_retrieval_context.is_some()","self.cognitive_retrieval_learning.is_some()","self.plasticity_bootstrap.is_some()","self.learning_iteration_bootstrap.is_some()","self.terminal_learning_bootstrap.is_some()","self.neuron_generation_bootstrap.is_some()","self.circuit_task_bootstrap.is_some()","self.circuit_task_invocation.is_some()","self.intuition_policy_host.is_some()","self.intelligence_product_runner.is_some()","self.intelligence_invocation_provider.is_some()","self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility","crate::notes_thread_execution::inspect(&self.identity.home_root)?","original Notes seed profile cannot be combined with an execution or owner profile"]
+forbidden = ["SigningKey", "ProductionAuthorityToken", "Serialize", "Deserialize", "pub struct", "pub enum"]
+required_function_order = [{function = "fn with_original_notes_seed_profile(", sequence = ["self.notes_thread_seed_profile = true", "self.original_notes_seed_profile()?", "Ok(self)"], top_level = ["self.original_notes_seed_profile()?;"]}, {function = "fn original_notes_seed_profile(", sequence = ["if !self.notes_thread_seed_profile", "return Ok(false)", "!matches!(&self.sockets, AgentdSocketInputs::Bind)", "return Err(AgentdError::Invalid(", "crate::notes_thread_execution::inspect(&self.identity.home_root)?", "Ok(true)"], top_level = ["crate::notes_thread_execution::inspect(&self.identity.home_root)?;"]}]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config.rs"
+required = ["mod notes_seed;", "notes_thread_seed_profile: bool", "notes_thread_seed_profile: false"]
+forbidden = ["pub notes_thread_seed_profile"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["let notes_thread_seed_profile = config.original_notes_seed_profile()?", "} else if notes_thread_seed_profile {", "AppServerModelToolProfile::OriginalNotesSeed"]
+forbidden = []
+required_function_order = [{function = "fn run_with_shutdown(", sequence = ["config.original_notes_seed_profile()?", "config.take_circuit_task_bootstrap()?", "config.take_production_operations()", "config.take_socket_inputs()", "config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "} else if notes_thread_seed_profile {", "AppServerModelToolProfile::OriginalNotesSeed", "AppServerModelToolProfile::Standard", "run_app_server("], top_level = ["let notes_thread_seed_profile = config.original_notes_seed_profile()?;"]}]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/app_runtime.rs"
+required = ["OriginalNotesSeed", "Self::OriginalNotesSeed => false"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/main.rs"
+required = ["if flag == \"--notes-thread-seed-profile\"", "path == \"finite-v2\"", "other_profile_arguments |= flag != \"--notes-thread-seed-profile\"", "duplicate --notes-thread-seed-profile", "--notes-thread-seed-profile must be finite-v2", "--notes-thread-seed-profile cannot be combined with other Agentd arguments", "--notes-thread-seed-profile cannot be combined with a Root launch", "--notes-thread-seed-profile requires Linux"]
+forbidden = []
+required_function_order = [{function = "fn main(", sequence = ["other_profile_arguments |= flag !=", "if flag ==", "!notes_thread_seed_profile", "path ==", "notes_thread_seed_profile = true", "if notes_thread_seed_profile", "!other_profile_arguments", "production.is_none()", "config = config.with_original_notes_seed_profile()?", "match production {"]}]

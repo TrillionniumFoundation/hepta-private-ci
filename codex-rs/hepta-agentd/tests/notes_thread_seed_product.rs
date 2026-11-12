@@ -1,4 +1,4 @@
-#![cfg(unix)]
+#![cfg(target_os = "linux")]
 
 use anyhow::Context;
 use anyhow::Result;
@@ -11,6 +11,7 @@ use codex_hepta_agentd::NotesThreadSeedReceipt;
 use codex_hepta_agentd::ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG;
 use codex_hepta_agentd::ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG;
 use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
+use codex_hepta_supervisor::AgentCommand;
 use serde_json::Value;
 use std::process::Command;
 use wiremock::MockServer;
@@ -18,6 +19,7 @@ use wiremock::MockServer;
 mod support;
 
 use support::fleet::FleetHarness;
+use support::fleet::agentd_binary;
 use support::fleet::connect_app_server_with_experimental;
 
 const AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75df0";
@@ -47,7 +49,13 @@ stream_max_retries = 0
         agent.layout.home_root().join("environments.toml"),
         ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,
     )?;
-    fleet.start(&agent)?;
+    fleet.start_command(
+        &agent,
+        AgentCommand::new(
+            agentd_binary()?,
+            vec!["--notes-thread-seed-profile".into(), "finite-v2".into()],
+        )?,
+    )?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let output = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-notes-thread-seed")?)
         .arg("--control-socket")
@@ -123,6 +131,65 @@ stream_max_retries = 0
             .context("read mock provider requests")?
             .is_empty(),
         "seeding an unused original thread contacted the model provider"
+    );
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn standard_profile_rejects_original_notes_seed_before_model_contact() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_ID, "notes-seed-workspace")?;
+    let provider = MockServer::start().await;
+    std::fs::write(
+        agent.layout.home_root().join("config.toml"),
+        format!(
+            r#"model = "mock-model"
+model_provider = "mock_provider"
+{ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG}
+[model_providers.mock_provider]
+name = "Mock provider for original Notes seed"
+base_url = "{}/v1"
+wire_api = "responses"
+request_max_retries = 0
+stream_max_retries = 0
+"#,
+            provider.uri()
+        ),
+    )?;
+    std::fs::write(
+        agent.layout.home_root().join("environments.toml"),
+        ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,
+    )?;
+    fleet.start(&agent)?;
+    let (_control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
+    let output = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-notes-thread-seed")?)
+        .arg("--control-socket")
+        .arg(agent.layout.agentd_control_socket())
+        .arg("--agent-id")
+        .arg(agent.agent_id.to_string())
+        .arg("--spawn-generation")
+        .arg("1")
+        .arg("--codex-home")
+        .arg(agent.layout.home_root())
+        .arg("--cwd")
+        .arg(&agent.workspace)
+        .output()
+        .context("run original Notes seed against Standard")?;
+    ensure!(!output.status.success(), "Standard admitted a finite Notes seed");
+    ensure!(
+        String::from_utf8_lossy(&output.stderr)
+            .contains("original Notes effective Core execution profile differs"),
+        "unexpected seed failure: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    ensure!(output.stdout.is_empty(), "rejected seed emitted a receipt");
+    ensure!(
+        provider
+            .received_requests()
+            .await
+            .context("read mock provider requests")?
+            .is_empty(),
+        "rejected seed contacted the model provider"
     );
     Ok(())
 }

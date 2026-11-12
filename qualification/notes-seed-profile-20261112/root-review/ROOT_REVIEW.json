@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.notes-seed.root-static-review.v1",
+  "candidate_tree": "88781d9f6dc0163fb1f2f4b5239947e004d71566",
+  "all_8_postimages_verified": true,
+  "default_standard_unchanged": true,
+  "seed_profile_capability_reduction": true,
+  "mixed_configuration_recheck_before_take": true,
+  "root_launch_rejected": true,
+  "original_profile_and_effective_verifier_unchanged": true,
+  "no_owner_or_signature_construction": true,
+  "linux_exports_aligned": {
+    "path": "codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs",
+    "before_cfg": "unix",
+    "after_cfg": "target_os = \"linux\"",
+    "why": "Existing original Notes seed API and constants are cfg(target_os=linux) in the unchanged base lib.rs; retain all six actual Linux test methods without promising unsupported Unix platforms.",
+    "bytes": 7000,
+    "git_blob": "d9d474c591180da0a0fa16f9e52334da8a3b3c21",
+    "sha256": "e0144e06bd23222689b5c17eb385e079973c308e767f58f8ea16a08d0b78d75d"
+  },
+  "validation": {
+    "build": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "caller_proof": "NOT_RUN",
+    "fix": "NOT_RUN",
+    "fmt": "NOT_RUN"
+  },
+  "owner_decision": null
+}

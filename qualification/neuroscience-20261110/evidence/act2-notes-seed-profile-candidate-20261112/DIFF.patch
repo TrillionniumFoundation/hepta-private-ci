@@ -1,0 +1,509 @@
+diff --git a/codex-rs/hepta-agentd/src/config.rs b/codex-rs/hepta-agentd/src/config.rs
+--- a/codex-rs/hepta-agentd/src/config.rs
++++ b/codex-rs/hepta-agentd/src/config.rs
+@@ -19,6 +19,10 @@
+ #[path = "config_circuit_task.rs"]
+ mod circuit_task;
+ 
++#[cfg(target_os = "linux")]
++#[path = "config_notes_seed.rs"]
++mod notes_seed;
++
+ #[path = "config_sockets.rs"]
+ mod sockets;
+ pub(crate) use sockets::AgentdSocketInputs;
+@@ -112,6 +116,8 @@
+     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
+     desktop_objective: Option<crate::AgentdDesktopObjectiveConfig>,
+     #[cfg(target_os = "linux")]
++    notes_thread_seed_profile: bool,
++    #[cfg(target_os = "linux")]
+     notes_ui: Option<crate::AgentdNotesUiRuntime>,
+     #[cfg(target_os = "linux")]
+     notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
+@@ -278,6 +284,8 @@
+             production_writer_host: None,
+             notes_objective: None,
+             desktop_objective: None,
++            #[cfg(target_os = "linux")]
++            notes_thread_seed_profile: false,
+             #[cfg(target_os = "linux")]
+             notes_ui: None,
+             #[cfg(target_os = "linux")]
+
+diff --git a/codex-rs/hepta-agentd/src/config_notes_seed.rs b/codex-rs/hepta-agentd/src/config_notes_seed.rs
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/config_notes_seed.rs
+@@ -0,0 +1,64 @@
++//! Pre-seed capability attenuation. This installs no Root, effect or tool owner.
++
++use super::AgentdConfig;
++use super::AgentdSocketInputs;
++use super::CognitiveRetrievalMode;
++use crate::AgentdError;
++
++impl AgentdConfig {
++    /// Select the finite v2 Core profile before creating an unused Notes thread.
++    /// The original launcher still checks the effective profile and creates the
++    /// original receipt. This selection grants no Notes execution authority.
++    pub fn with_original_notes_seed_profile(mut self) -> Result<Self, AgentdError> {
++        self.notes_thread_seed_profile = true;
++        self.original_notes_seed_profile()?;
++        Ok(self)
++    }
++
++    /// Recheck before runtime consumes any configured owner or socket input.
++    pub(crate) fn original_notes_seed_profile(&self) -> Result<bool, AgentdError> {
++        if !self.notes_thread_seed_profile {
++            return Ok(false);
++        }
++        if !matches!(&self.sockets, AgentdSocketInputs::Bind)
++            || self.authbus_trust_file.is_some()
++            || self.authbus_checkpoint_file.is_some()
++            || self.evidence_trust_file.is_some()
++            || self.evidence_recovery_frontier_file.is_some()
++            || self.evidence_recovery_frontier_trust_file.is_some()
++            || self.automation_effect_host_file.is_some()
++            || self.objective_profile_file.is_some()
++            || self.cognitive_ranker.is_some()
++            || self.production_operations.is_some()
++            || self.production_writer_host.is_some()
++            || self.notes_objective.is_some()
++            || self.desktop_objective.is_some()
++            || self.notes_ui.is_some()
++            || self.notes_thread_tools.is_some()
++            || self.desktop_thread_tools.is_some()
++            || self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility
++            || self.cognitive_retrieval_context.is_some()
++            || self.cognitive_retrieval_learning.is_some()
++            || self.plasticity_bootstrap.is_some()
++            || self.learning_iteration_bootstrap.is_some()
++            || self.terminal_learning_bootstrap.is_some()
++            || self.neuron_generation_bootstrap.is_some()
++            || self.circuit_task_bootstrap.is_some()
++            || self.circuit_task_invocation.is_some()
++            || self.intuition_policy_host.is_some()
++            || self.intelligence_product_runner.is_some()
++            || self.intelligence_invocation_provider.is_some()
++        {
++            return Err(AgentdError::Invalid(
++                "original Notes seed profile cannot be combined with an execution or owner profile"
++                    .into(),
++            ));
++        }
++        crate::notes_thread_execution::inspect(&self.identity.home_root)?;
++        Ok(true)
++    }
++}
++
++#[cfg(test)]
++#[path = "config_notes_seed_tests.rs"]
++mod tests;
+
+diff --git a/codex-rs/hepta-agentd/src/app_runtime.rs b/codex-rs/hepta-agentd/src/app_runtime.rs
+--- a/codex-rs/hepta-agentd/src/app_runtime.rs
++++ b/codex-rs/hepta-agentd/src/app_runtime.rs
+@@ -44,7 +44,10 @@
+     Standard,
+     #[cfg(target_os = "linux")]
+     OriginalNotes,
++    /// Pre-seed attenuation without an installed effect handler or Root grant.
+     #[cfg(target_os = "linux")]
++    OriginalNotesSeed,
++    #[cfg(target_os = "linux")]
+     OriginalDesktop,
+ }
+ 
+@@ -54,6 +57,8 @@
+             Self::Standard => true,
+             #[cfg(target_os = "linux")]
+             Self::OriginalNotes | Self::OriginalDesktop => false,
++            #[cfg(target_os = "linux")]
++            Self::OriginalNotesSeed => false,
+         }
+     }
+ }
+@@ -342,6 +347,15 @@
+     async fn notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state() {
+         finite_embedding_keeps_only_the_original_store(
+             super::AppServerModelToolProfile::OriginalNotes,
++        )
++        .await;
++    }
++
++    #[cfg(target_os = "linux")]
++    #[tokio::test]
++    async fn seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state() {
++        finite_embedding_keeps_only_the_original_store(
++            super::AppServerModelToolProfile::OriginalNotesSeed,
+         )
+         .await;
+     }
+
+diff --git a/codex-rs/hepta-agentd/src/runtime.rs b/codex-rs/hepta-agentd/src/runtime.rs
+--- a/codex-rs/hepta-agentd/src/runtime.rs
++++ b/codex-rs/hepta-agentd/src/runtime.rs
+@@ -48,6 +48,8 @@
+     arg0_paths: Arg0DispatchPaths,
+     shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
+ ) -> Result<(), AgentdError> {
++    #[cfg(target_os = "linux")]
++    let notes_thread_seed_profile = config.original_notes_seed_profile()?;
+     let circuit_task = config.take_circuit_task_bootstrap()?;
+     let production_operations = config.take_production_operations();
+     let sockets = config.take_socket_inputs();
+@@ -62,6 +64,8 @@
+         crate::app_runtime::AppServerModelToolProfile::OriginalDesktop
+     } else if notes_thread_tools.is_some() {
+         crate::app_runtime::AppServerModelToolProfile::OriginalNotes
++    } else if notes_thread_seed_profile {
++        crate::app_runtime::AppServerModelToolProfile::OriginalNotesSeed
+     } else {
+         crate::app_runtime::AppServerModelToolProfile::Standard
+     };
+
+diff --git a/codex-rs/hepta-agentd/src/main.rs b/codex-rs/hepta-agentd/src/main.rs
+--- a/codex-rs/hepta-agentd/src/main.rs
++++ b/codex-rs/hepta-agentd/src/main.rs
+@@ -32,6 +32,8 @@
+             #[cfg(target_os = "linux")]
+             let (mut config, production) = startup.receive().await?;
+             let mut args = arguments.into_iter();
++            let mut notes_thread_seed_profile = false;
++            let mut other_profile_arguments = false;
+             let mut authbus_trust = None;
+             let mut intelligence_authority_file = None;
+             let mut intelligence_authority_signer = None;
+@@ -50,7 +52,18 @@
+                 let path = args
+                     .next()
+                     .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
+-                if flag == "--authbus-trust-file" {
++                other_profile_arguments |= flag != "--notes-thread-seed-profile";
++                if flag == "--notes-thread-seed-profile" {
++                    anyhow::ensure!(
++                        !notes_thread_seed_profile,
++                        "duplicate --notes-thread-seed-profile"
++                    );
++                    anyhow::ensure!(
++                        path == "finite-v2",
++                        "--notes-thread-seed-profile must be finite-v2"
++                    );
++                    notes_thread_seed_profile = true;
++                } else if flag == "--authbus-trust-file" {
+                     anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
+                     authbus_trust = Some(path);
+                 } else if flag == "--plasticity-bootstrap-descriptor" {
+@@ -146,6 +159,22 @@
+                 } else {
+                     anyhow::bail!("unknown Agentd argument {flag:?}");
+                 }
++            }
++            if notes_thread_seed_profile {
++                anyhow::ensure!(
++                    !other_profile_arguments,
++                    "--notes-thread-seed-profile cannot be combined with other Agentd arguments"
++                );
++                #[cfg(target_os = "linux")]
++                {
++                    anyhow::ensure!(
++                        production.is_none(),
++                        "--notes-thread-seed-profile cannot be combined with a Root launch"
++                    );
++                    config = config.with_original_notes_seed_profile()?;
++                }
++                #[cfg(not(target_os = "linux"))]
++                anyhow::bail!("--notes-thread-seed-profile requires Linux");
+             }
+             match (
+                 intelligence_authority_file,
+
+diff --git a/codex-rs/hepta-agentd/src/config_notes_seed_tests.rs b/codex-rs/hepta-agentd/src/config_notes_seed_tests.rs
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/config_notes_seed_tests.rs
+@@ -0,0 +1,147 @@
++use codex_hepta_contracts::AgentId;
++use codex_hepta_fleet::AgentLifecycle;
++use codex_hepta_fleet::AgentManifest;
++use codex_hepta_fleet::FleetRegistry;
++use codex_hepta_fleet::ResourceBudget;
++use codex_hepta_fleet::WorkspaceBinding;
++use codex_hepta_paths::HeptaFleetRoot;
++
++use super::AgentdConfig;
++use super::CognitiveRetrievalMode;
++use crate::AgentdError;
++use crate::ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG;
++use crate::ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG;
++
++fn fixture() -> (tempfile::TempDir, AgentdConfig) {
++    let temp = tempfile::tempdir().expect("temporary registry");
++    let root = temp.path().canonicalize().expect("canonical registry");
++    let fleet_path = root.join("fleet");
++    let fleet = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet path");
++    let registry = FleetRegistry::initialize(fleet.clone()).expect("original registry");
++    let workspace = root.join("workspace");
++    std::fs::create_dir(&workspace).expect("workspace");
++    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
++    let record = registry
++        .register(
++            AgentManifest::new(
++                agent_id.clone(),
++                WorkspaceBinding::new(workspace.clone(), &fleet).expect("workspace binding"),
++                ResourceBudget::local_default(),
++            )
++            .expect("manifest"),
++        )
++        .expect("register agent");
++    registry
++        .compare_and_transition(
++            &agent_id,
++            /*expected_generation*/ 0,
++            AgentLifecycle::Starting,
++        )
++        .expect("original starting generation");
++    std::fs::write(
++        record.layout.home_root().join("config.toml"),
++        format!(
++            "model = \"fixture-model\"\nmodel_provider = \"fixture-provider\"\n{ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG}"
++        ),
++    )
++    .expect("finite configuration");
++    std::fs::write(
++        record.layout.home_root().join("environments.toml"),
++        ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,
++    )
++    .expect("disabled environments");
++    let config = AgentdConfig::load(
++        fleet_path,
++        agent_id,
++        /*spawn_generation*/ 1,
++        record.layout.home_root().to_path_buf(),
++        record.layout.run_root().to_path_buf(),
++        record.layout.home_root().to_path_buf(),
++        workspace,
++    )
++    .expect("ordinary registered configuration");
++    (temp, config)
++}
++
++#[test]
++fn original_notes_seed_profile_does_not_supply_notes_execution_owners() {
++    let (_temp, config) = fixture();
++    let config = config
++        .with_original_notes_seed_profile()
++        .expect("explicit finite seed profile");
++    assert!(config.original_notes_seed_profile().expect("finite files"));
++    assert!(matches!(
++        config.require_finite_notes_profile(),
++        Err(AgentdError::Invalid(message))
++            if message == "finite Notes profile requires its original writer, Notes, AuthBus and admission owners without another execution plane"
++    ));
++}
++
++#[test]
++fn original_notes_seed_profile_rejects_mixed_configurations_in_both_orders() {
++    let profiles: [fn(AgentdConfig) -> AgentdConfig; 3] = [
++        |config| config.with_objective_profile_file("unused-objective.json".into()),
++        |config| config.with_authbus_trust_file("unused-authbus.json".into()),
++        |config| config.with_cognitive_retrieval_mode(CognitiveRetrievalMode::HnmfRequired),
++    ];
++    for profile in profiles {
++        for seed_selected_first in [false, true] {
++            let (_temp, config) = fixture();
++            let config = if seed_selected_first {
++                config
++                    .with_original_notes_seed_profile()
++                    .expect("initial seed selection")
++            } else {
++                config
++            };
++            let config = profile(config);
++            let result = if seed_selected_first {
++                config.original_notes_seed_profile()
++            } else {
++                config.with_original_notes_seed_profile().map(|_| true)
++            };
++            assert!(matches!(
++                result,
++                Err(AgentdError::Invalid(message))
++                    if message == "original Notes seed profile cannot be combined with an execution or owner profile"
++            ));
++        }
++    }
++}
++
++#[test]
++fn original_notes_seed_profile_rechecks_files_before_runtime() {
++    for (file, original, changed, error) in [
++        (
++            "config.toml",
++            "hepta_memory = false",
++            "hepta_memory = true",
++            "original Notes Core execution profile is not finite",
++        ),
++        (
++            "config.toml",
++            "hepta_cognitive_write = false",
++            "hepta_cognitive_write = true",
++            "original Notes Core execution profile is not finite",
++        ),
++        (
++            "environments.toml",
++            "include_local = false",
++            "include_local = true",
++            "original Notes execution environments are not disabled",
++        ),
++    ] {
++        let (_temp, config) = fixture();
++        let config = config
++            .with_original_notes_seed_profile()
++            .expect("initial finite files");
++        let path = config.identity().home_root.join(file);
++        let bytes = std::fs::read_to_string(&path).expect("original file");
++        assert!(bytes.contains(original));
++        std::fs::write(path, bytes.replace(original, changed)).expect("changed file");
++        assert!(matches!(
++            config.original_notes_seed_profile(),
++            Err(AgentdError::Invalid(message)) if message.contains(error)
++        ));
++    }
++}
+
+diff --git a/codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs b/codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs
+--- a/codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs
++++ b/codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs
+@@ -11,6 +11,7 @@
+ use codex_hepta_agentd::ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG;
+ use codex_hepta_agentd::ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG;
+ use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
++use codex_hepta_supervisor::AgentCommand;
+ use serde_json::Value;
+ use std::process::Command;
+ use wiremock::MockServer;
+@@ -18,6 +19,7 @@
+ mod support;
+ 
+ use support::fleet::FleetHarness;
++use support::fleet::agentd_binary;
+ use support::fleet::connect_app_server_with_experimental;
+ 
+ const AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75df0";
+@@ -47,7 +49,13 @@
+         agent.layout.home_root().join("environments.toml"),
+         ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,
+     )?;
+-    fleet.start(&agent)?;
++    fleet.start_command(
++        &agent,
++        AgentCommand::new(
++            agentd_binary()?,
++            vec!["--notes-thread-seed-profile".into(), "finite-v2".into()],
++        )?,
++    )?;
+     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
+     let output = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-notes-thread-seed")?)
+         .arg("--control-socket")
+@@ -123,6 +131,65 @@
+             .context("read mock provider requests")?
+             .is_empty(),
+         "seeding an unused original thread contacted the model provider"
++    );
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn standard_profile_rejects_original_notes_seed_before_model_contact() -> Result<()> {
++    let mut fleet = FleetHarness::new()?;
++    let agent = fleet.register(AGENT_ID, "notes-seed-workspace")?;
++    let provider = MockServer::start().await;
++    std::fs::write(
++        agent.layout.home_root().join("config.toml"),
++        format!(
++            r#"model = "mock-model"
++model_provider = "mock_provider"
++{ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG}
++[model_providers.mock_provider]
++name = "Mock provider for original Notes seed"
++base_url = "{}/v1"
++wire_api = "responses"
++request_max_retries = 0
++stream_max_retries = 0
++"#,
++            provider.uri()
++        ),
++    )?;
++    std::fs::write(
++        agent.layout.home_root().join("environments.toml"),
++        ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,
++    )?;
++    fleet.start(&agent)?;
++    let (_control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
++    let output = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-notes-thread-seed")?)
++        .arg("--control-socket")
++        .arg(agent.layout.agentd_control_socket())
++        .arg("--agent-id")
++        .arg(agent.agent_id.to_string())
++        .arg("--spawn-generation")
++        .arg("1")
++        .arg("--codex-home")
++        .arg(agent.layout.home_root())
++        .arg("--cwd")
++        .arg(&agent.workspace)
++        .output()
++        .context("run original Notes seed against Standard")?;
++    ensure!(!output.status.success(), "Standard admitted a finite Notes seed");
++    ensure!(
++        String::from_utf8_lossy(&output.stderr)
++            .contains("original Notes effective Core execution profile differs"),
++        "unexpected seed failure: {}",
++        String::from_utf8_lossy(&output.stderr)
++    );
++    ensure!(output.stdout.is_empty(), "rejected seed emitted a receipt");
++    ensure!(
++        provider
++            .received_requests()
++            .await
++            .context("read mock provider requests")?
++            .is_empty(),
++        "rejected seed contacted the model provider"
+     );
+     Ok(())
+ }
+
+diff --git a/CALLERS.toml b/CALLERS.toml
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -2332,3 +2332,32 @@
+     "validate_receipt_digest(&provider.receipt_digest)?;",
+   ],
+ ]
++
++# The pre-seed selector only removes capability. It is not a privileged owner.
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/config_notes_seed.rs"
++required = ["pub fn with_original_notes_seed_profile(","pub(crate) fn original_notes_seed_profile(","!matches!(&self.sockets, AgentdSocketInputs::Bind)","self.authbus_trust_file.is_some()","self.authbus_checkpoint_file.is_some()","self.evidence_trust_file.is_some()","self.evidence_recovery_frontier_file.is_some()","self.evidence_recovery_frontier_trust_file.is_some()","self.automation_effect_host_file.is_some()","self.objective_profile_file.is_some()","self.cognitive_ranker.is_some()","self.production_operations.is_some()","self.production_writer_host.is_some()","self.notes_objective.is_some()","self.desktop_objective.is_some()","self.notes_ui.is_some()","self.notes_thread_tools.is_some()","self.desktop_thread_tools.is_some()","self.cognitive_retrieval_context.is_some()","self.cognitive_retrieval_learning.is_some()","self.plasticity_bootstrap.is_some()","self.learning_iteration_bootstrap.is_some()","self.terminal_learning_bootstrap.is_some()","self.neuron_generation_bootstrap.is_some()","self.circuit_task_bootstrap.is_some()","self.circuit_task_invocation.is_some()","self.intuition_policy_host.is_some()","self.intelligence_product_runner.is_some()","self.intelligence_invocation_provider.is_some()","self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility","crate::notes_thread_execution::inspect(&self.identity.home_root)?","original Notes seed profile cannot be combined with an execution or owner profile"]
++forbidden = ["SigningKey", "ProductionAuthorityToken", "Serialize", "Deserialize", "pub struct", "pub enum"]
++required_function_order = [{function = "fn with_original_notes_seed_profile(", sequence = ["self.notes_thread_seed_profile = true", "self.original_notes_seed_profile()?", "Ok(self)"], top_level = ["self.original_notes_seed_profile()?;"]}, {function = "fn original_notes_seed_profile(", sequence = ["if !self.notes_thread_seed_profile", "return Ok(false)", "!matches!(&self.sockets, AgentdSocketInputs::Bind)", "return Err(AgentdError::Invalid(", "crate::notes_thread_execution::inspect(&self.identity.home_root)?", "Ok(true)"], top_level = ["crate::notes_thread_execution::inspect(&self.identity.home_root)?;"]}]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/config.rs"
++required = ["mod notes_seed;", "notes_thread_seed_profile: bool", "notes_thread_seed_profile: false"]
++forbidden = ["pub notes_thread_seed_profile"]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/runtime.rs"
++required = ["let notes_thread_seed_profile = config.original_notes_seed_profile()?", "} else if notes_thread_seed_profile {", "AppServerModelToolProfile::OriginalNotesSeed"]
++forbidden = []
++required_function_order = [{function = "fn run_with_shutdown(", sequence = ["config.original_notes_seed_profile()?", "config.take_circuit_task_bootstrap()?", "config.take_production_operations()", "config.take_socket_inputs()", "config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "} else if notes_thread_seed_profile {", "AppServerModelToolProfile::OriginalNotesSeed", "AppServerModelToolProfile::Standard", "run_app_server("], top_level = ["let notes_thread_seed_profile = config.original_notes_seed_profile()?;"]}]
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/app_runtime.rs"
++required = ["OriginalNotesSeed", "Self::OriginalNotesSeed => false"]
++forbidden = []
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/main.rs"
++required = ["if flag == \"--notes-thread-seed-profile\"", "path == \"finite-v2\"", "other_profile_arguments |= flag != \"--notes-thread-seed-profile\"", "duplicate --notes-thread-seed-profile", "--notes-thread-seed-profile must be finite-v2", "--notes-thread-seed-profile cannot be combined with other Agentd arguments", "--notes-thread-seed-profile cannot be combined with a Root launch", "--notes-thread-seed-profile requires Linux"]
++forbidden = []
++required_function_order = [{function = "fn main(", sequence = ["other_profile_arguments |= flag !=", "if flag ==", "!notes_thread_seed_profile", "path ==", "notes_thread_seed_profile = true", "if notes_thread_seed_profile", "!other_profile_arguments", "production.is_none()", "config = config.with_original_notes_seed_profile()?", "match production {"]}]
