@@ -32,19 +32,19 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         let snapshot = snapshot.clone();
         self.inner
             .in_original_prepared_lane(move |owners, runtime, read| {
-                inner.training.with_original_training_operation(
-                    &inner.dataset_cut,
-                    read,
-                    |training| {
-                        let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
-                            OriginalQ24StageOperationV1::from_original_receipt_read(
-                                &inner, owners, runtime, training, read,
-                            )?;
-                        let result = operation.read_publication_material(&snapshot);
-                        operation.finish_original_b_read()?;
-                        result
-                    },
-                )
+                let training: &OriginalCellQ24TrainingStageV1<
+                    FileAnchorWitnessStore,
+                    FileAnchorWitnessStore,
+                > = &inner.training;
+                training.with_original_training_operation(&inner.dataset_cut, read, |training| {
+                    let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
+                        OriginalQ24StageOperationV1::from_original_receipt_read(
+                            &inner, owners, runtime, training, read,
+                        )?;
+                    let result = operation.read_publication_material(&snapshot);
+                    operation.finish_original_b_read()?;
+                    result
+                })
             })
             .await
     }
@@ -170,32 +170,32 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         let result = self
             .inner
             .in_original_prepared_lane(move |owners, runtime, read| {
-                inner.training.with_original_training_operation(
-                    &inner.dataset_cut,
-                    read,
-                    |training| {
-                        let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
-                            OriginalQ24StageOperationV1::from_original_receipt_read(
-                                &inner, owners, runtime, training, read,
-                            )?;
-                        let result = (|| {
-                            if operation.read_publication_material(&snapshot)? != manifest {
-                                return Err(Error::WrongScope);
-                            }
-                            if inner.cancelled.load(Ordering::Acquire) {
-                                return Err(Error::CommitUncertain);
-                            }
-                            effect_started.store(true, Ordering::Release);
-                            let value = work();
-                            if operation.read_publication_material(&snapshot)? != manifest {
-                                return Err(Error::WrongScope);
-                            }
-                            Ok(value)
-                        })();
-                        operation.finish_original_b_read()?;
-                        result
-                    },
-                )
+                let training: &OriginalCellQ24TrainingStageV1<
+                    FileAnchorWitnessStore,
+                    FileAnchorWitnessStore,
+                > = &inner.training;
+                training.with_original_training_operation(&inner.dataset_cut, read, |training| {
+                    let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
+                        OriginalQ24StageOperationV1::from_original_receipt_read(
+                            &inner, owners, runtime, training, read,
+                        )?;
+                    let result = (|| {
+                        if operation.read_publication_material(&snapshot)? != manifest {
+                            return Err(Error::WrongScope);
+                        }
+                        if inner.cancelled.load(Ordering::Acquire) {
+                            return Err(Error::CommitUncertain);
+                        }
+                        effect_started.store(true, Ordering::Release);
+                        let value = work();
+                        if operation.read_publication_material(&snapshot)? != manifest {
+                            return Err(Error::WrongScope);
+                        }
+                        Ok(value)
+                    })();
+                    operation.finish_original_b_read()?;
+                    result
+                })
             })
             .await;
         match result {

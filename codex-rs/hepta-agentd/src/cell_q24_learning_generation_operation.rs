@@ -36,24 +36,24 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     .block_on(selection.observe_original_selection(&snapshot))
                     .map_err(unavailable)?;
                 owners.generation = Some((selection, next_use));
-                inner.training.with_original_training_operation(
-                    &inner.dataset_cut,
-                    read,
-                    |training| {
-                        let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
-                            OriginalQ24StageOperationV1::from_original_receipt_read(
-                                &inner, owners, runtime, training, read,
-                            )?;
-                        let result = (|| {
-                            for receipt in &snapshot.receipts {
-                                operation.authenticate_receipt(&snapshot, receipt)?;
-                            }
-                            Ok(())
-                        })();
-                        operation.finish_original_b_read()?;
-                        result
-                    },
-                )
+                let training: &OriginalCellQ24TrainingStageV1<
+                    FileAnchorWitnessStore,
+                    FileAnchorWitnessStore,
+                > = &inner.training;
+                training.with_original_training_operation(&inner.dataset_cut, read, |training| {
+                    let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
+                        OriginalQ24StageOperationV1::from_original_receipt_read(
+                            &inner, owners, runtime, training, read,
+                        )?;
+                    let result = (|| {
+                        for receipt in &snapshot.receipts {
+                            operation.authenticate_receipt(&snapshot, receipt)?;
+                        }
+                        Ok(())
+                    })();
+                    operation.finish_original_b_read()?;
+                    result
+                })
             })
             .await
     }

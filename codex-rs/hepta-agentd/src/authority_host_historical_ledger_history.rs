@@ -204,11 +204,10 @@ impl PendingOriginalLedgerHistoryV1<'_> {
         let LedgerPhase::Captured { cut } = &record.phase else {
             return Err(io::Error::other("original Ledger capture missing"));
         };
-        let trust = Arc::clone(&self.files.deployment.trust).bind_original(
-            &self.identity,
-            &self.files.deployment.initial,
-            now,
-        )?;
+        let trust_files: Arc<crate::authority_host_runtime::RootInitialLearningTrustFilesV1> =
+            Arc::clone(&self.files.deployment.trust);
+        let trust: RegisteredInitialLearningTrustV1 =
+            trust_files.bind_original(&self.identity, &self.files.deployment.initial, now)?;
         if trust.pin != record.trust {
             return Err(io::Error::other("historical original trust pin differs"));
         }

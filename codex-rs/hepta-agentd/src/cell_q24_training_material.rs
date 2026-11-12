@@ -149,54 +149,54 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         let inner = Arc::clone(&self.inner);
         self.inner
             .in_original_prepared_lane(move |owners, runtime, read| {
-                inner.training.with_original_training_operation(
-                    &inner.dataset_cut,
-                    read,
-                    |training| {
-                        {
-                            let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
-                                OriginalQ24StageOperationV1::from_original_receipt_read(
-                                    &inner, owners, runtime, training, read,
-                                )?;
-                            let result: Result<(), Error> = (|| {
-                                for receipt in &inner.dataset_cut.receipts {
-                                    operation.authenticate_receipt(&expected, receipt)?;
-                                }
-                                Ok(())
-                            })();
-                            operation.finish_original_b_read()?;
-                            result?;
-                        }
-                        let before =
-                            OriginalQ24TrainingOperationV1::read_original_completion_in_operation(
-                                training,
-                            )?;
-                        let after =
-                            OriginalQ24TrainingOperationV1::read_original_completion_in_operation(
-                                training,
-                            )?;
-                        let material = OriginalCellQ24TrainingMaterialV1::from_original_readbacks(
-                            inner.dataset_cut.clone(),
-                            inner.prepared.scope().clone(),
-                            &expected,
-                            before,
-                            after,
-                        );
+                let training: &OriginalCellQ24TrainingStageV1<
+                    FileAnchorWitnessStore,
+                    FileAnchorWitnessStore,
+                > = &inner.training;
+                training.with_original_training_operation(&inner.dataset_cut, read, |training| {
+                    {
                         let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
                             OriginalQ24StageOperationV1::from_original_receipt_read(
                                 &inner, owners, runtime, training, read,
                             )?;
-                        let checked: Result<(), Error> = (|| {
+                        let result: Result<(), Error> = (|| {
                             for receipt in &inner.dataset_cut.receipts {
                                 operation.authenticate_receipt(&expected, receipt)?;
                             }
                             Ok(())
                         })();
                         operation.finish_original_b_read()?;
-                        checked?;
-                        material
-                    },
-                )
+                        result?;
+                    }
+                    let before =
+                        OriginalQ24TrainingOperationV1::read_original_completion_in_operation(
+                            training,
+                        )?;
+                    let after =
+                        OriginalQ24TrainingOperationV1::read_original_completion_in_operation(
+                            training,
+                        )?;
+                    let material = OriginalCellQ24TrainingMaterialV1::from_original_readbacks(
+                        inner.dataset_cut.clone(),
+                        inner.prepared.scope().clone(),
+                        &expected,
+                        before,
+                        after,
+                    );
+                    let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
+                        OriginalQ24StageOperationV1::from_original_receipt_read(
+                            &inner, owners, runtime, training, read,
+                        )?;
+                    let checked: Result<(), Error> = (|| {
+                        for receipt in &inner.dataset_cut.receipts {
+                            operation.authenticate_receipt(&expected, receipt)?;
+                        }
+                        Ok(())
+                    })();
+                    operation.finish_original_b_read()?;
+                    checked?;
+                    material
+                })
             })
             .await
     }

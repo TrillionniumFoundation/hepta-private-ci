@@ -209,8 +209,8 @@ impl AgentdRootLearningInputsV1 {
         let scope = self
             .scope
             .ok_or_else(|| refused("original Q24 checkpoint scope absent"))?;
-        let (ports, checkpoint) = self
-            .client
+        let client: AgentdLearningCheckpointClientV1 = self.client;
+        let (ports, checkpoint) = client
             .with_original_q24_checkpoint(stages)
             .map_err(|error| refused(error.to_string()))?;
         let (handle, bootstrap) = crate::learning_iteration_channel_scoped_v2(
@@ -225,12 +225,9 @@ impl AgentdRootLearningInputsV1 {
         let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
         let bootstrap: LearningIterationRuntimeBootstrapV1 =
             bootstrap.with_original_circuit_learning_delivery(self.initial.request)?;
-        Ok((
-            handle,
-            bootstrap
-                .with_original_q24_stage_owners(original)?
-                .with_original_q24_checkpoint(checkpoint)?,
-        ))
+        let bootstrap: LearningIterationRuntimeBootstrapV1 =
+            bootstrap.with_original_q24_stage_owners(original)?;
+        Ok((handle, bootstrap.with_original_q24_checkpoint(checkpoint)?))
     }
 
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {

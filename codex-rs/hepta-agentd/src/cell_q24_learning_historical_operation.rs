@@ -184,8 +184,8 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
             if matches!(mode, OriginalHistoricalRestoreModeV1::Readback) {
                 return Err(Error::CommitUncertain);
             }
-            self.original_stage_context()?
-                .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
+            let context: &OriginalHistoricalStageContextV1 = self.original_stage_context()?;
+            context.require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
             let committed = self.runtime.block_on(
                 self.original_stage_context()?
                     .commit_checkpoint(codex_hepta_types::Digest32::ZERO, initial),
@@ -229,8 +229,8 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         if coordinator.next_stage() != Some(stage) {
             return Err(Error::WrongScope);
         }
-        self.original_stage_context()?
-            .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
+        let context: &OriginalHistoricalStageContextV1 = self.original_stage_context()?;
+        context.require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
         if let Some(decision) = coordinator.snapshot().receipts.iter().find(|receipt| {
             matches!(
                 receipt.observation,
@@ -241,8 +241,8 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         }
         let receipt = self.execute_stage(coordinator.snapshot(), stage)?;
         self.authenticate_receipt(coordinator.snapshot(), &receipt)?;
-        self.original_stage_context()?
-            .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
+        let context: &OriginalHistoricalStageContextV1 = self.original_stage_context()?;
+        context.require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
         self.inner
             .prepared
             .scope()
@@ -256,7 +256,8 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         if committed != coordinator.snapshot().head_digest {
             return Err(Error::CommitUncertain);
         }
-        self.original_stage_context()?
+        let context: &OriginalHistoricalStageContextV1 = self.original_stage_context()?;
+        context
             .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)
             .map_err(|_| Error::CommitUncertain)?;
         Ok(OriginalHistoricalResultV1 {

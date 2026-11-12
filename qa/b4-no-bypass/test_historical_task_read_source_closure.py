@@ -31,11 +31,11 @@ ROOT_INPUTS = A + "root_production_inputs.rs"
 SESSION = A + "authority_host_session.rs"
 CALLERS = {
     "connection_capture": (ROOT_INPUTS,), "connection_take": (ROOT_INPUTS,),
-    "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS, A + "root_historical_learning_trust_client.rs"),
+    "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS, A + "root_historical_learning_trust_client.rs", A + "root_post_a_learning_client.rs"),
     "same_session": (CLIENT,), "send": (CLI,), "receive": (LAUNCH, LATE),
     "connect": (LAUNCH, LATE), "from_stream": (INPUTS,),
     "client_session": (LAUNCH, LATE), "observe": (A + "production_post_a_q24.rs",),
-    "receipt_client": (A + "cell_q24_dataset_historical_task.rs", A + "root_historical_learning_trust_client.rs"),
+    "receipt_client": (A + "cell_q24_dataset_historical_task.rs", A + "root_historical_learning_trust_client.rs", A + "learning_iteration_historical_source.rs", A + "root_post_a_learning_client.rs"),
     "receipt_read": (A + "root_historical_learning_trust_client.rs", A + "root_historical_learning_operation.rs"), "enable": (CLI,), "seal": (CLI,), "provider": (PREPARED,),
     "exchange": (RUNTIME,), "cold_source": (PROVIDER,), "cold_cell": (PROVIDER,),
     "reply": (CLIENT,), "profile": (PROVIDER, PREPARED, INPUTS),

@@ -1,6 +1,7 @@
 //! Close only the original owners, then reopen their exact files and witnesses.
 //! The source/Cell read capabilities stay original; this is not daemon restart
 //! qualification. A readonly witness descriptor injects one real write failure.
+#![cfg(test)]
 
 use std::fs::File;
 use std::sync::Mutex;

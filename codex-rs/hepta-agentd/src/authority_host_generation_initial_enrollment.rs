@@ -56,7 +56,13 @@ impl HostAuthorityService {
                     .observed_unix_ms;
                 let learning_trust = inputs
                     .learning_trust
-                    .map(|files| files.bind_original(&self.identity, deployment, now))
+                    .map(
+                        |files: Arc<
+                            crate::authority_host_runtime::RootInitialLearningTrustFilesV1,
+                        >| {
+                            files.bind_original(&self.identity, deployment, now)
+                        },
+                    )
                     .transpose()?;
                 let (artifacts, selected) =
                     inputs::open_artifacts(inputs.artifacts, config.peer_uid, now)?;

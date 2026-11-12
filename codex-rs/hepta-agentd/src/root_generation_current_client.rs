@@ -298,8 +298,8 @@ impl RootGenerationCurrentClient {
             profile: self.profile.binding.clone(),
             command,
         };
-        let raw = lane
-            .stream
+        let stream: &mut OriginalPublicationStream = &mut lane.stream;
+        let raw = stream
             .exchange(&serde_json::to_vec(&request).map_err(|_| uncertain())?)
             .map_err(|_| uncertain())?;
         let response: Response = serde_json::from_slice(&raw).map_err(|_| uncertain())?;

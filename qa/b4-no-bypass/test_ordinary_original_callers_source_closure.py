@@ -31,10 +31,27 @@ ACTUAL = {
     "root_artifact_original_withdrawal_bind": (A + "production_post_a_artifacts.rs",),
     "root_generation_connection_original_binding": (A + "root_generation_initial_source_capture.rs",),
     "root_generation_publication_handoff_until": (A + "cell_q24_publication_root_stage.rs",),
+    "q24_successor_running_admission": (A + "cell_q24_publication_successor_grant.rs", A + "production_post_a_continuation.rs",),
+    "root_original_publication_stream_until": (A + "root_independent_b_client_connect.rs", A + "root_independent_b_source_client.rs",),
+    "root_initial_learning_trust_activation": (A + "authority_host_q24_evaluation_admission.rs",),
+    "cell_original_physical_witness_codec": (A + "authority_host_successor_files_read.rs",),
+    "root_historical_task_read_original_session": (A + "root_post_a_learning_client.rs",),
+    "root_historical_task_read_receipt_client": (A + "learning_iteration_historical_source.rs", A + "root_post_a_learning_client.rs",),
+    "root_historical_recipient_trust_activation": (A + "root_historical_learning_operation.rs",),
+    "cell_q24_historical_dataset_task_receipt": (A + "cell_q24_dataset_historical_ledger.rs",),
+    "root_publication_fixed_version": (A + "authority_host_publication_grant.rs",),
+    "root_publication_reserved_version": (A + "authority_host_publication_grant_store.rs",),
+    "root_publication_original_frame_deadline": (A + "authority_host_initial_peer_runtime.rs",),
+    "q24_training_original_operation_evidence": (A + "cell_q24_training_b_plan.rs",),
+    "q24_training_original_operation_evidence_current": (A + "root_independent_b_candidate_data.rs", A + "root_independent_b_plan.rs",),
+    "historical_stage_original_source": (A + "learning_iteration_successor.rs",),
 }
 TYPED = {
     "root_generation_publication_original_stream": "RootGenerationCurrentClient",
     "artifact_original_acknowledged_readback": "LearningArtifactOwnerService",
+    "root_initial_artifact_same_session": "RootGenerationPublicationConnectionV1",
+    "root_initial_learning_trust_bind": "RootInitialLearningTrustFilesV1",
+    "root_initial_learning_trust_payload": "RegisteredInitialLearningTrustV1",
 }
 OTHER = (
     "learning_original_q24_with_original_q24_stage_owners",
@@ -43,6 +60,12 @@ OTHER = (
     "q24_root_artifact_qualified_phase",
     "q24_root_retained_phase",
     "root_generation_publication_purpose_connect",
+    "root_initial_artifact_revalidate",
+    "q24_training_original_operation",
+    "q24_root_checkpoint_original_pair",
+    "q24_runtime_original_checkpoint",
+    "historical_stage_current_admission",
+    "post_a_artifact_existing_owner_open",
 )
 
 
@@ -58,6 +81,16 @@ class OrdinaryOriginalCallersSourceClosureTests(unittest.TestCase):
             A + "root_generation_initial_client.rs",
             A + "authority_host_historical_task.rs",
             A + "cell_q24_dataset_historical_task.rs",
+            A + "root_historical_task_connection.rs",
+            A + "root_historical_task_read_client.rs",
+            A + "production_launcher.rs",
+            A + "production_launcher_late_writer.rs",
+            A + "authority_host_learning_session.rs",
+            A + "authority_host_historical_read.rs",
+            A + "authority_host_post_a_derive.rs",
+            A + "cell_q24_task_ledger_recovery_support.rs",
+            A + "cell_q24_learning_stage_owners.rs",
+            A + "root_independent_b_source_client.rs",
         }
         for identifier in (*ACTUAL, *TYPED, *OTHER):
             row = cls.boundaries[identifier]

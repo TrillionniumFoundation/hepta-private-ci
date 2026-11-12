@@ -42,7 +42,7 @@ impl RootHistoricalTaskReadSlot {
                 "historical read differs from original five-lane receive",
             ));
         }
-        let connection = RootHistoricalTaskReadConnectionV1 {
+        let connection: RootHistoricalTaskReadConnectionV1 = RootHistoricalTaskReadConnectionV1 {
             original: original.clone(),
             identity: identity.clone(),
             authority: session.authority(),
@@ -59,7 +59,7 @@ impl RootHistoricalTaskReadSlot {
         &mut self,
         session: &AgentdRootAuthoritySession,
     ) -> Result<RootHistoricalTaskReadConnectionV1, AgentdError> {
-        let connection = self
+        let connection: RootHistoricalTaskReadConnectionV1 = self
             .connection
             .take()
             .ok_or_else(|| refused("historical read connection absent or already taken"))?;
