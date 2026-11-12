@@ -1,0 +1,28 @@
+{
+  "command": [
+    "just",
+    "bazel-lock-check"
+  ],
+  "source": "ce8b224add8cfd732fd0bdf6fd73661873dabdc6",
+  "dirty": " M .github/blob-size-allowlist.txt\n M CALLERS.toml\n?? qa/b4-no-bypass/test_run_start_read_only_source_closure.py\n",
+  "start_utc": "2026-11-12T06:47:45Z",
+  "bazel_version": "9.3.0",
+  "tls_verification": true,
+  "inputs": {
+    "codex-rs/Cargo.toml": "722f70c04e70174e8c9a7c80da055739607d8b69249fc08e629c8adb1a8a45bd",
+    "codex-rs/Cargo.lock": "9548f29c2848eef29e7543a1c2aad4a8021bee39457b93abab31049a17c6b250",
+    "codex-rs/hepta-learning-ledger/Cargo.toml": "2f417160691f4cbe3eeafc84264518d024fbc4edc42d9d6b9ef3bfed09f21d66",
+    "MODULE.bazel": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e",
+    "MODULE.bazel.lock": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 35.564,
+  "end_utc": "2026-11-12T06:48:21Z",
+  "inputs_after": {
+    "codex-rs/Cargo.toml": "722f70c04e70174e8c9a7c80da055739607d8b69249fc08e629c8adb1a8a45bd",
+    "codex-rs/Cargo.lock": "9548f29c2848eef29e7543a1c2aad4a8021bee39457b93abab31049a17c6b250",
+    "codex-rs/hepta-learning-ledger/Cargo.toml": "2f417160691f4cbe3eeafc84264518d024fbc4edc42d9d6b9ef3bfed09f21d66",
+    "MODULE.bazel": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e",
+    "MODULE.bazel.lock": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+  }
+}
