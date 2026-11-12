@@ -4,6 +4,8 @@
 //! On a shared filesystem whose locks and fsync are linearizable across hosts,
 //! the same format can coordinate host failover. Recovery accepts an
 //! independently retained minimum anchor and fails closed on rollback.
+//! Every load and CAS replays the same physical grammar. Observed uncertainty
+//! poisons this handle; the poison is not a persistent cross-process fence.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -37,6 +39,9 @@ const MAX_RECORDS: usize = 1_000_000;
 const EVENT_FENCE: u8 = 0;
 const EVENT_PLAN: u8 = 1;
 
+#[path = "fenced_holdout_file_replay.rs"]
+mod physical;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
     Binding,
@@ -63,6 +68,7 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
+    image_digest: Digest32,
     poisoned: bool,
 }
 
@@ -103,13 +109,18 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         file.write_all(&header)
             .and_then(|()| file.sync_all())
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
-        Ok(Self {
+        let mut store = Self {
             file,
             binding,
             state: None,
             length: HEADER as u64,
+            image_digest: Digest32::of_bytes(&header),
             poisoned: false,
-        })
+        };
+        store
+            .require_physical_current()
+            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
+        Ok(store)
     }
 
     pub fn recover(
@@ -118,71 +129,40 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
         let mut file = acquire(file, binding)?;
-        let length = file.metadata().map_err(io_error)?.len();
-        if length > MAX_BYTES {
-            return Err(LockedFileCasErrorV1::Capacity);
-        }
-        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        let mut bytes = Vec::new();
-        (&mut *file)
-            .take(MAX_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(io_error)?;
-        if bytes.len() as u64 != length {
-            return Err(LockedFileCasErrorV1::Corrupt);
-        }
-        if bytes.len() < HEADER {
-            return Err(LockedFileCasErrorV1::MissingHeader);
-        }
-        if &bytes[..8] != MAGIC
-            || &bytes[8..40] != binding.as_array()
-            || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
-        {
-            return Err(LockedFileCasErrorV1::Corrupt);
-        }
-
-        let mut state: Option<FinalHoldoutCasRecordV1> = None;
-        let mut minimum_witnessed = minimum.is_none();
-        let mut cursor = HEADER;
-        while cursor < bytes.len() {
-            let raw = bytes
-                .get(cursor..cursor + 4)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let count = u32::from_be_bytes([raw[0], raw[1], raw[2], raw[3]]) as usize;
-            if !(1..=MAX_FRAME).contains(&count) {
-                return Err(LockedFileCasErrorV1::Capacity);
-            }
-            cursor += 4;
-            let payload = bytes
-                .get(cursor..cursor + count)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            cursor += count;
-            let checksum = bytes
-                .get(cursor..cursor + 32)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            cursor += 32;
-            if checksum != Digest32::of_bytes(payload).as_array() {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            state = Some(replay_event(binding, state, payload)?);
-            if minimum.is_some_and(|anchor| {
-                state
-                    .as_ref()
-                    .is_some_and(|record| record_anchor(record) == anchor)
-            }) {
-                minimum_witnessed = true;
-            }
-        }
-        validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
+        let bytes = physical::read_stable_image(&mut file)?;
+        let state = physical::replay_image(&bytes, binding, minimum)?;
         file.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
+        if physical::read_stable_image(&mut file)? != bytes {
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
         Ok(Self {
             file,
             binding,
             state,
-            length,
+            length: bytes.len() as u64,
+            image_digest: Digest32::of_bytes(&bytes),
             poisoned: false,
         })
+    }
+
+    fn require_physical_current(&mut self) -> Result<Vec<u8>, FinalHoldoutCasStoreError> {
+        if self.poisoned {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        self.poisoned = true;
+        let bytes = physical::read_stable_image(&mut self.file)
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if bytes.len() as u64 != self.length
+            || Digest32::of_bytes(&bytes) != self.image_digest
+            || physical::replay_image(&bytes, self.binding, /*minimum*/ None)
+                .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+                != self.state
+        {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        self.poisoned = false;
+        Ok(bytes)
     }
 
     #[must_use]
@@ -202,16 +182,7 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         if binding != self.binding {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
-        if self
-            .file
-            .metadata()
-            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
-            .len()
-            != self.length
-        {
-            self.poisoned = true;
-            return Err(FinalHoldoutCasStoreError::Indeterminate);
-        }
+        self.require_physical_current()?;
         Ok(self.state.clone())
     }
 
@@ -227,16 +198,7 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         if binding != self.binding || next.binding != binding {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
-        if self
-            .file
-            .metadata()
-            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
-            .len()
-            != self.length
-        {
-            self.poisoned = true;
-            return Err(FinalHoldoutCasStoreError::Indeterminate);
-        }
+        let mut expected_image = self.require_physical_current()?;
         next.validate(binding)
             .map_err(|_| FinalHoldoutCasStoreError::Rejected)?;
         let current_digest = self.state.as_ref().map(|record| record.state_digest);
@@ -261,17 +223,30 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
         frame.extend_from_slice(&payload);
         frame.extend_from_slice(Digest32::of_bytes(&payload).as_array());
+        expected_image.extend_from_slice(&frame);
+        self.poisoned = true;
         let write = self
             .file
             .seek(SeekFrom::Start(self.length))
             .and_then(|_| self.file.write_all(&frame))
             .and_then(|()| self.file.sync_all());
         if write.is_err() {
-            self.poisoned = true;
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
+        let observed = physical::read_stable_image(&mut self.file)
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if observed != expected_image
+            || physical::replay_image(&observed, binding, /*minimum*/ None)
+                .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+                .as_ref()
+                != Some(next)
+        {
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
         self.state = Some(next.clone());
         self.length = next_length;
+        self.image_digest = Digest32::of_bytes(&observed);
+        self.poisoned = false;
         Ok(())
     }
 }
