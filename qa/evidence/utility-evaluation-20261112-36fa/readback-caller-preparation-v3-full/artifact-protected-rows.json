@@ -1,0 +1,517 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+    "required": [
+      "pub struct OriginalArtifactHeadConnectionV1 {",
+      "enum Origin {",
+      "pub async fn sign_original_registry(",
+      "pub async fn read_original_head("
+    ],
+    "forbidden": [
+      "SigningKey",
+      "Signer",
+      "SigningKey::generate",
+      "SigningKey::from_bytes",
+      "UnixStream::connect",
+      "UnixListener",
+      "File::open",
+      "OpenOptions",
+      "HostAuthorityPeerChannel::from_stream",
+      "LearningOwnerJournalV1::create(",
+      "LearningOwnerJournalV1::recover(",
+      "commit_once(",
+      "OriginalArtifactPreparedPublicationV1 {",
+      "from_original_registry_durable(",
+      "impl Clone for OriginalArtifactHeadConnectionV1",
+      "pub channel:",
+      "pub origin:",
+      "pub fn bind(",
+      "pub(crate) fn bind(",
+      "pub fn exchange(",
+      "pub(crate) fn exchange(",
+      "permit_all",
+      "if false"
+    ],
+    "required_order": [
+      [
+        "enum ",
+        "Origin {\n    Fresh,\n    Readonly(Option<SignedCurrentArtifactHeadV1>),\n}"
+      ],
+      [
+        "pub ",
+        "struct OriginalArtifactHeadConnectionV1 {\n    channel: HostAuthorityPeerChannel,\n    config: ArtifactHeadSigningConfigV1,\n    binding: Digest32,\n    initial_at: u64,\n    origin: Origin,\n}"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn from_original_stream(",
+        "sequence": [
+          "fn ",
+          "from_original_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        original_head_pidfd: OwnedFd,\n        config: ArtifactHeadSigningConfigV1,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        Self::bind(\n            stream,\n            peer,\n            original_head_pidfd,\n            config,\n            timeout,\n            lifetime,\n            Origin::Fresh,\n        )\n    }"
+        ]
+      },
+      {
+        "function": "fn recover_original_stream(",
+        "sequence": [
+          "fn ",
+          "recover_original_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        original_head_pidfd: OwnedFd,\n        config: ArtifactHeadSigningConfigV1,\n        expected: Option<SignedCurrentArtifactHeadV1>,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        Self::bind(\n            stream,\n            peer,\n            original_head_pidfd,\n            config,\n            timeout,\n            lifetime,\n            Origin::Readonly(expected),\n        )\n    }"
+        ]
+      },
+      {
+        "function": "fn bind(",
+        "sequence": [
+          "fn ",
+          "bind(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        original_head_pidfd: OwnedFd,\n        config: ArtifactHeadSigningConfigV1,\n        timeout: Duration,\n        lifetime: Duration,\n        origin: Origin,\n    ) -> Result<Self, Error> {\n        let started = now()?;\n        require_peer(&peer, &config.signer_id)?;\n        config.authenticate_current(started)?;\n        let binding = config.binding()?;\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_head_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        channel.check_peer_lifetime()?;\n        let initial_at = fresh(started)?;\n        config.authenticate_current(initial_at)?;\n        Ok(Self {\n            channel,\n            config,\n            binding,\n            initial_at,\n            origin,\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn sign_original_registry(",
+        "sequence": [
+          "fn ",
+          "sign_original_registry(\n        self,\n        prepared: OriginalArtifactPreparedPublicationV1,\n        cancelled: Arc<AtomicBool>,\n    ) -> Result<\n        (\n            OriginalArtifactPreparedPublicationV1,\n            SignedCurrentArtifactHeadV1,\n        ),\n        Error,\n    > {\n        if !matches!(&self.origin, Origin::Fresh) {\n            return Err(Error::ReadbackRequired);\n        }\n        let original = prepared\n            .registry_durable()\n            .encode_for_original_head_source(&self.config)?;\n        let claims = UntrustedArtifactRegistryDurableV1::decode(&original, &self.config)?;\n        claims.require_unsigned_phase()?;\n                                                                             \n                                                                                \n        let signed = self.exchange(wire::Action::Sign, claims, cancelled).await?;\n        Ok((prepared, signed))\n    }"
+        ]
+      },
+      {
+        "function": "fn read_original_head(",
+        "sequence": [
+          "fn ",
+          "read_original_head(\n        self,\n        observed: &OriginalArtifactRegistryDurableV1,\n    ) -> Result<SignedCurrentArtifactHeadV1, Error> {\n        let bytes = observed.encode_for_original_head_source(&self.config)?;\n        let source = UntrustedArtifactRegistryDurableV1::decode(&bytes, &self.config)?;\n        self.exchange(\n            wire::Action::Readback,\n            source,\n            Arc::new(AtomicBool::new(false)),\n        )\n        .await\n    }"
+        ]
+      },
+      {
+        "function": "fn exchange(",
+        "sequence": [
+          "fn ",
+          "exchange(\n        mut self,\n        action: wire::Action,\n        source: UntrustedArtifactRegistryDurableV1,\n        cancelled: Arc<AtomicBool>,\n    ) -> Result<SignedCurrentArtifactHeadV1, Error> {\n        let started = now()?;\n        if started < self.initial_at {\n            return Err(Error::CommitUncertain);\n        }\n        source.authenticate_current(&self.config, started)?;\n        let request = wire::Request::new(wire::Purpose::Head, action, 1, self.binding)?;\n        let encoded = request.encode();\n        let abandoned = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&abandoned));\n        let (channel, bytes) = tokio::task::spawn_blocking(move || {\n            if abandoned.load(Ordering::Acquire) || cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            self.channel.check_peer_lifetime()?;\n            if abandoned.load(Ordering::Acquire) || cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            let bytes = self\n                .channel\n                .request(&encoded)\n                .map_err(|_| Error::CommitUncertain)?;\n            Ok::<_, Error>((self, bytes))\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)??;\n        drop(waiting);\n        let payload = request.read_response(&bytes).map_err(|error| {\n            if action == wire::Action::Sign {\n                Error::CommitUncertain\n            } else {\n                error\n            }\n        })?;\n        let signed = decode_artifact_head_bytes_v1(payload)?;\n        channel.channel.check_peer_lifetime()?;\n        let current = fresh(started)?;\n        channel\n            .config\n            .verify_original_head(&source, &signed, current)?;\n        if let Origin::Readonly(Some(expected)) = channel.origin\n            && expected != signed\n        {\n            return Err(Error::CommitUncertain);\n        }\n        Ok(signed)\n    }"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+    "required": [
+      "OriginalArtifactHeadOwnerV1<W>",
+      "pub async fn serve_commands("
+    ],
+    "forbidden": [
+      "SigningKey",
+      "Signer",
+      "SigningKey::generate",
+      "SigningKey::from_bytes",
+      "File::open",
+      "OpenOptions",
+      "UnixStream::connect",
+      "HostAuthorityPeerChannel::from_stream",
+      "OriginalArtifactHeadOwnerV1::create(",
+      "OriginalArtifactHeadOwnerV1::recover(",
+      "LearningOwnerJournalV1::create(",
+      "LearningOwnerJournalV1::recover(",
+      "OriginalArtifactPreparedPublicationV1 {",
+      "request.payload",
+      "request.signing_bytes",
+      "permit_all",
+      "if false"
+    ],
+    "required_order": [],
+    "required_function_order": [
+      {
+        "function": "fn serve_commands(",
+        "sequence": [
+          "fn ",
+          "serve_commands(\n        self: &Arc<Self>,\n        stream: UnixStream,\n        consumer: LearningIterationEvidencePeerV1,\n        original_consumer_pidfd: OwnedFd,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {\n        require_peer(&consumer, &self.source.config.writer_lease.producer_id)?;\n        let permit = Arc::clone(&self.connections)\n            .try_acquire_owned()\n            .map_err(|_| Error::Busy)?;\n                                                                              \n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: consumer.pid,\n                boot_id: consumer.boot_id,\n                process_start_ticks: consumer.process_start_ticks,\n            },\n            consumer.uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        let binding = self.source.config.binding()?;\n        let original = Arc::clone(self);\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let result = tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            for nonce in 1..=128 {\n                if cancelled.load(Ordering::Acquire) {\n                    return Err(Error::Unavailable);\n                }\n                let mut failure = None;\n                let exchanged = channel.exchange(|bytes| {\n                    if cancelled.load(Ordering::Acquire) {\n                        return Err(HostIssuerTransportError::Unavailable);\n                    }\n                    let result = (|| {\n                        let started = now()?;\n                        let request =\n                            wire::Request::decode(bytes, wire::Purpose::Head, nonce, binding)?;\n                        original.source.config.authenticate_current(started)?;\n                        let response = match request.action {\n                            wire::Action::Sign => original.sign_original(&cancelled),\n                            wire::Action::Readback => original.read_original(&cancelled),\n                        };\n                        original\n                            .source\n                            .config\n                            .authenticate_current(fresh(started)?)?;\n                        match response {\n                            Ok(signed) => request.response(wire::Status::Completed, &signed),\n                            Err(Error::Missing) => request.response(wire::Status::Missing, &[]),\n                            Err(Error::Pending) => request.response(wire::Status::Pending, &[]),\n                            Err(Error::ReadbackRequired) => {\n                                request.response(wire::Status::ReadbackRequired, &[])\n                            }\n                            Err(error) => Err(error),\n                        }\n                    })();\n                    result.map_err(|error| {\n                        failure = Some(error);\n                        HostIssuerTransportError::InvalidRequest\n                    })\n                });\n                match exchanged {\n                    Ok(true) => {}\n                    Ok(false) => return Ok(nonce - 1),\n                    Err(error) => return Err(failure.unwrap_or(Error::Transport(error))),\n                }\n            }\n            Err(Error::Unavailable)\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)?;\n        drop(waiting);\n        result\n    }"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+    "required": [
+      "pub struct OriginalArtifactRegistrySourceOwnerV1 {",
+      "pub struct OriginalArtifactRegistrySourceClientV1 {",
+      "pub(super) struct QueueFence(pub(super) Arc<AtomicBool>);"
+    ],
+    "forbidden": [
+      "wire::Action::Sign",
+      "SigningKey",
+      "Signer",
+      "UnixStream::connect",
+      "UnixListener",
+      "File::open",
+      "OpenOptions",
+      "HostAuthorityPeerChannel::from_stream",
+      "LearningArtifactOwnerService::open(",
+      "LearningArtifactOwnerService::create(",
+      "OriginalArtifactPreparedPublicationV1 {",
+      "sign_original(",
+      "commit_once(",
+      "publish_original(",
+      "resume_original(",
+      "repair_original(",
+      "pub writer:",
+      "pub channel:",
+      "pub fn read_current_in_lane(",
+      "pub(crate) fn read_current_in_lane(",
+      "permit_all",
+      "if false"
+    ],
+    "required_order": [
+      [
+        "pub ",
+        "struct OriginalArtifactRegistrySourceOwnerV1 {\n    writer: Arc<Mutex<LearningArtifactOwnerService>>,\n    config: ArtifactHeadSigningConfigV1,\n    binding: Digest32,\n    connections: Arc<Semaphore>,\n}"
+      ],
+      [
+        "struct ",
+        "Channel {\n    peer: HostAuthorityPeerChannel,\n    next: u64,\n    source_at: u64,\n    subject: Option<Digest32>,\n}"
+      ],
+      [
+        "pub ",
+        "struct OriginalArtifactRegistrySourceClientV1 {\n    pub(super) config: ArtifactHeadSigningConfigV1,\n    binding: Digest32,\n    channel: Mutex<Option<Channel>>,\n    initial_at: u64,\n}"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn from_original_writer(",
+        "sequence": [
+          "fn ",
+          "from_original_writer(\n        writer: Arc<Mutex<LearningArtifactOwnerService>>,\n        config: ArtifactHeadSigningConfigV1,\n    ) -> Result<Self, Error> {\n        config.authenticate_current(now()?)?;\n        let binding = config.binding()?;\n        Ok(Self {\n            writer,\n            config,\n            binding,\n            connections: Arc::new(Semaphore::new(4)),\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn serve_reads(",
+        "sequence": [
+          "fn ",
+          "serve_reads(\n        self: &Arc<Self>,\n        stream: UnixStream,\n        consumer: LearningIterationEvidencePeerV1,\n        original_consumer_pidfd: OwnedFd,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {\n                                                                              \n        require_peer(&consumer, &self.config.signer_id)?;\n        let permit = Arc::clone(&self.connections)\n            .try_acquire_owned()\n            .map_err(|_| Error::Busy)?;\n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: consumer.pid,\n                boot_id: consumer.boot_id,\n                process_start_ticks: consumer.process_start_ticks,\n            },\n            consumer.uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        let original = Arc::clone(self);\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let result = tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            for nonce in 1..=128 {\n                if cancelled.load(Ordering::Acquire) {\n                    return Err(Error::Unavailable);\n                }\n                let mut failure = None;\n                let exchanged = channel.exchange(|bytes| {\n                    if cancelled.load(Ordering::Acquire) {\n                        return Err(HostIssuerTransportError::Unavailable);\n                    }\n                    original.respond(bytes, nonce).map_err(|error| {\n                        failure = Some(error);\n                        HostIssuerTransportError::InvalidRequest\n                    })\n                });\n                match exchanged {\n                    Ok(true) => {}\n                    Ok(false) => return Ok(nonce - 1),\n                    Err(error) => return Err(failure.unwrap_or(Error::Transport(error))),\n                }\n            }\n            Err(Error::Unavailable)\n        })\n        .await\n        .map_err(|_| Error::Unavailable)?;\n        drop(waiting);\n        result\n    }"
+        ]
+      },
+      {
+        "function": "fn respond(",
+        "sequence": [
+          "fn ",
+          "respond(&self, bytes: &[u8], nonce: u64) -> Result<Vec<u8>, Error> {\n        let started = now()?;\n        let request = wire::Request::decode(bytes, wire::Purpose::Registry, nonce, self.binding)?;\n        self.config.authenticate_current(started)?;\n        let writer = self.writer.try_lock().map_err(|_| Error::Busy)?;\n        let observed = LearningArtifactOwnerService::read_original_registry_durable(\n            &writer,\n            &self.config.publication,\n        )?;\n        drop(writer);\n                                                                            \n                                                                              \n        let encoded = observed.encode_for_original_head_source(&self.config)?;\n        let claims = UntrustedArtifactRegistryDurableV1::decode(&encoded, &self.config)?;\n        claims.authenticate_current(&self.config, fresh(started)?)?;\n        request.response(wire::Status::Completed, &encoded)\n    }"
+        ]
+      },
+      {
+        "function": "fn from_original_stream(",
+        "sequence": [
+          "fn ",
+          "from_original_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        original_writer_pidfd: OwnedFd,\n        config: ArtifactHeadSigningConfigV1,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        let started = now()?;\n        require_peer(&peer, &config.writer_lease.producer_id)?;\n        config.authenticate_current(started)?;\n        let binding = config.binding()?;\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot_id: peer.boot_id,\n                process_start_ticks: peer.process_start_ticks,\n            },\n            peer.uid,\n            original_writer_pidfd,\n            timeout,\n            lifetime,\n        )?;\n        channel.check_peer_lifetime()?;\n        let observed = fresh(started)?;\n        config.authenticate_current(observed)?;\n        Ok(Self {\n            config,\n            binding,\n            initial_at: observed,\n            channel: Mutex::new(Some(Channel {\n                peer: channel,\n                next: 1,\n                source_at: 0,\n                subject: None,\n            })),\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn read_current(",
+        "sequence": [
+          "fn ",
+          "read_current(\n        self: &Arc<Self>,\n    ) -> Result<UntrustedArtifactRegistryDurableV1, Error> {\n        let original = Arc::clone(self);\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let result = tokio::task::spawn_blocking(move || original.read_current_in_lane(&cancelled))\n            .await\n            .map_err(|_| Error::Unavailable)?;\n        drop(waiting);\n        result\n    }"
+        ]
+      },
+      {
+        "function": "fn read_current_in_lane(",
+        "sequence": [
+          "fn ",
+          "read_current_in_lane(\n        &self,\n        cancelled: &AtomicBool,\n    ) -> Result<UntrustedArtifactRegistryDurableV1, Error> {\n        let mut channel = self\n            .channel\n            .try_lock()\n            .map_err(|_| Error::Busy)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        let started = now()?;\n        if started < self.initial_at || cancelled.load(Ordering::Acquire) {\n            return Err(Error::Unavailable);\n        }\n        self.config.authenticate_current(started)?;\n        let request = wire::Request::new(\n            wire::Purpose::Registry,\n            wire::Action::Readback,\n            channel.next,\n            self.binding,\n        )?;\n        channel.next = channel.next.checked_add(1).ok_or(Error::Unavailable)?;\n        channel.peer.check_peer_lifetime()?;\n        if cancelled.load(Ordering::Acquire) {\n            return Err(Error::Unavailable);\n        }\n        let bytes = channel.peer.request(&request.encode())?;\n        let payload = request.read_response(&bytes)?;\n        let source = UntrustedArtifactRegistryDurableV1::decode(payload, &self.config)?;\n                                                                                \n        channel.peer.check_peer_lifetime()?;\n        let current = fresh(started)?;\n        source.authenticate_current(&self.config, current)?;\n        let binding = source.subject_binding(&self.config)?;\n        if source.observed_unix_millis() < channel.source_at\n            || channel.subject.is_some_and(|old| old != binding)\n            || cancelled.load(Ordering::Acquire)\n        {\n            return Err(Error::CommitUncertain);\n        }\n        channel.source_at = source.observed_unix_millis();\n        channel.subject = Some(binding);\n        *self.channel.try_lock().map_err(|_| Error::Busy)? = Some(channel);\n        Ok(source)\n    }"
+        ]
+      },
+      {
+        "function": "fn drop(",
+        "sequence": [
+          "fn ",
+          "drop(&mut self) {\n        self.0.store(true, Ordering::Release);\n    }"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+    "required": [
+      "pub struct OriginalArtifactHeadOwnerV1<W: AnchorWitnessStore> {",
+      "pub(super) fn sign_original(",
+      "pub(super) fn read_original("
+    ],
+    "forbidden": [
+      "SigningKey::generate",
+      "SigningKey::from_bytes",
+      "self.admitted.store(",
+      "self.original_key.replace(",
+      "self.original_key.get_or_insert",
+      "UnixStream::connect",
+      "File::open",
+      "OpenOptions",
+      "pub original_key:",
+      "pub admitted:",
+      "pub journal:",
+      "pub fn sign_original(",
+      "pub(crate) fn sign_original(",
+      "pub fn read_original(",
+      "pub(crate) fn read_original(",
+      "permit_all",
+      "if false"
+    ],
+    "required_order": [
+      [
+        "pub ",
+        "struct OriginalArtifactHeadOwnerV1<W: AnchorWitnessStore> {\n    pub(super) source: Arc<OriginalArtifactRegistrySourceClientV1>,\n    journal: Mutex<LearningOwnerJournalV1<W>>,\n    original_key: Mutex<Option<SigningKey>>,\n    key: ProductEvaluationExecutionKeyV1,\n    original_subject: Digest32,\n    admitted: AtomicBool,\n    pub(super) connections: Arc<Semaphore>,\n}"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn create(",
+        "sequence": [
+          "fn ",
+          "create(\n        file: File,\n        witness: W,\n        original_key: SigningKey,\n        source: OriginalArtifactRegistrySourceClientV1,\n    ) -> Result<Self, Error> {\n        let source = Arc::new(source);\n        let started = now()?;\n        source\n            .config\n            .require_registered_key(&original_key.verifying_key().to_bytes(), started)?;\n        let before = source.read_current().await?;\n        before.require_unsigned_phase()?;\n        let binding = source.config.binding()?;\n        let original_subject = before.subject_binding(&source.config)?;\n        let queued_source = Arc::clone(&source);\n        let queued_before = before.clone();\n        let verifying_key = original_key.verifying_key().to_bytes();\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let journal = tokio::task::spawn_blocking(move || {\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            let current_source = queued_source.read_current_in_lane(&cancelled)?;\n            if !queued_before.same_original_observation(&current_source) {\n                return Err(Error::CommitUncertain);\n            }\n            let current = fresh(started)?;\n            queued_source\n                .config\n                .require_registered_key(&verifying_key, current)?;\n            current_source.authenticate_current(&queued_source.config, current)?;\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            Ok::<_, Error>(LearningOwnerJournalV1::create(file, witness, binding)?)\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)??;\n        drop(waiting);\n        let after = source.read_current().await?;\n        if !before.same_original_observation(&after) {\n            return Err(Error::CommitUncertain);\n        }\n        let current = fresh(started)?;\n        after.authenticate_current(&source.config, current)?;\n        source\n            .config\n            .require_registered_key(&original_key.verifying_key().to_bytes(), current)?;\n        let key = ProductEvaluationExecutionKeyV1 {\n            plan_id: source.config.publication.operation_id.clone(),\n            binding_digest: original_subject,\n        };\n        Ok(Self {\n            source,\n            journal: Mutex::new(journal),\n            original_key: Mutex::new(Some(original_key)),\n            key,\n            original_subject,\n            admitted: AtomicBool::new(false),\n            connections: Arc::new(Semaphore::new(4)),\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn recover(",
+        "sequence": [
+          "fn ",
+          "recover(\n        file: File,\n        witness: W,\n        source: OriginalArtifactRegistrySourceClientV1,\n    ) -> Result<Self, Error> {\n        let source = Arc::new(source);\n        let started = now()?;\n        let before = source.read_current().await?;\n        let binding = source.config.binding()?;\n        let original_subject = before.subject_binding(&source.config)?;\n        let queued_source = Arc::clone(&source);\n        let queued_before = before.clone();\n        let cancelled = Arc::new(AtomicBool::new(false));\n        let waiting = QueueFence(Arc::clone(&cancelled));\n        let journal = tokio::task::spawn_blocking(move || {\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            let current_source = queued_source.read_current_in_lane(&cancelled)?;\n            if !queued_before.same_original_observation(&current_source) {\n                return Err(Error::CommitUncertain);\n            }\n            current_source.authenticate_current(&queued_source.config, fresh(started)?)?;\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            Ok::<_, Error>(LearningOwnerJournalV1::recover(file, witness, binding)?)\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)??;\n        drop(waiting);\n        let after = source.read_current().await?;\n        if !before.same_original_observation(&after) {\n            return Err(Error::CommitUncertain);\n        }\n        after.authenticate_current(&source.config, fresh(started)?)?;\n        let key = ProductEvaluationExecutionKeyV1 {\n            plan_id: source.config.publication.operation_id.clone(),\n            binding_digest: original_subject,\n        };\n        Ok(Self {\n            source,\n            journal: Mutex::new(journal),\n            original_key: Mutex::new(None),\n            key,\n            original_subject,\n            admitted: AtomicBool::new(true),\n            connections: Arc::new(Semaphore::new(4)),\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn sign_original(",
+        "sequence": [
+          "fn ",
+          "sign_original(&self, cancelled: &AtomicBool) -> Result<Vec<u8>, Error> {\n                                                                             \n                                                                 \n        if self.admitted.swap(true, Ordering::AcqRel) {\n            return Err(Error::ReadbackRequired);\n        }\n        if cancelled.load(Ordering::Acquire) {\n            return Err(Error::CommitUncertain);\n        }\n        let started = now()?;\n        let before = self.source.read_current_in_lane(cancelled)?;\n        self.require_subject(&before)?;\n        before.require_unsigned_phase()?;\n        let key = self\n            .original_key\n            .try_lock()\n            .map_err(|_| Error::Busy)?\n            .take()\n            .ok_or(Error::ReadbackRequired)?;\n        if cancelled.load(Ordering::Acquire) {\n            return Err(Error::CommitUncertain);\n        }\n        let bytes = {\n            let mut journal = self.journal.try_lock().map_err(|_| Error::Busy)?;\n            if cancelled.load(Ordering::Acquire) {\n                return Err(Error::CommitUncertain);\n            }\n            journal\n                .commit_once(&self.key, || {\n                    let current = fresh(started)\n                        .map_err(|_| LearningOriginalOwnerErrorV1::Binding(                  ))?;\n                    if cancelled.load(Ordering::Acquire) {\n                        return Err(LearningOriginalOwnerErrorV1::CommitUncertain);\n                    }\n                    self.source\n                        .config\n                        .require_registered_key(&key.verifying_key().to_bytes(), current)\n                        .map_err(|_| {\n                            LearningOriginalOwnerErrorV1::Binding(                              )\n                        })?;\n                    let mut signed =\n                        self.source\n                            .config\n                            .unsigned_head(&before, current)\n                            .map_err(|_| {\n                                LearningOriginalOwnerErrorV1::Binding(\n                                                                    ,\n                                )\n                            })?;\n                    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();\n                    let encoded = encode_artifact_head_bytes_v1(&signed).map_err(|_| {\n                        LearningOriginalOwnerErrorV1::Binding(                         )\n                    })?;\n                    Ok(encode_record(self.original_subject, &encoded))\n                })\n                .map_err(original_journal_error)?\n        };\n        drop(key);\n                                                                              \n        let after = self.source.read_current_in_lane(cancelled)?;\n        if !before.same_original_observation(&after) {\n            return Err(Error::CommitUncertain);\n        }\n        let saved = self.read_record()?;\n        if saved != bytes {\n            return Err(Error::CommitUncertain);\n        }\n        let signed = decode_record(self.original_subject, &saved)?;\n        let current = fresh(started)?;\n        self.require_subject(&after)?;\n        self.source\n            .config\n            .verify_original_head(&after, &signed, current)?;\n        encode_artifact_head_bytes_v1(&signed).map_err(Error::from)\n    }"
+        ]
+      },
+      {
+        "function": "fn read_original(",
+        "sequence": [
+          "fn ",
+          "read_original(&self, cancelled: &AtomicBool) -> Result<Vec<u8>, Error> {\n        let started = now()?;\n        let before = self.source.read_current_in_lane(cancelled)?;\n        self.require_subject(&before)?;\n        let bytes = self.read_record()?;\n        let signed = decode_record(self.original_subject, &bytes)?;\n        let after = self.source.read_current_in_lane(cancelled)?;\n                                                                              \n                                                                               \n                                                                             \n        if !before.same_original_observation(&after) {\n            return Err(Error::CommitUncertain);\n        }\n        let saved = self.read_record()?;\n        if saved != bytes {\n            return Err(Error::CommitUncertain);\n        }\n        let current = fresh(started)?;\n        self.require_subject(&after)?;\n        self.source\n            .config\n            .verify_original_head(&after, &signed, current)?;\n        encode_artifact_head_bytes_v1(&signed).map_err(Error::from)\n    }"
+        ]
+      },
+      {
+        "function": "fn require_subject(",
+        "sequence": [
+          "fn ",
+          "require_subject(&self, source: &UntrustedArtifactRegistryDurableV1) -> Result<(), Error> {\n        if source.subject_binding(&self.source.config)? != self.original_subject {\n            return Err(Error::CommitUncertain);\n        }\n        Ok(())\n    }"
+        ]
+      },
+      {
+        "function": "fn read_record(",
+        "sequence": [
+          "fn ",
+          "read_record(&self) -> Result<Vec<u8>, Error> {\n        self.journal\n            .try_lock()\n            .map_err(|_| Error::Busy)?\n            .read(&self.key)\n            .map_err(original_journal_error)\n    }"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/artifact_original_head_wire.rs",
+    "required": [
+      "pub(super) const MAX_BYTES: usize = 16_384;",
+      "const HEADER: usize = 50;",
+      "const MAGIC: &[u8; 8] = b\"HARPC001\";"
+    ],
+    "forbidden": [
+      "SigningKey",
+      "Signer",
+      "File::open",
+      "UnixStream::connect",
+      "serde_json::Value",
+      "permit_all",
+      "if false"
+    ],
+    "required_order": [
+      [
+        "pub(super) ",
+        "enum Purpose {\n    Registry = 1,\n    Head = 2,\n}"
+      ],
+      [
+        "pub(super) ",
+        "enum Action {\n    Readback = 1,\n    Sign = 2,\n}"
+      ],
+      [
+        "pub(super) ",
+        "enum Status {\n    Completed = 1,\n    Missing = 2,\n    Pending = 3,\n    Unavailable = 4,\n    ReadbackRequired = 5,\n}"
+      ],
+      [
+        "pub(super) ",
+        "struct Request {\n    purpose: Purpose,\n    pub(super) action: Action,\n    nonce: u64,\n    binding: Digest32,\n}"
+      ],
+      [
+        "fn ",
+        "read_response<'a>(&self, bytes: &'a [u8]) -> Result<&'a [u8], Error> {\n        if bytes.len() < HEADER + 5 || bytes.len() > MAX_BYTES || bytes[..HEADER] != self.encode() {\n            return Err(Error::Binding(                                 ));\n        }\n        let length =\n            u32::from_be_bytes(bytes[51..55].try_into().map_err(|_| Error::Unavailable)?) as usize;\n        if bytes.len() != HEADER + 5 + length {\n            return Err(Error::Unavailable);\n        }\n        match bytes[50] {\n            1 if length > 0 => Ok(&bytes[55..]),\n            2 if length == 0 => Err(Error::Missing),\n            3 if length == 0 => Err(Error::Pending),\n            4 if length == 0 => Err(Error::Unavailable),\n            5 if length == 0 => Err(Error::ReadbackRequired),\n            _ => Err(Error::Binding(                                   )),\n        }\n    }"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn new(",
+        "sequence": [
+          "fn ",
+          "new(\n        purpose: Purpose,\n        action: Action,\n        nonce: u64,\n        binding: Digest32,\n    ) -> Result<Self, Error> {\n        if nonce == 0\n            || nonce > 128\n            || binding.is_zero()\n            || purpose == Purpose::Registry && action != Action::Readback\n        {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(Self {\n            purpose,\n            action,\n            nonce,\n            binding,\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn encode(",
+        "sequence": [
+          "fn ",
+          "encode(&self) -> Vec<u8> {\n        let mut bytes = MAGIC.to_vec();\n        bytes.push(self.purpose as u8);\n        bytes.push(self.action as u8);\n        bytes.extend_from_slice(&self.nonce.to_be_bytes());\n        bytes.extend_from_slice(self.binding.as_array());\n        bytes\n    }"
+        ]
+      },
+      {
+        "function": "fn decode(",
+        "sequence": [
+          "fn ",
+          "decode(\n        bytes: &[u8],\n        purpose: Purpose,\n        nonce: u64,\n        binding: Digest32,\n    ) -> Result<Self, Error> {\n        if bytes.len() != HEADER\n            || bytes.get(..8) != Some(MAGIC.as_slice())\n            || bytes[8] != purpose as u8\n        {\n            return Err(Error::Binding(                                 ));\n        }\n        let action = match bytes[9] {\n            1 => Action::Readback,\n            2 => Action::Sign,\n            _ => return Err(Error::Binding(                          )),\n        };\n        let observed_nonce =\n            u64::from_be_bytes(bytes[10..18].try_into().map_err(|_| Error::Unavailable)?);\n        let observed_binding =\n            Digest32::from_array(bytes[18..50].try_into().map_err(|_| Error::Unavailable)?);\n        if observed_nonce != nonce || observed_binding != binding {\n            return Err(Error::Binding(                                          ));\n        }\n        Self::new(purpose, action, nonce, binding)\n    }"
+        ]
+      },
+      {
+        "function": "fn response(",
+        "sequence": [
+          "fn ",
+          "response(&self, status: Status, payload: &[u8]) -> Result<Vec<u8>, Error> {\n        if status != Status::Completed && !payload.is_empty() {\n            return Err(Error::Binding(                                          ));\n        }\n        let length = HEADER\n            .checked_add(5)\n            .and_then(|n| n.checked_add(payload.len()))\n            .ok_or(Error::Unavailable)?;\n        if length > MAX_BYTES || status == Status::Completed && payload.is_empty() {\n            return Err(Error::Binding(\n                                                             ,\n            ));\n        }\n        let mut bytes = self.encode();\n        bytes.push(status as u8);\n        bytes.extend_from_slice(&(payload.len() as u32).to_be_bytes());\n        bytes.extend_from_slice(payload);\n        Ok(bytes)\n    }"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+    "required": [
+      "pub struct ArtifactHeadSigningConfigV1 {",
+      "b\"hepta.original-artifact-head-native.v1\""
+    ],
+    "forbidden": [
+      "SigningKey",
+      "Signer",
+      "File::open",
+      "UnixStream::connect",
+      "permit_all",
+      "if false"
+    ],
+    "required_order": [
+      [
+        "pub ",
+        "struct ArtifactHeadSigningConfigV1 {\n    pub publication: OriginalArtifactPublicationContextV1,\n    pub trust: ArtifactOwnerTrustV1,\n    pub writer_lease: SignedArtifactWriterLeaseV1,\n    pub storage_binding: Digest32,\n    pub signer_id: StableId,\n    pub authority_epoch: u64,\n    pub signature_expires_at: u64,\n}"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn binding(",
+        "sequence": [
+          "fn ",
+          "binding(&self) -> Result<Digest32, Error> {\n        let verifier = ArtifactOwnerVerifierV1::new(self.trust.clone())?;\n        let mut bytes = b                                        .to_vec();\n        bytes.extend_from_slice(verifier.trust_digest().as_array());\n        bytes.extend_from_slice(self.storage_binding.as_array());\n        bytes.extend_from_slice(self.writer_lease_digest().as_array());\n        bytes.extend_from_slice(\n            crate::publication::digest_intent(\n                &self.publication.operation_id,\n                &self.publication.admission,\n                self.publication.expected_registry_predecessor_head,\n            )\n            .as_array(),\n        );\n        push_id(&mut bytes, &self.signer_id);\n        bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());\n        bytes.extend_from_slice(&self.signature_expires_at.to_be_bytes());\n        Ok(Digest32::of_bytes(&bytes))\n    }"
+        ]
+      },
+      {
+        "function": "fn writer_lease_digest(",
+        "sequence": [
+          "fn ",
+          "writer_lease_digest(&self) -> Digest32 {\n        let mut bytes = self.writer_lease.signing_bytes();\n        bytes.extend_from_slice(&self.writer_lease.signature);\n        Digest32::of_bytes(&bytes)\n    }"
+        ]
+      },
+      {
+        "function": "fn authenticate_current(",
+        "sequence": [
+          "fn ",
+          "authenticate_current(&self, now: u64) -> Result<(), Error> {\n        let verifier = ArtifactOwnerVerifierV1::new(self.trust.clone())?;\n        let writer = verifier.verify_writer_lease(&self.writer_lease, now)?;\n        let manifest = &self.publication.admission.validated_manifest.manifest;\n        if self.storage_binding.is_zero()\n            || manifest.producer_id != writer.producer_id\n            || self.publication.admission.withdrawal_scope_digest\n                != self.trust.withdrawal_scope_digest\n            || self.signer_id == writer.producer_id\n            || self.signature_expires_at < now\n            || self.signature_expires_at > self.writer_lease.expires_at\n            || self.signature_expires_at > manifest.expires_at\n            || self.authority_epoch < self.trust.minimum_authority_epoch\n        {\n            return Err(Error::WriterLeaseContext);\n        }\n        verify_artifact_admission_v3(\n            &self.publication.admission,\n            self.publication.admission.withdrawal_head_digest,\n            now,\n        )\n        .map_err(|_| Error::CheckpointMismatch)?;\n        let signer = verifier\n            .head_signers\n            .get(&self.signer_id)\n            .ok_or(Error::UnknownSigner)?;\n        if self.signature_expires_at > signer.expires_at\n            || signer\n                .revoked_at\n                .is_some_and(|at| self.signature_expires_at >= at)\n            || self.trust.writer_signers.iter().any(|writer| {\n                writer.signer_id == signer.signer_id || writer.verifying_key == signer.verifying_key\n            })\n        {\n            return Err(Error::SignerContext);\n        }\n        verify_signer_context(\n            signer,\n            Digest32::of_bytes(&signer.verifying_key),\n            self.authority_epoch,\n            now,\n            now,\n                                true,\n        )\n    }"
+        ]
+      },
+      {
+        "function": "fn require_registered_key(",
+        "sequence": [
+          "fn ",
+          "require_registered_key(&self, verifying_key: &[u8; 32], now: u64) -> Result<(), Error> {\n        self.authenticate_current(now)?;\n        let signer = self\n            .trust\n            .head_signers\n            .iter()\n            .find(|entry| entry.signer_id == self.signer_id)\n            .ok_or(Error::UnknownSigner)?;\n        if &signer.verifying_key != verifying_key {\n            return Err(Error::InvalidKey);\n        }\n        Ok(())\n    }"
+        ]
+      },
+      {
+        "function": "fn unsigned_head(",
+        "sequence": [
+          "fn ",
+          "unsigned_head(\n        &self,\n        source: &UntrustedArtifactRegistryDurableV1,\n        issued_at: u64,\n    ) -> Result<SignedCurrentArtifactHeadV1, Error> {\n        source.authenticate_current(self, issued_at)?;\n        let generation = self.expected_generation(source)?;\n        let signer = self\n            .trust\n            .head_signers\n            .iter()\n            .find(|entry| entry.signer_id == self.signer_id)\n            .ok_or(Error::UnknownSigner)?;\n        Ok(SignedCurrentArtifactHeadV1 {\n            withdrawal_scope_digest: self.trust.withdrawal_scope_digest,\n            binding: self.storage_binding,\n            witness: RegistryHeadWitnessV1 {\n                registry_id: self.trust.registry_id.clone(),\n                generation,\n                head_digest: source.registry_receipt().head_digest,\n                predecessor_head_digest: self.publication.expected_registry_predecessor_head,\n                authority_epoch: self.authority_epoch,\n                signer_id: self.signer_id.clone(),\n                signing_key_digest: Digest32::of_bytes(&signer.verifying_key),\n                issued_at,\n                expires_at: self.signature_expires_at,\n            },\n            signature: [0; 64],\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn verify_original_head(",
+        "sequence": [
+          "fn ",
+          "verify_original_head(\n        &self,\n        source: &UntrustedArtifactRegistryDurableV1,\n        signed: &SignedCurrentArtifactHeadV1,\n        now: u64,\n    ) -> Result<(), Error> {\n        source.authenticate_current(self, now)?;\n        if signed.witness.issued_at > now {\n            return Err(Error::CurrentHeadContext);\n        }\n                                                                             \n                                                                        \n        let signer = self\n            .trust\n            .head_signers\n            .iter()\n            .find(|entry| entry.signer_id == self.signer_id)\n            .ok_or(Error::UnknownSigner)?;\n        if signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest\n            || signed.binding != self.storage_binding\n            || signed.witness.registry_id != self.trust.registry_id\n            || signed.witness.generation != self.expected_generation(source)?\n            || signed.witness.head_digest != source.registry_receipt().head_digest\n            || signed.witness.predecessor_head_digest\n                != self.publication.expected_registry_predecessor_head\n            || signed.witness.authority_epoch != self.authority_epoch\n            || signed.witness.signer_id != self.signer_id\n            || signed.witness.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)\n            || signed.witness.expires_at != self.signature_expires_at\n        {\n            return Err(Error::CurrentHeadContext);\n        }\n        if let Some(current) = source.current_head()\n            && current.witness.head_digest == source.registry_receipt().head_digest\n            && current != signed\n        {\n            return Err(Error::CurrentHeadConflict);\n        }\n        let verifier = ArtifactOwnerVerifierV1::new(self.trust.clone())?;\n        verifier.verify_signed_head(\n            signed,\n            &RegistryHeadRequirementV1 {\n                registry_id: self.trust.registry_id.clone(),\n                minimum_generation: signed.witness.generation,\n                expected_predecessor_head_digest: self\n                    .publication\n                    .expected_registry_predecessor_head,\n                minimum_authority_epoch: self.trust.minimum_authority_epoch,\n                now,\n            },\n                                       true,\n        )?;\n        Ok(())\n    }"
+        ]
+      },
+      {
+        "function": "fn expected_generation(",
+        "sequence": [
+          "fn ",
+          "expected_generation(\n        &self,\n        source: &UntrustedArtifactRegistryDurableV1,\n    ) -> Result<Generation, Error> {\n        match source.current_head() {\n            Some(current)\n                if current.witness.head_digest == source.registry_receipt().head_digest =>\n            {\n                Ok(current.witness.generation)\n            }\n            Some(current)\n                if current.witness.head_digest\n                    == self.publication.expected_registry_predecessor_head =>\n            {\n                if self.authority_epoch < current.witness.authority_epoch {\n                    return Err(Error::SignerContext);\n                }\n                current\n                    .witness\n                    .generation\n                    .next()\n                    .map_err(|_| Error::CurrentHeadContext)\n            }\n            None if self.publication.expected_registry_predecessor_head\n                == self.trust.genesis_predecessor_head_digest =>\n            {\n                Ok(self.trust.minimum_registry_generation)\n            }\n            Some(_) | None => Err(Error::CurrentHeadConflict),\n        }\n    }"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+    "required": [
+      "pub struct OriginalArtifactRegistryDurableV1 {",
+      "pub(crate) fn read_original_registry_durable("
+    ],
+    "forbidden": [
+      "SigningKey",
+      "Signer",
+      "File::create",
+      "OpenOptions",
+      "std::fs::write",
+      "fs::write",
+      "std::fs::rename",
+      "fs::rename",
+      "UnixStream::connect",
+      "permit_all",
+      "if false",
+      "pub checkpoint:",
+      "pub registry:",
+      "pub current:",
+      "pub writer_lease:",
+      "pub trust_digest:",
+      "pub observed_unix_millis:"
+    ],
+    "required_order": [
+      [
+        "pub ",
+        "struct OriginalArtifactRegistryDurableV1 {\n    checkpoint: ArtifactOwnerPublicationCheckpointV1,\n    registry: ArtifactRegistrySnapshot,\n    registry_receipt: RegistrySnapshotReceipt,\n    current: Option<SignedCurrentArtifactHeadV1>,\n    writer_lease: SignedArtifactWriterLeaseV1,\n    trust_digest: Digest32,\n    observed_unix_millis: u64,\n}"
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn authority(",
+        "sequence": [
+          "fn ",
+          "authority(&self) -> AuthorityPosture {\n        AuthorityPosture::DENY_ALL\n    }"
+        ]
+      },
+      {
+        "function": "fn same_original_read(",
+        "sequence": [
+          "fn ",
+          "same_original_read(&self, other: &Self) -> bool {\n        self.checkpoint == other.checkpoint\n            && self.registry == other.registry\n            && self.current == other.current\n            && self.writer_lease == other.writer_lease\n            && self.trust_digest == other.trust_digest\n    }"
+        ]
+      },
+      {
+        "function": "fn read_original_publication_checkpoints(",
+        "sequence": [
+          "fn ",
+          "read_original_publication_checkpoints(\n        &self,\n        operation_id: &StableId,\n    ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {\n        let mut observed = Vec::new();\n        let mut missing_seen = false;\n        let mut invariant = None;\n        for phase in ordered_phases() {\n            let path = self.checkpoint_path(operation_id, phase);\n            if !path.exists() {\n                missing_seen = true;\n                continue;\n            }\n            if missing_seen {\n                return Err(ArtifactOwnerHostError::CheckpointGap);\n            }\n            let checkpoint = decode_checkpoint(&read_small_record(&path, MAX_SMALL_RECORD_BYTES)?)?;\n            if checkpoint.operation_id != *operation_id || checkpoint.phase != phase {\n                return Err(ArtifactOwnerHostError::CheckpointMismatch);\n            }\n            let key = (\n                checkpoint.intent_digest,\n                checkpoint.admission_digest,\n                checkpoint.withdrawal_scope_digest,\n                checkpoint.expected_registry_predecessor_head,\n            );\n            if invariant.is_some_and(|value| value != key) {\n                return Err(ArtifactOwnerHostError::CheckpointMismatch);\n            }\n            invariant = Some(key);\n            observed.push(checkpoint);\n        }\n        Ok(observed)\n    }"
+        ]
+      },
+      {
+        "function": "fn read_original_registry_durable(",
+        "sequence": [
+          "fn ",
+          "read_original_registry_durable(\n        &self,\n        context: &OriginalArtifactPublicationContextV1,\n        withdrawals: &DatasetWithdrawalRegistry,\n        binding: Digest32,\n        clock: &impl Fn() -> Result<u64, Error>,\n    ) -> Result<OriginalArtifactRegistryDurableV1, Error> {\n        let started = clock()?;\n        let writer = self.require_current_writer(started)?;\n        let withdrawals_before = withdrawals.snapshot();\n        validate_artifact_publication_v3(&context.admission, withdrawals, started)\n            .map_err(ArtifactPublicationError::from)?;\n        let before_records = self.read_original_publication_checkpoints(&context.operation_id)?;\n        let before = before_records.last().cloned().ok_or(Error::NoCheckpoint)?;\n                                                                            \n                                                                       \n        for checkpoint in &before_records {\n            if checkpoint.admission_digest != context.admission.admission_digest\n                || checkpoint.withdrawal_scope_digest != context.admission.withdrawal_scope_digest\n                || checkpoint.withdrawal_head_digest != context.admission.withdrawal_head_digest\n                || checkpoint.expected_registry_predecessor_head\n                    != context.expected_registry_predecessor_head\n                || checkpoint.original_writer_lease_digest != writer.lease_digest\n                || checkpoint.authority.grants_any()\n                || context.admission.validated_manifest.manifest.producer_id != writer.producer_id\n            {\n                return Err(Error::Context);\n            }\n            ArtifactPublicationTransactionV1::from_snapshot(\n                ArtifactPublicationTransactionSnapshotV1 {\n                    intent: ArtifactPublicationIntentV1 {\n                        operation_id: context.operation_id.clone(),\n                        admission: context.admission.clone(),\n                        expected_registry_predecessor_head: context\n                            .expected_registry_predecessor_head,\n                        intent_digest: checkpoint.intent_digest,\n                    },\n                    phase: checkpoint.phase,\n                    registry_receipt: checkpoint.registry_receipt,\n                    witness_receipt: checkpoint.witness_receipt,\n                    acknowledged_at: checkpoint.acknowledged_at,\n                    state_digest: checkpoint.state_digest,\n                },\n            )?;\n        }\n        if matches!(\n            before.phase,\n            ArtifactPublicationPhaseV1::Prepared | ArtifactPublicationPhaseV1::PayloadDurable\n        ) {\n            return Err(Error::Pending(before.phase));\n        }\n        let receipt = before.registry_receipt.ok_or(Error::Context)?;\n        if receipt.binding != binding {\n            return Err(Error::Context);\n        }\n        let (current_before, current_registry_before) =\n            self.read_preparation_current(binding, started)?;\n        let registry = read_registry_snapshot(\n            File::open(self.registry_snapshot_path(receipt))\n                .map_err(ArtifactOwnerHostError::from)?,\n            receipt,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        let mut predecessor_snapshot = registry.snapshot();\n        let last = predecessor_snapshot.records.pop().ok_or(Error::Context)?;\n        if last.predecessor_chain_digest != context.expected_registry_predecessor_head {\n            return Err(Error::Context);\n        }\n        predecessor_snapshot.head_digest = context.expected_registry_predecessor_head;\n        let predecessor = ArtifactRegistry::from_snapshot(predecessor_snapshot)\n            .map_err(ArtifactOwnerHostError::from)?;\n        let mut transaction = ArtifactPublicationTransactionV1::begin(\n            context.operation_id.clone(),\n            context.admission.clone(),\n            withdrawals,\n            &predecessor,\n            context.expected_registry_predecessor_head,\n            started,\n        )?;\n        if last.event != original_registration_event(&transaction)? {\n            return Err(Error::Context);\n        }\n        let manifest = &context.admission.validated_manifest.manifest;\n        let path = self.root.join(          ).join(format!(\n                       ,\n            manifest.artifact_id, manifest.bytes_digest\n        ));\n        let payload = read_candidate_payload(\n            File::open(&path).map_err(ArtifactOwnerHostError::from)?,\n            &registry,\n            &manifest.artifact_id,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        transaction.record_payload_durable(Digest32::of_bytes(&payload), payload.len() as u64)?;\n        transaction.record_registry_durable(&registry, receipt, withdrawals, started)?;\n        let current_head = current_before\n            .as_ref()\n            .map(|value| value.witness.head_digest);\n        let current_is_parent = current_registry_before.snapshot().head_digest\n            == context.expected_registry_predecessor_head\n            && (current_before.is_some()\n                || context.expected_registry_predecessor_head\n                    == self.verifier.trust.genesis_predecessor_head_digest);\n        if !current_is_parent && current_head != Some(receipt.head_digest) {\n            return Err(Error::Context);\n        }\n        if matches!(\n            before.phase,\n            ArtifactPublicationPhaseV1::WitnessDurable | ArtifactPublicationPhaseV1::Acknowledged\n        ) {\n            let signed = current_before.as_ref().ok_or(Error::Context)?;\n            if signed.witness.head_digest != receipt.head_digest {\n                return Err(Error::Context);\n            }\n            let requirement = self.preparation_head_requirement(signed, started);\n            let witness_receipt = before.witness_receipt.ok_or(Error::Context)?;\n            let witness_path = self.root.join(           ).join(format!(\n                               ,\n                signed.witness.generation.get(),\n                witness_receipt.witness_digest\n            ));\n            let actual = read_registry_head_witness(\n                File::open(witness_path).map_err(ArtifactOwnerHostError::from)?,\n                witness_receipt,\n                &requirement,\n            )\n            .map_err(ArtifactOwnerHostError::from)?;\n            if actual != signed.witness {\n                return Err(Error::Context);\n            }\n            transaction.record_witness_durable(\n                &actual,\n                &requirement,\n                witness_receipt,\n                withdrawals,\n                started,\n            )?;\n            if let Some(acknowledged_at) = before.acknowledged_at {\n                transaction.acknowledge(withdrawals, acknowledged_at)?;\n            }\n        }\n        if checkpoint_from_snapshot(&transaction.snapshot(), writer.lease_digest) != before {\n            return Err(Error::Context);\n        }\n                                                                               \n                                                              \n        let registry_after = read_registry_snapshot(\n            File::open(self.registry_snapshot_path(receipt))\n                .map_err(ArtifactOwnerHostError::from)?,\n            receipt,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        let payload_after = read_candidate_payload(\n            File::open(path).map_err(ArtifactOwnerHostError::from)?,\n            &registry_after,\n            &manifest.artifact_id,\n        )\n        .map_err(ArtifactOwnerHostError::from)?;\n        let (current_after, current_registry_after) =\n            self.read_preparation_current(binding, started)?;\n        let after_records = self.read_original_publication_checkpoints(&context.operation_id)?;\n        let after = after_records.last().cloned().ok_or(Error::NoCheckpoint)?;\n        if before_records != after_records\n            || registry.snapshot() != registry_after.snapshot()\n            || payload != payload_after\n            || current_before != current_after\n            || current_registry_before.snapshot() != current_registry_after.snapshot()\n            || withdrawals_before != withdrawals.snapshot()\n        {\n            return Err(Error::ChangedDuringRead);\n        }\n        let fresh = clock()?;\n        if fresh < started {\n            return Err(Error::Clock);\n        }\n        let writer_after = self.require_current_writer(fresh)?;\n        if writer_after.lease_digest != writer.lease_digest {\n            return Err(Error::ChangedDuringRead);\n        }\n        validate_artifact_publication_v3(&context.admission, withdrawals, fresh)\n            .map_err(ArtifactPublicationError::from)?;\n        if let Some(signed) = &current_after {\n            self.verifier.verify_signed_head(\n                signed,\n                &self.preparation_head_requirement(signed, fresh),\n                                           true,\n            )?;\n        }\n                                                                                \n                                                                            \n        Ok(OriginalArtifactRegistryDurableV1 {\n            checkpoint: after,\n            registry: registry_after.snapshot(),\n            registry_receipt: receipt,\n            current: current_after,\n            writer_lease: self.lease.clone(),\n            trust_digest: self.verifier.trust_digest(),\n            observed_unix_millis: fresh,\n        })\n    }"
+        ]
+      },
+      {
+        "function": "fn preparation_head_requirement(",
+        "sequence": [
+          "fn ",
+          "preparation_head_requirement(\n        &self,\n        signed: &SignedCurrentArtifactHeadV1,\n        now: u64,\n    ) -> RegistryHeadRequirementV1 {\n        RegistryHeadRequirementV1 {\n            registry_id: self.verifier.trust.registry_id.clone(),\n            minimum_generation: signed.witness.generation,\n            expected_predecessor_head_digest: signed.witness.predecessor_head_digest,\n            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,\n            now,\n        }\n    }"
+        ]
+      },
+      {
+        "function": "fn read_preparation_current(",
+        "sequence": [
+          "fn ",
+          "read_preparation_current(\n        &self,\n        binding: Digest32,\n        now: u64,\n    ) -> Result<(Option<SignedCurrentArtifactHeadV1>, ArtifactRegistry), ArtifactOwnerHostError>\n    {\n        let Some(head) = self.discover_current_head(now)? else {\n            return Ok((None, ArtifactRegistry::new()));\n        };\n        let current = self.current_registry_view_bounded(now)?;\n        if current.receipt().binding != binding\n            || current.receipt().head_digest != head.signed.witness.head_digest\n            || current.witness_digest() != head.witness_digest\n            || current.trust_digest() != head.trust_digest\n        {\n            return Err(ArtifactOwnerHostError::CurrentHeadConflict);\n        }\n        Ok((Some(head.signed), current.registry().clone()))\n    }"
+        ]
+      }
+    ]
+  }
+]

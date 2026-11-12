@@ -1,0 +1,374 @@
+{
+  "format": "hepta.source-closure-caller-cache-audit.v3.1",
+  "status": "static_review_and_controlled_injection_purity_check_only",
+  "unchanged_original_verifier": [
+    {
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "git_blob_sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    },
+    {
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "git_blob_sha": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    }
+  ],
+  "algorithmic_reasoning": [
+    "authority_fields only adds aliases via target-as and type-alias declarations, closing transitively over existing aliases; the exact injected functions contain none of those declaration tokens.",
+    "After alias normalization, authority_fields only adds fields by matching struct declarations; the injected functions contain no struct/type/impl/use/enum/union declarations.",
+    "The existing complete source_index entries are copied without mutation, so all pre-existing alias and field contributions remain identical.",
+    "The QA additionally checks controlled injections through the original one-file authority_fields and checks _declared_aliases for every already-known target/alias before reusing the complete baseline cache.",
+    "Removing a real source could remove aliases or fields. Such negative cases always pass a new empty cache to the original full verifier.",
+    "The original _verify_boundary still traverses each complete source_index and enforces exact observed==expected for every baseline and negative case."
+  ],
+  "reports": [
+    {
+      "kind": "training",
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "method": "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller",
+      "base": {
+        "bytes": 20364,
+        "sha256": "cc824fd81f0c100fc8bf5b6a99159b3eae17ea776ebdaa7ed148f80df216f84d",
+        "git_blob_sha": "c2fa1f2a40943859c12ba04bb31f55904c50309c"
+      },
+      "post": {
+        "bytes": 21451,
+        "sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e",
+        "git_blob_sha": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b"
+      },
+      "old_collection": "48-path EXPECTED definition/product-caller subset",
+      "old_training_subset_actual_paths": 48,
+      "new_collection": "complete original _source_files(ROOT, source_roots); unchanged source masks and original ignored fragments",
+      "complete_collection_invocations": 1,
+      "cache_scope": "one method's one immutable complete baseline source_index and receiver type; only proven pure function append cases reuse its fields; every actual file removal gets a fresh cache",
+      "cross_method_or_cross_source_cache": false,
+      "all_original_assertion_call_asts_retained": true,
+      "expected_and_admitted_asts_unchanged": true,
+      "method_executed_in_preparation": false,
+      "changed_old_functions": [
+        "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller"
+      ],
+      "unchanged_old_function_count": 11,
+      "added_functions": [],
+      "rows": [
+        {
+          "boundary": "learning_source_bound_training_stage_readback",
+          "receiver_type": "SourceBoundCellQ24TrainingStageV1",
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 2,
+          "missing_actual_caller_verifications": 1,
+          "total_original_boundary_calls": 4,
+          "old_type_index_builds": 4,
+          "new_full_baseline_or_missing_type_index_builds": 2,
+          "new_single_file_purity_index_builds": 2,
+          "pure_injection_cases": [
+            {
+              "code": "fn bypass(owner: &SourceBoundCellQ24TrainingStageV1) { owner.readback(); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            },
+            {
+              "code": "fn bypass(owner: &SourceBoundCellQ24TrainingStageV1) { SourceBoundCellQ24TrainingStageV1::readback(owner); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            }
+          ]
+        },
+        {
+          "boundary": "learning_original_owner_command_channel",
+          "receiver_type": null,
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 1,
+          "missing_actual_caller_verifications": 3,
+          "total_original_boundary_calls": 5,
+          "old_type_index_builds": 0,
+          "new_full_baseline_or_missing_type_index_builds": 0,
+          "new_single_file_purity_index_builds": 0,
+          "pure_injection_cases": []
+        },
+        {
+          "boundary": "learning_original_material_initial_context_check",
+          "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 2,
+          "missing_actual_caller_verifications": 1,
+          "total_original_boundary_calls": 4,
+          "old_type_index_builds": 4,
+          "new_full_baseline_or_missing_type_index_builds": 2,
+          "new_single_file_purity_index_builds": 2,
+          "pure_injection_cases": [
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialReceiptConfigV1) { owner.require_original_command_initial(); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            },
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialReceiptConfigV1) { OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(owner); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            }
+          ]
+        },
+        {
+          "boundary": "learning_original_material_dataset_context_check",
+          "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 2,
+          "missing_actual_caller_verifications": 1,
+          "total_original_boundary_calls": 4,
+          "old_type_index_builds": 4,
+          "new_full_baseline_or_missing_type_index_builds": 2,
+          "new_single_file_purity_index_builds": 2,
+          "pure_injection_cases": [
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialCommandReceiptV1) { owner.require_original_dataset_context(); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            },
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialCommandReceiptV1) { OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(owner); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "selection",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "method": "test_exact_readback_edges_use_complete_rust_collection_and_reject_another_caller",
+      "base": {
+        "bytes": 22590,
+        "sha256": "a50edb4c0a0b5f62a72729e5510233e18337b7ef8f375c86ca9abadf0dfd8fe2",
+        "git_blob_sha": "ea0fd6fd7c9ed0eda1aca4b586a0e7e9b8eb20e4"
+      },
+      "post": {
+        "bytes": 23410,
+        "sha256": "f6ffc9edfcf1e3407d289535f301d2969f1ffd5d8e55b818ccc82d68bc7553ea",
+        "git_blob_sha": "04411894dd8d5e5e0ec4652cf2df94748684162d"
+      },
+      "old_collection": "complete original _source_files collection",
+      "old_training_subset_actual_paths": null,
+      "new_collection": "complete original _source_files(ROOT, source_roots); unchanged source masks and original ignored fragments",
+      "complete_collection_invocations": 1,
+      "cache_scope": "one method's one immutable complete baseline source_index and receiver type; only proven pure function append cases reuse its fields; every actual file removal gets a fresh cache",
+      "cross_method_or_cross_source_cache": false,
+      "all_original_assertion_call_asts_retained": true,
+      "expected_and_admitted_asts_unchanged": true,
+      "method_executed_in_preparation": false,
+      "changed_old_functions": [
+        "test_exact_readback_edges_use_complete_rust_collection_and_reject_another_caller"
+      ],
+      "unchanged_old_function_count": 11,
+      "added_functions": [],
+      "rows": [
+        {
+          "boundary": "learning_original_owner_command_channel",
+          "receiver_type": null,
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 1,
+          "missing_actual_caller_verifications": 3,
+          "total_original_boundary_calls": 5,
+          "old_type_index_builds": 0,
+          "new_full_baseline_or_missing_type_index_builds": 0,
+          "new_single_file_purity_index_builds": 0,
+          "pure_injection_cases": []
+        },
+        {
+          "boundary": "learning_original_circuit_selection_remote_readback",
+          "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 2,
+          "missing_actual_caller_verifications": 1,
+          "total_original_boundary_calls": 4,
+          "old_type_index_builds": 4,
+          "new_full_baseline_or_missing_type_index_builds": 2,
+          "new_single_file_purity_index_builds": 2,
+          "pure_injection_cases": [
+            {
+              "code": "fn bypass(owner: &OriginalCircuitSelectionReceiptOwnerV1) { owner.readback_remote(); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            },
+            {
+              "code": "fn bypass(owner: &OriginalCircuitSelectionReceiptOwnerV1) { OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            }
+          ]
+        },
+        {
+          "boundary": "learning_original_material_initial_context_check",
+          "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 2,
+          "missing_actual_caller_verifications": 1,
+          "total_original_boundary_calls": 4,
+          "old_type_index_builds": 4,
+          "new_full_baseline_or_missing_type_index_builds": 2,
+          "new_single_file_purity_index_builds": 2,
+          "pure_injection_cases": [
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialReceiptConfigV1) { owner.require_original_command_initial(); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            },
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialReceiptConfigV1) { OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(owner); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            }
+          ]
+        },
+        {
+          "boundary": "learning_original_material_dataset_context_check",
+          "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 2,
+          "missing_actual_caller_verifications": 1,
+          "total_original_boundary_calls": 4,
+          "old_type_index_builds": 4,
+          "new_full_baseline_or_missing_type_index_builds": 2,
+          "new_single_file_purity_index_builds": 2,
+          "pure_injection_cases": [
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialCommandReceiptV1) { owner.require_original_dataset_context(); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            },
+            {
+              "code": "fn bypass(owner: &OriginalCellQ24MaterialCommandReceiptV1) { OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(owner); }",
+              "no_field_or_alias_declaration_keywords": true,
+              "original_single_file_fields": 0,
+              "original_single_file_aliases": 0,
+              "scope": "purity of controlled injection, not repository caller closure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "artifact",
+      "path": "qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+      "method": "test_exact_original_channel_membership_uses_all_rust_and_rejects_another_caller",
+      "base": {
+        "bytes": 26018,
+        "sha256": "4bf8212b3b3ef50f60475ed885e51905b5d9bd3eb7520b4e9e6a71ef1fb8dc80",
+        "git_blob_sha": "f3badff294da4a888c4dae00c5bb6931ad61591e"
+      },
+      "post": {
+        "bytes": 30133,
+        "sha256": "9586457087830b7f86888b783f92e2aebc215e1929c393c2da083f12bccf648b",
+        "git_blob_sha": "44704d85cc2b23ed99b9f067591bcddba315adec"
+      },
+      "old_collection": "complete original _source_files collection",
+      "old_training_subset_actual_paths": null,
+      "new_collection": "complete original _source_files(ROOT, source_roots); unchanged source masks and original ignored fragments",
+      "complete_collection_invocations": 1,
+      "cache_scope": "one method's one immutable complete baseline source_index and receiver type; only proven pure function append cases reuse its fields; every actual file removal gets a fresh cache",
+      "cross_method_or_cross_source_cache": false,
+      "all_original_assertion_call_asts_retained": true,
+      "expected_and_admitted_asts_unchanged": true,
+      "method_executed_in_preparation": false,
+      "changed_old_functions": [],
+      "unchanged_old_function_count": 19,
+      "added_functions": [
+        "assert_actual_durable_filename_templates",
+        "test_actual_durable_directory_literals_reject_same_length_and_decoy_replacements",
+        "test_actual_durable_filename_templates_reject_same_length_and_decoy_replacements"
+      ],
+      "rows": [
+        {
+          "boundary": "learning_original_owner_command_channel",
+          "receiver_type": null,
+          "baseline_verifications": 1,
+          "unexpected_caller_verifications": 1,
+          "missing_actual_caller_verifications": 3,
+          "total_original_boundary_calls": 5,
+          "old_type_index_builds": 0,
+          "new_full_baseline_or_missing_type_index_builds": 0,
+          "new_single_file_purity_index_builds": 0,
+          "pure_injection_cases": []
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "complete_source_collections_after": 3,
+    "original_verify_boundary_calls_after": 39,
+    "old_type_index_builds_selection_full_plus_training_subset": 24,
+    "new_full_source_type_index_builds": 12,
+    "new_single_file_purity_index_builds": 12
+  },
+  "original_nine_qa_95_functions": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "functions_byte_and_ast_identical": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "functions_byte_and_ast_identical": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "functions_byte_and_ast_identical": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "functions_byte_and_ast_identical": 12
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "functions_byte_and_ast_identical": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "functions_byte_and_ast_identical": 16
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "functions_byte_and_ast_identical": 11
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "functions_byte_and_ast_identical": 11
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "functions_byte_and_ast_identical": 7
+    }
+  ],
+  "historical_identity_exception": "Only the newly authored v2 Training membership method and newly authored v3 Selection membership method change. Historical v2/v3 byte-preservation evidence is retained, not rewritten. All original nine QA files' 95 functions remain unchanged.",
+  "timing": {
+    "budget_seconds": 600,
+    "budget_changed": false,
+    "full_gate_measured": false,
+    "warning": "Training coverage expands from a subset to all Rust. Counts alone cannot establish faster total time or compliance with the unchanged 600-second gate."
+  },
+  "full_source_gate": "not_run",
+  "full_caller_gate": "not_run",
+  "runtime_tests": "not_run"
+}

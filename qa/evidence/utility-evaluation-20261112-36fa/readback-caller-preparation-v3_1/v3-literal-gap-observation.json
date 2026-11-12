@@ -1,0 +1,129 @@
+{
+  "status": "v3_literal_gap_actually_reproduced",
+  "scope": "original source verifier on one exact Rust file; no Rust execution or full gate",
+  "v3_manifest_blob": "911b0ae279c4e552224985ea2d6df23b6cebe6be",
+  "v3_callers_blob": "21b854dd3f1bb245b42f2a57c0fd7685131430b2",
+  "source_path": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+  "source": {
+    "bytes": 17536,
+    "sha256": "8cd235aa30b30216e0e016e883625be10bc44ea3d81370ea7bcf20e1eed7a499",
+    "git_blob_sha": "26a09f65f0f78e3218f517f07f394573d25db13a"
+  },
+  "observations": [
+    {
+      "case": "unchanged_v3_baseline",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17536,
+        "sha256": "8cd235aa30b30216e0e016e883625be10bc44ea3d81370ea7bcf20e1eed7a499",
+        "git_blob_sha": "26a09f65f0f78e3218f517f07f394573d25db13a"
+      },
+      "raw_required_only_experiment": false,
+      "error": null
+    },
+    {
+      "case": "same_length_\"payloads\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17536,
+        "sha256": "d36f5d8775dccfeaff8f3c4efc6370dab83ea1a2c90e5efe5ff8704f1594578f",
+        "git_blob_sha": "5176738328a1f5f5c4295d0327025d0b44370df6"
+      },
+      "raw_required_only_experiment": false,
+      "error": null
+    },
+    {
+      "case": "same_length_\"witnesses\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17536,
+        "sha256": "c0ee9ff54d5feeae03b52eebdc6f6e6d5408e08661876711409258293c34b87e",
+        "git_blob_sha": "e96096bb85431297eed7359508ce88d72794ddca"
+      },
+      "raw_required_only_experiment": false,
+      "error": null
+    },
+    {
+      "case": "same_length_\"{}-{}.bin\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17536,
+        "sha256": "bdba4f76d947ac5e9bca9a5fdae11ebd7f364b32a82b15cc14bdfd3473c17431",
+        "git_blob_sha": "2480a2817cfc76153dd16884639f16e611f71d5f"
+      },
+      "raw_required_only_experiment": false,
+      "error": null
+    },
+    {
+      "case": "raw_required_spoofed_by_comment_\"{}-{}.bin\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17552,
+        "sha256": "ebba4674ffab288cc7f29e10e7041bb21cf76ca3fed4288671dff0094372beb6",
+        "git_blob_sha": "93f3ae24c4a0dec434ccd1166b8c2cc905a2f94b"
+      },
+      "raw_required_only_experiment": true,
+      "error": null
+    },
+    {
+      "case": "raw_required_spoofed_by_unrelated_constant_\"{}-{}.bin\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17589,
+        "sha256": "051fa0c58bdabb3f703dfa45c4f0a67b48fb0f4da1dbdcba73b7be56aa3c9e24",
+        "git_blob_sha": "3add216666445b32eedf16242b83b885080b2be1"
+      },
+      "raw_required_only_experiment": true,
+      "error": null
+    },
+    {
+      "case": "same_length_\"{}-{}.witness\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17536,
+        "sha256": "23a2794d637cab2a6afea9d4c40792cca7c27732b61a647eb16e378d6b7f1fbe",
+        "git_blob_sha": "aded438af853f20647a147ea12721c20a7ab4513"
+      },
+      "raw_required_only_experiment": false,
+      "error": null
+    },
+    {
+      "case": "raw_required_spoofed_by_comment_\"{}-{}.witness\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17556,
+        "sha256": "0e518cbadb82ae97e4fd9a21fe98089dd75af156a89e4792ef1fb257f6a7dd16",
+        "git_blob_sha": "6cd2190142bbf04d466e794d070cc0f79c076066"
+      },
+      "raw_required_only_experiment": true,
+      "error": null
+    },
+    {
+      "case": "raw_required_spoofed_by_unrelated_constant_\"{}-{}.witness\"",
+      "accepted_by_original_verifier": true,
+      "same_actual_function_mask_as_v3": true,
+      "source": {
+        "bytes": 17593,
+        "sha256": "ae9dddf23ae8ceb4737991f4688ea5daf5df3d83780e32fc96a6c376066881c0",
+        "git_blob_sha": "91a4358e23ac50c9d884d5858ef3d787b5c1c36d"
+      },
+      "raw_required_only_experiment": true,
+      "error": null
+    }
+  ],
+  "finding": "Same-length directory and format literals are masked from function-body guards. Raw required alone also accepts unchanged literals retained in comments or unrelated code.",
+  "not_claimed": [
+    "runtime behavior",
+    "full source-closure",
+    "full caller acceptance",
+    "authority"
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "at": "2026-11-12T11:43:17.763114+00:00",
+  "known_task_disk_usage": {
+    "argv": [
+      "du",
+      "-sx",
+      "--block-size=1",
+      "/home/qian-qi/hepta-utility-36fa-review-19aa",
+      "/home/qian-qi/hepta-utility-36fa-retained-e8b6fe2a",
+      "/home/qian-qi/hepta-utility-36fa-control-e8b6fe2a",
+      "/home/qian-qi/hepta-utility-36fa-evidence",
+      "/home/qian-qi/hepta-utility-36fa-target"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "267128832\t/home/qian-qi/hepta-utility-36fa-review-19aa\n266305536\t/home/qian-qi/hepta-utility-36fa-retained-e8b6fe2a\n266129408\t/home/qian-qi/hepta-utility-36fa-control-e8b6fe2a\n54386688\t/home/qian-qi/hepta-utility-36fa-evidence\n4096\t/home/qian-qi/hepta-utility-36fa-target\n"
+  },
+  "memory": {
+    "MemAvailable": "76462432 kB",
+    "MemTotal": "131760804 kB",
+    "SwapFree": "112 kB",
+    "SwapTotal": "8388604 kB"
+  },
+  "paths": [
+    {
+      "available_bytes": 5749481472,
+      "device": 2050,
+      "exists": true,
+      "inode": 12390321,
+      "is_symlink": false,
+      "path": "/home/qian-qi/hepta-utility-36fa-target",
+      "total_bytes": 982240026624,
+      "writable": true
+    },
+    {
+      "available_bytes": 5749481472,
+      "device": 2050,
+      "exists": true,
+      "inode": 49938433,
+      "is_symlink": false,
+      "path": "/home/qian-qi",
+      "total_bytes": 982240026624,
+      "writable": true
+    },
+    {
+      "available_bytes": 5749481472,
+      "device": 2050,
+      "exists": true,
+      "inode": 36962305,
+      "is_symlink": false,
+      "path": "/tmp",
+      "total_bytes": 982240026624,
+      "writable": true
+    },
+    {
+      "available_bytes": 5749481472,
+      "device": 2050,
+      "exists": true,
+      "inode": 50593807,
+      "is_symlink": false,
+      "path": "/var/tmp",
+      "total_bytes": 982240026624,
+      "writable": true
+    },
+    {
+      "available_bytes": 33549983744,
+      "device": 24,
+      "exists": true,
+      "inode": 1,
+      "is_symlink": false,
+      "path": "/dev/shm",
+      "total_bytes": 67461529600,
+      "writable": true
+    }
+  ],
+  "scope": "Read-only task resource preparation; no cleanup, no source/index changes, no Cargo",
+  "uid": 1000,
+  "writable_distinct_filesystems": [
+    {
+      "available_bytes": 33549983744,
+      "device": 24,
+      "filesystem": "tmpfs",
+      "is_symlink": false,
+      "path": "/dev/shm",
+      "total_bytes": 67461529600
+    },
+    {
+      "available_bytes": 5230592,
+      "device": 29,
+      "filesystem": "tmpfs",
+      "is_symlink": false,
+      "path": "/run/lock",
+      "total_bytes": 5242880
+    },
+    {
+      "available_bytes": 190961504256,
+      "device": 2067,
+      "filesystem": "ext4",
+      "is_symlink": false,
+      "path": "/data",
+      "total_bytes": 983023263744
+    },
+    {
+      "available_bytes": 13479178240,
+      "device": 49,
+      "filesystem": "tmpfs",
+      "is_symlink": false,
+      "path": "/run/user/1000",
+      "total_bytes": 13492305920
+    },
+    {
+      "available_bytes": 22061162496,
+      "device": 72,
+      "filesystem": "tmpfs",
+      "is_symlink": false,
+      "path": "/dev/shm/trill-organ-ui-cache-20261104-r1/target",
+      "total_bytes": 25769803776
+    }
+  ]
+}

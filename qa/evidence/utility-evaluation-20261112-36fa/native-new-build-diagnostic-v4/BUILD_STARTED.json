@@ -1,0 +1,95 @@
+{
+  "binaries_build_started": true,
+  "build_started": true,
+  "command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--list-type",
+    "binaries-only",
+    "--message-format",
+    "json",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--cargo-metadata",
+    "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/cargo-metadata.json"
+  ],
+  "environment": {
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/focused/helpers/bin/hepta-joint-propose",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-e8-diagnostic-target-v1",
+    "CODEX_REPO_ROOT": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "HEPTA_CI_LANE": "source-head",
+    "NEXTEST_PROFILE": "local",
+    "PATH": "/home/qian-qi/hepta-learn-037c-tools/nextest-0.9.103-e999c122:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qian-qi/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTY_V8_ARCHIVE": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "RUST_MIN_STACK": "8388608",
+    "SOURCE_SHA": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "TESTED_SHA": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd"
+  },
+  "environment_delta_from_original_focused": {
+    "CARGO_TARGET_DIR": {
+      "diagnostic": "/data/hepta-utility-36fa-e8-diagnostic-target-v1",
+      "original": "/home/qian-qi/hepta-utility-36fa-target",
+      "reason": "Original /home filesystem lacks planned build space; observed independent writable /data ext4 has 190961504256 available bytes, no existing target removed"
+    }
+  },
+  "features_added": [],
+  "free_bytes_before": 190409084928,
+  "historical_artifact_scope": {
+    "current_source_basis": "New full physical inventories before and after this diagnostic; independent preserved exact checkout",
+    "missing_original_gzips_reconstructed": false,
+    "retained_original_stage_gzips": 4,
+    "unavailable_original_stage_gzips": [
+      "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/source-after-maintenance.files.json.gz",
+      "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/source-after-eval.files.json.gz"
+    ]
+  },
+  "label": "NEW_BUILD_DIAGNOSTIC",
+  "metadata_started": true,
+  "metadata_strategy": "Original scoped run-nextest.py cargo metadata --no-deps strategy; Cargo still resolves/builds both requested packages and default features",
+  "original_binary_disappearance_cause": "Unknown",
+  "original_run_binary_available": false,
+  "package_selection": [
+    "codex-hepta-agentd",
+    "codex-hepta-intelligence-eval"
+  ],
+  "qualification": "Fresh controlled nextest binaries-only build/list for diagnosis; zero test execution, not the original run binary or a native full gate",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T11:45:25.866777+00:00",
+  "status": "preparing",
+  "target_state": {
+    "after": {
+      "device": 2067,
+      "inode": 20709398,
+      "mode": "0o700",
+      "mtime_ns": 1794483931424403280
+    },
+    "created_only_if_absent": true,
+    "existed_before": false,
+    "is_symlink": false,
+    "observed_at": "2026-11-12T11:45:31.407534+00:00",
+    "parent_before": {
+      "device": 2067,
+      "inode": 2,
+      "mtime_ns": 1794483394224469343
+    },
+    "path": "/data/hepta-utility-36fa-e8-diagnostic-target-v1"
+  },
+  "tests_executed": 0
+}

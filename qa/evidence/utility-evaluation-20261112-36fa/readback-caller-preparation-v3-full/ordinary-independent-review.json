@@ -1,0 +1,189 @@
+{
+  "schema": "hepta.utility.artifact-channel-v3-independent-static-review.v1",
+  "observed_at": "2026-11-12T11:43:10Z",
+  "reviewer": "/root/ordinary_path",
+  "status": "preparation_review_complete_with_narrow_literal_coverage_finding",
+  "candidate_status": "not_ready_as_complete_physical_path_fence_pending_v3_1",
+  "source_mutations": 0,
+  "tests_or_verifier_runs_by_this_review": 0,
+  "source_qualification_claimed": false,
+  "real_a_b_c_or_recovery_evidence_claimed": false,
+  "inputs": {
+    "artifact_rows": {
+      "bytes": 64124,
+      "sha256": "47d8530b92db241a91eb8bab33e75db6eec03be623d0d86e7ddaa518a3ebb0a7",
+      "git_blob_sha": "34aa67972323f8cac9d90a8eb7fbd8d25f0fbdca"
+    },
+    "artifact_qa": {
+      "bytes": 26018,
+      "sha256": "4bf8212b3b3ef50f60475ed885e51905b5d9bd3eb7520b4e9e6a71ef1fb8dc80",
+      "git_blob_sha": "f3badff294da4a888c4dae00c5bb6931ad61591e"
+    },
+    "structural_diff": {
+      "bytes": 10889,
+      "sha256": "10fd6e32e4fb85ebcd64980b9cad46a0f73879aecf6007ca743fb4c74e5aabd8",
+      "git_blob_sha": "838368537ba035ab88439963e013e97b3fdfaa6e"
+    },
+    "base_callers": {
+      "git_blob_sha": "317da5f28fbc1cf2556fa5935bb846dce8c7c2cb",
+      "bytes": 1122002,
+      "sha256": "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74"
+    },
+    "proposed_callers": {
+      "git_blob_sha": "21b854dd3f1bb245b42f2a57c0fd7685131430b2",
+      "bytes": 1198232,
+      "sha256": "43e89e30266761d06a73a9aa95ec2115ea0b2c259c194cb4fb1573e298595739"
+    },
+    "original_verifier": {
+      "path": "scripts/verify_hepta_callers.py",
+      "source_commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "functions_read": [
+        "_verify_protected_files",
+        "_verify_required_order",
+        "_verify_function_order",
+        "verify"
+      ]
+    },
+    "source_commits": [
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "b29869e856d08db1bfb066116a9c443376ccc57d"
+    ],
+    "prior_source_audits": [
+      "a36b1e0596a80ebb55aa163fb2719a245fc5f5ee",
+      "52a3bb7fcbfa97ab02b2ce5ca047860d19fcd21c"
+    ]
+  },
+  "independent_structure_check": {
+    "method": "Read exact base and candidate TOML bytes, verify their SHA256, parse TOML, compare original protected rows as a complete ordered prefix and compare each boundary field.",
+    "boundaries": 534,
+    "unchanged_boundary_rows": 530,
+    "changed_boundary_rows": 4,
+    "membership_additions": 9,
+    "original_protected_rows": 390,
+    "original_unique_paths": 319,
+    "original_protected_rows_and_order_exactly_preserved": true,
+    "additional_protected_rows": 9,
+    "total_protected_rows": 399,
+    "total_unique_protected_paths": 328,
+    "other_top_level_fields_unchanged": true,
+    "note": "A preliminary local summary counted dictionaries by unique path (319/328); a separate exact ordered-list comparison verified the actual 390/399 rows. No original records were relabeled or discarded."
+  },
+  "reviewed_rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "source_blob": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+      "functions": 6,
+      "conclusion": "Preserves private original channel/custody, Fresh versus Readonly, consuming self and original opaque prepared publication, fixed Head purpose, peer/current checks after I/O, full signed result equality for recovered readback. It permits the original Sign path and does not invent a key or continuation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "source_blob": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+      "functions": 1,
+      "conclusion": "Preserves actual original Head owner receiver, writer lease peer identity, original pidfd/channel, nonce bound, current authentication before action and after I/O, distinct Sign and Readback dispatch, and canonical unresolved statuses. Sign is deliberately permitted here."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "source_blob": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+      "functions": 7,
+      "conclusion": "Preserves the original writer Arc, Registry-only Readback, private channel take/restore only after nonce/peer/current/subject/time checks, cancellation fence, original physical durable read and fresh authentication. Prohibits reconnect, key creation and publication or signing entrance."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+      "source_blob": "bbab4d10cfe07d9f5709bf61f44c56d49698f1c5",
+      "functions": 6,
+      "conclusion": "Preserves native create and original recover, key=None/admitted=true after recovery, owner-wide admitted.swap before key.take, original commit_once, fixed subject and complete after-read signature verification. Native anchor reconciliation remains legal; command readback contains no sign/create/recover effect."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_wire.rs",
+      "source_blob": "1e6cad7a4dbc6f559169471b56d0634a64acb77e",
+      "functions": 4,
+      "additional_generic_function": "read_response<'a>",
+      "conclusion": "Preserves purpose/action enum values, nonce and binding, Registry-only Readback, bounded exact request/reply, distinct unresolved statuses. Generic read_response is protected through the unchanged file-level required_order because the original function selector does not accept generics. MAGIC and limits additionally use raw required markers."
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_head_source.rs",
+      "source_blob": "52becfc4df30309ea897e3b228a8638c03a39722",
+      "functions": 7,
+      "conclusion": "Preserves original signed writer lease/current registered key, head versus writer identity/key separation, fixed expiry and all exact signed context fields, complete current head equality, strict signature verification. Domain literal is additionally required raw. No claim of live control-plane revocation refresh."
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+      "source_blob": "26a09f65f0f78e3218f517f07f394573d25db13a",
+      "functions": 6,
+      "conclusion": "Preserves full ordered checkpoint and payload/registry/CURRENT/withdrawal before-after equality, current writer lease after I/O, fresh admission/head checks and DENY_ALL output. Legal in-memory transaction reconstruction is not forbidden. Physical path literals require the narrow follow-up below."
+    }
+  ],
+  "source_fence_representation": {
+    "complete_stripped_function_items": 37,
+    "representation": "The original required_function_order receives ['fn ', '<complete name, signature and stripped body>']; generic read_response uses the original required_order.",
+    "no_validator_changes": true,
+    "no_production_rust_changes": true,
+    "limitation": "This fixes stripped code, not every raw source byte. String/comment contents are masked. Raw required markers are mere file-wide substrings and are not equivalent to a function-scoped literal proof."
+  },
+  "qa_review": {
+    "methods": 14,
+    "membership_methods": 1,
+    "source_mutation_methods": 13,
+    "membership": "Uses original complete _source_files collection, original Rust and cfg(test) stripping, exact product_callers equality, original _verify_boundary, adds an unexpected caller and removes each of three admitted Artifact files; also asserts Root ordinary stage assembly remains empty and authority fields remain false.",
+    "negative_categories": [
+      "Readonly-to-Fresh or Readback-to-Sign promotion",
+      "lost consuming continuation or unsigned precondition",
+      "peer/current/signature checks removed or reordered",
+      "service purpose/nonce or unresolved status changes",
+      "registry original writer or channel restoration bypass",
+      "recovery as fresh signing owner",
+      "admitted/key.take/commit_once ordering and reset",
+      "readback signing or merging changed observations",
+      "wire nonce/binding/Registry-only and magic changes",
+      "fixed current lease/key/expiry/context changed",
+      "durable full equality/fresh checks removed",
+      "keyless reconnect/sign/recovery entrances"
+    ],
+    "actual_tests_run_by_reviewer": 0,
+    "author_reported_execution": "Evaluation reported nine baseline rows and 21 mutation methods (eight Selection, thirteen Artifact) passed. This review does not turn that report into independent execution evidence; the two full Rust membership methods were not executed in the author's reduced local source directory."
+  },
+  "finding": {
+    "id": "ARTIFACT-V3-DURABLE-LITERAL-COVERAGE",
+    "file": "codex-rs/hepta-learning-artifacts/src/owner_host_registry_durable.rs",
+    "function": "read_original_registry_durable",
+    "locations": {
+      "payload_directory_line": 233,
+      "payload_filename_line": 234,
+      "witness_directory_line": 266,
+      "witness_filename_line": 267
+    },
+    "exact_expressions": [
+      ".join(\"payloads\")",
+      "format!(\"{}-{}.bin\", ...)",
+      ".join(\"witnesses\")",
+      "format!(\"{}-{}.witness\", ...)"
+    ],
+    "evidence": "Original stripper replaces literal contents by same-width whitespace; a same-length directory or format-literal change leaves the complete stripped body identical. This row has no raw required markers for these literals. This is a static derivation; no mutation was executed by this reviewer.",
+    "effect": "The v3 rules should not be described as fully fixing the original physical path namespace or file-name templates.",
+    "authorized_followup": "Root asked the sole CALLERS/QA writer to prepare v3.1 using unchanged verifier and Rust, retain v3 unchanged, and record actual same-length mutations.",
+    "original_literal_calls_scope": {
+      "accepts": [
+        ".join(\"payloads\")",
+        ".join(\"witnesses\")"
+      ],
+      "rejects_as_marker_syntax": [
+        "format!(...)",
+        "byte-string arguments",
+        "multiple arguments"
+      ],
+      "validation": "Within the uniquely selected actual function, an exact source marker must have a span whose masked body equals _strip_rust_non_code(marker); exactly one actual call is required. Comments, literal contents, cfg(test) and nested-function placeholders cannot satisfy that check.",
+      "placement": "Include literal markers in an appropriate function-local sequence near the actual physical path/read anchors and retain the complete stripped body.",
+      "reachability_limit": "The original helper does not generally prove runtime reachability. The existing complete stripped body and forbidden guard entries reject insertion of a new dead branch in the approved function.",
+      "format_limit": "File-level required can be satisfied by a comment or unrelated raw text. A format! raw marker must not be presented as an equivalent anti-decoy function-scoped guarantee."
+    }
+  },
+  "concurrent_diagnostic": {
+    "job_id": "1a1cf796a68-2564-1a3b",
+    "idempotency_key": "hepta-utility-36fa-all-boundaries-overlay-v1",
+    "status": "still_running_at_last_actual_progress_observation",
+    "last_observed": "2026-11-12T11:40:04.633845+00:00",
+    "position": 229,
+    "separate_inputs": "Original CALLERS v2 blob 317da5... plus the fixed 25 Rust in-memory overlay. No v3 rows have been applied to that running job.",
+    "no_gate_pass_inherited": true
+  }
+}

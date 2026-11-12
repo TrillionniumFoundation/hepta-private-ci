@@ -1,0 +1,221 @@
+{
+  "format": "hepta.original-channel-registration-readback-receipt.v3",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "preparation_manifest_blob": "911b0ae279c4e552224985ea2d6df23b6cebe6be",
+  "packet_blob": "7d760d05fcebba4591008c523e2798f4ccaef0d9",
+  "method": "Every UTF-8 artifact was created as a Git blob, returned SHA checked against a locally computed canonical Git blob SHA, then fetched through the Git data blob endpoint and compared byte-for-byte as complete text.",
+  "artifacts": [
+    {
+      "key": "README-v3.md",
+      "blob": "1bf7ec933950a585bc1033a7051b1f0fe5c74c63",
+      "bytes": 7365,
+      "sha256": "052ffe67d80f3d264fdef19223b8a88617c765cea504e3ddcd989e1f02a3e606",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-manifest.json",
+      "blob": "911b0ae279c4e552224985ea2d6df23b6cebe6be",
+      "bytes": 112362,
+      "sha256": "2d14b385f352cc6ff2949cd8007929c997b546d14e652d42946d20ab52038f6c",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-packet.json.gz.base64",
+      "blob": "7d760d05fcebba4591008c523e2798f4ccaef0d9",
+      "bytes": 513649,
+      "sha256": "ee8d6d1d9a4cc3df873a6bda2985664a413f6033e941ac20ac49162e65062c7e",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3.patch",
+      "blob": "597f6b55a523b233b4314f93f8a3615779b76989",
+      "bytes": 197356,
+      "sha256": "aa360156235aa0761bb9de0e041dba46a46720cfa262492ba7798e5a829ad423",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-ast-diff.json",
+      "blob": "838368537ba035ab88439963e013e97b3fdfaa6e",
+      "bytes": 10889,
+      "sha256": "10fd6e32e4fb85ebcd64980b9cad46a0f73879aecf6007ca743fb4c74e5aabd8",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-expected-qa-preservation.json",
+      "blob": "a2a96585052099e8750075d18a750290884e0553",
+      "bytes": 80162,
+      "sha256": "b0764190bd61e1c667db193feb63ae979086c3e4a2ccd378038ee9d198294dd4",
+      "full_readback_equal": true
+    },
+    {
+      "key": "artifact-protected-rows.json",
+      "blob": "34aa67972323f8cac9d90a8eb7fbd8d25f0fbdca",
+      "bytes": 64124,
+      "sha256": "47d8530b92db241a91eb8bab33e75db6eec03be623d0d86e7ddaa518a3ebb0a7",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-nine-protected-diagnostic.json",
+      "blob": "4c6cdc9ae03a44fc23634f1f2c36cef42041e202",
+      "bytes": 3300,
+      "sha256": "50febc4cfdaa70f4886e6da677cec70468961d868654f1d9b86ad95e9b7e5e74",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-mutation-attempt-1.raw.log",
+      "blob": "3661537a0b1fcba2967e21e4a44d11da9350e4c9",
+      "bytes": 10174,
+      "sha256": "384a68bb86b52a8800e39de7c20a200bf6cff62335a03c3b33240ef095a1d8f9",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-mutation-attempt-1.json",
+      "blob": "41a06daec7dfe8ccb1faeedf54827980af45cf5f",
+      "bytes": 8152,
+      "sha256": "512d85bf322be37e8bf9bd1f1f4f39df6d7c4aa32c4e9527b02abf78d6c19591",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-mutation-attempt-2.raw.log",
+      "blob": "fcaa345c69a3bb5136ff52bbf65d96665181e9ec",
+      "bytes": 8660,
+      "sha256": "fab6d1d0b4d68739f140944374be7688e44cc7a0115c643e718083d25b552b82",
+      "full_readback_equal": true
+    },
+    {
+      "key": "final-v3-mutation-attempt-2.json",
+      "blob": "87e6433706490ac4c6f0b8e281af8e43c7dfc282",
+      "bytes": 8344,
+      "sha256": "13ff5fb2196e3e9da5b016ae8cc5c5c62bdb36c90fa8525fa3a49e5ad018eb0b",
+      "full_readback_equal": true
+    },
+    {
+      "key": "artifact-qa-attempt-1.py",
+      "blob": "8a1c1a830e220c35165c7d7b6cd1d995a7924e7c",
+      "bytes": 25650,
+      "sha256": "1450695364b59babd32034ccb232d896a13a8e56fd57061e5b4aebce16b79b6f",
+      "full_readback_equal": true
+    },
+    {
+      "key": "run-final-v3-mutations.py",
+      "blob": "074a56405ac362728d679fcb7032d4c1e2db2d06",
+      "bytes": 4099,
+      "sha256": "63cdec1a6f81095d703ad1f4e78d3d792b8293d12c872035214b797118847c7c",
+      "full_readback_equal": true
+    },
+    {
+      "key": "prepare-final-v3.py",
+      "blob": "267c2074701fde2878414ca4aefae476248d4a6f",
+      "bytes": 13865,
+      "sha256": "c1f1be68cdc413b4a808f95281ca21816fd196971c26833119db6c4d74fd4d7c",
+      "full_readback_equal": true
+    },
+    {
+      "key": "package-final-v3.py",
+      "blob": "9ec3619e830b34cfcdb9da72ab2c972368cadc2d",
+      "bytes": 9957,
+      "sha256": "8851f3ac6f207d316d43645c11c21db0c781bb106194fe73bd7c8b6561e1cc32",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/CALLERS.toml",
+      "blob": "21b854dd3f1bb245b42f2a57c0fd7685131430b2",
+      "bytes": 1198232,
+      "sha256": "43e89e30266761d06a73a9aa95ec2115ea0b2c259c194cb4fb1573e298595739",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+      "blob": "f3badff294da4a888c4dae00c5bb6931ad61591e",
+      "bytes": 26018,
+      "sha256": "4bf8212b3b3ef50f60475ed885e51905b5d9bd3eb7520b4e9e6a71ef1fb8dc80",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "blob": "64a621aacbeb51db7b51a204bd8e50b71aba2443",
+      "bytes": 13997,
+      "sha256": "b674d1f2056fc01d5f704d68cab8903e061ee21867281f766628c12af775a609",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "blob": "93cc5b3daa0a4c03036867be140d7211d10e9378",
+      "bytes": 25677,
+      "sha256": "cd3adb3a490c0caf097945fc785e20bdcbabde686939f0f679652bc918b60f9a",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "blob": "146114bc3283bd84f1a94a5e0e8eba81834fa191",
+      "bytes": 17338,
+      "sha256": "6d18768647876c618a759b9480fe0bdb24771791fc1bf5bbf915cd85a3625dea",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "blob": "d7b81f26f22a3d2ad283a9897a79dd9d8858aaeb",
+      "bytes": 21795,
+      "sha256": "da760a85dd76269ebc561d9c09b077c8a5155da0cf08205c0d208912d48f0564",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "blob": "24dea8d8d521414607aa627374de313bbf94c7ef",
+      "bytes": 14081,
+      "sha256": "d544f971f0273091d792d32f400ec5351e6c6d6527fb034f2ef0738ed498f1b1",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "blob": "ea0fd6fd7c9ed0eda1aca4b586a0e7e9b8eb20e4",
+      "bytes": 22590,
+      "sha256": "a50edb4c0a0b5f62a72729e5510233e18337b7ef8f375c86ca9abadf0dfd8fe2",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "blob": "7fcd286428c39df689adf11e935a533c20fdbe6b",
+      "bytes": 16197,
+      "sha256": "cf86624cb5da7a16b752252cfe1861de72a95164747d2ffdc7e61eb407d52295",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "blob": "53db4eea7acc003ea0683e0b9c7592176aa5934a",
+      "bytes": 18785,
+      "sha256": "5ba2d580f2f3c6d25575389ff5d4a9c6756d9c409507b055e215804cc5d1e1d5",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "blob": "3dffe332672145c171622fe8dfb133219a386e92",
+      "bytes": 14911,
+      "sha256": "db2beaeb758adf0ef7e13f83649978b75efc8aa0aa4ac25ac4265ad10f745c05",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "blob": "d5b602ec3fd1f212b7a5fa11d7481677440efe5b",
+      "bytes": 14189,
+      "sha256": "f3a2120f7b42c55d7002a507ed6e43ee93dd948ce6d78352a81cfdc67a9fb6f2",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "blob": "c2fa1f2a40943859c12ba04bb31f55904c50309c",
+      "bytes": 20364,
+      "sha256": "cc824fd81f0c100fc8bf5b6a99159b3eae17ea776ebdaa7ed148f80df216f84d",
+      "full_readback_equal": true
+    }
+  ],
+  "refs_changed": false,
+  "production_rust_changed": false,
+  "full_source_tree": null,
+  "full_source_gate": "not_run",
+  "full_caller_gate": "not_run",
+  "runtime_tests": "not_run",
+  "limits": [
+    "Readback establishes immutable artifact identity, not acceptance of source, actor authority, or deployed task improvement."
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "format": "hepta.original-channel-registration-readback-receipt.v3.1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "preparation_manifest_blob": "36f339c163bf0ac8449891c06a954f56b004825b",
+  "packet_blob": "2a68ea9ae4d11fd7bc7153404961e06789ad919e",
+  "method": "Each artifact's canonical Git blob SHA was computed from local bytes, matched to create_blob, then all UTF-8 content was fetched through Git data and compared for complete equality.",
+  "artifacts": [
+    {
+      "key": "README-v31.md",
+      "blob": "f472514c14b8488e51cd424ef3ff6a428775193d",
+      "bytes": 7310,
+      "sha256": "dd8c546a5f4f3768c27d558b2e9cd8e4322b9fb9143537d446a44de54c503be6",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-manifest.json",
+      "blob": "36f339c163bf0ac8449891c06a954f56b004825b",
+      "bytes": 39684,
+      "sha256": "ae0c12817399c6451e4f5e49fcfd196e9a61a7c8c401e68c118013b66dbb1748",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-packet.json.gz.base64",
+      "blob": "2a68ea9ae4d11fd7bc7153404961e06789ad919e",
+      "bytes": 458685,
+      "sha256": "59ce08732533477d0587e9869157a3655776be0ff03b78702cca0e4f041c2d1b",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31.patch",
+      "blob": "eee70da9d92def9f9a9b9f56d54e438414e95f29",
+      "bytes": 38902,
+      "sha256": "77cf5a5f84efbff349d1103e03ba3a50a26139af8b1ffd8b8786913d8280873e",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-callers-structural-diff.json",
+      "blob": "60024116b00f4d25648a2eb5f5a856cacb012cf7",
+      "bytes": 1274,
+      "sha256": "8ab63f75f67d58b9ebc0b66e3358362f941c0b9dd23683fbdd49acf2b788ff75",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-caller-cache-audit.json",
+      "blob": "17595d06404c6cd4c9243ae2c814260b992b3d6a",
+      "bytes": 18443,
+      "sha256": "780dfd8079e9c7fc1f8d8078985a1ac3960767911ff38aace73218412d8b22b8",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v3-literal-gap-observation.json",
+      "blob": "568047b7d61e15707165abd4a500a70229a29f8f",
+      "bytes": 4741,
+      "sha256": "24b91bbf5d271fcefc50300af8daf18a1b9fcae5c381b0b52a77a6d68d3af5a0",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v3-literal-gap.raw.log",
+      "blob": "4a594b64826b3da438944278edf0055fc90041c9",
+      "bytes": 3244,
+      "sha256": "40c782ca3977c86076008a06e4c0038209ca1d83ce443a24f5e869bf41a41962",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v3-literal-gap-run.json",
+      "blob": "ea19c60806d737be2288ae695d29bd6e591c7a19",
+      "bytes": 559,
+      "sha256": "f7d1ba6c7218dc0b59f9a7b00a2bfc9f3d23644a434563d922eb4a1ec79dc883",
+      "full_readback_equal": true
+    },
+    {
+      "key": "reproduce-v3-literal-gap.py",
+      "blob": "9abcb5b7312fc46225edec88aaf0bb33c3f309f9",
+      "bytes": 4029,
+      "sha256": "8274fda626cb9374e11c9964fc9c548ac45b57f2b6121df7c81d96e2062da384",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-literal-mutation-attempt-1.raw.log",
+      "blob": "2689a4e19e6d9eae3ea0583c690993163584ad62",
+      "bytes": 1031,
+      "sha256": "59bf63317b17a495ebb439376b478b0a31d51304d2d96acde8084cd8ec6c34d6",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-literal-mutation-attempt-1.json",
+      "blob": "4528d0c39201ac541133eefe7d8de6a5d3c52576",
+      "bytes": 8660,
+      "sha256": "90c0da4d8c7193d0cdef35facfefc0785722c6fbec42b29728a877c3105e3005",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-literal-mutation-attempt-2.raw.log",
+      "blob": "8edfc8931e9364180a669d5f58d0232621e1baed",
+      "bytes": 1031,
+      "sha256": "be7786589653bbafda7f187605d18ac4efd3402ee234b3fa47b51de333aac252",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-literal-mutation-attempt-2.json",
+      "blob": "0d4ab1f9a8c37d538278b2ec90a2d05c800f2f07",
+      "bytes": 8857,
+      "sha256": "4016139b68cef1b8721bae003085ceb1fab1b08666a2cf0aabb9a2f9c7cfa757",
+      "full_readback_equal": true
+    },
+    {
+      "key": "v31-artifact-qa-attempt-1.py",
+      "blob": "bf080d8f218ac30ac54c70a0329f0d42e86b7a50",
+      "bytes": 30002,
+      "sha256": "fe336f8db775823859c0c734854a4d061f0631b0a6eba34713b6ddfab44d436b",
+      "full_readback_equal": true
+    },
+    {
+      "key": "run-v31-literal-mutations.py",
+      "blob": "4ecde7f70d596055d11f493f569acefe11b62638",
+      "bytes": 1465,
+      "sha256": "0ad123f745fedf320a559343cc83a30e738b9ba76979c6b44c57ccfaf5d68d26",
+      "full_readback_equal": true
+    },
+    {
+      "key": "prepare-v31-callers.py",
+      "blob": "1e6beb45abbc81e4fa4bf7471ee4e76b87393b4f",
+      "bytes": 4329,
+      "sha256": "4d25744162801487f83bc2fb008f8fa19b346cf4abe286faad75168b4781ba54",
+      "full_readback_equal": true
+    },
+    {
+      "key": "audit-v31-caller-cache.py",
+      "blob": "0a9dc22e522b301132869fee6f56ce38dcbbd64c",
+      "bytes": 10941,
+      "sha256": "02f2ca248f1365408ea72e13e6d0910eeddc529fc31dce1055ad4d3394ccd51e",
+      "full_readback_equal": true
+    },
+    {
+      "key": "package-v31.py",
+      "blob": "441092c32baffc02bcf8e963530f91e1ba6a9ef4",
+      "bytes": 8769,
+      "sha256": "b35ae7a7e37e5fd877ff303e29f64d32cf94ffd836bc3a639a55a1624af058c3",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/CALLERS.toml",
+      "blob": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+      "bytes": 1198922,
+      "sha256": "9f546f6a12602286916c04c08657d35115b0fc7ffd92f47df80dc7ea74dcbf4a",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+      "blob": "44704d85cc2b23ed99b9f067591bcddba315adec",
+      "bytes": 30133,
+      "sha256": "9586457087830b7f86888b783f92e2aebc215e1929c393c2da083f12bccf648b",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "blob": "04411894dd8d5e5e0ec4652cf2df94748684162d",
+      "bytes": 23410,
+      "sha256": "f6ffc9edfcf1e3407d289535f301d2969f1ffd5d8e55b818ccc82d68bc7553ea",
+      "full_readback_equal": true
+    },
+    {
+      "key": "post/qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "blob": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+      "bytes": 21451,
+      "sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e",
+      "full_readback_equal": true
+    }
+  ],
+  "refs_changed": false,
+  "production_rust_changed": false,
+  "verifier_changed": false,
+  "budget_changed": false,
+  "full_source_tree": null,
+  "full_source_gate": "not_run",
+  "full_caller_gate": "not_run",
+  "runtime_tests": "not_run",
+  "scope": "Artifact identity preservation only. The 2 new literal methods were executed separately; no complete membership or deployment acceptance is claimed."
+}

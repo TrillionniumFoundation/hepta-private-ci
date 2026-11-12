@@ -1,0 +1,137 @@
+{
+  "format": "hepta.root-new-diagnostic-originals-review.v1",
+  "reviewed_at": "2026-11-12T12:00:50.398446+00:00",
+  "source_head": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "native_prebuild_archive": {
+    "original_manifest_blob": "7742aba06b6438e69052d91b6b250fd8a54d49e1",
+    "binary_blob": "e29b0c93cad08c473cbe3c672dfd0281cddf8781",
+    "base64_blob": "212acaa4cf20e27244d0f73c37cc38e97b637dc7",
+    "bytes": 45084,
+    "sha256": "087377d2a6b6d9a61ccc0574785e034f7c56ba9656b9934c12fc0d1a94904844",
+    "members_all_bytes_verified": [
+      {
+        "bytes": 4188,
+        "mode": "0o400",
+        "mtime_ns": 1794483931766076813,
+        "name": "BUILD_STARTED.json",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/BUILD_STARTED.json",
+        "sha256": "554d98dbec476193b4f85c2767740b5610dffca31e971ffcd684929542e291d8"
+      },
+      {
+        "bytes": 433,
+        "mode": "0o400",
+        "mtime_ns": 1794483931731035215,
+        "name": "CARGO_METADATA_RESULT.json",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/CARGO_METADATA_RESULT.json",
+        "sha256": "ec24dd1acc1e8e9b912dcbe6499b1672aad3f9f12746d7176dbc0fd897ba92fc"
+      },
+      {
+        "bytes": 921472,
+        "mode": "0o400",
+        "mtime_ns": 1794483931758175598,
+        "name": "cargo-metadata.json",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/cargo-metadata.json",
+        "sha256": "db9487edc962b7aa38418e1048f9fe138c272114638ae8b4959d50db2a8e3cca"
+      },
+      {
+        "bytes": 171,
+        "mode": "0o400",
+        "mtime_ns": 1794483931498209610,
+        "name": "NEXTEST_VERSION.txt",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/NEXTEST_VERSION.txt",
+        "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61"
+      },
+      {
+        "bytes": 7406,
+        "mode": "0o400",
+        "mtime_ns": 1794483931536557092,
+        "name": "NEXTEST_LIST_HELP.txt",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/NEXTEST_LIST_HELP.txt",
+        "sha256": "7bd9e227b0f2588711a1a59341faae7c237affa7e430e0f328647916b59915f7"
+      },
+      {
+        "bytes": 418,
+        "mode": "0o400",
+        "mtime_ns": 1794483931426662410,
+        "name": "TARGET_STATE.json",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/TARGET_STATE.json",
+        "sha256": "64b52ac30639008abe51378e28a26a9d4d35208c182716d10b2481cb4a64c275"
+      },
+      {
+        "bytes": 3215,
+        "mode": "0o400",
+        "mtime_ns": 1794483931389195662,
+        "name": "RESOURCE_OBSERVATION_ORIGINAL.json",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/RESOURCE_OBSERVATION_ORIGINAL.json",
+        "sha256": "f1959dc9221cf624ae91b1f8bada1b03b890aad3a32b3206950b4a9429d83998"
+      },
+      {
+        "bytes": 237,
+        "mode": "0o400",
+        "mtime_ns": 1794483931368026084,
+        "name": "source-before.json",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/e8b6-new-build-diagnostic-v4/source-before.json",
+        "sha256": "007b1de12240589d7ae28cbd464044f4311018380f00ff7e3cb968e9eb64997b"
+      }
+    ],
+    "cargo_metadata_bytes": 921472,
+    "test_execution_from_this_archive": 0,
+    "terminal_build_result_included": false
+  },
+  "all_boundary_progress": {
+    "original_sdk_blob": "5f8950837972acc26efd36ea62e12e509327f33a",
+    "offset": 167111,
+    "next_offset": 185584,
+    "bytes": 18473,
+    "sha256": "5024156f5e8ff2a6aaa7ce816d6e29350975355b7f5542372a7360f9a1d45a92",
+    "complete_jsonl_rows": 54,
+    "first_event": {
+      "at": "2026-11-12T11:48:02.822810+00:00",
+      "event": "boundary_completed",
+      "id": "learning_original_material_source_decode",
+      "original_result": {
+        "callPattern": null,
+        "id": "learning_original_material_source_decode",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_material_source.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "OriginalCellQ24DatasetV1",
+        "symbol": "OriginalCellQ24DatasetV1::from_original_material_peer"
+      },
+      "position": 272,
+      "status": "passed"
+    },
+    "last_event": {
+      "at": "2026-11-12T11:51:21.419947+00:00",
+      "event": "boundary_started",
+      "id": "learning_original_material_command_custody",
+      "position": 299
+    },
+    "actual_failed_rows": [
+      {
+        "at": "2026-11-12T11:49:46.305194+00:00",
+        "error": "learning_original_training_command_client_readback: codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs: unresolved possible OriginalCellQ24TrainingCommandClientV1::readback receiver",
+        "event": "boundary_completed",
+        "id": "learning_original_training_command_client_readback",
+        "position": 281,
+        "status": "failed"
+      },
+      {
+        "at": "2026-11-12T11:51:14.626876+00:00",
+        "error": "learning_original_owner_command_channel: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/artifact_original_head_client.rs', 'codex-rs/hepta-agentd/src/artifact_original_head_service.rs', 'codex-rs/hepta-agentd/src/artifact_original_registry_source.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+        "event": "boundary_completed",
+        "id": "learning_original_owner_command_channel",
+        "position": 295,
+        "status": "failed"
+      }
+    ],
+    "full_report_or_after_inventory_included": false,
+    "new_source_gate_claimed": false
+  },
+  "limits": [
+    "Only preserved original bytes are verified here; no new Rust test was run by this review.",
+    "A partial progress chunk or compiler prefix cannot establish terminal status or a passed full gate.",
+    "The unresolved typed receiver is a verifier failure, not authorization to add a caller or change the verifier."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-12T11:16:47.523952+00:00",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/diagnostic.py",
+    "--source-root",
+    "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "--overlay-json",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/overlay.json",
+    "--callers",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/CALLERS.toml",
+    "--callers-sha256",
+    "13b8b2d8d9fbe0768f0b8dd288ee8e147f5641a2affd99f7eed5b2647e107d74",
+    "--output",
+    "/home/qian-qi/hepta-utility-36fa-all-boundaries-overlay-v1/all-boundaries-scoped/diagnostic-result.json"
+  ],
+  "run_identity": "hepta-utility-36fa-all-boundaries-overlay-v1",
+  "schema": "hepta.utility.desktop-source-gates.v1.dispatch",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "status": "preparing",
+  "timeout_seconds": 4800
+}

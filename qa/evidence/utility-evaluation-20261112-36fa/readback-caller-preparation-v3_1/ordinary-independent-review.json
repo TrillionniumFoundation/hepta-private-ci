@@ -1,0 +1,146 @@
+{
+  "schema": "hepta.utility.artifact-v3_1-independent-static-review.v1",
+  "observed_at": "2026-11-12T11:58:06Z",
+  "reviewer": "/root/ordinary_path",
+  "status": "static_review_passed_with_explicit_scope_limits",
+  "source_mutations": 0,
+  "tests_or_verifier_runs_by_reviewer": 0,
+  "full_gate_status": "not_run",
+  "actual_A_B_C_qualification": false,
+  "inputs": {
+    "v3_review": "a57cc5e29f5922bf0db164900ff5642873a56c16",
+    "patch": "eee70da9d92def9f9a9b9f56d54e438414e95f29",
+    "manifest": "36f339c163bf0ac8449891c06a954f56b004825b",
+    "readme": "f472514c14b8488e51cd424ef3ff6a428775193d",
+    "callers_before": "21b854dd3f1bb245b42f2a57c0fd7685131430b2",
+    "callers_after": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+    "callers_after_sha256": "9f546f6a12602286916c04c08657d35115b0fc7ffd92f47df80dc7ea74dcbf4a",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "cache_audit": "17595d06404c6cd4c9243ae2c814260b992b3d6a"
+  },
+  "independent_checks": {
+    "actual_callers_readback_matches_single_line_patch": true,
+    "all_other_callers_bytes_unchanged": true,
+    "protected_rows": 399,
+    "unique_protected_paths": 328,
+    "boundaries": 534,
+    "existing_durable_function_constraints_preserved": 6,
+    "appended_same_function_constraint": {
+      "function": "fn read_original_registry_durable(",
+      "literal_calls": [
+        ".join(\"payloads\")",
+        ".join(\"witnesses\")"
+      ],
+      "sequence": [
+        "let manifest = &context.admission.validated_manifest.manifest;",
+        ".join(\"payloads\")",
+        "let payload = read_candidate_payload(",
+        ".join(\"witnesses\")",
+        "let actual = read_registry_head_witness(",
+        "let registry_after = read_registry_snapshot(",
+        "let payload_after = read_candidate_payload(",
+        "let fresh = clock()?;"
+      ],
+      "top_level": [
+        "let manifest = &context.admission.validated_manifest.manifest;",
+        "let payload = read_candidate_payload(",
+        "let registry_after = read_registry_snapshot(",
+        "let payload_after = read_candidate_payload(",
+        "let fresh = clock()?;"
+      ]
+    },
+    "qa_ast_and_byte_comparisons": [
+      {
+        "kind": "artifact",
+        "added_functions": [
+          "assert_actual_durable_filename_templates",
+          "test_actual_durable_directory_literals_reject_same_length_and_decoy_replacements",
+          "test_actual_durable_filename_templates_reject_same_length_and_decoy_replacements"
+        ],
+        "after_bytes": 30133,
+        "after_git_blob_sha": "44704d85cc2b23ed99b9f067591bcddba315adec",
+        "after_sha256": "9586457087830b7f86888b783f92e2aebc215e1929c393c2da083f12bccf648b",
+        "changed_old_functions": [],
+        "expected_and_admitted_identical": [
+          "EXPECTED",
+          "ADMITTED"
+        ],
+        "no_code_executed": true,
+        "old_assertion_call_asts_retained": true,
+        "static_ast_and_bytes_only": true,
+        "unchanged_old_functions": 19
+      },
+      {
+        "kind": "training",
+        "added_functions": [],
+        "after_bytes": 21451,
+        "after_git_blob_sha": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+        "after_sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e",
+        "changed_old_functions": [
+          "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller"
+        ],
+        "expected_and_admitted_identical": [
+          "EXPECTED",
+          "ADMITTED"
+        ],
+        "no_code_executed": true,
+        "old_assertion_call_asts_retained": true,
+        "static_ast_and_bytes_only": true,
+        "unchanged_old_functions": 11
+      },
+      {
+        "kind": "selection",
+        "added_functions": [],
+        "after_bytes": 23410,
+        "after_git_blob_sha": "04411894dd8d5e5e0ec4652cf2df94748684162d",
+        "after_sha256": "f6ffc9edfcf1e3407d289535f301d2969f1ffd5d8e55b818ccc82d68bc7553ea",
+        "changed_old_functions": [
+          "test_exact_readback_edges_use_complete_rust_collection_and_reject_another_caller"
+        ],
+        "expected_and_admitted_identical": [
+          "EXPECTED",
+          "ADMITTED"
+        ],
+        "no_code_executed": true,
+        "old_assertion_call_asts_retained": true,
+        "static_ast_and_bytes_only": true,
+        "unchanged_old_functions": 11
+      }
+    ],
+    "parsing_only_note": "Python ast/tomllib/hash operations inspected exact bytes; no imported QA, verifier, mutation, Cargo or H diagnostic was executed as part of this review."
+  },
+  "literal_finding_resolution": {
+    "directory_literals": "The added second function-order row uses the unchanged original literal_calls implementation for each actual .join call, in order with physical reads and final current authentication. Original full-body constraints remain. The top-level markers appropriately exclude the conditional witness call.",
+    "actual_format_arguments": "The Artifact QA locates the unique real durable-reader function in original masked code, then its exactly two real format! spans, uses the original balanced delimiter helper to bound arguments, and compares actual raw first argument strings at those spans. An outside comment/constant/macro cannot supply a span in this function. Combined with the unchanged complete-body source guard, the helper fixes the two existing filename templates.",
+    "existing_tests_unchanged": "All 19 existing Artifact functions are byte- and AST-identical; three functions are appended (one helper and two negative methods). EXPECTED and ADMITTED ASTs remain identical.",
+    "original_verifier_not_claimed_to_parse_format_macros": true,
+    "generic_read_response_limit": "The unchanged generic read_response<'a> fallback is file-level ordered stripped code, not equivalent to the 37 unique function/nested-function checks. README now explicitly states that limit.",
+    "no_production_or_authority_change": true
+  },
+  "cache_review": {
+    "training_source_scope": "The new Training method uses original _source_files(ROOT, source_roots), original masks and ignored fragments for every baseline and negative; the prior curated 48-path dictionary is removed.",
+    "method_local_cache": "Both Training and Selection allocate a new fields_cache inside one method against its complete immutable baseline sources. No cache is shared across methods or source versions.",
+    "pure_injection_argument": "The exact appended snippets contain no struct or alias declarations. QA checks no struct/type/use/enum/union/impl token, checks original authority_fields for the one injected file has no fields or aliases, and checks _declared_aliases against the target and every existing alias. Existing dictionary strings remain unchanged and the injected path is required absent. Original authority_fields derives only aliases and struct fields, so those additions leave its complete baseline result unchanged.",
+    "deletion_argument": "Each actual source deletion passes a new empty fields cache, because deleted files may contain aliases or fields.",
+    "unchanged_proof": "Original _verify_boundary still traverses the complete source dictionary and enforces exact observed == expected on every case. No result cache or receiver exemption is introduced.",
+    "assertions": "All old assertion-call ASTs, EXPECTED and ADMITTED values are independently retained. Only the newly authored Training and Selection membership methods change; each has 11 other functions unchanged.",
+    "static_accounting": {
+      "complete_source_collections": 3,
+      "original_boundary_invocations": 39,
+      "full_source_type_index_builds": 12,
+      "single_file_purity_checks": 12
+    },
+    "budget": "The original 600-second source-closure budget remains. Expanded Training coverage and counts alone do not establish timing compliance; all three complete membership methods still need their real complete-source run."
+  },
+  "execution_distinction": {
+    "author_reported_local_results": "The preparation author reports the v3 literal gap baseline/counterexamples and v3.1 six directory plus eight filename rejections, with original raw records. This review does not count those as independently rerun results.",
+    "current_all_534_run": "Still the single original job 1a1cf796a68-2564-1a3b using CALLERS v2 and the fixed 25-file in-memory Rust overlay; these v3.1 changes are not applied to it.",
+    "separate_new_typed_receiver_failure": "The current diagnostic has additionally observed learning_original_training_command_client_readback unresolved receiver in circuit_next_use_receipt_owner.rs. That requires its own source analysis/candidate and is not addressed or hidden by v3.1."
+  },
+  "integration_requirements": [
+    "Keep immutable v3 evidence and the reproduced gap.",
+    "Update the existing CALLERS allowlist hash when integrating final exact bytes.",
+    "Freeze an actual source commit before original full source/caller/native gates.",
+    "Do not inherit this static review or any partial diagnostic as full qualification."
+  ]
+}

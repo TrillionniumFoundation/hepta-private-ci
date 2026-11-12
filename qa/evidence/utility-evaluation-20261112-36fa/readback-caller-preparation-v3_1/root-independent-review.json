@@ -1,0 +1,207 @@
+{
+  "format": "hepta.root-v3.1-independent-preparation-review.v1",
+  "observed_at": "2026-11-12T11:58:36.716551+00:00",
+  "status": "preparation_reviewed_not_integrated_not_full_gate",
+  "source_head_still": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "packet_blob": "2a68ea9ae4d11fd7bc7153404961e06789ad919e",
+  "manifest_blob": "36f339c163bf0ac8449891c06a954f56b004825b",
+  "packet_raw": {
+    "bytes": 1700772,
+    "sha256": "613b46eb620719119fd5281395d424798a77477fe9e6188cf06172818d1f8f7c",
+    "git_blob_sha": "49a25934c113af2a8962bbd8b01292a066959a94"
+  },
+  "verified_files": [
+    {
+      "path": "CALLERS.toml",
+      "before": {
+        "bytes": 1198232,
+        "git_blob_sha": "21b854dd3f1bb245b42f2a57c0fd7685131430b2",
+        "sha256": "43e89e30266761d06a73a9aa95ec2115ea0b2c259c194cb4fb1573e298595739"
+      },
+      "after": {
+        "bytes": 1198922,
+        "git_blob_sha": "155282ec6dd93e2637659a73da10eb2f3936a7b3",
+        "sha256": "9f546f6a12602286916c04c08657d35115b0fc7ffd92f47df80dc7ea74dcbf4a"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+      "before": {
+        "bytes": 26018,
+        "git_blob_sha": "f3badff294da4a888c4dae00c5bb6931ad61591e",
+        "sha256": "4bf8212b3b3ef50f60475ed885e51905b5d9bd3eb7520b4e9e6a71ef1fb8dc80"
+      },
+      "after": {
+        "bytes": 30133,
+        "git_blob_sha": "44704d85cc2b23ed99b9f067591bcddba315adec",
+        "sha256": "9586457087830b7f86888b783f92e2aebc215e1929c393c2da083f12bccf648b"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "before": {
+        "bytes": 22590,
+        "git_blob_sha": "ea0fd6fd7c9ed0eda1aca4b586a0e7e9b8eb20e4",
+        "sha256": "a50edb4c0a0b5f62a72729e5510233e18337b7ef8f375c86ca9abadf0dfd8fe2"
+      },
+      "after": {
+        "bytes": 23410,
+        "git_blob_sha": "04411894dd8d5e5e0ec4652cf2df94748684162d",
+        "sha256": "f6ffc9edfcf1e3407d289535f301d2969f1ffd5d8e55b818ccc82d68bc7553ea"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "before": {
+        "bytes": 20364,
+        "git_blob_sha": "c2fa1f2a40943859c12ba04bb31f55904c50309c",
+        "sha256": "cc824fd81f0c100fc8bf5b6a99159b3eae17ea776ebdaa7ed148f80df216f84d"
+      },
+      "after": {
+        "bytes": 21451,
+        "git_blob_sha": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+        "sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e"
+      }
+    }
+  ],
+  "structural_review": {
+    "boundaries": 534,
+    "memberships_and_all_other_nonprotected_fields_unchanged": true,
+    "protected_rows": 399,
+    "unique_protected_paths": 328,
+    "changed_row_indices": [
+      398
+    ],
+    "all_previous_rows_and_sequences_preserved": true,
+    "new_function_literal_rule": {
+      "function": "fn read_original_registry_durable(",
+      "sequence": [
+        "let manifest = &context.admission.validated_manifest.manifest;",
+        ".join(\"payloads\")",
+        "let payload = read_candidate_payload(",
+        ".join(\"witnesses\")",
+        "let actual = read_registry_head_witness(",
+        "let registry_after = read_registry_snapshot(",
+        "let payload_after = read_candidate_payload(",
+        "let fresh = clock()?;"
+      ],
+      "literal_calls": [
+        ".join(\"payloads\")",
+        ".join(\"witnesses\")"
+      ],
+      "top_level": [
+        "let manifest = &context.admission.validated_manifest.manifest;",
+        "let payload = read_candidate_payload(",
+        "let registry_after = read_registry_snapshot(",
+        "let payload_after = read_candidate_payload(",
+        "let fresh = clock()?;"
+      ]
+    }
+  },
+  "original_nine_qa_functions": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "byte_and_ast_identical_functions": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "byte_and_ast_identical_functions": 10
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "byte_and_ast_identical_functions": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "byte_and_ast_identical_functions": 12
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "byte_and_ast_identical_functions": 9
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "byte_and_ast_identical_functions": 16
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "byte_and_ast_identical_functions": 11
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "byte_and_ast_identical_functions": 11
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "byte_and_ast_identical_functions": 7
+    }
+  ],
+  "original_function_total": 95,
+  "new_qa_function_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "changed_existing_functions": [
+        "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller"
+      ],
+      "unchanged_existing_functions": 11,
+      "new_functions": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "changed_existing_functions": [
+        "test_exact_readback_edges_use_complete_rust_collection_and_reject_another_caller"
+      ],
+      "unchanged_existing_functions": 11,
+      "new_functions": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+      "changed_existing_functions": [],
+      "unchanged_existing_functions": 19,
+      "new_functions": [
+        "assert_actual_durable_filename_templates",
+        "test_actual_durable_directory_literals_reject_same_length_and_decoy_replacements",
+        "test_actual_durable_filename_templates_reject_same_length_and_decoy_replacements"
+      ]
+    }
+  ],
+  "cache_review": {
+    "algorithm_read": "original authority_fields and _declared_aliases; complete baseline index is invariant under the controlled pure function-only append",
+    "scope": "one method and its complete baseline; keyed by original receiver type",
+    "real_file_removal": "always fresh fields cache",
+    "complete_membership_methods_executed": 0,
+    "unchanged_boundary_calls": 39,
+    "full_collections": 3,
+    "full_gate_budget_seconds": 600,
+    "full_gate_timing_proven": false
+  },
+  "literal_review": {
+    "directories": "original function-scoped literal_calls, real join call and ordering; existing complete-body fence preserved",
+    "templates": "new QA requires unique real function, exactly two real format macro spans, raw first string literal arguments, original length-preserving masks",
+    "negative_cases": {
+      "directory": 6,
+      "template_and_decoy": 8
+    },
+    "original_verifier_format_macro_capability_unchanged": true,
+    "generic_read_response_fallback": "existing generic file-level fallback is not a function uniqueness guarantee"
+  },
+  "actual_selected_mutation_run": {
+    "raw_blob": "8edfc8931e9364180a669d5f58d0232621e1baed",
+    "run_blob": "0d4ab1f9a8c37d538278b2ec90a2d05c800f2f07",
+    "methods_passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "inputs_unchanged": true,
+    "wrapper_elapsed_seconds": 0.4696028939997632,
+    "unittest_seconds": 0.348
+  },
+  "not_claimed": [
+    "full source gate",
+    "full caller gate",
+    "Rust runtime tests",
+    "ordinary A/B/C execution",
+    "cold recovery",
+    "adoption or authority",
+    "600-second full gate compliance"
+  ]
+}

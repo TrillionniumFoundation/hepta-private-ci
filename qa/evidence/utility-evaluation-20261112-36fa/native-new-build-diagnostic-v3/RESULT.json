@@ -1,0 +1,56 @@
+{
+  "build_started": false,
+  "error": "RuntimeError: insufficient task-target free space for controlled build",
+  "finished_at": "2026-11-12T11:32:13.950386+00:00",
+  "free_bytes_before": 6018326528,
+  "historical_artifact_scope": {
+    "current_source_basis": "New full physical inventories before and after this diagnostic; independent preserved exact checkout",
+    "missing_original_gzips_reconstructed": false,
+    "retained_original_stage_gzips": 4,
+    "unavailable_original_stage_gzips": [
+      "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/source-after-maintenance.files.json.gz",
+      "/home/qian-qi/hepta-utility-36fa-evidence/native-e8b6fe2a-v1/source-after-eval.files.json.gz"
+    ]
+  },
+  "label": "NEW_BUILD_DIAGNOSTIC",
+  "original_binary_disappearance_cause": "Unknown",
+  "original_run_binary_available": false,
+  "qualification": "Fresh controlled nextest binaries-only build/list for diagnosis; zero test execution, not the original run binary or a native full gate",
+  "source_after": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_before": {
+    "commit": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "files": 14741,
+    "inventory_sha256": "efdf0a2b8aa9879d3ae03c256ac24a23263a195c306f25d9815b05a4af702d56",
+    "status": "",
+    "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+  },
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "started_at": "2026-11-12T11:32:09.226062+00:00",
+  "status": "failed_new_build_diagnostic",
+  "target_state": {
+    "after": {
+      "device": 2050,
+      "inode": 12390321,
+      "mode": "0o700",
+      "mtime_ns": 1794483131767240272
+    },
+    "created_only_if_absent": true,
+    "existed_before": false,
+    "is_symlink": false,
+    "observed_at": "2026-11-12T11:32:11.763094+00:00",
+    "parent_before": {
+      "device": 2050,
+      "inode": 49938433,
+      "mtime_ns": 1794483006342921937
+    },
+    "path": "/home/qian-qi/hepta-utility-36fa-target"
+  },
+  "tests_executed": 0
+}
