@@ -140,6 +140,9 @@ enum PinRecordAccess {
 #[path = "authority_host_historical_source_record.rs"]
 mod record;
 
+#[path = "authority_host_historical_task_data.rs"]
+mod task_data;
+
 impl HostAuthorityService {
     /// Capture only under this actual Initial owner's original writer/pidfd.
     /// A must still be alive, but its Source writer must have released its lock.

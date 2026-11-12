@@ -103,6 +103,15 @@ impl RootRetainedCellDataV1 {
 }
 
 impl OriginalRetainedCellReadV1<'_> {
+    pub(in crate::authority_host_service::generation_initial::historical_source_pin) fn retained_cell_data_digest(
+        &self,
+    ) -> io::Result<Digest32> {
+        Ok(Digest32::of_parts(&[
+            b"hepta.root.original-historical-cell-data-cut.v1\0",
+            &serde_json::to_vec(&self.original.expected).map_err(io::Error::other)?,
+        ]))
+    }
+
     pub(in crate::authority_host_service::generation_initial::historical_source_pin) fn original_cell_publisher_identity(
         &self,
     ) -> io::Result<crate::AgentdIdentity> {
