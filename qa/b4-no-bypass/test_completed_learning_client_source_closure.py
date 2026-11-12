@@ -33,10 +33,12 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         expected = {
             "root_completed_accept_original": (),
-            "root_completed_retain_acceptance": (),
-            "root_completed_accept_capsule": (),
+            "root_completed_retain_acceptance": (
+                AGENT + "learning_iteration_historical_source.rs",),
+            "root_completed_accept_capsule": (
+                AGENT + "learning_iteration_terminal_acceptance.rs",),
             "root_completed_acceptance_construct": (),
-            "root_completed_read_original": (),
+            "root_completed_read_original": (AGENT + "production_post_a_q24.rs",),
             "root_completed_history_current": (
                 AGENT + "config_q24_completed_history.rs", AGENT + "state_q24_completed_history.rs"),
             "root_completed_history_construct": (),
@@ -44,6 +46,9 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
             "root_completed_history_reply": (CLIENT,),
         }
         paths = {CAP, PROTOCOL, CLIENT,
+                 AGENT + "learning_iteration_historical_source.rs",
+                 AGENT + "learning_iteration_terminal_acceptance.rs",
+                 AGENT + "production_post_a_q24.rs",
                  AGENT + "config_q24_completed_history.rs", AGENT + "state_q24_completed_history.rs"}
         index = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
