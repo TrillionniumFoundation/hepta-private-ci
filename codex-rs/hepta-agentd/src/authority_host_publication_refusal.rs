@@ -13,7 +13,11 @@ use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 
 use super::acceptance::PublicationAcceptance;
+
+#[path = "authority_host_publication_completed_refusal.rs"]
+mod completed;
 use super::*;
+pub(crate) use completed::OriginalPublicationHistoryProofV1;
 
 const PURPOSE: &str = "runtime.learning.publication-refusal.v1";
 
@@ -105,7 +109,7 @@ struct RefusalRecord {
     // infer or initialize the complete profile from restored primary bytes.
     original: Option<ReservedPublicationProfile>,
     // Missing in old records is not evidence of a previously accepted Publish.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     publication: Option<PublicationAcceptance>,
 }
 
