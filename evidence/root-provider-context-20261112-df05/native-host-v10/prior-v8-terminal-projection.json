@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "state": "failed",
+  "exit_code": 1,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_bytes": 0,
+  "stderr_bytes": 124,
+  "original": {
+    "bytes": 726,
+    "sha256": "45eab3ef9e0681b9c449dca0eee1fec57c30782e86679a68ea5b8eb4421353bc",
+    "reference": "private native v10 control/history/v8-terminal-native-original.json"
+  },
+  "phase": "history admission after private control files, before Cargo, source edits, commits or publication",
+  "failure": "The submitted v6 stderr copy normalized 99 carriage-return bytes; the original expected hash rejected it.",
+  "recovery": "Preserve the rejected request and raw terminal privately; use byte-preserving UTF-8 decoding with the original expected hash."
+}
