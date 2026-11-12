@@ -353,6 +353,13 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             started.elapsed().as_millis()
         );
     };
+    // These faults change only replies after successful original owner reads.
+    // Share the completed T and its four live Source connections; each case
+    // still gets its own channel, Session and irreversibly consumed client.
+    report("fault-fixture-start", None);
+    let run = completed_candidate().await?;
+    report("fault-fixture-ready", None);
+    let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     for fault in [
         Fault::WrongPage,
         Fault::WrongCompletion,
@@ -363,10 +370,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Fault::WrongFinishDigest,
         Fault::DropFinishAck,
     ] {
-        report("fault-fixture-start", Some(fault));
-        let run = completed_candidate().await?;
-        report("fault-fixture-ready", Some(fault));
-        let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
+        report("fault-case-start", Some(fault));
         let (connection, peer) = page_peer(
             Arc::clone(&run.owner),
             run.fixture.config.clone(),
@@ -388,6 +392,18 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             Err(error) => error,
         };
         report("fault-readback-finished", Some(fault));
+        // Count successful replies from the actual original handler before
+        // any fault mutation. An earlier failed owner cannot satisfy a later
+        // negative case by returning Missing, Pending or Uncertain instead.
+        assert_eq!(peer.original_begins.load(Ordering::Acquire), 1);
+        assert_eq!(
+            peer.original_finishes.load(Ordering::Acquire),
+            if matches!(fault, Fault::WrongFinishDigest | Fault::DropFinishAck) {
+                1
+            } else {
+                0
+            }
+        );
         match fault {
             Fault::WrongPage | Fault::WrongCompletion => assert!(matches!(
                 error,
@@ -434,9 +450,10 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             (run.fixture.training_bytes()?, run.fixture.bytes()?),
             original
         );
-        run.close()?;
-        report("fault-fixture-closed", Some(fault));
+        report("fault-case-finished", Some(fault));
     }
+    run.close()?;
+    report("fault-fixture-closed", None);
 
     report("renewal-fixture-start", None);
     let run = completed_candidate().await?;
