@@ -98,18 +98,18 @@ class CompleteHistoricalTaskSourceTests(unittest.TestCase):
     def test_original_run_start_is_full_record_joined_before_actual_ledger(self):
         for marker in (
             ".read_original_retired_source_cell(load_original_source)?",
-            "self.run_start.require_original_publisher(", "&pin.publisher", "pin.publisher_epoch",
+            "RootOriginalRunStartReadV1::require_original_publisher(", "&pin.publisher", "pin.publisher_epoch",
             "&pin.initial_profile", "&pin.writer", "&pin.target_files",
             "load_original_run_start()?",
             "&run_start.observed.record != source.source.publication().original_record()",
-            "self.ledger.observe_original_terminal(", "&source.source",
+            "PendingOriginalLedgerHistoryV1::observe_original_terminal(", "&source.source",
             "&source.definition", "&source.cell",
         ):
             self.reject(TASK, "fn observe_original_task(", marker)
 
     def test_complete_cut_commits_every_root_retained_data_kind(self):
         for marker in (
-            "self.run_start.retained_digest()?", "ledger.data_cut_digest()?",
+            "RootOriginalRunStartReadV1::retained_digest(self.run_start)?", "RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)?",
             "self.original.target.digest()", "self.handoff_digest.as_array()",
             "source.source_pin_digest.as_array()", "source.cell_cut_digest.as_array()",
             "run_start_digest.as_array()", "ledger_digest.as_array()",

@@ -371,8 +371,9 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
             ("root_initial_run_start_live_retain", "authority_host_run_start_transport.rs"),
         ):
             self.assertEqual(rows[identifier]["product_callers"], [A + caller])
-        for identifier in ("root_initial_run_start_cold_data", "root_initial_run_start_cold_digest",
-                           "root_initial_run_start_cold_physical"):
+        self.assertEqual(rows["root_initial_run_start_cold_data"]["product_callers"],
+                         [A + "authority_host_historical_task.rs"])
+        for identifier in ("root_initial_run_start_cold_digest", "root_initial_run_start_cold_physical"):
             self.assertEqual(rows[identifier]["product_callers"], [])
         self.remove(A + "production_initial_q24.rs", "assemble_original_initial_q24", (
             "self.retain_original_initial_run_start(&published)?",
