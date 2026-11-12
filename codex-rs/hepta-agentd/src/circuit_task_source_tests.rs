@@ -37,6 +37,10 @@ type Source = DurableCircuitTaskSourceV1<FileAnchorWitnessStore>;
 #[path = "circuit_task_source_history_tests.rs"]
 mod history;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_data_tests.rs"]
+pub(crate) mod data;
+
 fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)

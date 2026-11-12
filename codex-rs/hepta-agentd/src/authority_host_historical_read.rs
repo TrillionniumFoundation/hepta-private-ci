@@ -24,6 +24,8 @@ use crate::HostAuthorityServiceConfig;
 use crate::RootHistoricalSourceInputsV1;
 use crate::authority_host_runtime::RootInitialRunStartFilesV1;
 use crate::authority_host_service::generation_initial::cell_retention::RootHistoricalCellInputsV1;
+use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalCompleteTaskObservationV1;
+use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalTaskReadV1;
 use crate::authority_host_service::generation_initial::historical_source_pin::RootRetainedHistoricalCompleteTaskV1;
 use crate::authority_host_service::generation_initial::original_root;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadProfileV1;
@@ -174,8 +176,9 @@ impl HistoricalTaskReadRuntime {
                         if expected != initial || self.phase.load(Ordering::Acquire) != SERVING {
                             return Err(io::Error::other("original historical recipient changed"));
                         }
-                        read.require_original_target(&self.deployment.target)?;
-                        let observed = read.observe_original_task(
+                        RootOriginalHistoricalTaskReadV1::require_original_target(read, &self.deployment.target)?;
+                        let observed: RootOriginalHistoricalCompleteTaskObservationV1 = RootOriginalHistoricalTaskReadV1::observe_original_task(
+                            read,
                             |identity| {
                                 RootHistoricalSourceInputsV1::open_original_source_deployment(
                                     &self.deployment.source_deployment,
@@ -194,8 +197,9 @@ impl HistoricalTaskReadRuntime {
                             purpose: PURPOSE.into(),
                             request_id,
                             profile: self.profile.binding.clone(),
-                            data_cut: observed.data_cut_digest().to_string(),
-                            ledger: observed.ledger_read_data()?,
+                            data_cut: RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(&observed).to_string(),
+                            ledger: RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?,
+                            publication: RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(&observed),
                         })
                         .map_err(io::Error::other)?;
                         if reply.is_empty() || reply.len() > WIRE_BOUND {
