@@ -301,6 +301,8 @@ pub(crate) use selection_command::original_readback_test_ports;
 #[cfg(test)]
 pub(crate) use tests::fixture_original_receipt_client_until_close;
 #[cfg(test)]
+pub(crate) use tests::fixture_original_receipt_sequence_until_close;
+#[cfg(test)]
 pub(crate) use training_command::command_test_support;
 #[cfg(test)]
 pub(crate) use training_command::original_bootstrap_test_ports;
