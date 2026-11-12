@@ -15,6 +15,9 @@ use pretty_assertions::assert_eq;
 #[path = "product_execution_readback_tests.rs"]
 mod readback;
 
+#[path = "product_execution_physical_tests.rs"]
+mod physical;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn digest(value: &str) -> Digest32 {
