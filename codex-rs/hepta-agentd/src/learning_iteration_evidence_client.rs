@@ -323,3 +323,11 @@ pub(crate) use ordinary_stage_owners::recovered_material_only;
 pub(crate) use ordinary_stage_owners::fixture_from_original_clients;
 #[cfg(test)]
 pub(crate) use ordinary_stage_owners::recovered_candidate_clients;
+
+#[path = "circuit_candidate_next_use_command.rs"]
+mod candidate_next_use_command;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandClientV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandContextV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandErrorV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandOwnerV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandReceiptV1;

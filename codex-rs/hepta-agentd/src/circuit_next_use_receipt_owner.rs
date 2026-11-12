@@ -55,8 +55,14 @@ pub enum OriginalCircuitNextUseReceiptErrorV1 {
     Evidence(#[from] SignedEvidenceError),
     #[error("original published Circuit read capability: {0}")]
     PublishedRead(#[from] OriginalCircuitLearningReadErrorV1),
+    #[error("original positive published Circuit read capability: {0}")]
+    CandidatePublishedRead(#[from] crate::OriginalCircuitCandidateLearningReadErrorV1),
 }
 type Error = OriginalCircuitNextUseReceiptErrorV1;
+
+#[path = "circuit_candidate_next_use_receipt_sources.rs"]
+mod candidate_remote;
+pub(crate) use candidate_remote::OriginalCircuitCandidateNextUseRemoteSourcesV1;
 
 #[path = "circuit_next_use_readback_host.rs"]
 mod readback_host;
@@ -685,6 +691,19 @@ fn sign_original(
         .checked_add(config.maximum_signature_lifetime_seconds)
         .ok_or(OwnerError::Binding("signature deadline overflow"))?
         .min(config.signer.principal.expires_at);
+    // Positive S is already capped by all original Model and complete E-panel
+    // windows. Keep the existing TrainingNoUpdate signing path unchanged.
+    let expires_at = if config.selection.training_no_update_v2().is_none() {
+        expires_at
+            .min(config.training_evidence.expires_at)
+            .min(config.selection_evidence.expires_at)
+            .min(config.selection.request.envelope.expiry_unix_seconds)
+    } else {
+        expires_at
+    };
+    if expires_at <= issued_at {
+        return Err(OwnerError::Binding("empty original C signature window"));
+    }
     let mut signed = SignedLearningEvidenceV1 {
         evidence_id: evidence_id(identity)?,
         principal_id: config.signer.principal.principal_id.clone(),

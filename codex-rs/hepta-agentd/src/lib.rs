@@ -1472,3 +1472,26 @@ pub use artifact_original_head::OriginalArtifactHeadOwnerV1;
 pub use artifact_original_head::OriginalArtifactRegistrySourceClientV1;
 #[cfg(target_os = "linux")]
 pub use artifact_original_head::OriginalArtifactRegistrySourceOwnerV1;
+
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandContextV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadClientV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadContextV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadbackV1;
+#[cfg(target_os = "linux")]
+pub(crate) use circuit_feature_current::OriginalCircuitCandidateCompletionReadinessClientV1;

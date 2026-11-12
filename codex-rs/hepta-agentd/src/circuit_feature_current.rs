@@ -39,6 +39,8 @@ mod control;
 mod learning;
 #[path = "circuit_learning_read_capability.rs"]
 mod learning_read;
+#[path = "circuit_candidate_learning_read_capability.rs"]
+mod candidate_learning_read;
 #[path = "circuit_feature_current_owner.rs"]
 mod owner;
 #[path = "circuit_feature_current_recovery.rs"]
@@ -48,6 +50,12 @@ mod retirement;
 
 #[path = "circuit_learning_retained_publication.rs"]
 mod retained_publication;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadClientV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadContextV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadErrorV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadOwnerV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadbackV1;
+pub(crate) use candidate_learning_read::OriginalCircuitCandidateCompletionReadinessClientV1;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
