@@ -12,6 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from . import episodic_local_provider as provider
+from .episodic_local_worker import read_model_input
 
 
 class LocalProviderTests(unittest.TestCase):
@@ -213,6 +214,122 @@ class LocalProviderTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     provider._records(marker + b"[]\n")
             execute.assert_not_called()
+
+    def test_returned_generation_requires_and_retains_exact_model_input(self):
+        model_input = provider._canonical(
+            {
+                "schema": "hepta.mem12.model-input.v1",
+                "request_sha256": provider._pin(self.request)["sha256"],
+                "rendered_prompt": "public rendered C: 蓝色",
+                "tensors": {
+                    "input_ids": {
+                        "dtype": "torch.int64",
+                        "shape": [1, 2],
+                        "values": [[7, 9]],
+                    },
+                    "attention_mask": {
+                        "dtype": "torch.int64",
+                        "shape": [1, 2],
+                        "values": [[1, 1]],
+                    },
+                },
+            }
+        )
+
+        def capture(command, log, **kwargs):
+            bootstrap = {
+                "empty": True,
+                "namespaces": {
+                    name: "fixture-" + name
+                    for name in ("mnt", "pid", "net", "ipc", "uts", "user")
+                },
+            }
+            result = {
+                "request_sha256": provider._pin(self.request)["sha256"],
+                "model_input": provider._pin(model_input),
+                "prompt_tokens": 2,
+            }
+            log.write_bytes(
+                b"MEM11_BOOTSTRAP "
+                + provider._canonical(bootstrap)
+                + b"\nMEM12_MODEL_INPUT "
+                + model_input
+                + b"\nMEM11_RESULT "
+                + provider._canonical(result)
+                + b"\n"
+            )
+            return {"returncode": 0, "timed_out": False, "output_limit_exceeded": False}
+
+        with patch.object(provider, "execute_logged", side_effect=capture) as execute:
+            first = self.run_provider()
+            self.assertEqual(first["status"], "RETURNED")
+            output = self.root / "journal" / hashlib.sha256(b"fixture-id").hexdigest()
+            self.assertEqual((output / "model-input.json").read_bytes(), model_input)
+            self.assertEqual(self.run_provider(), first)
+            original_log = (output / "combined.log").read_bytes()
+            for change in ("nonempty", "namespaces", "runtime", "source"):
+                retained = json.loads(provider._canonical(first))
+                if change == "nonempty":
+                    retained["bootstrap"]["empty"] = False
+                elif change == "namespaces":
+                    retained["bootstrap"]["namespaces"] = retained["host_namespaces"]
+                elif change == "runtime":
+                    retained["runtime_after"]["sha256"] = "0" * 64
+                else:
+                    retained["source_unchanged"] = False
+                log = (
+                    b"MEM11_BOOTSTRAP "
+                    + provider._canonical(retained["bootstrap"])
+                    + b"\n"
+                    + original_log.split(b"\n", 1)[1]
+                )
+                retained["combined_log"] = provider._pin(log)
+                (output / "combined.log").write_bytes(log)
+                (output / "RECEIPT.json").write_bytes(provider._canonical(retained))
+                with (
+                    self.subTest(change=change),
+                    self.assertRaisesRegex(ValueError, "contradicts"),
+                ):
+                    self.run_provider()
+            (output / "combined.log").write_bytes(original_log)
+            (output / "RECEIPT.json").write_bytes(provider._canonical(first))
+            (output / "model-input.json").write_bytes(b"changed")
+            self.assertEqual(self.run_provider()["status"], "UNKNOWN")
+            self.assertEqual(execute.call_count, 1)
+
+    def test_model_input_rejects_mismatched_request_shape_and_missing_records(self):
+        document = {
+            "schema": "hepta.mem12.model-input.v1",
+            "request_sha256": provider._pin(self.request)["sha256"],
+            "rendered_prompt": "public rendered C",
+            "tensors": {
+                "input_ids": {"dtype": "torch.int64", "shape": [1, 1], "values": [[8]]},
+                "attention_mask": {
+                    "dtype": "torch.int64",
+                    "shape": [1, 1],
+                    "values": [[1]],
+                },
+            },
+        }
+        for change in ("request", "shape", "boolean", "mask", "missing", "duplicate"):
+            altered = json.loads(provider._canonical(document))
+            if change == "request":
+                altered["request_sha256"] = "0" * 64
+            elif change == "shape":
+                altered["tensors"]["input_ids"]["shape"] = [1, 2]
+            elif change == "boolean":
+                altered["tensors"]["input_ids"]["values"] = [[True]]
+            elif change == "mask":
+                altered["tensors"]["attention_mask"]["values"] = [[2]]
+            raw = provider._canonical(altered)
+            log = b"MEM12_MODEL_INPUT " + raw + b"\n"
+            if change == "missing":
+                log = b"no model input\n"
+            elif change == "duplicate":
+                log *= 2
+            result = {"model_input": provider._pin(raw), "prompt_tokens": 1}
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                read_model_input(log, provider._pin(self.request), result)
 
     def test_supervisor_preserves_only_explicit_descriptor(self):
         read, write = os.pipe()

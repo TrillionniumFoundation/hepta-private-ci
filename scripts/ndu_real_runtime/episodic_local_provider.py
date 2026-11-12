@@ -18,7 +18,8 @@ import time
 from hepta_ci_exec import execute_logged
 import hepta_ci_exec
 
-from . import episodic_provider_handoff
+from . import episodic_local_worker, episodic_provider_handoff
+from .episodic_local_worker import WORKER, verify_returned_generation
 from .episodic_provider_handoff import (
     _canonical,
     _json,
@@ -31,7 +32,7 @@ from .episodic_provider_handoff import (
 _LOADED_SOURCE = _read_regular(Path(__file__), 65536)
 _LOADED_DEPENDENCIES = {
     Path(module.__file__): _read_regular(Path(module.__file__), 65536)
-    for module in (hepta_ci_exec, episodic_provider_handoff)
+    for module in (hepta_ci_exec, episodic_provider_handoff, episodic_local_worker)
 }
 
 MODEL_NAMES = {
@@ -44,45 +45,6 @@ MODEL_NAMES = {
     "merges.txt",
     "vocab.json",
 }
-WORKER = r"""
-import hashlib, json, os, resource, sys
-from pathlib import Path
-os.environ.pop("PWD", None)
-resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-resource.setrlimit(resource.RLIMIT_FSIZE, (1048576, 1048576))
-print("MEM11_BOOTSTRAP " + json.dumps({
- "namespaces": {n: os.readlink("/proc/self/ns/"+n)
- for n in ("mnt", "pid", "net", "ipc", "uts", "user")},
- "empty": all(not os.listdir(p) for p in ("/home/provider", "/cache", "/work"))
-}, sort_keys=True), flush=True)
-sys.path.insert(0, "/runtime/site")
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
-torch.set_num_threads(4)
-torch.manual_seed(0)
-raw = Path("/input/request.json").read_bytes()
-request = json.loads(raw)
-tokenizer = AutoTokenizer.from_pretrained("/model", local_files_only=True,
- trust_remote_code=False)
-model = AutoModelForCausalLM.from_pretrained("/model", local_files_only=True,
- trust_remote_code=False, use_safetensors=True, dtype=torch.float32).eval()
-prompt = tokenizer.apply_chat_template([{"role":"user", "content":request["input"]}],
- tokenize=False, add_generation_prompt=True)
-inputs = tokenizer(prompt, return_tensors="pt", truncation=False)
-if inputs["input_ids"].shape[1] > 1024:
- raise ValueError("input token budget exceeded")
-with torch.inference_mode():
- result = model.generate(**inputs, do_sample=False,
-  max_new_tokens=request["max_output_tokens"], use_cache=True,
-  pad_token_id=tokenizer.eos_token_id)
-tokens = result[0, inputs["input_ids"].shape[1]:].tolist()
-usage = resource.getrusage(resource.RUSAGE_SELF)
-print("MEM11_RESULT " + json.dumps({"request_sha256":hashlib.sha256(raw).hexdigest(),
- "text":tokenizer.decode(tokens, skip_special_tokens=True), "tokens":tokens,
- "prompt_tokens":int(inputs["input_ids"].shape[1]),
- "user_cpu_seconds":usage.ru_utime, "system_cpu_seconds":usage.ru_stime,
- "max_rss_kib":usage.ru_maxrss}, sort_keys=True), flush=True)
-"""
 
 
 @dataclass(frozen=True)
@@ -121,6 +83,16 @@ def _document(raw):
         return _json(raw)
     except (RecursionError, UnicodeError) as error:
         raise ValueError("invalid or excessively nested provider document") from error
+
+
+def _source_unchanged():
+    try:
+        return _read_regular(Path(__file__), 65536) == _LOADED_SOURCE and all(
+            _read_regular(path, 65536) == raw
+            for path, raw in _LOADED_DEPENDENCIES.items()
+        )
+    except (OSError, ValueError):
+        return False
 
 
 def runtime_inventory(path):
@@ -297,6 +269,7 @@ def run_local_provider(
         for name, pin in (
             ("request.bin", admission["request"]),
             ("combined.log", retained.get("combined_log")),
+            ("model-input.json", retained.get("model_input")),
         ):
             if pin is not None and (
                 not (output / name).is_file()
@@ -312,24 +285,13 @@ def run_local_provider(
             raise ValueError("invalid local terminal status")
         if retained["status"] == "RETURNED":
             log = _read_regular(output / "combined.log", 1048576)
-            boots, results = _records(log)
-            execution = retained.get("execution")
-            if not isinstance(execution, dict):
-                raise ValueError("retained execution must be an object")
+            model_raw = verify_returned_generation(retained, log)
             if (
-                not isinstance(retained.get("combined_log"), dict)
-                or _pin(log) != retained["combined_log"]
-                or retained.get("local_generation_returned") is not True
-                or boots != [retained.get("bootstrap")]
-                or results != [retained.get("result")]
-                or execution.get("returncode") != 0
-                or execution.get("timed_out") is not False
-                or execution.get("output_limit_exceeded") is not False
-                or not results
-                or results[0].get("request_sha256") != admission["request"]["sha256"]
+                _pin(model_raw) != retained.get("model_input")
+                or _read_regular(output / "model-input.json", 1048576) != model_raw
             ):
                 raise ValueError(
-                    "returned terminal is not bound to complete generation evidence"
+                    "retained model input differs from generation evidence"
                 )
         elif retained.get("local_generation_returned") is not False:
             raise ValueError("nonreturned terminal claims generation")
@@ -456,39 +418,24 @@ def run_local_provider(
         raw = _read_regular(output / "combined.log", 1048576)
         receipt["combined_log"] = _pin(raw)
         boots, results = _records(raw)
-        if (
-            receipt["execution"]["returncode"] == 0
-            and not receipt["execution"]["timed_out"]
-            and not receipt["execution"]["output_limit_exceeded"]
-            and receipt["runtime_after"] == before
-            and len(boots) == len(results) == 1
-            and boots[0]["empty"] is True
-            and isinstance(boots[0].get("namespaces"), dict)
-            and set(boots[0]["namespaces"]) == set(namespaces)
-            and all(isinstance(boots[0]["namespaces"][n], str) for n in namespaces)
-            and all(boots[0]["namespaces"][n] != namespaces[n] for n in namespaces)
-            and results[0]["request_sha256"] == admission["request"]["sha256"]
-        ):
-            receipt.update(
-                status="RETURNED",
-                local_generation_returned=True,
-                bootstrap=boots[0],
-                result=results[0],
-            )
+        if len(boots) == len(results) == 1:
+            candidate = {
+                **receipt,
+                "status": "RETURNED",
+                "local_generation_returned": True,
+                "bootstrap": boots[0],
+                "result": results[0],
+                "source_unchanged": _source_unchanged(),
+            }
+            model_raw = verify_returned_generation(candidate, raw)
+            _write(output / "model-input.json", model_raw)
+            receipt.update(candidate, model_input=_pin(model_raw))
     except (OSError, ValueError, RuntimeError, KeyError) as error:
         receipt["error"] = type(error).__name__ + ": " + str(error)
     finally:
         for fd in descriptors:
             os.close(fd)
-        try:
-            receipt["source_unchanged"] = _read_regular(
-                Path(__file__), 65536
-            ) == _LOADED_SOURCE and all(
-                _read_regular(path, 65536) == raw
-                for path, raw in _LOADED_DEPENDENCIES.items()
-            )
-        except (OSError, ValueError):
-            receipt["source_unchanged"] = False
+        receipt["source_unchanged"] = _source_unchanged()
         if not receipt["source_unchanged"]:
             receipt.update(status="SOURCE_CHANGED", local_generation_returned=False)
         receipt["ended_at_unix_ns"] = time.time_ns()
