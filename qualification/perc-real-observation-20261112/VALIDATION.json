@@ -1,0 +1,41 @@
+{
+  "active_final_byte_execution": "ACTIVE_REPORT.json and ACTIVE_COMMAND_ENVELOPE.json",
+  "adoption": "NoUpdate",
+  "browser_evidence": "actual Chromium process starts, then process_singleton_posix.cc:297 socket() returns EPERM; no sandbox override added",
+  "browser_gate": "BLOCKED_LOCAL_ENVIRONMENT",
+  "final_full_regression_repeated_locally": false,
+  "first_full_regression": {
+    "command_wall_ns": 28902791366,
+    "errors": 3,
+    "errors_by_cause": {
+      "chromium_socket_EPERM": 1,
+      "fixture_missing_required_retained_native_text": 2
+    },
+    "failures": 0,
+    "passed": 146,
+    "process_returncode": 1,
+    "raw_stderr_sha256": "cec1a4d7a99a98a29a3831139d7fd7cd771dac93479bcb6dbffb8f2daf7fe279",
+    "skipped": 0,
+    "sources_unchanged": true,
+    "tests_run": 149
+  },
+  "fixture_correction": {
+    "code_behavior": "supply actual exact_text and its original byte SHA in test fixture; no production validator relaxed",
+    "passed": 2,
+    "raw_record": {
+      "finished_ns": 1794444424446307950,
+      "preceding_failure": "/workspace/scratch/e11c579132dc/validation/final-perc-regression-001/stderr.bin",
+      "returncode": 0,
+      "run_id": "active-source-fixture-002",
+      "scope": "repair fixture exact_text to match actual retained source; no validation relaxed",
+      "source_sha256": "5ab0a0f51b898b8349fad69e81c0e89ee148367daa30c029ba1a0a417b00c941",
+      "started_ns": 1794444424231015170,
+      "status": "PASS"
+    },
+    "targeted_tests_run": 2
+  },
+  "independent_confirmation_executed": false,
+  "ordinary_source_final_byte_execution": "SOURCE_NATIVE_REPORT.json",
+  "schema": "perc1.integration-validation.v1",
+  "scientific_status": "HOLD"
+}

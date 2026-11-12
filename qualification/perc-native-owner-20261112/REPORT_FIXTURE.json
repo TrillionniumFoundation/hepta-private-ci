@@ -1,0 +1,35 @@
+{
+  "schema": "perc1.native-owner-qualification-report.v1",
+  "status": "PASS_LOCAL_MECHANISM_ONLY",
+  "scientific_status": "HOLD",
+  "input_classification": "hand_authored_interoperability",
+  "classification_scope": "caller declaration; capture provenance must be checked separately",
+  "binary_sha256": "5cecad8e2e6706cba3b04c3786811921186576fed8817174f536cc93d1f7625c",
+  "inputs_sha256": {
+    "/workspace/scratch/e11c579132dc/perc-native-fixture-v1/wire.json": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b",
+    "/workspace/scratch/e11c579132dc/perc-native-fixture-v1/raster.rgb": "5ec3819d8a8f5d08142ce0ca2c16d212d0aa451fefbfebfe92f98451ac8fef3d",
+    "/workspace/scratch/e11c579132dc/perc-native-fixture-v1/expected.json": "5f09aee22b2e0d60198c0e98a58a5732a4c6fff176d8ccf064287ae1eed711d1",
+    "/workspace/scratch/e11c579132dc/perc-native-qualification-fixture-v2/diagnostic-head.json": "cadd286e3a70c064bcaa99b0379268621de61fd6289c3191cac00475d06e975a"
+  },
+  "native_library_owner": "CellOwnerJournalV1<FileAnchorWitnessStore>",
+  "actual_head_executions": 2,
+  "head_provenance": "hand_authored_diagnostic_no_training_claim",
+  "head_outputs_match_independent_integer_oracle": true,
+  "completed_cold_replays_without_encoder_or_inference": 3,
+  "lost_ack_recovered_from_original_without_new_compute": true,
+  "missing_or_changed_original_keeps_pending_without_new_compute": true,
+  "negative_controls": {
+    "source-drift": true,
+    "head-drift": true,
+    "source-rebound": true,
+    "journal-rollback": true,
+    "no-original-admission": true
+  },
+  "native_cell_owner_exercised": true,
+  "daemon_admission_exercised": false,
+  "trained_semantic_model_executed": false,
+  "production_owner_enrolled": false,
+  "independent_real_task_benefit_established": false,
+  "measurements": "child command wall; native head wall/vector capacity; no CPU/RSS/energy/billing qualification",
+  "invocations": 13
+}

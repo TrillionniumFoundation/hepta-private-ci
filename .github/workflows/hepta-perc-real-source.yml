@@ -1,0 +1,327 @@
+name: Hepta PERC real-source engineering qualification
+
+on:
+  push:
+    branches: [codex/perc-real-observation-20261112-e11c]
+    paths:
+      - scripts/perc1/**
+      - scripts/perc1_*.py
+      - scripts/perc1_*.rs
+      - scripts/test_perc1*.py
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - .github/workflows/hepta-perc-real-source.yml
+  pull_request:
+    paths:
+      - scripts/perc1/**
+      - scripts/perc1_*.py
+      - scripts/perc1_*.rs
+      - scripts/test_perc1*.py
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - .github/workflows/hepta-perc-real-source.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perc-real-source-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  engineering:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: ${{ github.workspace }}/scripts
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Check out the exact candidate source
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Set up Python 3.12
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Bind source and separate publishable records from original inputs
+        id: bind
+        env:
+          PERC_CI_PRIVATE: ${{ runner.temp }}/perc-real-source-private
+          PERC_CI_PUBLIC: ${{ runner.temp }}/perc-real-source-public
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/perc-real-source-browsers
+          PERC_TEST_MOBILENET_WEIGHTS: ${{ runner.temp }}/perc-real-source-private/inputs/mobilenet_v3_small-047dcff4.pth
+          PERC_TEST_DOCUMENT_DATASET: ${{ runner.temp }}/perc-real-source-private/inputs/funsd-panel
+          PERC_TEST_DOCUMENT_OUTPUT_DIR: ${{ runner.temp }}/perc-real-source-private/document-smoke
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          private, public = Path(os.environ['PERC_CI_PRIVATE']), Path(os.environ['PERC_CI_PUBLIC'])
+          private.mkdir(mode=0o700)
+          public.mkdir()
+          with Path(os.environ['GITHUB_ENV']).open('a') as exported:
+              for key in ('PERC_CI_PRIVATE', 'PERC_CI_PUBLIC', 'PLAYWRIGHT_BROWSERS_PATH',
+                          'PERC_TEST_MOBILENET_WEIGHTS', 'PERC_TEST_DOCUMENT_DATASET',
+                          'PERC_TEST_DOCUMENT_OUTPUT_DIR'):
+                  exported.write(key + '=' + os.environ[key] + '\n')
+          paths = subprocess.check_output([
+              'git', 'ls-files', '-z', '--', 'scripts/perc1', 'scripts/perc1_*.py',
+              'scripts/perc1_*.rs', 'scripts/test_perc1*.py', 'codex-rs/hepta-neuron',
+              'codex-rs/hepta-infer-core', 'codex-rs/hepta-types',
+              '.github/workflows/hepta-perc-real-source.yml',
+          ]).decode().split('\0')
+          pins = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths if p}
+          (public / 'SOURCE_BEFORE.json').write_text(json.dumps({
+              'commit': os.environ['SOURCE_SHA'],
+              'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'source_sha256': pins,
+          }, indent=2) + '\n')
+          PY
+      - name: Install pinned CPU runtime, OCR, browser and native toolchain
+        id: runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-eng fonts-dejavu-core build-essential pkg-config
+          python -m pip install --disable-pip-version-check --no-cache-dir numpy==1.26.4 Pillow==10.2.0 playwright==1.62.0
+          python -m pip install --disable-pip-version-check --no-cache-dir torch==2.8.0+cpu torchvision==0.23.0+cpu --index-url https://download.pytorch.org/whl/cpu
+          python -m playwright install --with-deps chromium
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+          rustc --version --verbose > "$PERC_CI_PUBLIC/toolchain.txt"
+          cargo --version >> "$PERC_CI_PUBLIC/toolchain.txt"
+          tesseract --version >> "$PERC_CI_PUBLIC/toolchain.txt" 2>&1
+      - name: Verify actual Chromium ELF and runtime identities
+        id: browser
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, importlib.metadata, json, os
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          expected = {'torch': '2.8.0+cpu', 'torchvision': '0.23.0+cpu',
+                      'numpy': '1.26.4', 'Pillow': '10.2.0', 'playwright': '1.62.0'}
+          versions = {name: importlib.metadata.version(name) for name in expected}
+          assert versions == expected, versions
+          with sync_playwright() as runtime:
+              binary = Path(runtime.chromium.executable_path).resolve(strict=True)
+          with binary.open('rb') as stream:
+              assert stream.read(4) == b'\x7fELF', 'Chromium must be the actual ELF binary'
+              stream.seek(0)
+              binary_sha = hashlib.file_digest(stream, 'sha256').hexdigest()
+          with Path(os.environ['GITHUB_ENV']).open('a') as stream:
+              stream.write('PERC_TEST_CHROMIUM=' + str(binary) + '\n')
+          Path(os.environ['PERC_CI_PUBLIC'], 'RUNTIME.json').write_text(json.dumps({
+              'versions': versions, 'chromium_path': str(binary), 'chromium_sha256': binary_sha,
+              'workflow_sandbox_overrides': False,
+          }, indent=2) + '\n')
+          PY
+      - name: Fetch full-SHA-pinned official inputs and prepare the default panel
+        id: inputs
+        run: |
+          set -euo pipefail
+          python scripts/perc1_ci_inputs.py --output "$PERC_CI_PRIVATE/inputs" > "$PERC_CI_PUBLIC/INPUTS.json"
+      - name: Run all PERC Python cases with real weight, document and browser prerequisites
+        id: tests
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import contextlib, json, os, sys, time, unittest
+          from pathlib import Path
+          private, public = Path(os.environ['PERC_CI_PRIVATE']), Path(os.environ['PERC_CI_PUBLIC'])
+          cases = {}
+          class Recorded(unittest.TextTestResult):
+              def startTest(self, test):
+                  cases[test.id()] = 'started'
+                  super().startTest(test)
+              def addSuccess(self, test):
+                  cases[test.id()] = 'passed'
+                  super().addSuccess(test)
+              def addError(self, test, err):
+                  cases[test.id()] = 'error'
+                  super().addError(test, err)
+              def addFailure(self, test, err):
+                  cases[test.id()] = 'failed'
+                  super().addFailure(test, err)
+              def addSkip(self, test, reason):
+                  cases[test.id()] = 'skipped'
+                  super().addSkip(test, reason)
+          started = time.perf_counter_ns()
+          with (private / 'tests.stdout.log').open('x') as stdout, (private / 'tests.stderr.log').open('x') as stderr:
+              with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                  suite = unittest.defaultTestLoader.discover('scripts', pattern='test_perc1*.py')
+                  result = unittest.TextTestRunner(stream=stderr, verbosity=2, resultclass=Recorded).run(suite)
+          required = [
+              'test_perc1_browser_capture.BrowserCaptureTests.test_actual_capture_preserves_dom_and_denies_outside_origin',
+              'test_perc1_browser_capture.BrowserCaptureTests.test_binary_pin_refuses_before_any_navigation',
+              'test_perc1_document_actor.DocumentExecutedTests.test_real_train_document_all_seven_conditions',
+              'test_perc1_source_capture.SourceCaptureTests.test_actual_tesseract_retains_executed_output_without_correctness_claim',
+          ]
+          producer = [name for name in cases if name.startswith('test_perc1_producer.ProducerExecutionTests.')]
+          complete = (result.wasSuccessful() and result.testsRun >= 127 and not result.skipped
+                      and not result.expectedFailures and not result.unexpectedSuccesses
+                      and producer and all(cases.get(name) == 'passed' for name in required + producer))
+          report = {
+              'schema': 'perc1.scoped-ci-tests.v1', 'status': 'PASS' if complete else 'FAIL',
+              'tests_run': result.testsRun, 'passed': sum(s == 'passed' for s in cases.values()),
+              'failures': len(result.failures), 'errors': len(result.errors), 'skipped': len(result.skipped),
+              'wall_ns': time.perf_counter_ns() - started, 'cases': cases,
+              'required_real_cases': required + producer, 'scientific_qualified': False,
+              'raw_log_policy': 'raw assertion output stays runner-private; published log contains case IDs/statuses only',
+          }
+          (public / 'TESTS.json').write_text(json.dumps(report, indent=2) + '\n')
+          (public / 'tests.log').write_text('\n'.join(status.upper() + ' ' + name for name, status in cases.items()) + '\n')
+          print(json.dumps({k: v for k, v in report.items() if k not in ('cases', 'required_real_cases')}, indent=2))
+          sys.exit(0 if complete else 1)
+          PY
+      - name: Build the minimal native owner from the exact source tree
+        id: native
+        run: |
+          set -euo pipefail
+          python scripts/perc1_native_owner_probe.py --repo "$GITHUB_WORKSPACE" \
+            --source-ref "$SOURCE_SHA" --build-dir "$PERC_CI_PRIVATE/native-build" \
+            --cargo "$(rustup which --toolchain 1.96.0 cargo)" \
+            --rustc "$(rustup which --toolchain 1.96.0 rustc)" --online \
+            > "$PERC_CI_PRIVATE/native-build-driver.stdout.log" 2> "$PERC_CI_PRIVATE/native-build-driver.stderr.log"
+      - name: Execute real source to native owner and cold-recovery qualification
+        id: source
+        run: |
+          set -euo pipefail
+          python -m perc1.source_qualification \
+            --training-images "$PERC_CI_PRIVATE/inputs/funsd/dataset/training_data/images" \
+            --acquisition-manifest "$PERC_CI_PRIVATE/inputs/funsd-acquisition.json" \
+            --weights "$PERC_TEST_MOBILENET_WEIGHTS" \
+            --weights-sha256 047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f \
+            --native-binary "$PERC_CI_PRIVATE/native-build/target/debug/perc1-native-cell-probe" \
+            --output "$PERC_CI_PRIVATE/source-qualification" \
+            > "$PERC_CI_PRIVATE/source-qualification.stdout.log" 2> "$PERC_CI_PRIVATE/source-qualification.stderr.log"
+      - name: Execute active source acquisition, STOP and cold decision replay
+        id: active
+        run: |
+          set -euo pipefail
+          python -m perc1.active_source_qualification \
+            --prior-run "$PERC_CI_PRIVATE/source-qualification" \
+            --training-images "$PERC_CI_PRIVATE/inputs/funsd/dataset/training_data/images" \
+            --weights "$PERC_TEST_MOBILENET_WEIGHTS" \
+            --output "$PERC_CI_PRIVATE/active-qualification" \
+            > "$PERC_CI_PRIVATE/active-qualification.stdout.log" 2> "$PERC_CI_PRIVATE/active-qualification.stderr.log"
+      - name: Retain bounded public summaries and complete-byte provenance on every outcome
+        if: always()
+        env:
+          PRIOR_JOB_STATUS: ${{ job.status }}
+          STAGE_OUTCOMES: ${{ toJSON(steps) }}
+          PERC_CI_PRIVATE: ${{ runner.temp }}/perc-real-source-private
+          PERC_CI_PUBLIC: ${{ runner.temp }}/perc-real-source-public
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, shutil, subprocess, sys
+          from pathlib import Path
+          private, public = Path(os.environ['PERC_CI_PRIVATE']), Path(os.environ['PERC_CI_PUBLIC'])
+          public.mkdir(exist_ok=True)
+          def read(path):
+              return json.loads(path.read_text()) if path.is_file() else None
+          def select(value, fields):
+              return {key: value[key] for key in fields.split() if key in value}
+          before = read(public / 'SOURCE_BEFORE.json')
+          actual = subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True)
+          after = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+                   for p in before['source_sha256'] if Path(p).is_file()} if before else {}
+          unchanged = bool(before and before['source_sha256'] == after
+                           and actual.stdout.strip() == os.environ['SOURCE_SHA'])
+          build = read(private / 'native-build/build.json')
+          tests = read(public / 'TESTS.json')
+          document = read(private / 'document-smoke/summary.json')
+          source = read(private / 'source-qualification/REPORT.json')
+          active = read(private / 'active-qualification/REPORT.json')
+          source_failure = read(private / 'source-qualification/FAILURE.json')
+          summaries = {}
+          if document:
+              summaries['DOCUMENT_SMOKE.json'] = select(document, 'schema status scope train_document conditions records formal_trace_count encoder_calls scientific_qualified conditions_summary')
+          if source:
+              summaries['SOURCE_QUALIFICATION.json'] = select(source, 'schema status scientific_status adoption source_code_sha256 source training execution_counts continuity limits production_daemon_integrated trained_semantic_head_executed')
+              summaries['SOURCE_QUALIFICATION.json']['source_evidence'] = select(source['source_evidence'], 'verified_artifact_count evidence_sha256 ocr_span_count ocr_accuracy_verified native_text full_document_text_consumed_by_native_head')
+              summaries['SOURCE_QUALIFICATION.json']['native'] = select(source['native'], 'schema status invocations actual_head_executions completed_cold_replays_without_encoder_or_inference negative_controls native_cell_owner_exercised daemon_admission_exercised production_owner_enrolled independent_real_task_benefit_established')
+          if build:
+              summaries['NATIVE_BUILD.json'] = build
+          if active:
+              summaries['ACTIVE_QUALIFICATION.json'] = select(active, 'schema status head_sha256 code_pins_sha256 config_sha256 projection_file_sha256 projection_backbone_batches_this_run actual_online_backbone_batches actual_source_callbacks distinct_original_documents nested_crop_observations independent_real_tasks real_value_training_pairs diagnostic_fixture_fits hand_controlled_diagnostic attempts_reserved attempt_budget stop_effects replay_new_effects decision_cold_reads source_cold_reads expected_negative_controls parent_wall_ns parent_process_cpu_ns cost_scope energy_joules provider_billing terminal_task_quality measured_net_benefit scientific_qualified production_daemon_integrated adoption real_power_loss_tested')
+              summaries['ACTIVE_QUALIFICATION.json']['steps'] = [
+                  {'name': step['name'], **select(step['receipt'], 'schema outcome returncode measurement_valid sources_unchanged command_wall_ns waited_cpu_ns meter_observed_wall_ns meter_observed_cpu_ns meter_postprocessing_wall_ns largest_waited_process_rss_bytes energy_joules provider_billing')}
+                  for step in active['steps']]
+          for name, value in summaries.items():
+              (public / name).write_text(json.dumps(value, indent=2) + '\n')
+          # Only compilation output: no dataset input is passed to the native build.
+          for name in ('build.stdout.log', 'build.stderr.log'):
+              path = private / 'native-build' / name
+              if path.is_file():
+                  shutil.copyfile(path, public / ('native-' + name))
+          manifest = {}
+          for folder in ('inputs', 'document-smoke', 'source-qualification', 'active-qualification'):
+              for path in sorted((private / folder).rglob('*')):
+                  if path.is_file() and not path.is_symlink():
+                      with path.open('rb') as stream:
+                          fingerprint = hashlib.file_digest(stream, 'sha256').hexdigest()
+                      manifest[str(path.relative_to(private))] = {'bytes': path.stat().st_size, 'sha256': fingerprint}
+          for path in sorted(private.glob('*.log')):
+              manifest[path.name] = {'bytes': path.stat().st_size, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+          (public / 'PROVENANCE_MANIFEST.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          complete = bool(os.environ['PRIOR_JOB_STATUS'] == 'success'
+                          and unchanged and tests and tests['status'] == 'PASS' and build
+                          and build['returncode'] == 0 and build['sources_unchanged']
+                          and source and source['status'] == 'PASS_LOCAL_MECHANISM_ONLY'
+                          and source['schema'] == 'perc1.real-source-native-qualification.v1'
+                          and active and active['status'] == 'PASS_LOCAL_ACTIVE_PIPELINE'
+                          and active['schema'] == 'perc1.active-source-qualification.v1')
+          stages = json.loads(os.environ['STAGE_OUTCOMES'])
+          report = {
+              'schema': 'perc1.real-source-hosted-ci.v1', 'source_sha': os.environ['SOURCE_SHA'],
+              'source_unchanged': unchanged, 'prior_job_status': os.environ['PRIOR_JOB_STATUS'],
+              'status': 'PASS_ENGINEERING_ONLY' if complete else 'INCOMPLETE_OR_FAILED',
+              'tests_status': tests['status'] if tests else 'NOT_COMPLETED',
+              'native_build_status': build['returncode'] if build else 'NOT_COMPLETED',
+              'source_qualification_status': source['status'] if source else 'NOT_COMPLETED',
+              'source_failure_type': source_failure.get('error_type') if source_failure else None,
+              'active_qualification_status': active['status'] if active else 'NOT_COMPLETED',
+              'stage_outcomes': {name: stages.get(name, {}).get('outcome', 'unknown')
+                                 for name in ('checkout', 'python', 'bind', 'runtime', 'browser', 'inputs', 'tests', 'native', 'source', 'active')},
+              'scientific_status': 'HOLD', 'adoption': 'NoUpdate',
+              'source_independence_verified': False, 'production_daemon_integrated': False,
+              'publication_scope': 'case-status and compiler logs, selected summaries and SHA/size provenance only; no FUNSD images/crops, OCR content, wire, RGB, or owner journals',
+              'raw_retention': 'runner-private files are ephemeral and are not uploaded; this artifact is not a durable copy of raw evidence',
+          }
+          (public / 'SUMMARY.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          sys.exit(0 if complete else 1)
+          PY
+      - name: Publish only the isolated public evidence directory
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: perc-real-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/perc-real-source-public
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 9
