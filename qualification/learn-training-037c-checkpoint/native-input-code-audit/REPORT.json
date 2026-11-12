@@ -1,0 +1,196 @@
+{
+  "schema": "native-four-v2-bundled-input-code-audit-v1",
+  "source": {
+    "commit": "fcd51c57113dbb83b3c8fbfaa34bd27cbdcdcfa2",
+    "path": "qualification/learn-runtime-037c-checkpoint/native-four-v2-request.typed.json",
+    "request": {
+      "bytes": 39832,
+      "sha256": "b9d4ce0abca746b29fcacb60698c2de858cadaeb196ae7428dc1781b0358e409",
+      "blob": "06b923a8b3c2dabfa41786f8505f6eef1ac9d396"
+    },
+    "wrapper": {
+      "bytes": 38962,
+      "sha256": "caf9dea6d6987620b496cf8c869539f248b067819b5289556002dbd4588bc35e",
+      "blob": "1377752bdfaeb82983fc49ef852fb118f0fb2fdb"
+    }
+  },
+  "mode": "PURE_JS_DECODE_AND_READ_ONLY_NO_HOST_EXECUTION",
+  "decoded_drivers": [
+    {
+      "name": "maintenance",
+      "bytes": 12659,
+      "sha256": "937222b474fc05fee7748fed5dc2842bc606634b9d31bba2304f3ecb5dad60d5",
+      "blob": "ee8d0334f490f567868e048a39a7c5130ba57a3a"
+    },
+    {
+      "name": "diagnostic",
+      "bytes": 15318,
+      "sha256": "9efc30242651cd4bb0e8e02550c57a794c21b230c16a4f70d63c198ae339fcb0",
+      "blob": "06c97b05c4a1ab09f16ed09db0a20d869144ad1d"
+    }
+  ],
+  "findings": [
+    {
+      "file": "maintenance.py",
+      "lines": [
+        141,
+        142,
+        181,
+        182,
+        183
+      ],
+      "conclusion": "Requires existing owned nonsymlink target directory, but does not require existing artifacts or nonempty cache; original just fix can build into an empty owned target."
+    },
+    {
+      "file": "diagnostic.py",
+      "lines": [
+        35,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205
+      ],
+      "conclusion": "Uses target path and builds original helpers before verification; no preexisting binary/cache requirement in this driver."
+    },
+    {
+      "file": "wrapper",
+      "lines": [
+        204,
+        205,
+        206,
+        320
+      ],
+      "conclusion": "Wrapper additionally requires nonempty target; a separate reviewed create-only cold admission must explicitly distinguish newly created empty target and capture inode/device after creation."
+    },
+    {
+      "file": "diagnostic.py",
+      "function": "test",
+      "lines": [
+        128,
+        129,
+        130
+      ],
+      "conclusion": "The only rename in the bundled drivers moves stale JUnit from source nextest report path into attempt evidence records."
+    },
+    {
+      "file": "diagnostic.py",
+      "lines": [
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240
+      ],
+      "conclusion": "Root cleanup restores ownership and unmounts the Root fixture; diagnostic-four does not select that branch."
+    }
+  ],
+  "scope_limit": "No unlink/rmtree/removal of target or V8 input was found in these two exact bundled drivers or the wrapper. This does not audit Cargo/just/build.rs child code and does not establish any cause for previously missing paths.",
+  "missing_input_cause": "UNKNOWN",
+  "raw_scan": [
+    {
+      "name": "diagnostic",
+      "meta": {
+        "bytes": 15318,
+        "sha256": "9efc30242651cd4bb0e8e02550c57a794c21b230c16a4f70d63c198ae339fcb0",
+        "blob": "06c97b05c4a1ab09f16ed09db0a20d869144ad1d"
+      },
+      "line_count": 259,
+      "matches": [
+        {
+          "line": 35,
+          "text": "    target = Path(os.environ['CARGO_TARGET_DIR']).resolve()"
+        },
+        {
+          "line": 45,
+          "text": "    records.mkdir(parents=True, exist_ok=False)"
+        },
+        {
+          "line": 130,
+          "text": "            report.rename(records / (name + '-prior-junit-excluded.xml'))"
+        },
+        {
+          "line": 139,
+          "text": "                     'CARGO_PROFILE_TEST_DEBUG', 'CARGO_PROFILE_DEV_DEBUG', 'CARGO_TARGET_DIR',"
+        },
+        {
+          "line": 140,
+          "text": "                     'RUSTY_V8_ARCHIVE', 'RUSTY_V8_SRC_BINDING_PATH', 'LIBCLANG_PATH',"
+        },
+        {
+          "line": 193,
+          "text": "                'CARGO_TARGET_DIR', 'CARGO_HOME', 'RUSTUP_HOME', 'RUSTUP_TOOLCHAIN',"
+        },
+        {
+          "line": 195,
+          "text": "                'CARGO_PROFILE_DEV_DEBUG', 'RUSTY_V8_ARCHIVE', 'RUSTY_V8_SRC_BINDING_PATH',"
+        },
+        {
+          "line": 216,
+          "text": "                     \"p=Path(sys.argv[1]); p.mkdir(mode=0o700); \""
+        },
+        {
+          "line": 217,
+          "text": "                     \"[(p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints')]; \""
+        }
+      ]
+    },
+    {
+      "name": "maintenance",
+      "meta": {
+        "bytes": 12659,
+        "sha256": "937222b474fc05fee7748fed5dc2842bc606634b9d31bba2304f3ecb5dad60d5",
+        "blob": "ee8d0334f490f567868e048a39a7c5130ba57a3a"
+      },
+      "line_count": 227,
+      "matches": [
+        {
+          "line": 23,
+          "text": "TARGET = Path(\"/data/hepta-learn-037c-20261112/target-cold-4ab-v1\")"
+        },
+        {
+          "line": 33,
+          "text": "RECORDS.mkdir(mode=0o700, exist_ok=False)"
+        },
+        {
+          "line": 141,
+          "text": "    if not TARGET.is_dir() or TARGET.is_symlink() or TARGET.stat().st_uid != os.getuid():"
+        },
+        {
+          "line": 146,
+          "text": "               CARGO_HOME=\"/home/qian-qi/.cargo\", CARGO_TARGET_DIR=str(TARGET),"
+        },
+        {
+          "line": 153,
+          "text": "               RUSTY_V8_ARCHIVE=str(archive), RUSTY_V8_SRC_BINDING_PATH=str(binding),"
+        },
+        {
+          "line": 155,
+          "text": "    keys = (\"PATH\", \"RUSTUP_HOME\", \"RUSTUP_TOOLCHAIN\", \"CARGO_HOME\", \"CARGO_TARGET_DIR\","
+        },
+        {
+          "line": 159,
+          "text": "            \"RUSTY_V8_ARCHIVE\", \"RUSTY_V8_SRC_BINDING_PATH\", \"RUSTFLAGS\", \"RUSTDOCFLAGS\","
+        },
+        {
+          "line": 163,
+          "text": "    disk = os.statvfs(str(TARGET))"
+        },
+        {
+          "line": 207,
+          "text": "            destination.parent.mkdir(parents=True, exist_ok=True)"
+        }
+      ]
+    }
+  ]
+}

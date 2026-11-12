@@ -1,0 +1,150 @@
+{
+  "schema": "learn-training-actual-format-archive-recovery-v1",
+  "status": "ACTUAL_ARCHIVE_BYTES_VERIFIED_PRODUCT_POSTIMAGES_NOT_YET_CHECKPOINTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "operation_id": "ae293bd955db071103705baa01c831b991e2ac35d6f110f0531144996241a5ab",
+  "original_payload": {
+    "bytes": 39810,
+    "sha256": "a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed",
+    "blob": "acb2623dd66a54d2fde68dbe40bc9cb12fd3d694"
+  },
+  "actual_archive": {
+    "bytes": 29526,
+    "sha256": "d5feb190422009022a9a1f091359f35042e54127b53212d83eba8cc289d11ef3",
+    "blob": "c38b09598c84510fa6f5110a3010aa3e9762efcd",
+    "original_path": "/home/qian-qi/hepta-learn-037c-evidence/format-training-read-transaction-v3/complete-postimages.json.gz"
+  },
+  "pages": [
+    {
+      "offset": 0,
+      "bytes": 4096,
+      "sha256": "89e1d0a73f3605f02450ea330d1a21af6c206a575fb4883d9a7369b1c942aa81"
+    },
+    {
+      "offset": 4096,
+      "bytes": 4096,
+      "sha256": "e82028dbde08ce8c0c2831af1f9dedfced66f7789fb4bca1f1063971d997520a"
+    },
+    {
+      "offset": 8192,
+      "bytes": 4096,
+      "sha256": "06adf9e0d73f6fbf8b749cd5ad173673bd436a69de929f1d96dfb8aa690187f1",
+      "store_key": "training_checkpoint_tarchive_page_8192_attempt_2"
+    },
+    {
+      "offset": 12288,
+      "bytes": 4096,
+      "sha256": "7a5845bfeae508900a5895d53a88d7585adc8157af020866f96954840d141b20",
+      "store_key": "training_checkpoint_tarchive_page_12288"
+    },
+    {
+      "offset": 16384,
+      "bytes": 4096,
+      "sha256": "02150055c6c4aec143a72c294d21361a97e33c9d63fca6caf1eccdecf7d7b37b",
+      "store_key": "training_checkpoint_tarchive_page_16384"
+    },
+    {
+      "offset": 20480,
+      "bytes": 4096,
+      "sha256": "698ee2b666b01fba1a5a0038374d3c8fc4e686122e40c93d988f7021cbfbbf3d",
+      "store_key": "training_checkpoint_tarchive_page_20480"
+    },
+    {
+      "offset": 24576,
+      "bytes": 4096,
+      "sha256": "6db42b76e518ddf91aa833ca10babd4ee42c1acc85ae52c2801c959c93517fef",
+      "store_key": "training_checkpoint_tarchive_page_24576"
+    },
+    {
+      "offset": 28672,
+      "bytes": 4096,
+      "sha256": "4ff43e0dc53ba12ff94700da428c81bc64258112983171e9580f3afd22b665b1",
+      "store_key": "training_checkpoint_tarchive_page_28672_attempt_2"
+    },
+    {
+      "offset": 32768,
+      "bytes": 4096,
+      "sha256": "f96e12adaa3eafd1856fef8f0bcbec05e96da22f49f5b41d2a925fee78a5e2ab",
+      "store_key": "training_checkpoint_tarchive_page_32768"
+    },
+    {
+      "offset": 36864,
+      "bytes": 2946,
+      "sha256": "03f58880fc732b8de442a6d49f6bde02073135ea663319f346c1f4c125c5b101",
+      "store_key": "training_checkpoint_tarchive_page_36864"
+    }
+  ],
+  "whole_payload_hash_matches_immutable_result_sha256": true,
+  "archive_hash_matches_previously_observed_actual_archive": true,
+  "failures_preserved": [
+    "offset-8192.attempt-1",
+    "offset-28672.attempt-1"
+  ],
+  "retrieval_only": true,
+  "new_host_jobs_started": false,
+  "native_tests_run": false,
+  "ordinary_qualification_count": 0,
+  "missing_original_artifacts": [
+    "final T new QA 11061 bytes / SHA35321542e88887630373801e7d903aab786f76c18320711b5c7d7fb316790abe",
+    "final T CALLERS delta 47147 bytes / SHA3a780c5f8846c6cd6c637306ea62e1049a5eb67fe86feedf24daaa6d4c8b42c8"
+  ],
+  "artifacts": [
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.payload.original.json",
+      "kind": "whole_original_native_sdk_payload",
+      "bytes": 39810,
+      "sha256": "a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed",
+      "blob": "acb2623dd66a54d2fde68dbe40bc9cb12fd3d694"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/actual-format/complete-postimages.json.gz",
+      "kind": "actual_formatter_archive",
+      "bytes": 29526,
+      "sha256": "d5feb190422009022a9a1f091359f35042e54127b53212d83eba8cc289d11ef3",
+      "blob": "c38b09598c84510fa6f5110a3010aa3e9762efcd"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-28672.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "4ff43e0dc53ba12ff94700da428c81bc64258112983171e9580f3afd22b665b1",
+      "blob": "7336b0ba3cbe6cf0bc7eafabaac03e24f85b25f5"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-28672.attempt-2.receipt.json",
+      "kind": "original_tool_response",
+      "bytes": 6325,
+      "sha256": "fd5ad202194a03bc6c1b63da2a1d95d9d0b9db3c06c702b5d2d9feaa90c20fe3",
+      "blob": "392f205856bb75dad49bc46afd3b4bc3f31d51df"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-32768.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "f96e12adaa3eafd1856fef8f0bcbec05e96da22f49f5b41d2a925fee78a5e2ab",
+      "blob": "783599c10b9011ee8621cbab4172e1b97ac07684"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-32768.receipt.json",
+      "kind": "original_tool_response",
+      "bytes": 6325,
+      "sha256": "3b7855df423b1525f944cc366ef4778bc76c39bc4bbc6d0fa3d1855ca5f330a5",
+      "blob": "7fd244050a5655673273b2d5e26d83caa4a3b547"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-36864.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 2946,
+      "sha256": "03f58880fc732b8de442a6d49f6bde02073135ea663319f346c1f4c125c5b101",
+      "blob": "225033f09b1d32ec7ce3bb934dc2e71557189ef8"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-36864.receipt.json",
+      "kind": "original_tool_response",
+      "bytes": 4788,
+      "sha256": "e2cd5a44e6c726d1198c0ce16aeb7eb7f2da3e516ca37deb519852f6a5e796e2",
+      "blob": "9b01952e2045f4c679e6c0ccfbc6b80d1de655ea"
+    }
+  ]
+}
