@@ -2,6 +2,8 @@
 //! This authenticates observations; it neither dispatches nor re-signs them.
 
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
+use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
+use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -63,8 +65,38 @@ pub(super) fn verify_attestations(
             | LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer,
             LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator,
             LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector,
-            LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal =>
-                return Err(Error::OwnerUnavailable("resident Candidate evaluation/Model route is absent")),
+            LearningIterationStageV1::Evaluation => {
+                // This exact original Candidate payload is separately obtained
+                // through the concrete Evaluator command. Its signature grants
+                // no Model or version rights and cannot stand in for a panel.
+                let mut training = LearningIterationCoordinatorV1::from_snapshot(
+                    profile.initial.clone(),
+                )?;
+                if snapshot.receipts.len() < 4 || snapshot.training_no_update_v2().is_some()
+                    || snapshot.receipts.get(3) != Some(receipt)
+                {
+                    return Err(Error::WrongScope);
+                }
+                for original in &snapshot.receipts[..3] {
+                    training.record(original.clone(), original.observed_unix_seconds)?;
+                }
+                let candidate = training.candidate().ok_or(Error::WrongScope)?
+                    .digest().map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+                if training.next_stage() != Some(LearningIterationStageV1::Evaluation)
+                    || receipt.predecessor != training.snapshot().head_digest
+                    || receipt.operation_id != profile.initial.request.operation_id
+                    || receipt.observed_unix_seconds > signature.issued_at
+                    || !matches!(&receipt.observation, LearningIterationObservationV1::Evaluation {
+                        candidate_bundle, evaluation_profile, ..
+                    } if *candidate_bundle == candidate
+                        && *evaluation_profile == profile.initial.request.evaluation_profile)
+                {
+                    return Err(Error::WrongScope);
+                }
+                LearningEvidenceRoleV1::Evaluator
+            }
+            LearningIterationStageV1::Proposal =>
+                return Err(Error::OwnerUnavailable("resident Model route is absent")),
         };
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
         let evidence = verifier.verify(role, signature, &payload, now).map_err(Error::Evidence)?;
@@ -79,6 +111,7 @@ pub(super) fn verify_attestations(
     }
     for (stage, current) in &verified {
         let independent: &[LearningIterationStageV1] = match stage {
+            LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
             LearningIterationStageV1::Selection => {
                 if snapshot.training_no_update_v2().is_none() {
                     return Err(Error::WrongScope);

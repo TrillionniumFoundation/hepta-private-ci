@@ -1,10 +1,9 @@
 //! Concrete ordinary Candidate branch on the same original E/D/T owners.
 //!
-//! This admits only the already implemented Candidate material readback. It
-//! does not substitute that material for independent B/retention, Evaluation,
-//! Model, Selector, version publication or FinalUse capabilities. Until the
-//! original B host supplies those separate operations, the real Training cut
-//! remains retained and Evaluation returns an explicit unavailable boundary.
+//! Evaluation uses its initially delivered original host connection. That host
+//! must retain the actual independent B/retention owners and original Evaluator
+//! receipt capability. Candidate bytes remain readonly material; neither this
+//! route nor an Evaluation receipt supplies Model, adoption or FinalUse rights.
 
 use std::sync::Arc;
 use std::time::Instant;
@@ -36,12 +35,17 @@ mod inputs;
 #[path = "cell_q24_candidate_stage_readback.rs"]
 mod readback;
 use readback::CandidateLane;
+use readback::CandidateRead;
+#[path = "cell_q24_candidate_stage_evaluation.rs"]
+mod evaluation;
+use evaluation::EvaluationLane;
 
 /// All endpoints are original connected streams delivered at the same initial
 /// handoff. There is no future Training receipt, B result, panel or model DTO.
 pub struct OriginalCellQ24CandidateStageStreamsV1 {
     pub common: OriginalCellQ24NoUpdateStageStreamsV1,
     pub candidate_material: OriginalCellQ24NoUpdatePeerStreamV1,
+    pub evaluator: OriginalCellQ24NoUpdatePeerStreamV1,
 }
 
 /// Root consumes this value. No Clone, owner getter, callback, key or mutable
@@ -51,6 +55,7 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     protocol: OriginalCellEvaluationPanelRegistrationV1,
     baseline: Arc<LoadedCellQ24ModelV1>,
     candidate: Mutex<CandidateLane>,
+    evaluation: Mutex<EvaluationLane>,
     end: Instant,
 }
 
@@ -117,18 +122,27 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                // Fresh T attestation occurs before Root checkpoints T: its
-                // durable dispatch still names the original Dataset prefix.
-                // Actual Candidate material belongs to the subsequent
-                // Evaluation dispatch, never a fabricated future gate head.
-                if self.common.origin == Origin::Recovered
+                if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
+                    // This is original readback, including while the fresh
+                    // Root future still has the three-cut Evaluation intent.
+                    // It never asks that gate to accept the future fourth cut.
+                    self.read_original_evaluation(snapshot).await?;
+                    if snapshot.receipts.len() != 4 {
+                        return Err(Error::OwnerUnavailable(
+                            "original post-Evaluation Model and adoption readback capabilities are required",
+                        ));
+                    }
+                    Ok(())
+                } else if self.common.origin == Origin::Recovered
                     && snapshot.receipts.len() == 3 && coordinator.candidate().is_some()
                 {
                     OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
-                        self, snapshot,
+                        self, snapshot, CandidateRead::Readback,
                     ).await?;
                     Ok(())
                 } else {
+                    // Fresh T attestation precedes Root's T checkpoint: do not
+                    // invent an Evaluation dispatch to validate that third cut.
                     LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await
                 }
             }).await.map_err(|_| Error::CommitUncertain)?
@@ -147,14 +161,7 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
                     if self.common.origin != Origin::Fresh {
                         return Err(Error::WrongScope);
                     }
-                    // The sealed material is read in this same continuation.
-                    // It does not supply a B task, Outcome or Evaluator signer.
-                    OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
-                        self, snapshot,
-                    ).await?;
-                    return Err(Error::OwnerUnavailable(
-                        "original B host, independent Outcome/cohort and Evaluator capabilities are required",
-                    ));
+                    return self.execute_original_evaluation(snapshot).await;
                 }
                 // A real NoUpdate follows the same existing Selector/C route.
                 // Candidate must not reach those retained-baseline commands.
@@ -190,6 +197,25 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
         Box::pin(async move {
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
+                let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+                if coordinator.candidate().is_some() && snapshot.receipts.len() >= 3 {
+                    let training = self.training_prefix(snapshot)?;
+                    if receipt.observation.stage() == Stage::Evaluation {
+                        let original = self.read_original_evaluation(snapshot).await?;
+                        if original.receipt() != receipt {
+                            return Err(Error::WrongScope);
+                        }
+                        return Ok(original.attestation().clone());
+                    }
+                    if matches!(receipt.observation.stage(), Stage::Experience | Stage::Dataset | Stage::Training) {
+                        return LearningIterationStageOwnerPortsV1::receipt_attestation(
+                            &self.common, &training, receipt, now_unix_seconds,
+                        ).await;
+                    }
+                    return Err(Error::OwnerUnavailable(
+                        "original Candidate Model and adoption attestation capabilities are required",
+                    ));
+                }
                 LearningIterationStageOwnerPortsV1::receipt_attestation(
                     &self.common, snapshot, receipt, now_unix_seconds,
                 ).await
@@ -210,7 +236,8 @@ pub(crate) fn fixture_from_original_clients(
     common.end = end;
     let owners = OriginalCellQ24CandidateStageOwnersV1 {
         common, protocol, baseline,
-        candidate: Mutex::new(CandidateLane::new(initial)), end,
+        candidate: Mutex::new(CandidateLane::new(initial)),
+        evaluation: Mutex::new(EvaluationLane::fixture_unavailable()), end,
     };
     owners.require_initial(
         &owners.common.material.initial,

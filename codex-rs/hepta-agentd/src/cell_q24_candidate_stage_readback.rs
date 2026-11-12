@@ -23,6 +23,11 @@ use crate::OriginalCellQ24TrainingCommandConnectionErrorV1;
 use crate::OriginalCellQ24TrainingCommandConnectionV1;
 use crate::RootResidentLearningEffectGateV3;
 
+/// Dispatch is held only inside the fresh admitted Evaluation future.
+/// Readback is an explicit non-effect path, never a fallback after Gate failure.
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub(super) enum CandidateRead { Dispatch, Readback }
+
 #[derive(Clone, Eq, PartialEq)]
 struct CandidateIdentity {
     bundle: CellCompatibilityBundleV1,
@@ -46,7 +51,7 @@ impl CandidateLane {
 
 impl OriginalCellQ24CandidateStageOwnersV1 {
     pub(super) async fn read_original_candidate(
-        &self, snapshot: &LearningIterationSnapshotV1,
+        &self, snapshot: &LearningIterationSnapshotV1, mode: CandidateRead,
     ) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
         let started_at = auth::now()?;
         self.require_live_deadline()?;
@@ -59,7 +64,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::WrongScope);
         }
         let expected_bundle = coordinator.candidate().ok_or(Error::WrongScope)?;
-        if self.common.origin == Origin::Fresh {
+        if mode == CandidateRead::Dispatch && self.common.origin != Origin::Fresh {
+            return Err(Error::WrongScope);
+        }
+        if mode == CandidateRead::Dispatch {
             let gate = self.common.root.as_ref()
                 .ok_or(Error::OwnerUnavailable("fresh resident Candidate continuation"))?;
             RootResidentLearningEffectGateV3::require_current(
@@ -104,7 +112,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // Re-read all three original roles after every Candidate page. A saved
         // signature, successful earlier page, or retained model is not CURRENT.
         state.read_prefix(&self.common, snapshot).await?;
-        if self.common.origin == Origin::Fresh {
+        if mode == CandidateRead::Dispatch {
             let gate = self.common.root.as_ref()
                 .ok_or(Error::OwnerUnavailable("fresh resident Candidate continuation"))?;
             RootResidentLearningEffectGateV3::require_current(

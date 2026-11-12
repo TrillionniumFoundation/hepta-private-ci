@@ -227,6 +227,14 @@ impl OriginalCellEvaluationCommandClientV1 {
                 *retained = Some(original.clone());
                 Ok(original)
             }
+            wire::Outcome::Missing | wire::Outcome::Pending
+                if self.retained.try_lock().map_err(|_| Error::Unavailable)?.is_some() =>
+            {
+                // An observed original Completed cannot regress to absence or
+                // Pending, including a full expected signature supplied at cold
+                // binding. Do not return this channel to its original slot.
+                return Err(Error::CommitUncertain);
+            }
             wire::Outcome::Missing => Err(Error::Missing),
             wire::Outcome::Pending => Err(Error::Pending),
             wire::Outcome::Busy => Err(Error::Busy),
