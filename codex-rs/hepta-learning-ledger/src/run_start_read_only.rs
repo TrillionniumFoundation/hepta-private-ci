@@ -58,7 +58,7 @@ pub fn observe_original_run_start_prefix_v1(
     max_records: usize,
 ) -> Result<OriginalRunStartPrefixV1, RunStartStoreError> {
     validate_domain(journal_binding, max_records)?;
-    let (before, bytes) = read_image(file)?;
+    let (before, bytes) = read_physical_image(file)?;
     if !bytes.is_empty() {
         let replay = replay_reader(
             &mut io::Cursor::new(&bytes),
@@ -70,7 +70,7 @@ pub fn observe_original_run_start_prefix_v1(
             return Err(RunStartStoreError::Indeterminate);
         }
     }
-    let (after, confirmed) = read_image(file)?;
+    let (after, confirmed) = read_physical_image(file)?;
     if before != after || bytes != confirmed {
         return Err(RunStartStoreError::Indeterminate);
     }
@@ -281,7 +281,7 @@ impl ReadOnlyRunStartViewV1 {
     }
 
     fn read_image(&self) -> Result<(FileStamp, Vec<u8>), RunStartStoreError> {
-        let (before, bytes) = read_image(&self.file)?;
+        let (before, bytes) = read_physical_image(&self.file)?;
         if (before.device, before.inode) != self.identity {
             return Err(RunStartStoreError::Indeterminate);
         }
@@ -289,7 +289,7 @@ impl ReadOnlyRunStartViewV1 {
     }
 }
 
-fn read_image(file: &File) -> Result<(FileStamp, Vec<u8>), RunStartStoreError> {
+fn read_physical_image(file: &File) -> Result<(FileStamp, Vec<u8>), RunStartStoreError> {
     let before = file_stamp(file)?;
     if before.length > MAX_FILE_BYTES {
         return Err(RunStartStoreError::Capacity);

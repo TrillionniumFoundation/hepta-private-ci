@@ -79,11 +79,15 @@ fn run_start_prefix_requires_original_readonly_binding_and_bounded_complete_hist
     );
     let readonly = must(File::open(fixture.path()));
     assert_eq!(
-        observe_original_run_start_prefix_v1(&readonly, digest("other-owner"), 16),
+        observe_original_run_start_prefix_v1(
+            &readonly,
+            digest("other-owner"),
+            /*max_records*/ 16
+        ),
         Err(RunStartStoreError::BindingMismatch)
     );
     assert_eq!(
-        observe_original_run_start_prefix_v1(&readonly, binding(), 0),
+        observe_original_run_start_prefix_v1(&readonly, binding(), /*max_records*/ 0),
         Err(RunStartStoreError::InvalidLimit)
     );
     assert_eq!(must(fs::read(fixture.path())), before);
