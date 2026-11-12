@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.retained-publication.python-review.v1",
+  "scope": "two exact source-control modules, existing coverage parser, Python syntax and whitespace only",
+  "started_utc": "2026-11-12T01:50:58.122287+00:00",
+  "source_before": {
+    "head": "3396b96cf11f7b04722fa0f94e7f2010434110bf",
+    "tree": "e203a683d6e246c64f5c1b54e6f95f67082791af",
+    "tracked_status": ""
+  },
+  "commands": [
+    {
+      "name": "retained-source",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_retained_publication_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 5,
+      "elapsed_seconds": 1.058126,
+      "log_bytes": 1331,
+      "log_sha256": "5df6c5bdc4ffd7f2f8e42fbd359d7ee9747cb2b1ae7b754c524d44b2b2a82c25"
+    },
+    {
+      "name": "training-source",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_training_command_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 5,
+      "elapsed_seconds": 0.325373,
+      "log_bytes": 1354,
+      "log_sha256": "f63965b23864e317023366c96cc3191cfe1a8b6de2dea2d07c6cc07f21b9ba2b"
+    },
+    {
+      "name": "coverage-parser",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.569055,
+      "log_bytes": 3123,
+      "log_sha256": "7d04012ef316ac8e691a1fa0262996dd6e56f7f46316a382134c1de14ce0e646"
+    },
+    {
+      "name": "py-compile",
+      "argv": [
+        "python3",
+        "-m",
+        "py_compile",
+        "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "scripts/hepta_c_observer_coverage.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.172955,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.093781,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "rust_executed": false,
+  "full_caller_proof_executed": false,
+  "authority_granted": false,
+  "source_after": {
+    "head": "3396b96cf11f7b04722fa0f94e7f2010434110bf",
+    "tree": "e203a683d6e246c64f5c1b54e6f95f67082791af",
+    "tracked_status": ""
+  },
+  "finished_utc": "2026-11-12T01:51:00.389469+00:00",
+  "complete": true,
+  "passed": false
+}

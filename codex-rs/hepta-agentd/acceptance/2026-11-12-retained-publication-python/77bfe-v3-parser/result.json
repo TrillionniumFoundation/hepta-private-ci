@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.retained-publication.python-review.v1",
+  "scope": "rerun only the previously failed existing parser after materializing its original workflow fixture; prior exact-head source/syntax/whitespace successes remain separately recorded",
+  "started_utc": "2026-11-12T01:57:29.152139+00:00",
+  "source_before": {
+    "head": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+    "tree": "377b386d89bc0f950ed260d8ab6fe58b423a9976",
+    "tracked_status": ""
+  },
+  "commands": [
+    {
+      "name": "coverage-parser",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.641177,
+      "log_bytes": 3123,
+      "log_sha256": "d84c148bbdb96ed5e7ef12da6fa0283c31674a0fa4d9783dad7fdf84e2fc162c"
+    }
+  ],
+  "rust_executed": false,
+  "full_caller_proof_executed": false,
+  "authority_granted": false,
+  "source_after": {
+    "head": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+    "tree": "377b386d89bc0f950ed260d8ab6fe58b423a9976",
+    "tracked_status": ""
+  },
+  "finished_utc": "2026-11-12T01:57:29.813719+00:00",
+  "complete": true,
+  "passed": true
+}
