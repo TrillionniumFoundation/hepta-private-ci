@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "ruff",
+    "format",
+    "qualification/hcsn_joint_dde/verify_retained_values.py",
+    "qualification/hcsn_joint_dde/test_retained_values.py"
+  ],
+  "exit": 0,
+  "files": {
+    "qualification/hcsn_joint_dde/test_retained_values.py": {
+      "ast_equal": true,
+      "formatted_sha256": "159362d83e5bbdf8a9661bac4df62a5094a7d0faf9e0cd2535d6f69a34d3cc82",
+      "tested_sha256": "7ebf1b7cc9dcd17e6310feae845504cb6b811bd623998f22cc1b4cbd89848d4d"
+    },
+    "qualification/hcsn_joint_dde/verify_retained_values.py": {
+      "ast_equal": true,
+      "formatted_sha256": "10da6146fa67a73b479d03eb52121df89e414bf5de24437053fc0400f7c7f5a9",
+      "tested_sha256": "bede69c0adc83a80a1084c053400ea58441852eaf6eb280fe346ed7b88519379"
+    }
+  },
+  "stderr": "",
+  "stdout": "2 files reformatted\n"
+}
