@@ -673,3 +673,62 @@ impl Drop for ComponentPhaseTiming {
         // in this process, including scopes that were already in flight.
     }
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
+    let (trust, signed) = fixture();
+    let proof = VerifiedRootWriterProof::verify(signed.clone(), &trust).unwrap();
+    let cache = RootObservationCache::new("fixture-boot".into());
+    let origin = boottime_ns().unwrap();
+    let mut sample = observation(&signed);
+    sample.clock.anchor_boottime_ns = origin;
+    cache.accept(sample, origin, origin).unwrap();
+    // Same-UID/synthetic-proof component: an actual held pidfd is live, and
+    // only the original session's absolute end expires during cache admission.
+    // SAFETY: this process is live; pidfd_open returns a new owned descriptor.
+    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    assert!(fd >= 0);
+    // SAFETY: this syscall returned the exclusively owned test pidfd.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };
+    let root = Arc::new(AsyncFd::new(pidfd).unwrap());
+    let end = origin.checked_add(200_000_000).unwrap();
+    let live = Arc::new(LiveRoot {
+        proof,
+        cache,
+        root,
+        end_boottime_ns: end,
+        active: AtomicBool::new(false),
+        consumers: Mutex::new(Vec::new()),
+        serial: tokio::sync::Semaphore::new(1),
+        refresh_failed: AtomicBool::new(false),
+    });
+    let mut waiting = None;
+    crate::root_observation_cache::tests::component_with_original_retained_lock(
+        &live.cache,
+        || {
+            let reader = Arc::clone(&live);
+            waiting = Some(std::thread::spawn(move || reader.current()));
+            crate::root_observation_cache::tests::component_wait_for_original_read_admission(
+                &live.cache,
+            );
+            while boottime_ns().unwrap() < end {
+                std::thread::yield_now();
+            }
+        },
+    );
+    assert!(matches!(
+        waiting.unwrap().join().unwrap(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+    let validated = crate::root_observation_cache::tests::component_last_validated_read(
+        &live.cache,
+    );
+    assert!(validated >= end, "cache validation did not cross the session end");
+    assert!(validated - origin <= MAX_AGE_NS, "the cache itself had already expired");
+    // The retained proof cannot authorize a new call after this original
+    // session end. This is a negative read, never a retry of an effect.
+    assert!(matches!(
+        live.cache.current(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+}

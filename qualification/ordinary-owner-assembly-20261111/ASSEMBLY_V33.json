@@ -1,0 +1,399 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.v33",
+  "status": "reviewed source integration; original full qualification pending",
+  "parent": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+  "parent_tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+  "previous_assembly_manifest": "32796f51303b6965b93b72ddb585e2df21d2d77e",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "preimage": {
+        "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+        "bytes": 16596,
+        "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+      },
+      "postimage": {
+        "git_blob": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+        "bytes": 23838,
+        "sha256": "9a3d4f9a47671ce5548bf78c669e3791e89ddb6348e7d693137a9be3edf8672f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "preimage": {
+        "git_blob": "7573cc6064186aab16e4dab5c12dd0eb97b71a1d",
+        "bytes": 4883,
+        "sha256": "e2b6c9e6c255a310136a2e80c3aace6f4b0094a27821f869454ac3fdd20482f8"
+      },
+      "postimage": {
+        "git_blob": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+        "bytes": 10876,
+        "sha256": "5018aedd890ca47152df3bd441baa0f58eeae0540ed4f095132bfa486f3fb652"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+        "bytes": 21031,
+        "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94"
+      },
+      "postimage": {
+        "git_blob": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+        "bytes": 21570,
+        "sha256": "f18d97e08ab796d6566e09e2323f8189d6a3b3b21f45a17de2ae832b480140ba"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+        "bytes": 24356,
+        "sha256": "39393346218a9e40bde0291ff78751acfacd61c583838ab0b0ccdb06855c06dd"
+      },
+      "postimage": {
+        "git_blob": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+        "bytes": 26931,
+        "sha256": "951763353c7b8e5eccab7a9ae09bcfb9687ff8f868905071865661b366292c01"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+        "bytes": 15239,
+        "sha256": "5a34eadea61f66573097f0a0cc6f3f5b5fdf84476e7fb2c084c5b675516c4106"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+        "bytes": 15464,
+        "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+        "bytes": 7338,
+        "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "git_blob": "8b9a140054028e8246677ac0959064a59f81c51f",
+        "bytes": 13770,
+        "sha256": "30f43d4137ff404095609b6867176595ea8a055b1b2b27b88b6e19516a3cf33d"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+        "bytes": 14195,
+        "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+      }
+    }
+  ],
+  "slices": [
+    {
+      "name": "bounded first cache admission and original session end",
+      "manifest": "d18c950cba8a3a4a7545e2f1e72c925623b5bdc6",
+      "exact_ops": "fc5f472aba57a4f8d373824d6dcb442df874d64c",
+      "root_review": "348fb637d26336534e09e977272cb83070b10bbc",
+      "independent_reviews": [
+        "a75aa47a17d4031da6ad0a1e1f9da53a337d0c89",
+        "4556774fdb73391eefb854654f60fb379c67ff5b"
+      ],
+      "scope": "Capture one original observation deadline and checked consumer generation before waiting for the retained mutex. Production samples real BOOTTIME under that mutex. Recheck the same original session end after cache current. No retry of returned authority/effect failures. This is an explicit local latency/CPU tradeoff; no hard real-time guarantee.",
+      "new_tests": 6
+    },
+    {
+      "name": "Initial Recover error-only diagnostics",
+      "manifest": "3666fa6fcf3f706e658fab881fea7d4f3b8a664a",
+      "exact_ops": "52ec4d1e9f07541dd2db836ef74f958cb82da16a",
+      "root_review": "7c0e47ad4e89d8d0c2e2be50a37300487955f0fe",
+      "independent_review": "f05b7df88240f1d862c762167dad0e34ddf78bbb",
+      "scope": "One lazy test context and eight error observers; leaf cause remains unknown. No timeout, retry, successful owner call or guard order change. cfg(test) diagnostics can affect scheduling and are not claimed timing-neutral.",
+      "new_tests": 0
+    },
+    {
+      "name": "existing authority observation exact expectation",
+      "manifest": "58b31b40d3e0e437f5931b82695bd05f4f950e2a",
+      "exact_ops": "9da1ba8fc5078d12e496b7de7b7315a6e655d311",
+      "root_review": "9e83a8953a3b178e939850ca911a1fb97843841f",
+      "independent_review": "2227eca24ad152e66f9eaaf999d1fdf6113c1af0",
+      "scope": "Original observation remains Revoked. Old admitted revision is checked as exact RevisionMismatch; real revoke receipt new revision is checked as exact Revoked. Existing production guard order remains unchanged.",
+      "new_tests": 0
+    }
+  ],
+  "original_failed_attempt": {
+    "source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "request": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f",
+    "result": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+    "progress": "a5ac2d271aa2e0536936a31d54f9ab6cbcf69247",
+    "status": "failed-native-components",
+    "ordinary": {
+      "executed": 1944,
+      "passed": 1943,
+      "failed": 1
+    },
+    "root": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "qa_passed": 236,
+    "full_original_caller": "passed on original failed source only",
+    "cleanup": {
+      "passed": 9,
+      "failed": 0
+    },
+    "source_clean": true,
+    "no_PASS_inherited": true
+  },
+  "precision": {
+    "current_result": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+    "current_ordinary_failure_proof": "466119445e75b976b1e825124b5e8063e112394b",
+    "note": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c",
+    "reason": "Previous derived projections parsed nanosecond JSON integers through JavaScript Number. Original UTF-8 summaries never changed. Current derived evidence uses raw UTF-8 and exact decimal strings. Earlier reviews that cite RESULT v1 retain their historical reference; this note and current result supersede only those precision projections.",
+    "original_records_rewritten": false
+  },
+  "qualification": {
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "root_exact_parents": 17,
+    "retries": 0,
+    "new_rust_tests": 6,
+    "new_qa_tests": 0,
+    "executed_for_this_source": 0,
+    "status": "pending original fmt/scoped fix/fmt then full qualification; actual maintenance drift must be assessed as a new exact source"
+  },
+  "unchanged": {
+    "max_age_ns": 500000000,
+    "age_origin": "request_started_ns",
+    "original_age_boundary": "age > MAX_AGE_NS",
+    "callers_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "blob_allowlist": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b",
+    "session_protected_markers_checked": true,
+    "Drop_fence_abort_lock_clear_order_preserved": true,
+    "dependencies": true,
+    "QA": true,
+    "checker": true,
+    "root_parent_roster": true,
+    "no_fenced_purpose_revival": true
+  },
+  "remaining_requirements": [
+    "Historical-source custody for a new incarnation, or a separately specified live-owner phase transition, is still not implemented.",
+    "A real independently enrolled Observer and actual task business Outcome remain required; task publication is not its label.",
+    "Feedback with origin=None does not enqueue a newly admitted Root learning source; original next-scope registration remains required.",
+    "Default Root CLI does not supply the existing trusted-host three-right late-writer sender or the complete actual Primary inputs.",
+    "Actual independent ordinary C and genuine business daemon+Root process restart remain unaccepted."
+  ],
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": "not accepted; existing successor still same actor across runs",
+    "real_daemon_and_Root_OS_restart": "not accepted",
+    "same_session_late_phase": "not implemented in this assembly",
+    "independent_consumer_contract": "not implemented",
+    "historical_A_custody_into_new_process_pair": "not implemented"
+  },
+  "publication": "Staging only. Draft remains unmerged. Public Draft source advancement waits for the new exact-source qualification assessment.",
+  "evidence_paths": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cache-bounded-admission-v33/MANIFEST.json",
+      "git_blob": "d18c950cba8a3a4a7545e2f1e72c925623b5bdc6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cache-bounded-admission-v33/EXACT_OPS.json",
+      "git_blob": "fc5f472aba57a4f8d373824d6dcb442df874d64c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cache-bounded-admission-v33/ROOT_REVIEW.json",
+      "git_blob": "348fb637d26336534e09e977272cb83070b10bbc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cache-bounded-admission-v33/INDEPENDENT_CACHE_REVIEW.json",
+      "git_blob": "a75aa47a17d4031da6ad0a1e1f9da53a337d0c89"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cache-bounded-admission-v33/INDEPENDENT_SESSION_REVIEW.json",
+      "git_blob": "4556774fdb73391eefb854654f60fb379c67ff5b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/cache-bounded-admission-v33/DIAGNOSIS_AND_DESIGN.json",
+      "git_blob": "9bf9fa47c84329d38983e783b2381e3f6d78ca76"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/initial-recover-diagnostic-v33/MANIFEST.json",
+      "git_blob": "3666fa6fcf3f706e658fab881fea7d4f3b8a664a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/initial-recover-diagnostic-v33/EXACT_OPS.json",
+      "git_blob": "52ec4d1e9f07541dd2db836ef74f958cb82da16a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/initial-recover-diagnostic-v33/ROOT_REVIEW.json",
+      "git_blob": "7c0e47ad4e89d8d0c2e2be50a37300487955f0fe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/initial-recover-diagnostic-v33/INDEPENDENT_REVIEW.json",
+      "git_blob": "f05b7df88240f1d862c762167dad0e34ddf78bbb"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/initial-recover-diagnostic-v33/ORIGINAL_CAUSAL_REVIEW.json",
+      "git_blob": "0fbc3c1b848b02db737fb39f88ff696cc74c30f4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/authority-observation-expectation-v33/MANIFEST.json",
+      "git_blob": "58b31b40d3e0e437f5931b82695bd05f4f950e2a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/authority-observation-expectation-v33/EXACT_OPS.json",
+      "git_blob": "9da1ba8fc5078d12e496b7de7b7315a6e655d311"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/authority-observation-expectation-v33/ROOT_REVIEW.json",
+      "git_blob": "9e83a8953a3b178e939850ca911a1fb97843841f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/authority-observation-expectation-v33/INDEPENDENT_REVIEW.json",
+      "git_blob": "2227eca24ad152e66f9eaaf999d1fdf6113c1af0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/RESULT.json",
+      "git_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/progress.json",
+      "git_blob": "a5ac2d271aa2e0536936a31d54f9ab6cbcf69247"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/exact-request.json",
+      "git_blob": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/final-source-identity.json",
+      "git_blob": "3544abb2b2edca18f198fbfb022fd9f05352a9db"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/PTY_BYTES.json",
+      "git_blob": "16114a01cdb807f6bad34407524c72fd87978001"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/PTY_OBSERVATIONS.json",
+      "git_blob": "3cc2942ab039ede8c8d49ede91328a540f8bad1a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/ROOT_LOG_AND_READS.json",
+      "git_blob": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/PROGRESS_READS.json",
+      "git_blob": "07c41dcd68b077af20a33872226aaade95c401ac"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/UID_HELPER_CUSTODY.json",
+      "git_blob": "dcf858f9ee50191bc1f2e489a1ce53da4f83c7fb"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/ORDINARY_FAILURE_PROOF.json",
+      "git_blob": "466119445e75b976b1e825124b5e8063e112394b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/PRECISION_CORRECTIONS.json",
+      "git_blob": "5a0cba3e4a5f732b8d6fec8703eae824afb6ba4c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/root.execution.json",
+      "git_blob": "b613935c29626ec9e2b0994d18222c1d75d74eaa"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/root.counts.json",
+      "git_blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/root.junit-summary.json",
+      "git_blob": "7919c6b683512bce0c306da02fdf02fd88deecd9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/root.junit-collection.json",
+      "git_blob": "4849b1482284dcbe91327fc4c07d1717aed4a289"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/root.parent-coverage.json",
+      "git_blob": "17e3a427d54a371bc2b592b4e7e0acff5bfe940a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/helper-postverify.execution.json",
+      "git_blob": "8e840b8e994af60a8e022a48d94fb8886056fb6f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/ordinary.execution.json",
+      "git_blob": "3c79dc38002fe04b62a35aeb27e51e7d420e4190"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/ordinary.counts.json",
+      "git_blob": "50088882e03231da09a3638b9db9501814514fde"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/ordinary.junit-summary.json",
+      "git_blob": "1616d52ed55fc42765be9d1eb32f7be686f04b02"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/ordinary.junit-collection.json",
+      "git_blob": "6f6c8e840b93c5ea2b43123e56345b51335fbd2d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/RESULT-v1.json",
+      "git_blob": "5a9abca495743069217509ebd40efe4755742f29"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/RESULT-v2.json",
+      "git_blob": "84d2037f63bc1f85351d9408d854742a9c1b5d1b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/ORDINARY_FAILURE_PROOF-v1.json",
+      "git_blob": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-5a2e937-seven/superseded/PRECISION_NOTE-v1.json",
+      "git_blob": "75c2d93557197bd5c9261f9f3cd469f10f11b46b"
+    }
+  ]
+}

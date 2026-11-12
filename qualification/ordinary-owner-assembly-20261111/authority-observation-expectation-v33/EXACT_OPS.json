@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.authority-lease-observation-revoked-expectation.exact-ops.v1",
+  "base": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "git_blob": "8b9a140054028e8246677ac0959064a59f81c51f",
+        "bytes": 13770,
+        "sha256": "30f43d4137ff404095609b6867176595ea8a055b1b2b27b88b6e19516a3cf33d"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+        "bytes": 14195,
+        "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+      }
+    }
+  ],
+  "operations": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "old": "    observation.finish_original_observation().unwrap();\n    registry\n        .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)\n        .unwrap();\n",
+      "new": "    observation.finish_original_observation().unwrap();\n    let receipt = registry\n        .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)\n        .unwrap();\n    assert_eq!(receipt.previous_lease_revision, original.revision);\n    assert_eq!(receipt.lease_revision, original.revision.checked_add(1).unwrap());\n",
+      "reason": "Retain the actual original revoke receipt and assert its exact revision transition; no fabricated post-revoke revision."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "old": "    assert!(matches!(\n        verifier.observe_original_lease(&original),\n        Err(AuthorityLeaseError::Revoked)\n    ));\n    assert!(matches!(\n        verifier.verify_use(&original.lease_id, original.revision, &original.binding),\n        Err(AuthorityLeaseError::Revoked)\n    ));\n",
+      "new": "    assert!(matches!(\n        verifier.observe_original_lease(&original),\n        Err(AuthorityLeaseError::Revoked)\n    ));\n    // New verification reads the current lease first; the original revision is stale.\n    assert!(matches!(\n        verifier.verify_use(&original.lease_id, original.revision, &original.binding),\n        Err(AuthorityLeaseError::RevisionMismatch)\n    ));\n    assert!(matches!(\n        verifier.verify_use(&original.lease_id, receipt.lease_revision, &original.binding),\n        Err(AuthorityLeaseError::Revoked)\n    ));\n",
+      "reason": "Preserve exact retained-observation Revoked; assert the existing stale-revision classification and separately require exact Revoked for a fresh verification using the real receipt revision."
+    }
+  ],
+  "invariants": {
+    "unique_forward_reverse": true,
+    "test_names_before": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "test_names_after": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "new_tests": 0,
+    "production_changes": 0,
+    "wait_unchanged": true,
+    "no_original_assertion_broadened": true,
+    "exact_stale_revision_assertion_added": true,
+    "exact_revoked_receipt_revision_assertion_added": true
+  },
+  "execution": "Static only; no formatter/compiler/test/checker/native invocation and no refs changed."
+}

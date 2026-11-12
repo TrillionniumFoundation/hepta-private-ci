@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.authority-lease-observation-expectation.independent-review.v1",
+  "status": "no-confirmed-static-blocker-test-only-candidate-unexecuted",
+  "reviewer": "chain_nextuse",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "native_request": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f"
+  },
+  "reviewed_delivery": {
+    "manifest": {
+      "git_blob": "58b31b40d3e0e437f5931b82695bd05f4f950e2a",
+      "bytes": 14865,
+      "sha256": "f83391a2e1fcfa34b5fdcf97b20fc8c41bb291d91b320e4fb4b601aab6824a5a"
+    },
+    "operations": {
+      "git_blob": "9da1ba8fc5078d12e496b7de7b7315a6e655d311",
+      "bytes": 4464,
+      "sha256": "8e86b47eb5f7b43027ccafaa9127a70f92b6250db876d4c678f220cc62719d33"
+    },
+    "preimage": {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "git_blob": "8b9a140054028e8246677ac0959064a59f81c51f",
+      "bytes": 13770,
+      "sha256": "30f43d4137ff404095609b6867176595ea8a055b1b2b27b88b6e19516a3cf33d"
+    },
+    "postimage": {
+      "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+      "bytes": 14195,
+      "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+    },
+    "rust_paths_changed": 1,
+    "production_paths_changed": 0,
+    "existing_test_methods_changed": 1,
+    "new_test_methods": 0,
+    "metadata_or_QA_changes": 0
+  },
+  "original_failure": {
+    "evidence": {
+      "git_blob": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd",
+      "bytes": 29434,
+      "sha256": "6cab55c3edfa4d7e79137ad47c71ee42f34a038385aff872b8413601c0e90f0d"
+    },
+    "counts": {
+      "errors": 0,
+      "executed": 1944,
+      "failed": 1,
+      "passed": 1943,
+      "skipped": 0,
+      "total": 1944
+    },
+    "ordinary_execution": {
+      "source_sha": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "tested_sha": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "status": "failed",
+      "command_exit_code": 100,
+      "elapsed_seconds": 528.8619771858212,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log_file": "ordinary.execution.json.e2422442a444445e91b18240221caff8.log",
+      "log_bytes": 1277439,
+      "log_sha256": "01dd76666213c4de86025f91edd8db41aabf6904f36325b507a3a59dde311049"
+    },
+    "native_JUnit": {
+      "bytes": 456502,
+      "sha256": "c71199e9715baf96ec9f0b2bc2303f101c3fc8a6668b44a70831c4a97874c988",
+      "status": "retained-failed",
+      "collector_exit": 1
+    },
+    "exact_suffix": {
+      "offset": 1276301,
+      "end_exclusive": 1277439,
+      "bytes": 1138,
+      "sha256": "e3ed73eac80f723a24e9da3055e279dca177bb44451cee611f7276b22014e6e5",
+      "git_blob": "d7ccf8a8fcdb35e2d390765f53443523d41fa807",
+      "encoding": "base64"
+    },
+    "suffix_base64_length_SHA_and_UTF8_roundtrip_verified": true,
+    "observed": "The original native suffix identifies the single failing method and the matches! assertion at authority_lease_observation_tests.rs:139 expecting Revoked for verify_use(original revision). It does not print the actual error variant.",
+    "whole_log_read_in_this_review": false,
+    "whole_log_scope": "The 1,277,439-byte whole log is bound by the original execution record, not independently reread here. The original evidence contains the exact bounded tail; the 1,138-byte failure suffix was decoded and rehashed independently.",
+    "full_native_terminal_inferred": false,
+    "original_ordinary_result_preserved": "1943 passed / 1 failed / 0 skipped; no later source result is inherited."
+  },
+  "fixed_product_sources": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "git_blob": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+      "fixed_commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "exact": true,
+      "bytes": 61811,
+      "sha256": "77acda03cf3979ae3b1bebb578770fac2d81c6298c76a2a40a3916a33ca06023"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "git_blob": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "fixed_commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "exact": true,
+      "bytes": 5176,
+      "sha256": "be8c22a07ade1fcd0a5b1e8023816053a05be16b515c16306c67d76c18b796b8"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "git_blob": "86021913605baf2555ec89acaf869ca774e2b437",
+      "fixed_commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "exact": true,
+      "bytes": 5763,
+      "sha256": "702694577744b48ea7559ef9abb87e40d05d66868be3d032dc6318f108142ac7"
+    }
+  ],
+  "semantic_review": [
+    {
+      "step": "Actual revoke",
+      "finding": "revoke::selected validates the original lease, advances the stored lease revision via next_revision, records the tombstone, persists under the original mutation fence and returns receipt(previous expected revision, actual stored revocation revision). In this fixture original revision is 1, so the persisted revision is 2."
+    },
+    {
+      "step": "Existing verify_use",
+      "finding": "The verifier reads the current stored lease, then validate_live checks epoch, expected revision and binding before the revocation tombstone. Therefore an old expected revision 1 against current lease 2 yields RevisionMismatch. This is a deterministic source-derived result for the fixed fixture, not a variant printed by the original failed assertion."
+    },
+    {
+      "step": "Original observation",
+      "finding": "observe_original_lease validates the retained full original object with its own revision 1. That equality succeeds, then the original tombstone yields Revoked. The patch preserves this exact assertion."
+    },
+    {
+      "step": "Verification using actual receipt",
+      "finding": "Using receipt.lease_revision matches current lease revision 2, so the same original validator reaches and refuses the tombstone as Revoked. No revision or receipt is fabricated."
+    },
+    {
+      "step": "Existing contract precedent",
+      "finding": "The current fixed parent already contains lease_is_durable_verified_and_cas_revoked, which captures the actual receipt, asserts revision 2 and requires verify_use(lease-one, 2, binding) == Revoked. This method was read directly from the pinned authority_lease.rs."
+    }
+  ],
+  "patch_review": {
+    "capture_existing_revoke_result_only": true,
+    "no_second_revoke_added": true,
+    "assertions_added": [
+      "receipt.previous_lease_revision == original.revision",
+      "receipt.lease_revision == original.revision.checked_add(1).unwrap()",
+      "verify_use using the actual receipt.lease_revision == exact Revoked"
+    ],
+    "corrected_expectation": "The existing verify_use with original.revision now requires exact RevisionMismatch.",
+    "retained_observation_expectation": "observe_original_lease(&original) remains exact Revoked.",
+    "original_busy_deadline_refusal_and_original_file_byte_equality_unchanged": true,
+    "no_is_err_broadening": true,
+    "no_new_ignore_or_skip": true,
+    "WAIT_and_existing_timing_checks_unchanged": true,
+    "no_product_order_lock_permission_clock_or_500ms_policy_change": true,
+    "receipt_field_types_checked": "The pinned RevocationReceipt exposes previous_lease_revision and lease_revision as u64; original.revision is u64. The existing pretty_assertions::assert_eq import is retained.",
+    "formatting_not_executed": true
+  },
+  "exact_byte_checks": {
+    "unique_forward_counts": [
+      1,
+      1
+    ],
+    "unique_reverse_counts": [
+      1,
+      1
+    ],
+    "forward_exact": true,
+    "reverse_exact": true,
+    "all_outside_target_function_exact": true,
+    "test_names_before": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "test_names_after": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "test_names_exact": true,
+    "before_target_assertions": {
+      "assert_matches": 3,
+      "assert_eq": 1,
+      "is_err": 0,
+      "ignores": 0
+    },
+    "after_target_assertions": {
+      "assert_matches": 4,
+      "assert_eq": 3,
+      "is_err": 0,
+      "ignores": 0
+    },
+    "WAIT_constant_unchanged": true,
+    "root_timeout_500ms_product_changes": 0
+  },
+  "qualification_boundaries": {
+    "review_method": "Read-only Git source and evidence retrieval; pure V8 UTF-8/hash checks and unique exact replacement replay only.",
+    "original_native_failure_remains": true,
+    "fixed_postimage_not_formatted_compiled_or_executed_here": true,
+    "original_checkers_not_executed": true,
+    "no_inherited_test_or_Root_results": true,
+    "ordinary_business_acceptance_granted": false,
+    "independent_C_or_physical_restart_qualification_granted": false,
+    "h_or_PTY_or_Cargo_invoked": false,
+    "source_or_ref_or_PR_mutated": false,
+    "scope_not_repeated": [
+      "Author's separate nineteen-file B4 literal-dependency inventory.",
+      "Author's separate five-method comparison with pre-observation baseline blob 924e4552472038934f665f6acf7a95438294893f."
+    ],
+    "scope_note": "Those author-supplied inventories were read in the manifest but are not presented as independent scans by this reviewer. The fixed current product implementations and original test precedent were independently read."
+  },
+  "recommendation": "Accept the exact test-only delta for a later fixed candidate, retaining V32's original failure. Root must run the original maintenance and qualification gates on that later source. This review supplies no execution PASS.",
+  "additional_patch_required": null
+}

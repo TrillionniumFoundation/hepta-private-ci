@@ -1,0 +1,92 @@
+{
+  "schema": "hepta-root-cache-bounded-first-admission-root-review-v1",
+  "status": "approved-for-fixed-source-integration; execution pending",
+  "base": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "manifest": "d18c950cba8a3a4a7545e2f1e72c925623b5bdc6",
+  "exact_ops": "fc5f472aba57a4f8d373824d6dcb442df874d64c",
+  "independent_reviews": {
+    "cache": "a75aa47a17d4031da6ad0a1e1f9da53a337d0c89",
+    "session_and_regressions": "4556774fdb73391eefb854654f60fb379c67ff5b"
+  },
+  "root_checks": {
+    "full_cache_post_read": true,
+    "all_new_tests_read": true,
+    "complete_LiveRoot_current_and_exact_postcache_insertion_read": true,
+    "full_manifest_and_both_independent_reviews_read": true,
+    "all_eight_pre_post_blob_size_sha_git_checked": true,
+    "exact_operations": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "operations": 8,
+        "forward_reverse_exact": true,
+        "old_tests_prefix": null,
+        "pre_lines": 367,
+        "post_lines": 556
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+        "operations": 1,
+        "forward_reverse_exact": true,
+        "old_tests_prefix": true,
+        "pre_lines": 152,
+        "post_lines": 312
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "operations": 1,
+        "forward_reverse_exact": true,
+        "old_tests_prefix": null,
+        "pre_lines": 582,
+        "post_lines": 594
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "operations": 1,
+        "forward_reverse_exact": true,
+        "old_tests_prefix": true,
+        "pre_lines": 676,
+        "post_lines": 735
+      }
+    ],
+    "accept_original_validation_whitespace_normalized_equal": true,
+    "original_clock_projection_suffix_byte_equal": true,
+    "original_two_test_files_complete_prefixes": true,
+    "unchanged_session_protected_markers_and_Drop_order_checked": true,
+    "registry_changed": false
+  },
+  "explicit_decision": {
+    "scheduling_change": "Allow the first retained memory-lock acquisition to wait only within the original request_started_ns+500ms budget captured once. This replaces immediate local WouldBlock refusal and is a real bounded latency/CPU tradeoff.",
+    "mirror": "Release-published only after full accepted Retained data while holding the same mutex; it limits admission and grants no authority.",
+    "clock": "Production current and accept take validation BOOTTIME under the actual retained mutex. All original age/clock/identity/revocation checks remain.",
+    "barrier": "Checked generation prevents full begin/end ABA and overflow; no old or permanent fence is cleared.",
+    "session": "After bounded cache reading, real BOOTTIME is checked against the exact same end_boottime_ns; expiry or clock error fences before returning authority.",
+    "error_scope": "A read whose old admission expired can fail while a newer valid shared feed survives. Already returned Authority errors and consumed/fenced purpose clients are not retried or revived.",
+    "scope_of_no_owner_IO": "Normal production code holds no filesystem/network/durable-owner callback in this cache critical section. Existing cfg(test) error stderr may execute while the lock is held."
+  },
+  "test_review": {
+    "new_normal_test_methods": 6,
+    "old_assertions_unchanged": true,
+    "removed_new_assertion": "The unexecuted first draft additionally demanded refused_at < second_deadline. Removed because late OS scheduling is compatible with correct first-deadline refusal.",
+    "required_negative_evidence": "Actual held-lock refusal, exact first captured expiry deadline, refusal sample after that deadline, and actual newer accepted deadline all remain.",
+    "limits": "Real scheduler stalls can consume 200/500ms windows. Thread join relies on the reviewed product deadline/fence paths; no hard realtime or executed concurrency PASS is claimed."
+  },
+  "qualification": {
+    "current_original_failed_result": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "packages": 7,
+    "root_exact_parents": 17,
+    "retries": 0,
+    "no_inherited_PASS": true,
+    "Initial_Recovery_leaf_still_unknown": true,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0
+  },
+  "instruction_scope": "Root AGENTS read. This is the smallest coherent guarded cache scheduling correction plus its session-end obligation; the large accept validation extraction is mechanically retained. Formatter and original scoped fix still precede all new tests. No dependency or external protocol change.",
+  "next": "Integrate with separately reviewed existing-test expectation correction and error-only Initial diagnostic slice, then run the unchanged full original qualification on the new exact source."
+}

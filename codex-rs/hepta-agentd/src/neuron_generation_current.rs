@@ -328,6 +328,12 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
         let head = self
             .store
             .load()
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=current-store-load error={_error:?}"
+                );
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         if matches!(head.initial.as_ref(), Some(InitialState::Prepared(_))) {
             if &head.current == binding {

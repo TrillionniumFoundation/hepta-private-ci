@@ -1,0 +1,111 @@
+{
+  "schema": "hepta-initial-recovery-diagnostic-root-review-v1",
+  "status": "accepted-for-next-fixed-source-diagnostic-only",
+  "source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "manifest": "3666fa6fcf3f706e658fab881fea7d4f3b8a664a",
+  "exact_operations": "52ec4d1e9f07541dd2db836ef74f958cb82da16a",
+  "independent_review": "f05b7df88240f1d862c762167dad0e34ddf78bbb",
+  "root_read": {
+    "manifest_full": true,
+    "operations_full": true,
+    "all_six_pre_post_blob_pins_verified": true,
+    "all_nine_exact_operations_replayed_both_directions": true,
+    "changed_regions_and_surrounding_control_flow_read": true,
+    "independent_review_full": true,
+    "root_AGENTS_full": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      },
+      "root_verified_unique_forward_reverse": true,
+      "operations": 1,
+      "changed_guards_or_assertions": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+        "bytes": 15239,
+        "sha256": "5a34eadea61f66573097f0a0cc6f3f5b5fdf84476e7fb2c084c5b675516c4106"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+        "bytes": 15464,
+        "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+      },
+      "root_verified_unique_forward_reverse": true,
+      "operations": 1,
+      "changed_guards_or_assertions": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+        "bytes": 7338,
+        "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      },
+      "root_verified_unique_forward_reverse": true,
+      "operations": 7,
+      "changed_guards_or_assertions": false
+    }
+  ],
+  "behavior": {
+    "new_original_authority_calls": 0,
+    "new_clock_samples": 0,
+    "new_refreshes": 0,
+    "retries": 0,
+    "new_tests": 0,
+    "changed_assertions": 0,
+    "changed_timeouts": 0,
+    "context": "One existing recovered-bundle failure receives lazy anyhow context in the dedicated test child.",
+    "diagnostics": "Eight existing Err results receive inspect_err observers. stderr output is cfg(test); original map_err and ? and all guard order remain.",
+    "important_limit": "Error output can execute while existing outer artifact/selected guards remain in scope. Test timing is not claimed unchanged; no normal-build machine-code identity is claimed."
+  },
+  "registry": {
+    "original_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "changed": false,
+    "boundaries": 504,
+    "protected_files": 366,
+    "reviewed_paths_with_protected_rows": 0,
+    "full_checker_run": false
+  },
+  "formatting": {
+    "native_formatter_not_executed": true,
+    "child_style": "Same single-line format closure form already occurs in the fixed surrounding async block, including longer lines. No speculative reformat is applied. Actual original fmt gate remains required."
+  },
+  "qualification": {
+    "original_result": "5a9abca495743069217509ebd40efe4755742f29",
+    "original_status": "failed-native-components",
+    "Initial_leaf_unresolved": true,
+    "no_repair_claim_for_Initial": true,
+    "no_inherited_PASS": true,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0
+  },
+  "decision": "Integrate with the independently reviewed real cache correction and test expectation correction into one later fixed source. Keep original errors and rerun all original gates."
+}

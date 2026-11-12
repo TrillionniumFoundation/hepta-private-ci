@@ -135,6 +135,18 @@ impl LiveRoot {
             #[cfg(test)]
             eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-cache error={_error:?}");
         })?;
+        // Bounded cache admission may have waited. Preserve the SAME
+        // session's absolute end before this read can authorize a caller.
+        if boottime_ns()
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-post-cache-boottime error={_error:?}");
+            })
+            .map_or(true, |checked| checked >= self.end_boottime_ns)
+        {
+            self.cache.fence();
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
         if self
             .proof
             .matches_observation(&observation)

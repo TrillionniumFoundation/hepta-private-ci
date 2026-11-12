@@ -1,0 +1,62 @@
+{
+  "schema": "hepta-v32-derived-projection-precision-corrections-v2",
+  "current_result": {
+    "filename": "RESULT.json",
+    "git_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+    "bytes": 34254,
+    "sha256": "e793f0fde35cf9f39d9d62013c5ba0954f9d5938b47ea060c27fcad4cd5d3211"
+  },
+  "current_ordinary_failure": {
+    "filename": "ORIGINAL_ORDINARY_FAILURE.json",
+    "git_blob": "466119445e75b976b1e825124b5e8063e112394b",
+    "bytes": 30687,
+    "sha256": "0f881b882f8588c93deb6302ddab2d8d58b637430a06a5cea109331d170f3fe7"
+  },
+  "superseded": {
+    "result_v1": {
+      "filename": "RESULT.json",
+      "git_blob": "5a9abca495743069217509ebd40efe4755742f29",
+      "bytes": 34894,
+      "sha256": "ab0d7da2290c8afac55b700c4a49c5c08534d5d44ff5e93466ee4e24cdb833b0"
+    },
+    "result_v2": {
+      "filename": "RESULT.json",
+      "git_blob": "84d2037f63bc1f85351d9408d854742a9c1b5d1b",
+      "bytes": 32828,
+      "sha256": "b24edd5af8cd4f9fd77f0903ad76a3299387c348e2feda4ef23c3d3f59deb9d6"
+    },
+    "ordinary_failure_v1": {
+      "filename": "ORIGINAL_ORDINARY_FAILURE.json",
+      "git_blob": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd",
+      "bytes": 29434,
+      "sha256": "6cab55c3edfa4d7e79137ad47c71ee42f34a038385aff872b8413601c0e90f0d"
+    },
+    "earlier_correction_note": {
+      "filename": "RESULT_PRECISION_CORRECTION.json",
+      "git_blob": "75c2d93557197bd5c9261f9f3cd469f10f11b46b",
+      "bytes": 2346,
+      "sha256": "41a19bce5f70db7ba6512e4ce6cd57e24ec8883dd32ce191be7fae240a1a4a24"
+    }
+  },
+  "corrected_values": [
+    {
+      "original_summary": "1616d52ed55fc42765be9d1eb32f7be686f04b02",
+      "field": "junit_mtime_ns",
+      "exact_decimal": "1794467909046914025",
+      "rounded_v1_decimal": "1794467909046914000"
+    },
+    {
+      "original_summary": "7919c6b683512bce0c306da02fdf02fd88deecd9",
+      "field": "junit_mtime_ns",
+      "exact_decimal": "1794468147708128878",
+      "rounded_v1_decimal": "1794468147708128800"
+    }
+  ],
+  "scope": "Correct only derived JSON projections before V13 export. Original native files, their byte/SHA/Git identities, all native outcomes, source identity and cleanup remain unchanged. Keep superseded projections explicitly labeled rather than overwriting their history.",
+  "verified": {
+    "current_artifacts_have_no_unsafe_integer_numbers": true,
+    "original_utf8_summary_bytes_retained": true,
+    "qualification_counts_unchanged": true,
+    "no_source_or_test_or_native_rerun": true
+  }
+}

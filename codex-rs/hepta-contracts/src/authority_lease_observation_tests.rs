@@ -129,15 +129,22 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
         before
     );
     observation.finish_original_observation().unwrap();
-    registry
+    let receipt = registry
         .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)
         .unwrap();
+    assert_eq!(receipt.previous_lease_revision, original.revision);
+    assert_eq!(receipt.lease_revision, original.revision.checked_add(1).unwrap());
     assert!(matches!(
         verifier.observe_original_lease(&original),
         Err(AuthorityLeaseError::Revoked)
     ));
+    // New verification reads the current lease first; the original revision is stale.
     assert!(matches!(
         verifier.verify_use(&original.lease_id, original.revision, &original.binding),
+        Err(AuthorityLeaseError::RevisionMismatch)
+    ));
+    assert!(matches!(
+        verifier.verify_use(&original.lease_id, receipt.lease_revision, &original.binding),
         Err(AuthorityLeaseError::Revoked)
     ));
 }

@@ -1,0 +1,341 @@
+{
+  "schema": "hepta.authority-lease-observation-revoked-expectation.manifest.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "frozen test-only source candidate; not compiled or executed",
+  "base": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "exact_native_request": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f",
+  "scope": {
+    "rust_paths_changed": 1,
+    "production_paths_changed": 0,
+    "existing_test_methods_changed": 1,
+    "new_tests": 0,
+    "metadata_changes": 0,
+    "qa_changes": 0,
+    "checker_changes": 0,
+    "ignore_changes": 0,
+    "ref_changes": 0
+  },
+  "affected_test": {
+    "package": "codex-hepta-contracts",
+    "fully_qualified_name": "authority_lease::observation::tests::original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+    "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs"
+  },
+  "delivery": {
+    "exact_ops": {
+      "git_blob": "9da1ba8fc5078d12e496b7de7b7315a6e655d311",
+      "bytes": 4464,
+      "sha256": "8e86b47eb5f7b43027ccafaa9127a70f92b6250db876d4c678f220cc62719d33"
+    },
+    "files": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "preimage": {
+          "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+          "git_blob": "8b9a140054028e8246677ac0959064a59f81c51f",
+          "bytes": 13770,
+          "sha256": "30f43d4137ff404095609b6867176595ea8a055b1b2b27b88b6e19516a3cf33d"
+        },
+        "postimage": {
+          "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+          "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+          "bytes": 14195,
+          "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+        }
+      }
+    ],
+    "operation_count": 2,
+    "unique_forward_and_reverse_exact": true,
+    "postimage_get_and_hash_verified": true
+  },
+  "original_failure": {
+    "status": "retained failure; this source-only correction does not change the original outcome",
+    "proof": {
+      "git_blob": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd",
+      "bytes": 29434,
+      "sha256": "6cab55c3edfa4d7e79137ad47c71ee42f34a038385aff872b8413601c0e90f0d"
+    },
+    "execution": {
+      "git_blob": "3c79dc38002fe04b62a35aeb27e51e7d420e4190",
+      "bytes": 1930,
+      "sha256": "b6fcc65899cf3b54535fddf19f3574b435e1b09bb77b784540c931eb7986542f"
+    },
+    "counts_artifact": {
+      "git_blob": "50088882e03231da09a3638b9db9501814514fde",
+      "bytes": 104,
+      "sha256": "0495ece2149081bf6665d01b1783267ce2cacbd70f2781a2516856dac7b0983c"
+    },
+    "counts": {
+      "errors": 0,
+      "executed": 1944,
+      "failed": 1,
+      "passed": 1943,
+      "skipped": 0,
+      "total": 1944
+    },
+    "junit_summary": {
+      "git_blob": "1616d52ed55fc42765be9d1eb32f7be686f04b02",
+      "bytes": 1294,
+      "sha256": "b44b0557e56918c0c5685df81ce313ab786114d978ef0ddc86a77b5cf75f201b"
+    },
+    "collection_binding": {
+      "git_blob": "6f6c8e840b93c5ea2b43123e56345b51335fbd2d",
+      "bytes": 552,
+      "sha256": "b57b84f8d007643c50f251391ad6250da60aff0980a5bc940100ef4a798718fb"
+    },
+    "suffix": {
+      "bytes": 1138,
+      "sha256": "e3ed73eac80f723a24e9da3055e279dca177bb44451cee611f7276b22014e6e5",
+      "git_blob": "d7ccf8a8fcdb35e2d390765f53443523d41fa807",
+      "utf8_round_trip": true,
+      "offset": 1276301,
+      "end_exclusive": 1277439
+    },
+    "observed": "Native stderr records the failed matches! assertion at line 139 and does not print the actual Err variant.",
+    "derived": "RevisionMismatch is independently derived from the fixed fixture and product validation order, not quoted as a printed native return value.",
+    "source_before_after_clean": true,
+    "command_exit_code": 100,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "whole_native_status": "Not inferred here. Root continues the one original full run and owns its final status."
+  },
+  "precise_cause": [
+    "The successful original revoke advances the stored lease revision and stores a tombstone. The receipt exposes previous_lease_revision and lease_revision.",
+    "verify_use loads the current stored lease. validate_live compares its revision to the caller's expected revision before looking up the tombstone.",
+    "The old expected original.revision therefore returns exact RevisionMismatch after successful revoke.",
+    "observe_original_lease validates the retained original object against its own revision first; it then encounters the tombstone and returns exact Revoked.",
+    "Fresh verify_use with the actual receipt.lease_revision passes the revision equality check and then returns exact Revoked."
+  ],
+  "exact_correction": [
+    "Retain the existing revoke_exact_before result as receipt, without adding a second revoke.",
+    "Assert receipt.previous_lease_revision equals original.revision and receipt.lease_revision equals original.revision.checked_add(1).unwrap().",
+    "Preserve the retained-original observe_original_lease == Revoked assertion byte-for-byte.",
+    "Change only the old-revision verify_use expectation from Revoked to exact RevisionMismatch.",
+    "Add exact verify_use == Revoked using the actual receipt.lease_revision and the same original lease ID/binding."
+  ],
+  "unchanged_contract_evidence": {
+    "current_product_files": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+        "git_blob": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+        "bytes": 61811,
+        "sha256": "77acda03cf3979ae3b1bebb578770fac2d81c6298c76a2a40a3916a33ca06023"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+        "git_blob": "8691a8725bad4c858589228015ee74cf75c266bb",
+        "bytes": 5176,
+        "sha256": "be8c22a07ade1fcd0a5b1e8023816053a05be16b515c16306c67d76c18b796b8"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "git_blob": "86021913605baf2555ec89acaf869ca774e2b437",
+        "bytes": 5763,
+        "sha256": "702694577744b48ea7559ef9abb87e40d05d66868be3d032dc6318f108142ac7"
+      }
+    ],
+    "pre_observation_fence_authority": {
+      "git_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "bytes": 61661,
+      "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10"
+    },
+    "baseline_exact_body_comparisons": [
+      {
+        "marker": "pub fn verify_use(",
+        "byte_identical": true,
+        "bytes": 803,
+        "sha256": "67ec4736650e163f8bcdd3bddd603d0ceecc1d5cc3ef19b07fdb2bf16e543e4a",
+        "baseline_line": 639,
+        "current_line": 648
+      },
+      {
+        "marker": "fn validate_live(",
+        "byte_identical": true,
+        "bytes": 1112,
+        "sha256": "16213fcadf7b7d0a0012aca1c0b2924c4efd262e10072a072bbd2c01ec182f72",
+        "baseline_line": 828,
+        "current_line": 829
+      },
+      {
+        "marker": "fn receipt(",
+        "byte_identical": true,
+        "bytes": 468,
+        "sha256": "d0820981ae2bbf610e2eb9755d7ee2132ba33f9c4d0baa02675eeedbfff16f1b",
+        "baseline_line": 808,
+        "current_line": 809
+      },
+      {
+        "marker": "pub struct RevocationReceipt {",
+        "byte_identical": true,
+        "bytes": 250,
+        "sha256": "6451c34e3d0bed7eee12955b25795027dedbda901448db22bd02a21a5b7a048c",
+        "baseline_line": 153,
+        "current_line": 158
+      },
+      {
+        "marker": "fn lease_is_durable_verified_and_cas_revoked()",
+        "byte_identical": true,
+        "bytes": 979,
+        "sha256": "0f705050bd6c68f4ee9663e951c2555dec62f6c8cb1ad560c0ef5353cb7b8636",
+        "baseline_line": 1285,
+        "current_line": 1286
+      }
+    ],
+    "existing_baseline_test": "lease_is_durable_verified_and_cas_revoked already verifies revision 2 after revoke and requires AuthorityLeaseError::Revoked.",
+    "policy": "Do not reorder revision/tombstone checks, broaden to is_err(), relax deadlines or permissions, retry the effect, change authority objects, or fabricate a new revision."
+  },
+  "static_validation": {
+    "unique_forward_reverse": true,
+    "test_names_before": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "test_names_after": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "new_tests": 0,
+    "production_changes": 0,
+    "wait_unchanged": true,
+    "no_original_assertion_broadened": true,
+    "exact_stale_revision_assertion_added": true,
+    "exact_revoked_receipt_revision_assertion_added": true,
+    "all_bytes_outside_target_function_unchanged": true,
+    "original_blocked_revoke_unavailable_assertion_unchanged": true,
+    "original_persisted_bytes_equal_assertion_unchanged": true,
+    "original_retained_observation_revoked_assertion_unchanged": true,
+    "other_six_test_functions_unchanged": true,
+    "b4_literal_dependency_review": {
+      "source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "files": [
+        {
+          "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+          "git_blob": "2aad87cdd5ad46a8b0ec91ea7936d7ccf374bdc7",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+          "git_blob": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+          "git_blob": "d0f9e0cfac21f64bd2d2998c99fc094eee7493d5",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+          "git_blob": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+          "git_blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+          "git_blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+          "git_blob": "ee0f5225031f82edf413a7f4bed12f77ff479a7b",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+          "git_blob": "a09ec96ea064b35216e43b17dd4726d3a36afc7e",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+          "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+          "git_blob": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+          "git_blob": "b422159a6afc6524387f7442f116c0bf46d0ce70",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+          "git_blob": "dd376c477770afae84963baf4a6f3b84b5deedf9",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+          "git_blob": "bfe51bdf1c0d1b25adc741ecf4a8bb3d7bb7ec93",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+          "git_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+          "git_blob": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+          "git_blob": "8d0de4f77b939c477376927021ded17e6e526dd8",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+          "git_blob": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+          "git_blob": "83bb92cfca3d4724cb498730046bcfda3831631e",
+          "hits": []
+        },
+        {
+          "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+          "git_blob": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+          "hits": []
+        }
+      ],
+      "terms": [
+        "authority_lease_observation_tests.rs",
+        "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+        "original-observation-lease",
+        "verifier.verify_use(&original.lease_id, original.revision, &original.binding)"
+      ],
+      "hits": [],
+      "registry_test_path_mentions": 0,
+      "registry_test_method_mentions": false,
+      "scope": "Raw literal dependency search only; not QA or original checker execution."
+    },
+    "actual_execution_performed": []
+  },
+  "review_and_qualification": {
+    "independent_review": "Assigned to chain_nextuse; pending separate immutable review.",
+    "required_next_step": "Root integrates exact source operations into a new fixed candidate and runs the unchanged original qualification. No prior package or Root result is inherited.",
+    "no_validation_claims": [
+      "No Rust formatting or compilation performed by this author.",
+      "No test, original caller checker, Python QA, h, PTY, Cargo or Root process invoked.",
+      "No assertion of full native PASS, ordinary business completion, or production authorization change."
+    ]
+  }
+}

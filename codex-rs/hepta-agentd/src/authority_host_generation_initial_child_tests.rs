@@ -166,7 +166,8 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 let task = initial.recover_feature(authorities, selected, target)
                     .with_context(|| format!("initial child {phase:?}: reading original published Feature"))?;
                 drop(timing);
-                task.require_bundle(&bundle)?;
+                task.require_bundle(&bundle)
+                    .with_context(|| format!("initial child {phase:?}: checking recovered published Feature bundle"))?;
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 assert_eq!(std::fs::read(&claims)?, before);
                 if phase == Phase::RetiredSession {
