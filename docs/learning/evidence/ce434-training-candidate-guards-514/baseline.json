@@ -1,0 +1,311 @@
+{
+  "head": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "tests": 56,
+  "failures": 0,
+  "errors": 72,
+  "skips": 0,
+  "success": false,
+  "sha256": "c6b2d8f74619406ee881e6e5aa28e3a646c1ae23eb267b4bff0631c8fec025f4",
+  "bytes": 183472,
+  "files": [
+    "test_original_training_owner_source_closure.py",
+    "test_original_training_command_source_closure.py",
+    "test_original_training_bootstrap_source_closure.py",
+    "test_original_training_initial_connection_source_closure.py",
+    "test_original_training_source_capture_source_closure.py",
+    "test_original_training_snapshot_source_closure.py",
+    "test_original_candidate_material_source_closure.py",
+    "test_original_candidate_stage_source_closure.py",
+    "test_q24_model_proposal_source_closure.py"
+  ],
+  "problems": [
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_actual_dataset_moves_the_same_transport_after_final_peer_io_and_authentication",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock (marker='peer.actor_id != material.initial.owners.trainer')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock (marker='original_owner_command_channel_v1(')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock (marker='original_owner_pidfd,')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock (marker='.check_peer_lifetime()')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock (marker='current_binding != initial_binding || fresh_now < started_at')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_initial_handoff_binds_original_actor_peer_full_context_and_clock",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_late_binding_accepts_only_the_sealed_original_material_cut",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='Origin::Fresh => (false, None)')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='Origin::Recovered(expected) => (')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='wire::authenticate_receipt(')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='.map(|(receipt, attestation)|')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='receipt,')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='attestation,')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='verified_at)')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='.transpose()?')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence (marker='retained: Mutex::new(retained)')",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_recovered_connection_cannot_rearm_or_renew_retained_training_evidence",
+      "last": "original_training_connection_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs', marker='self,')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs', marker='OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs: unique top-level code marker required: let original = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='channel.execution_requested = true')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='pin != &expected')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='context.dataset != *dataset.snapshot()')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='.take()')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='for page in 0..pages')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='response.request != request')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='total as usize != length')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='heads.len() != expected_offset')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='STANDARD_NO_PAD.encode(&part) != encoded_heads')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='OriginalCellQ24CandidateMaterialV1::from_verified_readback(')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='let fresh_now = now()?')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='checked_at < minimum_now || fresh_now < checked_at')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='expected.attestation().clone()')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', marker='&verified != expected')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='self.operation != OPERATION')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='usize::from(self.page) >= MAX_PAGES')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='request.page != self.next_page')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='pin != &request.completion')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='&attestation.signing_bytes()')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='&attestation.signature')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='completion_digest(material.receipt(), material.attestation())?')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (bound='const PAGE_BYTES: usize = 2_048')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (bound='const MAX_PAGES: usize = 17')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (bound='const FRAME_BYTES: usize = 16_384')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature (bound='const ORIGINAL_Q24_CANDIDATE_HEAD_BYTES: usize = 12 + 64 * 64 * 8')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='candidate.bundle != *signed')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='baseline.components() != &dataset.request.selected_bundle.components')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='if changed.next().is_some()')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='baseline.validate_single_head_candidate(candidate, head)?')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='Digest32::of_bytes(heads)')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='components.heads = head_digest')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='if signed != &expected')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', marker='request.require_initial(&self.config.material, request_id)?')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', marker='session.require_request(&request)?')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', marker='if let Some(original) = self.ready()?')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', marker='OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', marker='candidate_wire::MaterialResult::ReadbackRequired')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', marker='SessionDisposition::CloseReadback')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='AuthorityPosture::DENY_ALL')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', declaration='impl Clone for OriginalCellQ24CandidateMaterialV1 {}')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', declaration='use serde::Deserialize;')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs: unique top-level code marker required: let row = changed.next()"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', declaration='fn bypass() { original_owner_command_channel_v1(); }')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs', declaration='fn bypass() { channel.execution_requested = false; }')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:fn from_original_connection(: required code order missing: ['let started_at = now()?', 'let OriginalCellQ24TrainingCommandClientV1 {', 'channel, context, binding, retained', 'channel', '.into_inner()', 'channel.execution_requested = true', 'retained', '.into_inner()', '.as_ref()', '.is_some_and(|pin| pin != &expected)', 'context.dataset != *dataset.snapshot()', 'context.validate()? != material.initial', 'context.scope != material.scope', 'context.verifier.trust_digest() != material.verifier.trust_digest()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'return Err(Error::Binding(', 'signed_length(&context, &expected)?', 'candidate_wire::completion_digest(', 'expected.receipt()', 'expected.attestation()', 'check_peer_lifetime()', 'verify_original_context(', '&context', '&material', '&dataset', '&expected', 'started_at', 'Ok(Self {', 'channel: Mutex::new(Some(channel))']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', declaration='fn bypass() { owner.build_original_owner(); }')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', declaration='fn bypass() { State::Starting; }')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs:fn candidate_material_response(: required code order missing: ['let request: candidate_wire::Request = serde_json::from_slice(bytes)', 'request.require_initial(&self.config.material, request_id)?', 'session.require_request(&request)?', 'if let Some(original) = self.ready()?', 'OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(', 'original.as_ref()', 'bytes', 'request_id', 'session', 'session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)']"
+    },
+    {
+      "id": "test_original_candidate_material_source_closure.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (path='codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs', declaration='enum Action { Execute }')",
+      "last": "original_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs:fn require_common(: required code order missing: ['self.schema != 1', 'self.operation != OPERATION', 'self.request_id != request_id', 'usize::from(self.page) >= MAX_PAGES', 'return Err(Error::Binding(', 'for value in [', '&self.binding', '&self.dataset_head', '&self.scope_binding', '&self.completion', 'let digest: Digest32 = value.parse()', 'digest.is_zero() || digest.to_string() != *value', 'return Err(Error::Binding(', 'Ok(())']"
+    },
+    {
+      "id": "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material",
+      "last": "original_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs: required marker missing: 'enum CandidateRead { Dispatch, Readback }'"
+    },
+    {
+      "id": "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time",
+      "last": "original_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs:fn bind(: required code order missing: ['fn bind(', 'let admitted_at = Instant::now()', 'OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)', 'material.initial.request.evaluation_profile != protocol.evaluation_profile()', 'baseline.components() != &material.initial.request.selected_bundle.components', 'peer.peer.actor_id != material.initial.owners.trainer', 'peer.timeout.is_zero()', 'peer.timeout > Duration::from_secs(30)', 'peer.lifetime.is_zero()', 'peer.lifetime > Duration::from_secs(300)', 'return Err(Error::WrongScope)', 'admitted_at.checked_add(peer.lifetime)', 'evaluator.peer.actor_id != material.initial.owners.evaluator', 'evaluator.timeout.is_zero()', 'evaluator.timeout > Duration::from_secs(30)', 'evaluator.lifetime.is_zero()', 'evaluator.lifetime > Duration::from_secs(300)', 'admitted_at.checked_add(evaluator.lifetime)', 'OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams(', 'OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams(', 'OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(', 'OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(', 'OriginalCellEvaluationCommandConnectionV1::from_original_stream(', 'OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream(', 'let end = end.min(evaluator_end)', 'let end = end.min(common.end)', 'common.end = end', 'auth::require_material(&material, binding)?', 'auth::require_clock(started_at, fresh)?', 'Instant::now() >= end', 'return Err(Error::DeadlineExceeded)', 'CandidateLane::new(candidate)', 'EvaluationLane::new(evaluator)']"
+    },
+    {
+      "id": "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_last_root_and_source_io_precede_fresh_full_original_signature_checks",
+      "last": "original_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs: required marker missing: 'enum CandidateRead { Dispatch, Readback }'"
+    },
+    {
+      "id": "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority",
+      "last": "original_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs: required marker missing: 'enum CandidateRead { Dispatch, Readback }'"
+    },
+    {
+      "id": "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success",
+      "last": "original_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs: required marker missing: 'enum CandidateRead { Dispatch, Readback }'"
+    }
+  ]
+}
