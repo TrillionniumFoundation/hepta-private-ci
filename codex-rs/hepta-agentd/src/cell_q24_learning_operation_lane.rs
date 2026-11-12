@@ -44,7 +44,9 @@ impl Q24StageState {
                 OriginalPreparedReadV1::require_prepared(read, &inner.prepared)
                     .map_err(unavailable)?;
                 runtime
-                    .block_on(owners.factory.require_current())
+                    .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
+                        &owners.factory,
+                    ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);
@@ -53,7 +55,9 @@ impl Q24StageState {
                 OriginalPreparedReadV1::require_prepared(read, &inner.prepared)
                     .map_err(unavailable)?;
                 runtime
-                    .block_on(owners.factory.require_current())
+                    .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
+                        &owners.factory,
+                    ))
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);

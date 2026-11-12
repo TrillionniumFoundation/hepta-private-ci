@@ -168,7 +168,7 @@ impl SigningFilesData {
         {
             return Err(refused("original key differs from Root-selected signer"));
         }
-        Ok((self.owner.open(files, objective, mode)?, key))
+        Ok((JournalData::open(&self.owner, files, objective, mode)?, key))
     }
 
     pub(super) fn freeze_original(
