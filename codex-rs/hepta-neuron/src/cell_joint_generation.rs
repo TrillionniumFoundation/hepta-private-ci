@@ -250,6 +250,9 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
         let payload = self.request_payload(manifest, request, self.resident.is_none(), None);
         let payload = match payload {
             Ok(value) => value,
+            Err(CellGenerationErrorV2::Unavailable) => {
+                return Err(CellGenerationErrorV2::Unavailable);
+            }
             Err(CellGenerationErrorV2::Deadline) => {
                 return unstarted_proposal(
                     manifest,

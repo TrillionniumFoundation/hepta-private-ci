@@ -37,13 +37,11 @@ impl JointGenerationProcessWorkerV1 {
             if input.public_digest != self.public_digest {
                 return Err(CellGenerationErrorV2::InvalidBinding);
             }
-            cell_joint_observed::request_bytes(
-                request,
-                &input,
-                weights,
-                public,
-                resident_clock.unwrap_or_else(|| (self.clock)()),
-            )
+            let now = resident_clock.unwrap_or_else(|| (self.clock)());
+            if now == 0 {
+                return Err(CellGenerationErrorV2::Unavailable);
+            }
+            cell_joint_observed::request_bytes(request, &input, weights, public, now)
         } else {
             let input = serde_json::from_slice::<JointGenerationInputV1>(&request.input)
                 .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;

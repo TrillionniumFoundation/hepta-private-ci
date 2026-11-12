@@ -40,8 +40,10 @@ failure after submission poisons the session; no automatic respawn or replay is
 introduced. A known terminal outcome requires bounded child/pipe termination;
 unconfirmed termination or transport errors remain unresolved at the owner.
 
-The current mounted-procfs descriptor resolver and zero-clock refusal are
-retained rather than copying the historical transport's PID assumption.
+The current mounted-procfs descriptor resolver is retained. Zero clock samples
+are refused at native entry and on the observed V2 payload path. The V2 payload
+check explicitly returns Unavailable through the worker instead of allowing
+invalid-clock uncertainty to become a terminal Rejected proposal.
 
 ## Qualification and limits
 

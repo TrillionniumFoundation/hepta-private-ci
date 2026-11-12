@@ -4,7 +4,7 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
-fn resident(harness: &mut Harness) -> TestResult {
+pub(super) fn resident(harness: &mut Harness) -> TestResult {
     harness.worker = JointGenerationProcessWorkerV1::open_resident_files(
         JointGenerationProcessConfigV1 {
             executable: harness.directory.0.join("proposal"),
