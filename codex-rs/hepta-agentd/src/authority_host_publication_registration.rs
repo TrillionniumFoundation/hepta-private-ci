@@ -77,9 +77,9 @@ impl HostAuthorityService {
                         },
                     )?;
                     if mode == RootGenerationPublicationModeV1::Reserve {
-                        retained.require_baseline()?;
+                        RegisteredSuccessorData::require_baseline(&retained)?;
                     } else {
-                        retained.require_exact()?;
+                        RegisteredSuccessorData::require_exact(&retained)?;
                     }
                     enrolled.successor = Some(retained);
                 }

@@ -37,7 +37,7 @@ def require_structure(path, source, rows):
         installation.require_structure(path, source)
     if path == FILES:
         body, raw = route.function(source, "fn retain_original_publication(")
-        literal = 'data.purpose != "runtime.learning.post-a-publication-deployment.v1"'
+        literal = 'data.purpose != "runtime.learning.post-a-publication-deployment.v2"'
         if raw.count(literal) != 1:
             raise PROOF.VerificationFailure("the actual Root plan purpose must remain exact")
         start = raw.index(literal)
@@ -105,7 +105,7 @@ class PostAPublicationSourceTests(unittest.TestCase):
 
     def test_root_plan_keeps_original_recipient_and_all_file_inputs(self):
         self.check(FILES, "retain_original_publication", (
-            "original_root()?", "MetadataFile::open_metadata(path)?", "data.schema != 1",
+            "original_root()?", "MetadataFile::open_metadata(path)?", "data.schema != 2",
             "data.initial != initial.head_digest.to_string()", "!initial.receipts.is_empty()",
             "data.inputs.issuer_keys.is_empty()", "DirectoryPin::capture_root(",
             "RootAuthorityDirectory::open(", "OriginalFile::open_original(&data.inputs.previous_journal)?",
@@ -115,8 +115,8 @@ class PostAPublicationSourceTests(unittest.TestCase):
             "OriginalFile::open_original(&data.inputs.withdrawal_file)?",
             "material.require_distinct(file)?", "held.require_original_files()?"))
         self.mutate(FILES, lambda source: source.replace(
-            '"runtime.learning.post-a-publication-deployment.v1"',
-            '"untrusted" /* "runtime.learning.post-a-publication-deployment.v1" */', 1))
+            '"runtime.learning.post-a-publication-deployment.v2"',
+            '"untrusted" /* "runtime.learning.post-a-publication-deployment.v2" */', 1))
 
     def test_route_uses_original_root_uid_phase_initial_and_end(self):
         self.check(FILES, "attach_original_route", (

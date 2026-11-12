@@ -82,8 +82,11 @@ impl RegisteredSuccessorData {
                         "successor must precede original CURRENT preparation",
                     ));
                 }
-                let configuration =
-                    files.require_registered_baseline(identity, &original.intent.target)?;
+                let configuration = RootOriginalSuccessorFilesV1::require_registered_baseline(
+                    &files,
+                    identity,
+                    &original.intent.target,
+                )?;
                 let record = SuccessorRecord {
                     schema: 1,
                     purpose: SUCCESSOR_PURPOSE.into(),
@@ -176,10 +179,12 @@ impl RegisteredSuccessorData {
         let profile = original
             .profile
             .original_for_version(PublicationVersion::DurableV2)?;
-        if self
-            .files
-            .require_registered_baseline(&identity, &profile.intent.target)?
-            .to_string()
+        if RootOriginalSuccessorFilesV1::require_registered_baseline(
+            &self.files,
+            &identity,
+            &profile.intent.target,
+        )?
+        .to_string()
             != original.configuration
         {
             return Err(io::Error::other("original successor baseline changed"));
@@ -225,7 +230,7 @@ impl RegisteredSuccessorData {
     /// Called after the entire actual Root writer context returns. No successful
     /// reply or durable Ready can precede this complete independent re-read.
     pub(super) fn finish_observed(&self, expected: &RootSuccessorTaskCutV1) -> io::Result<()> {
-        if self.observe_retired(false)? != *expected {
+        if self.observe_retired(/*capture*/ false)? != *expected {
             return Err(io::Error::other(
                 "successor changed after Root writer postchecks",
             ));
@@ -265,9 +270,11 @@ impl RegisteredSuccessorData {
         let profile = record
             .profile
             .original_for_version(PublicationVersion::DurableV2)?;
-        let cut = self
-            .files
-            .observe_original_successor(&identity, &profile.intent.target)?;
+        let cut = RootOriginalSuccessorFilesV1::observe_original_successor(
+            &self.files,
+            &identity,
+            &profile.intent.target,
+        )?;
         if cut.configuration != record.configuration {
             return Err(io::Error::other("original successor configuration changed"));
         }

@@ -59,7 +59,7 @@ impl RootOriginalSuccessorFilesV1 {
                 {
                     return Err(io::Error::other("successor Source baseline is not empty"));
                 }
-                cell.require_original_cell_baseline()?;
+                OriginalCellFiles::require_original_cell_baseline(&cell)?;
             }
             Ok(configuration)
         })
@@ -93,7 +93,8 @@ impl RootOriginalSuccessorFilesV1 {
             let before = source
                 .observe_run_publication(&inputs.source.scope.run_id)
                 .map_err(io::Error::other)?;
-            let (cell_anchor, decision) = cell.read_original_successor_cell(
+            let (cell_anchor, decision) = OriginalCellFiles::read_original_successor_cell(
+                &cell,
                 &inputs.definition,
                 &inputs.source,
                 before.publication(),
@@ -191,8 +192,8 @@ impl RootOriginalSuccessorFilesV1 {
         ]);
         let registry = original.registry().map_err(io::Error::other)?;
         let source_inputs = RootHistoricalSourceInputsV1 {
-            journal: files[3].original_readonly_description()?,
-            witness: files[4].original_readonly_description()?,
+            journal: RetainedMaterial::original_readonly_description(&files[3])?,
+            witness: RetainedMaterial::original_readonly_description(&files[4])?,
             witness_scope: original.witness_scope,
             witness_generation: original.witness_generation,
             witness_records: original.witness_records,
@@ -206,8 +207,8 @@ impl RootOriginalSuccessorFilesV1 {
             .into_registered(identity, target, self.uid, self.gid)?;
         let cell = OriginalCellFiles::retain_original_cell(
             RootHistoricalCellInputsV1 {
-                journal: files[5].original_readonly_description()?,
-                witness: files[6].original_readonly_description()?,
+                journal: RetainedMaterial::original_readonly_description(&files[5])?,
+                witness: RetainedMaterial::original_readonly_description(&files[6])?,
                 witness_scope: JournalScope {
                     scope_digest: Digest32::from_array(self.data.cell_witness_scope),
                     objective_digest: Digest32::from_array(self.data.cell_witness_objective),

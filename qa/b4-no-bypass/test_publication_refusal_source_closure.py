@@ -30,7 +30,7 @@ CALLERS = {
     "root_publication_refusal_inspect": (TRANSPORT,),
     "root_publication_refusal_persist": (OWNER,),
     "root_publication_refusal_uncertain_ack": (RUNTIME,),
-    "root_publication_original_frame_deadline": (TRANSPORT,),
+    "root_publication_original_frame_deadline": ('codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs', 'codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs',),
 }
 
 
@@ -81,11 +81,23 @@ def require_structure(path, source):
         start, stop = route.original.span(body, "|refusal| {")
         if not body.index("PublicationRefusal::enroll(") < start:
             raise PROOF.VerificationFailure("the complete context must enter the durable arm")
-        for marker in ("self.enroll_armed_generation_publication(", "enrolled.require_profile()?",
+        for marker in ("self.enroll_armed_generation_publication(",
                        "verify_pinned_process(", "let original = enrolled.reserved.clone()"):
             if not start < body.index(marker) < stop:
                 raise PROOF.VerificationFailure("whole original context or final read escaped arm")
             at_depth(body[start:stop], marker, 1)
+        # The added C registration uses a second, sequential actual context.
+        # Both contexts and all of their postchecks remain inside this arm.
+        for match in re.finditer(r"with_learning_profile\s*\(", body):
+            if not start < match.start() < stop:
+                raise PROOF.VerificationFailure("actual Root proof before durable arm")
+        inner = body[start:stop]
+        context, done = route.original.span(inner, "|initial, proof| {")
+        if not re.match(r"^\s*,\s*\)\?;", inner[done:]):
+            raise PROOF.VerificationFailure("successor context postcheck must propagate")
+        if "enrolled.require_profile()?" not in inner[context:done]:
+            raise PROOF.VerificationFailure("actual C registration lacks its profile check")
+        at_depth(inner[done:], "enrolled.require_profile()?", -1)
     if path == TRANSPORT:
         body, _ = route.function(source, "fn serve_generation_publication_with_end(")
         start, stop = route.original.span(body, "PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {")

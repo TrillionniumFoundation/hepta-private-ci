@@ -82,8 +82,8 @@ impl OriginalPostAPublicationFiles {
         self.require_original_files()?;
         let data = PreparedPublicationData {
             inputs: self.data.clone(),
-            material: self.material.original_data()?,
-            successor: self.successor.original_data()?,
+            material: RetainedMaterial::original_data(&self.material)?,
+            successor: RootOriginalSuccessorFilesV1::original_data(&self.successor)?,
         };
         self.require_original_files()?;
         Ok(data)
