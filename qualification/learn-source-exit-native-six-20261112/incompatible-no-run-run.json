@@ -1,0 +1,50 @@
+{
+  "scope": "actual component verification on alternate executor; not complete ordinary learning acceptance",
+  "command": [
+    "python3",
+    "scripts/hepta_ci_v8.py",
+    "--run",
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked",
+    "--no-run"
+  ],
+  "cwd": "/home/qq/hepta-learn-ff41-native-20261112",
+  "before": {
+    "sha": "f1fa643a420cedec99007ca87562266c86c70296",
+    "tree": "f331f7fa8fc3238aad8d2573c8be578a481dba8a",
+    "tracked_status": ""
+  },
+  "started_utc": "2026-11-12T05:41:39.466929+00:00",
+  "uid": 1000,
+  "status": "completed",
+  "tools": {
+    "rustc": {
+      "exit": 0,
+      "output": "rustc 1.96.0 (ac68faa20 2026-05-25)\n"
+    },
+    "nextest": {
+      "exit": 0,
+      "output": "cargo-nextest 0.9.151 (6b3f99457 2026-11-02)\nrelease: 0.9.151\ncommit-hash: 6b3f994577a98874a2e0ea5bef77fbbab3434044\ncommit-date: 2026-11-02\nhost: x86_64-unknown-linux-gnu\n"
+    },
+    "just": {
+      "exit": 0,
+      "output": "just 1.51.0\n"
+    }
+  },
+  "returncode": 2,
+  "after": {
+    "sha": "f1fa643a420cedec99007ca87562266c86c70296",
+    "tree": "f331f7fa8fc3238aad8d2573c8be578a481dba8a",
+    "tracked_status": ""
+  },
+  "elapsed_seconds": 4.798436017008498,
+  "finished_utc": "2026-11-12T05:41:44.278949+00:00",
+  "source_unchanged": true,
+  "log_bytes": 564,
+  "log_sha256": "80e522bfaa0ae7d0a49127a4cdff9a5d4d72cf0b26dc60754d88a91710955d70",
+  "junit": []
+}
