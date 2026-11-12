@@ -476,14 +476,15 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
         let training = match &self.profile {
             Profile::Legacy => {
-                source
+                let trainer: &LearningIterationEvidenceClientV1 = source
                     .trainer()
-                    .ok_or(OwnerError::Binding("original C Trainer source"))?
-                    .readback(
-                        source.snapshot(),
-                        prior(&self.config, LearningIterationStageV1::Training)?,
-                    )
-                    .await?
+                    .ok_or(OwnerError::Binding("original C Trainer source"))?;
+                LearningIterationEvidenceClientV1::readback(
+                    trainer,
+                    source.snapshot(),
+                    prior(&self.config, LearningIterationStageV1::Training)?,
+                )
+                .await?
             }
             Profile::Evaluated(selection) => {
                 let (trainer, evaluator) = source
