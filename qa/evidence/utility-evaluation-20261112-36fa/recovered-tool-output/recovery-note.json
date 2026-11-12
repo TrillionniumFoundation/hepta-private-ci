@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.tool-output-recovery.v1",
+  "recovered_at_utc": "2026-11-12 08:10:08 UTC",
+  "source_execution_commit": "91d0e10e002d285aec720e9f2b2f3a1d854b4707",
+  "source_execution_tree": "8cd35e01cc02146606457a8481ecc1d8dda22158",
+  "provenance": "These two complete raw payloads were reproduced from the complete tool outputs observed during the original execution. Their byte counts and SHA-256 values were recalculated and exactly matched the values retained in the original execution records before publication as Git blobs.",
+  "payloads": [
+    {
+      "proposed_path": "evidence/utility-evaluation-20261112-36fa/recovered-tool-output/91d0-caller-verify.log",
+      "bytes": 191,
+      "sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+      "outcome": "The actual original full caller verifier exited 1 after 876.4081998929996 seconds. timed_out=false. This is a failed gate."
+    },
+    {
+      "proposed_path": "evidence/utility-evaluation-20261112-36fa/recovered-tool-output/91d0-caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "outcome": "The original caller self-test exited 0. This raw line alone does not encode a source identity or replace the complete execution record."
+    }
+  ],
+  "unavailable_original_payloads": [
+    "Complete original source inventories and their compressed bytes",
+    "Complete original source-closure logs",
+    "Complete original source-gate package and package manifest payload"
+  ],
+  "limitation": "This newly generated note is a recovery explanation, not an original execution record. It does not claim that the original package or its full manifest has been restored. Previously observed hashes and outcomes remain observations, not recovered unavailable bytes. Original cloud executions at 19aa without observed terminal records remain Unknown; a later desktop execution is a distinct run."
+}

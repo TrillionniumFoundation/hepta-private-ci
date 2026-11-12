@@ -1,0 +1,103 @@
+{
+  "behavioral_tests_started": false,
+  "checkout_before": {
+    "head": "b19f15923760da49cf735f550da3a50beb9c50a2",
+    "status": "",
+    "tree": "8cd35e01cc02146606457a8481ecc1d8dda22158"
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "bundle",
+        "verify",
+        "/home/qian-qi/hepta-utility-36fa-evidence/utility-qa-6d0d.bundle"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-11-12T07:54:23.012003+00:00",
+      "stage": "qa_bundle_verify",
+      "stderr": "/home/qian-qi/hepta-utility-36fa-evidence/utility-qa-6d0d.bundle \u6ca1\u95ee\u9898\n",
+      "stdout": "\u8fd9\u4e2a\u6346\u7ed1\u5305\u4e2d\u542b\u6709\u8fd9\u4e2a\u5f15\u7528\uff1a\n6d0da9fe0cae414975288f23a3779d7bf86e3638 refs/heads/utility-api-qa-readback\n\u8fd9\u4e2a\u6346\u7ed1\u5305\u9700\u8981\u8fd9\u4e2a\u5f15\u7528\uff1a\n91d0e10e002d285aec720e9f2b2f3a1d854b4707 \nThe bundle uses this hash algorithm: sha1\n"
+    },
+    {
+      "command": [
+        "git",
+        "bundle",
+        "list-heads",
+        "/home/qian-qi/hepta-utility-36fa-evidence/utility-qa-6d0d.bundle"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-11-12T07:54:23.014946+00:00",
+      "stage": "qa_bundle_heads",
+      "stderr": "",
+      "stdout": "6d0da9fe0cae414975288f23a3779d7bf86e3638 refs/heads/utility-api-qa-readback\n"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "/home/qian-qi/hepta-utility-36fa-evidence/utility-qa-6d0d.bundle",
+        "refs/heads/utility-api-qa-readback"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-11-12T07:54:23.227629+00:00",
+      "stage": "qa_bundle_import",
+      "stderr": "\u6765\u81ea /home/qian-qi/hepta-utility-36fa-evidence/utility-qa-6d0d.bundle\n * branch                utility-api-qa-readback -> FETCH_HEAD\n",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "6d0da9fe0cae414975288f23a3779d7bf86e3638"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-11-12T07:54:23.327239+00:00",
+      "stage": "checkout_exact_6d",
+      "stderr": "\u8b66\u544a\uff1a\u60a8\u6b63\u4e22\u4e0b 4 \u4e2a\u63d0\u4ea4\uff0c\u672a\u548c\u4efb\u4f55\u5206\u652f\u5173\u8054\uff1a\n\n  b19f15923 fix(eval): keep partial negative evidence insufficient through learning receipts\n  0b450608d fix(learn): preserve independent Outcome evidence under explicit Dataset v3\n  34dbce608 merge(learn): join original Model and deep readback owners on common NDU source\n  0740bd09a test(learn): exercise evaluated retention publication and original intent recovery\n\n\u5982\u679c\u60a8\u60f3\u8981\u901a\u8fc7\u521b\u5efa\u65b0\u5206\u652f\u4fdd\u5b58\u5b83\uff0c\u8fd9\u53ef\u80fd\u662f\u4e00\u4e2a\u597d\u65f6\u5019\u3002\n\u5982\u4e0b\u64cd\u4f5c\uff1a\n\n git branch <\u65b0\u5206\u652f\u540d> b19f15923\n\nHEAD \u76ee\u524d\u4f4d\u4e8e 6d0da9fe0 test(learn): align exact caller expectations with original Model owners\n",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "finished_at": "2026-11-12T08:06:23.921719+00:00",
+      "log_bytes": 184921,
+      "log_sha256": "a09caf225e9edf5d493f6db98c9f2c451bbc554726df607f1512ce2deae3073e",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 101,
+      "source": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+      "timed_out": false,
+      "tree": "fefb5d02dbd981b508727f7ffaf93fc68b720976"
+    }
+  ],
+  "error": "RuntimeError: agentd-6d-fix failed",
+  "finished_at": "2026-11-12T08:06:25.358196+00:00",
+  "intended_source": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+  "intended_tree": "fefb5d02dbd981b508727f7ffaf93fc68b720976",
+  "patch": {
+    "bytes": 9872,
+    "sha256": "11d3c207abd98da8b894cb6ba76dd02b7a7e6c16884d7e1540b1b1c1fab3bd86"
+  },
+  "qa_bundle": {
+    "bytes": 2697,
+    "created_only_if_absent": true,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/utility-qa-6d0d.bundle",
+    "sha256": "9ba0ec961f3997102b12c0cea21b141071657765d05fb01eb7f0ea916756158c"
+  },
+  "source_after": {
+    "head": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+    "status": " M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n",
+    "tree": "fefb5d02dbd981b508727f7ffaf93fc68b720976"
+  },
+  "stage": "agentd-6d-fix",
+  "started_at": "2026-11-12T07:54:22.520287+00:00",
+  "status": "failed"
+}

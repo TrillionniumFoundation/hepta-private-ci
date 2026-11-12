@@ -1,0 +1,321 @@
+{
+  "schema": "hepta.utility-evaluation.evidence-index.v2",
+  "checkpoint": "canonical-e8-aligned-gates-pending",
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "previous_evidence_head": "e672a18548cbf047f1301a3dbf779105d04fd462",
+  "artifact_count_excluding_this_index": 76,
+  "artifacts": [
+    {
+      "path": "checkpoints/README-e672a185.md",
+      "git_blob_sha": "446be8fedde8ce34b209eb3533c0f9a7d855a6e9"
+    },
+    {
+      "path": "controls/COUNTEREXAMPLE_PRECEDENCE_CONTROL.patch",
+      "git_blob_sha": "7bad2fbdf7a4552fd84640413247576294c8be15"
+    },
+    {
+      "path": "controls/COUNTEREXAMPLE_PREPARATION.json",
+      "git_blob_sha": "fd87dfb31105259cb2e0add9d85dc66f0a21a729"
+    },
+    {
+      "path": "drivers/canonical-e8-alignment.py",
+      "git_blob_sha": "becebd21ba7093bfb7752f9f79eb82f6af97862b"
+    },
+    {
+      "path": "drivers/canonical-e8-pipeline.py",
+      "git_blob_sha": "c7bad97b0a18847ca85db60eda66d4578e613c6f"
+    },
+    {
+      "path": "drivers/native-exact-driver-3c318e8d.py",
+      "git_blob_sha": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    {
+      "path": "drivers/observations/e8-config-file-info.json",
+      "git_blob_sha": "02dfb2c463a42566377ee2beb3902757dc92a25e"
+    },
+    {
+      "path": "drivers/observations/e8-config-terminal.json",
+      "git_blob_sha": "8067a9b1604570a47d8565eafcdb0874a41621c8"
+    },
+    {
+      "path": "drivers/observations/v2-driver-file-info.json",
+      "git_blob_sha": "7eeec06837ebeb032061275ac39999e3bcbe9a0c"
+    },
+    {
+      "path": "drivers/observations/v2-driver-terminal.json",
+      "git_blob_sha": "34a25080703e07d9ab057d2443e925e5bacb46cc"
+    },
+    {
+      "path": "drivers/observations/v2-template-file-info.json",
+      "git_blob_sha": "305f30028a06602442566e38042fe9cde5e519a7"
+    },
+    {
+      "path": "drivers/observations/v2-template-terminal.json",
+      "git_blob_sha": "8b574adc4ec98b09dcd68ba427cd65e06fdb520f"
+    },
+    {
+      "path": "drivers/SOURCE_GATES_E8_PREPARATION.json",
+      "git_blob_sha": "fedb52a0833600ab8a0dbb512f18a9a9d31e85ef"
+    },
+    {
+      "path": "drivers/SOURCE_GATES_V2_DESKTOP_PREPARATION.json",
+      "git_blob_sha": "1c447334773a66dddb5b57f6b6b8ecb27f4598fc"
+    },
+    {
+      "path": "drivers/source-gates-e8-config.json",
+      "git_blob_sha": "2c98f568925c8f118376d88fd3f7967c0d6c7ed4"
+    },
+    {
+      "path": "drivers/source-gates-v2-first-path-observation.json",
+      "git_blob_sha": "f6a87059e1f913b90b61304d52a6b835691890d2"
+    },
+    {
+      "path": "drivers/source-gates-v2-synthetic-validation.json",
+      "git_blob_sha": "8879c4927b44c5e2a2e5132fb67ad9787b754098"
+    },
+    {
+      "path": "drivers/source-gates-v2-template.json",
+      "git_blob_sha": "91fec40566145de903e259d615d40a7981940ce0"
+    },
+    {
+      "path": "drivers/source-gates-v2.py",
+      "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "path": "integration/CANONICAL_E8_COMMIT_PACKET.json",
+      "git_blob_sha": "668dbb2a74e9d09b1557496fb0065630f53cef8b"
+    },
+    {
+      "path": "integration/CANONICAL_UPSTREAM_MANIFEST.json",
+      "git_blob_sha": "9e1d654c90c48764ac7ea90fe0168fe265083b14"
+    },
+    {
+      "path": "integration/CANONICAL_UPSTREAM_NATIVE_IMPORT_RESULT.json",
+      "git_blob_sha": "aad40c37746620987711bf49dd3a354f5e5a3c2a"
+    },
+    {
+      "path": "integration/CANONICAL_UPSTREAM_PACKET.json.gz.b64",
+      "git_blob_sha": "dd1b38bee756d2e47606840e230caa7db5ab3949"
+    },
+    {
+      "path": "integration/CANONICAL_UPSTREAM_ROOT_VERIFICATION.json",
+      "git_blob_sha": "8c4aa7291db72068ce4933a0937075c5c02d9735"
+    },
+    {
+      "path": "integration/E8_SOURCE_PUBLICATION.json",
+      "git_blob_sha": "6b6d29c2577e525d40a2b4bdfd85923027ebadae"
+    },
+    {
+      "path": "integration/UPSTREAM_726_MANIFEST.json",
+      "git_blob_sha": "8bcb95455bcb47361ab24813a2d2681a156d0f46"
+    },
+    {
+      "path": "integration/UPSTREAM_726_PACKET.json.gz",
+      "git_blob_sha": "421a86b05bc4754dddcc0efbc603d118a175ec18"
+    },
+    {
+      "path": "integration/UPSTREAM_726_PACKET.json.gz.b64",
+      "git_blob_sha": "573de255d6a3b1fa1f944a439e124678b7b59ca4"
+    },
+    {
+      "path": "native/19aa-conditional-pipeline.stdout.log",
+      "git_blob_sha": "4852722db40ff94b980a4d4d157d1be6dfeccda0"
+    },
+    {
+      "path": "native/agentd-6d-fix.log.gz",
+      "git_blob_sha": "224ef36f89183d9bfcdf86b395620d91fd73714c"
+    },
+    {
+      "path": "native/agentd-6d-fix.log.gz.b64",
+      "git_blob_sha": "7be637949910a9a50e570596bafea77422720a69"
+    },
+    {
+      "path": "native/agentd-6d-maintenance.patch",
+      "git_blob_sha": "9d91cc3d0ee72cf655aac45fe1f165c48fb3d907"
+    },
+    {
+      "path": "native/ALL_ERROR_BLOCKS.json.gz",
+      "git_blob_sha": "6a766e801417a05b026058bb7a4c7b81d322e52d"
+    },
+    {
+      "path": "native/ALL_ERROR_BLOCKS.json.gz.b64",
+      "git_blob_sha": "d201acd78eade3c7b6feb0593e749f13dcdc2ab4"
+    },
+    {
+      "path": "native/ARCHIVE_INTEGRITY.json",
+      "git_blob_sha": "8058a295e3422a2323da0de6f1efeb3202e88a2b"
+    },
+    {
+      "path": "native/CANONICAL_E8_ALIGNMENT_RESULT.json",
+      "git_blob_sha": "ac99ac9667ce39e772480c223c4b75d7022e7bd6"
+    },
+    {
+      "path": "native/ERROR_CONTEXTS.json",
+      "git_blob_sha": "efe00df873ff0462b2aecbf0b655431dca9f5caf"
+    },
+    {
+      "path": "native/ERRORS_INDEX.json",
+      "git_blob_sha": "1c5a316b2a3afcdeaa3136862696d2eba2abd515"
+    },
+    {
+      "path": "native/FINAL_SOURCE_GITHUB_BYTE_VERIFICATION.json",
+      "git_blob_sha": "a6b0283682231ee53e49384fda7fcf2b5e8dee37"
+    },
+    {
+      "path": "native/FORMATTED_PREPARATION_POSTIMAGES.json.gz",
+      "git_blob_sha": "e7ad692019a43d25e8f9728a4f80e4b790826922"
+    },
+    {
+      "path": "native/FORMATTED_PREPARATION_POSTIMAGES.json.gz.b64",
+      "git_blob_sha": "c80cfcbb84fc00d53e9ee683325684f202c98418"
+    },
+    {
+      "path": "native/INTEGRATED_FINAL_FOUR_POSTIMAGES.json.gz",
+      "git_blob_sha": "58231fb66a7d056a7fa39c2efa6f798ed98e6d36"
+    },
+    {
+      "path": "native/INTEGRATED_FINAL_FOUR_POSTIMAGES.json.gz.b64",
+      "git_blob_sha": "607926a08dc21f7a3f7d68530fe8fc86fde392ce"
+    },
+    {
+      "path": "native/INTEGRATED_FINAL_MAINTENANCE_DELTA.patch",
+      "git_blob_sha": "5d7507e52233c08a6d13476e5fdf3ba4f993222a"
+    },
+    {
+      "path": "native/INTEGRATED_FINAL_POSTIMAGE_MANIFEST.json",
+      "git_blob_sha": "453a77d2042ae012087bafb1d14ef943fb8707c3"
+    },
+    {
+      "path": "native/INTEGRATED_PREPARATION_RESULT.json",
+      "git_blob_sha": "238f1cc90e4c63f595899c7a1cc652c8d2b02b09"
+    },
+    {
+      "path": "native/integrated-fix.log.gz",
+      "git_blob_sha": "9c8c23a68705905cff156d389b3d52b69eca5627"
+    },
+    {
+      "path": "native/integrated-fix.log.gz.b64",
+      "git_blob_sha": "7d55b50105023551c84077eb36eaa4b6cfd081e1"
+    },
+    {
+      "path": "native/NATIVE_19AA_RESULT.json",
+      "git_blob_sha": "5f59dae284aa094c7addfbd08706b4484fe13a98"
+    },
+    {
+      "path": "native/POSTIMAGE_MANIFEST.json",
+      "git_blob_sha": "9fb514718fe78a2042d1e07fc6af49e7c9becdff"
+    },
+    {
+      "path": "native/postimages.tar.gz",
+      "git_blob_sha": "fc9143c289b9e91ee46596c4617d1696eb1c00d8"
+    },
+    {
+      "path": "native/postimages.tar.gz.b64",
+      "git_blob_sha": "b8240edf613f33fdf2423f6f1e8e6718fd97ac1d"
+    },
+    {
+      "path": "native/PREP_RESULT.json",
+      "git_blob_sha": "07e3b2b3dfcee15ba9511ff72ec407139cd21758"
+    },
+    {
+      "path": "native/PREPARATION_BYTE_VERIFICATION.json",
+      "git_blob_sha": "c42bee11735862cef8508588fbb784c97f4ab78b"
+    },
+    {
+      "path": "native/PREPUBLISH_COMPILE_DIAGNOSTICS.json",
+      "git_blob_sha": "3dbd4917da3ee3f91c30bb15563509d540c04719"
+    },
+    {
+      "path": "native/PREPUBLISH_MAINTENANCE_DELTA.patch",
+      "git_blob_sha": "2ed0b3473cc49655505c2b202fb01cce8308b47e"
+    },
+    {
+      "path": "native/PREPUBLISH_MAINTENANCE_RESULT.json",
+      "git_blob_sha": "32560286c1554b46445282a5db6b28d7b44a563e"
+    },
+    {
+      "path": "native/PREPUBLISH_POSTIMAGE_MANIFEST.json",
+      "git_blob_sha": "9997ee00659f20abd706c6c31dc89e17508ed6bb"
+    },
+    {
+      "path": "native/PREPUBLISH_TEST_POSTIMAGE_READBACK.json",
+      "git_blob_sha": "cbef1b645925cbc7e4bb4392ddad404a880077fa"
+    },
+    {
+      "path": "native/prepublish-fix.log.gz",
+      "git_blob_sha": "9a5178e6a3790de62135e37ebc2eac6cd8fb0328"
+    },
+    {
+      "path": "native/prepublish-fix.log.gz.b64",
+      "git_blob_sha": "daa432360d3631352bb72c9a895ec19c5d0c06c1"
+    },
+    {
+      "path": "native/REVIEW_19AA_APPLY_FMT_RESULT.json",
+      "git_blob_sha": "77552117920e8e829797401ded9ee2ac85680990"
+    },
+    {
+      "path": "native/SOURCE_MAINTENANCE_RESULT.json",
+      "git_blob_sha": "b28a877a8ea0b0bcc9f583a5fa811dd721d1dfa3"
+    },
+    {
+      "path": "ORDINARY_INTEGRATION_MAP.md",
+      "git_blob_sha": "2059d041fd450c99a04b657eb7d9d04afc2a85db"
+    },
+    {
+      "path": "README.md",
+      "git_blob_sha": "3662beeecd77cfc727c1bf8f28fe90dd06772cc0"
+    },
+    {
+      "path": "recovered-tool-output/91d0-caller-self-test.log",
+      "git_blob_sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2"
+    },
+    {
+      "path": "recovered-tool-output/91d0-caller-verify.log",
+      "git_blob_sha": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d"
+    },
+    {
+      "path": "recovered-tool-output/recovery-note.json",
+      "git_blob_sha": "289db372ab448b9cad9a0f44a97dbb586bede8c6"
+    },
+    {
+      "path": "REMOTE_EVAL_INPUT_EQUIVALENCE_91D0_19AA.json",
+      "git_blob_sha": "8d6e952b9dc6dd9604ea7712c62d74cf4b993b5f"
+    },
+    {
+      "path": "repairs/CALLER_LET_CHAIN_ALIGNMENT_MANIFEST.json",
+      "git_blob_sha": "243b4f0f97377a357d2a5e791e493887ff06ff09"
+    },
+    {
+      "path": "repairs/CALLER_LET_CHAIN_ALIGNMENT.patch",
+      "git_blob_sha": "a3fcee69510e9d57d0555471b68c578b624c82a9"
+    },
+    {
+      "path": "repairs/EXPLICIT_IMPORT_POSTIMAGES.json",
+      "git_blob_sha": "f12f1f7426e08f744001aab71f79b3e1076b7085"
+    },
+    {
+      "path": "repairs/FIXTURE_COMPILE_POSTIMAGES.json",
+      "git_blob_sha": "d37c77872b64166d04501abf9743f9b11fef9ba8"
+    },
+    {
+      "path": "SOURCE_AUDIT.md",
+      "git_blob_sha": "80c52f200634e6bb0738e5071e24252d0d237cd0"
+    },
+    {
+      "path": "windows/19aa-observation.json",
+      "git_blob_sha": "708b53269b50e4514e58b9a6137ca1012eb4eac0"
+    },
+    {
+      "path": "windows/19aa-workflow-job-decoded.log",
+      "git_blob_sha": "b05a53dcacfe11d9a3f05c709248af1f164ea765"
+    }
+  ],
+  "qualification": {
+    "new_source_software_tests": "pending fresh terminal records",
+    "canonical_source_identity": "verified",
+    "preparation_fix_and_fmt": "passed",
+    "ordinary_real_loop": "not established",
+    "historical_unknowns": "preserved"
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "schema": "hepta.utility-evaluation.windows-source-observation.v1",
+  "source_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "source_tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
+  "run_id": 43179383388,
+  "job_id": 131051379690,
+  "conclusion": "failure",
+  "log_blob": "b05a53dcacfe11d9a3f05c709248af1f164ea765",
+  "log_encoding": "Exact decoded string returned by github_fetch_workflow_job_logs, persisted as UTF-8. This is not a claim to preserve the original transport ZIP.",
+  "log_characters": 329254,
+  "full_log_readback_equal": true,
+  "compiler_findings": {
+    "diagnostic": "E0659",
+    "message": "assert_eq is ambiguous",
+    "file": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+    "occurrences_per_compile": 12,
+    "compile_attempts": 2,
+    "existing_prepared_repair_blob": "80faebd0661512735b5524cce3aed72f257a518f",
+    "repair_execution_on_windows": "not yet performed"
+  },
+  "learn_gate": {
+    "expected_cases": 36,
+    "observed_passed_tests": 0,
+    "observed_failed_tests": 0,
+    "selected_count": null,
+    "fresh_junit": "not created; collection rejected",
+    "status": "failed before test execution"
+  },
+  "jobs": [
+    {
+      "id": 131051379690,
+      "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 43179383388,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Checkout immutable PR head without saved credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Install repository test runners",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify exact source identity and pinned native compiler",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Exercise actual Prompt Registry Windows durable owner",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Exercise signed final-use and authority-lease durable stores",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Validate Agentd Prompt Runtime integration and reopened state",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        },
+        {
+          "name": "Enforce source-level Rust formatting for durable owners",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Prove directory acquisition rejects both original native attacks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Exercise exact Windows LEARN file and CURRENT regressions",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11
+        },
+        {
+          "name": "Confirm no generated or modified tracked source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Preserve exact source and all acquisition qualification logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Retain native LEARN logs, exact case coverage and original JUnit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Post Checkout immutable PR head without saved credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13926678706,
+      "name": "windows-learn-regressions-19aa601fa09321f1b6d1b3ff3b4d422908004e48-43179383388-1",
+      "size_in_bytes": 10979,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13926678706",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13926678706/zip",
+      "expired": false,
+      "created_at": "2026-11-12T08:33:19Z",
+      "expires_at": "2026-11-26T08:33:19Z",
+      "updated_at": "2026-11-12T08:33:19Z",
+      "digest": "sha256:7b9980b729899ae104f329cc35698cef5458fc93527622f59dec5364f7eba466",
+      "workflow_run": {
+        "id": 43179383388,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "codex/utility-evidence-closure-20261112-36fa",
+        "head_sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48"
+      }
+    }
+  ],
+  "scope": "This observation applies only to the exact 19aa source. The prepared repair is not a Windows acceptance result."
+}

@@ -1,0 +1,86 @@
+{
+  "added_scope": [
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs"
+  ],
+  "base_head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "before_status": " M codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n",
+  "behavioral_tests_started": false,
+  "candidate_tree": "3903f56aab53d6a97b30c92afe3240c3bb79b186",
+  "changed_files": 40,
+  "diff": {
+    "bytes": 37391,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-prepublish-maintenance-v1/candidate.patch",
+    "sha256": "d417e1a03df986383319c0106baeea5421cf478d2b55e94c578e3e3e5c4cac77"
+  },
+  "error": "RuntimeError: maintenance changed files outside reviewed 22; root review required",
+  "finished_at": "2026-11-12T08:44:14.000602+00:00",
+  "formatted_input_tree": "74c4313c45a53e3573ff23960482c1e4fd47688d",
+  "maintenance_delta": {
+    "bytes": 15212,
+    "sha256": "682e96dfee8493ffa0e16165d7ca81d1a52ca3a487e206afcbc9d8a0b246f218"
+  },
+  "manifest": "/home/qian-qi/hepta-utility-36fa-evidence/review-prepublish-maintenance-v1/POSTIMAGE_MANIFEST.json",
+  "packet": {
+    "bytes": 112323,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-prepublish-maintenance-v1/POSTIMAGES.json.gz",
+    "sha256": "465c135954d223c63af9b599d7a8c7a334dac192e01b1ea910ac6934f4d838d0",
+    "uncompressed_bytes": 611549,
+    "uncompressed_sha256": "d0cb88635f0cb6e583d92541e67e365b0282af59e13008f343c6503acc596ba2"
+  },
+  "qualification": "Unpublished candidate maintenance/compile preparation; not 19aa qualification; no behavioral tests",
+  "source_after": {
+    "head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "status": " M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/circuit_task_source_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs\n"
+  },
+  "source_after_inventory": {
+    "files": 14739,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-prepublish-maintenance-v1/SOURCE_AFTER.json.gz",
+    "uncompressed_bytes": 2807601,
+    "uncompressed_sha256": "c75db843beb328509cd3901869c4fa82841c8de1bf142947c36196662569e72a"
+  },
+  "source_before_inventory": {
+    "files": 14739,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-prepublish-maintenance-v1/SOURCE_BEFORE.json.gz",
+    "uncompressed_bytes": 2807601,
+    "uncompressed_sha256": "5ecc3bd73d7db440d84b528426b0c407bf7241584c59a1540679384cd1a4e927"
+  },
+  "stage": "fix",
+  "stages": [
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "finished_at": "2026-11-12T08:44:06.841342+00:00",
+      "log_bytes": 87608,
+      "log_sha256": "ea5cb72e03c29478bbb77de1665e45aa0a9392db7a2e0c017fd9183053916565",
+      "name": "fix",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "timed_out": false
+    }
+  ],
+  "started_at": "2026-11-12T08:34:54.417930+00:00",
+  "status": "failed"
+}

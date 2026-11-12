@@ -1,0 +1,116 @@
+{
+  "format": "hepta-agentd-explicit-test-import-postimages-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_source": {
+    "commit": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
+    "agentd_tree": "a7199da1f0bc38f7f59cfd97da138e6091682f20",
+    "agentd_src_tree": "d3e35cd90056d36f28412b7503d1a5146e2d9885",
+    "all_base_blobs_verified_in_untruncated_git_tree": true
+  },
+  "diagnostic_source": {
+    "commit": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "exit_code": 101,
+    "total_coded_errors": 85,
+    "index_blob": "1c5a316b2a3afcdeaa3136862696d2eba2abd515",
+    "contexts_blob": "efe00df873ff0462b2aecbf0b655431dca9f5caf",
+    "errors_addressed_here": {
+      "E0659": 74,
+      "E0433": 1
+    },
+    "scope": "Six explicit pretty_assertions macro import lines across four test modules, and one explicit codex_hepta_types::AuthorityPosture import. No assertions, fixtures, expected values, test attributes, or production behavior changed."
+  },
+  "qualification": {
+    "compile_executed_on_postimages": false,
+    "tests_executed_on_postimages": false,
+    "rustfmt_executed": false,
+    "refs_or_pull_requests_changed": false,
+    "status": "Immutable candidate postimages only; native integration must apply to exact 19aa, run the original fix/fmt/test gates, and preserve actual outcomes."
+  },
+  "excluded_file_ownership": {
+    "ordinary_path": [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs"
+    ],
+    "mechanical_maintenance": "Separate reviewed native 6d patch; do not replace 19aa cell_q24_model_current_owner.rs with the older whole-file postimage. Preserve both published ProductEvaluationExecutionStoreV1::readback UFCS calls."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+      "before_bytes": 13178,
+      "before_git_blob_sha1": "f38405227b85a01c77dacbbfdf242bf635fdea21",
+      "before_sha256": "59b95559085fe0b069be69c2ca76dd32abeb75dfa9b014accd5d8214b130e544",
+      "after_bytes": 13212,
+      "after_git_blob_sha1": "80faebd0661512735b5524cce3aed72f257a518f",
+      "after_sha256": "a9dd05ee2e8159074ab68878d0b4a859667a529fc709437e4594ce09273e23fc",
+      "diff": "--- a/codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs\n+++ b/codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs\n@@ -3,6 +3,7 @@\n //! explicit fixtures; these are source-binding checks, not ordinary A/B runs.\n \n use super::*;\n+use pretty_assertions::assert_eq;\n \n #[tokio::test]\n async fn signed_ledger_facts_cannot_substitute_another_source_profile_or_policy()\n",
+      "mode": "100644",
+      "base_verified_in_tree": "d3e35cd90056d36f28412b7503d1a5146e2d9885",
+      "created_blob_sha": "80faebd0661512735b5524cce3aed72f257a518f",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "before_bytes": 12600,
+      "before_git_blob_sha1": "fb7a503746c73baaac46d52ed523b6636479ba95",
+      "before_sha256": "abd7804094ff883e69575ffdfef96d77ecb41830ecc41556ce7489f0210f0124",
+      "after_bytes": 12668,
+      "after_git_blob_sha1": "165792415bda2de4b5e27d2aafe6892847ed6cc6",
+      "after_sha256": "99d1c6a9d1804590519b13e2747ef7c6aa2f48f4a7ffed3f4be4591aeb42934b",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs\n@@ -13,6 +13,8 @@\n \n use codex_hepta_neuron::JournalScope;\n use codex_hepta_types::Generation;\n+use pretty_assertions::assert_eq;\n+use pretty_assertions::assert_ne;\n \n use super::*;\n use crate::OriginalCellEvaluationCommandClientV1;\n",
+      "mode": "100644",
+      "base_verified_in_tree": "d3e35cd90056d36f28412b7503d1a5146e2d9885",
+      "created_blob_sha": "165792415bda2de4b5e27d2aafe6892847ed6cc6",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "before_bytes": 11354,
+      "before_git_blob_sha1": "69010268db6932d97e1dc810fbed52d305ba061b",
+      "before_sha256": "3b63da06aee7e558270db72261737b90416540aa9bc58656e336a77efe17f28b",
+      "after_bytes": 11422,
+      "after_git_blob_sha1": "5e55a55d9a6a39b41c4180719e59da97a9dded4f",
+      "after_sha256": "ba7e51dc021be91cb1180dd21c0336a9bf795c5bd2abf23c97eb00a3452a5e6a",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs\n@@ -7,6 +7,8 @@\n use crate::prepare_original_circuit_evaluated_retention_v1;\n use crate::recover_original_circuit_evaluated_retention_v1;\n use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;\n+use pretty_assertions::assert_eq;\n+use pretty_assertions::assert_ne;\n \n #[path = \"circuit_evaluated_retention_publication_support_tests.rs\"]\n mod publication_fixture;\n",
+      "mode": "100644",
+      "base_verified_in_tree": "d3e35cd90056d36f28412b7503d1a5146e2d9885",
+      "created_blob_sha": "5e55a55d9a6a39b41c4180719e59da97a9dded4f",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs",
+      "before_bytes": 4401,
+      "before_git_blob_sha1": "2d08884e9b1d4916bbd3ec3444d4961c0660b78d",
+      "before_sha256": "8822f061feeda81bdcf4f4a2c09b5b9f9b62e1913dedbf614b4f0a676f18d461",
+      "after_bytes": 4435,
+      "after_git_blob_sha1": "d75af31f8df25cc768549d87ebec48522a195946",
+      "after_sha256": "42249d046165e96bc421c5d152298d8a84a06634f7c72661159e843697813f68",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs\n@@ -4,6 +4,7 @@\n \n use super::*;\n use codex_hepta_learning_ledger::LedgerEvent;\n+use pretty_assertions::assert_eq;\n use material::evaluation_provider::DecisionBinding;\n \n #[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\n",
+      "mode": "100644",
+      "base_verified_in_tree": "d3e35cd90056d36f28412b7503d1a5146e2d9885",
+      "created_blob_sha": "d75af31f8df25cc768549d87ebec48522a195946",
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "before_bytes": 10766,
+      "before_git_blob_sha1": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "before_sha256": "1578de3a03bfd394a917274abd0b2f212fb70ed993120398f0dc340a2d423627",
+      "after_bytes": 10807,
+      "after_git_blob_sha1": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "after_sha256": "281d4befb8661b56055607e9f7beb704fdca589cab8b178fa33874a36a01ab3c",
+      "diff": "--- a/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs\n+++ b/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs\n@@ -1,6 +1,7 @@\n //! Actual Version/FinalUse mechanisms with an explicit UID-0 protocol fixture.\n //! These do not assert native Training or a deployed independent-role loop.\n use super::*;\n+use codex_hepta_types::AuthorityPosture;\n use pretty_assertions::assert_eq;\n \n #[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\n",
+      "mode": "100644",
+      "base_verified_in_tree": "d3e35cd90056d36f28412b7503d1a5146e2d9885",
+      "created_blob_sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "full_utf8_readback_equal": true
+    }
+  ]
+}

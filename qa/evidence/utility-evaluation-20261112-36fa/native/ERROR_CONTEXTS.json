@@ -1,0 +1,58 @@
+{
+  "representative_by_code_and_message": [
+    {
+      "code": "E0433",
+      "context": "error[E0433]: cannot find module or crate `rustix` in this scope\n  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:25:22\n   |\n25 |                 uid: rustix::process::geteuid().as_raw(),\n   |                      ^^^^^^ use of unresolved module or unlinked crate `rustix`\n   |\n   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`\n",
+      "message": "cannot find module or crate `rustix` in this scope",
+      "representative_raw_line": 2245
+    },
+    {
+      "code": "E0659",
+      "context": "error[E0659]: `assert_eq` is ambiguous\n   --> hepta-agentd/src/cell_q24_dataset_binding_tests.rs:37:9\n    |\n 37 |         assert_eq!(\n    |         ^^^^^^^^^ ambiguous name\n    |\n    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution\nnote: `assert_eq` could refer to the macro imported here\n   --> hepta-agentd/src/cell_q24_dataset_binding_tests.rs:5:5\n    |\n  5 | use super::*;\n    |     ^^^^^^^^\n    = help: consider adding an explicit import of `assert_eq` to disambiguate\n    = help: or use `self::assert_eq` to refer to this macro unambiguously\nnote: `assert_eq` could also refer to the macro defined here\n   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13\n    |\n162 |     pub use super::v1::*;\n    |             ^^^^^^^^^\n",
+      "message": "`assert_eq` is ambiguous",
+      "representative_raw_line": 2277
+    },
+    {
+      "code": "E0659",
+      "context": "error[E0659]: `assert_ne` is ambiguous\n   --> hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:152:9\n    |\n152 |         assert_ne!(bundle.digest()?, host.original.candidate.digest()?);\n    |         ^^^^^^^^^ ambiguous name\n    |\n    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution\nnote: `assert_ne` could refer to the macro imported here\n   --> hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs:17:5\n    |\n 17 | use super::*;\n    |     ^^^^^^^^\n    = help: consider adding an explicit import of `assert_ne` to disambiguate\n    = help: or use `self::assert_ne` to refer to this macro unambiguously\nnote: `assert_ne` could also refer to the macro defined here\n   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13\n    |\n162 |     pub use super::v1::*;\n    |             ^^^^^^^^^\n",
+      "message": "`assert_ne` is ambiguous",
+      "representative_raw_line": 2697
+    },
+    {
+      "code": "E0603",
+      "context": "error[E0603]: module `material` is private\n  --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:31:48\n   |\n31 | use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;\n   |                                                ^^^^^^^^  --------------- module `bootstrap_ports` is not publicly re-exported\n   |                                                |\n   |                                                private module\n   |\nnote: the module `material` is defined here\n  --> hepta-agentd/src/learning_iteration_evidence_client.rs:83:1\n   |\n83 | mod material;\n   | ^^^^^^^^^^^^^\n",
+      "message": "module `material` is private",
+      "representative_raw_line": 3797
+    },
+    {
+      "code": "E0624",
+      "context": "error[E0624]: method `command_response` is private\n   --> hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs:35:33\n    |\n 35 |             let response = self.command_response(&serde_json::to_vec(&request)?, 1)?;\n    |                                 ^^^^^^^^^^^^^^^^ private method\n    |\n   ::: hepta-agentd/src/circuit_retained_version_service.rs:166:5\n    |\n166 |     fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {\n    |     ----------------------------------------------------------------------------------- private method defined here\n",
+      "message": "method `command_response` is private",
+      "representative_raw_line": 3872
+    },
+    {
+      "code": "E0277",
+      "context": "error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied\n    --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:245:13\n     |\n 245 |             serde_json::from_value(record[\"candidate\"][\"journal_cut\"].clone())?;\n     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `for<'de> authority_host_wire::_::_serde::Deserialize<'de>` is not implemented for `codex_hepta_types::Digest32`\n     |\n     = help: the following other types implement trait `authority_host_wire::_::_serde::Deserialize<'de>`:\n               `&'a [u8]` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a serde_json::value::RawValue` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a std::path::Path` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a str` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `()` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T,)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T0, T1)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T0, T1, T2)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n             and 4034 others\n     = note: required for `codex_hepta_types::Digest32` to implement `authority_host_wire::_::_serde::de::DeserializeOwned`\nnote: required by a bound in `serde_json::from_value`\n    --> /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8\n     |\n1037 | pub fn from_value<T>(value: Value) -> Result<T, Error>\n     |        ---------- required by a bound in this function\n1038 | where\n1039 |     T: DeserializeOwned,\n     |        ^^^^^^^^^^^^^^^^ required by this bound in `from_value`\n     = note: the full name for the type has been written to '/home/qian-qi/hepta-utility-36fa-target/debug/deps/codex_hepta_agentd-d1742a550ab64ff1.long-type-13694327969051627547.txt'\n     = note: consider using `--verbose` to print the full type name to the console\n",
+      "message": "the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied",
+      "representative_raw_line": 3883
+    },
+    {
+      "code": "E0433",
+      "context": "error[E0433]: cannot find type `AuthorityPosture` in this scope\n  --> hepta-agentd/src/circuit_retained_version_issuer_tests.rs:41:41\n   |\n41 |     assert_eq!(publication.authority(), AuthorityPosture::DENY_ALL);\n   |                                         ^^^^^^^^^^^^^^^^ use of undeclared type `AuthorityPosture`\n",
+      "message": "cannot find type `AuthorityPosture` in this scope",
+      "representative_raw_line": 3939
+    },
+    {
+      "code": null,
+      "context": "error: could not compile `codex-hepta-agentd` (lib test) due to 85 previous errors; 13 warnings emitted\n",
+      "message": "could not compile `codex-hepta-agentd` (lib test) due to 85 previous errors; 13 warnings emitted",
+      "representative_raw_line": 3974
+    },
+    {
+      "code": null,
+      "context": "error: recipe `fix` failed on line 58 with exit code 101\n",
+      "message": "recipe `fix` failed on line 58 with exit code 101",
+      "representative_raw_line": 3976
+    }
+  ]
+}

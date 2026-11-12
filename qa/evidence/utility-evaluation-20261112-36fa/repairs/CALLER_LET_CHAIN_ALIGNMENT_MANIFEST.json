@@ -1,0 +1,121 @@
+{
+  "format": "hepta-clippy-source-marker-alignment-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d"
+  },
+  "scope": "Align two exact protected source markers with the already reviewed Clippy nested-if to let-chain transformation. No new gate relaxation, caller expansion, authority change, source logic change, or test change.",
+  "reviewed_mechanical_patch": {
+    "blob_sha": "9d91cc3d0ee72cf655aac45fe1f165c48fb3d907",
+    "sha256": "11d3c207abd98da8b894cb6ba76dd02b7a7e6c16884d7e1540b1b1c1fab3bd86",
+    "original_producer_source": "6d0da9fe0cae414975288f23a3779d7bf86e3638",
+    "application_for_this_review": "In-memory hunk reconstruction against immutable 726 source, without applying to a repository or executing code."
+  },
+  "replacement": {
+    "source_path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+    "function": "async fn in_lane<T:",
+    "old_marker": "if owners.require_captured_tail_current().is_err()",
+    "new_marker": "&& owners.require_captured_tail_current().is_err()",
+    "occurrences": 2,
+    "base_callers_lines": [
+      7138,
+      7158
+    ],
+    "preserved_contract": "Full require_captured_tail_current().is_err() call; ordered original live-source read, captured-tail condition, source_fenced=true, CommitUncertain refusal and result return. No required_order item removed or reordered."
+  },
+  "structural_proof": {
+    "structural_changes": [
+      {
+        "path": [
+          "protected_file",
+          232,
+          "required_order",
+          0,
+          5
+        ],
+        "before": "if owners.require_captured_tail_current().is_err()",
+        "after": "&& owners.require_captured_tail_current().is_err()"
+      },
+      {
+        "path": [
+          "protected_file",
+          234,
+          "required_order",
+          0,
+          5
+        ],
+        "before": "if owners.require_captured_tail_current().is_err()",
+        "after": "&& owners.require_captured_tail_current().is_err()"
+      }
+    ],
+    "boundary_count_before": 522,
+    "boundary_count_after": 522,
+    "protected_file_count_before": 381,
+    "protected_file_count_after": 381,
+    "all_other_leaves_equal": true
+  },
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "base": {
+        "bytes": 1039720,
+        "sha256": "a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b",
+        "git_blob_sha": "44918e0d7e06eb2afcbf42fe8e38229eea4bf4a2"
+      },
+      "postimage": {
+        "bytes": 1039720,
+        "sha256": "103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6",
+        "git_blob_sha": "1f6c7677c46d4e1076c1ec944ddbd9e46c998517"
+      },
+      "full_utf8_blob_readback_equal": true,
+      "exact_diff": "--- a/CALLERS.toml\n+++ b/CALLERS.toml\n@@ -7135,7 +7135,7 @@\n path = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\n required = []\n forbidden = []\n-required_order = [[\"async fn in_lane<T:\",\"training.require_live_source_if_captured()?\",\"let result = work(&mut owners)\",\"if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\",\".map_err(|_| Error::CommitUncertain)?\",\"if owners.require_captured_tail_current().is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"result\"]]\n+required_order = [[\"async fn in_lane<T:\",\"training.require_live_source_if_captured()?\",\"let result = work(&mut owners)\",\"if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)\",\".map_err(|_| Error::CommitUncertain)?\",\"&& owners.require_captured_tail_current().is_err()\",\"owners.source_fenced = true\",\"return Err(Error::CommitUncertain)\",\"result\"]]\n required_function_order = [\n   { function = \"fn require_captured_tail_current(\", sequence = [\".require_original_dataset_scope(\", \"&self.receipts.config.dataset,\", \"&self.receipts.config.scope,\", \")?\", \"match self.receipts.journal.read(&self.receipts.saved)\", \"Ok(_) =>\", \"self.read_original_completion()?\", \"self.require_retained_attestation_current(&completed)?\", \"ProductEvaluationExecutionStoreErrorV1::Missing\", \"LearningOriginalOwnerErrorV1::Pending\", \"Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())\", \"Ok(())\"] },\n   { function = \"fn require_retained_attestation_current(\", sequence = [\"learning_iteration_receipt_signing_bytes_v1(\", \"&completed.receipt\", \"self.receipts\", \".verifier\", \".verify(\", \"LearningEvidenceRoleV1::Generator\", \"&completed.attestation\", \"&payload\", \"super::now()\", \".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?\", \"Ok(())\"] },\n@@ -7155,7 +7155,7 @@\n path = \"codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\"\n required = [\"source_fenced: bool\", \"source_fenced: false\"]\n forbidden = []\n-required_order = [[\"async fn in_lane<T:\", \"owners.try_lock()\", \"if owners.source_fenced\", \"return Err(Error::CommitUncertain)\", \"let result = work(&mut owners)\", \"if owners.require_captured_tail_current().is_err()\", \"owners.source_fenced = true\", \"return Err(Error::CommitUncertain)\"]]\n+required_order = [[\"async fn in_lane<T:\", \"owners.try_lock()\", \"if owners.source_fenced\", \"return Err(Error::CommitUncertain)\", \"let result = work(&mut owners)\", \"&& owners.require_captured_tail_current().is_err()\", \"owners.source_fenced = true\", \"return Err(Error::CommitUncertain)\"]]\n \n \n \n"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "base": {
+        "bytes": 11207,
+        "sha256": "246e6a64711b9db50e5c783d2cabc6bd5eb1d73699d5e85fe00f781c79444c78",
+        "git_blob_sha": "b53cb67cefe37bc0c277c342dc36fce4639f708d"
+      },
+      "postimage": {
+        "bytes": 11292,
+        "sha256": "963d6ffe4b340fe1031333c6808d466a80b6063a9e8aa792a31145c26c0c1b3f",
+        "git_blob_sha": "674d53420bc09883b1b6f50ff5098e3a8e0aab67"
+      },
+      "full_utf8_blob_readback_equal": true,
+      "appended_exact_hash_line": "sha256:103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6 CALLERS.toml\n",
+      "reason": "CALLERS.toml is an intentional large source asset. The existing allowlist authorizes exact SHA256 bytes; this appends only the new CALLERS digest and preserves all historical entries.",
+      "exact_diff": "--- a/.github/blob-size-allowlist.txt\n+++ b/.github/blob-size-allowlist.txt\n@@ -89,3 +89,4 @@\n sha256:b76d9fc58c178d9e1edb33efb3e5ed12b397c028b9e0ec218f94a9161ca3830d CALLERS.toml\n sha256:6a8ebaaed565060351cd7e5861206659c9b191b367bf2e42937e8df008ef7e5f CALLERS.toml\n sha256:a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b CALLERS.toml\n+sha256:103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6 CALLERS.toml\n"
+    }
+  ],
+  "patch": {
+    "blob_sha": "a3fcee69510e9d57d0555471b68c578b624c82a9",
+    "full_utf8_blob_readback_equal": true
+  },
+  "static_preflight": {
+    "changed_rust_files_considered": 10,
+    "related_protected_file_rows": 12,
+    "qa_python_sources_read": 52,
+    "qa_files_referencing_changed_paths_and_parsed_as_ast": 21,
+    "callers_existing_to_missing_literal_markers": 2,
+    "qa_existing_to_missing_literal_markers": 0,
+    "meaning": "Read-only text and AST-literal comparison identifies these two concrete stale markers. It is not a source-closure test execution, full verifier run, or behavioral qualification."
+  },
+  "application_requirements": [
+    "Use exact fixed-726 base file identities, or separately review any merge; do not overwrite intervening CALLERS or allowlist changes with whole-file postimages.",
+    "Apply only the two approved CALLERS tokens and the one exact SHA256 allowlist line.",
+    "Keep 19aa's ProductEvaluationExecutionStoreV1::readback UFCS changes when composing the separate native source maintenance patch."
+  ],
+  "execution_status": {
+    "unittest_run": false,
+    "caller_verify_run": false,
+    "rust_build_or_test_run": false,
+    "refs_created_or_updated": false,
+    "pull_requests_changed": false,
+    "repository_source_modified_by_this_preparation": false
+  },
+  "qualification": "Immutable postimages and static syntax-alignment evidence only. Exact final integrated source still needs its own original gate records."
+}

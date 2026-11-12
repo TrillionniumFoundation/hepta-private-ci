@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.canonical-upstream.independent-root-byte-verification.v1",
+  "commits": [
+    {
+      "sha": "2aa73b91658178ac6fdf50c2d4e9507ccd4b0b0f",
+      "tree": "ac11caf8d0f2ec9a90cd75c1ec17d542396841f3",
+      "parent": "eabfb55ef388c750725884713c2f1fe9044b334f",
+      "bytes": 320,
+      "sha256": "a68d1b89f12504ac65fb8b4772266bf62cf401e48920abc21ca152f59ad45140",
+      "changed_paths": 5
+    },
+    {
+      "sha": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+      "tree": "f6eba04ce6afa681046326157fdbfe12d9af0093",
+      "parent": "2aa73b91658178ac6fdf50c2d4e9507ccd4b0b0f",
+      "bytes": 329,
+      "sha256": "be2c0e4e76a02b6cc50b4a0dec07c534ac7f8f3cb65873f96434c76c5cb85b38",
+      "changed_paths": 4
+    },
+    {
+      "sha": "0ca40875e665653cbea5f4d55947d195d75685b4",
+      "tree": "290cc13aabb7b20db413de5cd818ddcb5acb1dc0",
+      "parent": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+      "bytes": 322,
+      "sha256": "6515ea18f35de7aa9016a9738dddfb5910bc646ba68f2f737bc02cfc761785b8",
+      "changed_paths": 2
+    },
+    {
+      "sha": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+      "parent": "0ca40875e665653cbea5f4d55947d195d75685b4",
+      "bytes": 335,
+      "sha256": "0882464a000d05195808446a32c35191b9e41d9cc720e344727ebb0b772fde23",
+      "changed_paths": 5
+    }
+  ],
+  "verified_blobs": 16,
+  "native_import_executed": false,
+  "qualification": "Original object byte and parent identity checks only; full-tree reconstruction on original repository belongs to the later native import record"
+}

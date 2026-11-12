@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.utility.desktop-source-gates.preparation.v2",
+  "state": "PREPARED_WAITING_FROZEN_SOURCE",
+  "actual_source_gate_commands_started": 0,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "driver": {
+    "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/driver-v2-20c11034.py",
+    "bytes": 22946,
+    "lines": 483,
+    "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31"
+  },
+  "config_template": {
+    "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/config-template-v2.json",
+    "bytes": 755,
+    "sha256": "47f552b5f405639e0ac891b07049adf089da784c9b3d83acd1d61c2af1cdbc1c",
+    "git_blob_sha": "91fec40566145de903e259d615d40a7981940ce0"
+  },
+  "evidence": [
+    {
+      "artifact": "template",
+      "kind": "file_info",
+      "blob_sha": "305f30028a06602442566e38042fe9cde5e519a7",
+      "sha256": "5320af6e8bc4aca5f789c19eb2876f0c19a93956992f2b4a072f275deb7cae36",
+      "bytes": 587,
+      "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/config-template-v2.json",
+      "job_id": null,
+      "observed": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 256,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 256,
+        "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/config-template-v2.json",
+        "sha256": "47f552b5f405639e0ac891b07049adf089da784c9b3d83acd1d61c2af1cdbc1c",
+        "size": 755,
+        "version": "2050:15996715:755:1794475091078519267:1794475091078519267"
+      }
+    },
+    {
+      "artifact": "driver",
+      "kind": "file_info",
+      "blob_sha": "7eeec06837ebeb032061275ac39999e3bcbe9a0c",
+      "sha256": "fc84895fe13044cc23b9fbe60822e9f8481f2c7e01df498f72e380c8af6574ce",
+      "bytes": 589,
+      "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/driver-v2-20c11034.py",
+      "job_id": null,
+      "observed": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 256,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 256,
+        "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/driver-v2-20c11034.py",
+        "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+        "size": 22946,
+        "version": "2050:15996582:22946:1794474453741097808:1794474453741097808"
+      }
+    },
+    {
+      "artifact": "template",
+      "kind": "process_status",
+      "blob_sha": "8b574adc4ec98b09dcd68ba427cd65e06fdb520f",
+      "sha256": "4ff297f3a74df5d265b0ed1ec76500d6684ac198334ce5e3c2ba1f294f546221",
+      "bytes": 908,
+      "path": null,
+      "job_id": "1a1cf0cdb64-2564-1974",
+      "observed": {
+        "at_unix_ms": 1794475091114,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1cf0cdb64-2564-1974",
+        "launch_nonce": "64af2f7fa509ce5927d3102984a5a2b9",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 262,
+            "stored": 262
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    },
+    {
+      "artifact": "driver",
+      "kind": "process_status",
+      "blob_sha": "34a25080703e07d9ab057d2443e925e5bacb46cc",
+      "sha256": "b81cdf1beacb9009a5eb8e00f994516cb999a2e8fe64f9cbf6c46a313f457b2e",
+      "bytes": 908,
+      "path": null,
+      "job_id": "1a1cf03222b-2564-1965",
+      "observed": {
+        "at_unix_ms": 1794474453766,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1cf03222b-2564-1965",
+        "launch_nonce": "3656302dda3f5a69d9667e99767415a1",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 262,
+            "stored": 262
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    }
+  ],
+  "original_driver_v2_missing_observation": {
+    "blob_sha": "f6a87059e1f913b90b61304d52a6b835691890d2",
+    "sha256": "269423e5606a353db1992cf76c156de1dfe2aa4683542ad244a5d694ac0bac17",
+    "bytes": 211,
+    "semantics": "Original FileNotFoundError observation retained. Does not prove any earlier uncertain write can never finish; the new hash-suffixed path was created separately without modifying the original path."
+  },
+  "driver_validation": {
+    "blob_sha": "8879c4927b44c5e2a2e5132fb67ad9787b754098",
+    "scope": "Synthetic driver-only state/error checks. No source closure, caller self-test, or full caller invocation."
+  },
+  "budgets_seconds": {
+    "source-closure": 600,
+    "self-test": 300,
+    "verify": 4800
+  },
+  "workflow_reference": ".github/workflows/hepta-daemon-learning-native.yml",
+  "final_source_identity": null,
+  "final_run_identity": null,
+  "restrictions": [
+    "Gate launch waits for root-published exact source and native exact object/tree/clean confirmation.",
+    "New desktop gate execution has a separate identity; old cloud 19aa sessions 53404 and 80302 remain Unknown.",
+    "Original 91d full caller failed normally with exit 1; original 6d source closure passed 346 tests; these are not qualifications of a future source.",
+    "Do not hardcode the previous test count of 346.",
+    "Use gate-final.json and run-result.gates for final phase state; packaged gate-summary.json is the prepackage pending snapshot.",
+    "Synthetic tests and these source checks do not prove authorized real A/B/C or daemon/Root cold recovery."
+  ]
+}

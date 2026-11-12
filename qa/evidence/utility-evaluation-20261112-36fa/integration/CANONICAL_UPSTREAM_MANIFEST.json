@@ -1,0 +1,183 @@
+{
+  "base_commit": "eabfb55ef388c750725884713c2f1fe9044b334f",
+  "base_tree": "e68a7ffb394bdac721259fd6295d799800d564c3",
+  "changed_blob_identity_proof": "All 16 changed blob UTF-8 texts were fetched through GitHub at their exact blob IDs, re-encoded without modifications, and verified by byte length, SHA256 and Git blob SHA-1. Each changed path/mode/blob is independently checked in an untruncated GitHub tree for its original commit.",
+  "execution_status": {
+    "build_or_test_executed": false,
+    "desktop_source_touched": false,
+    "git_refs_created_or_updated": false,
+    "native_git_import_executed": false,
+    "repository_source_modified": false
+  },
+  "import_contract": [
+    "Verify this transport and uncompressed packet hashes before use.",
+    "Require the exact base commit and base tree to exist in the destination object repository; stop on missing objects, without network probes.",
+    "Decode every blob and verify byte length, SHA256 and Git blob identity before git hash-object -w --stdin. Retain all returned object identities.",
+    "For each ordered commit, require the single original parent. Create a separate temporary GIT_INDEX_FILE outside the working tree; do not use the repository's normal index.",
+    "git read-tree the original parent into that private index; apply only the listed path/mode/blob cache entries; git write-tree must exactly equal the original commit's expected tree before creating its commit object.",
+    "Decode raw_commit_base64 without altering bytes, timezone, author, committer, message or terminal newlines. Verify its byte count, SHA256 and Git commit-object SHA-1; write with git hash-object -t commit -w --stdin and require the returned SHA to equal the original published SHA.",
+    "Read each created commit with git cat-file commit and compare the complete bytes to raw_commit_base64; verify parent and tree chain through the tip.",
+    "Do not checkout, reset, stage in the normal index, update any ref, re-sign, reauthor, amend, replace the original commit with a tree-equivalent new identity, or modify desktop source. Record the import outcome separately."
+  ],
+  "original_commit_identity_proof": "For each of the four metadata records, author/committer timezone and terminal-newline candidates were examined. Exactly one reconstructed body matched the original published Git commit SHA-1. All four use -0500 and no terminal message newline. Full verified original bodies are included as raw_commit_base64; preserve them exactly.",
+  "qualification": "Canonical Git object transport only; no compilation, behavior, source gate or ordinary A/B/C qualification is implied.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.git.canonical-upstream-import.manifest.v1",
+  "summary": {
+    "base64_transport": {
+      "bytes": 851536,
+      "git_blob_sha": "dd1b38bee756d2e47606840e230caa7db5ab3949",
+      "sha256": "1e2c47981688fb1ab64fcacf83dcdab9e24f149e48a2aca5da1495a03ed13cbb"
+    },
+    "blobs": [
+      {
+        "bytes": 27811,
+        "sha": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+        "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334"
+      },
+      {
+        "bytes": 13882,
+        "sha": "e7de9eb47047a02d56c645e5883ff443585db37d",
+        "sha256": "be23ae96d502ed9b5d359ee98f5aa7df3c2626730c378d59abe01feecb22228a"
+      },
+      {
+        "bytes": 18722,
+        "sha": "2586448bac166332724b83fb7ecfc0f40ba935a2",
+        "sha256": "c2b6d1d098b68b13d693bb3c88b5479b9624f5c91e29b52d7b5ba4b09cfd0e64"
+      },
+      {
+        "bytes": 14993,
+        "sha": "0369b0242c81001e890df78b14ea781fcf48895e",
+        "sha256": "91bda7f6ee87021e67c18bc6ec4e221dc8761bac8d6fbd2337ff76a56ba816ce"
+      },
+      {
+        "bytes": 7324,
+        "sha": "cbbe38c49e7dadcd9397a3ebb6d45ee30a82d0a2",
+        "sha256": "e93d36febb5ea104c2e64d0dd8a037e9bae26b9d16a986319987a80283a18602"
+      },
+      {
+        "bytes": 11122,
+        "sha": "f8440f960b02ea978724be042b82f07dd6c618cd",
+        "sha256": "b0c9ebaa8cc312b22368064824bd40cc33e67e0229fa9b66dad6a3d4f1792fe3"
+      },
+      {
+        "bytes": 1038579,
+        "sha": "21df2fd489033b9b17c51428bcfd3a5a2a927b19",
+        "sha256": "6a8ebaaed565060351cd7e5861206659c9b191b367bf2e42937e8df008ef7e5f"
+      },
+      {
+        "bytes": 13049,
+        "sha": "5fb67098c33f4ccc055fb3e8ac18486543680eec",
+        "sha256": "547b93c64daf821fbc4b3b75cc7e1c6225799cd0164f7a24853124a5f6a67034"
+      },
+      {
+        "bytes": 27663,
+        "sha": "f5e1e190546e15ca6802338446a12de414154f49",
+        "sha256": "d334c4528d6f5287ae1bd61e651d7478692768a6eaaf849cd9f3045b8b2d50f5"
+      },
+      {
+        "bytes": 9477,
+        "sha": "d36a1d22ef847cbde89ee60bf1a53d322edb5f69",
+        "sha256": "1912843137c91453f9d7e9dc0cf85e77e2c20b59a548d0101c0ae1aed0295726"
+      },
+      {
+        "bytes": 5533,
+        "sha": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+        "sha256": "2b17d2ff155974e152d2fcb3bfd13bfcad5dc2df8ad3d7ab1502b59046919926"
+      },
+      {
+        "bytes": 11207,
+        "sha": "b53cb67cefe37bc0c277c342dc36fce4639f708d",
+        "sha256": "246e6a64711b9db50e5c783d2cabc6bd5eb1d73699d5e85fe00f781c79444c78"
+      },
+      {
+        "bytes": 1039720,
+        "sha": "44918e0d7e06eb2afcbf42fe8e38229eea4bf4a2",
+        "sha256": "a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b"
+      },
+      {
+        "bytes": 9036,
+        "sha": "3e4b82d31a39681d85df560004e2d1d704953cd3",
+        "sha256": "b2b1bb76baaea11e6e872699187099a10b10f0a7cb8b86b4428fc99c5702c2b4"
+      },
+      {
+        "bytes": 13485,
+        "sha": "604d5d7f5d494fc047b1fc1d883b883a272da1d6",
+        "sha256": "7617b58380adce3624bd47d038e0209fa72b27e8182fb9299753eae972f1f908"
+      },
+      {
+        "bytes": 15341,
+        "sha": "49a9fdf08c63cf3a2ecb46f123f3dcee7349b345",
+        "sha256": "bc604932d2512fc21f7d23053494486d629572644a5f66c62c50db886f41abe5"
+      }
+    ],
+    "changed_blob_bytes": 2276944,
+    "commit_count": 4,
+    "commits": [
+      {
+        "changed_paths": 5,
+        "message_terminal_newline_bytes": 0,
+        "parents": [
+          "eabfb55ef388c750725884713c2f1fe9044b334f"
+        ],
+        "raw_commit_bytes": 320,
+        "raw_commit_sha256": "a68d1b89f12504ac65fb8b4772266bf62cf401e48920abc21ca152f59ad45140",
+        "sha": "2aa73b91658178ac6fdf50c2d4e9507ccd4b0b0f",
+        "timezone": "-0500",
+        "tree": "ac11caf8d0f2ec9a90cd75c1ec17d542396841f3"
+      },
+      {
+        "changed_paths": 4,
+        "message_terminal_newline_bytes": 0,
+        "parents": [
+          "2aa73b91658178ac6fdf50c2d4e9507ccd4b0b0f"
+        ],
+        "raw_commit_bytes": 329,
+        "raw_commit_sha256": "be2c0e4e76a02b6cc50b4a0dec07c534ac7f8f3cb65873f96434c76c5cb85b38",
+        "sha": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+        "timezone": "-0500",
+        "tree": "f6eba04ce6afa681046326157fdbfe12d9af0093"
+      },
+      {
+        "changed_paths": 2,
+        "message_terminal_newline_bytes": 0,
+        "parents": [
+          "8b4d162cff8fa7c4d53c520370217ceda99ee0aa"
+        ],
+        "raw_commit_bytes": 322,
+        "raw_commit_sha256": "6515ea18f35de7aa9016a9738dddfb5910bc646ba68f2f737bc02cfc761785b8",
+        "sha": "0ca40875e665653cbea5f4d55947d195d75685b4",
+        "timezone": "-0500",
+        "tree": "290cc13aabb7b20db413de5cd818ddcb5acb1dc0"
+      },
+      {
+        "changed_paths": 5,
+        "message_terminal_newline_bytes": 0,
+        "parents": [
+          "0ca40875e665653cbea5f4d55947d195d75685b4"
+        ],
+        "raw_commit_bytes": 335,
+        "raw_commit_sha256": "0882464a000d05195808446a32c35191b9e41d9cc720e344727ebb0b772fde23",
+        "sha": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "timezone": "-0500",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d"
+      }
+    ],
+    "gzip": {
+      "bytes": 638651,
+      "git_blob_sha": "99109d7b474bc689d387ecd58569078f937f532c",
+      "sha256": "cd06f8f7db2d255b4aa8f5427ceb710ca5ff1ae3fc2e8d341ecf74e1f6ec8c63"
+    },
+    "packet": {
+      "bytes": 3054185,
+      "git_blob_sha": "83bd7ea29c41aa7417fdf921f53608e4340381d4",
+      "sha256": "476743023beba4de871cf6cd3959633078ce5f17c581ff6e9127045615b96563"
+    },
+    "unique_changed_blobs": 16,
+    "unique_changed_paths": 14
+  },
+  "tip": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+  "tip_tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+  "transport": "ASCII base64 of gzip(mtime=0, level=9) of UTF-8 JSON; no newline is appended to the base64 transport. Decode base64 strictly, then decompress gzip.",
+  "tree_execution_limit": "No local or desktop read-tree/update-index/write-tree import was executed during this preparation. The native importer must reproduce each complete original tree from the existing parent using the private-index contract before writing its original commit. Missing base tree/blob objects must stop the import."
+}

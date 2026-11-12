@@ -1,0 +1,65 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs
+index 2586448ba..8b20df071 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs
+@@ -93,7 +93,7 @@ impl Metadata {
+         })?;
+         owners.evidence_trust_digest = verifier.trust_digest();
+         let mut coordinator =
+-            LearningIterationCoordinatorV1::new(original.initial.request.clone(), owners)?;
++            LearningIterationCoordinatorV1::new(original.initial.request, owners)?;
+         let initial = coordinator.snapshot().clone();
+         let rule = digest("resident-fixture-frozen-rule");
+         let scope = FrozenLearningScopeV2::freeze(
+diff --git a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+index 13d6b8114..7d31e6558 100644
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+@@ -421,11 +421,11 @@ pub(super) fn unstarted_material_with_profile(
+         update_rule,
+     )?;
+     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
+-        initial: initial,
+-        scope: scope,
++        initial,
++        scope,
+         rule,
+-        freeze_plan: freeze_plan,
+-        freeze_evidence: freeze_evidence,
++        freeze_plan,
++        freeze_evidence,
+         experience_signer: credentials.experience.clone(),
+         dataset_signer: credentials.dataset.clone(),
+         verifier: writer.verifier().clone(),
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+index fbe69353b..002394b4a 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+@@ -290,7 +290,6 @@ fn require_clock(started_at: u64, current: u64) -> Result<(), Error> {
+ 
+ #[path = "neuron_cell_evaluation_model_material.rs"]
+ mod model_material;
+-pub(crate) use model_material::OriginalCellEvaluationModelInputV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialV1;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
+index 94d6c9330..4c3063ecd 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
+@@ -85,10 +85,11 @@ impl OriginalCellEvaluationHostV1 {
+                 return Ok(request_id - 1);
+             }
+             if request_id == 1
+-                && let Some((ready, release)) = pause.take() {
+-                    ready.send(())?;
+-                    release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
+-                }
++                && let Some((ready, release)) = pause.take()
++            {
++                ready.send(())?;
++                release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
++            }
+         }
+         anyhow::bail!("original material session exhausted");
+     }

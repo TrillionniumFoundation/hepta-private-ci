@@ -1,0 +1,101 @@
+{
+  "base_head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "behavioral_tests_started": false,
+  "candidate_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "changed_files": 53,
+  "diff": {
+    "bytes": 170731,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/candidate.patch",
+    "sha256": "58aaf1c7cc572663b4449c1e7bf3c6753d5c9a5779f55968312f982c98778f8a"
+  },
+  "extra_scope": [
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+  ],
+  "finished_at": "2026-11-12T09:17:01.996850+00:00",
+  "input_worktree_tree": "3903f56aab53d6a97b30c92afe3240c3bb79b186",
+  "integrated_tree_verified": "5ea87208f5deb990d9dbb6d32989658a8b4b0364",
+  "maintenance_delta": {
+    "bytes": 3575,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/maintenance-from-integrated.patch",
+    "sha256": "f47cc68fb8edeee12b975735dc54d7422608161d932fe27d2089727970cd4fa6"
+  },
+  "manifest": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/POSTIMAGE_MANIFEST.json",
+  "packet": {
+    "bytes": 315532,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/POSTIMAGES.json.gz",
+    "sha256": "f35edf0666eadf72289af3ba1be9038c91e25296aa2bad0e44193c087ea1473b",
+    "uncompressed_bytes": 1893656,
+    "uncompressed_sha256": "9430685ee0cbb12f6b4d5b4e56608b39e885063d7c0635e63746af7bfd6be6cd"
+  },
+  "preauthorized_host_line_removal_verified": true,
+  "qualification": "Unpublished integrated candidate preparation only; no final-source or ordinary qualification",
+  "required_integrated_tree": "5ea87208f5deb990d9dbb6d32989658a8b4b0364",
+  "source_after": {
+    "head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "status": " M .github/blob-size-allowlist.txt\n M .github/workflows/hepta-daemon-learning-native.yml\n M CALLERS.toml\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs\n M codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/circuit_task_source_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs\n M qa/b4-no-bypass/test_evaluated_retention_source_closure.py\n M qa/b4-no-bypass/test_original_training_source_capture_source_closure.py\n M qa/b4-no-bypass/test_resident_root_source_closure.py\n M qa/b4-no-bypass/test_training_no_update_source_closure.py\n?? codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs\n?? qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py\n"
+  },
+  "source_after_inventory": {
+    "bytes": 2807944,
+    "files": 14741,
+    "gzip_bytes": 763613,
+    "gzip_sha256": "e3ad0927239155cd43aaa695f08a262cd0838878da7eedb6fe8edef46e06bf84",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/SOURCE_AFTER.json.gz",
+    "sha256": "a54f1cb4a63997decc3c3bf13e76625321325f4577c9e2044a77288e0c375221"
+  },
+  "source_before_compile_inventory": {
+    "bytes": 2807944,
+    "files": 14741,
+    "gzip_bytes": 763621,
+    "gzip_sha256": "fd7384ce2cc6a1d9ffc910888cc3b6f71d336300aa3368023cf060264bfecb24",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/SOURCE_BEFORE_COMPILE.json.gz",
+    "sha256": "1034afc709006484de7aad294dbede78c8565e384c3665ff10dc6e967ac88c8d"
+  },
+  "source_before_inventory": {
+    "bytes": 2807541,
+    "files": 14739,
+    "gzip_bytes": 763497,
+    "gzip_sha256": "d34d7f38575cef1c4aa67181ceb11aeea8b8c09f903164ea50f4981cc9ba15b9",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/review-integrate-726-maintenance-v1/SOURCE_BEFORE_INTEGRATION.json.gz",
+    "sha256": "afdeeddfd12c19fe1ba5a6a07dc3a04bdb6bfd7b8962d2a69e88c03dfc1304d7"
+  },
+  "stage": "fmt",
+  "stages": [
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "finished_at": "2026-11-12T09:16:51.002802+00:00",
+      "log_bytes": 65817,
+      "log_sha256": "f94de32d3a56e8632fba7464b41470549dd5ca7688874bf856b19253df4c4ed3",
+      "name": "fix",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "19aa601fa09321f1b6d1b3ff3b4d422908004e48"
+      ],
+      "finished_at": "2026-11-12T09:16:53.081372+00:00",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "fmt",
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "timed_out": false
+    }
+  ],
+  "started_at": "2026-11-12T09:11:45.388049+00:00",
+  "status": "integrated_preparation_ready",
+  "upstream_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d"
+}

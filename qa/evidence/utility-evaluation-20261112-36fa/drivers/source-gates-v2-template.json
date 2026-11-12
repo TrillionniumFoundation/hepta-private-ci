@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.utility.desktop-source-gates.v1",
+  "state": "WAITING_FROZEN_SOURCE",
+  "run_identity": null,
+  "object_repository": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+  "source_checkout": null,
+  "records": null,
+  "source_sha": null,
+  "source_tree": null,
+  "driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "hepta_ci_exec_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+  "budgets_seconds": {
+    "source-closure": 600,
+    "self-test": 300,
+    "verify": 4800
+  },
+  "workflow_reference": ".github/workflows/hepta-daemon-learning-native.yml",
+  "qualification": "New desktop source checks only; does not resume old cloud Unknown executions or prove actual A/B/C."
+}

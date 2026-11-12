@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.git.canonical-merge-commit.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "parents": [
+    "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "726af8f4a345a2ffb148b971f3fa16c71436862d"
+  ],
+  "raw_commit_bytes": 969,
+  "raw_commit_sha256": "60ce053e6b3452a071a5cb73deae2265a4733ba8eefe39672bf688e39d6cfbcf",
+  "raw_commit_base64": "dHJlZSBiNjA3ZmY1ZjUwODEyYzVlMGY5MzJkN2RhZTE4ZDRjNzRmMTI2OWNiCnBhcmVudCAxOWFhNjAxZmEwOTMyMWYxYjZkMWIzZmYzYjRkNDIyOTA4MDA0ZTQ4CnBhcmVudCA3MjZhZjhmNGEzNDVhMmZmYjE0OGI5NzFmM2ZhMTZjNzE0MzY4NjJkCmF1dGhvciBRaWFuIFFJIDwxMDIxNTkyNDArUHJvZkhlcHRhQHVzZXJzLm5vcmVwbHkuZ2l0aHViLmNvbT4gMTc5NDQ3NTczNyAtMDUwMApjb21taXR0ZXIgUWlhbiBRSSA8MTAyMTU5MjQwK1Byb2ZIZXB0YUB1c2Vycy5ub3JlcGx5LmdpdGh1Yi5jb20+IDE3OTQ0NzU3MzcgLTA1MDAKCmZpeChsZWFybik6IHJlc3RvcmUgbmF0aXZlIGV2YWx1YXRpb24gZml4dHVyZXMgb24gZnJvemVuIHJldGVudGlvbiBiYXNlCgpSZXBhaXIgYW1iaWd1b3VzIHRlc3QgaW1wb3J0cywgb3JpZ2luYWwgcHJpdmF0ZSBmaXh0dXJlIHBhdGhzLCB0cmFuc3BvcnQgaGVscGVyCnJldXNlIGFuZCBqb3VybmFsLWN1dCBkZWNvZGluZyBzbyB0aGUgb3JpZ2luYWwgYWdlbnRkIG5hdGl2ZSBnYXRlcyBjYW4gY29tcGlsZS4KUmV0YWluIHRoZSByZXZpZXdlZCBhdXRvbWF0aWMgbWFpbnRlbmFuY2UgYW5kIGFsaWduIHR3byBleGFjdCBzb3VyY2UgbWFya2Vycwp3aXRoIHRoZSBlcXVpdmFsZW50IHNob3J0LWNpcmN1aXQgY29uZGl0aW9ucy4KCkludGVncmF0ZSB0aGUgb3JpZ2luYWwgZXZhbHVhdGVkLXJldGVudGlvbiBhbmNlc3RyeSBhdCA3MjZhZjhmNCwgcHJlc2VydmluZyBpdHMKc3RyaWN0IFJvb3QgYXV0aGVudGljYXRpb24sIGZvdXIgcmVnaXN0ZXJlZCBtZWNoYW5pc20gdGVzdHMgYW5kIG9yaWdpbmFsIFQvRQpjb25uZWN0aW9uIGN1c3RvZHkuIFByZXBhcmF0aW9uIGZpeCBhbmQgZm9ybWF0dGluZyBwYXNzZWQgb24gdGhlIGV4YWN0IHRyZWU7CmNhbm9uaWNhbC1oZWFkIGJlaGF2aW9yIGFuZCBzb3VyY2UgZ2F0ZXMgcmVtYWluIHNlcGFyYXRlIHJlcXVpcmVkIHJlY29yZHMu",
+  "author_timezone": "-0500",
+  "committer_timezone": "-0500",
+  "message_terminal_newline_bytes_added": 0,
+  "github_git_commit_metadata": {
+    "sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "node_id": "C_kwDOTrgxoNoAKGU4YjZmZTJhYTU1YjRmZGNmZThkOWMxNWVhODMwZTE2ZjAxNDRiYmQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T09:28:57Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T09:28:57Z"
+    },
+    "tree": {
+      "sha": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/b607ff5f50812c5e0f932d7dae18d4c74f1269cb"
+    },
+    "message": "fix(learn): restore native evaluation fixtures on frozen retention base\n\nRepair ambiguous test imports, original private fixture paths, transport helper\nreuse and journal-cut decoding so the original agentd native gates can compile.\nRetain the reviewed automatic maintenance and align two exact source markers\nwith the equivalent short-circuit conditions.\n\nIntegrate the original evaluated-retention ancestry at 726af8f4, preserving its\nstrict Root authentication, four registered mechanism tests and original T/E\nconnection custody. Preparation fix and formatting passed on the exact tree;\ncanonical-head behavior and source gates remain separate required records.",
+    "parents": [
+      {
+        "sha": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/19aa601fa09321f1b6d1b3ff3b4d422908004e48"
+      },
+      {
+        "sha": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/726af8f4a345a2ffb148b971f3fa16c71436862d"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "verification": {
+    "git_commit_object_sha1_matches_published_sha": true,
+    "parent_order_matches_frozen_order": true,
+    "tree_matches_frozen_native_tree": true,
+    "method": "Reconstruct Git commit body from immutable GitHub Git-commit metadata and retain only the timezone/newline candidate whose Git commit-object SHA-1 exactly matches the published SHA. Raw bytes, not a tree-equivalent replacement, are provided."
+  },
+  "native_import_contract": [
+    "Require both original parents to exist, in the listed order. Import the original 726 ancestry from the separately verified canonical upstream packet first if needed.",
+    "Require the complete tree object b607ff5f50812c5e0f932d7dae18d4c74f1269cb produced by the native 53-path preparation to exist.",
+    "Decode raw_commit_base64 strictly; verify raw byte count, SHA256 and Git commit-object SHA-1 before writing with git hash-object -t commit -w --stdin.",
+    "Read back using git cat-file commit and require exact complete bytes. Do not reserialize dates, reorder parents, append a message newline, re-sign or create a substitute commit.",
+    "This package does not authorize ref updates or checkout changes; root controls final source refs and native controls the separately authorized exact-source execution."
+  ],
+  "execution_status": {
+    "native_object_import_executed": false,
+    "refs_updated": false,
+    "source_modified": false,
+    "build_or_test_executed": false
+  }
+}

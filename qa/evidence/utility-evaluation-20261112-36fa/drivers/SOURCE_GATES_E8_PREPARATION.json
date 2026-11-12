@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.utility.desktop-source-gates.exact-source-preparation.v1",
+  "state": "PREPARED_WAITING_NATIVE_CLEAN",
+  "actual_source_gate_commands_started": 0,
+  "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+  "reported_frozen_parents": [
+    "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "726af8f4a345a2ffb148b971f3fa16c71436862d"
+  ],
+  "general_driver_preparation_manifest_blob": "1c447334773a66dddb5b57f6b6b8ecb27f4598fc",
+  "driver_path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/driver-v2-20c11034.py",
+  "driver_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+  "driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+  "config_path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/config-e8b6fe2a-v1.json",
+  "config": {
+    "schema": "hepta.utility.desktop-source-gates.v1",
+    "state": "READY_FOR_EXACT_SOURCE_RUN",
+    "run_identity": "hepta-utility-36fa-desktop-source-gates-e8b6fe2a-v1",
+    "object_repository": "/home/qian-qi/hepta-utility-36fa-review-19aa",
+    "source_checkout": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-v1",
+    "records": "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1",
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "source_tree": "b607ff5f50812c5e0f932d7dae18d4c74f1269cb",
+    "driver_sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "hepta_ci_exec_sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+    "budgets_seconds": {
+      "source-closure": 600,
+      "self-test": 300,
+      "verify": 4800
+    },
+    "workflow_reference": ".github/workflows/hepta-daemon-learning-native.yml",
+    "qualification": "New desktop source checks only; does not resume old cloud Unknown executions or prove actual A/B/C."
+  },
+  "config_identity": {
+    "bytes": 1003,
+    "sha256": "420f57dd0d0f320f335aa927cb9bf37f2970ab9e6f135741fa4664bcbd6a0e2a",
+    "git_blob_sha": "2c98f568925c8f118376d88fd3f7967c0d6c7ed4"
+  },
+  "config_writer_job": "1a1cf17e8be-2564-198a",
+  "config_original_observations": [
+    {
+      "kind": "file_info",
+      "bytes": 589,
+      "sha256": "884536d9dabf5ca216614c095dac6953c44ed8bc3843c9b939c27fe141d82123",
+      "git_blob_sha": "02dfb2c463a42566377ee2beb3902757dc92a25e",
+      "observed": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 256,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 256,
+        "path": "/home/qian-qi/hepta-utility-36fa-final-source-gates-preparation/config-e8b6fe2a-v1.json",
+        "sha256": "420f57dd0d0f320f335aa927cb9bf37f2970ab9e6f135741fa4664bcbd6a0e2a",
+        "size": 1003,
+        "version": "2050:16015783:1003:1794475816008916523:1794475816008916523"
+      }
+    },
+    {
+      "kind": "process_status",
+      "bytes": 908,
+      "sha256": "f7f3ff2afd5182b5cb775eb5d16aa0c7664d65031b068448ac4f3b665e9bfe76",
+      "git_blob_sha": "8067a9b1604570a47d8565eafcdb0874a41621c8",
+      "observed": {
+        "at_unix_ms": 1794475816037,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1cf17e8be-2564-198a",
+        "launch_nonce": "17da95c213bcae9d8d9a1dcb6563fcad",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 294,
+            "stored": 294
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    }
+  ],
+  "runner_verification": {
+    "source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+    "path": "scripts/hepta_ci_exec.py",
+    "bytes": 12863,
+    "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+  },
+  "source_clone_created": false,
+  "launch_condition": "Wait native EXACT_CHECKOUT confirming imported exact source/tree, original scoped fix for agentd and eval plus fmt succeed with no source diff, and current source is clean. No lock contention or source modification by this gate preparer.",
+  "qualification": "Prepared config only. No gate has been dispatched. Does not inherit old cloud or other source results, and does not prove actual A/B/C."
+}

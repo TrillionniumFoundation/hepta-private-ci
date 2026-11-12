@@ -1,0 +1,41 @@
+diff --git a/codex-rs/hepta-intelligence-eval/src/closure.rs b/codex-rs/hepta-intelligence-eval/src/closure.rs
+index 97d6c9cbc151cb5373ca900a7915f8f38ff941aa..f11cfafe121c9902d33bcbe9e8311c16221b0aeb 100644
+--- a/codex-rs/hepta-intelligence-eval/src/closure.rs
++++ b/codex-rs/hepta-intelligence-eval/src/closure.rs
+@@ -248,13 +248,10 @@
+         }
+     }
+ 
+-    // A known negative metric does not complete the other evidence gates.
+-    // Retain that negative evidence, but only a complete comparison may become
+-    // Ineligible for downstream use as an evaluated NoUpdate.
+-    let disposition = if insufficient {
++    let disposition = if !failed_metrics.is_empty() {
++        IndependentEvaluationDispositionV1::Ineligible
++    } else if insufficient {
+         IndependentEvaluationDispositionV1::InsufficientEvidence
+-    } else if !failed_metrics.is_empty() {
+-        IndependentEvaluationDispositionV1::Ineligible
+     } else {
+         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+     };
+diff --git a/codex-rs/hepta-intelligence-eval/src/lib.rs b/codex-rs/hepta-intelligence-eval/src/lib.rs
+index 124be43c3440b99cb9b6f6d0e30d25ffbb533352..f95462aab649ccd650e47976b44bba6300a77701 100644
+--- a/codex-rs/hepta-intelligence-eval/src/lib.rs
++++ b/codex-rs/hepta-intelligence-eval/src/lib.rs
+@@ -320,12 +320,10 @@
+         }
+     }
+ 
+-    // Compatibility evaluations retain known failures without labeling a
+-    // partial comparison as a complete negative result.
+-    let disposition = if insufficient {
++    let disposition = if !failed_metrics.is_empty() {
++        Disposition::Ineligible
++    } else if insufficient {
+         Disposition::InsufficientEvidence
+-    } else if !failed_metrics.is_empty() {
+-        Disposition::Ineligible
+     } else {
+         Disposition::EligibleForFurtherReview
+     };
