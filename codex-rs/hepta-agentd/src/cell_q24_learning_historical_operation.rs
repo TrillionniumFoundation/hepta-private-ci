@@ -219,10 +219,10 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
                 }
                 Ok(self
                     .owners
-                    .complete_original_root_evaluation(
+                    .execute_original_root_evaluation(
+                        self.training,
                         &original,
                         self.inner.prepared.scope(),
-                        OriginalRootBEvaluationActionV1::Complete,
                     )?
                     .receipt()
                     .clone())
