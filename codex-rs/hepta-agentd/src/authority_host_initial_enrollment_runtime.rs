@@ -5,6 +5,7 @@ use super::*;
 use crate::RootGenerationInitialEnrollmentV1;
 use crate::authority_host_service::generation_initial::RegisteredGenerationInitial;
 use crate::authority_host_service::generation_initial::run_start_retention::RegisteredInitialRunStartRetentionV1;
+use std::io::Write;
 
 pub(super) struct InitialEnrollmentContext<'a> {
     pub(super) initial: &'a BoundInitial,
@@ -17,6 +18,19 @@ pub(super) struct InitialEnrollmentContext<'a> {
 }
 
 impl InitialEnrollmentContext<'_> {
+    /// Fixed diagnostic phases only; this does not read inputs or change an end.
+    pub(super) fn trace_phase(&self, stage: &str, started: Instant, end: Instant) {
+        if self.initial.runtime.peer_deployment.is_some() {
+            let now = Instant::now();
+            let elapsed_micros = now.saturating_duration_since(started).as_micros();
+            let remaining_micros = end.saturating_duration_since(now).as_micros();
+            let _ = writeln!(
+                io::stderr(),
+                "original Initial phase={stage}; elapsed_micros={elapsed_micros}; remaining_micros={remaining_micros}"
+            );
+        }
+    }
+
     pub(super) fn require_original_context(&self, end: Instant) -> io::Result<()> {
         if end > self.end || self.stopping.load(Ordering::Acquire) {
             return Err(io::Error::other("original Initial serving context closed"));
@@ -44,7 +58,10 @@ impl InitialEnrollmentContext<'_> {
         RegisteredGenerationInitial,
         Option<RegisteredInitialRunStartRetentionV1>,
     )> {
+        let started = Instant::now();
+        self.trace_phase("enrollment.context-before", started, end);
         self.require_original_context(end)?;
+        self.trace_phase("enrollment.profile-before", started, end);
         let enrolled = self.service.enroll_generation_initial(
             self.config,
             self.registration,
@@ -52,14 +69,17 @@ impl InitialEnrollmentContext<'_> {
             &self.initial.runtime.deployment,
             inputs,
         );
+        self.trace_phase("enrollment.profile-returned", started, end);
         let enrolled = enrolled.map_err(|error| enrollment_error("profile enrollment", error));
         let enrollment_post = self.require_original_context(end);
+        self.trace_phase("enrollment.profile-context-returned", started, end);
         let slot: RegisteredGenerationInitial = enrolled?;
         if let Err(error) = enrollment_post {
             RegisteredGenerationInitial::refuse_original_enrollment(&slot)?;
             return Err(error);
         }
         let result = (|| {
+            self.trace_phase("enrollment.run-start-before", started, end);
             let run_start = self
                 .initial
                 .runtime
@@ -77,6 +97,7 @@ impl InitialEnrollmentContext<'_> {
                 })
                 .transpose()
                 .map_err(|error| enrollment_error("RunStart baseline", error))?;
+            self.trace_phase("enrollment.run-start-returned", started, end);
             if let Some(source) = self.initial.runtime.source_capture.as_ref() {
                 let context = source_capture::SourceCaptureContext {
                     service: self.service,
@@ -87,19 +108,27 @@ impl InitialEnrollmentContext<'_> {
                     stopping: self.stopping,
                     end,
                 };
+                self.trace_phase("enrollment.cell-before", started, end);
                 source
                     .register_original_source_cell(context)
                     .map_err(|error| enrollment_error("Cell baseline", error))?;
+                self.trace_phase("enrollment.cell-returned", started, end);
+                self.trace_phase("enrollment.ledger-before", started, end);
                 source
                     .register_original_source_ledger(context)
                     .map_err(|error| enrollment_error("Ledger baseline", error))?;
+                self.trace_phase("enrollment.ledger-returned", started, end);
             }
+            self.trace_phase("enrollment.profile-recheck-before", started, end);
             RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?;
+            self.trace_phase("enrollment.profile-recheck-returned", started, end);
             Ok(run_start)
         })();
         // A failed baseline still receives the original writer/pidfd/end
         // postcheck, and any retained Initial profile is fenced on failure.
+        self.trace_phase("enrollment.final-context-before", started, end);
         let post = self.require_original_context(end);
+        self.trace_phase("enrollment.final-context-returned", started, end);
         match result.and_then(|run_start| post.map(|()| run_start)) {
             Ok(run_start) => Ok((slot, run_start)),
             Err(error) => {
