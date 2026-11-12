@@ -1,4 +1,4 @@
-//! Construct and bind original Observer owners inside one Prepared operation.
+//! Initialize and bind original Observer owners inside one Prepared operation.
 //! The borrow checks the same retained capability; journal lifecycle and all
 //! actual witness reads remain owned by the original durable journal.
 
@@ -60,5 +60,23 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         OriginalPreparedReadV1::require_prepared(read, &self.prepared)?;
         OriginalPreparedReadV1::require_prepared(read, prepared)?;
         Ok(())
+    }
+    pub(crate) fn attest_experience_in_operation(
+        &mut self,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
+        if self.config.stage != OriginalCellQ24SourceStageV1::Experience {
+            return Err(binding("original Experience owner"));
+        }
+        let prepared = Arc::clone(&self.prepared);
+        self.attest_at(prepared.initial(), read)
+    }
+
+    pub(crate) fn attest_dataset_in_operation(
+        &mut self,
+        experience: &mut OriginalCellQ24SourceReceiptOwnerV1<impl AnchorWitnessStore>,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
+        self.with_original_experience_in_operation(experience, read, Self::attest_at)
     }
 }
