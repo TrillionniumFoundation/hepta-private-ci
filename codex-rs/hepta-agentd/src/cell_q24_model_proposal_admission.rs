@@ -218,3 +218,9 @@ impl Admission {
         Ok(CellQ24ModelProposalReceiptV1 { receipt })
     }
 }
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_current_admission.rs"]
+mod current;
+#[cfg(target_os = "linux")]
+pub(super) use current::validate_current_material;

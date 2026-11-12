@@ -423,6 +423,16 @@ pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateTaskStreamV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandConnectionV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandHostV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandReceiptV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionErrorV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionV1;
