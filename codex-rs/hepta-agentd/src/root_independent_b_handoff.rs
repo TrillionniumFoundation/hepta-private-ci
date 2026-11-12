@@ -1,4 +1,5 @@
-//! A separate Root purpose carrying only the original sealed route and pidfd.
+//! A separate Root purpose carrying the original sealed route, pidfd and the
+//! registered candidate DATA input. No result, holdout or signature writer moves.
 //! The actual current owner is obtained later from the live enrolled Root lane.
 
 use super::*;
@@ -9,6 +10,7 @@ const INDEPENDENT_B_FRAME: &[u8] = b"HEPTA_ROOT_INDEPENDENT_B_EVALUATION_V1";
 /// construct this value, and receiving it does not activate a B read client.
 pub struct RootIndependentBEvaluationHandoffV1 {
     pub(crate) bootstrap: File,
+    pub(crate) candidate_data: File,
     pub(crate) root_pidfd: OwnedFd,
     pub(crate) root_pid: u32,
 }
@@ -35,7 +37,11 @@ pub fn send_root_independent_b_evaluation_handoff(
     send_packet(
         &socket,
         INDEPENDENT_B_FRAME,
-        &[offer.bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()],
+        &[
+            offer.bootstrap.as_raw_fd(),
+            root_pidfd.as_raw_fd(),
+            offer.candidate_data.as_raw_fd(),
+        ],
         timeout,
     )
 }
@@ -70,14 +76,19 @@ pub fn receive_root_independent_b_evaluation_handoff(
         unsafe { crate::notes_bootstrap::received_descriptors(&message) };
     if !valid
         || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
-        || descriptors.len() != 2
+        || descriptors.len() != 3
         || size as usize != INDEPENDENT_B_FRAME.len()
         || &bytes[..INDEPENDENT_B_FRAME.len()] != INDEPENDENT_B_FRAME
     {
         return Err(refused(
-            "exact independent B purpose and two original rights required",
+            "exact independent B purpose and three original rights required",
         ));
     }
+    let candidate_data = File::from(
+        descriptors
+            .pop()
+            .ok_or_else(|| refused("original B candidate data missing"))?,
+    );
     let root_pidfd = descriptors
         .pop()
         .ok_or_else(|| refused("independent B Root pin missing"))?;
@@ -90,6 +101,7 @@ pub fn receive_root_independent_b_evaluation_handoff(
     require_root_pin(&root_pidfd, peer.pid as u32)?;
     Ok(RootIndependentBEvaluationHandoffV1 {
         bootstrap,
+        candidate_data,
         root_pidfd,
         root_pid: peer.pid as u32,
     })

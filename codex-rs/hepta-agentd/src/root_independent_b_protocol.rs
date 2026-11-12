@@ -31,6 +31,8 @@ pub(crate) struct Bootstrap {
     pub(crate) writer: String,
     pub(crate) binding: String,
     pub(crate) socket: PathBuf,
+    pub(crate) candidate_data_device: u64,
+    pub(crate) candidate_data_inode: u64,
 }
 
 #[derive(Deserialize, Serialize)]

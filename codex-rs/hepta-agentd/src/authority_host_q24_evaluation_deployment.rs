@@ -34,6 +34,7 @@ struct Deployment {
     trust: PathBuf,
     protocol_statement: PathBuf,
     source: PathBuf,
+    candidate_data: PathBuf,
     observed_statement: PathBuf,
     policy_statement: PathBuf,
     realized_plan_statement: PathBuf,
@@ -90,6 +91,7 @@ pub(super) struct OriginalBInputs {
     protocol_statement: OriginalBFile,
     protocol_statement_digest: Digest32,
     pub(super) source: OriginalBFile,
+    pub(super) candidate_data: OriginalBFile,
     pub(super) observed_statement: OriginalBFile,
     pub(super) policy_statement: OriginalBFile,
     pub(super) realized_plan_statement: OriginalBFile,
@@ -139,6 +141,7 @@ impl OriginalBInputs {
             protocol_statement,
             protocol_statement_digest,
             source: tracker.open(&data.source, OriginalBFileAccess::ReadOnly)?,
+            candidate_data: tracker.open(&data.candidate_data, OriginalBFileAccess::OwnerWriter)?,
             observed_statement: tracker
                 .open(&data.observed_statement, OriginalBFileAccess::ReadOnly)?,
             policy_statement: tracker
@@ -192,6 +195,7 @@ impl OriginalBInputs {
         // labels when Root records the original protocol registration.
         for file in [
             &self.source,
+            &self.candidate_data,
             &self.observed_statement,
             &self.policy_statement,
             &self.realized_plan_statement,
@@ -240,13 +244,14 @@ impl OriginalBInputs {
         Ok(())
     }
 
-    fn all_files(&self) -> [&OriginalBFile; 23] {
+    fn all_files(&self) -> [&OriginalBFile; 24] {
         [
             &self.deployment,
             &self.protocol_file,
             &self.trust_file,
             &self.protocol_statement,
             &self.source,
+            &self.candidate_data,
             &self.observed_statement,
             &self.policy_statement,
             &self.realized_plan_statement,

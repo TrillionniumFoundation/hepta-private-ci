@@ -64,6 +64,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                 "B route differs from the actual original Root session",
             ));
         }
+        super::candidate_data::require_original_data_file(&handoff.candidate_data, &bootstrap)?;
         let initial = digest(&bootstrap.initial)?;
         digest(&bootstrap.scope)?;
         digest(&bootstrap.writer)?;
@@ -118,6 +119,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                     stream,
                     sequence: 1,
                 }),
+                candidate_data: Mutex::new(handoff.candidate_data),
                 refused: AtomicBool::new(false),
             };
             let observation = client
