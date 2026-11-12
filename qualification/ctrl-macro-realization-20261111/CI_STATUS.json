@@ -1,7 +1,7 @@
 {
   "schema": "ctrl.macro-ci-observation.v1",
-  "observed_at_utc": "2026-11-12T01:29:58Z",
-  "observed_at_new_york": "2026-11-11T20:29:58-05:00",
+  "observed_at_utc": "2026-11-12T05:18:26Z",
+  "observed_at_new_york": "2026-11-12T00:18:26-05:00",
   "final_code_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
   "final_code_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
   "scope": "Exact committed stages; CPU contracts and native fixtures are not business policy efficacy",
@@ -83,9 +83,9 @@
       "pr": 6078,
       "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
       "cpu_run_id": 43133891398,
-      "cpu_status": "queued",
+      "cpu_status": "success",
       "native_run_id": 43133891410,
-      "native_status": "queued"
+      "native_status": "success"
     }
   ],
   "raw_log_verified_cpu_runs": [
@@ -163,15 +163,87 @@
       "artifact_id": 13907161051,
       "artifact_digest": "sha256:a94da0567a72ef692c76f5c8db10370d93a96163ff077c24ca4842f5bb249ec3",
       "artifact_expires_at": "2026-12-12T01:27:52Z"
+    },
+    {
+      "stage": 9,
+      "run_id": 43133891398,
+      "job_id": 130904422343,
+      "job": "contracts",
+      "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "tested_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+      "passed_methods": 149,
+      "suite_count": 21,
+      "skipped": 0,
+      "all_receipts_passed": true,
+      "all_inner_log_hashes_verified": true,
+      "source_before_after_unchanged": true,
+      "artifact_id": 13912040694,
+      "artifact_digest": "sha256:ddbf88da4bbc7d8f5f7371cad2d27322c94961b1ec02b183814cf1f739e7877c",
+      "artifact_expires_at": "2026-12-12T03:08:00Z",
+      "details": "CI_FINAL_VERIFICATION.json"
     }
   ],
   "local_native_qualification": "BLOCKED_BEFORE_ACTOR_EXECUTION",
-  "final_head_native_result": "PENDING_NO_SUCCESS_CLAIM",
+  "final_head_native_result": "PASSED_NATIVE_FIXTURE_NO_POLICY_EFFICACY_CLAIM",
   "business_experiments_run": 0,
   "policy_efficacy_evaluated": false,
   "full_physical_cost_observed": false,
   "production_update": "no-update",
   "repo": "TrillionniumFoundation/hepta-private-ci",
   "run_url_pattern": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/{run_id}",
-  "all_repository_ci_passed": false
+  "all_repository_ci_passed": false,
+  "previous_observed_at_utc": "2026-11-12T01:29:58Z",
+  "prior_stage_statuses_observed_at_utc": "2026-11-12T01:29:58Z",
+  "stage_status_note": "Stages 1-8 retain their original observation; only stage 9 is refreshed here.",
+  "raw_log_verified_native_runs": [
+    {
+      "stage": 9,
+      "run_id": 43133891410,
+      "job_id": 130904422614,
+      "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314",
+      "source_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+      "tested_sha": "82344e182cff3f6526a7f0dc521d67139ab01029",
+      "tested_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f",
+      "source_and_tested_tree_equal": true,
+      "original_methods": 3,
+      "macro_methods": 2,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "landlock_abi": 8,
+      "artifact_id": 13911931157,
+      "artifact_digest": "sha256:9b23098158c8715a7cd47f35817cc606861b89d1d6001a0eea5e9e315ee112b6",
+      "artifact_expires_at": "2026-11-26T03:06:23Z",
+      "details": "CI_FINAL_VERIFICATION.json"
+    }
+  ],
+  "latest_verified_cpu_methods": 149,
+  "latest_cpu_count_note": "21 CI suites at the final code head; separate from the 160-method historical local coverage inventory.",
+  "repository_ci_snapshot": [
+    {
+      "run_id": 43133891281,
+      "name": "Hepta EVOLVE-1 CPU contracts",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 43133891268,
+      "name": "Hepta architecture convergence",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 43133891482,
+      "name": "blocking-ci",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "run_id": 43133891264,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
 }

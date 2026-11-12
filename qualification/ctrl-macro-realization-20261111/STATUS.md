@@ -39,6 +39,16 @@ READ 宏完整包含 `PREPARE_ROI → READ_ROI → 重新选择 → WRITE_TEXT �
 逐阶段 exact-head 状态和已核验的原始日志证据见 [CI_STATUS.json](CI_STATUS.json)，状态以该记录的观测时间为准。
 阶段 1 的 [run 43128919632](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128919632) 实测 85 项通过，阶段 2 的 [run 43129296842](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43129296842) 实测 98 项通过，阶段 4 的 [run 43130973217](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43130973217) 实测 122 项通过；三次对应不同 head，包含重叠套件，**85、98、122 不相加**，也不替代最终 head 的验收。
 
+## 最终代码锚点的远程验证
+
+已逐项核对最终代码 `e5ed7174` 的 [CPU run 43133891398](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43133891398)：21 个套件、149 个唯一测试方法通过，零 skips/failures；每套件原始日志的 SHA256、字节数与执行前后干净源码身份均已核对。
+这是本次 CI 实跑范围，与上方本地 160 方法覆盖清单分别保留，不能混写或相加。
+[Native run 43133891410](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43133891410) 实际通过原有 OCR 3/3 和新宏动作 2/2 方法，零 skips/failures；`READ → 重新选择 → 交付 → 独立评分` 方法已执行。
+该 lane 使用 Landlock ABI 8；tested merge 为 `82344e182cff3f6526a7f0dc521d67139ab01029`，其 tree 与 source `e5ed7174` 同为 `a2a659f2e9bf133c3987ae34db6603ba64a2ec4f`。本地隔离失败原件仍按原样保留。
+三个下载 ZIP 的 SHA256 均匹配 GitHub artifact digest；完整身份、每套件日志摘要及 native 原始 stdout 分段见 [CI_FINAL_VERIFICATION.json](CI_FINAL_VERIFICATION.json) 与 [CI_NATIVE_TESTS.log](CI_NATIVE_TESTS.log)。
+有限 cohort 算术另有 4/4 通过，方法与 CPU lane 重叠，不能额外累加。仓库 blocking-ci 在本次观测仍 queued，不声称全仓 CI 通过。
+以上均为 manufactured contract/native fixture 验证，`policy_evaluation_performed=false`、新增独立真实任务为 0，不能据此放行真实策略效益或生产采用。
+
 ## 原始业务身份与效益结论
 
 [READ_ONLY_ORIGINALS.json](READ_ONLY_ORIGINALS.json) 是 `2026-11-12T01:11:42+00:00` 只读观测记录的逐字节副本。

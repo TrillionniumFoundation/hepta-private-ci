@@ -1,6 +1,6 @@
 # CTRL 宏动作执行交接
 
-当前状态：本地 native 在 Mandatory Landlock ABI 检查处被拒绝（`abi=-1, errno=38`）；原生 CI 排队，结果未确认。不得绕过隔离、改成 skip 或据此声称实际宏动作完成。当前无新增真实业务效益证据，保持 **HOLD / NoUpdate**。
+当前状态：代码锚点 `e5ed7174` 的 CPU CI 已通过 149 个方法；原生 CI 已实际通过 OCR 3/3 与宏动作 2/2，包含 READ 后重新选择、交付和独立评分。原生 tested merge 与 source 的 tree 相同，Landlock ABI 8；详见 [CI_FINAL_VERIFICATION.json](CI_FINAL_VERIFICATION.json)。本地 Mandatory Landlock 失败原件（`abi=-1, errno=38`）仍保留；不得绕过隔离或改成 skip。上述结果限于 fixture，真实六策略和 2×2 尚未执行，保持 **HOLD / NoUpdate**。
 以下命令从仓库根目录运行；`python` 必须是具备该仓库原生依赖与内核条件的解释器。所有大写路径/pin 变量均由审核后的真实材料提供，本文不提供虚构数据、模型 pin 或 fixture 替代品。
 
 ## 1. 先冻结来源、case 与完整分母

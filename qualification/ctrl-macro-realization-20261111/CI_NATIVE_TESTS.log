@@ -1,0 +1,17 @@
+test_actual_ocr_wire_delivery_and_independent_score_bind (ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_actual_ocr_wire_delivery_and_independent_score_bind) ... ok
+test_observed_wire_change_is_rejected (ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_observed_wire_change_is_rejected) ... ok
+test_wrong_model_pin_fails_before_any_action (ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_wrong_model_pin_fails_before_any_action) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 5.035s
+
+OK
+{"errors": 0, "executed_tests": 3, "expected_failures": 0, "failures": 0, "historical_content_root_cause_established": false, "policy_improvement_established": false, "schema": "ctrl.native-fixture.tests.v1", "skipped": 0, "status": "PASSED_FIXTURE"}
+test_native_stop_and_read_reselect_deliver_and_score (ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score) ... ok
+test_training_and_exploration_overrides_are_rejected_before_launch (ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 7.227s
+
+OK
+{"adoption_authorized": false, "control_training_labels": "manufactured fixture only", "discovered_test_ids": ["ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score", "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"], "errors": 0, "executed_tests": 2, "expected_failures": 0, "failures": 0, "full_physical_cost_observed": false, "independent_real_tasks_added": 0, "minimum_tests": 2, "policy_evaluation_performed": false, "required_test_ids": ["ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score", "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"], "schema": "ctrl.native-macro.tests.v1", "skipped": 0, "source_sha": "e5ed7174fe80201a942395a5b1f8366f3f0a7314", "status": "PASSED_NATIVE_FIXTURE", "suite": "ndu_real_runtime.test_macro_native.NativeMacroTests", "tested_sha": "82344e182cff3f6526a7f0dc521d67139ab01029", "tested_tree": "a2a659f2e9bf133c3987ae34db6603ba64a2ec4f", "unexpected_successes": 0}
