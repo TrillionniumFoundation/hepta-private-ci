@@ -42,6 +42,39 @@ impl OriginalRootBPlanChallengeV1<'_> {
     pub(crate) fn original_binding(&self) -> Result<Digest32, Error> {
         self.client.original_binding()
     }
+
+    pub(super) fn wait_original_source(
+        &self,
+        original: &OriginalQ24TrainingOperationEvidenceV1<'_>,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<SourceReadyData, Error> {
+        self.require_original_training(original, scope)?;
+        let reader = self
+            .client
+            .source_admitted
+            .try_lock()
+            .map_err(|_| Error::CommitUncertain)?
+            .take()
+            .ok_or(Error::CommitUncertain)?;
+        // The original frame has completed. No client stream lock is held and
+        // this wait cannot renew the session or start a second request lane.
+        let raw = crate::root_independent_b_notice::receive_original_notice(
+            reader,
+            self.client.bootstrap.root.pid,
+            self.client.end,
+            || {
+                self.client
+                    .connection
+                    .require_original()
+                    .map_err(std::io::Error::other)
+            },
+        )
+        .map_err(unavailable)?;
+        let ready = SourceReadyData::decode(&raw, &self.client.bootstrap.binding, &self.data)
+            .map_err(unavailable)?;
+        self.require_original_training(original, scope)?;
+        Ok(ready)
+    }
 }
 
 impl OriginalRootIndependentBEvaluationClientV1 {

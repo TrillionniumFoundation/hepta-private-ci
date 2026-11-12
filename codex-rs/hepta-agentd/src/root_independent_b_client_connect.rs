@@ -65,6 +65,10 @@ impl OriginalRootIndependentBEvaluationClientV1 {
             ));
         }
         super::candidate_data::require_original_data_file(&handoff.candidate_data, &bootstrap)?;
+        crate::root_independent_b_notice::require_original_notice_reader(
+            &handoff.source_admitted,
+            bootstrap.root.pid,
+        )?;
         let initial = digest(&bootstrap.initial)?;
         digest(&bootstrap.scope)?;
         digest(&bootstrap.writer)?;
@@ -120,6 +124,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                     sequence: 1,
                 }),
                 candidate_data: Mutex::new(handoff.candidate_data),
+                source_admitted: Mutex::new(Some(handoff.source_admitted)),
                 refused: AtomicBool::new(false),
                 end,
             };

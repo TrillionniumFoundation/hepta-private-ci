@@ -40,8 +40,19 @@ pub enum OriginalBSourceIngressStatusV1 {
 }
 
 pub async fn submit_original_root_b_source(
-    mut handoff: RootIndependentBSourceHandoffV1,
+    handoff: RootIndependentBSourceHandoffV1,
     read_original: impl FnOnce() -> io::Result<OriginalBSourceSignedDataV1>,
+) -> Result<OriginalBSourceIngressStatusV1, AgentdError> {
+    submit_original_root_b_source_with_candidate(handoff, |_| read_original()).await
+}
+
+/// Receive actual candidate DATA before the independent owners produce their
+/// policy/outcomes. The callback receives no handoff, FD or authority object.
+pub async fn submit_original_root_b_source_with_candidate(
+    mut handoff: RootIndependentBSourceHandoffV1,
+    read_original: impl FnOnce(
+        &crate::OriginalRootBCandidateDataV1,
+    ) -> io::Result<OriginalBSourceSignedDataV1>,
 ) -> Result<OriginalBSourceIngressStatusV1, AgentdError> {
     let length = handoff.bootstrap.metadata()?.len();
     if length == 0 || length > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
@@ -113,7 +124,47 @@ pub async fn submit_original_root_b_source(
     {
         return Err(refused("original B source socket custody differs"));
     }
-    let original = read_original()?;
+    let notice = handoff
+        .candidate_notice
+        .take()
+        .ok_or_else(|| refused("original B candidate notice missing"))?;
+    let raw = crate::root_independent_b_notice::receive_original_notice(
+        notice,
+        handoff.root_pid,
+        end,
+        || {
+            require_process(&bootstrap.root)?;
+            require_process(&bootstrap.source_peer)?;
+            crate::root_observation_stream::check_lifetime(&handoff.root_pidfd)
+                .map_err(|_| io::Error::other("original B source Root ended"))
+        },
+    )?;
+    let candidate_file = handoff
+        .candidate_data
+        .take()
+        .ok_or_else(|| refused("original B readonly candidate missing"))?;
+    let candidate =
+        crate::root_independent_b_candidate_notice::CandidateNotice::read_original_data(
+            &raw,
+            &candidate_file,
+            &bootstrap,
+            end,
+            || {
+                require_process(&bootstrap.root)?;
+                require_process(&bootstrap.source_peer)?;
+                crate::root_observation_stream::check_lifetime(&handoff.root_pidfd)
+                    .map_err(|_| io::Error::other("original B source Root ended"))
+            },
+        )?;
+    drop(candidate_file);
+    let original = read_original(&candidate)?;
+    require_process(&bootstrap.root)?;
+    require_process(&bootstrap.source_peer)?;
+    crate::root_observation_stream::check_lifetime(&handoff.root_pidfd)
+        .map_err(|_| refused("original B source Root ended"))?;
+    if Instant::now() >= end {
+        return Err(refused("original B source end elapsed"));
+    }
     if original.source.is_empty() || original.source.len() > SOURCE_BOUND {
         return Err(refused("bounded original signed B source required"));
     }
