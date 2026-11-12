@@ -63,6 +63,7 @@ def main():
         start=time.perf_counter()
         output,receipt=amplitude_flow(model,times,*inputs,supports=supports,**options)
         calls.append(dict(label=label,wall_seconds=time.perf_counter()-start,**receipt))
+        (args.output/"CALLS.json").write_text(json.dumps(calls,indent=2,sort_keys=True)+"\n")
         return output
 
     for geometry in ("uniform","graded"):
