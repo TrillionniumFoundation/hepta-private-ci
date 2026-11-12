@@ -630,9 +630,11 @@ impl LearningIterationRuntimeBootstrapV1 {
         require_ready(state)?;
         #[cfg(target_os = "linux")]
         if let Some(source) = &self.historical_source {
-            source
-                .require_current_historical_source(state.identity())
-                .map_err(|_| LearningIterationRuntimeErrorV1::WrongScope)?;
+            historical_source::RegisteredHistoricalLearningSourceV1::require_current_historical_source(
+                source,
+                state.identity(),
+            )
+            .map_err(|_| LearningIterationRuntimeErrorV1::WrongScope)?;
         }
         if self.enforce_circuit_admission
             && !state
