@@ -21,10 +21,17 @@ pub fn register_host_resident_learning_v3(
     profile: RootResidentLearningProfileV3,
 ) -> io::Result<RootResidentLearningRegistrationV3> {
     let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
-    let OriginalHostIssuerCustodyV3 { issuer, leases, root, .. } =
-        open_original_issuer_custody(&config)?;
+    let OriginalHostIssuerCustodyV3 {
+        issuer,
+        leases,
+        root,
+        ..
+    } = open_original_issuer_custody(&config)?;
     RootResidentLearningRegistrationV3::register_original_root(
-        root, issuer, Arc::new(leases), profile,
+        root,
+        issuer,
+        Arc::new(leases),
+        profile,
     )
 }
 
@@ -36,9 +43,17 @@ pub fn recover_host_resident_learning_v3(
     authorization: RootResidentLearningReadbackAuthorizationV3,
 ) -> io::Result<RootResidentLearningRegistrationV3> {
     let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
-    let OriginalHostIssuerCustodyV3 { issuer, leases, root, .. } =
-        open_original_issuer_custody(&config)?;
+    let OriginalHostIssuerCustodyV3 {
+        issuer,
+        leases,
+        root,
+        ..
+    } = open_original_issuer_custody(&config)?;
     RootResidentLearningRegistrationV3::recover_original_root(
-        root, issuer, Arc::new(leases), profile, authorization,
+        root,
+        issuer,
+        Arc::new(leases),
+        profile,
+        authorization,
     )
 }

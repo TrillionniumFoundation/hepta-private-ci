@@ -30,12 +30,22 @@ pub(super) async fn original_attestations(
     let mut signatures = Vec::with_capacity(snapshot.receipts.len());
     for receipt in &snapshot.receipts {
         let (_, now) = owner.read(cancellation).await?;
-        signatures.push(stages.receipt_attestation(snapshot, receipt, now / 1_000).await?);
+        signatures.push(
+            stages
+                .receipt_attestation(snapshot, receipt, now / 1_000)
+                .await?,
+        );
     }
     // All role I/O precedes this fresh Root clock and revalidation of every
     // retained complete signature, including the earliest observer window.
     let (_, fresh) = owner.read(cancellation).await?;
-    verify_attestations(&owner.authority.profile, verifier, snapshot, &signatures, fresh / 1_000)?;
+    verify_attestations(
+        &owner.authority.profile,
+        verifier,
+        snapshot,
+        &signatures,
+        fresh / 1_000,
+    )?;
     Ok(signatures)
 }
 
@@ -46,9 +56,12 @@ pub(super) fn verify_attestations(
     signatures: &[SignedLearningEvidenceV1],
     now: u64,
 ) -> Result<(), Error> {
-    profile.require_verifier(verifier).map_err(|_| Error::WrongScope)?;
+    profile
+        .require_verifier(verifier)
+        .map_err(|_| Error::WrongScope)?;
     profile.scope.validate_snapshot(snapshot)?;
-    if snapshot.request != profile.initial.request || snapshot.owners != profile.initial.owners
+    if snapshot.request != profile.initial.request
+        || snapshot.owners != profile.initial.owners
         || signatures.len() != snapshot.receipts.len()
         || signatures.len() > 5
         || verifier.trust_digest() != snapshot.owners.evidence_trust_digest
@@ -59,15 +72,21 @@ pub(super) fn verify_attestations(
     for (receipt, signature) in snapshot.receipts.iter().zip(signatures) {
         let stage = receipt.observation.stage();
         let role = match stage {
-            LearningIterationStageV1::Experience | LearningIterationStageV1::Dataset
+            LearningIterationStageV1::Experience
+            | LearningIterationStageV1::Dataset
             | LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer,
             LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator,
             LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector,
-            LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal =>
-                return Err(Error::OwnerUnavailable("resident Candidate evaluation/Model route is absent")),
+            LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal => {
+                return Err(Error::OwnerUnavailable(
+                    "resident Candidate evaluation/Model route is absent",
+                ));
+            }
         };
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let evidence = verifier.verify(role, signature, &payload, now).map_err(Error::Evidence)?;
+        let evidence = verifier
+            .verify(role, signature, &payload, now)
+            .map_err(Error::Evidence)?;
         if evidence.principal().principal_id != receipt.actor_id
             || &receipt.actor_id != snapshot.owners.owner(stage)
             || evidence.trust_digest() != snapshot.owners.evidence_trust_digest
@@ -85,12 +104,16 @@ pub(super) fn verify_attestations(
                 }
                 &[LearningIterationStageV1::Training]
             }
-            LearningIterationStageV1::NextUse =>
-                &[LearningIterationStageV1::Training, LearningIterationStageV1::Selection],
+            LearningIterationStageV1::NextUse => &[
+                LearningIterationStageV1::Training,
+                LearningIterationStageV1::Selection,
+            ],
             _ => &[],
         };
         for predecessor in independent {
-            let previous = verified.iter().find(|(stage, _)| stage == predecessor)
+            let previous = verified
+                .iter()
+                .find(|(stage, _)| stage == predecessor)
                 .ok_or(Error::Evidence(SignedEvidenceError::ContextMismatch))?;
             verify_signed_actor_separation(&previous.1, current, now).map_err(Error::Evidence)?;
         }
