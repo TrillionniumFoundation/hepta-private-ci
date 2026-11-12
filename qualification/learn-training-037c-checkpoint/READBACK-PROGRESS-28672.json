@@ -1,0 +1,136 @@
+{
+  "schema": "learn-training-checkpoint-partial-readback-v1",
+  "operation_id": "ae293bd955db071103705baa01c831b991e2ac35d6f110f0531144996241a5ab",
+  "total_bytes": 39810,
+  "result_sha256": "a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed",
+  "recovered_contiguous_bytes": 28672,
+  "complete": false,
+  "source_a96": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "prior_checkpoint": "8ce881377ffe451cd9317663422fcfedf262f75f",
+  "pages": [
+    {
+      "offset": 0,
+      "bytes": 4096,
+      "sha256": "89e1d0a73f3605f02450ea330d1a21af6c206a575fb4883d9a7369b1c942aa81"
+    },
+    {
+      "offset": 4096,
+      "bytes": 4096,
+      "sha256": "e82028dbde08ce8c0c2831af1f9dedfced66f7789fb4bca1f1063971d997520a"
+    },
+    {
+      "offset": 8192,
+      "bytes": 4096,
+      "sha256": "06adf9e0d73f6fbf8b749cd5ad173673bd436a69de929f1d96dfb8aa690187f1",
+      "store_key": "training_checkpoint_tarchive_page_8192_attempt_2"
+    },
+    {
+      "offset": 12288,
+      "bytes": 4096,
+      "sha256": "7a5845bfeae508900a5895d53a88d7585adc8157af020866f96954840d141b20",
+      "store_key": "training_checkpoint_tarchive_page_12288"
+    },
+    {
+      "offset": 16384,
+      "bytes": 4096,
+      "sha256": "02150055c6c4aec143a72c294d21361a97e33c9d63fca6caf1eccdecf7d7b37b",
+      "store_key": "training_checkpoint_tarchive_page_16384"
+    },
+    {
+      "offset": 20480,
+      "bytes": 4096,
+      "sha256": "698ee2b666b01fba1a5a0038374d3c8fc4e686122e40c93d988f7021cbfbbf3d",
+      "store_key": "training_checkpoint_tarchive_page_20480"
+    },
+    {
+      "offset": 24576,
+      "bytes": 4096,
+      "sha256": "6db42b76e518ddf91aa833ca10babd4ee42c1acc85ae52c2801c959c93517fef",
+      "store_key": "training_checkpoint_tarchive_page_24576"
+    }
+  ],
+  "missing_offsets_from": 28672,
+  "latest_read": "MCP timeout; original retained, no effect/state inferred",
+  "h_window": "returned to root after completed RPC; no H call active",
+  "status": "PARTIAL_PRESERVATION_ONLY_NATIVE_UNRUN",
+  "native_qualification_count": 0,
+  "artifacts": [
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-8192.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "06adf9e0d73f6fbf8b749cd5ad173673bd436a69de929f1d96dfb8aa690187f1",
+      "blob": "c40e2958644572c96d4ffb7e99799d44b37e655c"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-8192.attempt-2.receipt.json",
+      "kind": "tool_response",
+      "bytes": 6324,
+      "sha256": "e23d34431622781ed0c2121f9e6edf772f98d5a37b04fd3cf187796619034738",
+      "blob": "585567a5097dc4d3ff6be442f7d7eddac6a506c2"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-12288.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "7a5845bfeae508900a5895d53a88d7585adc8157af020866f96954840d141b20",
+      "blob": "0f7c8340929867394d5bdce0694582948d82aa3d"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-12288.receipt.json",
+      "kind": "tool_response",
+      "bytes": 6325,
+      "sha256": "7929f76fae29ed067f22e82a6887f592e1a72e6f559f08b1c688085341c2de0e",
+      "blob": "b5591cb97015138adbddca9382128367c4cd80af"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-16384.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "02150055c6c4aec143a72c294d21361a97e33c9d63fca6caf1eccdecf7d7b37b",
+      "blob": "847da0e0b46ba2a1b7633e42b6def901b655d8f4"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-16384.receipt.json",
+      "kind": "tool_response",
+      "bytes": 6325,
+      "sha256": "756f58660fc94d9bf841a4b116615fe27a80ce07d5923eab1ec483903efa4d38",
+      "blob": "cea30e981b2839c982e6b61878aa570df4a68cb8"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-20480.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "698ee2b666b01fba1a5a0038374d3c8fc4e686122e40c93d988f7021cbfbbf3d",
+      "blob": "e09b6ad3c125db1d2f33d89efc00048e1c005493"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-20480.receipt.json",
+      "kind": "tool_response",
+      "bytes": 6325,
+      "sha256": "be2ca1025d38814db26114a1ed1e941c1f9dd462bc5db602dcba91ef2ee2d1d3",
+      "blob": "11c2e41442c260430341e214eccacd14a7b5151b"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-24576.part",
+      "kind": "immutable_payload_fragment",
+      "bytes": 4096,
+      "sha256": "6db42b76e518ddf91aa833ca10babd4ee42c1acc85ae52c2801c959c93517fef",
+      "blob": "f0055394b91cfe3e3a17f20e2f8b462ab4edf6c1"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-24576.receipt.json",
+      "kind": "tool_response",
+      "bytes": 6325,
+      "sha256": "4b8bc15e9b4f875e60d54e852ff4131797ae84df82f460072c9d963f8ff96a86",
+      "blob": "2d2cea471498efbbc90ff0eb42eabdb323a646f6"
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-28672.attempt-1.error.json",
+      "kind": "actual_read_timeout",
+      "bytes": 222,
+      "sha256": "ff3e11aaea0932b26ac796be1ee206fc93704b6738983e3936efca9158c83e0c",
+      "blob": "005f84b22256717b80dc4b19a67beac009eab93b"
+    }
+  ]
+}
