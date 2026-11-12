@@ -110,6 +110,14 @@ class EvidenceAdmission(unittest.TestCase):
     def test_journal_row_equal_under_python_alias_is_rejected(self):
         self.rejects(lambda r, p, j: j[1]["row"].update(valid=0), "adjacent row completion")
 
+    def test_frozen_original_archive_receipts_match(self):
+        report = audit.audit(self.result, self.pre, self.journal, self.plan)
+        self.assertIs(report["immutable_recorded_receipts"], True)
+        self.assertEqual(
+            {name: audit.digest(raw) for name, raw in (
+                ("result", self.result), ("preexecution", self.pre),
+                ("journal", self.journal))}, audit.ORIGINAL_RECEIPT_SHA256)
+
     def test_self_consistent_perfect_output_forgery_is_rejected(self):
         def change(result, pre, journal):
             # Forged text and parser flags, but unchanged real token IDs,
