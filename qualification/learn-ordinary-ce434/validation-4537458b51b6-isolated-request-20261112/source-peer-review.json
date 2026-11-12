@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.learn.isolated-main-outer-narrow-peer.v1",
+  "status": "static_peer_complete_no_blocking_finding_in_reviewed_scope",
+  "reviewer": "learn_readonly_bootstrap",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "reviewed": {
+    "new_outer": {
+      "sha": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+      "bytes": 101858,
+      "sha256": "98ebeb50134af56141dfbc06f5c3cf9d24d552719f8d004e6387b47009db00a3",
+      "full_API_readback_and_Git_hash": true
+    },
+    "old_outer": {
+      "sha": "d446168389b2d43af74e2d7066b1e3bb9db5de87",
+      "bytes": 93589,
+      "sha256": "6b5d0115e37bd1e5f29825024b8a829be271779d158581c0cc8e17c2dd2297cb",
+      "full_API_readback_and_Git_hash": true
+    },
+    "new_request": {
+      "sha": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+      "bytes": 106352,
+      "sha256": "fb6d46182ec9fc9d49ffb6ed1e5611175ab93986afc0fcf4aa955344f81784cd",
+      "full_API_readback_and_Git_hash": true
+    },
+    "native_dependency": {
+      "sha": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+      "bytes": 13265,
+      "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb",
+      "entire_single_path_inverse_equals_actual_old_dd7": true
+    }
+  },
+  "scope": "Complete actual outer and typed request were read. This review covers old-worktree and terminal preservation, exclusive worktree creation, common-Git/source identity, checkout-space refusal, own-child waits and exceptional retention. Embedded source-suite/native runner body and unchanged budgets are the other assigned peer's separate full-replay scope.",
+  "checks": [
+    {
+      "subject": "old actual source and terminal prerequisites",
+      "lines": [
+        33,
+        81
+      ],
+      "finding": "Before mkdir/fetch/worktree creation, require the exact owned canonical old worktree and actual Git top-level, a671 HEAD/tree and empty porcelain. Stable-read both exact original terminal files using lstat/NOFOLLOW fd/fstat/post-path identity, owner/nlink/size and full SHA256. Require the actual fixed failed terminal source and unchanged final status; a prepared receipt cannot pass.",
+      "pins": [
+        {
+          "bytes": 2396,
+          "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60"
+        },
+        {
+          "bytes": 51057,
+          "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+        }
+      ]
+    },
+    {
+      "subject": "exclusive destination and actual original object store",
+      "lines": [
+        13,
+        17,
+        65,
+        71,
+        138,
+        155
+      ],
+      "finding": "Reject any existing new repo, outer or native output. Reject inherited Git dir/worktree/common/index overrides. Require existing home/evidence parents owned/canonical and original fetch repository to resolve to the same common Git directory as the old repo. Fetch only the fixed source through the original transport. Check exact fetched tree, mkdir a new0700 repo, then git worktree add --detach into it without force. Verify preserved root identity, actual fixed clean top-level/HEAD/tree and common Git directory. No checkout or reset is issued against the old worktree."
+    },
+    {
+      "subject": "home allocation refusal",
+      "lines": [
+        104,
+        137
+      ],
+      "finding": "Use the actual fixed commit ls-tree -r -l -z full listing, require terminal NUL and valid path/object/mode/size entries, and sum actual blob bytes. Round each file to the actual filesystem allocation unit, include directory units and estimated index bytes plus a separate64MiB Git administration reserve. Require enough f_bavail and, when the filesystem exposes it, f_favail before mkdir/worktree add. No cleanup is used to make the gate pass.",
+      "limit": "This is an explicit checkout estimate/refusal rule. It does not prove subsequent Cargo build capacity or reserve disk against concurrent writers."
+    },
+    {
+      "subject": "same-source observations across execution",
+      "lines": [
+        143,
+        155,
+        163,
+        180
+      ],
+      "finding": "Recheck old a671 state after fetch, after worktree creation, immediately before tests and at final collection; recheck old/new root identities. The actual new source retains fixed inventory checks. Outer success needs all original step exits zero, new fixed HEAD/clean status and the old state equality. These are planned runtime checks, not observed runtime results."
+    },
+    {
+      "subject": "own processes and exceptional retention",
+      "lines": [
+        19,
+        29,
+        91,
+        103,
+        168,
+        188
+      ],
+      "finding": "Git reads and work commands use only their newly returned Popen handle, wait or drain/wait on exceptions, and add no signals/timeouts. The work-command helper chooses cwd at invocation rather than capturing the old repository as a default. The executor waits its own futures. On failure the outer records failure or uncertain old-source observation and retains only its fixed new output/native/worktree paths; it does not reset, clean, prune, remove, unmount or replay."
+    },
+    {
+      "subject": "request binding",
+      "finding": "The sole -c argument equals the complete reviewed outer bytes. Host desktop, /usr/bin/python3, cwd /home/qian-qi and PYTHONDONTWRITEBYTECODE=1 remain the declared inputs. The new key is learn-ce434-4537458b51b6-isolated-full-source-native-v1. No supervisor timeout, resource override, sudo or signal field is present."
+    }
+  ],
+  "exact_static_checks": {
+    "request_embeds_full_outer": true,
+    "request_keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "new_outer_body_uses_no_signal_or_cleanup_primitive": true,
+    "native_single_repo_literal_full_reverse_actual_bytes": true,
+    "read_only_git_API_review": true
+  },
+  "blocking_findings": [],
+  "limitations": [
+    "No Python parse/execution, H call, filesystem inspection, worktree creation or native test was performed for this review.",
+    "Actual directory existence/space/ownership, terminal-file presence and process status remain runtime facts for the original frozen request.",
+    "This does not certify the separate embedded-runner budget audit, all21 author's exact body edits, a successful main201 result, Root29, full-caller, maintenance, or ordinary deployment/custody.",
+    "The common Git object store may receive the explicitly requested fetch/worktree administration. Old source snapshots and this script's commands are the reviewed preservation boundary; this is not an assertion that all shared Git metadata is immutable."
+  ],
+  "ordinary_acceptance": 0
+}
