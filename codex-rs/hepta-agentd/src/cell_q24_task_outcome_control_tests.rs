@@ -13,6 +13,8 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio_util::sync::CancellationToken;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 use crate::AgentdClient;
 use crate::AgentdControlServer;
