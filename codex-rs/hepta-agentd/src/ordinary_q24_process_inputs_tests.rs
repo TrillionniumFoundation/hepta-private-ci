@@ -26,6 +26,12 @@ use crate::root_initial_learning_trust_data::LearningTrustPayloadV1;
 
 pub(super) const OBJECTIVE_ISSUER: &str = "ordinary-original-objective-issuer";
 pub(super) const RUN: &str = "ordinary-original-a";
+pub(super) const C_RUN: &str = "ordinary-original-c";
+
+enum OriginalRequest {
+    A,
+    C,
+}
 
 pub(super) struct ObjectiveInputs {
     pub(super) request: AuthBusObjectiveIngress,
@@ -40,6 +46,27 @@ impl ObjectiveInputs {
         bundle: &CellCompatibilityBundleV1,
         now: u64,
     ) -> anyhow::Result<Self> {
+        Self::for_original_request(identity, bundle, now, OriginalRequest::A)
+    }
+
+    pub(super) fn successor(
+        identity: &AgentdIdentity,
+        bundle: &CellCompatibilityBundleV1,
+        now: u64,
+    ) -> anyhow::Result<Self> {
+        Self::for_original_request(identity, bundle, now, OriginalRequest::C)
+    }
+
+    fn for_original_request(
+        identity: &AgentdIdentity,
+        bundle: &CellCompatibilityBundleV1,
+        now: u64,
+        original: OriginalRequest,
+    ) -> anyhow::Result<Self> {
+        let (run_id, message_id, sequence) = match original {
+            OriginalRequest::A => (RUN, "ordinary-original-a-message", 1),
+            OriginalRequest::C => (C_RUN, "ordinary-original-c-message", 2),
+        };
         // This fixture is already a declared compile_data file in both Agentd
         // Bazel test targets. Only public structured admission data is reused.
         let mut document: Value = serde_json::from_str(
@@ -50,7 +77,7 @@ impl ObjectiveInputs {
         let profile = document["profile"].clone();
         let admitted_profile = decode_admission_profile_json_v1(&serde_json::to_vec(&profile)?)?;
         let source = &mut document["source"];
-        source["requestId"] = json!(RUN);
+        source["requestId"] = json!(run_id);
         source["observedAt"] = json!(crate::notes_literal_prepare::utc_millis(now)?);
         source["deadline"] = json!(crate::notes_literal_prepare::utc_millis(
             now.checked_add(120_000)
@@ -88,15 +115,15 @@ impl ObjectiveInputs {
         let mut request = AuthBusObjectiveIngress {
             issuer_id: OBJECTIVE_ISSUER.into(),
             key_epoch: 1,
-            message_id: "ordinary-original-a-message".into(),
-            sequence: 1,
+            message_id: message_id.into(),
+            sequence,
             expires_at_ms: now
                 .checked_add(180_000)
                 .ok_or_else(|| anyhow::anyhow!("AuthBus expiry overflow"))?,
             signature_hex: String::new(),
             body: AuthBusObjectiveBody {
                 spawn_generation: identity.spawn_generation,
-                run_id: RUN.into(),
+                run_id: run_id.into(),
                 objective_revision: 1,
                 source_envelope_json: serde_json::to_string(source)?,
                 runtime_body_digest: crate::CellQ24FeatureWorkerV1::runtime_profile_digest()
