@@ -1,0 +1,45 @@
+{
+  "all_prior_evidence_preserved": true,
+  "checkpoint_observation_time": "2026-11-12 22:38:05 UTC",
+  "evidence_branch": "codex/utility-eval-evidence-20261112-36fa",
+  "evidence_file_count": 2793,
+  "evidence_head": "ce82fdbdd257354aef4309548c3bf37191a2ad7c",
+  "evidence_leaf": "0e1a8e254c59dfa369836fe58f611989a6e674a1",
+  "evidence_parent": "6985fcf2acf1ffbf7dd70ce06abdeb1775f18af9",
+  "evidence_parent_trees": {
+    "leaf": "0e1a8e254c59dfa369836fe58f611989a6e674a1",
+    "parent-evidence": "72657d230060c1cf099746804f3fe61247e0895d",
+    "parent-qa": "4b1377a7ae7839bbd619c07970aaba5c34b13b67",
+    "parent-root": "95478850d90c2738ef6f9d7a56f9db36c820bb10"
+  },
+  "evidence_root": "95478850d90c2738ef6f9d7a56f9db36c820bb10",
+  "later_source_gate_result": {
+    "exit_code": 1,
+    "job": "1a1d1e83bd4-2564-1c86",
+    "not_in_frozen_2793_checkpoint": true,
+    "self_test": "passed",
+    "source_closure": "failed",
+    "status": "failed",
+    "verify": "passed"
+  },
+  "native_qualification_started": false,
+  "pr_body": {
+    "bytes": 9214,
+    "git_blob": "b0bfe58d207ff16da424c8417fc1a92fc62ad08e",
+    "sha256": "4fca0c22c35ff1a0f73c3c165535ba1013e36f7892ef9e02d7eb61c628a7450c",
+    "updated_at": "2026-11-12T23:04:10Z"
+  },
+  "pr_number": 6203,
+  "pr_update_for_this_checkpoint": "ACTUAL_UPDATE_AND_EXACT_BODY_READBACK_VERIFIED",
+  "readme": {
+    "bytes": 19239,
+    "sha": "7a83f84bece50fdc3102b750f4576ae99efbb269",
+    "sha256": "e8cefe37b02c6fa19f1af2db335ce8b4deaf14e729a05329bc71b3135891cf22"
+  },
+  "real_qualified_task_chain_outcomes": 0,
+  "snapshot_source_gate_state": "running_source_closure",
+  "source_branch": "codex/utility-evidence-closure-20261112-36fa",
+  "source_gate_job": "1a1d1e83bd4-2564-1c86",
+  "source_head": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+}

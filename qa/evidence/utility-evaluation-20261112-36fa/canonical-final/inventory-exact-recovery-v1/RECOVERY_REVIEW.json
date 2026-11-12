@@ -1,0 +1,219 @@
+{
+  "actual_job": "1a1d1ddc8e4-2564-1c83",
+  "actual_result": {
+    "bytes": 368586,
+    "git_blob": "2678be6c23d00696d356e988120887a61f88bfab",
+    "sha256": "33cd2a23b1bd4a4b7b8ec5d41b5658d3149d701e7096cea00aee6f5d9f2f82c7"
+  },
+  "after_provenance": "The file named CANONICAL_CLEAN_INVENTORY.expected.json was initially a projection. Its entire bytes now match the actual canonical RESULT raw/gzip/all-part identities. This supports exact recovery of that original observation, not a second H read.",
+  "algorithm": "Original gzrecord: gzip.compress(raw,mtime=0); 262144-byte gzip chunks; base64.b64encode(chunk)+one LF. No JSON reserialization or gzip/header correction.",
+  "all_15188_physical_rows_equal": true,
+  "format": "hepta-canonical-full-inventory-exact-recovery-review-v1",
+  "native_or_H_calls": 0,
+  "not_claimed": [
+    "No new H/native/source/gate/test/main execution.",
+    "No physical source or Git index/config/ref modification.",
+    "No native compact snapshot was actually observed here; the earlier compact hash remains a projection until the original native runner reads it.",
+    "No raw Git index, stat extension or Git metadata archive was reconstructed from incomplete data or hashes.",
+    "No source/behavioral gate or real authorized A/T/B/C iteration PASS is inferred."
+  ],
+  "original_driver": {
+    "bytes": 46094,
+    "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+    "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+  },
+  "qualification": false,
+  "records": [
+    {
+      "actual_head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "actual_index_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+      "actual_status_empty": false,
+      "all_raw_gzip_part_pins_equal_actual_result": true,
+      "filesystem_entries": 15188,
+      "gzip": {
+        "bytes": 1263215,
+        "git_blob": "b611405e075255767ff661c522650f01406de53b",
+        "sha256": "3426190466a6b27c67b4bae3d93d3dde13e67012348230277e790a3ab2275fc9"
+      },
+      "parts": [
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 0,
+          "decoded_sha256": "55a35958c8033ba1e5e4efbcc6723ffab1e46f782a7435804746265717767a40",
+          "git_blob": "b9c0ffa1886ebbc38516ab81d9cdcfb89c9e2ad9",
+          "original_artifact_name": "SOURCE.before.inventory.json.gz.part-001.b64",
+          "relative_path": "recovered/SOURCE.before.inventory.json.gz.part-001.b64",
+          "reuse_existing_blob": true,
+          "sha256": "635ddf4cbb55db0e66bfbebf592086e262fc16b939c2cc17b85ba0e6e628a25f"
+        },
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 262144,
+          "decoded_sha256": "4c39fca08df0e89e197e347d15c33e1c8c2c54ece2edc2710521e9973950765b",
+          "git_blob": "4d10ed56ba443a52064b2f09806cf186a729b8d2",
+          "original_artifact_name": "SOURCE.before.inventory.json.gz.part-002.b64",
+          "relative_path": "recovered/SOURCE.before.inventory.json.gz.part-002.b64",
+          "reuse_existing_blob": true,
+          "sha256": "457aa9ebdfeac5a865aec09b4c3e55376adaf1053a76ac6851969bc659794727"
+        },
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 524288,
+          "decoded_sha256": "e53c6a9080d6e2d0710ca1b9daae1eadba07eb910f02a97fb492b6a1a574adbb",
+          "git_blob": "d740362b96d72de99919215d8014e9fc32a07846",
+          "original_artifact_name": "SOURCE.before.inventory.json.gz.part-003.b64",
+          "relative_path": "recovered/SOURCE.before.inventory.json.gz.part-003.b64",
+          "reuse_existing_blob": true,
+          "sha256": "b05b4a3b427bbb4d611f4fee89d1bbb3f821435c8840861ce54abd1a3e074a27"
+        },
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 786432,
+          "decoded_sha256": "b89df12779880a818441a72bb8a147cab8a3ee601991f203c594df7dc0a3ad01",
+          "git_blob": "3f257592f2e3a836d807a2a508d12a7cd3657c9c",
+          "original_artifact_name": "SOURCE.before.inventory.json.gz.part-004.b64",
+          "relative_path": "recovered/SOURCE.before.inventory.json.gz.part-004.b64",
+          "reuse_existing_blob": true,
+          "sha256": "fe2725c2303b933c39d9f536bde7d1c6a43c856a2e7bc4ac57ab1fcfff452b06"
+        },
+        {
+          "bytes": 286189,
+          "decoded_bytes": 214639,
+          "decoded_offset": 1048576,
+          "decoded_sha256": "c49eafc9a079fd2ecf5b934e6c11b2105a410df805da0700f8000feafb591b41",
+          "git_blob": "d967d35ac14be5de53493d9d9f17eb83fac79e5e",
+          "original_artifact_name": "SOURCE.before.inventory.json.gz.part-005.b64",
+          "relative_path": "recovered/SOURCE.before.inventory.json.gz.part-005.b64",
+          "reuse_existing_blob": true,
+          "sha256": "a4f23bfe116a540cd86bd9488d007fc17c27c3d81e9a5090300bc6415b928785"
+        }
+      ],
+      "raw": {
+        "bytes": 5614896,
+        "git_blob": "445e54a43503dd79ba1e856e2e07acf532994ae6",
+        "sha256": "5e106b53d7dfb69c5beb84a4d726c4591ff96d032e7aaa1a5418ccbbb95a16ca"
+      },
+      "record": "SOURCE.before.inventory.json",
+      "tracked_entries": 15188
+    },
+    {
+      "actual_head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "actual_index_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+      "actual_status_empty": true,
+      "all_raw_gzip_part_pins_equal_actual_result": true,
+      "filesystem_entries": 15188,
+      "gzip": {
+        "bytes": 1261360,
+        "git_blob": "2f515db6dff85cfc9f45d528a854fb8ffd79d346",
+        "sha256": "df3c53265b0c8eb51ed484ab5bd906c358d3b9a52ce1c514c80c8973efd97d15"
+      },
+      "parts": [
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 0,
+          "decoded_sha256": "3da2fc42fb1f22b7ce37669f037f1d3bd6269c06b312aeea09192d1a98a2825b",
+          "git_blob": "c47633b3c7c3c22c0f66c381bdc0efacdf74f304",
+          "original_artifact_name": "SOURCE.final.inventory.json.gz.part-001.b64",
+          "relative_path": "recovered/SOURCE.final.inventory.json.gz.part-001.b64",
+          "reuse_existing_blob": false,
+          "sha256": "305cf39c08bda9279379b6932553b5bc13c9f2f79433119f8802596ec88fa5a5"
+        },
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 262144,
+          "decoded_sha256": "b2cd17fb8608abd8e5429380f086777c18194d7c579e3f736225d144edd81d88",
+          "git_blob": "df22bcd199098261c74171ac0712262032ba8286",
+          "original_artifact_name": "SOURCE.final.inventory.json.gz.part-002.b64",
+          "relative_path": "recovered/SOURCE.final.inventory.json.gz.part-002.b64",
+          "reuse_existing_blob": false,
+          "sha256": "a821316745de4fab5bc71f8d5a6b10948b60b89ba654b4f8b2f8a556972d39b5"
+        },
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 524288,
+          "decoded_sha256": "d3486da9e3b98f22cf4e6fc031abb1c4228eb17749248e33e462dc5185ac1940",
+          "git_blob": "b4b67efb65f68c1d688200ef3bef2c5b4c3d1ed4",
+          "original_artifact_name": "SOURCE.final.inventory.json.gz.part-003.b64",
+          "relative_path": "recovered/SOURCE.final.inventory.json.gz.part-003.b64",
+          "reuse_existing_blob": false,
+          "sha256": "f0b197647d3eb9c754684b326669ed993f13ace063a87ef22383b1ec650bc19e"
+        },
+        {
+          "bytes": 349529,
+          "decoded_bytes": 262144,
+          "decoded_offset": 786432,
+          "decoded_sha256": "f9ac6018743554fcd8b2b74315173eee17dc8a929587d558f3d06a7775fc6f9e",
+          "git_blob": "d364333286e0ec5da6cbb1ce3290161ffd49e419",
+          "original_artifact_name": "SOURCE.final.inventory.json.gz.part-004.b64",
+          "relative_path": "recovered/SOURCE.final.inventory.json.gz.part-004.b64",
+          "reuse_existing_blob": false,
+          "sha256": "8013b522f3a237a67a8af9d01aba97dc7e69ef8ea0019e1e4914fee62c8adaab"
+        },
+        {
+          "bytes": 283713,
+          "decoded_bytes": 212784,
+          "decoded_offset": 1048576,
+          "decoded_sha256": "560edb2c9b58cd9e9ea5ca652a06f6b9daae131b5ad01d71e3a3906525b8e69d",
+          "git_blob": "6eea618d32625425773416023e6d42a7b3b00f5a",
+          "original_artifact_name": "SOURCE.final.inventory.json.gz.part-005.b64",
+          "relative_path": "recovered/SOURCE.final.inventory.json.gz.part-005.b64",
+          "reuse_existing_blob": false,
+          "sha256": "2f6c044f9f31db60f9075735ff0ed66192167eb9c430f766cc8df0e11a1587fd"
+        }
+      ],
+      "raw": {
+        "bytes": 5611184,
+        "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+        "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+      },
+      "record": "SOURCE.final.inventory.json",
+      "tracked_entries": 15188
+    }
+  ],
+  "recovered_index_or_stat_archives": 0,
+  "reuse": "The five before parts exactly equal prior finalfmt final.inventory parts. Reuse those existing immutable Git blobs; only five final-inventory parts need new creation.",
+  "runtime": {
+    "python": "3.12.14",
+    "zlib": "1.3.2",
+    "zlib_runtime": "1.3.2"
+  },
+  "source_after": {
+    "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "index_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+    "inventory": {
+      "bytes": 5611184,
+      "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+      "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+    },
+    "parents": [
+      "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    ]
+  },
+  "source_before": {
+    "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "index_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "inventory": {
+      "bytes": 5614896,
+      "git_blob": "445e54a43503dd79ba1e856e2e07acf532994ae6",
+      "sha256": "5e106b53d7dfb69c5beb84a4d726c4591ff96d032e7aaa1a5418ccbbb95a16ca"
+    }
+  },
+  "source_checkout_reads_or_writes": 0,
+  "source_physical_fields_equal": [
+    "path",
+    "kind",
+    "permissions",
+    "bytes",
+    "sha256",
+    "working_blob",
+    "stable"
+  ],
+  "status": "EXACT_RECOVERY_MATCHED_ACTUAL_RAW_GZIP_AND_ALL_PART_PINS"
+}

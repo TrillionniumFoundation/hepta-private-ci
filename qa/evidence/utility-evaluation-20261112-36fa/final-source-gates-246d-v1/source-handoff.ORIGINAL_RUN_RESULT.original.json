@@ -1,0 +1,131 @@
+{
+  "actual_A_B_C_qualification": false,
+  "attempted": [
+    "source-closure",
+    "self-test",
+    "verify"
+  ],
+  "entrypoints_started": [
+    "source-closure",
+    "self-test",
+    "verify"
+  ],
+  "finished_at": "2026-11-12T22:52:10.170156+00:00",
+  "gate_packages": [
+    {
+      "bytes": 8985,
+      "git_blob_sha": "c0df3c88047a21a728db055d7d40cb1da765b1da",
+      "original_files": 13,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/source-closure/retained-manifest.json",
+      "sha256": "b8bb8625323fa71c571155866e46a1a0d636a40f9c773503b9d1402f379efacb"
+    },
+    {
+      "bytes": 8379,
+      "git_blob_sha": "97f8f6687555e803bf299d11c8042f3fc515edd3",
+      "original_files": 12,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/self-test/retained-manifest.json",
+      "sha256": "20d51a6d31663e4a2a7a046f58ba420e9701b10b7c56949b7a72b375d468c8a1"
+    },
+    {
+      "bytes": 8373,
+      "git_blob_sha": "dde77f98e138e217dcb7d5d1e423f0558fc80510",
+      "original_files": 12,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/verify/retained-manifest.json",
+      "sha256": "24cdbda0706d64a43d937b904f989c636faac1bfcbb352a89f3ed7351a604ab5"
+    }
+  ],
+  "gates": [
+    {
+      "actual_A_B_C_qualification": false,
+      "after_inventory_error": null,
+      "after_inventory_sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b",
+      "before_inventory_sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b",
+      "elapsed_seconds": 385.0763303239364,
+      "execution_error": null,
+      "finished_at": "2026-11-12T22:43:41.555063+00:00",
+      "gate": "source-closure",
+      "lifecycle": {
+        "attempted": true,
+        "entrypoint_started": true,
+        "package": "completed",
+        "terminal_observed": true
+      },
+      "original_record": {
+        "bytes": 1536,
+        "path": "source-closure.json",
+        "sha256": "67ee72fe1d087fbff3794627973ae3552744c76963cb4add9b348e85b1742569"
+      },
+      "original_record_retained_unchanged": true,
+      "record_read_error": null,
+      "run_identity": "hepta-utility-36fa-source-gates-246d-v1",
+      "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+      "source_changed": false,
+      "source_sha": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "status": "failed"
+    },
+    {
+      "actual_A_B_C_qualification": false,
+      "after_inventory_error": null,
+      "after_inventory_sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b",
+      "before_inventory_sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b",
+      "elapsed_seconds": 12.188416660996154,
+      "execution_error": null,
+      "finished_at": "2026-11-12T22:43:54.504922+00:00",
+      "gate": "self-test",
+      "lifecycle": {
+        "attempted": true,
+        "entrypoint_started": true,
+        "package": "completed",
+        "terminal_observed": true
+      },
+      "original_record": {
+        "bytes": 391,
+        "path": "self-test.json",
+        "sha256": "385e07ae99b6b6c2f198da5b4a9410f44523b05b142980bae5734ffbf0096141"
+      },
+      "original_record_retained_unchanged": true,
+      "record_read_error": null,
+      "run_identity": "hepta-utility-36fa-source-gates-246d-v1",
+      "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+      "source_changed": false,
+      "source_sha": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "status": "passed"
+    },
+    {
+      "actual_A_B_C_qualification": false,
+      "after_inventory_error": null,
+      "after_inventory_sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b",
+      "before_inventory_sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b",
+      "elapsed_seconds": 494.1396835150663,
+      "execution_error": null,
+      "finished_at": "2026-11-12T22:52:09.383477+00:00",
+      "gate": "verify",
+      "lifecycle": {
+        "attempted": true,
+        "entrypoint_started": true,
+        "package": "completed",
+        "terminal_observed": true
+      },
+      "original_record": {
+        "bytes": 392,
+        "path": "verify.json",
+        "sha256": "b93bf93f538d61bc150b37648c2fc5bbe94fa8fc700cb4c673ab0b3b0d7cd806"
+      },
+      "original_record_retained_unchanged": true,
+      "record_read_error": null,
+      "run_identity": "hepta-utility-36fa-source-gates-246d-v1",
+      "schema": "hepta.utility.desktop-source-gates.v1.gate-summary",
+      "source_changed": false,
+      "source_sha": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "status": "passed"
+    }
+  ],
+  "new_desktop_execution": true,
+  "not_run": [],
+  "old_cloud_runs_resumed": false,
+  "run_identity": "hepta-utility-36fa-source-gates-246d-v1",
+  "schema": "hepta.utility.desktop-source-gates.v1",
+  "source_sha": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "status": "failed"
+}
