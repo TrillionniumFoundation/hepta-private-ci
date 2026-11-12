@@ -26,6 +26,10 @@ pub struct LedgerReadOnlyCutV1 {
     pub witness_digest: Digest32,
 }
 
+#[cfg(test)]
+#[path = "durable_read_only_tests.rs"]
+mod tests;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LedgerReadOnlyObservationV1 {
     pub cut: LedgerReadOnlyCutV1,
