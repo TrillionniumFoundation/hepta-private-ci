@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::AgentdState;
+use crate::OriginalCellQ24PreparedPublicationV1;
 use codex_hepta_automation::AutomationStore;
 use tokio_util::sync::CancellationToken;
 
@@ -193,14 +194,13 @@ impl PendingSuccessorOwner {
         let issued = match requested {
             OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, signed)),
             OriginalSuccessorGrant::OriginalRoot => {
-                original
-                    .prepared
-                    .issue_original_successor_final_use(
-                        Arc::clone(&state),
-                        self.context.identity().clone(),
-                        Arc::clone(&self.slot),
-                    )
-                    .await
+                OriginalCellQ24PreparedPublicationV1::issue_original_successor_final_use(
+                    original.prepared,
+                    Arc::clone(&state),
+                    self.context.identity().clone(),
+                    Arc::clone(&self.slot),
+                )
+                .await
             }
         };
         original
