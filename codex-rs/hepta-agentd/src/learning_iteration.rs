@@ -169,6 +169,10 @@ mod successor;
 #[cfg(target_os = "linux")]
 pub(crate) use successor::OriginalQ24SuccessorContext;
 
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_historical_source.rs"]
+pub(crate) mod historical_source;
+
 pub struct LearningIterationRuntimeBootstrapV1 {
     agent_id: AgentId,
     spawn_generation: u64,
@@ -182,6 +186,10 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     circuit_delivery_source: delivery::CircuitLearningSourceV1,
     #[cfg(target_os = "linux")]
     retained_source: Option<Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>>,
+    #[cfg(target_os = "linux")]
+    historical_source: Option<Arc<historical_source::RegisteredHistoricalLearningSourceV1>>,
+    #[cfg(target_os = "linux")]
+    historical_delivery: Option<historical_source::OriginalHistoricalLearningDeliveryV1>,
     enforce_circuit_admission: bool,
     #[cfg(target_os = "linux")]
     original_q24: Option<Arc<crate::OriginalCellQ24LearningStageOwnersV1>>,
@@ -284,6 +292,10 @@ fn learning_iteration_channel(
             circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
             #[cfg(target_os = "linux")]
             retained_source: None,
+            #[cfg(target_os = "linux")]
+            historical_source: None,
+            #[cfg(target_os = "linux")]
+            historical_delivery: None,
             enforce_circuit_admission: false,
             #[cfg(target_os = "linux")]
             original_q24: None,
@@ -616,6 +628,12 @@ impl LearningIterationRuntimeBootstrapV1 {
         state: &AgentdState,
     ) -> Result<(), LearningIterationRuntimeErrorV1> {
         require_ready(state)?;
+        #[cfg(target_os = "linux")]
+        if let Some(source) = &self.historical_source {
+            source
+                .require_current_historical_source(state.identity())
+                .map_err(|_| LearningIterationRuntimeErrorV1::WrongScope)?;
+        }
         if self.enforce_circuit_admission
             && !state
                 .automation_admission_ready()

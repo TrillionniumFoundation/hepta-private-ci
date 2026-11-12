@@ -8,8 +8,13 @@ use crate::root_production_inputs::OriginalQ24SuccessorSession;
 pub(crate) struct OriginalQ24SuccessorContext {
     identity: AgentdIdentity,
     owners: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
-    retained: Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>,
+    source: OriginalSuccessorSourceV1,
     session: Arc<OriginalQ24SuccessorSession>,
+}
+
+enum OriginalSuccessorSourceV1 {
+    Retained(Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>),
+    Historical(Arc<super::historical_source::RegisteredHistoricalLearningSourceV1>),
 }
 
 impl OriginalQ24SuccessorContext {
@@ -33,9 +38,16 @@ impl OriginalQ24SuccessorContext {
 
     pub(crate) async fn require_current_successor_context(&self) -> Result<(), AgentdError> {
         self.session.require_current_successor_session()?;
-        let retained: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> =
-            &self.retained;
-        retained.observe_retained_learning(&self.identity).await?;
+        match &self.source {
+            OriginalSuccessorSourceV1::Retained(retained) => {
+                let retained: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> =
+                    retained;
+                retained.observe_retained_learning(&self.identity).await?;
+            }
+            OriginalSuccessorSourceV1::Historical(source) => {
+                source.require_current_historical_source(&self.identity)?;
+            }
+        }
         let owners: &crate::OriginalCellQ24LearningStageOwnersV1 = self.owners.as_ref();
         owners
             .require_current()
@@ -58,10 +70,16 @@ impl LearningIterationRuntimeBootstrapV1 {
             .as_ref()
             .ok_or_else(|| successor_refused("original Root Q24 owners required"))?;
         let prepared = original.prepared();
-        let retained = self
-            .retained_source
-            .as_ref()
-            .ok_or_else(|| successor_refused("registered retained A source required"))?;
+        let source = match (&self.retained_source, &self.historical_source) {
+            (Some(retained), None) if retained.request() == &prepared.initial().request => {
+                OriginalSuccessorSourceV1::Retained(Arc::clone(retained))
+            }
+            (None, Some(historical)) if historical.request() == &prepared.initial().request => {
+                historical.require_prepared_historical_source(prepared)?;
+                OriginalSuccessorSourceV1::Historical(Arc::clone(historical))
+            }
+            _ => return Err(successor_refused("one actual original A source required")),
+        };
         let registry = self
             .circuit_delivery_registry
             .as_ref()
@@ -76,7 +94,6 @@ impl LearningIterationRuntimeBootstrapV1 {
             || self.scope.as_ref() != Some(prepared.scope())
             || self.owners != prepared.initial().owners
             || registry.requests.as_slice() != std::slice::from_ref(&prepared.initial().request)
-            || retained.request() != &prepared.initial().request
         {
             return Err(successor_refused(
                 "successor differs from assembled Root and retained source",
@@ -85,7 +102,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         let context = Arc::new(OriginalQ24SuccessorContext {
             identity: identity.clone(),
             owners: Arc::clone(original),
-            retained: Arc::clone(retained),
+            source,
             session,
         });
         context.require_current_successor_context().await?;
