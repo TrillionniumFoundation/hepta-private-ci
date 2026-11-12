@@ -21,7 +21,8 @@ STOP 必须实际完成 `WRITE_TEXT → STOP`；READ 必须实际完成 `PREPARE
 PYTHONPATH=scripts:. python -m ndu_real_runtime.metacontrol_native_pairs --plan "$PAIR_PLAN" --expected-plan-sha256 "$PAIR_FILE_SHA256" --output "$NEW_PAIR_OUTPUT"
 ```
 此 collector 的 CLI pin 是 **plan 文件原始字节 SHA256**。output 必须新建；强制采集只产生训练/校准动作证据，不是学到的策略评估。
-**转换器交接：** 当前转换器接口见下一阶段 `macro_training_pairs.py`；本文暂不声明已完成。只接受重新验收原件；转换失败或缺失状态保留 UNKNOWN，不补造。不能补写历史 public-state witness、借用另一状态候选，或用测试 fixture 跨过此步骤。
+转换入口已实现：`macro_training_pairs.export(collection_root, expected_plan_sha256=plan_file_sha, context=context, expected_source_sha256=frozen_converter_sha)`；这里 plan_file_sha 是保留 PLAN 原始字节摘要，frozen_converter_sha 是事前冻结的 `macro_training_pairs.source_sha256()`。仅接纳重新验收的 original READ 完整配对；repeat/noise、失败或缺件保留 UNKNOWN，不补造。
+将完整返回值单独保存并冻结 canonical `digest(report)`，再调用 `macro_training_pairs.fit_rows(report, split, expected_export_sha256=frozen_export_sha, context=context)`，split 分别取 train/calibration。任一计划项 UNKNOWN 都会拒绝取行；不可直接把 report["rows"] 送入拟合。
 每个新 fit row 必须含 `source_id, source_sha256, decision_id, context_sha256, state, branches, labels, label_receipts`；STOP/READ branches 各有 status、quality、cost、full_cost_observed、evidence_sha256、initial_public_state_sha256、public_state_sha256、actions。
 同对两分支初态摘要相同，public_state_sha256 必须绑定原始公开投影与 `digest(state)`；每个物理分支使用独立证据。acquired/selected_used/effect_occurred 标签各需原始 witness，无法证明则 null。不得向 actor 暴露 reference 或未来来源标签。
 
