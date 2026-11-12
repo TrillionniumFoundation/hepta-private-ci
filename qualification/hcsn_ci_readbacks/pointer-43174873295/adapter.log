@@ -1,0 +1,305 @@
+﻿2026-11-12T07:24:59.5241551Z Current runner version: '2.338.2'
+2026-11-12T07:24:59.5262540Z ##[group]Runner Image Provisioner
+2026-11-12T07:24:59.5263342Z Hosted Compute Agent
+2026-11-12T07:24:59.5263844Z Version: 20261028.624
+2026-11-12T07:24:59.5264408Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T07:24:59.5265064Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T07:24:59.5265676Z Worker ID: {21cd7ecc-24cd-4c6a-b320-d8e24c07571c}
+2026-11-12T07:24:59.5266459Z Region: westus3
+2026-11-12T07:24:59.5266934Z Cloud: Azure
+2026-11-12T07:24:59.5267445Z ##[endgroup]
+2026-11-12T07:24:59.5268636Z ##[group]Operating System
+2026-11-12T07:24:59.5269170Z Ubuntu
+2026-11-12T07:24:59.5269672Z 24.04.5
+2026-11-12T07:24:59.5270113Z LTS
+2026-11-12T07:24:59.5270542Z ##[endgroup]
+2026-11-12T07:24:59.5271102Z ##[group]Runner Image
+2026-11-12T07:24:59.5271647Z Image: ubuntu-24.04
+2026-11-12T07:24:59.5272165Z Version: 20261101.360.1
+2026-11-12T07:24:59.5273207Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T07:24:59.5274497Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T07:24:59.5275334Z ##[endgroup]
+2026-11-12T07:24:59.5276884Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T07:24:59.5278528Z Contents: read
+2026-11-12T07:24:59.5279140Z Metadata: read
+2026-11-12T07:24:59.5279628Z ##[endgroup]
+2026-11-12T07:24:59.5281384Z Secret source: Actions
+2026-11-12T07:24:59.5282286Z Cache mode: write
+2026-11-12T07:24:59.5282998Z Prepare workflow directory
+2026-11-12T07:24:59.5601697Z Prepare all required actions
+2026-11-12T07:24:59.5640991Z Getting action download info
+2026-11-12T07:24:59.8566654Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T07:24:59.9578215Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+2026-11-12T07:25:00.3839029Z Complete job name: adapter-tests
+2026-11-12T07:25:00.4546643Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T07:25:00.4547505Z with:
+2026-11-12T07:25:00.4547900Z   ref: 2a52aa78fe597c24d088bdc2d9230df60331c81d
+2026-11-12T07:25:00.4548395Z   persist-credentials: false
+2026-11-12T07:25:00.4548882Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:25:00.4552261Z   token: ***
+2026-11-12T07:25:00.4552618Z   ssh-strict: true
+2026-11-12T07:25:00.4552982Z   ssh-user: git
+2026-11-12T07:25:00.4553325Z   clean: true
+2026-11-12T07:25:00.4553699Z   sparse-checkout-cone-mode: true
+2026-11-12T07:25:00.4554123Z   fetch-depth: 1
+2026-11-12T07:25:00.4554477Z   fetch-tags: false
+2026-11-12T07:25:00.4554838Z   show-progress: true
+2026-11-12T07:25:00.4555206Z   lfs: false
+2026-11-12T07:25:00.4555542Z   submodules: false
+2026-11-12T07:25:00.4555901Z   set-safe-directory: true
+2026-11-12T07:25:00.4556535Z env:
+2026-11-12T07:25:00.4556888Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T07:25:00.4557352Z   PYTHONHASHSEED: 0
+2026-11-12T07:25:00.4557710Z   OMP_NUM_THREADS: 1
+2026-11-12T07:25:00.4558096Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T07:25:00.4558481Z   MKL_NUM_THREADS: 1
+2026-11-12T07:25:00.4558843Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T07:25:00.4559211Z ##[endgroup]
+2026-11-12T07:25:00.6643793Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:25:00.6645886Z ##[group]Getting Git version info
+2026-11-12T07:25:00.6646922Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T07:25:00.6648225Z [command]/usr/bin/git version
+2026-11-12T07:25:00.6702017Z git version 2.56.0
+2026-11-12T07:25:00.6719821Z ##[endgroup]
+2026-11-12T07:25:00.6732468Z Temporarily overriding HOME='/home/runner/work/_temp/e47f1fb6-3213-4587-bb6d-5a04804245cc' before making global git config changes
+2026-11-12T07:25:00.6734315Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T07:25:00.6737270Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:25:00.6786019Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T07:25:00.6789912Z ##[group]Initializing the repository
+2026-11-12T07:25:00.6793554Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:25:00.6872441Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T07:25:00.6874143Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T07:25:00.6875589Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T07:25:00.6876951Z hint: call:
+2026-11-12T07:25:00.6877567Z hint:
+2026-11-12T07:25:00.6878319Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T07:25:00.6879291Z hint:
+2026-11-12T07:25:00.6880117Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T07:25:00.6881461Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T07:25:00.6882536Z hint:
+2026-11-12T07:25:00.6883166Z hint: 	git branch -m <name>
+2026-11-12T07:25:00.6883872Z hint:
+2026-11-12T07:25:00.6884775Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T07:25:00.6886661Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T07:25:00.6889587Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:25:00.6967208Z ##[endgroup]
+2026-11-12T07:25:00.6968190Z ##[group]Disabling automatic garbage collection
+2026-11-12T07:25:00.6971823Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T07:25:00.7006738Z ##[endgroup]
+2026-11-12T07:25:00.7007744Z ##[group]Setting up auth
+2026-11-12T07:25:00.7008407Z Removing SSH command configuration
+2026-11-12T07:25:00.7014028Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:25:00.7052084Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:25:00.7357804Z Removing HTTP extra header
+2026-11-12T07:25:00.7364789Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:25:00.7409827Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:25:00.7625359Z Removing includeIf entries pointing to credentials config files
+2026-11-12T07:25:00.7631257Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:25:00.7673641Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:25:00.7897549Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T07:25:00.7943309Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:00.7982074Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:00.8026544Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:00.8182983Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:00.8218629Z ##[endgroup]
+2026-11-12T07:25:00.8219232Z ##[group]Fetching the repository
+2026-11-12T07:25:00.8225775Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2a52aa78fe597c24d088bdc2d9230df60331c81d
+2026-11-12T07:25:05.8093917Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:25:05.8094974Z  * branch            2a52aa78fe597c24d088bdc2d9230df60331c81d -> FETCH_HEAD
+2026-11-12T07:25:05.8119949Z [command]/usr/bin/git rev-parse --verify --quiet 2a52aa78fe597c24d088bdc2d9230df60331c81d^{object}
+2026-11-12T07:25:05.8141267Z 2a52aa78fe597c24d088bdc2d9230df60331c81d
+2026-11-12T07:25:05.8153335Z ##[endgroup]
+2026-11-12T07:25:05.8154323Z ##[group]Determining the checkout info
+2026-11-12T07:25:05.8155352Z ##[endgroup]
+2026-11-12T07:25:05.8157333Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T07:25:05.8213931Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T07:25:05.8251573Z ##[group]Checking out the ref
+2026-11-12T07:25:05.8254020Z [command]/usr/bin/git checkout --progress --force 2a52aa78fe597c24d088bdc2d9230df60331c81d
+2026-11-12T07:25:06.5845301Z Note: switching to '2a52aa78fe597c24d088bdc2d9230df60331c81d'.
+2026-11-12T07:25:06.5846205Z 
+2026-11-12T07:25:06.5846941Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T07:25:06.5848068Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T07:25:06.5849192Z state without impacting any branches by switching back to a branch.
+2026-11-12T07:25:06.5849794Z 
+2026-11-12T07:25:06.5850273Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T07:25:06.5851392Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T07:25:06.5851980Z 
+2026-11-12T07:25:06.5852348Z   git switch -c <new-branch-name>
+2026-11-12T07:25:06.5852829Z 
+2026-11-12T07:25:06.5853211Z Or undo this operation with:
+2026-11-12T07:25:06.5854015Z 
+2026-11-12T07:25:06.5854341Z   git switch -
+2026-11-12T07:25:06.5854766Z 
+2026-11-12T07:25:06.5855282Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T07:25:06.5855908Z 
+2026-11-12T07:25:06.5856569Z HEAD is now at 2a52aa7 fix(hcsn): require strict artifact admission with Python optimization
+2026-11-12T07:25:06.5878917Z ##[endgroup]
+2026-11-12T07:25:06.5924904Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T07:25:06.5955594Z 2a52aa78fe597c24d088bdc2d9230df60331c81d
+2026-11-12T07:25:06.5963831Z ##[group]Removing auth
+2026-11-12T07:25:06.5964574Z Removing SSH command configuration
+2026-11-12T07:25:06.5967699Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:25:06.6005032Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:25:06.6230601Z Removing HTTP extra header
+2026-11-12T07:25:06.6233860Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:25:06.6273607Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:25:06.6498639Z Removing includeIf entries pointing to credentials config files
+2026-11-12T07:25:06.6501296Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:25:06.6534016Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T07:25:06.6535288Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T07:25:06.6536474Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T07:25:06.6537682Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T07:25:06.6546139Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T07:25:06.6580896Z /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6598311Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6635308Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T07:25:06.6663720Z /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6679261Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6719482Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T07:25:06.6749633Z /github/runner_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6755584Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6799444Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T07:25:06.6826814Z /github/runner_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6833032Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config
+2026-11-12T07:25:06.6870762Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:25:06.7092059Z Removing credentials config '/home/runner/work/_temp/git-credentials-fd462526-8f5f-4c41-800e-1549b5b4fcaf.config'
+2026-11-12T07:25:06.7100278Z ##[endgroup]
+2026-11-12T07:25:06.7436781Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+2026-11-12T07:25:06.7437622Z with:
+2026-11-12T07:25:06.7438215Z   python-version: 3.12.3
+2026-11-12T07:25:06.7438851Z   check-latest: false
+2026-11-12T07:25:06.7441750Z   token: ***
+2026-11-12T07:25:06.7442367Z   update-environment: true
+2026-11-12T07:25:06.7443005Z   allow-prereleases: false
+2026-11-12T07:25:06.7443631Z   freethreaded: false
+2026-11-12T07:25:06.7444230Z env:
+2026-11-12T07:25:06.7444921Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T07:25:06.7445568Z   PYTHONHASHSEED: 0
+2026-11-12T07:25:06.7446163Z   OMP_NUM_THREADS: 1
+2026-11-12T07:25:06.7446872Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T07:25:06.7447496Z   MKL_NUM_THREADS: 1
+2026-11-12T07:25:06.7448086Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T07:25:06.7448699Z ##[endgroup]
+2026-11-12T07:25:06.8615178Z ##[group]Installed versions
+2026-11-12T07:25:06.8638233Z Version 3.12.3 was not found in the local cache
+2026-11-12T07:25:07.9958953Z Version 3.12.3 is available for downloading
+2026-11-12T07:25:07.9959860Z Download from "https://github.com/actions/python-versions/releases/download/3.12.3-11057844995/python-3.12.3-linux-24.04-x64.tar.gz"
+2026-11-12T07:25:08.6156909Z Extract downloaded archive
+2026-11-12T07:25:08.6280901Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/f04ce3bd-276c-48fe-808c-469c3ecab985 -f /home/runner/work/_temp/528ca65d-ed2b-4567-abb9-222dc1f7d5c8
+2026-11-12T07:25:10.3509367Z Execute installation script
+2026-11-12T07:25:10.3616759Z Check if Python hostedtoolcache folder exist...
+2026-11-12T07:25:10.3617328Z Create Python 3.12.3 folder
+2026-11-12T07:25:10.3632488Z Copy Python binaries to hostedtoolcache folder
+2026-11-12T07:25:10.7319701Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-11-12T07:25:10.7356085Z Upgrading pip...
+2026-11-12T07:25:13.0331862Z Looking in links: /tmp/tmp6p4vt77n
+2026-11-12T07:25:13.0338037Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.12.3/x64/lib/python3.12/site-packages (24.0)
+2026-11-12T07:25:14.6070577Z Collecting pip
+2026-11-12T07:25:14.6639575Z Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
+2026-11-12T07:25:14.6776030Z Downloading pip-26.3-py3-none-any.whl (2.0 MB)
+2026-11-12T07:25:14.7400108Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 33.4 MB/s eta 0:00:00
+2026-11-12T07:25:14.7400529Z 
+2026-11-12T07:25:14.7542447Z Installing collected packages: pip
+2026-11-12T07:25:14.7543248Z Attempting uninstall: pip
+2026-11-12T07:25:14.7561225Z Found existing installation: pip 24.0
+2026-11-12T07:25:14.7861494Z Uninstalling pip-24.0:
+2026-11-12T07:25:14.7916900Z Successfully uninstalled pip-24.0
+2026-11-12T07:25:15.8737977Z Successfully installed pip-26.3
+2026-11-12T07:25:15.9257421Z Create complete file
+2026-11-12T07:25:15.9296920Z Successfully set up CPython (3.12.3)
+2026-11-12T07:25:15.9297889Z ##[endgroup]
+2026-11-12T07:25:15.9509328Z ##[group]Run python -m unittest discover -s qualification/hcsn_differentiable/replay_v1 -p 'test_cpu_migration.py' -v
+2026-11-12T07:25:15.9510049Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/replay_v1 -p 'test_cpu_migration.py' -v[0m
+2026-11-12T07:25:15.9532696Z shell: /usr/bin/bash -e {0}
+2026-11-12T07:25:15.9532935Z env:
+2026-11-12T07:25:15.9533125Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T07:25:15.9533376Z   PYTHONHASHSEED: 0
+2026-11-12T07:25:15.9533550Z   OMP_NUM_THREADS: 1
+2026-11-12T07:25:15.9533731Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T07:25:15.9533917Z   MKL_NUM_THREADS: 1
+2026-11-12T07:25:15.9534096Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T07:25:15.9534336Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:15.9534684Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T07:25:15.9535042Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:15.9535368Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:15.9535667Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:15.9535974Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T07:25:15.9536238Z ##[endgroup]
+2026-11-12T07:25:16.2233031Z test_duplicate_archive_member_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_duplicate_archive_member_is_rejected) ... ok
+2026-11-12T07:25:16.2239842Z test_duplicate_index_original_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_duplicate_index_original_is_rejected) ... ok
+2026-11-12T07:25:16.2251671Z test_exact_synthetic_bytes_survive_relocation (test_cpu_migration.ArchiveAdmissionTests.test_exact_synthetic_bytes_survive_relocation) ... ok
+2026-11-12T07:25:16.2260684Z test_index_hash_disagreement_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_index_hash_disagreement_is_rejected) ... ok
+2026-11-12T07:25:16.2266134Z test_index_path_redirection_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_index_path_redirection_is_rejected) ... ok
+2026-11-12T07:25:16.2268986Z test_json_ambiguity_and_nonfinite_values_are_rejected (test_cpu_migration.ArchiveAdmissionTests.test_json_ambiguity_and_nonfinite_values_are_rejected) ... ok
+2026-11-12T07:25:16.2278445Z test_ordered_parts_reconstruct_exact_archive_bytes (test_cpu_migration.ArchiveAdmissionTests.test_ordered_parts_reconstruct_exact_archive_bytes) ... ok
+2026-11-12T07:25:16.2475936Z test_part_hash_mutation_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_part_hash_mutation_is_rejected) ... ok
+2026-11-12T07:25:16.2480589Z test_part_traversal_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_part_traversal_is_rejected) ... ok
+2026-11-12T07:25:16.2486245Z test_symlink_archive_member_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_symlink_archive_member_is_rejected) ... ok
+2026-11-12T07:25:16.2489002Z test_traversal_and_alias_paths_are_rejected (test_cpu_migration.ArchiveAdmissionTests.test_traversal_and_alias_paths_are_rejected) ... ok
+2026-11-12T07:25:16.2495045Z test_unindexed_member_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_unindexed_member_is_rejected) ... ok
+2026-11-12T07:25:16.2499736Z test_wrong_archive_identity_fails_before_extraction (test_cpu_migration.ArchiveAdmissionTests.test_wrong_archive_identity_fails_before_extraction) ... ok
+2026-11-12T07:25:16.2608495Z test_changed_cpu_torch_source_is_rejected (test_cpu_migration.DerivedPlanTests.test_changed_cpu_torch_source_is_rejected) ... ok
+2026-11-12T07:25:16.2669573Z test_cuda_profile_cannot_be_silently_reused (test_cpu_migration.DerivedPlanTests.test_cuda_profile_cannot_be_silently_reused) ... ok
+2026-11-12T07:25:16.2887483Z test_only_prepared_location_changes_and_source_bytes_are_retained (test_cpu_migration.DerivedPlanTests.test_only_prepared_location_changes_and_source_bytes_are_retained) ... ok
+2026-11-12T07:25:16.2953775Z test_unbound_prepared_path_is_rejected (test_cpu_migration.DerivedPlanTests.test_unbound_prepared_path_is_rejected) ... ok
+2026-11-12T07:25:16.3024194Z test_wrong_checkpoint_selection_is_rejected (test_cpu_migration.DerivedPlanTests.test_wrong_checkpoint_selection_is_rejected) ... ok
+2026-11-12T07:25:16.3024876Z 
+2026-11-12T07:25:16.3025032Z ----------------------------------------------------------------------
+2026-11-12T07:25:16.3025342Z Ran 18 tests in 0.082s
+2026-11-12T07:25:16.3025461Z 
+2026-11-12T07:25:16.3025532Z OK
+2026-11-12T07:25:16.3147256Z ##[group]Run python -m unittest discover -s qualification/hcsn_differentiable/replay_v1 -p test_artifact_pointer.py -v
+2026-11-12T07:25:16.3147941Z [36;1mpython -m unittest discover -s qualification/hcsn_differentiable/replay_v1 -p test_artifact_pointer.py -v[0m
+2026-11-12T07:25:16.3148530Z [36;1mpython -O -m unittest discover -s qualification/hcsn_differentiable/replay_v1 -p test_artifact_pointer.py -v[0m
+2026-11-12T07:25:16.3167124Z shell: /usr/bin/bash -e {0}
+2026-11-12T07:25:16.3167361Z env:
+2026-11-12T07:25:16.3167547Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T07:25:16.3167760Z   PYTHONHASHSEED: 0
+2026-11-12T07:25:16.3167937Z   OMP_NUM_THREADS: 1
+2026-11-12T07:25:16.3168121Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T07:25:16.3168314Z   MKL_NUM_THREADS: 1
+2026-11-12T07:25:16.3168498Z   CUDA_VISIBLE_DEVICES: 
+2026-11-12T07:25:16.3168735Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:16.3169107Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-12T07:25:16.3169438Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:16.3169731Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:16.3170029Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-12T07:25:16.3170334Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-12T07:25:16.3170596Z ##[endgroup]
+2026-11-12T07:25:16.5904860Z test_ambiguous_and_nonfinite_json_refuse (test_artifact_pointer.ArtifactPointerTests.test_ambiguous_and_nonfinite_json_refuse) ... ok
+2026-11-12T07:25:16.5906432Z test_frozen_pointer_returns_same_identity (test_artifact_pointer.ArtifactPointerTests.test_frozen_pointer_returns_same_identity) ... ok
+2026-11-12T07:25:16.5910570Z test_missing_and_changed_commitments_refuse (test_artifact_pointer.ArtifactPointerTests.test_missing_and_changed_commitments_refuse) ... ok
+2026-11-12T07:25:16.5912378Z test_real_missing_pointer_refuses (test_artifact_pointer.ArtifactPointerTests.test_real_missing_pointer_refuses) ... ok
+2026-11-12T07:25:18.1183679Z test_subprocess_optimization_cannot_skip_admission (test_artifact_pointer.ArtifactPointerTests.test_subprocess_optimization_cannot_skip_admission) ... ok
+2026-11-12T07:25:18.1184198Z 
+2026-11-12T07:25:18.1184531Z ----------------------------------------------------------------------
+2026-11-12T07:25:18.1184907Z Ran 5 tests in 1.528s
+2026-11-12T07:25:18.1185065Z 
+2026-11-12T07:25:18.1185172Z OK
+2026-11-12T07:25:18.4051646Z test_ambiguous_and_nonfinite_json_refuse (test_artifact_pointer.ArtifactPointerTests.test_ambiguous_and_nonfinite_json_refuse) ... ok
+2026-11-12T07:25:18.4053091Z test_frozen_pointer_returns_same_identity (test_artifact_pointer.ArtifactPointerTests.test_frozen_pointer_returns_same_identity) ... ok
+2026-11-12T07:25:18.4057939Z test_missing_and_changed_commitments_refuse (test_artifact_pointer.ArtifactPointerTests.test_missing_and_changed_commitments_refuse) ... ok
+2026-11-12T07:25:18.4059912Z test_real_missing_pointer_refuses (test_artifact_pointer.ArtifactPointerTests.test_real_missing_pointer_refuses) ... ok
+2026-11-12T07:25:19.9573579Z test_subprocess_optimization_cannot_skip_admission (test_artifact_pointer.ArtifactPointerTests.test_subprocess_optimization_cannot_skip_admission) ... ok
+2026-11-12T07:25:19.9574116Z 
+2026-11-12T07:25:19.9574247Z ----------------------------------------------------------------------
+2026-11-12T07:25:19.9574541Z Ran 5 tests in 1.552s
+2026-11-12T07:25:19.9574662Z 
+2026-11-12T07:25:19.9574762Z OK
+2026-11-12T07:25:20.0210675Z Post job cleanup.
+2026-11-12T07:25:20.1446556Z Post job cleanup.
+2026-11-12T07:25:20.2199042Z [command]/usr/bin/git version
+2026-11-12T07:25:20.2235764Z git version 2.56.0
+2026-11-12T07:25:20.2267332Z Temporarily overriding HOME='/home/runner/work/_temp/9c10cfa3-60e1-4f87-8b76-60b65db761d9' before making global git config changes
+2026-11-12T07:25:20.2268402Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T07:25:20.2274991Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:25:20.2360992Z Removing SSH command configuration
+2026-11-12T07:25:20.2367342Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:25:20.2403619Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:25:20.2717230Z Removing HTTP extra header
+2026-11-12T07:25:20.2720242Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:25:20.2726091Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:25:20.2961353Z Removing includeIf entries pointing to credentials config files
+2026-11-12T07:25:20.2968761Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:25:20.3045816Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:25:20.3421730Z Cleaning up orphan processes
