@@ -30,6 +30,7 @@ use ed25519_dalek::SigningKey;
 
 use crate::NeuronGenerationRuntimeHandleV2;
 use crate::OriginalCircuitFeatureLearningSourcesV1;
+use crate::OriginalHistoricalCircuitFeatureSourcesV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as Error;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -80,6 +81,7 @@ pub struct OriginalGenerationLearningReceiptSourcesV1 {
 enum OriginalLearningReceiptSourceV1 {
     Generation(OriginalGenerationLearningReceiptSourcesV1),
     Feature(OriginalCircuitFeatureLearningSourcesV1),
+    HistoricalFeature(OriginalHistoricalCircuitFeatureSourcesV1),
 }
 
 pub struct OriginalGenerationLearningReceiptOwnerV1<W: AnchorWitnessStore> {
@@ -91,6 +93,24 @@ pub struct OriginalGenerationLearningReceiptOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
+    pub(crate) fn recover_historical_feature(
+        file: File,
+        witness: W,
+        config: OriginalGenerationLearningReceiptConfigV1,
+        key: SigningKey,
+        source: OriginalHistoricalCircuitFeatureSourcesV1,
+    ) -> Result<Self, Error> {
+        let source = OriginalLearningReceiptSourceV1::HistoricalFeature(source);
+        let binding = validate_config(&config, &key, &source)?;
+        Ok(Self {
+            journal: LearningOwnerJournalV1::recover(file, witness, binding)?,
+            config,
+            key,
+            source,
+            binding,
+        })
+    }
+
     pub(crate) fn require_context(
         &self,
         initial: &LearningIterationSnapshotV1,
@@ -209,6 +229,14 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         let bytes = match self.journal.read(&saved) {
             Ok(bytes) => bytes,
             Err(Error::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {
+                if matches!(
+                    &self.source,
+                    OriginalLearningReceiptSourceV1::HistoricalFeature(_)
+                ) {
+                    return Err(Error::Binding(
+                        "historical generation requires an existing original signature",
+                    ));
+                }
                 let current = now()?;
                 if current >= config.initial.request.envelope.expiry_unix_seconds {
                     return Err(Error::Binding("new generation receipt after deadline"));
@@ -330,6 +358,11 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         predecessor: &LearningIterationCoordinatorV1,
     ) -> Result<LearningIterationObservationV1, Error> {
         let source = match &self.source {
+            OriginalLearningReceiptSourceV1::HistoricalFeature(source) => {
+                return source
+                    .read_original_feature_observation(predecessor, self.config.role)
+                    .map_err(|_| Error::Binding("original retired Feature data unavailable"));
+            }
             OriginalLearningReceiptSourceV1::Feature(source) => {
                 let feature: &OriginalCircuitFeatureLearningSourcesV1 = source;
                 return feature
@@ -516,6 +549,14 @@ fn validate_config(
                 Vec::new(),
             )
         }
+        OriginalLearningReceiptSourceV1::HistoricalFeature(source) => (
+            b"hepta.agentd.original-feature-receipt-owner.v1\0",
+            source
+                .require_original_feature_binding(expected)
+                .map_err(|_| Error::Binding("original historical Feature source binding"))?
+                .into_array(),
+            Vec::new(),
+        ),
     };
     Ok(Digest32::of_parts(&[
         domain,

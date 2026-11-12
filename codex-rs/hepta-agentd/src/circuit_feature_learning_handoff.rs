@@ -17,6 +17,10 @@ use crate::OriginalGenerationLearningRoleV1;
 use crate::OriginalGenerationLearningSigningFilesV1;
 use crate::cell_q24_learning_owner_error::owner_error;
 
+#[path = "circuit_feature_historical_handoff.rs"]
+mod historical;
+pub(crate) use historical::OriginalHistoricalCircuitFeatureLearningHandoffV1;
+
 /// Original published Cell/source owners and the already enrolled Selector and
 /// Observer capabilities. No field accepts a purported observation or grant.
 pub struct OriginalCircuitFeatureLearningHandoffV1 {
