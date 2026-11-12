@@ -251,32 +251,34 @@ impl CellQ24PreparedLearningV1 {
         dataset: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
     ) -> Result<CellQ24PreparedTrainingMaterialV1, Error> {
-        let facts = self.read_validated_facts()?;
-        if scope != self.scope
-            || dataset.request != self.initial.request
-            || dataset.owners != self.initial.owners
-            || dataset.receipts.len() != 2
-            || dataset.receipts[0].observation != facts.experience
-            || dataset.receipts[1].observation != facts.dataset
-            || dataset.receipts[0].evidence_digest != facts.experience_evidence
-            || dataset.receipts[1].evidence_digest != facts.dataset_evidence
-        {
-            return Err(Error::Binding(
-                "original Experience and Dataset observations",
-            ));
-        }
-        let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-            dataset,
-            scope,
-            Arc::clone(&self.config.baseline),
-            self.config.head,
-            self.config.rule.digest(&self.batch)?,
-        )?;
-        self.revalidate_source()?;
-        Ok(CellQ24PreparedTrainingMaterialV1 {
-            plan,
-            batch: self.batch.clone(),
-            rule: self.config.rule,
-        })
+        self.with_original_prepared_operation(|read| {
+            let facts = OriginalPreparedReadV1::read_validated_facts(read)?;
+            if scope != self.scope
+                || dataset.request != self.initial.request
+                || dataset.owners != self.initial.owners
+                || dataset.receipts.len() != 2
+                || dataset.receipts[0].observation != facts.experience
+                || dataset.receipts[1].observation != facts.dataset
+                || dataset.receipts[0].evidence_digest != facts.experience_evidence
+                || dataset.receipts[1].evidence_digest != facts.dataset_evidence
+            {
+                return Err(Error::Binding(
+                    "original Experience and Dataset observations",
+                ));
+            }
+            let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
+                dataset,
+                scope,
+                Arc::clone(&self.config.baseline),
+                self.config.head,
+                self.config.rule.digest(&self.batch)?,
+            )?;
+            OriginalPreparedReadV1::require_prepared(read, self)?;
+            Ok(CellQ24PreparedTrainingMaterialV1 {
+                plan,
+                batch: self.batch.clone(),
+                rule: self.config.rule,
+            })
+        })?
     }
 }
