@@ -1,0 +1,93 @@
+{
+  "schema": "act3_gru_async_recovery_independent_audit_v1",
+  "passed": true,
+  "tests": 8,
+  "model_sha256": "7388073b70b5b27953dc74a41a2052ea57e7e70fe0ca220b50d1da0815bc116c",
+  "source_sha256": {
+    "async_owner_wait.py": "eaec392cc53da967fcb719ad3f554e97369345bf7998b2192b4b67fe725d6a6f",
+    "durable_async_owner.py": "e12b19e15bc38278de05689e773d037b2272f66eca6b5c715392e329d1ae2703",
+    "file_family.py": "9d65246d0374d18d7035428b930ccbee68075ff8b264bb47bff1ee69dfd62dfd",
+    "gru_async_continuation.py": "dbb14de58a542df79039c588b071b7c3190b7ad0803c00428cd17ff9d2a95913",
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+    "test_gru_async_continuation.py": "070d7ee6a1858cd083b7500de7eaecbde58cf6a2e00f0e92d42a7be14dce09b1"
+  },
+  "positive_timeline_events": [
+    "uninterrupted_reference",
+    "committed_original_gru_checkpoint",
+    "original_controller_exit_observed",
+    "original_worker_continued",
+    "restored_gru_final"
+  ],
+  "cases": {
+    "actual_opaque_effect": {
+      "phase": "PENDING",
+      "sequence": 1,
+      "hidden_nonzero": true,
+      "release_attempted": true,
+      "physical_effects": 1
+    },
+    "controller_death_and_late_original_effect": {
+      "phase": "DONE",
+      "sequence": 2,
+      "actions": ["ensure", "stop"],
+      "hidden_nonzero": true,
+      "release_attempted": true,
+      "physical_effects": 1
+    },
+    "post_h2_precommit_process_death": {
+      "phase": "DONE",
+      "sequence": 2,
+      "actions": ["ensure", "stop"],
+      "matches_uninterrupted_reference": true,
+      "physical_effects": 1
+    },
+    "controller_death_before_release": {
+      "phase": "PENDING",
+      "sequence": 1,
+      "hidden_nonzero": true,
+      "release_attempted": false,
+      "physical_effects": 0
+    },
+    "different_archived_model": {
+      "restore_rejected": true,
+      "phase_after_rejection": "PENDING",
+      "physical_effects": 0
+    },
+    "effect_disappears_after_confirmation": {
+      "advance_rejected": true,
+      "phase": "PENDING",
+      "sequence": 1,
+      "physical_effects_after_removal": 0
+    },
+    "failed_h1_checkpoint_commit": {
+      "phase": "READY",
+      "sequence": 0,
+      "release_attempted": false,
+      "physical_effects": 0
+    },
+    "semantic_checkpoint_tamper": {
+      "restore_rejected_with_recomputed_checksum": true,
+      "original_checkpoint_restored_after_test": true,
+      "physical_effects": 0
+    }
+  },
+  "checks": {
+    "all_sqlite_integrity_checks_ok": true,
+    "all_checkpoint_source_and_model_bindings_match": true,
+    "all_retained_effect_payload_hashes_match": true,
+    "nonzero_h1_committed_before_release": true,
+    "controller_death_observed_before_original_worker_continue": true,
+    "restored_h2_hidden_features_actions_match_reference": true,
+    "unknown_never_advances_hidden": true,
+    "post_h2_precommit_death_recomputes_from_h1": true
+  },
+  "qualification": {
+    "controlled_single_invocation_hidden_recovery": true,
+    "complete_policy": false,
+    "host_power_loss": false,
+    "production_authority": false,
+    "learning_benefit": false,
+    "promotion": false
+  }
+}

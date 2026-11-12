@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "checks": [
+    "exact final source hashes in every original SQLite",
+    "original worker stopped before controller exit",
+    "controller exit observed before original worker continued",
+    "confirmed original readback after worker continuation",
+    "foreign intent rejected; original bytes restored and both versions retained"
+  ],
+  "event_count": 6,
+  "model_hidden_state_qualified": false,
+  "production_authority": false
+}

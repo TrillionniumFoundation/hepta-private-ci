@@ -1,0 +1,10 @@
+{
+  "classification": "fixed exact original-invocation receipt guard",
+  "fixed_source_sha256": "29f88dbe6a3b933fb84bf362e35323146f32f4c15da6662eb1a1ada1328d4689",
+  "actual_child_cut_exit": 17,
+  "restore_exit": 1,
+  "restore_stderr": "Traceback (most recent call last):\n  File \"<string>\", line 11, in <module>\n  File \"/workspace/scratch/d70a317df5f3/act-work/scripts/act2_learning/durable_lifecycle.py\", line 184, in restore\n    self.owner._records()\n  File \"/workspace/scratch/d70a317df5f3/act-work/scripts/act2_learning/durable_lifecycle.py\", line 86, in _records\n    raise ValueError(\"original invocation identity drift\")\nValueError: original invocation identity drift\n",
+  "foreign_invocation": "foreign-self-consistent-operation",
+  "expected_original_invocation": "original:0",
+  "result": "REJECTED"
+}
