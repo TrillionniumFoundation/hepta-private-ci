@@ -7,6 +7,13 @@ use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use super::*;
 
 impl NeuronGenerationCurrentOwnerV1 {
+    pub(crate) fn read_original_root_recovery_intent(
+        &self,
+        original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+    ) -> Result<codex_hepta_types::Digest32, AgentdError> {
+        store::CurrentStore::read_original_root_recovery_intent(&self.store, original)
+    }
+
     pub(crate) fn read_original_completed_successor(
         &self,
         original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,

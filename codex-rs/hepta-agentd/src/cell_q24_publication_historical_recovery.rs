@@ -5,6 +5,33 @@
 use super::*;
 
 impl OriginalCellQ24RootPublicationDriverV1 {
+    /// Read the actual already published intent from this same Root connection.
+    /// The digest is data for the existing recovery operation, not a new grant.
+    pub(crate) async fn read_original_recovery_intent(
+        &self,
+        original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+    ) -> Result<Digest32, Error> {
+        let original: &OriginalDecision = &self.driver.original;
+        OriginalDecision::require_current(original).await?;
+        original.decision.require_root_publication()?;
+        NeuronGenerationCurrentOwnerV1::require_original_root_selection(
+            &self.driver.current,
+            &original.decision.snapshot,
+            &original.decision.operation,
+            self.selected.observation().digest(),
+        )?;
+        let digest = NeuronGenerationCurrentOwnerV1::read_original_root_recovery_intent(
+            &self.driver.current,
+            original_a,
+        )?;
+        OriginalDecision::require_current(original).await?;
+        NeuronGenerationCurrentOwnerV1::require_original_root_historical_receipt(
+            &self.driver.current,
+            original_a,
+        )?;
+        Ok(digest)
+    }
+
     pub(crate) async fn recover_feature_from_historical_a(
         self,
         recovery: OriginalCellQ24HistoricalFeatureRecoveryV1,

@@ -31,6 +31,19 @@ enum Store {
 
 impl CurrentStore {
     #[cfg(target_os = "linux")]
+    pub(super) fn read_original_root_recovery_intent(
+        &self,
+        original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+    ) -> Result<codex_hepta_types::Digest32, AgentdError> {
+        match &self.store {
+            Store::Root(client) => {
+                crate::root_generation_current_client::RootGenerationCurrentClient::read_original_recovery_intent(client, original)
+            }
+            _ => Err(invalid("recovery intent requires the actual Root publication client")),
+        }
+    }
+
+    #[cfg(target_os = "linux")]
     pub(super) fn read_original_completed_successor(
         &self,
         original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
