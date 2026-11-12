@@ -249,3 +249,25 @@ async fn original_panel_refuses_valid_renewed_training_without_replacing_member_
 
 #[path = "circuit_original_evaluation_host_tests.rs"]
 mod evaluation_host;
+
+// Temporary, synchronous layout diagnostic for the FDE stack-overflow evidence.
+// The closures below are never called: no future, fixture, owner or task is run.
+// This case is not part of the frozen 190-case acceptance inventory.
+#[test]
+fn original_panel_fixture_future_layout_diagnostic() {
+    fn future_bytes<F>(_: impl FnOnce() -> F) -> usize {
+        std::mem::size_of::<F>()
+    }
+
+    eprintln!(
+        "LEARN_FDE_LAYOUT panel_fixture={} positive_fixture={} b_fixture={} panel_member={} panel_owner={} preregistered_future={} positive_future={} panel_future={}",
+        std::mem::size_of::<PanelFixture>(),
+        std::mem::size_of::<PositiveFixture>(),
+        std::mem::size_of::<BFixture>(),
+        std::mem::size_of::<PanelMemberFixture>(),
+        std::mem::size_of::<Panel>(),
+        future_bytes(preregistered),
+        future_bytes(|| PositiveFixture::ready_with_profile(Digest32::ZERO, 1)),
+        future_bytes(|| PanelFixture::completed(TrainingPeer::Original)),
+    );
+}
