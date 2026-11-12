@@ -1,0 +1,544 @@
+﻿2026-11-12T00:32:20.8316150Z Current runner version: '2.338.2'
+2026-11-12T00:32:20.8355070Z ##[group]Runner Image Provisioner
+2026-11-12T00:32:20.8356740Z Hosted Compute Agent
+2026-11-12T00:32:20.8357990Z Version: 20261028.624
+2026-11-12T00:32:20.8359400Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T00:32:20.8360760Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T00:32:20.8362180Z Worker ID: {42ca4ffc-60b4-4822-bc74-219bf5d754af}
+2026-11-12T00:32:20.8363490Z Region: westus
+2026-11-12T00:32:20.8364520Z Cloud: MacCloud
+2026-11-12T00:32:20.8365520Z ##[endgroup]
+2026-11-12T00:32:20.8368700Z ##[group]Operating System
+2026-11-12T00:32:20.8369790Z macOS
+2026-11-12T00:32:20.8370680Z 26.7.2
+2026-11-12T00:32:20.8371550Z 25G332
+2026-11-12T00:32:20.8372500Z ##[endgroup]
+2026-11-12T00:32:20.8373490Z ##[group]Runner Image
+2026-11-12T00:32:20.8374540Z Image: macos-26-arm64
+2026-11-12T00:32:20.8375590Z Version: 20261102.0473.1
+2026-11-12T00:32:20.8378000Z Included Software: https://github.com/actions/runner-images/blob/macos-26-arm64/20261102.0473/images/macos/macos-26-arm64-Readme.md
+2026-11-12T00:32:20.8381820Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-26-arm64%2F20261102.0473
+2026-11-12T00:32:20.8383730Z ##[endgroup]
+2026-11-12T00:32:20.8385810Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T00:32:20.8390530Z Contents: read
+2026-11-12T00:32:20.8391590Z Metadata: read
+2026-11-12T00:32:20.8392570Z ##[endgroup]
+2026-11-12T00:32:20.8396640Z Secret source: Actions
+2026-11-12T00:32:20.8398380Z Cache mode: write
+2026-11-12T00:32:20.8399830Z Prepare workflow directory
+2026-11-12T00:32:20.8780660Z Prepare all required actions
+2026-11-12T00:32:20.8820010Z Getting action download info
+2026-11-12T00:32:21.1639670Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T00:32:21.4198140Z Download action repository 'astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b' (SHA:08807647e7069bb48b6ef5acd8ec9567f424441b)
+2026-11-12T00:32:22.0320370Z Complete job name: PRED-1 (macos-latest)
+2026-11-12T00:32:22.0932850Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T00:32:22.0933580Z with:
+2026-11-12T00:32:22.0933990Z   ref: 10629bab4d5f948854e7c59fed331213956fb974
+2026-11-12T00:32:22.0934450Z   persist-credentials: false
+2026-11-12T00:32:22.0935060Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T00:32:22.0938330Z   token: ***
+2026-11-12T00:32:22.0938670Z   ssh-strict: true
+2026-11-12T00:32:22.0957530Z   ssh-user: git
+2026-11-12T00:32:22.0957930Z   clean: true
+2026-11-12T00:32:22.0958320Z   sparse-checkout-cone-mode: true
+2026-11-12T00:32:22.0958710Z   fetch-depth: 1
+2026-11-12T00:32:22.0959100Z   fetch-tags: false
+2026-11-12T00:32:22.0959480Z   show-progress: true
+2026-11-12T00:32:22.0959830Z   lfs: false
+2026-11-12T00:32:22.0960140Z   submodules: false
+2026-11-12T00:32:22.0960540Z   set-safe-directory: true
+2026-11-12T00:32:22.0961690Z env:
+2026-11-12T00:32:22.0962010Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T00:32:22.0963570Z   OMP_NUM_THREADS: 1
+2026-11-12T00:32:22.0964050Z ##[endgroup]
+2026-11-12T00:32:22.5393130Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T00:32:22.5394810Z ##[group]Getting Git version info
+2026-11-12T00:32:22.5395530Z Working directory is '/Users/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T00:32:22.5396370Z [command]/opt/homebrew/bin/git version
+2026-11-12T00:32:22.6064850Z git version 2.56.0
+2026-11-12T00:32:22.6144050Z ##[endgroup]
+2026-11-12T00:32:22.6151780Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/964390a4-de82-4530-aac4-2a3668d11ee6/.gitconfig'
+2026-11-12T00:32:22.6153080Z Temporarily overriding HOME='/Users/runner/work/_temp/964390a4-de82-4530-aac4-2a3668d11ee6' before making global git config changes
+2026-11-12T00:32:22.6159620Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T00:32:22.6160860Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T00:32:22.6350010Z Deleting the contents of '/Users/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T00:32:22.6355550Z ##[group]Initializing the repository
+2026-11-12T00:32:22.6359550Z [command]/opt/homebrew/bin/git init /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T00:32:22.6676940Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T00:32:22.6691610Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T00:32:22.6692390Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T00:32:22.6693040Z hint: call:
+2026-11-12T00:32:22.6693400Z hint:
+2026-11-12T00:32:22.6693850Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T00:32:22.6694320Z hint:
+2026-11-12T00:32:22.6694810Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T00:32:22.6695550Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T00:32:22.6696270Z hint:
+2026-11-12T00:32:22.6696740Z hint: 	git branch -m <name>
+2026-11-12T00:32:22.6697200Z hint:
+2026-11-12T00:32:22.6697760Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T00:32:22.6713680Z Initialized empty Git repository in /Users/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T00:32:22.6726510Z [command]/opt/homebrew/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T00:32:22.6807330Z ##[endgroup]
+2026-11-12T00:32:22.6808160Z ##[group]Disabling automatic garbage collection
+2026-11-12T00:32:22.6825890Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-11-12T00:32:22.6902930Z ##[endgroup]
+2026-11-12T00:32:22.6903640Z ##[group]Setting up auth
+2026-11-12T00:32:22.6920740Z Removing SSH command configuration
+2026-11-12T00:32:22.6935870Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T00:32:22.7183030Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T00:32:22.8680230Z Removing HTTP extra header
+2026-11-12T00:32:22.8684910Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T00:32:22.8755840Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T00:32:22.9810540Z Removing includeIf entries pointing to credentials config files
+2026-11-12T00:32:22.9811650Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T00:32:22.9885420Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T00:32:23.0782950Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T00:32:23.0914500Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git.path /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:23.1059100Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:23.1154750Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:23.1238800Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:23.1349890Z ##[endgroup]
+2026-11-12T00:32:23.1352200Z ##[group]Fetching the repository
+2026-11-12T00:32:23.1365270Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 10629bab4d5f948854e7c59fed331213956fb974
+2026-11-12T00:32:29.7846070Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T00:32:29.7872370Z  * branch            10629bab4d5f948854e7c59fed331213956fb974 -> FETCH_HEAD
+2026-11-12T00:32:29.7932120Z [command]/opt/homebrew/bin/git rev-parse --verify --quiet 10629bab4d5f948854e7c59fed331213956fb974^{object}
+2026-11-12T00:32:29.8151740Z 10629bab4d5f948854e7c59fed331213956fb974
+2026-11-12T00:32:29.8296900Z ##[endgroup]
+2026-11-12T00:32:29.8298900Z ##[group]Determining the checkout info
+2026-11-12T00:32:29.8300580Z ##[endgroup]
+2026-11-12T00:32:29.8302650Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-11-12T00:32:29.9067680Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T00:32:29.9246380Z ##[group]Checking out the ref
+2026-11-12T00:32:29.9263070Z [command]/opt/homebrew/bin/git checkout --progress --force 10629bab4d5f948854e7c59fed331213956fb974
+2026-11-12T00:32:31.1159810Z Updating files:  10% (1433/13809)
+2026-11-12T00:32:31.1963680Z Updating files:  11% (1519/13809)
+2026-11-12T00:32:31.2831420Z Updating files:  12% (1658/13809)
+2026-11-12T00:32:31.4196960Z Updating files:  13% (1796/13809)
+2026-11-12T00:32:31.4943790Z Updating files:  14% (1934/13809)
+2026-11-12T00:32:31.5251200Z Updating files:  15% (2072/13809)
+2026-11-12T00:32:31.6471500Z Updating files:  16% (2210/13809)
+2026-11-12T00:32:31.7388980Z Updating files:  17% (2348/13809)
+2026-11-12T00:32:31.8229190Z Updating files:  18% (2486/13809)
+2026-11-12T00:32:31.8760970Z Updating files:  19% (2624/13809)
+2026-11-12T00:32:31.9410790Z Updating files:  20% (2762/13809)
+2026-11-12T00:32:32.0142110Z Updating files:  21% (2900/13809)
+2026-11-12T00:32:32.0249340Z Updating files:  22% (3038/13809)
+2026-11-12T00:32:32.0674990Z Updating files:  22% (3051/13809)
+2026-11-12T00:32:32.1233520Z Updating files:  23% (3177/13809)
+2026-11-12T00:32:32.1854660Z Updating files:  24% (3315/13809)
+2026-11-12T00:32:32.2550450Z Updating files:  25% (3453/13809)
+2026-11-12T00:32:32.3206250Z Updating files:  26% (3591/13809)
+2026-11-12T00:32:32.3626360Z Updating files:  27% (3729/13809)
+2026-11-12T00:32:32.4382060Z Updating files:  28% (3867/13809)
+2026-11-12T00:32:32.4572580Z Updating files:  29% (4005/13809)
+2026-11-12T00:32:32.4845050Z Updating files:  30% (4143/13809)
+2026-11-12T00:32:32.5115520Z Updating files:  31% (4281/13809)
+2026-11-12T00:32:32.6429150Z Updating files:  32% (4419/13809)
+2026-11-12T00:32:32.7071310Z Updating files:  33% (4557/13809)
+2026-11-12T00:32:32.8134460Z Updating files:  34% (4696/13809)
+2026-11-12T00:32:32.8708930Z Updating files:  35% (4834/13809)
+2026-11-12T00:32:32.8969310Z Updating files:  36% (4972/13809)
+2026-11-12T00:32:32.9344970Z Updating files:  37% (5110/13809)
+2026-11-12T00:32:32.9617380Z Updating files:  38% (5248/13809)
+2026-11-12T00:32:33.0108890Z Updating files:  39% (5386/13809)
+2026-11-12T00:32:33.0208490Z Updating files:  40% (5524/13809)
+2026-11-12T00:32:33.0315310Z Updating files:  40% (5600/13809)
+2026-11-12T00:32:33.0679770Z Updating files:  41% (5662/13809)
+2026-11-12T00:32:33.0973560Z Updating files:  42% (5800/13809)
+2026-11-12T00:32:33.1245320Z Updating files:  43% (5938/13809)
+2026-11-12T00:32:33.1437730Z Updating files:  44% (6076/13809)
+2026-11-12T00:32:33.1634800Z Updating files:  45% (6215/13809)
+2026-11-12T00:32:33.1869500Z Updating files:  46% (6353/13809)
+2026-11-12T00:32:33.2124350Z Updating files:  47% (6491/13809)
+2026-11-12T00:32:33.2319740Z Updating files:  48% (6629/13809)
+2026-11-12T00:32:33.2640380Z Updating files:  49% (6767/13809)
+2026-11-12T00:32:33.3224560Z Updating files:  50% (6905/13809)
+2026-11-12T00:32:33.3653440Z Updating files:  51% (7043/13809)
+2026-11-12T00:32:33.3973030Z Updating files:  52% (7181/13809)
+2026-11-12T00:32:33.4309880Z Updating files:  53% (7319/13809)
+2026-11-12T00:32:33.4649860Z Updating files:  54% (7457/13809)
+2026-11-12T00:32:33.4922600Z Updating files:  55% (7595/13809)
+2026-11-12T00:32:33.5517640Z Updating files:  56% (7734/13809)
+2026-11-12T00:32:33.5783100Z Updating files:  57% (7872/13809)
+2026-11-12T00:32:33.6099300Z Updating files:  58% (8010/13809)
+2026-11-12T00:32:33.6345170Z Updating files:  59% (8148/13809)
+2026-11-12T00:32:33.6748390Z Updating files:  60% (8286/13809)
+2026-11-12T00:32:33.7171470Z Updating files:  61% (8424/13809)
+2026-11-12T00:32:33.7456820Z Updating files:  62% (8562/13809)
+2026-11-12T00:32:33.7709190Z Updating files:  63% (8700/13809)
+2026-11-12T00:32:33.8051230Z Updating files:  64% (8838/13809)
+2026-11-12T00:32:33.8307630Z Updating files:  65% (8976/13809)
+2026-11-12T00:32:33.8579480Z Updating files:  66% (9114/13809)
+2026-11-12T00:32:33.8898190Z Updating files:  67% (9253/13809)
+2026-11-12T00:32:33.9241030Z Updating files:  68% (9391/13809)
+2026-11-12T00:32:33.9400820Z Updating files:  69% (9529/13809)
+2026-11-12T00:32:33.9621910Z Updating files:  70% (9667/13809)
+2026-11-12T00:32:34.0223230Z Updating files:  71% (9805/13809)
+2026-11-12T00:32:34.0623330Z Updating files:  71% (9840/13809)
+2026-11-12T00:32:34.0977170Z Updating files:  72% (9943/13809)
+2026-11-12T00:32:34.1455680Z Updating files:  73% (10081/13809)
+2026-11-12T00:32:34.1631180Z Updating files:  74% (10219/13809)
+2026-11-12T00:32:34.1807520Z Updating files:  75% (10357/13809)
+2026-11-12T00:32:34.2081960Z Updating files:  76% (10495/13809)
+2026-11-12T00:32:34.2294440Z Updating files:  77% (10633/13809)
+2026-11-12T00:32:34.2540660Z Updating files:  78% (10772/13809)
+2026-11-12T00:32:34.2726310Z Updating files:  79% (10910/13809)
+2026-11-12T00:32:34.2936460Z Updating files:  80% (11048/13809)
+2026-11-12T00:32:34.3142440Z Updating files:  81% (11186/13809)
+2026-11-12T00:32:34.3457220Z Updating files:  82% (11324/13809)
+2026-11-12T00:32:34.3818900Z Updating files:  83% (11462/13809)
+2026-11-12T00:32:34.4232360Z Updating files:  84% (11600/13809)
+2026-11-12T00:32:34.4539050Z Updating files:  85% (11738/13809)
+2026-11-12T00:32:34.4979920Z Updating files:  86% (11876/13809)
+2026-11-12T00:32:34.6040030Z Updating files:  87% (12014/13809)
+2026-11-12T00:32:34.6272440Z Updating files:  88% (12152/13809)
+2026-11-12T00:32:34.6438000Z Updating files:  89% (12291/13809)
+2026-11-12T00:32:34.6645670Z Updating files:  90% (12429/13809)
+2026-11-12T00:32:34.7074480Z Updating files:  91% (12567/13809)
+2026-11-12T00:32:34.7472950Z Updating files:  92% (12705/13809)
+2026-11-12T00:32:34.7814750Z Updating files:  93% (12843/13809)
+2026-11-12T00:32:34.9652420Z Updating files:  94% (12981/13809)
+2026-11-12T00:32:35.0280230Z Updating files:  95% (13119/13809)
+2026-11-12T00:32:35.0735900Z Updating files:  95% (13130/13809)
+2026-11-12T00:32:35.0948610Z Updating files:  96% (13257/13809)
+2026-11-12T00:32:35.1219250Z Updating files:  97% (13395/13809)
+2026-11-12T00:32:35.1572100Z Updating files:  98% (13533/13809)
+2026-11-12T00:32:35.1919470Z Updating files:  99% (13671/13809)
+2026-11-12T00:32:35.1920660Z Updating files: 100% (13809/13809)
+2026-11-12T00:32:35.1921180Z Updating files: 100% (13809/13809), done.
+2026-11-12T00:32:35.2286650Z HEAD is now at 10629ba PRED: compare three history baselines with retained inputs and failure receipts
+2026-11-12T00:32:35.2372590Z ##[endgroup]
+2026-11-12T00:32:35.2656080Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-11-12T00:32:35.2770890Z 10629bab4d5f948854e7c59fed331213956fb974
+2026-11-12T00:32:35.2786190Z ##[group]Removing auth
+2026-11-12T00:32:35.2787010Z Removing SSH command configuration
+2026-11-12T00:32:35.2792110Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T00:32:35.2886390Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T00:32:35.4672230Z Removing HTTP extra header
+2026-11-12T00:32:35.4675760Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T00:32:35.4771950Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T00:32:35.6227900Z Removing includeIf entries pointing to credentials config files
+2026-11-12T00:32:35.6236400Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T00:32:35.6312610Z includeif.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T00:32:35.6314230Z includeif.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T00:32:35.6315350Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T00:32:35.6316450Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T00:32:35.6321380Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T00:32:35.6407440Z /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.6427590Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git.path /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.6540460Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T00:32:35.6613560Z /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.6630380Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.6731090Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T00:32:35.6850810Z /github/runner_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.6861900Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.7054600Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T00:32:35.7126330Z /github/runner_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.7135470Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config
+2026-11-12T00:32:35.7218520Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T00:32:35.8457360Z Removing credentials config '/Users/runner/work/_temp/git-credentials-b545d617-1e48-4797-aef3-cf32139c3360.config'
+2026-11-12T00:32:35.8481550Z ##[endgroup]
+2026-11-12T00:32:35.8909250Z ##[group]Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+2026-11-12T00:32:35.8909830Z with:
+2026-11-12T00:32:35.8910130Z   version: 0.11.3
+2026-11-12T00:32:35.8910440Z   activate-environment: false
+2026-11-12T00:32:35.8927110Z   no-project: false
+2026-11-12T00:32:35.8927600Z   working-directory: /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T00:32:35.8930310Z   github-token: ***
+2026-11-12T00:32:35.8930490Z   enable-cache: auto
+2026-11-12T00:32:35.8930960Z   cache-dependency-glob: **/*requirements*.txt
+**/*requirements*.in
+**/*constraints*.txt
+**/*constraints*.in
+**/pyproject.toml
+**/uv.lock
+**/*.py.lock
+
+2026-11-12T00:32:35.8932200Z   restore-cache: true
+2026-11-12T00:32:35.8932370Z   save-cache: true
+2026-11-12T00:32:35.8932530Z   prune-cache: true
+2026-11-12T00:32:35.8932720Z   cache-python: false
+2026-11-12T00:32:35.8932910Z   ignore-nothing-to-cache: false
+2026-11-12T00:32:35.8933210Z   ignore-empty-workdir: false
+2026-11-12T00:32:35.8933520Z   add-problem-matchers: true
+2026-11-12T00:32:35.8933710Z   resolution-strategy: highest
+2026-11-12T00:32:35.8933890Z env:
+2026-11-12T00:32:35.8934030Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T00:32:35.8934190Z   OMP_NUM_THREADS: 1
+2026-11-12T00:32:35.8934340Z ##[endgroup]
+2026-11-12T00:32:36.2030510Z Fetching manifest data from https://raw.githubusercontent.com/astral-sh/versions/main/v1/uv.ndjson ...
+2026-11-12T00:32:36.4076450Z Downloading uv from "https://releases.astral.sh/github/uv/releases/download/0.11.3/uv-aarch64-apple-darwin.tar.gz" ...
+2026-11-12T00:32:36.8826800Z [command]/usr/bin/tar xz -C /Users/runner/work/_temp/bec9750c-1300-4b49-ac05-6db68b28f3ac -f /Users/runner/work/_temp/c5d5980a-a00e-4bc0-b620-f5dd24377c6d
+2026-11-12T00:32:37.1711740Z Added /Users/runner/.local/bin to the path
+2026-11-12T00:32:37.1719090Z Added /Users/runner/hostedtoolcache/uv/0.11.3/aarch64 to the path
+2026-11-12T00:32:37.1720970Z Set UV_PYTHON_INSTALL_DIR to /Users/runner/work/_temp/uv-python-dir
+2026-11-12T00:32:37.1740400Z Added /Users/runner/work/_temp/uv-python-dir to the path
+2026-11-12T00:32:37.1800910Z Set UV_CACHE_DIR to /Users/runner/work/_temp/setup-uv-cache
+2026-11-12T00:32:37.1802860Z Successfully installed uv version 0.11.3
+2026-11-12T00:32:37.6428500Z Searching files using cache dependency glob: /Users/runner/work/hepta-private-ci/hepta-private-ci/**/*requirements*.txt,/Users/runner/work/hepta-private-ci/hepta-private-ci/**/*requirements*.in,/Users/runner/work/hepta-private-ci/hepta-private-ci/**/*constraints*.txt,/Users/runner/work/hepta-private-ci/hepta-private-ci/**/*constraints*.in,/Users/runner/work/hepta-private-ci/hepta-private-ci/**/pyproject.toml,/Users/runner/work/hepta-private-ci/hepta-private-ci/**/uv.lock,/Users/runner/work/hepta-private-ci/hepta-private-ci/**/*.py.lock
+2026-11-12T00:32:39.1154610Z /Users/runner/work/hepta-private-ci/hepta-private-ci/qualification/cell_common_foundations/requirements.txt
+2026-11-12T00:32:39.2292490Z /Users/runner/work/hepta-private-ci/hepta-private-ci/scripts/codex_package/smoke_tests/pyproject.toml
+2026-11-12T00:32:39.2299660Z /Users/runner/work/hepta-private-ci/hepta-private-ci/scripts/codex_package/smoke_tests/uv.lock
+2026-11-12T00:32:39.2457320Z /Users/runner/work/hepta-private-ci/hepta-private-ci/scripts/pyproject.toml
+2026-11-12T00:32:39.2500820Z /Users/runner/work/hepta-private-ci/hepta-private-ci/scripts/uv.lock
+2026-11-12T00:32:39.2572640Z /Users/runner/work/hepta-private-ci/hepta-private-ci/sdk/python/pyproject.toml
+2026-11-12T00:32:39.2625440Z /Users/runner/work/hepta-private-ci/hepta-private-ci/sdk/python/uv.lock
+2026-11-12T00:32:39.2637380Z /Users/runner/work/hepta-private-ci/hepta-private-ci/sdk/python-runtime/pyproject.toml
+2026-11-12T00:32:39.2654900Z /Users/runner/work/hepta-private-ci/hepta-private-ci/sdk/python-runtime/uv.lock
+2026-11-12T00:32:39.2890370Z /Users/runner/work/hepta-private-ci/hepta-private-ci/tools/hepta-engineering-control/pyproject.toml
+2026-11-12T00:32:39.2920910Z Found 10 files to hash.
+2026-11-12T00:32:39.2931320Z Trying to restore cache from GitHub Actions cache with key: setup-uv-2-aarch64-apple-darwin-macos-16-3.15.2-pruned-d170940cd327159e99cb5d8d2ff6af641085ed91253ab29548574099aaab516b
+2026-11-12T00:32:39.4515430Z No GitHub Actions cache found for key: setup-uv-2-aarch64-apple-darwin-macos-16-3.15.2-pruned-d170940cd327159e99cb5d8d2ff6af641085ed91253ab29548574099aaab516b
+2026-11-12T00:32:39.5367830Z ##[group]Run uv run --no-project --python 3.12 --with numpy==2.3.5 python - <<'PY'
+2026-11-12T00:32:39.5368550Z [36;1muv run --no-project --python 3.12 --with numpy==2.3.5 python - <<'PY'[0m
+2026-11-12T00:32:39.5369030Z [36;1mimport json[0m
+2026-11-12T00:32:39.5375090Z [36;1mimport platform[0m
+2026-11-12T00:32:39.5375440Z [36;1mimport sys[0m
+2026-11-12T00:32:39.5375700Z [36;1m[0m
+2026-11-12T00:32:39.5375970Z [36;1mimport numpy[0m
+2026-11-12T00:32:39.5376250Z [36;1m[0m
+2026-11-12T00:32:39.5376500Z [36;1mprint(json.dumps({[0m
+2026-11-12T00:32:39.5376860Z [36;1m    "python": sys.version,[0m
+2026-11-12T00:32:39.5377150Z [36;1m    "numpy": numpy.__version__,[0m
+2026-11-12T00:32:39.5377510Z [36;1m    "platform": platform.platform(),[0m
+2026-11-12T00:32:39.5377820Z [36;1m}, sort_keys=True))[0m
+2026-11-12T00:32:39.5378160Z [36;1massert sys.version_info[:2] == (3, 12)[0m
+2026-11-12T00:32:39.5378480Z [36;1massert numpy.__version__ == "2.3.5"[0m
+2026-11-12T00:32:39.5378960Z [36;1mPY[0m
+2026-11-12T00:32:39.5450310Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T00:32:39.5450740Z env:
+2026-11-12T00:32:39.5450990Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T00:32:39.5451320Z   OMP_NUM_THREADS: 1
+2026-11-12T00:32:39.5451620Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+2026-11-12T00:32:39.5452160Z   UV_CACHE_DIR: /Users/runner/work/_temp/setup-uv-cache
+2026-11-12T00:32:39.5452530Z ##[endgroup]
+2026-11-12T00:32:40.3180760Z Downloading numpy (4.9MiB)
+2026-11-12T00:32:40.5700720Z  Downloaded numpy
+2026-11-12T00:32:40.5907280Z Installed 1 package in 19ms
+2026-11-12T00:32:41.1629110Z {"numpy": "2.3.5", "platform": "macOS-26.7.2-arm64-arm-64bit", "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]"}
+2026-11-12T00:32:41.1885670Z ##[group]Run uv run --no-project --python 3.12 --with numpy==2.3.5 python -m unittest discover -s scripts/hepta_pred1 -p 'test_*.py' -t scripts -v
+2026-11-12T00:32:41.1886650Z [36;1muv run --no-project --python 3.12 --with numpy==2.3.5 python -m unittest discover -s scripts/hepta_pred1 -p 'test_*.py' -t scripts -v[0m
+2026-11-12T00:32:41.1925530Z shell: /bin/bash -e {0}
+2026-11-12T00:32:41.1925830Z env:
+2026-11-12T00:32:41.1926180Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T00:32:41.1926460Z   OMP_NUM_THREADS: 1
+2026-11-12T00:32:41.1926750Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+2026-11-12T00:32:41.1927200Z   UV_CACHE_DIR: /Users/runner/work/_temp/setup-uv-cache
+2026-11-12T00:32:41.1927670Z ##[endgroup]
+2026-11-12T00:32:41.8421270Z test_ablation_removes_values_and_masks_without_mutation (hepta_pred1.test_action_history.ActionHistoryTests.test_ablation_removes_values_and_masks_without_mutation) ... ok
+2026-11-12T00:32:41.8422620Z test_empty_prefix_and_bounded_generator (hepta_pred1.test_action_history.ActionHistoryTests.test_empty_prefix_and_bounded_generator) ... ok
+2026-11-12T00:32:41.8425060Z test_execution_ack_arriving_after_effect_reconciles_earlier_duration (hepta_pred1.test_action_history.ActionHistoryTests.test_execution_ack_arriving_after_effect_reconciles_earlier_duration) ... ok
+2026-11-12T00:32:41.8429760Z test_identity_phase_order_and_evidence_mismatch_are_rejected (hepta_pred1.test_action_history.ActionHistoryTests.test_identity_phase_order_and_evidence_mismatch_are_rejected) ... ok
+2026-11-12T00:32:41.8432920Z test_late_execution_ack_reconciles_interval_receipts_without_backfill (hepta_pred1.test_action_history.ActionHistoryTests.test_late_execution_ack_reconciles_interval_receipts_without_backfill) ... ok
+2026-11-12T00:32:41.8434820Z test_late_readback_and_equal_clock_later_sequence_do_not_backfill (hepta_pred1.test_action_history.ActionHistoryTests.test_late_readback_and_equal_clock_later_sequence_do_not_backfill) ... ok
+2026-11-12T00:32:41.8437110Z test_later_terminal_cannot_contradict_earlier_time_or_cost_facts (hepta_pred1.test_action_history.ActionHistoryTests.test_later_terminal_cannot_contradict_earlier_time_or_cost_facts) ... ok
+2026-11-12T00:32:41.8441040Z test_missing_receipt_is_not_failure_zero_time_or_right_censoring (hepta_pred1.test_action_history.ActionHistoryTests.test_missing_receipt_is_not_failure_zero_time_or_right_censoring) ... ok
+2026-11-12T00:32:41.8442350Z test_only_verified_nonoccurrence_produces_right_censoring (hepta_pred1.test_action_history.ActionHistoryTests.test_only_verified_nonoccurrence_produces_right_censoring) ... ok
+2026-11-12T00:32:41.8700180Z test_real_model_accepts_snapshot_and_recurrent_reset_is_separate (hepta_pred1.test_action_history.ActionHistoryTests.test_real_model_accepts_snapshot_and_recurrent_reset_is_separate) ... ok
+2026-11-12T00:32:41.8703350Z test_reordered_acceptance_ack_does_not_invent_or_rewrite_execution (hepta_pred1.test_action_history.ActionHistoryTests.test_reordered_acceptance_ack_does_not_invent_or_rewrite_execution) ... ok
+2026-11-12T00:32:41.8711560Z test_strict_censor_boundary_and_decreasing_lower_bound_receipts (hepta_pred1.test_action_history.ActionHistoryTests.test_strict_censor_boundary_and_decreasing_lower_bound_receipts) ... ok
+2026-11-12T00:32:41.8715120Z test_terminal_occurrence_must_lie_in_declared_continuous_interval (hepta_pred1.test_action_history.ActionHistoryTests.test_terminal_occurrence_must_lie_in_declared_continuous_interval) ... ok
+2026-11-12T00:32:41.9094160Z test_actual_fixed1_parity_and_zero_price_adaptive_agreement (hepta_pred1.test_cached_preparation.CachedPreparationTests.test_actual_fixed1_parity_and_zero_price_adaptive_agreement) ... ok
+2026-11-12T00:32:41.9219720Z test_all_choices_and_bridge_precede_evaluator_and_labels_do_not_change_policy (hepta_pred1.test_cached_preparation.CachedPreparationTests.test_all_choices_and_bridge_precede_evaluator_and_labels_do_not_change_policy) ... ok
+2026-11-12T00:32:41.9339060Z test_only_queried_slots_are_computed_scanned_and_priced (hepta_pred1.test_cached_preparation.CachedPreparationTests.test_only_queried_slots_are_computed_scanned_and_priced) ... ok
+2026-11-12T00:32:41.9394940Z test_whole_panel_reservation_exact_boundaries_and_no_subset_fallback (hepta_pred1.test_cached_preparation.CachedPreparationTests.test_whole_panel_reservation_exact_boundaries_and_no_subset_fallback) ... ok
+2026-11-12T00:32:41.9438990Z test_aggregate_pairs_by_factor_identity_and_refuses_missing_cell (hepta_pred1.test_cached_replay.CachedReplayTests.test_aggregate_pairs_by_factor_identity_and_refuses_missing_cell) ... ok
+2026-11-12T00:32:42.0166100Z test_failed_replay_retains_incomplete_receipt_and_refuses_overwrite (hepta_pred1.test_cached_replay.CachedReplayTests.test_failed_replay_retains_incomplete_receipt_and_refuses_overwrite) ... ok
+2026-11-12T00:32:42.0859990Z test_no_fit_reads_before_two_terminal_gates_and_identity_checks (hepta_pred1.test_cached_replay.CachedReplayTests.test_no_fit_reads_before_two_terminal_gates_and_identity_checks) ... ok
+2026-11-12T00:32:42.1679170Z test_real_checkpoint_bridge_preserves_every_formal_oldcheap_episode (hepta_pred1.test_cached_replay.CachedReplayTests.test_real_checkpoint_bridge_preserves_every_formal_oldcheap_episode) ... ok
+2026-11-12T00:32:42.1682350Z test_exact_scores_against_analytic_distributions (hepta_pred1.test_contracts.ContractTests.test_exact_scores_against_analytic_distributions) ... ok
+2026-11-12T00:32:42.1684930Z test_grid_order_exact_atom_and_frozen_data (hepta_pred1.test_contracts.ContractTests.test_grid_order_exact_atom_and_frozen_data) ... ok
+2026-11-12T00:32:42.1687610Z test_history_rejects_future_backfill_and_copies_payload (hepta_pred1.test_contracts.ContractTests.test_history_rejects_future_backfill_and_copies_payload) ... ok
+2026-11-12T00:32:42.1690190Z test_likelihood_uses_event_mass_and_keeps_zero_mass_infinite (hepta_pred1.test_contracts.ContractTests.test_likelihood_uses_event_mass_and_keeps_zero_mass_infinite) ... ok
+2026-11-12T00:32:42.1693480Z test_numeric_validation_and_finite_support_failure (hepta_pred1.test_contracts.ContractTests.test_numeric_validation_and_finite_support_failure) ... ok
+2026-11-12T00:32:42.1696700Z test_right_censor_and_interval_have_correct_boundaries (hepta_pred1.test_contracts.ContractTests.test_right_censor_and_interval_have_correct_boundaries) ... ok
+2026-11-12T00:32:42.1700480Z test_terminal_and_imagination_provenance (hepta_pred1.test_contracts.ContractTests.test_terminal_and_imagination_provenance) ... ok
+2026-11-12T00:32:42.1701860Z test_unknown_never_becomes_failure_or_zero_cost (hepta_pred1.test_contracts.ContractTests.test_unknown_never_becomes_failure_or_zero_cost) ... ok
+2026-11-12T00:32:42.1730790Z test_actions_removed_from_both_history_and_candidates_without_mutation (hepta_pred1.test_crossed_design.CrossedDesignTests.test_actions_removed_from_both_history_and_candidates_without_mutation) ... ok
+2026-11-12T00:32:42.1734460Z test_complete_grid_retains_interactions_and_is_order_invariant (hepta_pred1.test_crossed_design.CrossedDesignTests.test_complete_grid_retains_interactions_and_is_order_invariant) ... ok
+2026-11-12T00:32:42.1736790Z test_missing_cells_cannot_be_dropped_or_imputed (hepta_pred1.test_crossed_design.CrossedDesignTests.test_missing_cells_cannot_be_dropped_or_imputed) ... ok
+2026-11-12T00:32:42.1737770Z test_no_time_cannot_read_lag_slot_or_explicit_clock (hepta_pred1.test_crossed_design.CrossedDesignTests.test_no_time_cannot_read_lag_slot_or_explicit_clock) ... ok
+2026-11-12T00:32:42.1753010Z test_sealed_seeds_and_confirmation_switches_are_rejected (hepta_pred1.test_crossed_design.CrossedDesignTests.test_sealed_seeds_and_confirmation_switches_are_rejected) ... ok
+2026-11-12T00:32:42.1754230Z test_seed_boolean_duplicate_and_bad_rates_cannot_change_design (hepta_pred1.test_crossed_design.CrossedDesignTests.test_seed_boolean_duplicate_and_bad_rates_cannot_change_design) ... ok
+2026-11-12T00:32:42.9185870Z test_complete_campaign_generates_only_train_dev_once_per_data_level (hepta_pred1.test_crossed_training.CrossedTrainingTests.test_complete_campaign_generates_only_train_dev_once_per_data_level) ... ok
+2026-11-12T00:32:43.6254160Z test_failed_fit_remains_failed_with_original_cell_and_consumed_work (hepta_pred1.test_crossed_training.CrossedTrainingTests.test_failed_fit_remains_failed_with_original_cell_and_consumed_work) ... ok
+2026-11-12T00:32:43.9413490Z test_actual_fit_separates_all_rngs_and_restores_selected_optimizer (hepta_pred1.test_crossed_training_fit.CrossedFitTests.test_actual_fit_separates_all_rngs_and_restores_selected_optimizer) ... ok
+2026-11-12T00:32:43.9523800Z test_actual_oversized_file_is_rejected_before_open_or_whole_file_read (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_actual_oversized_file_is_rejected_before_open_or_whole_file_read) ... ok
+2026-11-12T00:32:43.9611630Z test_all_arms_and_full_fit_steps_count_including_partial_batches (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_all_arms_and_full_fit_steps_count_including_partial_batches) ... ok
+2026-11-12T00:32:43.9689870Z test_checkpoint_tie_uses_first_strict_minimum (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_checkpoint_tie_uses_first_strict_minimum) ... ok
+2026-11-12T00:32:43.9802190Z test_duplicate_json_nonfinite_and_wrong_payload_identity_rejected (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_duplicate_json_nonfinite_and_wrong_payload_identity_rejected) ... ok
+2026-11-12T00:32:43.9947350Z test_explicit_input_allowlist_never_opens_confirmation_or_checkpoint (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_explicit_input_allowlist_never_opens_confirmation_or_checkpoint) ... ok
+2026-11-12T00:32:44.0023550Z test_file_growth_after_stat_still_reads_only_limit_plus_one (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_file_growth_after_stat_still_reads_only_limit_plus_one) ... ok
+2026-11-12T00:32:44.0084610Z test_full_consumption_cannot_be_replaced_by_checkpoint_steps (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_full_consumption_cannot_be_replaced_by_checkpoint_steps) ... ok
+2026-11-12T00:32:44.0132460Z test_misleading_epoch_or_cost_booleans_rejected (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_misleading_epoch_or_cost_booleans_rejected) ... ok
+2026-11-12T00:32:44.0211380Z test_misnamed_result_and_hidden_confirmation_fields_rejected (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_misnamed_result_and_hidden_confirmation_fields_rejected) ... ok
+2026-11-12T00:32:44.0287720Z test_missing_epoch_and_missing_fit_fail_closed (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_missing_epoch_and_missing_fit_fail_closed) ... ok
+2026-11-12T00:32:44.0343510Z test_seed_sets_must_be_disjoint_and_integer (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_seed_sets_must_be_disjoint_and_integer) ... ok
+2026-11-12T00:32:44.0396980Z test_source_is_never_executed_and_changed_wiring_is_not_misinterpreted (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_source_is_never_executed_and_changed_wiring_is_not_misinterpreted) ... ok
+2026-11-12T00:32:44.0441090Z test_symlink_input_remains_rejected (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_symlink_input_remains_rejected) ... ok
+2026-11-12T00:32:44.0502720Z test_uses_only_family_selection_seed_dev_values_for_family_rule (hepta_pred1.test_diagnose_training.TrainingDiagnosticTests.test_uses_only_family_selection_seed_dev_values_for_family_rule) ... ok
+2026-11-12T00:32:44.0512720Z test_exact_scores_deadline_budget_and_full_cost_boundary (hepta_pred1.test_evaluation.EvaluationTests.test_exact_scores_deadline_budget_and_full_cost_boundary) ... ok
+2026-11-12T00:32:44.0520580Z test_illegal_high_scoring_action_never_selected (hepta_pred1.test_evaluation.EvaluationTests.test_illegal_high_scoring_action_never_selected) ... ok
+2026-11-12T00:32:44.0526460Z test_invalid_probability_and_evaluator_labels_rejected (hepta_pred1.test_evaluation.EvaluationTests.test_invalid_probability_and_evaluator_labels_rejected) ... ok
+2026-11-12T00:32:44.0543350Z test_only_public_inputs_before_all_predictions_with_horizon_preserved (hepta_pred1.test_evaluation.EvaluationTests.test_only_public_inputs_before_all_predictions_with_horizon_preserved) ... ok
+2026-11-12T00:32:44.0562140Z test_preparation_deadline_and_budget_boundaries (hepta_pred1.test_evaluation.EvaluationTests.test_preparation_deadline_and_budget_boundaries) ... ok
+2026-11-12T00:32:44.0635120Z test_same_information_oracle_has_zero_regret (hepta_pred1.test_evaluation.EvaluationTests.test_same_information_oracle_has_zero_regret) ... ok
+2026-11-12T00:32:44.0642070Z test_translated_crps_and_horizon_specific_feasibility (hepta_pred1.test_evaluation.EvaluationTests.test_translated_crps_and_horizon_specific_feasibility) ... ok
+2026-11-12T00:32:44.0648840Z test_zero_event_mass_is_infinite_nll_not_clipped (hepta_pred1.test_evaluation.EvaluationTests.test_zero_event_mass_is_infinite_nll_not_clipped) ... ok
+2026-11-12T00:32:44.1418920Z test_all_parameters_have_correct_bptt (hepta_pred1.test_models.ModelTests.test_all_parameters_have_correct_bptt) ... ok
+2026-11-12T00:32:44.1687280Z test_checkpoint_resumes_optimizer_exactly (hepta_pred1.test_models.ModelTests.test_checkpoint_resumes_optimizer_exactly) ... ok
+2026-11-12T00:32:44.2898510Z test_matching_reports_close_counts (hepta_pred1.test_models.ModelTests.test_matching_reports_close_counts) ... ok
+2026-11-12T00:32:44.2949050Z test_reset_action_and_streaming_contract (hepta_pred1.test_models.ModelTests.test_reset_action_and_streaming_contract) ... ok
+2026-11-12T00:32:44.5099190Z test_training_updates_time_kernel_and_reduces_loss (hepta_pred1.test_models.ModelTests.test_training_updates_time_kernel_and_reduces_loss) ... ok
+2026-11-12T00:32:44.5114990Z test_unknown_is_zero_information_and_invalid_sets_rejected (hepta_pred1.test_models.ModelTests.test_unknown_is_zero_information_and_invalid_sets_rejected) ... ok
+2026-11-12T00:32:44.6043770Z test_cursor_clock_and_future_collection_boundaries (hepta_pred1.test_native_ledger.NativeLedgerTests.test_cursor_clock_and_future_collection_boundaries) ... ok
+2026-11-12T00:32:44.6424110Z test_freeze_rejects_invalid_encoder_structure_and_preserves_empty_prefix (hepta_pred1.test_native_ledger.NativeLedgerTests.test_freeze_rejects_invalid_encoder_structure_and_preserves_empty_prefix) ... ok
+2026-11-12T00:32:44.6737640Z test_full_identity_and_initial_fact_changes_are_rejected (hepta_pred1.test_native_ledger.NativeLedgerTests.test_full_identity_and_initial_fact_changes_are_rejected) ... ok
+2026-11-12T00:32:44.7142900Z test_missing_then_indeterminate_then_reconciliation_never_labels_business (hepta_pred1.test_native_ledger.NativeLedgerTests.test_missing_then_indeterminate_then_reconciliation_never_labels_business) ... ok
+2026-11-12T00:32:44.7440760Z test_python310_projection_bounds_without_connection_setlimit (hepta_pred1.test_native_ledger.NativeLedgerTests.test_python310_projection_bounds_without_connection_setlimit) ... ok
+2026-11-12T00:32:44.7853990Z test_rehashed_malformed_snapshot_cannot_be_joined (hepta_pred1.test_native_ledger.NativeLedgerTests.test_rehashed_malformed_snapshot_cannot_be_joined) ... ok
+2026-11-12T00:32:44.9048590Z test_snapshot_arrays_freeze_reopen_corruption_and_overwrite_refusal (hepta_pred1.test_native_ledger.NativeLedgerTests.test_snapshot_arrays_freeze_reopen_corruption_and_overwrite_refusal) ... ok
+2026-11-12T00:32:44.9195260Z test_wal_readonly_collection_retains_raw_clocks_and_missing_rows (hepta_pred1.test_native_ledger.NativeLedgerTests.test_wal_readonly_collection_retains_raw_clocks_and_missing_rows) ... ok
+2026-11-12T00:32:44.9205510Z test_better_offline_calibration_never_repairs_actual_utility_eligibility (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_better_offline_calibration_never_repairs_actual_utility_eligibility) ... ok
+2026-11-12T00:32:44.9207430Z test_duplicate_mismatch_unbounded_and_invalid_forecasts_fail_closed (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_duplicate_mismatch_unbounded_and_invalid_forecasts_fail_closed) ... ok
+2026-11-12T00:32:44.9210310Z test_mixed_budget_contracts_cannot_share_overall_means (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_mixed_budget_contracts_cannot_share_overall_means) ... ok
+2026-11-12T00:32:44.9211650Z test_only_chosen_executed_actions_receive_scores (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_only_chosen_executed_actions_receive_scores) ... ok
+2026-11-12T00:32:44.9216020Z test_reliability_endpoints_and_quantile_coverage (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_reliability_endpoints_and_quantile_coverage) ... ok
+2026-11-12T00:32:44.9219150Z test_sources_splits_and_actions_do_not_become_owner_benefit (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_sources_splits_and_actions_do_not_become_owner_benefit) ... ok
+2026-11-12T00:32:44.9224340Z test_unknown_cancel_and_censor_are_not_exact_duration_or_zero_cost (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_unknown_cancel_and_censor_are_not_exact_duration_or_zero_cost) ... ok
+2026-11-12T00:32:44.9227140Z test_unsupported_and_incomplete_costs_remain_in_denominators (hepta_pred1.test_observed_calibration.OfflineCalibrationTests.test_unsupported_and_incomplete_costs_remain_in_denominators) ... ok
+2026-11-12T00:32:44.9244920Z test_better_calibration_but_worse_actual_utility_keeps_parent (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_better_calibration_but_worse_actual_utility_keeps_parent) ... ok
+2026-11-12T00:32:44.9263490Z test_budget_caps_are_bound_and_unknown_caps_cannot_qualify (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_budget_caps_are_bound_and_unknown_caps_cannot_qualify) ... ok
+2026-11-12T00:32:44.9278020Z test_conditional_paired_gate_uses_realized_utility_and_never_activates (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_conditional_paired_gate_uses_realized_utility_and_never_activates) ... ok
+2026-11-12T00:32:44.9281110Z test_duplicate_or_reused_units_and_split_leaks_are_rejected (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_duplicate_or_reused_units_and_split_leaks_are_rejected) ... ok
+2026-11-12T00:32:44.9283690Z test_forecast_and_ledger_are_frozen_and_future_receipts_rejected (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_forecast_and_ledger_are_frozen_and_future_receipts_rejected) ... ok
+2026-11-12T00:32:44.9286200Z test_full_wall_includes_decision_to_receipt_waiting (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_full_wall_includes_decision_to_receipt_waiting) ... ok
+2026-11-12T00:32:44.9288510Z test_malformed_predictions_cannot_be_scored (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_malformed_predictions_cannot_be_scored) ... ok
+2026-11-12T00:32:44.9298360Z test_missing_cost_or_wall_blocks_utility_even_with_zero_penalty (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_missing_cost_or_wall_blocks_utility_even_with_zero_penalty) ... ok
+2026-11-12T00:32:44.9319830Z test_missing_registration_clock_design_groups_and_budget_fail_closed (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_missing_registration_clock_design_groups_and_budget_fail_closed) ... ok
+2026-11-12T00:32:44.9321150Z test_off_grid_continuous_scores_and_full_ledger_utility (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_off_grid_continuous_scores_and_full_ledger_utility) ... ok
+2026-11-12T00:32:44.9364170Z test_overspend_or_time_overrun_blocks_adoption_without_dropping_rows (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_overspend_or_time_overrun_blocks_adoption_without_dropping_rows) ... ok
+2026-11-12T00:32:44.9366440Z test_preexecution_validation_export_and_retrospective_scoring (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_preexecution_validation_export_and_retrospective_scoring) ... ok
+2026-11-12T00:32:44.9373050Z test_reliability_bins_are_observed_only_and_sources_remain_separate (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_reliability_bins_are_observed_only_and_sources_remain_separate) ... ok
+2026-11-12T00:32:44.9374400Z test_sparse_duplicate_atoms_match_independent_quadratic_crps (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_sparse_duplicate_atoms_match_independent_quadratic_crps) ... ok
+2026-11-12T00:32:44.9375570Z test_unexecuted_and_other_actions_have_no_factual_scores (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_unexecuted_and_other_actions_have_no_factual_scores) ... ok
+2026-11-12T00:32:44.9381360Z test_unknown_cancel_censor_and_interval_never_become_exact_labels (hepta_pred1.test_observed_evaluation.ObservedEvaluationTests.test_unknown_cancel_censor_and_interval_never_become_exact_labels) ... ok
+2026-11-12T00:32:44.9692860Z test_checkpoint_exact_readback_and_resume (hepta_pred1.test_observed_gru.ObservedGRUTests.test_checkpoint_exact_readback_and_resume) ... ok
+2026-11-12T00:32:45.1022020Z test_history_learning_order_and_stateless_candidate_inference (hepta_pred1.test_observed_gru.ObservedGRUTests.test_history_learning_order_and_stateless_candidate_inference) ... ok
+2026-11-12T00:32:45.1418850Z test_rehashed_corruption_cannot_bypass_shapes_sources_and_ledgers (hepta_pred1.test_observed_gru.ObservedGRUTests.test_rehashed_corruption_cannot_bypass_shapes_sources_and_ledgers) ... ok
+2026-11-12T00:32:45.1617390Z test_unknowns_remain_committed_and_do_not_fit_or_normalize (hepta_pred1.test_observed_gru.ObservedGRUTests.test_unknowns_remain_committed_and_do_not_fit_or_normalize) ... ok
+2026-11-12T00:32:45.2073650Z test_variable_length_gradient_matches_finite_difference_and_single_rows (hepta_pred1.test_observed_gru.ObservedGRUTests.test_variable_length_gradient_matches_finite_difference_and_single_rows) ... ok
+2026-11-12T00:32:45.3000960Z test_coordinated_rehash_does_not_admit_late_history (hepta_pred1.test_observed_history.ObservedHistoryTests.test_coordinated_rehash_does_not_admit_late_history) ... ok
+2026-11-12T00:32:45.4470430Z test_fixed_summary_consumes_actual_history_and_retains_full_commitment (hepta_pred1.test_observed_history.ObservedHistoryTests.test_fixed_summary_consumes_actual_history_and_retains_full_commitment) ... ok
+2026-11-12T00:32:45.5342290Z test_full_frozen_history_and_censor_bounds_survive_without_rewriting (hepta_pred1.test_observed_history.ObservedHistoryTests.test_full_frozen_history_and_censor_bounds_survive_without_rewriting) ... ok
+2026-11-12T00:32:45.6238660Z test_rehashed_wrong_snapshot_or_decision_cannot_supply_history (hepta_pred1.test_observed_history.ObservedHistoryTests.test_rehashed_wrong_snapshot_or_decision_cannot_supply_history) ... ok
+2026-11-12T00:32:45.7326710Z test_confirmations_panel_drift_and_missing_originals_are_refused (hepta_pred1.test_observed_history_run.ObservedHistoryRunTests.test_confirmations_panel_drift_and_missing_originals_are_refused) ... ok
+2026-11-12T00:32:45.8864810Z test_failed_gru_readback_keeps_prior_work_and_terminal_cost_receipt (hepta_pred1.test_observed_history_run.ObservedHistoryRunTests.test_failed_gru_readback_keeps_prior_work_and_terminal_cost_receipt) ... ok
+2026-11-12T00:32:46.0452890Z test_missing_action_support_keeps_all_six_holdout_records (hepta_pred1.test_observed_history_run.ObservedHistoryRunTests.test_missing_action_support_keeps_all_six_holdout_records) ... ok
+2026-11-12T00:32:46.1999350Z test_same_native_attempt_cannot_cross_splits_under_new_decision_and_group (hepta_pred1.test_observed_history_run.ObservedHistoryRunTests.test_same_native_attempt_cannot_cross_splits_under_new_decision_and_group) ... ok
+2026-11-12T00:32:46.3318260Z test_source_identity_drift_is_retained_as_failed_work (hepta_pred1.test_observed_history_run.ObservedHistoryRunTests.test_source_identity_drift_is_retained_as_failed_work) ... ok
+2026-11-12T00:32:46.7013220Z test_three_models_replay_from_retained_sources_without_backdated_choices (hepta_pred1.test_observed_history_run.ObservedHistoryRunTests.test_three_models_replay_from_retained_sources_without_backdated_choices) ... ok
+2026-11-12T00:32:46.7029520Z test_analytic_gradient_matches_finite_differences (hepta_pred1.test_observed_models.ObservedModelTests.test_analytic_gradient_matches_finite_differences) ... ok
+2026-11-12T00:32:46.7034840Z test_empirical_preserves_continuous_chosen_action_targets (hepta_pred1.test_observed_models.ObservedModelTests.test_empirical_preserves_continuous_chosen_action_targets) ... ok
+2026-11-12T00:32:46.7517010Z test_mlp_learns_actions_and_preserves_prediction_state (hepta_pred1.test_observed_models.ObservedModelTests.test_mlp_learns_actions_and_preserves_prediction_state) ... ok
+2026-11-12T00:32:46.7591920Z test_pinned_checkpoint_replay_and_exact_adam_resume (hepta_pred1.test_observed_models.ObservedModelTests.test_pinned_checkpoint_replay_and_exact_adam_resume) ... ok
+2026-11-12T00:32:46.7666370Z test_rehashed_checkpoint_rejects_learning_rate_and_work_ledger_drift (hepta_pred1.test_observed_models.ObservedModelTests.test_rehashed_checkpoint_rejects_learning_rate_and_work_ledger_drift) ... ok
+2026-11-12T00:32:46.7697640Z test_rehashed_checkpoint_still_requires_source_and_shapes (hepta_pred1.test_observed_models.ObservedModelTests.test_rehashed_checkpoint_still_requires_source_and_shapes) ... ok
+2026-11-12T00:32:46.7699070Z test_split_identity_and_invalid_labels_are_refused_before_fit (hepta_pred1.test_observed_models.ObservedModelTests.test_split_identity_and_invalid_labels_are_refused_before_fit) ... ok
+2026-11-12T00:32:46.7706090Z test_unknown_cancel_censor_keep_exclusions_and_input_identity (hepta_pred1.test_observed_models.ObservedModelTests.test_unknown_cancel_censor_keep_exclusions_and_input_identity) ... ok
+2026-11-12T00:32:46.7707230Z test_fixed1_forecast_charges_real_units_not_old_discrete_grid (hepta_pred1.test_observed_policy.ObservedPolicyTests.test_fixed1_forecast_charges_real_units_not_old_discrete_grid) ... ok
+2026-11-12T00:32:46.7708330Z test_impossible_payoffs_and_overflow_do_not_choose_or_prepare (hepta_pred1.test_observed_policy.ObservedPolicyTests.test_impossible_payoffs_and_overflow_do_not_choose_or_prepare) ... ok
+2026-11-12T00:32:46.7709460Z test_information_value_uses_posterior_max_and_charges_preparation (hepta_pred1.test_observed_policy.ObservedPolicyTests.test_information_value_uses_posterior_max_and_charges_preparation) ... ok
+2026-11-12T00:32:46.7710580Z test_no_scenarios_stops_and_inconsistent_scenarios_are_rejected (hepta_pred1.test_observed_policy.ObservedPolicyTests.test_no_scenarios_stops_and_inconsistent_scenarios_are_rejected) ... ok
+2026-11-12T00:32:46.9345820Z test_cli_pipeline_has_bound_checkpoints_and_no_backdated_decisions (hepta_pred1.test_observed_run.ObservedRunTests.test_cli_pipeline_has_bound_checkpoints_and_no_backdated_decisions) ... ok
+2026-11-12T00:32:46.9753450Z test_confirmation_entries_are_refused_before_opening_them (hepta_pred1.test_observed_run.ObservedRunTests.test_confirmation_entries_are_refused_before_opening_them) ... ok
+2026-11-12T00:32:47.0535130Z test_failed_fit_preserves_partial_model_and_terminal_cost_receipt (hepta_pred1.test_observed_run.ObservedRunTests.test_failed_fit_preserves_partial_model_and_terminal_cost_receipt) ... ok
+2026-11-12T00:32:47.1174760Z test_unsupported_holdout_action_stays_in_denominator (hepta_pred1.test_observed_run.ObservedRunTests.test_unsupported_holdout_action_stays_in_denominator) ... ok
+2026-11-12T00:32:47.1227200Z test_actual_checkpoint_panel_freezes_tie_order_and_inference_charge (hepta_pred1.test_owner_bridge.OwnerBridgeTests.test_actual_checkpoint_panel_freezes_tie_order_and_inference_charge) ... ok
+2026-11-12T00:32:47.1256050Z test_cancel_without_execution_stays_unknown_and_not_zero_label (hepta_pred1.test_owner_bridge.OwnerBridgeTests.test_cancel_without_execution_stays_unknown_and_not_zero_label) ... ok
+2026-11-12T00:32:47.1286510Z test_complete_join_preserves_continuous_readback_and_snapshot (hepta_pred1.test_owner_bridge.OwnerBridgeTests.test_complete_join_preserves_continuous_readback_and_snapshot) ... ok
+2026-11-12T00:32:47.1319030Z test_false_same_information_and_understated_wall_are_rejected (hepta_pred1.test_owner_bridge.OwnerBridgeTests.test_false_same_information_and_understated_wall_are_rejected) ... ok
+2026-11-12T00:32:47.1346350Z test_retrospective_dispatch_cannot_be_frozen_as_prospective (hepta_pred1.test_owner_bridge.OwnerBridgeTests.test_retrospective_dispatch_cannot_be_frozen_as_prospective) ... ok
+2026-11-12T00:32:47.1382790Z test_settlement_and_mismatched_binding_never_become_effect_labels (hepta_pred1.test_owner_bridge.OwnerBridgeTests.test_settlement_and_mismatched_binding_never_become_effect_labels) ... ok
+2026-11-12T00:32:47.1484280Z test_missing_database_and_bad_bounds_never_create_owner (hepta_pred1.test_owner_capture.OwnerCaptureTests.test_missing_database_and_bad_bounds_never_create_owner) ... ok
+2026-11-12T00:32:47.1570730Z test_oversized_identity_is_rejected_before_export (hepta_pred1.test_owner_capture.OwnerCaptureTests.test_oversized_identity_is_rejected_before_export) ... ok
+2026-11-12T00:32:47.1724990Z test_paginated_wal_capture_preserves_rows_without_effect_labels (hepta_pred1.test_owner_capture.OwnerCaptureTests.test_paginated_wal_capture_preserves_rows_without_effect_labels) ... ok
+2026-11-12T00:32:47.1751050Z test_action_ablation_removes_history_and_query_in_both_paths (hepta_pred1.test_preparation.FixedOneTests.test_action_ablation_removes_history_and_query_in_both_paths) ... ok
+2026-11-12T00:32:47.1811630Z test_actual_kernels_match_uncached_fixed_one_with_fewer_state_updates (hepta_pred1.test_preparation.FixedOneTests.test_actual_kernels_match_uncached_fixed_one_with_fewer_state_updates) ... ok
+2026-11-12T00:32:47.1828000Z test_all_policies_are_frozen_before_evaluator_and_legacy_names_are_explicit (hepta_pred1.test_preparation.FixedOneTests.test_all_policies_are_frozen_before_evaluator_and_legacy_names_are_explicit) ... ok
+2026-11-12T00:32:47.1829490Z test_candidate_mutation_cannot_change_the_reused_real_state (hepta_pred1.test_preparation.FixedOneTests.test_candidate_mutation_cannot_change_the_reused_real_state) ... ok
+2026-11-12T00:32:47.1838110Z test_full_support_plus_exact_operation_cost_and_time_boundaries (hepta_pred1.test_preparation.FixedOneTests.test_full_support_plus_exact_operation_cost_and_time_boundaries) ... ok
+2026-11-12T00:32:47.1852040Z test_mixed_admission_charges_only_executed_model_and_choice_work (hepta_pred1.test_preparation.FixedOneTests.test_mixed_admission_charges_only_executed_model_and_choice_work) ... ok
+2026-11-12T00:32:47.1854500Z test_no_budget_or_legal_action_stops_before_state_or_head_allocation (hepta_pred1.test_preparation.FixedOneTests.test_no_budget_or_legal_action_stops_before_state_or_head_allocation) ... ok
+2026-11-12T00:32:47.1856940Z test_only_legal_admitted_rows_and_one_observed_prefix_are_computed (hepta_pred1.test_preparation.FixedOneTests.test_only_legal_admitted_rows_and_one_observed_prefix_are_computed) ... ok
+2026-11-12T00:32:47.1858990Z test_tariff_and_override_errors_are_rejected_before_model_calls (hepta_pred1.test_preparation.FixedOneTests.test_tariff_and_override_errors_are_rejected_before_model_calls) ... ok
+2026-11-12T00:32:47.1873400Z test_budget_and_deadline_reserve_full_support_not_predicted_cost (hepta_pred1.test_preparation.PreparationTests.test_budget_and_deadline_reserve_full_support_not_predicted_cost) ... ok
+2026-11-12T00:32:47.1874560Z test_confirmation_and_malformed_groups_are_not_development (hepta_pred1.test_preparation.PreparationTests.test_confirmation_and_malformed_groups_are_not_development) ... ok
+2026-11-12T00:32:47.1883880Z test_decision_delay_is_reserved_and_not_subtracted_twice_at_choice (hepta_pred1.test_preparation.PreparationTests.test_decision_delay_is_reserved_and_not_subtracted_twice_at_choice) ... ok
+2026-11-12T00:32:47.1897810Z test_evaluator_changes_cannot_change_frozen_choices (hepta_pred1.test_preparation.PreparationTests.test_evaluator_changes_cannot_change_frozen_choices) ... ok
+2026-11-12T00:32:47.1905390Z test_evaluator_unavailable_until_all_predictions_finish (hepta_pred1.test_preparation.PreparationTests.test_evaluator_unavailable_until_all_predictions_finish) ... ok
+2026-11-12T00:32:47.1912620Z test_fixed_baselines_share_charge_and_do_not_mutate_inputs (hepta_pred1.test_preparation.PreparationTests.test_fixed_baselines_share_charge_and_do_not_mutate_inputs) ... ok
+2026-11-12T00:32:47.1916920Z test_illegal_preferred_action_never_selected (hepta_pred1.test_preparation.PreparationTests.test_illegal_preferred_action_never_selected) ... ok
+2026-11-12T00:32:47.1920270Z test_invalid_public_inputs_and_probability_mass_rejected (hepta_pred1.test_preparation.PreparationTests.test_invalid_public_inputs_and_probability_mass_rejected) ... ok
+2026-11-12T00:32:47.1927880Z test_joint_choice_and_once_only_prefix_preparation_decision_cost (hepta_pred1.test_preparation.PreparationTests.test_joint_choice_and_once_only_prefix_preparation_decision_cost) ... ok
+2026-11-12T00:32:47.1932460Z test_mixed_admission_queries_only_admitted_rows (hepta_pred1.test_preparation.PreparationTests.test_mixed_admission_queries_only_admitted_rows) ... ok
+2026-11-12T00:32:47.1934630Z test_no_legal_or_budgeted_option_stops_before_model_execution (hepta_pred1.test_preparation.PreparationTests.test_no_legal_or_budgeted_option_stops_before_model_execution) ... ok
+2026-11-12T00:32:47.1949800Z test_original_commitment_is_required_and_content_address_is_immutable (hepta_pred1.test_recover.RecoveryTests.test_original_commitment_is_required_and_content_address_is_immutable) ... ok
+2026-11-12T00:32:47.1951170Z test_replay_excludes_measurement_timing_but_never_scientific_values (hepta_pred1.test_recover.RecoveryTests.test_replay_excludes_measurement_timing_but_never_scientific_values) ... ok
+2026-11-12T00:32:47.1952620Z test_actual_eight_fit_run_retains_exact_identity_bytes_and_create_only_output (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_actual_eight_fit_run_retains_exact_identity_bytes_and_create_only_output) ... skipped 'Linux research execution wrapper'
+2026-11-12T00:32:47.1954120Z test_escalated_timeout_exit_race_still_writes_terminal_receipt (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_escalated_timeout_exit_race_still_writes_terminal_receipt) ... skipped 'Linux research execution wrapper'
+2026-11-12T00:32:47.1955510Z test_launch_failure_is_retained_without_retry_or_fake_result (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_launch_failure_is_retained_without_retry_or_fake_result) ... skipped 'Linux research execution wrapper'
+2026-11-12T00:32:47.1956810Z test_mismatched_registration_refuses_before_output_or_child_launch (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_mismatched_registration_refuses_before_output_or_child_launch) ... skipped 'Linux research execution wrapper'
+2026-11-12T00:32:47.1958570Z test_successful_child_cannot_make_changed_or_unreadable_source_replayable (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_successful_child_cannot_make_changed_or_unreadable_source_replayable) ... skipped 'Linux research execution wrapper'
+2026-11-12T00:32:47.1960090Z test_timeout_terminates_only_the_child_owned_session_and_retains_receipt (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_timeout_terminates_only_the_child_owned_session_and_retains_receipt) ... skipped 'Linux research execution wrapper'
+2026-11-12T00:32:47.1964750Z test_paired_seed_inference_keeps_training_denominator (hepta_pred1.test_run.CampaignTests.test_paired_seed_inference_keeps_training_denominator) ... ok
+2026-11-12T00:32:47.8869410Z test_real_campaign_freezes_before_new_seeds_and_confirmation (hepta_pred1.test_run.CampaignTests.test_real_campaign_freezes_before_new_seeds_and_confirmation) ... ok
+2026-11-12T00:32:47.9202290Z test_actual_forward_parity_all_model_kinds (hepta_pred1.test_shadow_model.ShadowModelTests.test_actual_forward_parity_all_model_kinds) ... ok
+2026-11-12T00:32:47.9296610Z test_checkpoint_limit_and_malformed_npy_fail_before_model_load (hepta_pred1.test_shadow_model.ShadowModelTests.test_checkpoint_limit_and_malformed_npy_fail_before_model_load) ... ok
+2026-11-12T00:32:47.9366270Z test_checkpoint_schema_identity_and_contract_refuse (hepta_pred1.test_shadow_model.ShadowModelTests.test_checkpoint_schema_identity_and_contract_refuse) ... ok
+2026-11-12T00:32:47.9544520Z test_create_only_and_later_readback_cannot_enter_snapshot (hepta_pred1.test_shadow_model.ShadowModelTests.test_create_only_and_later_readback_cannot_enter_snapshot) ... ok
+2026-11-12T00:32:47.9698220Z test_nonfinite_inputs_parameters_and_outputs_refuse (hepta_pred1.test_shadow_model.ShadowModelTests.test_nonfinite_inputs_parameters_and_outputs_refuse) ... ok
+2026-11-12T00:32:47.9854200Z test_shared_prefix_counts_and_readonly_state (hepta_pred1.test_shadow_model.ShadowModelTests.test_shared_prefix_counts_and_readonly_state) ... ok
+2026-11-12T00:32:48.0034170Z test_single_candidate_only_one_head_and_changed_query (hepta_pred1.test_shadow_model.ShadowModelTests.test_single_candidate_only_one_head_and_changed_query) ... ok
+2026-11-12T00:32:48.0130880Z test_state_mutation_and_duplicate_candidates_refuse (hepta_pred1.test_shadow_model.ShadowModelTests.test_state_mutation_and_duplicate_candidates_refuse) ... ok
+2026-11-12T00:32:48.0233320Z test_verified_bytes_ignore_checkpoint_path_replacement (hepta_pred1.test_shadow_model.ShadowModelTests.test_verified_bytes_ignore_checkpoint_path_replacement) ... ok
+2026-11-12T00:32:48.0249710Z test_action_and_horizon_change_normalized_distribution (hepta_pred1.test_simulator.SimulatorTests.test_action_and_horizon_change_normalized_distribution) ... ok
+2026-11-12T00:32:48.0707200Z test_dataset_replay_groups_and_observation_coarsening (hepta_pred1.test_simulator.SimulatorTests.test_dataset_replay_groups_and_observation_coarsening) ... ok
+2026-11-12T00:32:48.0724340Z test_delayed_bayes_filter_matches_full_path_enumeration (hepta_pred1.test_simulator.SimulatorTests.test_delayed_bayes_filter_matches_full_path_enumeration) ... ok
+2026-11-12T00:32:48.0744810Z test_evidence_clock_is_after_variable_history_and_preparation (hepta_pred1.test_simulator.SimulatorTests.test_evidence_clock_is_after_variable_history_and_preparation) ... ok
+2026-11-12T00:32:48.0746040Z test_future_readback_does_not_rewrite_features_or_belief (hepta_pred1.test_simulator.SimulatorTests.test_future_readback_does_not_rewrite_features_or_belief) ... ok
+2026-11-12T00:32:48.0746870Z 
+2026-11-12T00:32:48.0747190Z ----------------------------------------------------------------------
+2026-11-12T00:32:48.0747610Z Ran 182 tests in 6.264s
+2026-11-12T00:32:48.0747740Z 
+2026-11-12T00:32:48.0747810Z OK (skipped=6)
+2026-11-12T00:32:48.1126580Z Post job cleanup.
+2026-11-12T00:32:48.2192090Z UV_CACHE_DIR is already set to /Users/runner/work/_temp/setup-uv-cache
+2026-11-12T00:32:48.2194050Z UV_PYTHON_INSTALL_DIR is already set to /Users/runner/work/_temp/uv-python-dir
+2026-11-12T00:32:48.2201700Z Pruning cache...
+2026-11-12T00:32:48.2211790Z [command]/Users/runner/hostedtoolcache/uv/0.11.3/aarch64/uv cache prune --ci --force
+2026-11-12T00:32:48.2310300Z Pruning cache at: /Users/runner/work/_temp/setup-uv-cache
+2026-11-12T00:32:48.3192770Z Removed 1912 files (38.6MiB)
+2026-11-12T00:32:48.3207130Z Including uv cache path: /Users/runner/work/_temp/setup-uv-cache
+2026-11-12T00:32:48.3310270Z [command]/opt/homebrew/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/runner/work/hepta-private-ci/hepta-private-ci --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt
+2026-11-12T00:32:48.9481780Z Sent 509172 of 509172 (100.0%), 1.2 MBs/sec
+2026-11-12T00:32:49.1521410Z uv cache saved with key: setup-uv-2-aarch64-apple-darwin-macos-16-3.15.2-pruned-d170940cd327159e99cb5d8d2ff6af641085ed91253ab29548574099aaab516b
+2026-11-12T00:32:49.2375070Z Post job cleanup.
+2026-11-12T00:32:49.3223080Z [command]/opt/homebrew/bin/git version
+2026-11-12T00:32:49.3296770Z git version 2.56.0
+2026-11-12T00:32:49.3317710Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/6a9e0d32-f892-47b6-9f8e-1acb8ce634b6/.gitconfig'
+2026-11-12T00:32:49.3326020Z Temporarily overriding HOME='/Users/runner/work/_temp/6a9e0d32-f892-47b6-9f8e-1acb8ce634b6' before making global git config changes
+2026-11-12T00:32:49.3326830Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T00:32:49.3329110Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T00:32:49.3398540Z Removing SSH command configuration
+2026-11-12T00:32:49.3403320Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T00:32:49.3472710Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T00:32:49.4304560Z Removing HTTP extra header
+2026-11-12T00:32:49.4310110Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T00:32:49.4378620Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T00:32:49.5205070Z Removing includeIf entries pointing to credentials config files
+2026-11-12T00:32:49.5211240Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T00:32:49.5280060Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T00:32:49.6218650Z Cleaning up orphan processes
