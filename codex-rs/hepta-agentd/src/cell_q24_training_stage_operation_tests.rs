@@ -1,6 +1,8 @@
 //! Real original task, Dataset, Trainer and Generator owners. This tests the
 //! synchronous operation boundary, not a deployed Root stage or independent B.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 #[tokio::test]

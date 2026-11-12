@@ -2,6 +2,8 @@
 //! provenance. Fixture issuers and actual local task files remain components,
 //! not an authenticated Root historical consumer or independent B acceptance.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 use crate::project_original_q24_dataset_v1;
 

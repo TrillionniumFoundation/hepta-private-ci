@@ -565,7 +565,7 @@ impl Fixture {
     }
 }
 
-fn assign_component_artifacts(root: &Path) -> anyhow::Result<()> {
+pub(super) fn assign_component_artifacts(root: &Path) -> anyhow::Result<()> {
     let mut paths = vec![root.to_owned()];
     let mut index = 0;
     while index < paths.len() {

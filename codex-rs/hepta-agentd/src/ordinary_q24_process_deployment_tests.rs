@@ -84,8 +84,8 @@ impl OriginalAFilePaths {
             .first_mut()
             .ok_or_else(|| anyhow::anyhow!("original finite route absent"))?;
         original.cell = definition.clone();
-        circuit.parameter_bundle_digest =
-            Sha256Digest::parse(definition.bundle_digest.to_string())?;
+        circuit.parameter_bundle_digest = Sha256Digest::parse(definition.bundle_digest.to_string())
+            .map_err(anyhow::Error::msg)?;
         circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
         let routes = &bindings[0].routes;
         let mut cell = self.cell_data(source.objective_digest);

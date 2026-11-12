@@ -1,6 +1,8 @@
 //! Original owner compatibility and real journal release. Fixture role keys
 //! authorize only this component test, not Root enrollment or independent B.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 use crate::CellQ24DatasetFreezePreparationV1;
 use crate::OriginalCellQ24DatasetFreezeOwnerV1;
