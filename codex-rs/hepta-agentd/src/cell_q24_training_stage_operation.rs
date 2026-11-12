@@ -90,10 +90,7 @@ impl<'read, TW: AnchorWitnessStore, RW: AnchorWitnessStore>
     pub(crate) fn read_original_training_evidence(
         &mut self,
     ) -> Result<OriginalQ24TrainingOperationEvidenceV1<'read>, RuntimeError> {
-        let completed = self
-            .owners
-            .read_original_completion_with_source(self.source)
-            .map_err(owner_error)?;
+        let completed = Self::read_original_completion_in_operation(self)?;
         let mut cut =
             codex_hepta_learning_artifacts::LearningIterationCoordinatorV1::from_snapshot(
                 self.dataset.clone(),
@@ -107,6 +104,14 @@ impl<'read, TW: AnchorWitnessStore, RW: AnchorWitnessStore>
             snapshot: cut.snapshot().clone(),
             source: self.source,
         })
+    }
+
+    pub(crate) fn read_original_completion_in_operation(
+        &mut self,
+    ) -> Result<OriginalCellQ24TrainingCompletionV1, RuntimeError> {
+        self.owners
+            .read_original_completion_with_source(self.source)
+            .map_err(owner_error)
     }
 }
 

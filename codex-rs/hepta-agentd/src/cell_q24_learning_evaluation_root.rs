@@ -24,7 +24,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     ) -> Result<(), Error> {
         let inner = Arc::clone(&self.inner);
         self.inner
-            .in_lane(move |owners, _, _| {
+            .in_original_prepared_lane(move |owners, _, _| {
                 if owners.evaluation.is_some() || owners.root_evaluation.is_some() {
                     return Err(Error::WrongScope);
                 }
