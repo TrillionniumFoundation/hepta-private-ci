@@ -143,6 +143,49 @@ fn definition_data(cell: &CellDefinitionV1) -> Value {
     let c = &r.calibration;
     let e = &r.resource_envelope;
     let n = &cell.native;
+    let calibration = json!({
+        "calibration_artifact_digest": c.calibration_artifact_digest.into_array(),
+        "ood_artifact_digest": c.ood_artifact_digest.into_array(), "generation": c.generation.get(),
+        "valid_from_sequence": c.valid_from_sequence, "expires_after_sequence": c.expires_after_sequence,
+        "zero_confidence_error_q24": c.zero_confidence_error_q24,
+        "maximum_in_domain_error_q24": c.maximum_in_domain_error_q24,
+        "minimum_confidence_ppm": c.minimum_confidence_ppm, "maximum_ood_ppm": c.maximum_ood_ppm,
+        "minimum_active_ppm": c.minimum_active_ppm, "maximum_active_ppm": c.maximum_active_ppm,
+        "maximum_projection_count": c.maximum_projection_count, "measured_ece_ppm": c.measured_ece_ppm,
+        "maximum_ece_ppm": c.maximum_ece_ppm,
+        "measured_false_acceptance_ppm": c.measured_false_acceptance_ppm,
+        "maximum_false_acceptance_ppm": c.maximum_false_acceptance_ppm
+    });
+    let envelope = json!({
+        "p95_latency_micros": e.p95_latency_micros, "p99_latency_micros": e.p99_latency_micros,
+        "transient_allocation_bytes": e.transient_allocation_bytes,
+        "checkpoint_bytes": e.checkpoint_bytes, "write_amplification_ppm": e.write_amplification_ppm
+    });
+    let runtime = json!({
+        "config_id": r.config_id.as_str(), "generation": r.generation.get(),
+        "model_id": r.model_id.as_str(), "model_manifest_digest": r.model_manifest_digest.into_array(),
+        "encoder_digest": r.encoder_digest.into_array(), "head_digest": r.head_digest.into_array(),
+        "weights_digest": r.weights_digest.into_array(), "tokenizer_digest": r.tokenizer_digest.into_array(),
+        "preprocessor_digest": r.preprocessor_digest.into_array(),
+        "quantization_digest": r.quantization_digest.into_array(),
+        "runtime_digest": r.runtime_digest.into_array(), "device_digest": r.device_digest.into_array(),
+        "normalization_digest": r.normalization_digest.into_array(),
+        "native_config_digest": r.native_config_digest.into_array(),
+        "input_feature_dimension": r.input_feature_dimension, "state_width": r.state_width,
+        "modulator_dimension": r.modulator_dimension,
+        "calibration": calibration, "resource_envelope": envelope
+    });
+    let native = json!({
+        "model_digest": n.model_digest.into_array(), "normalization_digest": n.normalization_digest.into_array(),
+        "generation": n.generation.get(), "width": n.width, "top_k": n.top_k,
+        "temporal_decay_q24": n.temporal_decay_q24, "inhibition_gain_q24": n.inhibition_gain_q24,
+        "inhibition": n.inhibition.iter().map(|edge| json!({
+            "source": edge.source, "target": edge.target, "weight_q24": edge.weight_q24
+        })).collect::<Vec<_>>(),
+        "activity_decay_q24": n.activity_decay_q24, "target_activity_q24": n.target_activity_q24,
+        "threshold_rate_q24": n.threshold_rate_q24, "threshold_min_q24": n.threshold_min_q24,
+        "threshold_max_q24": n.threshold_max_q24, "eligibility_decay_q24": n.eligibility_decay_q24
+    });
     json!({
         "cell_id": cell.cell_id.as_str(),
         "bundle_digest": cell.bundle_digest.into_array(),
@@ -159,48 +202,7 @@ fn definition_data(cell: &CellDefinitionV1) -> Value {
                 CellCandidateKindV1::SlowPath => "slow_path",
             }
         })).collect::<Vec<_>>(),
-        "runtime": {
-            "config_id": r.config_id.as_str(), "generation": r.generation.get(),
-            "model_id": r.model_id.as_str(), "model_manifest_digest": r.model_manifest_digest.into_array(),
-            "encoder_digest": r.encoder_digest.into_array(), "head_digest": r.head_digest.into_array(),
-            "weights_digest": r.weights_digest.into_array(), "tokenizer_digest": r.tokenizer_digest.into_array(),
-            "preprocessor_digest": r.preprocessor_digest.into_array(),
-            "quantization_digest": r.quantization_digest.into_array(),
-            "runtime_digest": r.runtime_digest.into_array(), "device_digest": r.device_digest.into_array(),
-            "normalization_digest": r.normalization_digest.into_array(),
-            "native_config_digest": r.native_config_digest.into_array(),
-            "input_feature_dimension": r.input_feature_dimension, "state_width": r.state_width,
-            "modulator_dimension": r.modulator_dimension,
-            "calibration": {
-                "calibration_artifact_digest": c.calibration_artifact_digest.into_array(),
-                "ood_artifact_digest": c.ood_artifact_digest.into_array(), "generation": c.generation.get(),
-                "valid_from_sequence": c.valid_from_sequence, "expires_after_sequence": c.expires_after_sequence,
-                "zero_confidence_error_q24": c.zero_confidence_error_q24,
-                "maximum_in_domain_error_q24": c.maximum_in_domain_error_q24,
-                "minimum_confidence_ppm": c.minimum_confidence_ppm, "maximum_ood_ppm": c.maximum_ood_ppm,
-                "minimum_active_ppm": c.minimum_active_ppm, "maximum_active_ppm": c.maximum_active_ppm,
-                "maximum_projection_count": c.maximum_projection_count, "measured_ece_ppm": c.measured_ece_ppm,
-                "maximum_ece_ppm": c.maximum_ece_ppm,
-                "measured_false_acceptance_ppm": c.measured_false_acceptance_ppm,
-                "maximum_false_acceptance_ppm": c.maximum_false_acceptance_ppm
-            },
-            "resource_envelope": {
-                "p95_latency_micros": e.p95_latency_micros, "p99_latency_micros": e.p99_latency_micros,
-                "transient_allocation_bytes": e.transient_allocation_bytes,
-                "checkpoint_bytes": e.checkpoint_bytes, "write_amplification_ppm": e.write_amplification_ppm
-            }
-        },
-        "native": {
-            "model_digest": n.model_digest.into_array(), "normalization_digest": n.normalization_digest.into_array(),
-            "generation": n.generation.get(), "width": n.width, "top_k": n.top_k,
-            "temporal_decay_q24": n.temporal_decay_q24, "inhibition_gain_q24": n.inhibition_gain_q24,
-            "inhibition": n.inhibition.iter().map(|edge| json!({
-                "source": edge.source, "target": edge.target, "weight_q24": edge.weight_q24
-            })).collect::<Vec<_>>(),
-            "activity_decay_q24": n.activity_decay_q24, "target_activity_q24": n.target_activity_q24,
-            "threshold_rate_q24": n.threshold_rate_q24, "threshold_min_q24": n.threshold_min_q24,
-            "threshold_max_q24": n.threshold_max_q24, "eligibility_decay_q24": n.eligibility_decay_q24
-        }
+        "runtime": runtime, "native": native
     })
 }
 
