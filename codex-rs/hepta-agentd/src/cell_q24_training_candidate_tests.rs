@@ -62,7 +62,7 @@ async fn original_candidate_material_reconstructs_actual_pages_and_cold_original
         training.clone(),
     )?;
     let material = client.readback().await?;
-    assert_eq!(material.bundle(), candidate);
+    assert_eq!(material.bundle(), candidate.as_ref());
     assert_eq!(material.model().components(), &candidate.components);
     assert_eq!(
         Digest32::of_bytes(material.heads()),

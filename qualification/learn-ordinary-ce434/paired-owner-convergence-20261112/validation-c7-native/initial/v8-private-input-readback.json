@@ -1,0 +1,22 @@
+{
+  "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "original_manifest_unchanged": true,
+  "private_artifacts": [
+    {
+      "key": "RUSTY_V8_ARCHIVE",
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "acquisition": "read-only reuse of the exact original V8 pair recovered and full-hash-verified in dependency-recovery-441de918-v1"
+    },
+    {
+      "key": "RUSTY_V8_SRC_BINDING_PATH",
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "acquisition": "read-only reuse of the exact original V8 pair recovered and full-hash-verified in dependency-recovery-441de918-v1"
+    }
+  ],
+  "copied_or_downloaded_during_this_native_invocation": false,
+  "recovery_record_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc"
+}
