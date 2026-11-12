@@ -31,6 +31,7 @@ mod inputs;
 #[path = "root_historical_learning_trust_client.rs"]
 mod learning_trust;
 pub(crate) use learning_trust::OriginalHistoricalLearningTrustV1;
+pub(crate) use learning_trust::OriginalHistoricalOperationV1;
 pub(crate) use learning_trust::OriginalHistoricalStageAuthoritiesV1;
 
 #[path = "root_post_a_learning_client.rs"]
@@ -40,6 +41,19 @@ pub(crate) use post_a::OriginalPostAFrozenLearningAckV1;
 struct Lane {
     stream: OriginalPublicationStream,
     sequence: u64,
+}
+
+struct FenceReadOnDrop<'read> {
+    client: &'read RootHistoricalTaskReadClientV1,
+    armed: bool,
+}
+
+impl Drop for FenceReadOnDrop<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.client.fence();
+        }
+    }
 }
 
 enum Reply {
@@ -243,19 +257,24 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         &self,
         action: impl FnOnce(&RootHistoricalLedgerReadDataV1) -> io::Result<T>,
     ) -> io::Result<T> {
+        let mut fence = FenceReadOnDrop {
+            client: &self.client,
+            armed: true,
+        };
         let result = (|| {
             if self.client.observe()? != self.data {
                 return Err(refused());
             }
-            let value = action(&self.data.ledger)?;
+            let value = action(&self.data.ledger);
             if self.client.observe()? != self.data {
                 return Err(refused());
             }
-            Ok(value)
+            value
         })();
         if result.is_err() {
             self.client.fence();
         }
+        fence.armed = false;
         result
     }
 }

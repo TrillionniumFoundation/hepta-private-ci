@@ -10,6 +10,10 @@ use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use super::*;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustPayloadV1;
 
+#[path = "root_historical_learning_operation.rs"]
+mod operation;
+pub(crate) use operation::OriginalHistoricalOperationV1;
+
 pub(crate) struct OriginalHistoricalLearningTrustV1 {
     receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
     clock: Arc<dyn AuthorityClock>,
@@ -163,20 +167,7 @@ impl OriginalHistoricalLearningTrustV1 {
             u64,
         ) -> io::Result<T>,
     ) -> io::Result<T> {
-        OriginalHistoricalTaskReadReceiptV1::with_current_read(&self.receipt, |data| {
-            let now = self.clock.now_unix_ms().map_err(io::Error::other)? / 1_000;
-            let (activated, evaluator) = self
-                .payload
-                .activate_for_recipient(self.initial_snapshot(), now)?;
-            self.require_same_activation(&activated, &evaluator)?;
-            let value = action(data, activated.verifier(), &evaluator, now)?;
-            let after = self.clock.now_unix_ms().map_err(io::Error::other)? / 1_000;
-            let (activated, evaluator) = self
-                .payload
-                .activate_for_recipient(self.initial_snapshot(), after)?;
-            self.require_same_activation(&activated, &evaluator)?;
-            Ok(value)
-        })
+        self.with_original_operation(|operation| operation.read_for(self, &self.receipt, action))?
     }
 
     fn require_same_activation(
