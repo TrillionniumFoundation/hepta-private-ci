@@ -139,12 +139,12 @@ fn run_original_cold(
                     "ReadFinalized changed the original C record or complete cut"
                 );
                 anyhow::ensure!(
-                    again.refusal_attempt >= finalized.refusal_attempt,
-                    "C refusal attempt regressed"
+                    again.refusal_attempt > finalized.refusal_attempt,
+                    "second query did not complete a new original C read"
                 );
                 anyhow::ensure!(
-                    accepted.require_unchanged()? >= first_attempt,
-                    "acceptance attempt regressed"
+                    accepted.require_unchanged()? > first_attempt,
+                    "second query did not complete a new acceptance verification"
                 );
                 Ok::<_, anyhow::Error>((first, again))
             })
