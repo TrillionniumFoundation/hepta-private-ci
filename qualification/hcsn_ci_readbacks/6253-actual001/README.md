@@ -1,0 +1,15 @@
+# Four-amplitude Adam and fresh-process resume originals for #6253
+
+This preserves the sole [run43228409724 / job131217519039](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43228409724/job/131217519039) at exact source `994def0b188c5105d0ceb9ace281af7f4bd0e3b2` and frozen identity `hcsn-adjoint-four-amplitudes-adam-resume-20261112-c06d-stage1`.
+
+The producer reports PASS:8 known fresh actors,13 forward and13 adjoint invocations/completions,9 Adam invocations/completions,46 overlapping checks and no unresolved actor cost. Eight updates belong to the positive paths; the ninth is the real unpublished crash-control update. The omit-Adam actor exits42 before forward/Adam; the process-crash actor exits73 after one pending step while old published bytes survive. These are actual outcomes, not budget-only claims.
+
+Full child-tree wall/CPU is27.207213550 /25.452279s, including imports and all actors. The reported RUSAGE_CHILDREN maximum RSS is416776KiB; it is not a measured simultaneous aggregate peak. All eight actor and controller stderr files are empty. Earlier #6248 RED and its separate warning/cost remain unchanged.
+
+The authoritative original ZIP is944384B, SHA256 `31cca7713e060283efc00f55792cb5a30c032355244110836800241a8b46311f`, with66 size/SHA-verified members and17 CRC-checked inner PT/pending ZIPs. It retains every PT, NPZ, journal, actor admission/nonce/PID/terminal and the full RESULT/ACTORS JSON. Those JSON originals are2,201,464 /2,084,237 bytes; they are not fetched as truncated loose text. Lossless archival gzip mirrors retain them under `mirrors/`; MIRRORS.json binds their original hashes and discloses that they are derived transport copies.
+
+The separate independent actual audit preserves its original12-member package, receipt, exact inspector and strict nonexecuting PT reader. It reads all17 payloads, checks complete step1/step2 logical equality, next stochastic loss/target/output/all four gradients,13 live Gx/G-transpose-cotangent records,36 tensor Adam updates, actual omit/crash controls,8 PIDs and all bindings. Maximum raw Adam parameter-update discrepancy is0; moment errors are5.42e-20 /1.65e-24. This audit executes zero candidate/model/Torch/ODE/adjoint/Adam API calls and is not another run. Static001/002 REDs and STATIC003 clear are retained separately as source reviews, not numerical attempts.
+
+All13 original source hashes were freshly recomputed. Archival byte/CRC checks, independent semantic/math audit and actual producer counters retain separate identities. This archive adds zero numerical/model/Torch/optimizer work and requests no rerun.
+
+Scope is the generated same-runtime N7/N12 four-amplitude fixture and optimizer boundaries. No power-loss durability, hostile attestation, cross-runtime restore, in-flight graph/DDE-history state, n512, full-network/prior/migration, historical training, task/energy benefit or adoption follows. HOLD_NO_GO. All new files are outside model workflow paths; source994 and prior975 remain unchanged.

@@ -1,0 +1,387 @@
+﻿2026-11-12T13:34:11.8307731Z Current runner version: '2.338.2'
+2026-11-12T13:34:11.8328758Z ##[group]Runner Image Provisioner
+2026-11-12T13:34:11.8329572Z Hosted Compute Agent
+2026-11-12T13:34:11.8330066Z Version: 20261028.624
+2026-11-12T13:34:11.8330619Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T13:34:11.8331232Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T13:34:11.8331830Z Worker ID: {3594b7f6-6475-466b-9d0f-f5e4cb444c48}
+2026-11-12T13:34:11.8332590Z Region: westus2
+2026-11-12T13:34:11.8333061Z Cloud: Azure
+2026-11-12T13:34:11.8333508Z ##[endgroup]
+2026-11-12T13:34:11.8334668Z ##[group]Operating System
+2026-11-12T13:34:11.8335262Z Ubuntu
+2026-11-12T13:34:11.8335796Z 24.04.5
+2026-11-12T13:34:11.8336237Z LTS
+2026-11-12T13:34:11.8336658Z ##[endgroup]
+2026-11-12T13:34:11.8337178Z ##[group]Runner Image
+2026-11-12T13:34:11.8337707Z Image: ubuntu-24.04
+2026-11-12T13:34:11.8338218Z Version: 20261101.360.1
+2026-11-12T13:34:11.8339277Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T13:34:11.8340581Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T13:34:11.8341394Z ##[endgroup]
+2026-11-12T13:34:11.8342625Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T13:34:11.8344119Z Contents: read
+2026-11-12T13:34:11.8344674Z Metadata: read
+2026-11-12T13:34:11.8345170Z ##[endgroup]
+2026-11-12T13:34:11.8346884Z Secret source: Actions
+2026-11-12T13:34:11.8347724Z Cache mode: write
+2026-11-12T13:34:11.8348299Z Prepare workflow directory
+2026-11-12T13:34:11.8759492Z Prepare all required actions
+2026-11-12T13:34:11.8799295Z Getting action download info
+2026-11-12T13:34:12.1955775Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-12T13:34:12.2777224Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-12T13:34:12.3865479Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-12T13:34:12.6042925Z Complete job name: adam-restoration
+2026-11-12T13:34:12.6685050Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-12T13:34:12.6685906Z with:
+2026-11-12T13:34:12.6686295Z   ref: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:12.6686788Z   persist-credentials: false
+2026-11-12T13:34:12.6687268Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T13:34:12.6690591Z   token: ***
+2026-11-12T13:34:12.6690945Z   ssh-strict: true
+2026-11-12T13:34:12.6691299Z   ssh-user: git
+2026-11-12T13:34:12.6691639Z   clean: true
+2026-11-12T13:34:12.6692068Z   sparse-checkout-cone-mode: true
+2026-11-12T13:34:12.6692625Z   fetch-depth: 1
+2026-11-12T13:34:12.6692972Z   fetch-tags: false
+2026-11-12T13:34:12.6693347Z   show-progress: true
+2026-11-12T13:34:12.6693705Z   lfs: false
+2026-11-12T13:34:12.6694036Z   submodules: false
+2026-11-12T13:34:12.6694419Z   set-safe-directory: true
+2026-11-12T13:34:12.6694833Z   allow-unsafe-pr-checkout: false
+2026-11-12T13:34:12.6695739Z env:
+2026-11-12T13:34:12.6696114Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:34:12.6696503Z   OMP_NUM_THREADS: 1
+2026-11-12T13:34:12.6696859Z   MKL_NUM_THREADS: 1
+2026-11-12T13:34:12.6697235Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:34:12.6697723Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:12.6698236Z ##[endgroup]
+2026-11-12T13:34:12.9187560Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T13:34:12.9189694Z ##[group]Getting Git version info
+2026-11-12T13:34:12.9190710Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T13:34:12.9192293Z [command]/usr/bin/git version
+2026-11-12T13:34:12.9263282Z git version 2.56.0
+2026-11-12T13:34:12.9308968Z ##[endgroup]
+2026-11-12T13:34:12.9315201Z Temporarily overriding HOME='/home/runner/work/_temp/2d8821bd-0100-42c3-b7b7-0fde363b60f3' before making global git config changes
+2026-11-12T13:34:12.9323372Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T13:34:12.9325167Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T13:34:12.9374727Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T13:34:12.9378869Z ##[group]Initializing the repository
+2026-11-12T13:34:12.9384785Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T13:34:12.9495329Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T13:34:12.9496257Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T13:34:12.9496990Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T13:34:12.9497583Z hint: call:
+2026-11-12T13:34:12.9497916Z hint:
+2026-11-12T13:34:12.9498349Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T13:34:12.9499086Z hint:
+2026-11-12T13:34:12.9499555Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T13:34:12.9500310Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T13:34:12.9500901Z hint:
+2026-11-12T13:34:12.9501365Z hint: 	git branch -m <name>
+2026-11-12T13:34:12.9501801Z hint:
+2026-11-12T13:34:12.9502508Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T13:34:12.9506495Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T13:34:12.9517747Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T13:34:12.9563777Z ##[endgroup]
+2026-11-12T13:34:12.9564719Z ##[group]Disabling automatic garbage collection
+2026-11-12T13:34:12.9567456Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T13:34:12.9601701Z ##[endgroup]
+2026-11-12T13:34:12.9602576Z ##[group]Setting up auth
+2026-11-12T13:34:12.9609456Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T13:34:12.9644159Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T13:34:12.9989395Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T13:34:13.0027829Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T13:34:13.0234072Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T13:34:13.0271816Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T13:34:13.0479762Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T13:34:13.0523883Z ##[endgroup]
+2026-11-12T13:34:13.0524555Z ##[group]Fetching the repository
+2026-11-12T13:34:13.0533622Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:18.6627534Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T13:34:18.6629155Z  * branch            994def0b188c5105d0ceb9ace281af7f4bd0e3b2 -> FETCH_HEAD
+2026-11-12T13:34:18.6633170Z ##[endgroup]
+2026-11-12T13:34:18.6634640Z ##[group]Determining the checkout info
+2026-11-12T13:34:18.6711195Z ##[endgroup]
+2026-11-12T13:34:18.6723448Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T13:34:18.6729556Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T13:34:18.6735642Z ##[group]Checking out the ref
+2026-11-12T13:34:18.6739313Z [command]/usr/bin/git checkout --progress --force 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:19.4648979Z Note: switching to '994def0b188c5105d0ceb9ace281af7f4bd0e3b2'.
+2026-11-12T13:34:19.4649469Z 
+2026-11-12T13:34:19.4649702Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T13:34:19.4650145Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T13:34:19.4650572Z state without impacting any branches by switching back to a branch.
+2026-11-12T13:34:19.4650828Z 
+2026-11-12T13:34:19.4651017Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T13:34:19.4651473Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T13:34:19.4651694Z 
+2026-11-12T13:34:19.4651816Z   git switch -c <new-branch-name>
+2026-11-12T13:34:19.4651988Z 
+2026-11-12T13:34:19.4652100Z Or undo this operation with:
+2026-11-12T13:34:19.4652518Z 
+2026-11-12T13:34:19.4652665Z   git switch -
+2026-11-12T13:34:19.4652889Z 
+2026-11-12T13:34:19.4653286Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T13:34:19.4654859Z 
+2026-11-12T13:34:19.4655246Z HEAD is now at 994def0 Preserve unknown launch effects before spawning bounded Adam actors
+2026-11-12T13:34:19.4689752Z ##[endgroup]
+2026-11-12T13:34:19.4744517Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T13:34:19.4774846Z 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:19.4783043Z ##[group]Removing auth
+2026-11-12T13:34:19.4786812Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T13:34:19.4820921Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T13:34:19.5044558Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T13:34:19.5075446Z http.https://github.com/.extraheader
+2026-11-12T13:34:19.5081220Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-12T13:34:19.5117478Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T13:34:19.5333590Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T13:34:19.5368214Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T13:34:19.5584369Z ##[endgroup]
+2026-11-12T13:34:19.5809076Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-12T13:34:19.5809443Z with:
+2026-11-12T13:34:19.5809646Z   python-version: 3.12
+2026-11-12T13:34:19.5809865Z   check-latest: false
+2026-11-12T13:34:19.5811976Z   token: ***
+2026-11-12T13:34:19.5812378Z   update-environment: true
+2026-11-12T13:34:19.5812652Z   allow-prereleases: false
+2026-11-12T13:34:19.5812884Z   freethreaded: false
+2026-11-12T13:34:19.5813095Z env:
+2026-11-12T13:34:19.5813293Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:34:19.5813512Z   OMP_NUM_THREADS: 1
+2026-11-12T13:34:19.5813720Z   MKL_NUM_THREADS: 1
+2026-11-12T13:34:19.5813939Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:34:19.5814224Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:19.5814528Z ##[endgroup]
+2026-11-12T13:34:19.6962488Z ##[group]Installed versions
+2026-11-12T13:34:19.7047244Z (node:2208) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T13:34:19.7047883Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T13:34:19.7048368Z Successfully set up CPython (3.12.16)
+2026-11-12T13:34:19.7049054Z ##[endgroup]
+2026-11-12T13:34:19.7203817Z ##[group]Run python -m pip install numpy==2.3.5 scipy==1.17.0
+2026-11-12T13:34:19.7204507Z [36;1mpython -m pip install numpy==2.3.5 scipy==1.17.0[0m
+2026-11-12T13:34:19.7244658Z shell: /usr/bin/bash -e {0}
+2026-11-12T13:34:19.7245029Z env:
+2026-11-12T13:34:19.7245298Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:34:19.7245540Z   OMP_NUM_THREADS: 1
+2026-11-12T13:34:19.7245749Z   MKL_NUM_THREADS: 1
+2026-11-12T13:34:19.7245974Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:34:19.7246277Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:19.7246725Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:19.7247114Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T13:34:19.7247495Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:19.7247828Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:19.7248240Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:19.7248591Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T13:34:19.7248891Z ##[endgroup]
+2026-11-12T13:34:20.6679583Z Collecting numpy==2.3.5
+2026-11-12T13:34:20.7305657Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-12T13:34:20.8513161Z Collecting scipy==1.17.0
+2026-11-12T13:34:20.8588128Z   Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-12T13:34:20.8832954Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-11-12T13:34:21.2587673Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 46.1 MB/s  0:00:00
+2026-11-12T13:34:21.2662278Z Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.0 MB)
+2026-11-12T13:34:21.5978067Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.0/35.0 MB 106.1 MB/s  0:00:00
+2026-11-12T13:34:21.7383332Z Installing collected packages: numpy, scipy
+2026-11-12T13:34:26.6687949Z 
+2026-11-12T13:34:26.6697126Z Successfully installed numpy-2.3.5 scipy-1.17.0
+2026-11-12T13:34:26.6704258Z 
+2026-11-12T13:34:26.6704565Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-12T13:34:26.6705063Z [notice] To update, run: pip install --upgrade pip
+2026-11-12T13:34:26.7230025Z ##[group]Run python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+2026-11-12T13:34:26.7230635Z [36;1mpython -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu[0m
+2026-11-12T13:34:26.7249927Z shell: /usr/bin/bash -e {0}
+2026-11-12T13:34:26.7250154Z env:
+2026-11-12T13:34:26.7250326Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:34:26.7250522Z   OMP_NUM_THREADS: 1
+2026-11-12T13:34:26.7250702Z   MKL_NUM_THREADS: 1
+2026-11-12T13:34:26.7250883Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:34:26.7251137Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:26.7251460Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:26.7251796Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T13:34:26.7252290Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:26.7252593Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:26.7252951Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:26.7253258Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T13:34:26.7253538Z ##[endgroup]
+2026-11-12T13:34:26.9785818Z Looking in indexes: https://download.pytorch.org/whl/cpu
+2026-11-12T13:34:27.2907372Z Collecting torch==2.8.0
+2026-11-12T13:34:27.3679591Z   Downloading torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (29 kB)
+2026-11-12T13:34:27.4069610Z Collecting filelock (from torch==2.8.0)
+2026-11-12T13:34:27.4548664Z   Downloading filelock-4.2.4-py3-none-any.whl.metadata (2.0 kB)
+2026-11-12T13:34:27.4766792Z Collecting typing-extensions>=4.10.0 (from torch==2.8.0)
+2026-11-12T13:34:27.4835670Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-12T13:34:27.5002831Z Collecting setuptools (from torch==2.8.0)
+2026-11-12T13:34:27.5143544Z   Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-12T13:34:27.5462525Z Collecting sympy>=1.13.3 (from torch==2.8.0)
+2026-11-12T13:34:27.5532919Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-11-12T13:34:27.5831281Z Collecting networkx (from torch==2.8.0)
+2026-11-12T13:34:27.5900323Z   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+2026-11-12T13:34:27.6111169Z Collecting jinja2 (from torch==2.8.0)
+2026-11-12T13:34:27.6218303Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-11-12T13:34:27.6580462Z Collecting fsspec (from torch==2.8.0)
+2026-11-12T13:34:27.6658044Z   Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+2026-11-12T13:34:27.7024553Z Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.8.0)
+2026-11-12T13:34:27.7098570Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-11-12T13:34:27.7942833Z Collecting MarkupSafe>=2.0 (from jinja2->torch==2.8.0)
+2026-11-12T13:34:27.8275943Z   Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-12T13:34:27.8462857Z Downloading torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (183.9 MB)
+2026-11-12T13:34:32.2141067Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 183.9/183.9 MB 42.2 MB/s  0:00:04
+2026-11-12T13:34:32.2218265Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-11-12T13:34:32.2986302Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 98.2 MB/s  0:00:00
+2026-11-12T13:34:32.3057428Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-11-12T13:34:32.3099610Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 125.6 MB/s  0:00:00
+2026-11-12T13:34:32.3170859Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-12T13:34:32.3255342Z Downloading filelock-4.2.4-py3-none-any.whl (162 kB)
+2026-11-12T13:34:32.3344882Z Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+2026-11-12T13:34:32.3919561Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-11-12T13:34:32.4144615Z Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-12T13:34:32.4231243Z Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+2026-11-12T13:34:32.4424441Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 108.9 MB/s  0:00:00
+2026-11-12T13:34:32.4660233Z Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+2026-11-12T13:34:32.4857184Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 66.9 MB/s  0:00:00
+2026-11-12T13:34:32.7868964Z Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+2026-11-12T13:34:47.5878505Z 
+2026-11-12T13:34:47.5893260Z Successfully installed MarkupSafe-3.0.3 filelock-4.2.4 fsspec-2026.9.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.7 setuptools-78.1.0 sympy-1.14.0 torch-2.8.0+cpu typing-extensions-4.16.0
+2026-11-12T13:34:47.5900261Z 
+2026-11-12T13:34:47.5900537Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-12T13:34:47.5901348Z [notice] To update, run: pip install --upgrade pip
+2026-11-12T13:34:47.6569825Z ##[group]Run python - <<'PY'
+2026-11-12T13:34:47.6570106Z [36;1mpython - <<'PY'[0m
+2026-11-12T13:34:47.6570320Z [36;1mimport hashlib, json, os, subprocess[0m
+2026-11-12T13:34:47.6570573Z [36;1mfrom pathlib import Path[0m
+2026-11-12T13:34:47.6570839Z [36;1mpackage=Path('qualification/hcsn_adjoint_adam_resume')[0m
+2026-11-12T13:34:47.6571163Z [36;1mrequest=json.loads((package/'REQUEST.json').read_text())[0m
+2026-11-12T13:34:47.6571500Z [36;1minventory=json.loads((package/'SOURCE.json').read_text())[0m
+2026-11-12T13:34:47.6571879Z [36;1mhead=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()[0m
+2026-11-12T13:34:47.6572365Z [36;1massert head==os.environ['CANDIDATE_COMMIT'][0m
+2026-11-12T13:34:47.6572767Z [36;1mhashes={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in request['source_paths']}[0m
+2026-11-12T13:34:47.6573312Z [36;1massert hashes==inventory['source_sha256'][0m
+2026-11-12T13:34:47.6573949Z [36;1msource=dict(source_commit=head,request_identity=request['identity'],source_sha256=hashes,prefrozen_inventory_sha256=hashlib.sha256((package/'SOURCE.json').read_bytes()).hexdigest())[0m
+2026-11-12T13:34:47.6574724Z [36;1mPath(os.environ['RUNNER_TEMP'],'adam-resume-source.json').write_text(json.dumps(source,indent=2,sort_keys=True)+'\n')[0m
+2026-11-12T13:34:47.6575161Z [36;1mprint(json.dumps(source,sort_keys=True))[0m
+2026-11-12T13:34:47.6575396Z [36;1mPY[0m
+2026-11-12T13:34:47.6593415Z shell: /usr/bin/bash -e {0}
+2026-11-12T13:34:47.6593624Z env:
+2026-11-12T13:34:47.6593786Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:34:47.6593980Z   OMP_NUM_THREADS: 1
+2026-11-12T13:34:47.6594154Z   MKL_NUM_THREADS: 1
+2026-11-12T13:34:47.6594342Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:34:47.6594591Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:47.6594921Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.6595255Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T13:34:47.6595577Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.6595873Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.6596163Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.6596456Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T13:34:47.6596715Z ##[endgroup]
+2026-11-12T13:34:47.6941055Z {"prefrozen_inventory_sha256": "c860ca3d5c6de723894d697f36f4ad268eae374f430bcc005312930fb76fa02d", "request_identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261112-c06d-stage1", "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2", "source_sha256": {".github/workflows/hcsn-adjoint-adam-resume.yml": "bb7f1d57a19f8d6fb54fa05093f83763f2b9cccc4573582290b0d6df6ad014f9", "qualification/hcsn_adjoint_adam_resume/REQUEST.json": "2303ec2b73cef285d2c0c0dc79aab38a3f691444746a4300720c23db063a54d2", "qualification/hcsn_adjoint_adam_resume/SPEC.md": "e0f007353ea84dd6af31006a29ba4e402766d97949176a10698441c629a3dce9", "qualification/hcsn_adjoint_adam_resume/actor.py": "40c37bcdf6912758e573b9858aa13ffd233e9f94c6f6d91c4c13716350b6ed1c", "qualification/hcsn_adjoint_adam_resume/native_probe.py": "f2e0b5bf8c4c15bbfd2df967749d949acffe22e4093320aa17c7ff9fbdc84ae2", "qualification/hcsn_adjoint_adam_resume/state.py": "3dd3263a6a4cb80919b86957ce090998723ab6800d6cf0739fe2b8e562317124", "qualification/hcsn_adjoint_torch/torch_flow.py": "0f23d6ff6351be021f93d054b2cc2037ef76a87f29d11ca48fd4a725238bb5b4", "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22", "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441", "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c", "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0", "qualification/hcsn_initial_adjoint/solver.py": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91", "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"}}
+2026-11-12T13:34:47.7006899Z ##[group]Run python - <<'PY'
+2026-11-12T13:34:47.7007177Z [36;1mpython - <<'PY'[0m
+2026-11-12T13:34:47.7007422Z [36;1mimport json, os, resource, subprocess, sys, time[0m
+2026-11-12T13:34:47.7007704Z [36;1mfrom pathlib import Path[0m
+2026-11-12T13:34:47.7007977Z [36;1mroot=Path(os.environ['RUNNER_TEMP'])/'adam-resume'[0m
+2026-11-12T13:34:47.7008239Z [36;1mroot.mkdir()[0m
+2026-11-12T13:34:47.7009034Z [36;1mcommand=[sys.executable,'-B','-m','qualification.hcsn_adjoint_adam_resume.native_probe','--source',str(Path(os.environ['RUNNER_TEMP'])/'adam-resume-source.json'),'--baseline','qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz','--output',str(root/'protocol')][0m
+2026-11-12T13:34:47.7010073Z [36;1mwall,cpu=time.perf_counter(),time.process_time()[0m
+2026-11-12T13:34:47.7010394Z [36;1mbefore=resource.getrusage(resource.RUSAGE_CHILDREN)[0m
+2026-11-12T13:34:47.7010855Z [36;1mwith (root/'controller.stdout').open('wb') as stdout,(root/'controller.stderr').open('wb') as stderr:[0m
+2026-11-12T13:34:47.7011510Z [36;1m    result=subprocess.run(command,stdout=stdout,stderr=stderr)[0m
+2026-11-12T13:34:47.7012014Z [36;1mafter=resource.getrusage(resource.RUSAGE_CHILDREN)[0m
+2026-11-12T13:34:47.7013429Z [36;1mcost=dict(source_commit=os.environ['CANDIDATE_COMMIT'],exit_code=result.returncode,full_child_tree_wall_seconds=time.perf_counter()-wall,full_child_tree_cpu_seconds=(after.ru_utime+after.ru_stime)-(before.ru_utime+before.ru_stime),wrapper_cpu_seconds=time.process_time()-cpu,reported_child_tree_max_rss_kib=after.ru_maxrss,includes_imports_and_all_fresh_actors=True,maximum_adam_updates=9,maximum_forwards=13,maximum_adjoints=13)[0m
+2026-11-12T13:34:47.7014771Z [36;1m(root/'WRAPPER-COST.json').write_text(json.dumps(cost,indent=2,sort_keys=True)+'\n')[0m
+2026-11-12T13:34:47.7033447Z [36;1mprint((root/'controller.stdout').read_text())[0m
+2026-11-12T13:34:47.7033960Z [36;1mprint((root/'controller.stderr').read_text(),file=sys.stderr)[0m
+2026-11-12T13:34:47.7034428Z [36;1mprint(json.dumps(cost,sort_keys=True))[0m
+2026-11-12T13:34:47.7034693Z [36;1mraise SystemExit(result.returncode)[0m
+2026-11-12T13:34:47.7034924Z [36;1mPY[0m
+2026-11-12T13:34:47.7052824Z shell: /usr/bin/bash -e {0}
+2026-11-12T13:34:47.7053029Z env:
+2026-11-12T13:34:47.7053195Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:34:47.7053392Z   OMP_NUM_THREADS: 1
+2026-11-12T13:34:47.7053570Z   MKL_NUM_THREADS: 1
+2026-11-12T13:34:47.7053760Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:34:47.7054011Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:34:47.7054341Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.7054693Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T13:34:47.7055021Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.7055311Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.7055605Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:34:47.7055935Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T13:34:47.7056190Z ##[endgroup]
+2026-11-12T13:35:14.9447674Z 
+2026-11-12T13:35:14.9449037Z {"actors": 8, "actual_calls": {"adam_updates": 9, "adjoints": 13, "forwards": 13}, "calls_status": "EXACT_FOR_ALL_STARTED_ACTORS", "checks": 46, "error": null, "observed_calls_only": {"adam_updates": 9, "adjoints": 13, "forwards": 13}, "status": "PASS", "unknown_actor_costs": []}
+2026-11-12T13:35:14.9472737Z 
+2026-11-12T13:35:14.9484720Z {"exit_code": 0, "full_child_tree_cpu_seconds": 25.452279, "full_child_tree_wall_seconds": 27.20721355, "includes_imports_and_all_fresh_actors": true, "maximum_adam_updates": 9, "maximum_adjoints": 13, "maximum_forwards": 13, "reported_child_tree_max_rss_kib": 416776, "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2", "wrapper_cpu_seconds": 0.0003306699999999982}
+2026-11-12T13:35:14.9531179Z ##[group]Run git diff --exit-code && git diff --cached --exit-code
+2026-11-12T13:35:14.9531563Z [36;1mgit diff --exit-code && git diff --cached --exit-code[0m
+2026-11-12T13:35:14.9549355Z shell: /usr/bin/bash -e {0}
+2026-11-12T13:35:14.9549558Z env:
+2026-11-12T13:35:14.9549725Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:35:14.9549918Z   OMP_NUM_THREADS: 1
+2026-11-12T13:35:14.9550092Z   MKL_NUM_THREADS: 1
+2026-11-12T13:35:14.9550272Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:35:14.9550516Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:35:14.9550829Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:14.9551187Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T13:35:14.9551683Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:14.9551981Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:14.9552494Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:14.9552793Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T13:35:14.9553049Z ##[endgroup]
+2026-11-12T13:35:15.2798699Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T13:35:15.2799019Z with:
+2026-11-12T13:35:15.2799220Z   name: four-amplitude-adam-resume-originals
+2026-11-12T13:35:15.2799588Z   path: /home/runner/work/_temp/adam-resume
+/home/runner/work/_temp/adam-resume-source.json
+
+2026-11-12T13:35:15.2799935Z   if-no-files-found: error
+2026-11-12T13:35:15.2800134Z   compression-level: 6
+2026-11-12T13:35:15.2800315Z   overwrite: false
+2026-11-12T13:35:15.2800509Z   include-hidden-files: false
+2026-11-12T13:35:15.2800699Z env:
+2026-11-12T13:35:15.2800858Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T13:35:15.2801059Z   OMP_NUM_THREADS: 1
+2026-11-12T13:35:15.2801231Z   MKL_NUM_THREADS: 1
+2026-11-12T13:35:15.2801412Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T13:35:15.2801654Z   CANDIDATE_COMMIT: 994def0b188c5105d0ceb9ace281af7f4bd0e3b2
+2026-11-12T13:35:15.2801952Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:15.2802488Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T13:35:15.2802815Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:15.2803115Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:15.2803406Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T13:35:15.2803699Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T13:35:15.2803946Z ##[endgroup]
+2026-11-12T13:35:15.4155217Z (node:2338) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T13:35:15.4156142Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T13:35:15.4284163Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-12T13:35:15.4286127Z The least common ancestor is /home/runner/work/_temp. This will be the root directory of the artifact
+2026-11-12T13:35:15.4286924Z With the provided path, there will be 66 files uploaded
+2026-11-12T13:35:15.4292779Z Artifact name is valid!
+2026-11-12T13:35:15.4293316Z Root directory input is valid!
+2026-11-12T13:35:15.8312083Z Beginning upload of artifact content to blob storage
+2026-11-12T13:35:15.9551951Z (node:2338) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T13:35:16.6588077Z Uploaded bytes 944384
+2026-11-12T13:35:16.7399123Z Finished uploading artifact content to blob storage!
+2026-11-12T13:35:16.7399807Z SHA256 digest of uploaded artifact zip is 31cca7713e060283efc00f55792cb5a30c032355244110836800241a8b46311f
+2026-11-12T13:35:16.7401159Z Finalizing artifact upload
+2026-11-12T13:35:17.2726711Z Artifact four-amplitude-adam-resume-originals.zip successfully finalized. Artifact ID 13948404632
+2026-11-12T13:35:17.2727721Z Artifact four-amplitude-adam-resume-originals has been successfully uploaded! Final size is 944384 bytes. Artifact ID is 13948404632
+2026-11-12T13:35:17.2733778Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43228409724/artifacts/13948404632
+2026-11-12T13:35:17.2920027Z Post job cleanup.
+2026-11-12T13:35:17.3919797Z (node:2351) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T13:35:17.3920389Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T13:35:17.4032631Z Post job cleanup.
+2026-11-12T13:35:17.4769094Z [command]/usr/bin/git version
+2026-11-12T13:35:17.4807901Z git version 2.56.0
+2026-11-12T13:35:17.4841770Z Temporarily overriding HOME='/home/runner/work/_temp/6f3384c8-c914-4ff0-924e-a235135683f1' before making global git config changes
+2026-11-12T13:35:17.4842896Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T13:35:17.4847339Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T13:35:17.4883012Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T13:35:17.4918077Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T13:35:17.5229849Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T13:35:17.5264097Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T13:35:17.5517599Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T13:35:17.5589246Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T13:35:17.5954692Z Cleaning up orphan processes
+2026-11-12T13:35:17.6248369Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

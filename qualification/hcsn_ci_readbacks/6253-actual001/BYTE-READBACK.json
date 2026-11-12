@@ -1,0 +1,89 @@
+{
+  "adam_invocations": 0,
+  "adjoints": 0,
+  "all_extracted_members_sha256_size_match": true,
+  "all_outer_crc_passed": true,
+  "artifact_id": 13948404632,
+  "candidate_imports": 0,
+  "claims_fullstate_semantic_equality": false,
+  "forwards": 0,
+  "inner_torch_zip_checks": [
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/crash-published.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/crash-published.pt.pending"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-continuous/state.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-continuous/step1.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-continuous/step2.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-first/state.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-first/step1.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-resumed/state.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/graded-resumed/step2.pt"
+    },
+    {
+      "crc_checked_members": 24,
+      "member": "adam-resume/protocol/omit-adam.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-continuous/state.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-continuous/step1.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-continuous/step2.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-first/state.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-first/step1.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-resumed/step2.pt"
+    },
+    {
+      "crc_checked_members": 36,
+      "member": "adam-resume/protocol/uniform-resumed/state.pt"
+    }
+  ],
+  "job_id": 131217519039,
+  "outer_members": 66,
+  "run_id": 43228409724,
+  "scope": "primary byte/CRC verification only; no checkpoint semantic decode or mathematical audit",
+  "single_remote_binary_download": true,
+  "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2",
+  "torch_imports": 0,
+  "zip_bytes": 944384,
+  "zip_sha256": "31cca7713e060283efc00f55792cb5a30c032355244110836800241a8b46311f"
+}
