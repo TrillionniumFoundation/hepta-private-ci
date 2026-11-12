@@ -58,10 +58,11 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
         for suffix in ("create", "recover", "attest", "readback"):
             row = rows["learning_original_training_receipt_" + suffix]
             self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else (INPUTS,))
+            self.assertEqual(row.product_callers, () if suffix in ("attest", "readback") else (INPUTS,))
             PROOF._verify_boundary(ROOT, row, sources, ())
-            with self.assertRaises(PROOF.VerificationFailure):
-                PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ())
+            if row.product_callers:
+                with self.assertRaises(PROOF.VerificationFailure):
+                    PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ())
             method = row.symbol.rsplit("::", 1)[1]
             changed = dict(sources)
             changed["codex-rs/hepta-agentd/src/unregistered_training_signer.rs"] = (
@@ -79,7 +80,8 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)
         }
         for name, expected in (
-            ("cell_q24_original_training_execute", (STAGE,)),
+            ("cell_q24_original_training_execute", ()),
+            ("q24_training_fit_source_read", (STAGE,)),
             ("cell_q24_original_training_pair_binding", (STAGE, MODEL_MATERIAL)),
         ):
             row = rows[name]
@@ -120,16 +122,18 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
 
     def test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane(self):
         for function, markers in (
-            ("fn execute_training(", ("self.require_dataset(dataset)?", "owners.receipts.journal.read(&owners.receipts.saved)",
-                "Ok(_) => owners.read_original_completion()", "ProductEvaluationExecutionStoreErrorV1::Missing",
-                "let retained_outcome = match training.readback()", "Ok(outcome) => Some(outcome)",
+            ("fn execute_training(", ("self.require_dataset(dataset)?", "self.in_lane(move |owners|",
+                "owners.execute_original_training_with_source(&cancellation, &OriginalQ24OwnerReadV1)")),
+            ("fn execute_original_training_with_source(", ("self.receipts.journal.read(&self.receipts.saved)",
+                "Ok(_) => self.read_original_completion_with_source(source)", "ProductEvaluationExecutionStoreErrorV1::Missing",
+                "let retained_outcome = match training.readback_with_source(source)", "Ok(outcome) => Some(outcome)",
                 "Err(CellQ24TrainingOwnerErrorV1::Store(", ")) => None", "Err(error) => return Err(error.into())",
                 "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
                 "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
-                "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?")),
+                "Some(outcome) => outcome", "None => training.fit_or_readback_with_source(cancellation, source)?", "receipts.attest_completion_with_source(training, source)?")),
             ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", "training.require_original_dataset_scope(")),
             ("fn receipt_attestation(", ("self.readback(dataset).await?", "if &completed.receipt != expected")),
-            ("fn read_original_completion(&mut self)", ("self.receipts.readback(training)?", "training.readback()?")),
+            ("fn read_original_completion_with_source(", ("self.receipts.readback_with_source(training, source)?", "training.readback_with_source(source)?")),
         ):
             for marker in markers:
                 with self.subTest(function=function, marker=marker):
@@ -157,15 +161,15 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
 
     def test_native_completed_read_precedes_claim_and_no_caller_payload_is_signed(self):
         for marker in (
-            "training.read_learning_observation(&self.config.dataset)?",
+            "training.read_learning_observation_with_source(&self.config.dataset, source)?",
             "require_observation(&self.config, &observation)?", "self.journal.commit_once(saved, ||",
             "training_receipt(config, &observation, now()?)", "learning_iteration_receipt_signing_bytes_v1(&receipt)",
-            "learning_owner_evidence::encode(&payload, &signed)", "self.authenticate_completed(training, &observation, &bytes)",
+            "learning_owner_evidence::encode(&payload, &signed)", "self.authenticate_completed(training, &observation, &bytes, source)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn attest_original_completion(", marker)
+                self.rejects("fn attest_completion_with_source(", marker)
         marker = "require_observation(&self.config, &observation)?;"
-        self.rejects("fn attest_original_completion(", marker, "if false {" + marker + "}")
+        self.rejects("fn attest_completion_with_source(", marker, "if false {" + marker + "}")
 
     def test_readback_requires_original_time_exact_payload_identity_and_both_current_heads(self):
         for marker in (
@@ -175,7 +179,7 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             "verified.principal() != &self.config.signer.principal",
             "verified.controller_id() != &self.config.signer.controller_id",
             "signed.evidence_id != evidence_id(self.saved.binding_digest)?",
-            "training.read_learning_observation(&self.config.dataset)? != *observation",
+            "training.read_learning_observation_with_source(&self.config.dataset, source)?\n            != *observation",
             "self.journal.read(&self.saved)? != bytes",
         ):
             with self.subTest(marker=marker):

@@ -46,7 +46,7 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         row = rows["cell_q24_original_training_observation"]
         self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-        self.assertEqual(row.product_callers, (RECEIPTS, MODEL_MATERIAL))
+        self.assertEqual(row.product_callers, (MODEL_MATERIAL,))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
             for path in (READBACK, RECEIPTS, MODEL_MATERIAL)
@@ -60,7 +60,7 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
 
     def test_readback_requires_original_completed_bytes_scope_and_current_witness(self):
         for marker in (
-            "self.require_current()?;", "if original_dataset_cut != &self.plan.prefix",
+            "self.require_current_with_source(source)?;", "if original_dataset_cut != &self.plan.prefix",
             "self.journal.readback(&self.key)?", "return Err(Error::Pending)",
             "self.decode(&payload)?", "self.plan\n            .scope\n            .validate_observation(&observation)",
             "self.plan.scope.binding()", "self.key.binding_digest.as_array(),\n                &payload",

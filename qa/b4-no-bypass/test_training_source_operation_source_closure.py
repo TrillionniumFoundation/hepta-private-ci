@@ -14,6 +14,9 @@ READ = AGENT + "cell_q24_training_source_read.rs"
 PREPARED = AGENT + "cell_q24_prepared_operation.rs"
 TRAINING = AGENT + "cell_composed_q24_training.rs"
 FIT = AGENT + "cell_q24_training_fit.rs"
+OPERATION = AGENT + "cell_q24_training_stage_operation.rs"
+OWNER = AGENT + "cell_composed_q24_training_owner.rs"
+STAGE = AGENT + "cell_q24_training_stage.rs"
 
 
 class TrainingSourceOperationTests(unittest.TestCase):
@@ -89,6 +92,38 @@ class TrainingSourceOperationTests(unittest.TestCase):
             self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
             self.assertIn(identifier, rows)
         self.assertEqual(rows["q24_prepared_training_batch_read"]["product_callers"], [READ])
+
+    def test_borrowed_training_uses_the_original_lane_and_owner_through_postchecks(self):
+        self.check_markers(OPERATION, "fn with_original_training_operation<T>(", (
+            "for<'owners, 'read> FnOnce(", "self.require_dataset(dataset)",
+            ".try_acquire_owned()", ".try_lock()",
+            "validate_config(&owners.receipts.config, &owners.receipts.key)",
+            "let result = work(&mut OriginalQ24TrainingOperationV1", "owners: &mut owners"))
+        for occurrence in (0, 1):
+            self.reject_removal(OPERATION, "fn with_original_training_operation<T>(",
+                                "CellQ24TrainingOwnerV1::require_dataset_scope_with_source(", occurrence)
+            self.reject_removal(OPERATION, "fn with_original_training_operation<T>(",
+                                "CellQ24TrainingOwnerV1::require_original_dataset_source(", occurrence)
+
+    def test_training_evidence_comes_from_actual_completed_owners_and_exact_cut(self):
+        self.check_markers(OPERATION, "fn read_original_training_evidence(", (
+            ".read_original_completion_with_source(self.source)",
+            "LearningIterationCoordinatorV1::from_snapshot(", "self.dataset.clone()",
+            "cut.record(", "completed.receipt.clone()", "completed.receipt.observed_unix_seconds",
+            "snapshot: cut.snapshot().clone()", "source: self.source"))
+        self.check_markers(STAGE, "fn read_original_completion_with_source(", (
+            "self.receipts.readback_with_source(training, source)?",
+            "training.readback_with_source(source)?", "Ok(OriginalCellQ24TrainingCompletionV1"))
+
+    def test_original_claim_witness_and_canonical_terminal_bytes_still_enclose_fit(self):
+        self.check_markers(OWNER, "fn fit_or_readback_with_source(", (
+            "match self.journal.claim(&self.key)?", "self.anchor_append(before)?",
+            "self.plan.fit_with_original_source(", "self.batch.clone(),", "source,",
+            "encode(&outcome, self.key.binding_digest)?", "self.decode(&payload)?",
+            "self.journal.complete(&self.key, &payload)?", "self.readback_with_source(source)"))
+        for occurrence in (0, 1):
+            self.reject_removal(OWNER, "fn fit_or_readback_with_source(",
+                                "self.require_current_with_source(source)?", occurrence)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,8 @@ use ed25519_dalek::SigningKey;
 use crate::CellQ24TrainingObservationV2;
 use crate::CellQ24TrainingOwnerErrorV1;
 use crate::CellQ24TrainingOwnerV1;
+use crate::cell_composed_q24::OriginalQ24DatasetReadV1;
+use crate::cell_composed_q24::OriginalQ24OwnerReadV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -52,6 +54,10 @@ mod stage;
 pub use stage::OriginalCellQ24TrainingCompletionV1;
 pub use stage::OriginalCellQ24TrainingStageErrorV1;
 pub use stage::OriginalCellQ24TrainingStageV1;
+#[cfg(target_os = "linux")]
+pub(crate) use stage::OriginalQ24TrainingOperationEvidenceV1;
+#[cfg(target_os = "linux")]
+pub(crate) use stage::OriginalQ24TrainingOperationV1;
 
 /// Original host configuration, fixed before requesting a training signature.
 /// Structural validation cannot manufacture Dataset custody or Root enrollment.
@@ -113,7 +119,16 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
         &mut self,
         training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        let observation = training.read_learning_observation(&self.config.dataset)?;
+        self.attest_completion_with_source(training, &OriginalQ24OwnerReadV1)
+    }
+
+    pub(crate) fn attest_completion_with_source(
+        &mut self,
+        training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let observation =
+            training.read_learning_observation_with_source(&self.config.dataset, source)?;
         require_observation(&self.config, &observation)?;
         let config = &self.config;
         let key = &self.key;
@@ -126,7 +141,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
             let signed = sign_original(config, key, &receipt, &payload, saved.binding_digest)?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(training, &observation, &bytes)
+        self.authenticate_completed(training, &observation, &bytes, source)
     }
 
     /// Read the original receipt against the original training owner's current
@@ -135,10 +150,19 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
         &mut self,
         training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        let observation = training.read_learning_observation(&self.config.dataset)?;
+        self.readback_with_source(training, &OriginalQ24OwnerReadV1)
+    }
+
+    pub(crate) fn readback_with_source(
+        &mut self,
+        training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>,
+        source: &impl OriginalQ24DatasetReadV1,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let observation =
+            training.read_learning_observation_with_source(&self.config.dataset, source)?;
         require_observation(&self.config, &observation)?;
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(training, &observation, &bytes)
+        self.authenticate_completed(training, &observation, &bytes, source)
     }
 
     fn authenticate_completed(
@@ -146,6 +170,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
         training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>,
         observation: &CellQ24TrainingObservationV2,
         bytes: &[u8],
+        source: &impl OriginalQ24DatasetReadV1,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = training_receipt(&self.config, observation, signed.issued_at)?;
@@ -168,7 +193,8 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
                 LearningOriginalOwnerErrorV1::Binding("original Generator identity").into(),
             );
         }
-        if training.read_learning_observation(&self.config.dataset)? != *observation
+        if training.read_learning_observation_with_source(&self.config.dataset, source)?
+            != *observation
             || self.journal.read(&self.saved)? != bytes
         {
             return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
