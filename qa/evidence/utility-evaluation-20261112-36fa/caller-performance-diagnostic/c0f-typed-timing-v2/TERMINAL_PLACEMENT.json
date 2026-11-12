@@ -1,0 +1,350 @@
+{
+  "format": "hepta.utility.scoped-timing-terminal-placement.v1",
+  "run_identity": "hepta-utility-36fa-c0f-typed-timing-v2",
+  "job_id": "1a1d07fc10b-2564-1b8c",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "created_unix_ms": 1794499395851,
+  "terminal_at_unix_ms": 1794499624242,
+  "actual_supervisor_state": "failed",
+  "actual_supervisor_exit_code": 3,
+  "actual_original_runner_returncode": 3,
+  "actual_original_runner_timed_out": false,
+  "actual_original_runner_output_limit_exceeded": false,
+  "status": "stopped_scoped_timing_diagnostic",
+  "full_gate_run": false,
+  "qualification_pass": false,
+  "original_verify_returned": false,
+  "optimized_helper_loaded": false,
+  "source_unchanged": true,
+  "source_collection_count": 6597,
+  "boundary_calls": 14,
+  "boundary_calls_completed": 13,
+  "internal_stop_seconds": 220,
+  "original_runner_timeout_seconds": 240,
+  "outer_supervisor_timeout_seconds": 300,
+  "worker_wall_seconds": 224.88051252695732,
+  "worker_cpu_seconds": 221.595828306,
+  "metrics_are_inclusive_nonadditive": true,
+  "stopped_in": {
+    "boundary_position": 13,
+    "boundary_id": "final_use_open_state",
+    "original_file": "scripts/hepta_typed_callers.py",
+    "original_line": 193,
+    "operation": "word-boundary regex scan in has_authority_call"
+  },
+  "files": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/terminal-small-files.json",
+      "git_blob_sha": "e04b8a3e6dfbec113db5d4800a98ba4e716a566b",
+      "full_readback_equal": true,
+      "bytes": 11920,
+      "sha256": "3213eeb0d9fad79d52217539f64a14531472cea4fe8966b5c44a4b6f43542471"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/timing-metrics.json",
+      "git_blob_sha": "6b9c99de29fdc479fb34ea9d8a44c47e4bf0651e",
+      "bytes": 7691,
+      "sha256": "b830a8ce2d620052c7ee4801af30dd842ad1d779d58bc24267a2ec40662e2da1",
+      "version": "2050:50138504:7691:1794499619153575544:1794499619153575544",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/diagnostic-result.json",
+      "git_blob_sha": "747eadc9a2c862ba1757685b163983ad520263fc",
+      "bytes": 641,
+      "sha256": "489c99b118f1effdf8beba019f8f8aa58fc9c59b7dcb7148dd77d971a44e7a65",
+      "version": "2050:50138506:641:1794499624007154634:1794499624007154634",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/launcher-final.json",
+      "git_blob_sha": "fb84b260fcc19b521ebb33bac5eb6b5c779da41c",
+      "bytes": 1137,
+      "sha256": "74a5ebb44488007f59c282075352a1e38c31c413f78c2ba04755a2b6833a8c23",
+      "version": "2050:50138508:1137:1794499624166825351:1794499624166825351",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/original-execute-logged.json",
+      "git_blob_sha": "dbd020b36b0c936bee24362b9057ff201ebaaf20",
+      "bytes": 473,
+      "sha256": "49777aa8ddb164f6f455a37832e769ef4b36e4eab9ab0896467b0bfd72e04fbe",
+      "version": "2050:50138507:473:1794499624076033884:1794499624076033884",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/diagnostic.log",
+      "git_blob_sha": "9149d789daa7c88f0a6e55d6e85cf6b385fc8189",
+      "bytes": 4459,
+      "sha256": "a511bb422d25d9e4fbdb1debc1dfaab19c768753bc355f4916cd32f567cd0e35",
+      "version": "2050:50138500:4459:1794499624043832215:1794499624043832215",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/worker-start.json",
+      "git_blob_sha": "905130ee3b2d1bc24a259e93f47fa836dff27845",
+      "bytes": 316,
+      "sha256": "839287ccd75d8e08b276362e313565e08b7aeb605e0523de3da6fd050fcff5a0",
+      "version": "2050:50138501:316:1794499399162515448:1794499399162515448",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/launcher-start.json",
+      "git_blob_sha": "b035c986bdcdae3424a75bf94427dcb850c89319",
+      "bytes": 198,
+      "sha256": "9bac3c18b0f194febfca7deeda3693518580410f89919cc7d9e0013f22144b15",
+      "version": "2050:50138499:198:1794499398977684023:1794499398977684023",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/INPUT.json",
+      "git_blob_sha": "f9f23abea00eb29597118eb9659696aa3986fcec",
+      "bytes": 2340,
+      "sha256": "430b0a797b8d524161d29e7534ee422cd06ffc2fe56f11ca6e16e0b9bac628fb",
+      "version": "2050:50138498:2340:1794499398653293795:1794499398653293795",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/extra-original-files.json",
+      "git_blob_sha": "8023f5617fc3790c89068341552364cfee47451f",
+      "bytes": 9028,
+      "sha256": "44661a6be04eb9427355adeea7a258cb9dbfe565ef4d8ae324db47863676a96d",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/terminal-process-status.json",
+      "git_blob_sha": "501477d8a0dbf08dff2e962b0b334930f0ed9148",
+      "bytes": 728,
+      "sha256": "d860deb453783b84b296afb4ad8b7ef87e0a202c49cc5730986168e61f195a4f",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-file-info.json",
+      "git_blob_sha": "39e0ef12f084aa08ab9c6a86702a45ef9b28cc2a",
+      "bytes": 483,
+      "sha256": "3c9234c10422a317c336af08f5022ae3a3d761d7893ca131b139a443d8b8bb17",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/original-source-index-paths.json",
+      "bytes": 388271,
+      "sha256": "993e9c7906270cc60d2804d5c31f39d263d4d93c1851f5ac56675ba2f6cb87b1",
+      "git_blob_sha": "14500947be4bfdea07129d2084fea87641dda0e9",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-chunk-0.json",
+      "bytes": 87718,
+      "sha256": "7565d329db602400bcd3bc9118d009ffb0cb52c70a8c733def674afd979cc991",
+      "git_blob_sha": "beeffe4e1f7dd6c94346f63ae22bcf818f4dc23a",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-chunk-65536.json",
+      "bytes": 87723,
+      "sha256": "b7de577f4e0c1dde128d58299553c68231d040971f2b2e0c5a90066e4675262f",
+      "git_blob_sha": "02023a44b1e7201cfc01ec905cc1baf44507a964",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-chunk-131072.json",
+      "bytes": 87724,
+      "sha256": "743c7c25a91e32eee098a1e02c6e228a4f2c4456e87ea12ab37f8cb80ae95140",
+      "git_blob_sha": "e4e36ea399e47f845ef101413b5b5888f5aa7d62",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-chunk-196608.json",
+      "bytes": 87724,
+      "sha256": "f5d602f6ce18d3f954fab4e132ea61ef8361d66d13bb028db1b62406c5743eef",
+      "git_blob_sha": "9476f8c4781c694947c6fb0cb0a806aea808a0c3",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-chunk-262144.json",
+      "bytes": 87724,
+      "sha256": "041cf724f12c0c058a9c83a88fd50cccf91637e64c88236c6f74da305d515e88",
+      "git_blob_sha": "2214bb39b94eb311ef522a2e3913a1c3b6922d73",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-index-chunk-327680.json",
+      "bytes": 81127,
+      "sha256": "3876f6931bf94e32b100b70502e948007fd3f101fd1032c33c3dcfb0fd633a45",
+      "git_blob_sha": "46215c3dd3ebd2b1d4e6b599af72f957403aade1",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/first-status-observation-timeout.json",
+      "bytes": 220,
+      "sha256": "3949a63082c431b4b853b9e79a3e7da46c57e2e0a7d6be3265ecdaf212449804",
+      "git_blob_sha": "7bda4c417c9d6366898e7627e3448b1061b62dec",
+      "provenance": "serialized original tool response; observation failed, not an execution retry"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-before-file-info-observation-timeout.json",
+      "bytes": 215,
+      "sha256": "bbd2b7bca8cf6485d08db1f592cb0d4a911a36807fb29962bd76ce400f2a92c6",
+      "git_blob_sha": "e4bba7d90ebb6a69f11bb99d681baebe2af0e24a",
+      "provenance": "serialized original tool response; observation failed, not an execution retry"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/source-after-file-info-observation-timeout.json",
+      "bytes": 215,
+      "sha256": "bbd2b7bca8cf6485d08db1f592cb0d4a911a36807fb29962bd76ce400f2a92c6",
+      "git_blob_sha": "e4bba7d90ebb6a69f11bb99d681baebe2af0e24a",
+      "provenance": "serialized original tool response; observation failed, not an execution retry"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/terminal-process-read-observation-timeout.json",
+      "bytes": 218,
+      "sha256": "8a12f082809adbd62d567ab20e2c58ced3d75fda16bd66a697111bf132672cba",
+      "git_blob_sha": "4d4ad28a9f1e2c0ebcbc9474349fdfb72d8786d1",
+      "provenance": "serialized original tool response; observation failed, not an execution retry"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/rejected-relative-executable-tool-response.json",
+      "bytes": 230,
+      "sha256": "72739837badc05e0b96651aca1cf326d69f50f20ed0f9d83e992693cfc9d971b",
+      "git_blob_sha": "b15537856327c14133dffaea3a2ce108dd43f079",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/actual-launch.json",
+      "bytes": 2923,
+      "sha256": "17bb48ce673613d52d469bd867809ecb30ef933f1c485c301b9ad9d1183e055d",
+      "git_blob_sha": "69da9b29fb33f99a0341f753be42724cd0c0b52b",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/native-sdk/first-process-read.json",
+      "bytes": 2764,
+      "sha256": "91c8607a459ddd394cb182281541226d778fb6fc42827da8939a8634ba3a7f88",
+      "git_blob_sha": "d67fe8c2c04914088051e543b896ba054085e17a",
+      "full_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reviewed-control/driver.py",
+      "bytes": 3802,
+      "sha256": "3d43ad09170570e0b7a002a73ae02fca9b01a59760eaec7f2fe4eb6e7957b14a",
+      "git_blob_sha": "24c932c8c088ade4e69365b7842e125b2430c443",
+      "provenance": "reviewed immutable bytes; actual control full-file readback event preserved"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reviewed-control/worker.py",
+      "bytes": 13210,
+      "sha256": "4205c7032e494a1eaecccae0b4bd3231ff2e7d9c7e1db6fb040840f39312b028",
+      "git_blob_sha": "9381dd67bc8f6d12e0ef135f91f0761981bc2434",
+      "provenance": "reviewed immutable bytes; actual control full-file readback event preserved"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reviewed-control/input.json",
+      "bytes": 2340,
+      "sha256": "ea7c0f1e0beb0c4aebb61e3ea8304d8e99583e7cc7e83dbaf65c152fbd1fbbbf",
+      "git_blob_sha": "e64d6c9f2ca0c6971882e364b1a45331aac576a1",
+      "provenance": "reviewed immutable bytes; actual control full-file readback event preserved"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reviewed-control/TRANSFER.json",
+      "bytes": 20476,
+      "sha256": "b97d1491b8505d85c7eaba0f9f70608c3abc082070708c4cfffcc303f51fe66d",
+      "git_blob_sha": "ad2958fe80391438bc22f6d4f64b034f52aa9725",
+      "provenance": "unchanged reviewed exact create-only transport control"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reviewed-control/bootstrap.py",
+      "bytes": 1814,
+      "sha256": "078430044f2cf8ee85fd2a126d3dafa5f23dc7fe4664d7bcba7dbaac0286ff70",
+      "git_blob_sha": "ebc4b1fc6cb5a680ee82fae41bb917d8d720c928",
+      "provenance": "unchanged reviewed exact create-only transport control"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0000",
+      "bytes": 262144,
+      "sha256": "c52c2efc57ee1221f1dfbac717b4f118531420ee51bd42e4f0ba84b861110930",
+      "git_blob_sha": "15f437648057ec384eeff4f01334ea39ed5474db",
+      "provenance": "already retained and independently verified exact original inventory bytes; reused compression packaging, not a new native profile part file"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0001",
+      "bytes": 262144,
+      "sha256": "564e56570e2eeb4dbabfac044e6cab10901610dbfb43891e7d78f820b863494b",
+      "git_blob_sha": "24e975826d14044b0c6d4bb40c37629d6b4a09a6",
+      "provenance": "already retained and independently verified exact original inventory bytes; reused compression packaging, not a new native profile part file"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0002",
+      "bytes": 262144,
+      "sha256": "728e0bdb1806465f95db84721d85cf13aad92f4300b0bfb87516d30eb808e72a",
+      "git_blob_sha": "ffe3e04977f548b8c6a131d42e6cf0fd2b62ad06",
+      "provenance": "already retained and independently verified exact original inventory bytes; reused compression packaging, not a new native profile part file"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0003",
+      "bytes": 262144,
+      "sha256": "ddf3be807b1e6bd3c97e57b23c8e831c1490ad2a5c42a97007dccfaf21e8073f",
+      "git_blob_sha": "fabcbf9d28037353a9f8af215494684284abfb9e",
+      "provenance": "already retained and independently verified exact original inventory bytes; reused compression packaging, not a new native profile part file"
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0004",
+      "bytes": 184643,
+      "sha256": "f24a1f6924ce89fa382e4c00e8772fd9fcbb42243607841a1f8c0723cb9d137c",
+      "git_blob_sha": "0ed5ee3a6414aa9eafbf9ccd399d9c524d6c9eb4",
+      "provenance": "already retained and independently verified exact original inventory bytes; reused compression packaging, not a new native profile part file"
+    }
+  ],
+  "source_inventory_reconstruction": [
+    {
+      "original_remote_path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-typed-timing-v2/source-before.inventory.json",
+      "bytes": 5474911,
+      "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+      "git_blob_sha": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+      "encoding": "gzip",
+      "parts_in_order": [
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0000",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0001",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0002",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0003",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0004"
+      ],
+      "identity_basis": "actual successful runtime before/after inventory record; identical previously fully verified original bytes",
+      "late_independent_file_info_observation": "MCP timeout; no new complete on-site read of this profile path is claimed"
+    },
+    {
+      "original_remote_path": "/home/qian-qi/hepta-utility-36fa-evidence/c0f-typed-timing-v2/source-after.inventory.json",
+      "bytes": 5474911,
+      "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+      "git_blob_sha": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+      "encoding": "gzip",
+      "parts_in_order": [
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0000",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0001",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0002",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0003",
+        "qa/evidence/utility-evaluation-20261112-36fa/diagnostics/c0f-typed-timing-v2/reused-inventory/source.inventory.json.part0004"
+      ],
+      "identity_basis": "actual successful runtime before/after inventory record; identical previously fully verified original bytes",
+      "late_independent_file_info_observation": "MCP timeout; no new complete on-site read of this profile path is claimed"
+    }
+  ],
+  "prior_inventory_recovery_proof_git_blob_sha": "8522315d1db2950ed01569fcf0c4dc7962ff90f5",
+  "reviewed_control_manifest_git_blob_sha": "fef4b2ab5a2195ce8f9f3af79f3260ded620e842",
+  "control_input_sha256": "ea7c0f1e0beb0c4aebb61e3ea8304d8e99583e7cc7e83dbaf65c152fbd1fbbbf",
+  "runtime_sorted_INPUT_sha256": "430b0a797b8d524161d29e7534ee422cd06ffc2fe56f11ca6e16e0b9bac628fb",
+  "parsed_input_objects_identical": true,
+  "runtime_stdout_complete_at_supervisor": true,
+  "complete_runtime_stdout_captured_off_host": false,
+  "complete_original_execute_logged_raw_captured_off_host": true,
+  "limits": [
+    "This intentional 220-second timing stop is neither a full caller verification nor a qualification PASS. Original c0f fullcaller PASS and overall source-gates failure retain separate identities.",
+    "Inclusive function and boundary measurements overlap and must not be summed or converted to additive percentages; no optimized-runtime improvement was measured.",
+    "Original complete Rust collection was observed with all 6597 unique paths; only 13 boundary calls returned before the internal stop interrupted the 14th.",
+    "The first relative-executable request was explicitly rejected as INVALID_ARGUMENT. Only the corrected /usr/bin/python3 request with the same stable key launched; no second admitted job exists in the observed record.",
+    "The control input and the launcher's sorted archival INPUT have different byte hashes but recursively equal parsed values; both exact byte versions are preserved.",
+    "The raw original execute_logged log and all terminal JSON are captured completely. The late full runtime stdout read failed; no reconstruction from summaries is claimed.",
+    "Late independent before/after inventory file_info reads failed. Their original runtime complete identities match the previously fully recovered inventory; the exact reconstruction preserves that provenance rather than claiming fresh full site reads.",
+    "All artifact assembly after cloud unavailability was performed in V8 against already observed bytes and immutable GitHub objects; no cloud filesystem completion is asserted."
+  ]
+}

@@ -1,0 +1,67 @@
+diff --git a/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py b/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
+index 4b824b6562195eb23e82ec41d7ce727a6885427a..b3ce035272a94815839dcb002077936276027044 100644
+--- a/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
++++ b/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
+@@ -129,26 +129,36 @@
+-    def test_registered_calls_are_exact_and_extra_callers_are_rejected(self):
+-        paths = {path for identifier in EXPECTED for path in (
+-            self.boundaries[identifier].definition_path,
+-            *self.boundaries[identifier].product_callers,
+-        )}
+-        sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text())) for path in paths}
+-        for identifier, expected in EXPECTED.items():
+-            with self.subTest(boundary=identifier):
+-                row = self.boundaries[identifier]
+-                self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
+-                self.assertEqual(row.product_callers, expected)
+-                PROOF._verify_boundary(ROOT, row, sources, ())
+-                method = row.symbol.rsplit("::", 1)[-1]
+-                changed = dict(sources)
+-                changed[AGENT + "unregistered_evaluated_read.rs"] = f"fn bypass(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
+-                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+-                    PROOF._verify_boundary(ROOT, row, changed, ())
+-                if expected:
+-                    with self.assertRaises(PROOF.VerificationFailure):
+-                        PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ())
+-        for identifier in ("learning_original_published_read_client_current", "learning_original_evaluated_read_selection_binding"):
+-            changed = dict(sources)
+-            changed[AGENT + "unregistered_real_remote_s.rs"] = sources[REMOTE]
+-            with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+-                PROOF._verify_boundary(ROOT, self.boundaries[identifier], changed, ())
+-        self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
++    def test_registered_calls_are_exact_and_extra_callers_are_rejected(self):
++        source_roots = PROOF._string_tuple(self.manifest, "source_roots")
++        ignored = PROOF._string_tuple(self.manifest, "ignored_path_fragments")
++        self.assertEqual(source_roots, ("codex-rs",))
++        self.assertEqual(ignored, ("/tests/", "/examples/", "_tests.rs"))
++        sources = {
++            path.relative_to(ROOT).as_posix(): PROOF._strip_cfg_test_items(
++                PROOF._strip_rust_non_code(path.read_text(encoding="utf-8"))
++            )
++            for path in PROOF._source_files(ROOT, source_roots)
++        }
++        for attack_path in (
++            AGENT + "unregistered_evaluated_read.rs",
++            AGENT + "unregistered_real_remote_s.rs",
++        ):
++            self.assertFalse(PROOF._is_ignored(attack_path, ignored))
++        for identifier, expected in EXPECTED.items():
++            with self.subTest(boundary=identifier):
++                row = self.boundaries[identifier]
++                self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
++                self.assertEqual(row.product_callers, expected)
++                PROOF._verify_boundary(ROOT, row, sources, ignored)
++                method = row.symbol.rsplit("::", 1)[-1]
++                changed = dict(sources)
++                changed[AGENT + "unregistered_evaluated_read.rs"] = f"fn bypass(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
++                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
++                    PROOF._verify_boundary(ROOT, row, changed, ignored)
++                if expected:
++                    with self.assertRaises(PROOF.VerificationFailure):
++                        PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ignored)
++        for identifier in ("learning_original_published_read_client_current", "learning_original_evaluated_read_selection_binding"):
++            changed = dict(sources)
++            changed[AGENT + "unregistered_real_remote_s.rs"] = sources[REMOTE]
++            with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
++                PROOF._verify_boundary(ROOT, self.boundaries[identifier], changed, ignored)
++        self.assertTrue(all(value is False for value in self.manifest["authority"].values()))

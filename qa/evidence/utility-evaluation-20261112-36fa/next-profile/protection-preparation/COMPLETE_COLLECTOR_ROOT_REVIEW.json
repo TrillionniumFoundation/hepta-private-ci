@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.root.full-collector-qa-proposal-review.v1",
+  "source_preparation": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+  "before": {
+    "git_blob_sha": "4b824b6562195eb23e82ec41d7ce727a6885427a",
+    "bytes": 26872,
+    "sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852"
+  },
+  "after": {
+    "git_blob_sha": "b3ce035272a94815839dcb002077936276027044",
+    "bytes": 27335,
+    "sha256": "b81bf3195a75ff5c587d2dc3494862bed89c0ebf7e48f836d92fec577ae66b43"
+  },
+  "whole_preimage_matches_actual_prepared_raw_object": true,
+  "only_one_method_changed": true,
+  "all_other_file_bytes_identical": true,
+  "old_attack_and_assertion_tail_exact_after_reversing_only_four_ignored_arguments": true,
+  "full_original_collector_and_original_masks": true,
+  "frozen_source_roots": [
+    "codex-rs"
+  ],
+  "frozen_ignored_fragments": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "attacks_outside_ignored_explicitly_asserted": true,
+  "no_verdict_path_or_field_cache": true,
+  "original_verifier_api_signatures_checked": true,
+  "python_ast_executed": false,
+  "tests_executed": false,
+  "native_applied": false,
+  "qualification": false,
+  "condition": "Apply only after matching the actual formatted worktree's exact unchanged QA preimage; final original source-closure gate remains required with frozen budget."
+}

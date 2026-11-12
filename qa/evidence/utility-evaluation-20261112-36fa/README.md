@@ -1,10 +1,10 @@
 # Utility evaluation — original caller PASS; overall qualification remains HOLD
 
-Checkpoint: 2026-11-12 16:18:20 UTC. Draft [PR #6203](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6203) still publishes **c0f78493f815780f68b9bf5e390a21314d79311f**, tree **313ee34febc8ccc54c611ab56286e289518c63cb**. Its full evaluator library and full caller gate passed. Its original focused native and source-closure gates failed. **No merge, production activation, real Adopt, completed real NoUpdate, or cold-recovery qualification is claimed.**
+Checkpoint: 2026-11-12 16:43:15 UTC. Draft [PR #6203](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6203) still publishes **c0f78493f815780f68b9bf5e390a21314d79311f**, tree **313ee34febc8ccc54c611ab56286e289518c63cb**. Its full evaluator library and full caller gate passed. Its original focused native and source-closure gates failed. **No merge, production activation, real Adopt, completed real NoUpdate, or cold-recovery qualification is claimed.**
 
 The next source exists as an immutable **PREPARATION/HOLD** object, **86dd56a930277e0d1aef3e475e35c2b5d60b43b7**, tree **383ab85c39ef9d848252ef5c25922d13d9fae6c6**, with 15,188 leaves. It has not replaced the PR head and has not run maintenance, compilation or qualification. Its exact parents are c0f followed by fixed upstream a96d1b821d10ed3d9e99dd06c5141f9f242ae318.
 
-All previous evidence remains addressed. The [unchanged 1120-file README](checkpoints/README_1120FILES_C0F_FULLCALLER_PENDING.md) preserves the prior checkpoint's then-pending caller observation and all earlier history. The present checkpoint contains **1425** addressed files; that count is an archive inventory, not a quality score.
+All previous evidence remains addressed. The [unchanged 1425-file README](checkpoints/README_1425FILES_OBJECT_CLOSURE_PENDING.md) preserves the prior checkpoint's then-pending object-closure validation. It retains the [1120-file historical checkpoint](checkpoints/README_1120FILES_C0F_FULLCALLER_PENDING.md) and all earlier observations. The present checkpoint contains **1486** addressed files; that count is an archive inventory, not a quality score.
 
 ## Exact published source and actual original gates
 
@@ -60,7 +60,7 @@ The cause of that missing file remains Unknown. This is not evidence of an origi
 
 The separate original source-gates clone was fully inventoried before and after its completed caller run and again during the completed timing diagnostic. Its proof is not substituted for the old review directory.
 
-The cloud execution environment subsequently became unavailable. GitHub object reads/writes and the independent native desktop remain separate capabilities. A local root canonical-validator request was terminated without a usable completion receipt; no execution or saved output is claimed for it. The approved next operation is **evidence-only validation of canonical Git object closures**, with no import, checkout, Cargo or source/ref mutation.
+The cloud execution environment subsequently became unavailable. GitHub object reads/writes and the independent native desktop remain separate capabilities. A local root canonical-validator request was terminated without a usable completion receipt; no execution or saved output is claimed for it. The approved **evidence-only canonical object validation has now actually completed successfully**. Its read-only Git object checks did not import objects, create a checkout, run Cargo or examine current worktree file bytes. The next operation is preparation of a new independent repository and exact physical checkout; its reviewed implementation and actual execution are still pending.
 
 [Original failed prerequisite result](a96-origin-object-fetch-v1/RESULT.json) · [unaltered native payload](a96-origin-object-fetch-v1/RESULT.binary-read.payload.json) · [canonical transport](next-profile/a96-canonical-transport) · [root transport-only review](next-profile/a96-canonical-transport/ROOT_TRANSPORT_REVIEW.json) · [prepared independent validator](next-profile/a96-canonical-independent-validation-v1).
 
@@ -94,9 +94,37 @@ The ordinary evaluated preparation keeps legacy and evaluated profiles distinct,
 
 The structural CALLERS preparation has **569 boundaries**, including 28 additions relative to fixed a96's 541. Existing authority flags remain false. The 12 QA structural edits change expected membership only; the original 140 function ASTs remain unchanged. **Ten new protected rows, 39 existing protected literal updates, new adversarial QA and final blob-size allowance synchronization remain incomplete**, pending actual native maintenance. The subsequent complete exact-source gates must run under their original definitions and budgets.
 
-The canonical a96 transport contains **395 original Git objects: seven commits, 80 trees and 308 blobs**. Root verified the complete transport identities, all seven canonical commit bodies and the explicitly documented 72-byte binary recovery. Full inflated object-graph/native prerequisite validation is not yet claimed in this checkpoint. The required-existing set is exactly the objects needed by the seven new snapshots minus transported objects, plus two commit anchors; it is **not a claim of complete recursive repository history**. The original manifest's broader ancestry phrase is preserved and this scope correction is explicit.
+The canonical a96 transport contains **395 original Git objects: seven commits, 80 trees and 308 blobs**. Root verified the complete transport identities, all seven canonical commit bodies and the explicitly documented 72-byte binary recovery. The approved independent native validator then actually verified every inflated object body, seven complete snapshot diffs and the exact existing prerequisite set. Root separately read the complete original result and matched it against the pinned-version native binary read, full-file metadata and durable process terminal. The required-existing set is exactly the objects needed by the seven new snapshots minus transported objects, plus two commit anchors; it is **not a claim of complete recursive repository history**. The original manifest's broader ancestry phrase is preserved and this scope correction is explicit.
 
 [Prepared canonical commit](next-profile/preparation86dd/CANONICAL_COMMIT.json) · [root independent commit/tree review](next-profile/preparation86dd/ROOT_REVIEW.json) · [ordinary evaluated preparation](ordinary-evaluated-no-update-preparation) · [structural non-Rust review and remaining protections](next-profile/nonrust-structural-v1).
+
+
+### Actual canonical object validation and full prepared delta
+
+The unique native validation job **1a1d09b7b3e-2564-1ba7** ran at **16:33:35.443467–16:33:48.419914 UTC**. Its actual status is **canonical_snapshot_closure_verified**; the process exited **0**, with no timeout, complete/durable output and terminal publication confirmed. This is an object-closure result, not a qualification gate.
+
+The reviewed driver **49c9c2c13cf545b2a47cce110b8dce6b60a0e86a** checked all **395** provided raw objects; the seven original commit bodies and complete tree/leaf differences; the authentic b298 and c0f snapshots; and **16,082** required existing objects (**14,306 blobs, 1,774 trees, two commit anchors**). The existing prerequisite set exactly equals what the seven new snapshots need after excluding transported objects and adding the two anchors. The complete trusted b298/c0f snapshot union contains 16,136 objects. Final a96 is exactly tree f96bebefbc1e7d8187efadb62f88d524cdd18451 with **15,161 leaves**.
+
+The original complete result is **38,525 bytes**, SHA256 **e3fa2ee9c142b6360fb7994db28746d54b2abf9fc27ea362f08e6a80d37f7bdb**, Git blob **d7c135961dfacc04fe8b69697a66450e65566acb**. Root decoded the full original binary-read payload and checked exact bytes, hash, length, fixed version and EOF. The original source repo's HEAD/tree, **2,013,903-byte index**, and empty ref listing were identical before/after; **current physical worktree files were not examined by this operation**. The next materialization must freshly reproduce the full original physical inventory before/after.
+
+Three full audit packages were generated on the native host: object audit **1,916,374 gzip bytes**, nine snapshot leaf maps **10,388,682 gzip bytes**, and raw trees/anchors **920,740 gzip bytes**. Their exact raw/compressed identities and recoverable parts are in the original result. Their complete transfer off the native host is not yet claimed. Current source/test failures and historical whole-history fsck limitations remain unchanged.
+
+Root also independently checked the next **86dd** transport: **87** raw objects (**77 blobs, nine new trees, one original commit**), 2,302,939 raw object bytes. Its five verbatim ASCII JSON fragments assemble to exactly **3,241,174 bytes**, SHA256 **05e3a7b01f5814e0816fe8d521c68f55fddc64536e62fcedca7934e0832cb055**. Every object body and Git ID, all provided-object reachability and all **1,451 immediate external references** were checked. Thirteen independent original Git tree reads proved the complete fixed-a96-to-86dd difference: **99 paths changed, 27 added, zero deleted**, resulting in **15,188 leaves**. Two unchanged c0f evaluator subtrees are deliberately reused rather than retransmitted. Direct reference checks are not a substitute for the final native transitive closure and physical source checks.
+
+[Original native object result](next-profile/a96-canonical-independent-validation-v1/ROOT_REVIEW.native-original.json) · [root actual-result review](next-profile/a96-canonical-independent-validation-v1/ROOT_ACTUAL_RESULT_REVIEW.json) · [full 86dd objects/delta review](next-profile/preparation86dd/ROOT_FULL_OBJECTS_AND_DELTA_REVIEW.json) · [87-object transport manifest](next-profile/preparation86dd/OBJECT_MANIFEST.json) · [handoff and exact format](next-profile/preparation86dd/README.md).
+
+### Separate QA strengthening proposal
+
+A separately reviewed proposal strengthens one existing published-read membership test from its declared-file subset to the **original complete Rust collector and both original masks**. It locks the existing source root and ignored-path contract, keeps every original assertion/attack, and checks that its two injected attack paths cannot be ignored. Each variant receives a separate full source dictionary and follows the original uncached boundary scan; no verdict/path/field cache or new ignored path is introduced.
+
+This method explicitly leaves the earlier structural-only phase in which 140 function ASTs were unchanged. Its 25 original boundary invocations, when the method reaches them, retain the same attacks. The proposal is **not applied or executed**: it may enter the final non-Rust packet only after the actual formatted worktree matches its exact QA preimage. Further Clone/readiness/current-authority protections and adversarial QA remain in preparation.
+
+[Exact proposal](next-profile/protection-preparation/complete-collector/MANIFEST.json) · [root method review](next-profile/protection-preparation/COMPLETE_COLLECTOR_ROOT_REVIEW.json) · [independent semantic checklist](next-profile/protection-preparation/INDEPENDENT_SEMANTIC_CHECKLIST.md).
+
+### Exact-head hosted CI observation
+
+The read-only observation at **16:21:52–16:21:53 UTC** found **zero check runs, zero check suites and zero workflow runs** for the exact published c0f head. Combined status was pending with zero entries. This supplies no PASS and does not prove a job is running. No workflow was triggered by that observation. [Original timestamped API responses](published-c0f/CI_OBSERVATION_1621.json).
+
 
 ## External utility and authority limits
 

@@ -1,0 +1,105 @@
+{
+  "format": "hepta.utility.evaluated-published-read-complete-collector-proposal.v1",
+  "state": "PREPARED_NOT_APPLIED_NOT_FORMATTED_NOT_EXECUTED",
+  "prepared_source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+  "before": {
+    "git_blob_sha": "4b824b6562195eb23e82ec41d7ce727a6885427a",
+    "bytes": 26872,
+    "sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852"
+  },
+  "after": {
+    "git_blob_sha": "b3ce035272a94815839dcb002077936276027044",
+    "bytes": 27335,
+    "sha256": "b81bf3195a75ff5c587d2dc3494862bed89c0ebf7e48f836d92fec577ae66b43"
+  },
+  "function": "EvaluatedPublishedReadClosureTests.test_registered_calls_are_exact_and_extra_callers_are_rejected",
+  "prior_stage": "The structural-only candidate retained 140 functions byte/AST-identical; this one method now enters an explicit reviewed migration and is no longer claimed unchanged.",
+  "replacement": "Declared-definition/caller subset is replaced with the same original complete _source_files and non-code/cfg-test masks used by verify. No source path is removed before authority_fields.",
+  "source_roots_exact": [
+    "codex-rs"
+  ],
+  "ignored_fragments_exact": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "ignored_contract_reason": "Original verify builds fields from every collected Rust file and uses these existing fragments only when classifying product call sites; using the old subset fixture's empty tuple with the full collection would misclassify examples and tests.",
+  "source_map_lifetime": "One baseline dictionary is read once inside this method. Each existing mutation uses a separate dict(baseline) plus its existing injection. Immutable string values are shared; no path, field, receiver, verdict or cross-method cache is introduced.",
+  "original_boundary_call_sites": 4,
+  "normal_uncached_original_boundary_call_path": true,
+  "fields_by_receiver_type_argument_added": false,
+  "old_tail_equal_after_reversing_only_four_ignored_arguments": true,
+  "old_assertion_lines_unchanged": [
+    "                self.assertIn(identifier, self.manifest[\"privileged_inventory\"][\"required_boundary_ids\"])",
+    "                self.assertEqual(row.product_callers, expected)",
+    "                with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):",
+    "                    with self.assertRaises(PROOF.VerificationFailure):",
+    "            with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):",
+    "        self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))"
+  ],
+  "attack_map": [
+    {
+      "existing": "for each of the 8 original EXPECTED boundaries, add a new explicitly typed caller",
+      "original_path": "codex-rs/hepta-agentd/src/unregistered_evaluated_read.rs",
+      "expected_not_ignored": true,
+      "mutation": "fresh dict(sources), same original f-string assignment",
+      "assertion": "same original assertRaisesRegex(VerificationFailure, 'unexpected')"
+    },
+    {
+      "existing": "for each original boundary with nonempty expected callers, remove the entire declared set",
+      "boundary_count": 7,
+      "mutation": "same original replace(row, product_callers=()), original full source map",
+      "assertion": "same original assertRaises(VerificationFailure)"
+    },
+    {
+      "existing": "duplicate the full actual original evaluated S remote source into a new file for the same two original boundaries",
+      "original_path": "codex-rs/hepta-agentd/src/unregistered_real_remote_s.rs",
+      "boundary_ids": [
+        "learning_original_published_read_client_current",
+        "learning_original_evaluated_read_selection_binding"
+      ],
+      "expected_not_ignored": true,
+      "mutation": "fresh dict(sources), same original sources[REMOTE] assignment",
+      "assertion": "same original assertRaisesRegex(VerificationFailure, 'unexpected')"
+    }
+  ],
+  "expected_boundary_invocations_if_no_earlier_failure": 25,
+  "all_other_file_bytes_unchanged": true,
+  "other_tests_deleted": false,
+  "qualification_budget_changes": false,
+  "original_verifier_changed": false,
+  "performance_claim": null,
+  "executed_tests": [],
+  "notes": [
+    "Exact postimage and patch are review artifacts only, not installed in the native source or published branch.",
+    "The full baseline map does not change between variants; each original verifier call recomputes its original authority fields over its complete supplied variant map.",
+    "Actual validation of this strengthened method and the unchanged full gate still awaits the final formatted source and original budgets."
+  ],
+  "artifacts": [
+    {
+      "name": "postimage.py",
+      "bytes": 27335,
+      "sha256": "b81bf3195a75ff5c587d2dc3494862bed89c0ebf7e48f836d92fec577ae66b43",
+      "git_blob_sha": "b3ce035272a94815839dcb002077936276027044"
+    },
+    {
+      "name": "changes.patch",
+      "bytes": 4680,
+      "sha256": "0250e178005b3e0bf17fdd9c9cb2701b21df1191428efdce76f55643f3baf54b",
+      "git_blob_sha": "804c9b61a200419ed4e8e764fe8cdd02e305b059"
+    },
+    {
+      "name": "original-method.py",
+      "bytes": 1877,
+      "sha256": "91ffa7b186377585970e339956da603ff8f71472afa982cc4a0596120c1241d4",
+      "git_blob_sha": "106ad5ef1b2dc8a3ab9c0abc0e78c344658daed7"
+    },
+    {
+      "name": "proposed-method.py",
+      "bytes": 2340,
+      "sha256": "2456a5fed121a5d404dbfb87686fc2ac129eaaf2741ba30618579beac3a40f01",
+      "git_blob_sha": "0e33be271b2ea840e04d899a48376480b93fd448"
+    }
+  ]
+}

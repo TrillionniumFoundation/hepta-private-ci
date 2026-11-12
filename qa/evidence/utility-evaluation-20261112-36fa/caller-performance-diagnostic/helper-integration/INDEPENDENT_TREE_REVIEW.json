@@ -1,0 +1,25 @@
+{
+  "format": "hepta.utility.parser-overlay-independent-tree-review.v1",
+  "review_mode": "read_only_raw_Git_tree_encoding_in_V8; no filesystem mutation, object creation, ref update or test",
+  "source_proof_git_blob_sha": "0f9a40f5077c877f4dc9fb90c1e685baf282340e",
+  "base_root_readback_git_blob_sha": "35e1dedfb0aadf1999dc0aa0363820f131ba8c4f",
+  "exact_helper_plan_git_blob_sha": "cc49ec0e0ca73469286c43d5e319363877594f90",
+  "base_tree": "f1db976f9712af1884fd681b51d4e871d38d3683",
+  "after_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "base_scripts_tree": "8b97e16bce086c417d7f270d9632c589491b1666",
+  "after_scripts_tree": "7bbd23a96d10b7f3b00f48cb142cca64905a970a",
+  "script_entries": 199,
+  "root_entries": 56,
+  "old_script_tree_reconstructed_by_reversing_only_one_blob": true,
+  "root_only_changed_entry": [
+    "scripts"
+  ],
+  "source_delta": {
+    "path": "scripts/hepta_typed_callers.py",
+    "before": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "after": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+    "exact_two_text_replacements_verified": true
+  },
+  "unchanged_other_source": true,
+  "qualification": "PREPARATION/HOLD; no optimized performance or full gate result"
+}

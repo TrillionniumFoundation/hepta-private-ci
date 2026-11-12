@@ -1,0 +1,167 @@
+{
+  "boundaries": [
+    {
+      "cpu_seconds_inclusive": 15.007150771,
+      "exception_type": null,
+      "identifier": "root_registered_learning_checkpoint_writer",
+      "original_call_returned": true,
+      "position": 0,
+      "wall_seconds_inclusive": 15.012965102912858
+    },
+    {
+      "cpu_seconds_inclusive": 16.834348404000004,
+      "exception_type": null,
+      "identifier": "root_original_learning_checkpoint_exchange",
+      "original_call_returned": true,
+      "position": 1,
+      "wall_seconds_inclusive": 16.84267028910108
+    },
+    {
+      "cpu_seconds_inclusive": 0.06695245800000293,
+      "exception_type": null,
+      "identifier": "supervisor_authorized_boot",
+      "original_call_returned": true,
+      "position": 2,
+      "wall_seconds_inclusive": 0.06699547613970935
+    },
+    {
+      "cpu_seconds_inclusive": 0.03833901299999809,
+      "exception_type": null,
+      "identifier": "memory_production_writer_open",
+      "original_call_returned": true,
+      "position": 3,
+      "wall_seconds_inclusive": 0.03839673404581845
+    },
+    {
+      "cpu_seconds_inclusive": 0.04519353199999898,
+      "exception_type": null,
+      "identifier": "cognitive_store_recovery_open",
+      "original_call_returned": true,
+      "position": 4,
+      "wall_seconds_inclusive": 0.04522785893641412
+    },
+    {
+      "cpu_seconds_inclusive": 1.4718391100000048,
+      "exception_type": null,
+      "identifier": "cognitive_production_mutation_capability",
+      "original_call_returned": true,
+      "position": 5,
+      "wall_seconds_inclusive": 1.4720086089801043
+    },
+    {
+      "cpu_seconds_inclusive": 0.038672599000008745,
+      "exception_type": null,
+      "identifier": "agentd_production_writer_host",
+      "original_call_returned": true,
+      "position": 6,
+      "wall_seconds_inclusive": 0.03866769606247544
+    },
+    {
+      "cpu_seconds_inclusive": 1.4412165509999966,
+      "exception_type": null,
+      "identifier": "agentd_production_operation_runtime",
+      "original_call_returned": true,
+      "position": 7,
+      "wall_seconds_inclusive": 1.4417442879639566
+    },
+    {
+      "cpu_seconds_inclusive": 0.03663330999999914,
+      "exception_type": null,
+      "identifier": "learning_artifact_owner_bootstrap",
+      "original_call_returned": true,
+      "position": 8,
+      "wall_seconds_inclusive": 0.036628922913223505
+    },
+    {
+      "cpu_seconds_inclusive": 0.0372708700000004,
+      "exception_type": null,
+      "identifier": "learning_artifact_owner_restart",
+      "original_call_returned": true,
+      "position": 9,
+      "wall_seconds_inclusive": 0.03726667305454612
+    },
+    {
+      "cpu_seconds_inclusive": 1.533899684000005,
+      "exception_type": null,
+      "identifier": "learning_artifact_verified_current_view",
+      "original_call_returned": true,
+      "position": 10,
+      "wall_seconds_inclusive": 1.5345430639572442
+    },
+    {
+      "cpu_seconds_inclusive": 0.044557001999990575,
+      "exception_type": null,
+      "identifier": "provider_effect_coordinator",
+      "original_call_returned": true,
+      "position": 11,
+      "wall_seconds_inclusive": 0.04462306504137814
+    },
+    {
+      "cpu_seconds_inclusive": 0.043924469000003796,
+      "exception_type": null,
+      "identifier": "http_provider_effect_adapter",
+      "original_call_returned": true,
+      "position": 12,
+      "wall_seconds_inclusive": 0.043919348157942295
+    },
+    {
+      "cpu_seconds_inclusive": 148.35348509699998,
+      "exception_type": "DiagnosticWindowEnded",
+      "identifier": "final_use_open_state",
+      "original_call_returned": false,
+      "position": 13,
+      "wall_seconds_inclusive": 148.40223866305314
+    }
+  ],
+  "boundary_set_reduced": false,
+  "full_gate_run": false,
+  "input_index": {
+    "rust_source_count": 6597,
+    "source_path_list_sha256": "f1fb7f16bb17ce059275a1c538fdc4de9b9dd86dfe5a8f7ae82aae1da2f7acc3"
+  },
+  "metrics": {
+    "_declared_aliases": {
+      "calls": 64833,
+      "completed_calls": 64833,
+      "cpu_seconds_inclusive": 43.958130447001224,
+      "exception_counts": {},
+      "wall_seconds_inclusive": 43.958540472667664
+    },
+    "_verify_boundary": {
+      "calls": 14,
+      "completed_calls": 13,
+      "cpu_seconds_inclusive": 184.99348286999998,
+      "exception_counts": {
+        "DiagnosticWindowEnded": 1
+      },
+      "wall_seconds_inclusive": 185.0578957903199
+    },
+    "has_authority_call": {
+      "calls": 25251,
+      "completed_calls": 25250,
+      "cpu_seconds_inclusive": 152.70682942200122,
+      "exception_counts": {
+        "DiagnosticWindowEnded": 1
+      },
+      "wall_seconds_inclusive": 152.74914403515868
+    }
+  },
+  "original_exception": {
+    "message": "220-second internal diagnostic window ended",
+    "phase": "original_verify",
+    "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/prepared-c0f-typed-timing-v2/worker.py\", line 184, in main\n    original_result = proof.verify(source, source / 'CALLERS.toml')\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1/scripts/verify_hepta_callers.py\", line 747, in verify\n    _verify_boundary(\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/prepared-c0f-typed-timing-v2/worker.py\", line 113, in invoke\n    result = original(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1/scripts/verify_hepta_callers.py\", line 528, in _verify_boundary\n    matched = any(\n              ^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1/scripts/verify_hepta_callers.py\", line 529, in <genexpr>\n    has_authority_call(code, boundary.receiver_type, method, fields)\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/prepared-c0f-typed-timing-v2/worker.py\", line 113, in invoke\n    result = original(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1/scripts/hepta_typed_callers.py\", line 193, in has_authority_call\n    if not any(re.search(rf\"\\b{re.escape(name)}\\b\", code) for name in type_names):\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1/scripts/hepta_typed_callers.py\", line 193, in <genexpr>\n    if not any(re.search(rf\"\\b{re.escape(name)}\\b\", code) for name in type_names):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/re/__init__.py\", line 177, in search\n    return _compile(pattern, flags).search(string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/prepared-c0f-typed-timing-v2/worker.py\", line 85, in stop\n    raise DiagnosticWindowEnded('220-second internal diagnostic window ended')\nDiagnosticWindowEnded: 220-second internal diagnostic window ended\n",
+    "type": "DiagnosticWindowEnded"
+  },
+  "original_verify_result": null,
+  "original_verify_returned": false,
+  "phase": "original_verify",
+  "source_collection_reduced": false,
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "status": "stopped_scoped_timing_diagnostic",
+  "timing_semantics": "All wrapped timings are inclusive. Nested measurements overlap and must not be summed into a total or percentage.",
+  "verdict_cache_added": false,
+  "verify_call_cpu_seconds": 214.609839571,
+  "verify_call_wall_seconds": 214.75597450812347,
+  "worker_cpu_seconds_before_after_inventory": 218.116902762,
+  "worker_wall_seconds_before_after_inventory": 220.0268411168363
+}

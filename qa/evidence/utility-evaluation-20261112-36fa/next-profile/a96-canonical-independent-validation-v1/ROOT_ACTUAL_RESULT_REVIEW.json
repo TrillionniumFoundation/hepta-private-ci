@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.root.actual-a96-canonical-validation-review.v1",
+  "job_id": "1a1d09b7b3e-2564-1ba7",
+  "original_process_terminal": {
+    "at_unix_ms": 1794501228560,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1d09b7b3e-2564-1ba7",
+    "launch_nonce": "1b67457ff8951d1659890c41a04f4cea",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 40197,
+        "stored": 40197
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "actual_result_git_blob": "d7c135961dfacc04fe8b69697a66450e65566acb",
+  "original_binary_read_sdk": "b8e80a91f0942bf9307693e004a3a1d054c11dc4",
+  "actual_file_info_sdk": "b94cddb05f7792cd726b95dfe4ab99c16df3f84c",
+  "result_bytes": 38525,
+  "result_sha256": "e3fa2ee9c142b6360fb7994db28746d54b2abf9fc27ea362f08e6a80d37f7bdb",
+  "result_version": "2050:50138593:38525:1794501228422818512:1794501228422818512",
+  "complete_native_result_bytes_independently_checked": true,
+  "actual_status": "canonical_snapshot_closure_verified",
+  "actual_start": "2026-11-12T16:33:35.443467+00:00",
+  "actual_finish": "2026-11-12T16:33:48.419914+00:00",
+  "provided_objects_verified": 395,
+  "canonical_commits": 7,
+  "required_existing_exact_set": 16082,
+  "final_a96_leaves": 15161,
+  "trusted_b298_c0f_snapshot_union": 16136,
+  "git_head_tree_index_refs_before_after_equal": true,
+  "source_worktree_physical_inventory_examined": false,
+  "scope": "Pinned snapshot closure and original canonical Git object bytes. This is not recursive history fsck, source physical availability, maintenance, compilation, qualification, real adoption or cold recovery.",
+  "large_audit_objects_generated_on_native_host": [
+    {
+      "name": "OBJECT_AUDIT.json.gz",
+      "bytes": 1916374,
+      "sha256": "6ba1a292e89231b552011dccab1a73e173e805cf006dac55f1430faa177dd473",
+      "git_blob": "2158415ddeccf26f4422b9dbef9dd5512e63606e",
+      "raw_bytes": 5086531,
+      "raw_sha256": "547786e055bb0710dccffa0d15fcdd3ed56425b885d0807611b7aa7ea41ea8f2",
+      "off_host_complete_readback_confirmed": false
+    },
+    {
+      "name": "SNAPSHOT_LEAVES.json.gz",
+      "bytes": 10388682,
+      "sha256": "de21c2a0b0321c91376fdd26a84a0e67915a507f445932e1067b435ac5fca8ec",
+      "git_blob": "f62217caa10ab953afeecbf90047da328caa7d33",
+      "raw_bytes": 32945102,
+      "raw_sha256": "91736e55f3902df2aa7d5de6d42f3ed4385e7470748e65362d6bff8cac210adb",
+      "off_host_complete_readback_confirmed": false
+    },
+    {
+      "name": "TREE_AND_ANCHOR_RAW.json.gz",
+      "bytes": 920740,
+      "sha256": "a86aa06f6f1752ae604362b4af4d34842487d50a9511e5c4978d63840fa1b9d7",
+      "git_blob": "1796295975d26842f3f913c8b206a4b9c38e9ee6",
+      "raw_bytes": 1987695,
+      "raw_sha256": "8912bc39982001e1705ac027a197341fd9a722d75746a68e1da207fdcc4e19b8",
+      "off_host_complete_readback_confirmed": false
+    }
+  ],
+  "native_import": false,
+  "Cargo": false,
+  "qualification": false
+}
