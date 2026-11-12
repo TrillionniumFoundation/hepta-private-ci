@@ -35,6 +35,9 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
 #[path = "circuit_feature_current_control.rs"]
 mod control;
+#[cfg(target_os = "linux")]
+#[path = "circuit_feature_source_capture.rs"]
+mod source_capture;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
 #[path = "circuit_feature_learning_source.rs"]

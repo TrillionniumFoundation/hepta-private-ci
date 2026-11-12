@@ -86,6 +86,23 @@ pub(crate) fn original_initial_next(
 }
 
 impl NeuronGenerationCurrentOwnerV1 {
+    pub(crate) fn require_original_initial_source_session(
+        &self,
+        session: &crate::AgentdRootAuthoritySession,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<(), AgentdError> {
+        self.store.original_source_capture_client()?
+            .require_source_capture_session(session, identity)
+    }
+
+    pub(crate) fn capture_original_initial_source(
+        &self,
+        closed: crate::circuit_task::OriginalCircuitSourceClosedV1,
+    ) -> Result<(), AgentdError> {
+        self.store.original_source_capture_client()?
+            .capture_source_after_quiescence(closed)
+    }
+
     pub(crate) fn original_broker_initial_publish(
         &self,
         expected: &CurrentHead,

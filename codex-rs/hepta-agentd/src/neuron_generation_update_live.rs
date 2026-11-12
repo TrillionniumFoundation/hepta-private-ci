@@ -93,6 +93,21 @@ pub(crate) struct LiveGenerationCurrent {
 }
 
 impl LiveGenerationCurrent {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn original_initial_source_current(
+        &self,
+        session: &crate::AgentdRootAuthoritySession,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError> {
+        if !matches!(&self.publication, RetainedPublication::Initial(_)) {
+            return Err(invalid("source capture requires original Initial publication"));
+        }
+        self.check_current(self.publication.target()).map_err(invalid)?;
+        self.current.require_original_initial_source_session(session, identity)?;
+        self.check_current(self.publication.target()).map_err(invalid)?;
+        Ok(Arc::clone(&self.current))
+    }
+
     pub(crate) fn new(
         current: Arc<NeuronGenerationCurrentOwnerV1>,
         authorities: AgentdGenerationUpdateAuthoritiesV1,

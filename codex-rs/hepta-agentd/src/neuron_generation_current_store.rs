@@ -81,6 +81,17 @@ impl CurrentStore {
     }
 
     #[cfg(target_os = "linux")]
+    pub(super) fn original_source_capture_client(
+        &self,
+    ) -> Result<&crate::root_generation_initial_client::RootGenerationInitialClient, AgentdError>
+    {
+        match &self.store {
+            Store::RootInitial(original) => Ok(original),
+            _ => Err(invalid("same original Root Initial capture client required")),
+        }
+    }
+
+    #[cfg(target_os = "linux")]
     pub(super) fn require_original_root_selection(
         &self,
         decision: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
