@@ -104,6 +104,8 @@ class HistoricalQ24StageSourceClosureTests(unittest.TestCase):
         for occurrence in (0, 1):
             self.rejects(LANE, "fn run_original_historical_stage(",
                          "context.require_in_operation(read, OriginalHistoricalStageAdmissionV1::ReadOnly)?", occurrence)
+            self.rejects(LANE, "fn run_original_historical_stage(",
+                         "crate::AgentdRootQ24ModelFactoryV1::require_current(", occurrence)
 
     def test_signature_and_checkpoint_cannot_escape_stage_postchecks(self):
         for marker in (

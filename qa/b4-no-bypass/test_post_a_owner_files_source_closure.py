@@ -53,7 +53,7 @@ class PostAOwnerFilesSourceTests(unittest.TestCase):
             self.reject_removal(FILES, "fn into_original_inputs(", "prepared.revalidate_source()", occurrence)
         self.check_markers(FILES, "fn into_original_inputs(", (
             "self.experience\n                .open_original(", "self.dataset\n                .open_original(",
-            "self.training.open(files, objective, self.mode)?", "self.training_receipt.open_original(",
+            "JournalData::open(&self.training, files, objective, self.mode)?", "self.training_receipt.open_original(",
             "self.local\n                .open_original(", "experience.open_witness()?", "dataset.open_witness()?",
             "training.open_witness()?", "receipts.open_witness()?", "local.open_witness()?"))
 
