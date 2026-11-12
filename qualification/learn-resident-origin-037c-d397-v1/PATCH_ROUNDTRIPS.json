@@ -1,0 +1,134 @@
+[
+  {
+    "label": "original_actual_format_only",
+    "patch": {
+      "bytes": 6563,
+      "sha256": "b84b2e9a88fbafea7bf0d4bb4e3f82ad855d939b54d8e723467ce753d419ddd9",
+      "blob": "1b87c047f2afa29611fbdb71771ba5c269438af6"
+    },
+    "paths": [
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/deployment_issuer_tests.rs"
+    ],
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--verbose",
+          "/tmp/hepta-learn-037c-20261112/profile-resident-origin-formatted-v1/format-only.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "Checking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs...\n"
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--verbose",
+          "/tmp/hepta-learn-037c-20261112/profile-resident-origin-formatted-v1/format-only.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "Checking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs...\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs cleanly.\n"
+      }
+    ],
+    "all_after_equal": true
+  },
+  {
+    "label": "original_actual_seven_file_patch",
+    "patch": {
+      "bytes": 15144,
+      "sha256": "f10a3d6ba7999208d16aa45a7bbaa8a8419f077640d1d21ff0f6850a3afd534a",
+      "blob": "6d911b082877579761e7f7142afc00d3a08d49be"
+    },
+    "paths": [
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/deployment_issuer_tests.rs"
+    ],
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--verbose",
+          "/tmp/hepta-learn-037c-20261112/profile-resident-origin-formatted-v1/resident-origin-formatted.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "Checking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/deployment_issuer_tests.rs...\n"
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--verbose",
+          "/tmp/hepta-learn-037c-20261112/profile-resident-origin-formatted-v1/resident-origin-formatted.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "Checking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/deployment_issuer_tests.rs...\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/deployment_issuer_tests.rs cleanly.\n"
+      }
+    ],
+    "all_after_equal": true
+  },
+  {
+    "label": "derived_complete_ten_file_patch",
+    "patch": {
+      "bytes": 28291,
+      "sha256": "02fe4188d2b89dc17428aaa5c53ed976ca9f17e3728091ebb3e332eeb776346d",
+      "blob": "b835feadc8945f2775be6c584420c58c22b83110"
+    },
+    "paths": [
+      ".github/workflows/hepta-daemon-learning-native.yml",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/deployment_issuer_tests.rs",
+      "qa/b4-no-bypass/test_resident_origin_source_closure.py",
+      "qa/b4-no-bypass/test_resident_root_source_closure.py"
+    ],
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--verbose",
+          "/tmp/hepta-learn-037c-20261112/profile-resident-origin-formatted-v1/ORIGIN_FINAL.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "Checking patch .github/workflows/hepta-daemon-learning-native.yml...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/deployment_issuer_tests.rs...\nChecking patch qa/b4-no-bypass/test_resident_origin_source_closure.py...\nChecking patch qa/b4-no-bypass/test_resident_root_source_closure.py...\n"
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--verbose",
+          "/tmp/hepta-learn-037c-20261112/profile-resident-origin-formatted-v1/ORIGIN_FINAL.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "Checking patch .github/workflows/hepta-daemon-learning-native.yml...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs...\nChecking patch codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs...\nChecking patch codex-rs/hepta-agentd/src/deployment_issuer_tests.rs...\nChecking patch qa/b4-no-bypass/test_resident_origin_source_closure.py...\nChecking patch qa/b4-no-bypass/test_resident_root_source_closure.py...\nApplied patch .github/workflows/hepta-daemon-learning-native.yml cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs cleanly.\nApplied patch codex-rs/hepta-agentd/src/deployment_issuer_tests.rs cleanly.\nApplied patch qa/b4-no-bypass/test_resident_origin_source_closure.py cleanly.\nApplied patch qa/b4-no-bypass/test_resident_root_source_closure.py cleanly.\n"
+      }
+    ],
+    "all_after_equal": true
+  }
+]

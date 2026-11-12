@@ -1,0 +1,304 @@
+{
+  "schema": "ordinary_original_capability_contract_v1",
+  "status": "DESIGN_FROM_EXACT_SOURCES_NOT_ORDINARY_QUALIFICATION",
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "unchanged_production_child": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "inputs": [
+    {
+      "id": "retained_root_session",
+      "type": "PreparedHostAuthoritySession",
+      "supplier": "Original registered Root startup",
+      "existing_constructor": "prepare_fresh_from_registered / initialize_fresh / open",
+      "original_custody": [
+        "HostAuthorityService",
+        "registered daemon identity",
+        "held original owner_pidfd",
+        "issuer/Registry/Root owners"
+      ],
+      "implementable_edge": "Consume the same session into a resident-aware supervisor; do not reopen its service or duplicate exclusive owners.",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "symbol": "pub struct PreparedHostAuthoritySession",
+        "git_blob": "5c9f1927f9048310eff6d8469dacf1a0c4ee3b21"
+      }
+    },
+    {
+      "id": "published_a",
+      "type": "ReadyAgentdGenerationInitialV1<W> -> PublishedCircuitFeatureTaskV1",
+      "supplier": "Original generation publisher with real selected Artifact, consumed FinalUse and protected CURRENT",
+      "existing_constructor": "prepare_agentd_generation_initial_v1(...).publish(&original_final_use), or recover_agentd_generation_initial_v1(...); then into_circuit_feature_task",
+      "cannot_manufacture": [
+        "FinalUse signature or consumed witness",
+        "Artifact selection",
+        "protected CURRENT",
+        "completed A receipt"
+      ],
+      "implementable_edge": "Concrete original-task live transport plus an ordinary startup consumer, retaining the original guarded task on its host.",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+        "symbol": "ReadyAgentdGenerationInitialV1",
+        "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d"
+      }
+    },
+    {
+      "id": "task_files_and_model",
+      "type": "CircuitQ24TaskProfileV1<SW,CW>",
+      "supplier": "Authorized original Circuit task host and actual model loader",
+      "fields": [
+        "CircuitQ24TaskFilesV1<SW,CW>",
+        "source_mode",
+        "published_task",
+        "TaskFlowFence",
+        "BoundedCircuitDefinitionV2",
+        "routes",
+        "CellCompatibilityBundleV1",
+        "Arc<LoadedCellQ24ModelV1>",
+        "worker_generation",
+        "maximum_cell_records",
+        "queue_capacity",
+        "clock"
+      ],
+      "existing_consumer": "circuit_q24_task_channel_v1 -> CircuitQ24TaskRuntimeV1::install",
+      "source_profile": "The same actual Q24 NDU snapshot profile; a full signed RunStart digest is not a substitute.",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+        "symbol": "pub fn circuit_q24_task_channel_v1",
+        "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a"
+      }
+    },
+    {
+      "id": "completed_a_material",
+      "type": "OriginalCellQ24MaterialReceiptConfigV1",
+      "supplier": "Original Experience/Dataset owners after actual A publication and genuine Decision/Outcome intake",
+      "required": [
+        "actual completed-A initial cut",
+        "FrozenLearningScopeV2",
+        "Dataset rule/plan",
+        "original signed freeze",
+        "original signer trust and verifier"
+      ],
+      "source_profile": "Decision support binds the actual source publication; Outcome support retains independently signed observer measurement semantics. NDU and full RunStart profiles remain distinct.",
+      "implementable_edge": "Receive late, then call the existing concrete stage constructor; never prefill before A completion.",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "symbol": "pub struct OriginalCellQ24MaterialReceiptConfigV1",
+        "git_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7"
+      }
+    },
+    {
+      "id": "original_ten_streams",
+      "type": "OriginalCellQ24CandidateStageStreamsV1",
+      "supplier": "Original independent role-host deployment, with each connection addressed to final Root",
+      "required": [
+        "already connected UnixStream",
+        "exact original peer incarnation",
+        "held original pidfd",
+        "remaining original timeout/lifetime"
+      ],
+      "existing_consumer": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams / recover_original_streams",
+      "forbidden_substitutes": [
+        "numeric PID reopen",
+        "reconnect by path",
+        "new owner",
+        "fresh deadline from expired duration",
+        "caller-populated authority flag"
+      ],
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "symbol": "pub struct OriginalCellQ24CandidateStageStreamsV1",
+        "git_blob": "5d2b1eeb3d9971741145563a4d708c28d6cd2eae"
+      }
+    },
+    {
+      "id": "independent_panel_and_baseline",
+      "types": [
+        "OriginalCellEvaluationPanelRegistrationV1",
+        "Arc<LoadedCellQ24ModelV1>"
+      ],
+      "supplier": "Pre-registered independent evaluator and original immutable model loader",
+      "required": [
+        "primary and retention profile fixed before candidate evaluation",
+        "actual Evaluator owner/transport",
+        "baseline components equal material.initial.request.selected_bundle.components"
+      ],
+      "implementable_edge": "Pass originals to the existing candidate constructor and retain them unchanged.",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+        "symbol": "protocol: OriginalCellEvaluationPanelRegistrationV1",
+        "git_blob": "05359fcfecf67f7695a99aa666f761db169aa5ed"
+      }
+    },
+    {
+      "id": "fresh_authorization",
+      "type": "RootResidentLearningProfileV3",
+      "supplier": "Original provisioned Root issuer and Registry",
+      "required": [
+        "actual completed-A initial cut",
+        "original signed intent",
+        "exact-purpose original lease",
+        "full scope/trust",
+        "original deadline"
+      ],
+      "purpose": "runtime.learning.resident-admission.v3",
+      "existing_consumer": "HostAuthorityService::register_resident_learning_v3 -> into_candidate_runtime",
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "symbol": "ROOT_RESIDENT_LEARNING_EXECUTE_V3",
+        "git_blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143"
+      }
+    },
+    {
+      "id": "cold_authorization",
+      "types": [
+        "same RootResidentLearningProfileV3",
+        "RootResidentLearningReadbackAuthorizationV3"
+      ],
+      "supplier": "Original provisioned Root issuer and Registry under separate readback policy",
+      "purpose": "runtime.learning.resident-readback.v3",
+      "existing_consumer": "HostAuthorityService::recover_resident_learning_v3 -> into_candidate_runtime with recovered original stages",
+      "required": [
+        "existing protected operation record",
+        "complete original signatures",
+        "readback-only private origin"
+      ],
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+        "symbol": "ROOT_RESIDENT_LEARNING_READBACK_V3",
+        "git_blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143"
+      }
+    },
+    {
+      "id": "late_daemon_enrollment",
+      "types": [
+        "AgentdRootResidentEnrollmentV3",
+        "AgentdRootResidentLearningClientV3"
+      ],
+      "supplier": "Ordinary task configuration plus the same Root's authenticated live V3 channel",
+      "existing_consumer": "with_root_resident_learning_enrollment -> enroll_original_root -> run_original_resident_delivery",
+      "required": [
+        "actual Q24 bootstrap already installed",
+        "actual Objective/AuthBus inputs",
+        "exclusive late resident source",
+        "durable A claim only after actual Root preflight"
+      ],
+      "source": {
+        "path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+        "symbol": "with_root_resident_learning_enrollment",
+        "git_blob": "e4918f2febdc8f64773bb263905b4090b78ce79b"
+      }
+    }
+  ],
+  "role_channels": [
+    {
+      "field": "common.experience",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "Experience",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "common.dataset",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "Dataset",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "common.trainer",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "Trainer command",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "common.selector",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "Selector command",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "common.version",
+      "type": "OriginalCellQ24NoUpdateTaskStreamV1",
+      "supplier": "original retained Version host",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "common.next_use",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "Observer / C command",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "common.completion",
+      "type": "OriginalCellQ24NoUpdateTaskStreamV1",
+      "supplier": "original C readiness host",
+      "maximum_timeout_ms": 500,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "candidate_material",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "same Trainer candidate-material purpose",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "evaluator",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "independent Evaluator",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    },
+    {
+      "field": "model",
+      "type": "OriginalCellQ24NoUpdatePeerStreamV1",
+      "supplier": "original Model host",
+      "maximum_timeout_ms": 30000,
+      "maximum_lifetime_ms": 300000,
+      "remaining_original_deadline_required": true
+    }
+  ],
+  "channel_limits_note": "These are original constructor ceilings, not fresh time budgets. Purpose-specific evidence/readiness protocols retain stricter limits. No reconnect or deadline renewal is authorized.",
+  "implementation_slices": [
+    {
+      "id": "a",
+      "state": "NOT_IMPLEMENTED",
+      "actual_consumer_required": "AgentdProductionStartup::receive installs the genuine Q24 bootstrap before run",
+      "producer_required": "Original task host consumes the actual guarded PublishedCircuitFeatureTaskV1",
+      "prerequisite": "Original initial publication, Artifact/FinalUse/CURRENT and task/model custody"
+    },
+    {
+      "id": "b",
+      "state": "NOT_IMPLEMENTED",
+      "actual_consumer_required": "Same PreparedHostAuthoritySession constructs concrete candidate stages and actual V3 runtime; ordinary enrollment consumes its real channel",
+      "producer_required": "Trusted late handoff of actual completed-A Material plus ten original role transports and original authorizations",
+      "prerequisite": "A actually completed; no future completion DTO"
+    },
+    {
+      "id": "c",
+      "state": "NOT_IMPLEMENTED",
+      "actual_consumer_required": "Root-owned supervisor retains the runtime independently of A exit and uses only original bounded cold readback",
+      "producer_required": "Same original service, explicit Root cancellation and original readback authorization",
+      "prerequisite": "No extension of leases or role channel ends"
+    }
+  ],
+  "implemented_separate_slice": "Private-origin prerefusal in consuming resident compose, before queue/CAS/effects; does not assemble main.",
+  "ordinary_qualifications": {
+    "adopt": 0,
+    "no_update": 0,
+    "daemon_root_cold_recovery": 0,
+    "multi_generation_improver": 0
+  }
+}

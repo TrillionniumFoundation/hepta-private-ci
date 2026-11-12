@@ -1,0 +1,103 @@
+{
+  "source_commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "source_tree": "57558558841da4a3209164d0033b903a553205d6",
+  "method": "Independent h_read_multiple_files full UTF-8 retrieval, exact encoded bytes checked against both readback metadata and original formatter manifest",
+  "actual_rustfmt_returncode": 0,
+  "actual_format_changed": [
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs"
+  ],
+  "raw_log_bytes": 0,
+  "files": [
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "bytes": 9083,
+      "sha256": "083dc934269c0fe818e8a3f7ad0aac8c86b1ba0d83900acf005db08ed10c7838",
+      "blob": "9572c684aa5fb5839ecd984469ffacb5cfb9e961",
+      "independent_read_version": "2050:2035306:9083:1794509713521256277:1794509713521256277",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "bytes": 15059,
+      "sha256": "b434736e1c6db7ca0b509869e1a3eb9fcb80609be570f6e52d325b1fcee058ff",
+      "blob": "237b9c130161a171085fb6e423580b94b4d92c7d",
+      "independent_read_version": "2050:2035356:15059:1794509713388029629:1794509713388029629",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "bytes": 15451,
+      "sha256": "b4aea356e847b871b9e7f7d281a15a9e5be4edb357133e16fffa50c07dcb5311",
+      "blob": "17b4748cf90ce55d8e0b3dfd1b7af5c09fb8a219",
+      "independent_read_version": "2050:2035359:15451:1794509713389314026:1794509713389314026",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "bytes": 8052,
+      "sha256": "fc0cf7ad761d838c187287c5644117d78f39558048b7db50ab48c23a0c141f0e",
+      "blob": "8d4991acb6172551be1bde562963850f4152378c",
+      "independent_read_version": "2050:2035362:8052:1794509713390636568:1794509713390636568",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "bytes": 12484,
+      "sha256": "27b7e0bd79419da569f79990dc4bf60a7c91d02ef297cb94c3d6ead2de7c910e",
+      "blob": "6e333bdd669478ae31599af72f34a8a29769948b",
+      "independent_read_version": "2050:2035369:12484:1794509713391996916:1794509713391996916",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "bytes": 7759,
+      "sha256": "0f4ed0a06023f21016df864edcf4c2d41a147cb18990550bedfc23b900e3edac",
+      "blob": "04eb864d24e5bc31187e405daea7c541c91f70bf",
+      "independent_read_version": "2050:2035372:7759:1794509713392715216:1794509713392715216",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "postimages/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs",
+      "bytes": 7439,
+      "sha256": "cee19351757fd3f3310dadcc66ec1c58560ae29d678033899dd1315d7739c12d",
+      "blob": "96d7bfd44f50eba1274f5bbf8adbff1da16acd7e",
+      "independent_read_version": "2050:2035538:7439:1794509713393374937:1794509713393374937",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "resident-origin-formatted.patch",
+      "bytes": 15144,
+      "sha256": "f10a3d6ba7999208d16aa45a7bbaa8a8419f077640d1d21ff0f6850a3afd534a",
+      "blob": "6d911b082877579761e7f7142afc00d3a08d49be",
+      "independent_read_version": "2050:2035544:15144:1794509713569931830:1794509713569931830",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "format-only.patch",
+      "bytes": 6563,
+      "sha256": "b84b2e9a88fbafea7bf0d4bb4e3f82ad855d939b54d8e723467ce753d419ddd9",
+      "blob": "1b87c047f2afa29611fbdb71771ba5c269438af6",
+      "independent_read_version": "2050:2035545:6563:1794509713570095291:1794509713570095291",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "rustfmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "independent_read_version": "2050:2035542:0:1794509713552255331:1794509713552255331",
+      "actual_manifest_match": true
+    },
+    {
+      "path": "toolchain-steps.json",
+      "bytes": 932,
+      "sha256": "a24e1850936e89d7a68f4ca41fa5110013624e11d26ffdf261cff1f79f4fc166",
+      "blob": "a760c2ca7af44b29a29a85ca4e2de15fdbe17651",
+      "independent_read_version": "2050:2035540:932:1794509713447496004:1794509713447496004",
+      "actual_manifest_match": false
+    }
+  ],
+  "pty_terminal_observed_by_this_read": false,
+  "native_tests_run": false,
+  "ordinary_qualification": 0
+}

@@ -1,0 +1,559 @@
+diff --git a/.github/workflows/hepta-daemon-learning-native.yml b/.github/workflows/hepta-daemon-learning-native.yml
+index 72d4b247d90dde972ac592b2d568cd6e470f97ff..0f4dffca6dcf24c197b9211e56af1cf80eb640da 100644
+--- a/.github/workflows/hepta-daemon-learning-native.yml
++++ b/.github/workflows/hepta-daemon-learning-native.yml
+@@ -106,6 +106,7 @@
+               "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+               "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+               "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
++              "authority_host_service::resident::authority::tests::origin::resident_root_consuming_origins_match_before_cas_issuance_and_dispatch",
+           ]
+           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
+                       "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..9572c684aa5fb5839ecd984469ffacb5cfb9e961 100644
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs
+@@ -0,0 +1,218 @@
++//! Actual protected Root state and original Material handlers. The held Trainer
++//! socket is an explicit same-process zero-frame probe, never a canned result.
++//! This tests consumption-time refusal, not an ordinary A/B/C qualification.
++
++use crate::AgentdError;
++use crate::OriginalCellEvaluationPanelRegistrationV1 as Panel;
++use crate::OriginalCellEvaluationPanelTaskV1 as Task;
++use crate::OriginalCellQ24MaterialEvidenceRoleV1 as Role;
++use crate::cell_q24_material_receipt_owner::MaterialCommandFixture;
++use crate::learning_iteration_evidence_client as stages;
++use crate::learning_iteration_evidence_client::original_bootstrap_test_ports;
++use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
++use codex_hepta_contracts::HostIssuerTransportError;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use pretty_assertions::assert_eq;
++use std::fs::File;
++use std::io::Read;
++use std::os::unix::fs::MetadataExt;
++use std::sync::Arc;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::Ordering;
++use std::time::Duration;
++use std::time::Instant;
++
++use super::support::ResidentRootFixture;
++
++#[derive(Clone, Copy, Debug)]
++enum Pairing {
++    FreshRegistrationRecoveredChannels,
++    RecoveredRegistrationFreshChannels,
++    FreshRegistrationFreshChannels,
++    RecoveredRegistrationRecoveredChannels,
++}
++
++#[derive(Clone, Copy, Debug)]
++enum Branch {
++    NoUpdate,
++    Candidate,
++}
++
++struct ProtectedRecord {
++    file: File,
++    bytes: Vec<u8>,
++}
++
++impl ProtectedRecord {
++    fn read(fixture: &ResidentRootFixture) -> anyhow::Result<Self> {
++        let name = Digest32::of_bytes(fixture.profile.owner_id().as_bytes());
++        let mut file = File::open(
++            fixture
++                .config
++                .state_dir
++                .join(format!("frontier-v1-{name}.json")),
++        )?;
++        let mut bytes = Vec::new();
++        file.read_to_end(&mut bytes)?;
++        Ok(Self { file, bytes })
++    }
++
++    fn replacements_since(&self, previous: &Self) -> anyhow::Result<u64> {
++        let current = self.file.metadata()?;
++        let old = previous.file.metadata()?;
++        // Holding the old inode prevents recycling. Every successful original
++        // CAS replaces this file; the initial record is vacant and no other
++        // writer runs during the synchronous consuming factory call.
++        Ok(u64::from(
++            (current.dev(), current.ino()) != (old.dev(), old.ino()),
++        ))
++    }
++}
++
++fn panel() -> anyhow::Result<Panel> {
++    Ok(Panel::new(
++        Task {
++            plan_id: StableId::new("resident-origin-primary")?,
++            task_digest: Digest32::of_bytes(b"resident-origin-primary-task"),
++            cohort_rule_digest: Digest32::of_bytes(b"resident-origin-primary-rule"),
++        },
++        vec![Task {
++            plan_id: StableId::new("resident-origin-retention")?,
++            task_digest: Digest32::of_bytes(b"resident-origin-retention-task"),
++            cohort_rule_digest: Digest32::of_bytes(b"resident-origin-retention-rule"),
++        }],
++    )?)
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_root_consuming_origins_match_before_cas_issuance_and_dispatch()
++-> anyhow::Result<()> {
++    let protocol = panel()?;
++    let material = Box::pin(
++        MaterialCommandFixture::candidate_pages_for_evaluation_profile(
++            protocol.evaluation_profile(),
++        ),
++    )
++    .await?;
++    for branch in [Branch::NoUpdate, Branch::Candidate] {
++        for pairing in [
++            Pairing::FreshRegistrationRecoveredChannels,
++            Pairing::RecoveredRegistrationFreshChannels,
++            Pairing::FreshRegistrationFreshChannels,
++            Pairing::RecoveredRegistrationRecoveredChannels,
++        ] {
++            let mut fixture = ResidentRootFixture::new(
++                material.config.initial.clone(),
++                material.config.scope.clone(),
++                &material.config.verifier,
++            )?;
++            if matches!(
++                pairing,
++                Pairing::RecoveredRegistrationFreshChannels
++                    | Pairing::RecoveredRegistrationRecoveredChannels
++            ) {
++                fixture.recover()?;
++            }
++            let registration = fixture.registration.take().expect("original registration");
++            let original = Arc::clone(&registration.owner);
++            let issuer_before = original
++                .authority
++                .issuer
++                .fixture_original_issuance_sequence()?;
++            let checkpoint_before = ProtectedRecord::read(&fixture)?;
++            let prior = original.checkpoint.read()?;
++            assert!(prior.snapshot.is_none());
++            assert!(!prior.dispatch_pending);
++            let material_before = material.bytes()?;
++            let (experience, e_peer) = material_ports::commands(&material, Role::Experience)?;
++            let (dataset, d_peer) = material_ports::commands(&material, Role::Dataset)?;
++            let common = match pairing {
++                Pairing::FreshRegistrationRecoveredChannels
++                | Pairing::RecoveredRegistrationRecoveredChannels => {
++                    stages::recovered_material_only(material.config.clone(), experience, dataset)?
++                }
++                Pairing::RecoveredRegistrationFreshChannels
++                | Pairing::FreshRegistrationFreshChannels => {
++                    stages::fresh_material_only(material.config.clone(), experience, dataset)?
++                }
++            };
++            let trainer_frames = Arc::new(AtomicU64::new(0));
++            let mut trainer_peer = None;
++            let result = match branch {
++                Branch::NoUpdate => registration.into_runtime(
++                    common,
++                    material.config.verifier.clone(),
++                    /*capacity*/ 1,
++                ),
++                Branch::Candidate => {
++                    let (candidate, mut peer) =
++                        original_bootstrap_test_ports::readonly_channel(material.config.clone())?;
++                    let frames = Arc::clone(&trainer_frames);
++                    trainer_peer = Some(std::thread::spawn(move || {
++                        peer.exchange(|_| {
++                            frames.fetch_add(1, Ordering::SeqCst);
++                            Err(HostIssuerTransportError::InvalidRequest)
++                        })
++                    }));
++                    let candidate = stages::fixture_from_original_clients(
++                        common,
++                        protocol.clone(),
++                        material.training_baseline(),
++                        candidate,
++                        Instant::now() + Duration::from_secs(300),
++                    )?;
++                    registration.into_candidate_runtime(
++                        candidate,
++                        material.config.verifier.clone(),
++                        /*capacity*/ 1,
++                    )
++                }
++            };
++            let observed = result.map(|(handle, runtime)| {
++                let readonly = handle.readonly;
++                drop(handle);
++                drop(runtime);
++                readonly
++            });
++            if let Some(peer) = trainer_peer {
++                assert!(
++                    !peer
++                        .join()
++                        .map_err(|_| anyhow::anyhow!("original Trainer probe panicked"))??
++                );
++            }
++            let checkpoint_after = ProtectedRecord::read(&fixture)?;
++            let after = original.checkpoint.read()?;
++            let issued = original
++                .authority
++                .issuer
++                .fixture_original_issuance_sequence()?
++                .checked_sub(issuer_before)
++                .ok_or_else(|| anyhow::anyhow!("original issuance counter regressed"))?;
++            let effects = (
++                checkpoint_after.replacements_since(&checkpoint_before)?,
++                issued,
++                u64::from(after.snapshot.is_some()),
++                u64::from(after.dispatch_pending),
++                material_ports::finish(e_peer)?,
++                material_ports::finish(d_peer)?,
++                trainer_frames.load(Ordering::SeqCst),
++            );
++            assert_eq!(effects, (0, 0, 0, 0, 0, 0, 0), "{branch:?} / {pairing:?}");
++            assert_eq!(checkpoint_after.bytes, checkpoint_before.bytes);
++            assert_eq!(material.bytes()?, material_before);
++            match pairing {
++                Pairing::FreshRegistrationRecoveredChannels
++                | Pairing::RecoveredRegistrationFreshChannels => {
++                    assert!(matches!(observed, Err(AgentdError::Invalid(message))
++                        if message == "resident registration and original role origins differ"));
++                }
++                Pairing::FreshRegistrationFreshChannels => assert!(!observed?),
++                Pairing::RecoveredRegistrationRecoveredChannels => assert!(observed?),
++            }
++        }
++    }
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
+index e16820f8bab3027ab74490f942a34c7ee5470739..237b9c130161a171085fb6e423580b94b4d92c7d 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
+@@ -427,3 +427,6 @@
+ 
+ #[path = "authority_host_learning_resident_retention_auth_tests.rs"]
+ mod retention_auth;
++
++#[path = "authority_host_learning_resident_origin_tests.rs"]
++mod origin;
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs
+index 3deaa319c779c5121e6e66ea94af14c77363c7d7..17b4748cf90ce55d8e0b3dfd1b7af5c09fb8a219 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs
+@@ -101,11 +101,19 @@
+         &verifier,
+     )
+     .map_err(|error| AgentdError::Invalid(error.to_string()))?;
++    // The consuming registration and role bundle carry independent private
++    // origins. Refuse either mismatch before creating a queue or admitting
++    // the original vacant-to-initial CAS; the later gate check still applies.
++    let readonly = owner.authority.readonly();
++    if ResidentOriginalStageOwnersV3::original_resident_readback_only(&stages) != readonly {
++        return Err(AgentdError::Invalid(
++            "resident registration and original role origins differ".into(),
++        ));
++    }
+     let authorization_binding = owner
+         .authority
+         .authorization_binding()
+         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+-    let readonly = owner.authority.readonly();
+     let (sender, receiver) = mpsc::channel(capacity);
+     let handle = RootResidentLearningHandleV3 {
+         sender,
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs
+index 9d949be99e4d7c6045bbff34d951ff4b47c0b641..8d4991acb6172551be1bde562963850f4152378c 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs
+@@ -41,6 +41,17 @@
+             Self::Candidate(stages) => OriginalCellQ24CandidateStageOwnersV1::require_initial(
+                 stages, initial, scope, verifier,
+             ),
++        }
++    }
++
++    pub(super) fn original_resident_readback_only(&self) -> bool {
++        match self {
++            Self::NoUpdate(stages) => {
++                OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(stages)
++            }
++            Self::Candidate(stages) => {
++                OriginalCellQ24CandidateStageOwnersV1::original_resident_readback_only(stages)
++            }
+         }
+     }
+ 
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
+index 5d2b1eeb3d9971741145563a4d708c28d6cd2eae..6e333bdd669478ae31599af72f34a8a29769948b 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
+@@ -114,6 +114,10 @@
+             return Err(Error::DeadlineExceeded);
+         }
+         Ok(())
++    }
++
++    pub(crate) fn original_resident_readback_only(&self) -> bool {
++        OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)
+     }
+ 
+     pub(crate) fn install_fresh_resident_gate(
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs b/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs
+index c2618413b04cc2196ac365b7f721dc062fc715e1..04eb864d24e5bc31187e405daea7c541c91f70bf 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs
+@@ -98,6 +98,12 @@
+         Ok(())
+     }
+ 
++    /// Observe the origin fixed while consuming the original role channels.
++    /// This cannot install a gate or promote recovered channels to new work.
++    pub(crate) fn original_resident_readback_only(&self) -> bool {
++        self.origin == Origin::Recovered
++    }
++
+     /// Only the resident fresh-CAS factory calls this while it owns Self by
+     /// value. Neither a recovered adapter nor a second install can gain work.
+     pub(crate) fn install_fresh_resident_gate(
+diff --git a/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs b/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs
+index bd63fba136764268970ba2df2d2f5be0cbe7a3fd..96d7bfd44f50eba1274f5bbf8adbff1da16acd7e 100644
+--- a/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs
+@@ -2,6 +2,16 @@
+ use codex_hepta_contracts::SystemAuthorityClock;
+ use ed25519_dalek::Verifier;
+ use pretty_assertions::assert_eq;
++
++impl DeploymentFinalUseIssuer {
++    /// Observe the original durable counter without issuing a sentinel grant.
++    pub(crate) fn fixture_original_issuance_sequence(&self) -> io::Result<u64> {
++        self.store
++            .load(STATE_OWNER)
++            .map(|state| state.sequence)
++            .map_err(io::Error::other)
++    }
++}
+ 
+ fn policy() -> DeploymentGrantPolicy {
+     DeploymentGrantPolicy {
+diff --git a/qa/b4-no-bypass/test_resident_origin_source_closure.py b/qa/b4-no-bypass/test_resident_origin_source_closure.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..39d80c2c5a786b41a188b223985b390232b31bce 100644
+--- /dev/null
++++ b/qa/b4-no-bypass/test_resident_origin_source_closure.py
+@@ -0,0 +1,171 @@
++"""Consumption-time origin equality precedes any Root runtime admission.
++
++These mutations protect the real private-origin comparison; source tests do
++not claim execution of the separately selected protected Root native case.
++"""
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "resident_origin_proof", ROOT / "scripts/verify_hepta_callers.py")
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++COMMON = AGENT + "cell_q24_no_update_stage_owners.rs"
++CANDIDATE = AGENT + "cell_q24_candidate_stage_owners.rs"
++STAGES = AGENT + "authority_host_learning_resident_stages.rs"
++RUNTIME = AGENT + "authority_host_learning_resident_runtime.rs"
++FILES = (COMMON, CANDIDATE, STAGES, RUNTIME)
++GETTER = "fn original_resident_readback_only("
++EXPECTED = {
++    "root_resident_no_update_private_origin": (STAGES, CANDIDATE),
++    "root_resident_candidate_private_origin": (STAGES,),
++    "root_resident_stage_private_origin": (RUNTIME,),
++}
++
++
++class ResidentOriginSourceClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++        cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
++
++    def code(self, source):
++        return PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
++
++    def rows(self, path):
++        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
++        self.assertEqual(len(rows), 1)
++        return rows
++
++    def verify(self, path, text):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(text)
++            PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
++
++    def item(self, path, function):
++        source = (ROOT / path).read_text()
++        code = self.code(source)
++        self.assertEqual(code.count(function), 1)
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        return source, start, end + 1
++
++    def rejects(self, path, function, marker, replacement=""):
++        source, start, end = self.item(path, function)
++        self.verify(path, source)
++        offset = source.index(marker, start, end)
++        changed = source[:offset] + replacement + source[offset + len(marker):]
++        self.assertNotEqual(changed, source)
++        with self.assertRaises(PROOF.VerificationFailure):
++            self.verify(path, changed)
++
++    def test_only_original_typed_getter_callers_are_registered(self):
++        sources = {path: self.code((ROOT / path).read_text()) for path in FILES}
++        for identifier, expected in EXPECTED.items():
++            with self.subTest(boundary=identifier):
++                row = self.boundaries[identifier]
++                self.assertEqual(row.product_callers, expected)
++                self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
++                PROOF._verify_boundary(ROOT, row, sources, ())
++                extra = dict(sources)
++                extra[AGENT + "unregistered_origin.rs"] = (
++                    f"fn bypass(owner: &{row.receiver_type}) {{ "
++                    "let _ = owner.original_resident_readback_only(); }")
++                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
++                    PROOF._verify_boundary(ROOT, row, extra, ())
++
++    def test_real_private_origins_cannot_be_replaced_or_inverted(self):
++        for replacement in ("", "self.origin == Origin::Fresh", "true", "false"):
++            with self.subTest(common=replacement):
++                self.rejects(COMMON, GETTER, "self.origin == Origin::Recovered", replacement)
++        for path, marker in (
++            (CANDIDATE, "OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)"),
++            (STAGES, "OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(stages)"),
++            (STAGES, "OriginalCellQ24CandidateStageOwnersV1::original_resident_readback_only(stages)"),
++        ):
++            for replacement in ("", "false", "true", "!" + marker):
++                with self.subTest(path=path, marker=marker, replacement=replacement):
++                    self.rejects(path, GETTER, marker, replacement)
++
++    def test_getters_and_origin_storage_cannot_gain_caller_authority(self):
++        for path, field in ((COMMON, "origin: Origin"), (CANDIDATE, "common: OriginalCellQ24NoUpdateStageOwnersV1")):
++            source = (ROOT / path).read_text()
++            code = self.code(source)
++            self.assertEqual(code.count(field), 1)
++            offset = code.index(field)
++            for visibility in ("pub", "pub(crate)", "pub(super)"):
++                with self.subTest(path=path, visibility=visibility):
++                    self.verify(path, source)
++                    changed = source[:offset] + visibility + " " + source[offset:]
++                    with self.assertRaises(PROOF.VerificationFailure):
++                        self.verify(path, changed)
++        for path in (COMMON, CANDIDATE, STAGES):
++            source = (ROOT / path).read_text()
++            visibility = "pub(super)" if path == STAGES else "pub(crate)"
++            marker = visibility + " " + GETTER
++            self.assertEqual(source.count(marker), 1)
++            with self.assertRaises(PROOF.VerificationFailure):
++                self.verify(path, source.replace(marker, "pub " + GETTER))
++            self.rejects(path, GETTER, "&self", "&self, caller_origin: bool")
++
++    def test_consuming_check_precedes_queue_and_cannot_use_a_constant(self):
++        check = "ResidentOriginalStageOwnersV3::original_resident_readback_only(&stages) != readonly"
++        self.rejects(RUNTIME, "fn compose(", check, check.replace("!=", "=="))
++        self.rejects(RUNTIME, "fn compose(", "let readonly = owner.authority.readonly()", "let readonly = true")
++        self.rejects(RUNTIME, "fn compose(", "let readonly = owner.authority.readonly()", "let readonly = false")
++        source, start, end = self.item(RUNTIME, "fn compose(")
++        code = self.code(source)
++        block_start = code.index("if " + check, start, end)
++        block_end = PROOF._rust_item_end(code, block_start) + 1
++        block = source[block_start:block_end]
++        self.rejects(RUNTIME, "fn compose(", block)
++        queue = "    let (sender, receiver) = mpsc::channel(capacity);"
++        moved = source[:block_start] + source[block_end:]
++        self.assertEqual(moved.count(queue), 1)
++        moved = moved.replace(queue, queue + "\n    " + block)
++        with self.assertRaises(PROOF.VerificationFailure):
++            self.verify(RUNTIME, moved)
++
++    def test_uncalled_closures_cannot_satisfy_origin_checks(self):
++        source, start, end = self.item(RUNTIME, "fn compose(")
++        code = self.code(source)
++        block_start = code.index("if ResidentOriginalStageOwnersV3::original_resident_readback_only", start, end)
++        block_end = PROOF._rust_item_end(code, block_start) + 1
++        block = source[block_start:block_end]
++        for replacement in (
++            "let never_called = || { " + block + " };",
++            block.replace("return Err(AgentdError::Invalid(", "let never_called = || { return Err(AgentdError::Invalid(")
++                 .replace("));\n    }", ")); };\n    }"),
++        ):
++            with self.subTest(replacement=replacement):
++                self.rejects(RUNTIME, "fn compose(", block, replacement)
++        for path in (COMMON, CANDIDATE, STAGES):
++            source, start, end = self.item(path, GETTER)
++            open_at = source.index("{", start, end)
++            body = source[open_at + 1:end - 1]
++            changed = source[:open_at+1] + " let never_called = || {" + body + "}; false " + source[end-1:]
++            with self.subTest(path=path):
++                with self.assertRaises(PROOF.VerificationFailure):
++                    self.verify(path, changed)
++
++    def test_later_fresh_gate_refusal_is_still_independent(self):
++        self.rejects(COMMON, "fn install_fresh_resident_gate(", "self.origin != Origin::Fresh || self.root.is_some()")
++        self.rejects(COMMON, "fn install_fresh_resident_gate(", "self.origin != Origin::Fresh", "self.origin == Origin::Fresh")
++        self.rejects(CANDIDATE, "fn install_fresh_resident_gate(", "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(&mut self.common, gate)")
++        self.rejects(RUNTIME, "fn admit(", "ResidentOriginalStageOwnersV3::install_fresh_resident_gate(")
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/qa/b4-no-bypass/test_resident_root_source_closure.py b/qa/b4-no-bypass/test_resident_root_source_closure.py
+index f93b355d806949ee1bc4f8f6ad6306271f3038a5..a57a7cb08131a8d806135817ef0646256ebdbe5a 100644
+--- a/qa/b4-no-bypass/test_resident_root_source_closure.py
++++ b/qa/b4-no-bypass/test_resident_root_source_closure.py
+@@ -110,6 +110,7 @@
+     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
++    "authority_host_service::resident::authority::tests::origin::resident_root_consuming_origins_match_before_cas_issuance_and_dispatch",
+ ]
+ ROOT_ISSUER_CASES = [
+     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+@@ -408,14 +409,20 @@
+             '#[path = "authority_host_learning_resident_retention_auth_tests.rs"]\nmod retention_auth;',
+             roots,
+         )
++        origin = (ROOT / (AGENT + "authority_host_learning_resident_origin_tests.rs")).read_text()
++        self.assertIn(
++            '#[path = "authority_host_learning_resident_origin_tests.rs"]\nmod origin;',
++            roots,
++        )
+         for name in ROOT_CASES:
+-            source = retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
++            source = origin if "::origin::" in name else retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
+             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
+         self.assertEqual(
+             roots.count('#[ignore = "explicit actual Root')
+             + evaluation.count('#[ignore = "explicit actual Root')
+             + model.count('#[ignore = "explicit actual Root')
+-            + retention.count('#[ignore = "explicit actual Root'),
++            + retention.count('#[ignore = "explicit actual Root')
++            + origin.count('#[ignore = "explicit actual Root'),
+             len(ROOT_CASES),
+         )
+         for marker in (

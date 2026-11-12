@@ -1,0 +1,1260 @@
+{
+  "source": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "kind": "row-level proposal, not a global registry write",
+  "base": {
+    "bytes": 1835944,
+    "sha256": "a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757",
+    "git_blob": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e"
+  },
+  "after": {
+    "bytes": 1839361,
+    "sha256": "2a33141a564b27e43b1cf6c826761fa5cf8d9fcc2c1fd58368eada7c56dfd4ae",
+    "git_blob": "5ba4d5e9937f45e9b70b005042845286ba139762"
+  },
+  "protected_replacements": [
+    {
+      "index": 296,
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+        "required": [
+          "pub struct OriginalCellQ24NoUpdateStageOwnersV1",
+          "origin: Origin",
+          "end: Instant",
+          "continuation: Mutex<Continuation>",
+          "root: Option<Arc<RootResidentLearningEffectGateV3>>",
+          "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "LearningEvidenceVerifierV1::new",
+          "with_root_learning_stage_owners(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "impl Clone for OriginalCellQ24NoUpdateStageOwnersV1",
+          "pub root:",
+          "pub continuation:",
+          "pub material:",
+          "pub fn install_fresh_resident_gate(",
+          "Arc<dyn LearningIterationStageOwnerPortsV1",
+          "FnOnce"
+        ],
+        "required_order": [
+          [
+            "fn validate_recovery<'a>",
+            "Box::pin(async move",
+            "tokio::time::timeout_at(self.end.into()",
+            "let started_at = auth::now()?",
+            "auth::require_snapshot(&self.material, snapshot)?",
+            ".continuation.try_lock()",
+            "state.read_prefix(self, snapshot).await?",
+            "auth::require_material(&self.material, self.initial_binding)?",
+            "auth::require_clock(started_at, fresh)?",
+            "auth::verify_prefix(&self.material, snapshot, &state, fresh)",
+            "fn execute_stage<'a>"
+          ],
+          [
+            "fn execute_stage<'a>",
+            "Box::pin(async move",
+            "tokio::time::timeout_at(self.end.into()",
+            "OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage)\n                    .await",
+            "fn prepare_proposal<'a>"
+          ],
+          [
+            "fn prepare_proposal<'a>",
+            "Box::pin(async {\n            Err(Error::OwnerUnavailable(",
+            "fn receipt_attestation<'a>"
+          ],
+          [
+            "fn receipt_attestation<'a>",
+            "Box::pin(async move",
+            "tokio::time::timeout_at(self.end.into()",
+            "let started_at = auth::now()?",
+            "auth::require_snapshot(&self.material, snapshot)?",
+            ".continuation.try_lock()",
+            "state.read_attestation(self, snapshot, receipt).await?",
+            "auth::require_material(&self.material, self.initial_binding)?",
+            "auth::require_clock(started_at, fresh)?",
+            "auth::verify_receipt(&self.material, receipt, &signature, fresh)?",
+            "Ok(signature)"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_streams(",
+            "sequence": [
+              "fn from_original_streams(",
+              "inputs::bind(material, streams, Origin::Fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_streams(",
+            "sequence": [
+              "fn recover_original_streams(",
+              "inputs::bind(material, streams, Origin::Recovered)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "fn require_initial(",
+              "initial != &self.material.initial",
+              "scope != &self.material.scope",
+              "verifier.trust_digest() != self.material.verifier.trust_digest()",
+              "verifier.scope_digest() != self.material.verifier.scope_digest()",
+              "verifier.objective_digest() != self.material.verifier.objective_digest()",
+              "return Err(Error::WrongScope)",
+              "auth::require_material(&self.material, self.initial_binding)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn install_fresh_resident_gate(",
+            "sequence": [
+              "fn install_fresh_resident_gate(",
+              "self.origin != Origin::Fresh || self.root.is_some()",
+              "return Err(Error::WrongScope)",
+              "self.root = Some(gate)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if self.origin != Origin::Fresh || self.root.is_some()",
+              "self.root = Some(gate)"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+        "required": [
+          "pub struct OriginalCellQ24NoUpdateStageOwnersV1",
+          "origin: Origin",
+          "end: Instant",
+          "continuation: Mutex<Continuation>",
+          "root: Option<Arc<RootResidentLearningEffectGateV3>>",
+          "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "LearningEvidenceVerifierV1::new",
+          "with_root_learning_stage_owners(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "impl Clone for OriginalCellQ24NoUpdateStageOwnersV1",
+          "pub root:",
+          "pub continuation:",
+          "pub material:",
+          "pub fn install_fresh_resident_gate(",
+          "Arc<dyn LearningIterationStageOwnerPortsV1",
+          "FnOnce",
+          "pub fn original_resident_readback_only(",
+          "pub origin: Origin",
+          "pub(crate) origin: Origin",
+          "pub(super) origin: Origin"
+        ],
+        "required_order": [
+          [
+            "fn validate_recovery<'a>",
+            "Box::pin(async move",
+            "tokio::time::timeout_at(self.end.into()",
+            "let started_at = auth::now()?",
+            "auth::require_snapshot(&self.material, snapshot)?",
+            ".continuation.try_lock()",
+            "state.read_prefix(self, snapshot).await?",
+            "auth::require_material(&self.material, self.initial_binding)?",
+            "auth::require_clock(started_at, fresh)?",
+            "auth::verify_prefix(&self.material, snapshot, &state, fresh)",
+            "fn execute_stage<'a>"
+          ],
+          [
+            "fn execute_stage<'a>",
+            "Box::pin(async move",
+            "tokio::time::timeout_at(self.end.into()",
+            "OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage)\n                    .await",
+            "fn prepare_proposal<'a>"
+          ],
+          [
+            "fn prepare_proposal<'a>",
+            "Box::pin(async {\n            Err(Error::OwnerUnavailable(",
+            "fn receipt_attestation<'a>"
+          ],
+          [
+            "fn receipt_attestation<'a>",
+            "Box::pin(async move",
+            "tokio::time::timeout_at(self.end.into()",
+            "let started_at = auth::now()?",
+            "auth::require_snapshot(&self.material, snapshot)?",
+            ".continuation.try_lock()",
+            "state.read_attestation(self, snapshot, receipt).await?",
+            "auth::require_material(&self.material, self.initial_binding)?",
+            "auth::require_clock(started_at, fresh)?",
+            "auth::verify_receipt(&self.material, receipt, &signature, fresh)?",
+            "Ok(signature)"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_streams(",
+            "sequence": [
+              "fn from_original_streams(",
+              "inputs::bind(material, streams, Origin::Fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_streams(",
+            "sequence": [
+              "fn recover_original_streams(",
+              "inputs::bind(material, streams, Origin::Recovered)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "fn require_initial(",
+              "initial != &self.material.initial",
+              "scope != &self.material.scope",
+              "verifier.trust_digest() != self.material.verifier.trust_digest()",
+              "verifier.scope_digest() != self.material.verifier.scope_digest()",
+              "verifier.objective_digest() != self.material.verifier.objective_digest()",
+              "return Err(Error::WrongScope)",
+              "auth::require_material(&self.material, self.initial_binding)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn install_fresh_resident_gate(",
+            "sequence": [
+              "fn install_fresh_resident_gate(",
+              "self.origin != Origin::Fresh || self.root.is_some()",
+              "return Err(Error::WrongScope)",
+              "self.root = Some(gate)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if self.origin != Origin::Fresh || self.root.is_some()",
+              "self.root = Some(gate)"
+            ]
+          },
+          {
+            "function": "fn original_resident_readback_only(",
+            "sequence": [
+              "fn original_resident_readback_only(",
+              "&self) -> bool {\n        self.origin == Origin::Recovered\n    }"
+            ],
+            "top_level": [
+              "self.origin == Origin::Recovered"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 310,
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "required": [
+          "pub struct RootResidentLearningRuntimeV3",
+          "enum ResidentStagesV3",
+          "Uninstalled(Option<ResidentOriginalStageOwnersV3>)",
+          "Installed(Arc<ResidentOriginalStageOwnersV3>)"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningIterationRuntimeBootstrapV1",
+          "from_registered(",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "LearningIterationObservationV1::TrainingNoUpdateV2"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn compose(",
+            "sequence": [
+              "stages: ResidentOriginalStageOwnersV3",
+              "profile\n        .require_verifier(&verifier)",
+              "!(1..=8).contains(&capacity)",
+              "verifier.trust_digest() != profile.initial.owners.evidence_trust_digest",
+              "ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )",
+              "owner\n        .authority\n        .authorization_binding()",
+              "owner.authority.readonly()",
+              "mpsc::channel(capacity)",
+              "Handle::try_current()",
+              "stages: ResidentStagesV3::Uninstalled(Some(stages))",
+              "admission_requested: readonly"
+            ]
+          },
+          {
+            "function": "fn run(",
+            "sequence": [
+              "root_cancellation: CancellationToken",
+              "let mut active: Option<Active> = None",
+              "root_cancellation.cancelled()",
+              "active = None",
+              "self.receiver.recv()",
+              "command.reply.is_closed()",
+              "self.admission_requested = true",
+              "continue",
+              "ResidentRequestModeV3::Admit",
+              "!self.admission_requested",
+              "self.admission_requested = true",
+              "self.admit(&root_cancellation).await",
+              "active = future",
+              "self.readback(&root_cancellation).await",
+              "if result.is_err()",
+              "self.admission_requested = true",
+              "command.reply.send(result)"
+            ]
+          },
+          {
+            "function": "fn admit(",
+            "sequence": [
+              "self.owner.authority.profile.initial.clone()",
+              "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?",
+              "self.readback(cancellation).await?",
+              "ResidentStagesV3::Uninstalled(slot)",
+              "slot.take().ok_or(Error::CommitUncertain)?",
+              "ResidentOriginalStageOwnersV3::install_fresh_resident_gate(",
+              "&mut stages,\n            Arc::clone(&continuation.gate)",
+              "let stages = Arc::new(stages)",
+              "self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))",
+              "snapshot: Some(initial),\n            attestations: Vec::new(),\n            model: None,\n            dispatch_pending: false",
+              "Box::pin(continue_original(owner, stages, verifier, continuation))"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "self.owner.read(cancellation).await?",
+              "authentication::original_attestations(",
+              "self.stages.get()?",
+              "self.owner.read(cancellation).await?",
+              "current.snapshot != original.snapshot",
+              "current.dispatch_pending != original.dispatch_pending",
+              "return Err(Error::CommitUncertain)",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "authentication::verify_original_evidence(",
+              "&evidence.signatures,",
+              "evidence.model.as_ref(),",
+              "fresh / 1_000",
+              "snapshot: current.snapshot",
+              "dispatch_pending: current.dispatch_pending"
+            ]
+          },
+          {
+            "function": "fn continue_original(",
+            "sequence": [
+              "continuation: ResidentContinuationV3",
+              "LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?",
+              "coordinator.next_stage()",
+              "ResidentOriginalStageOwnersV3::require_stage(\n            stages.as_ref(),\n            coordinator.snapshot(),\n            stage,\n        )?",
+              "coordinator.snapshot().clone()",
+              "gate.begin(&predecessor, stage).await?",
+              "stages.execute_stage(&predecessor, stage)",
+              "Duration::from_millis(250)",
+              "maximum_training_milliseconds",
+              "gate.cancellation().cancelled()",
+              "tokio::time::sleep_until(training_end)",
+              "stage == LearningIterationStageV1::Training",
+              "watchdog.tick()",
+              "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?",
+              "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)\n            .await?",
+              "profile.scope.validate_observation(&receipt.observation)?",
+              "owner.read(gate.cancellation()).await?",
+              "coordinator.record(receipt, now / 1_000)?",
+              "authentication::original_attestations(",
+              "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)\n            .await?",
+              "owner.read(gate.cancellation()).await?",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "authentication::verify_original_evidence(",
+              "&evidence.signatures,",
+              "evidence.model.as_ref(),",
+              "fresh / 1_000",
+              "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "required": [
+          "pub struct RootResidentLearningRuntimeV3",
+          "enum ResidentStagesV3",
+          "Uninstalled(Option<ResidentOriginalStageOwnersV3>)",
+          "Installed(Arc<ResidentOriginalStageOwnersV3>)"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningIterationRuntimeBootstrapV1",
+          "from_registered(",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "LearningIterationObservationV1::TrainingNoUpdateV2"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn compose(",
+            "sequence": [
+              "stages: ResidentOriginalStageOwnersV3",
+              "profile\n        .require_verifier(&verifier)",
+              "!(1..=8).contains(&capacity)",
+              "verifier.trust_digest() != profile.initial.owners.evidence_trust_digest",
+              "ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )",
+              "let readonly = owner.authority.readonly()",
+              "if ResidentOriginalStageOwnersV3::original_resident_readback_only(&stages) != readonly {\n        return Err(AgentdError::Invalid(\n                                                                    .into(),\n        ));\n    }",
+              "owner\n        .authority\n        .authorization_binding()",
+              "mpsc::channel(capacity)",
+              "Handle::try_current()",
+              "stages: ResidentStagesV3::Uninstalled(Some(stages))",
+              "admission_requested: readonly"
+            ],
+            "top_level": [
+              "let readonly = owner.authority.readonly()",
+              "if ResidentOriginalStageOwnersV3::original_resident_readback_only(&stages) != readonly {",
+              "let authorization_binding = owner",
+              "let (sender, receiver) = mpsc::channel(capacity)"
+            ]
+          },
+          {
+            "function": "fn run(",
+            "sequence": [
+              "root_cancellation: CancellationToken",
+              "let mut active: Option<Active> = None",
+              "root_cancellation.cancelled()",
+              "active = None",
+              "self.receiver.recv()",
+              "command.reply.is_closed()",
+              "self.admission_requested = true",
+              "continue",
+              "ResidentRequestModeV3::Admit",
+              "!self.admission_requested",
+              "self.admission_requested = true",
+              "self.admit(&root_cancellation).await",
+              "active = future",
+              "self.readback(&root_cancellation).await",
+              "if result.is_err()",
+              "self.admission_requested = true",
+              "command.reply.send(result)"
+            ]
+          },
+          {
+            "function": "fn admit(",
+            "sequence": [
+              "self.owner.authority.profile.initial.clone()",
+              "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?",
+              "self.readback(cancellation).await?",
+              "ResidentStagesV3::Uninstalled(slot)",
+              "slot.take().ok_or(Error::CommitUncertain)?",
+              "ResidentOriginalStageOwnersV3::install_fresh_resident_gate(",
+              "&mut stages,\n            Arc::clone(&continuation.gate)",
+              "let stages = Arc::new(stages)",
+              "self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))",
+              "snapshot: Some(initial),\n            attestations: Vec::new(),\n            model: None,\n            dispatch_pending: false",
+              "Box::pin(continue_original(owner, stages, verifier, continuation))"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "self.owner.read(cancellation).await?",
+              "authentication::original_attestations(",
+              "self.stages.get()?",
+              "self.owner.read(cancellation).await?",
+              "current.snapshot != original.snapshot",
+              "current.dispatch_pending != original.dispatch_pending",
+              "return Err(Error::CommitUncertain)",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "authentication::verify_original_evidence(",
+              "&evidence.signatures,",
+              "evidence.model.as_ref(),",
+              "fresh / 1_000",
+              "snapshot: current.snapshot",
+              "dispatch_pending: current.dispatch_pending"
+            ]
+          },
+          {
+            "function": "fn continue_original(",
+            "sequence": [
+              "continuation: ResidentContinuationV3",
+              "LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?",
+              "coordinator.next_stage()",
+              "ResidentOriginalStageOwnersV3::require_stage(\n            stages.as_ref(),\n            coordinator.snapshot(),\n            stage,\n        )?",
+              "coordinator.snapshot().clone()",
+              "gate.begin(&predecessor, stage).await?",
+              "stages.execute_stage(&predecessor, stage)",
+              "Duration::from_millis(250)",
+              "maximum_training_milliseconds",
+              "gate.cancellation().cancelled()",
+              "tokio::time::sleep_until(training_end)",
+              "stage == LearningIterationStageV1::Training",
+              "watchdog.tick()",
+              "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?",
+              "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)\n            .await?",
+              "profile.scope.validate_observation(&receipt.observation)?",
+              "owner.read(gate.cancellation()).await?",
+              "coordinator.record(receipt, now / 1_000)?",
+              "authentication::original_attestations(",
+              "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)\n            .await?",
+              "owner.read(gate.cancellation()).await?",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "authentication::verify_original_evidence(",
+              "&evidence.signatures,",
+              "evidence.model.as_ref(),",
+              "fresh / 1_000",
+              "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 324,
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "required": [
+          "pub(super) enum ResidentOriginalStageOwnersV3",
+          "NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)",
+          "Candidate(OriginalCellQ24CandidateStageOwnersV1)",
+          "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+          "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retention_stage("
+        ],
+        "forbidden": [
+          "pub enum ResidentOriginalStageOwnersV3",
+          "impl Clone for ResidentOriginalStageOwnersV3",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "Box<dyn",
+          "FnOnce",
+          "FnMut",
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "LearningIterationObservationV1::TrainingNoUpdateV2",
+          "LearningEvidenceVerifierV1::new"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "fn require_initial(",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+              "stages, initial, scope, verifier",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::require_initial(",
+              "stages, initial, scope, verifier"
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn install_fresh_resident_gate(",
+            "sequence": [
+              "fn install_fresh_resident_gate(",
+              "&mut self",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)"
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn require_stage(",
+            "sequence": [
+              "snapshot: &LearningIterationSnapshotV1",
+              "match stage",
+              "Stage::Evaluation | Stage::Proposal => match self",
+              "Self::NoUpdate(_) => Err(Error::OwnerUnavailable(",
+              "Self::Candidate(_) => Ok(())",
+              "Stage::Selection | Stage::NextUse",
+              "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()",
+              "let Self::Candidate(stages) = self else",
+              "return Err(Error::WrongScope)",
+              "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retention_stage(",
+              "stages, snapshot, stage",
+              "Stage::Experience\n            | Stage::Dataset\n            | Stage::Training\n            | Stage::Selection\n            | Stage::NextUse => Ok(())"
+            ],
+            "top_level": [
+              "match stage"
+            ]
+          },
+          {
+            "function": "fn read_original_model(",
+            "sequence": [
+              "match self",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::read_original_model(",
+              "stages, snapshot",
+              ".await",
+              "Self::NoUpdate(_) => Err(Error::OwnerUnavailable("
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn read_original_evaluated_attestations(",
+            "sequence": [
+              "snapshot.training_no_update_v2().is_some()",
+              "snapshot.receipts.get(3)",
+              "LearningIterationObservationV1::Evaluation",
+              "disposition: LearningEvaluationDispositionV1::NoUpdate",
+              "return Ok(None)",
+              "match self",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::read_original_evaluated_attestations(\n                    stages, snapshot,\n                )\n                .await?",
+              "Self::NoUpdate(_) => Err(Error::WrongScope)"
+            ],
+            "top_level": [
+              "if snapshot.training_no_update_v2().is_some()",
+              "match self"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "fn validate_recovery<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+            "fn execute_stage<'a>"
+          ],
+          [
+            "fn execute_stage<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+            "fn prepare_proposal<'a>"
+          ],
+          [
+            "fn prepare_proposal<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+            "fn receipt_attestation<'a>"
+          ],
+          [
+            "fn receipt_attestation<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds"
+          ]
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "required": [
+          "pub(super) enum ResidentOriginalStageOwnersV3",
+          "NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)",
+          "Candidate(OriginalCellQ24CandidateStageOwnersV1)",
+          "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+          "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retention_stage("
+        ],
+        "forbidden": [
+          "pub enum ResidentOriginalStageOwnersV3",
+          "impl Clone for ResidentOriginalStageOwnersV3",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "Box<dyn",
+          "FnOnce",
+          "FnMut",
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "LearningIterationObservationV1::TrainingNoUpdateV2",
+          "LearningEvidenceVerifierV1::new",
+          "pub fn original_resident_readback_only(",
+          "pub(crate) fn original_resident_readback_only("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "fn require_initial(",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+              "stages, initial, scope, verifier",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::require_initial(",
+              "stages, initial, scope, verifier"
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn install_fresh_resident_gate(",
+            "sequence": [
+              "fn install_fresh_resident_gate(",
+              "&mut self",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)"
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn require_stage(",
+            "sequence": [
+              "snapshot: &LearningIterationSnapshotV1",
+              "match stage",
+              "Stage::Evaluation | Stage::Proposal => match self",
+              "Self::NoUpdate(_) => Err(Error::OwnerUnavailable(",
+              "Self::Candidate(_) => Ok(())",
+              "Stage::Selection | Stage::NextUse",
+              "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()",
+              "let Self::Candidate(stages) = self else",
+              "return Err(Error::WrongScope)",
+              "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retention_stage(",
+              "stages, snapshot, stage",
+              "Stage::Experience\n            | Stage::Dataset\n            | Stage::Training\n            | Stage::Selection\n            | Stage::NextUse => Ok(())"
+            ],
+            "top_level": [
+              "match stage"
+            ]
+          },
+          {
+            "function": "fn read_original_model(",
+            "sequence": [
+              "match self",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::read_original_model(",
+              "stages, snapshot",
+              ".await",
+              "Self::NoUpdate(_) => Err(Error::OwnerUnavailable("
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn read_original_evaluated_attestations(",
+            "sequence": [
+              "snapshot.training_no_update_v2().is_some()",
+              "snapshot.receipts.get(3)",
+              "LearningIterationObservationV1::Evaluation",
+              "disposition: LearningEvaluationDispositionV1::NoUpdate",
+              "return Ok(None)",
+              "match self",
+              "Self::Candidate(stages)",
+              "OriginalCellQ24CandidateStageOwnersV1::read_original_evaluated_attestations(\n                    stages, snapshot,\n                )\n                .await?",
+              "Self::NoUpdate(_) => Err(Error::WrongScope)"
+            ],
+            "top_level": [
+              "if snapshot.training_no_update_v2().is_some()",
+              "match self"
+            ]
+          },
+          {
+            "function": "fn original_resident_readback_only(",
+            "sequence": [
+              "fn original_resident_readback_only(",
+              "&self) -> bool {\n        match self {\n            Self::NoUpdate(stages) => {\n                OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(stages)\n            }\n            Self::Candidate(stages) => {\n                OriginalCellQ24CandidateStageOwnersV1::original_resident_readback_only(stages)\n            }\n        }\n    }"
+            ],
+            "top_level": [
+              "match self"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "fn validate_recovery<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+            "fn execute_stage<'a>"
+          ],
+          [
+            "fn execute_stage<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+            "fn prepare_proposal<'a>"
+          ],
+          [
+            "fn prepare_proposal<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+            "fn receipt_attestation<'a>"
+          ],
+          [
+            "fn receipt_attestation<'a>",
+            "match self",
+            "Self::NoUpdate(stages)",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds",
+            "Self::Candidate(stages)",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds"
+          ]
+        ]
+      }
+    },
+    {
+      "index": 339,
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "required": [
+          "pub struct OriginalCellQ24CandidateStageStreamsV1",
+          "pub candidate_material: OriginalCellQ24NoUpdatePeerStreamV1",
+          "common: OriginalCellQ24NoUpdateStageOwnersV1",
+          "protocol: OriginalCellEvaluationPanelRegistrationV1",
+          "candidate: Mutex<CandidateLane>",
+          "end: Instant",
+          "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1",
+          "pub evaluator: OriginalCellQ24NoUpdatePeerStreamV1",
+          "evaluation: Mutex<EvaluationLane>",
+          "pub model: OriginalCellQ24NoUpdatePeerStreamV1",
+          "model: Mutex<ModelLane>",
+          "#[path = \"cell_q24_candidate_stage_retention.rs\"]\npub(super) mod retention;",
+          "retention: Mutex<EvaluatedLane>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "LearningEvidenceVerifierV1::new",
+          "FnOnce",
+          "FnMut",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "transmute",
+          "PreparedLearningIterationProposalV1 {",
+          "LearningIterationObservationV1::Evaluation",
+          "LearningIterationObservationV1::TrainingNoUpdateV2",
+          "impl Clone for OriginalCellQ24CandidateStageOwnersV1",
+          "pub common: OriginalCellQ24NoUpdateStageOwnersV1",
+          "pub protocol:",
+          "pub candidate:",
+          "pub fn install_fresh_resident_gate(",
+          "RootResidentLearningEffectGateV3::new",
+          "pub model: Mutex",
+          "pub fn read_original_model(",
+          "pub retention:",
+          "pub(crate) retention:",
+          "pub(super) retention:"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_streams(",
+            "sequence": [
+              "fn from_original_streams(",
+              "inputs::bind(material, streams, protocol, baseline, Origin::Fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_streams(",
+            "sequence": [
+              "fn recover_original_streams(",
+              "inputs::bind(material, streams, protocol, baseline, Origin::Recovered)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "fn require_initial(",
+              "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+              "initial.request.evaluation_profile != self.protocol.evaluation_profile()",
+              "self.baseline.components() != &initial.request.selected_bundle.components",
+              "Instant::now() >= self.end",
+              "return Err(Error::WrongScope)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+              "if initial.request.evaluation_profile"
+            ]
+          },
+          {
+            "function": "fn install_fresh_resident_gate(",
+            "sequence": [
+              "fn install_fresh_resident_gate(",
+              "&mut self",
+              "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(",
+              "&mut self.common, gate"
+            ],
+            "top_level": [
+              "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate("
+            ]
+          },
+          {
+            "function": "fn require_live_deadline(",
+            "sequence": [
+              "fn require_live_deadline(",
+              "Instant::now() >= self.end",
+              "return Err(Error::DeadlineExceeded)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if Instant::now() >= self.end"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "fn validate_recovery<'a>",
+            "tokio::time::timeout_at(self.end.into()",
+            "self.require_live_deadline()?",
+            "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+            "coordinator.candidate().is_some() && retention::is_evaluated_retention(snapshot)",
+            "self.read_original_evaluated_retention(snapshot).await",
+            "coordinator.candidate().is_some() && snapshot.receipts.len() == 5",
+            "OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?",
+            "coordinator.candidate().is_some() && snapshot.receipts.len() >= 4",
+            "self.read_original_evaluation(snapshot).await?",
+            "snapshot.receipts.len() != 4",
+            "Err(Error::OwnerUnavailable(",
+            "self.common.origin == Origin::Recovered",
+            "snapshot.receipts.len() == 3 && coordinator.candidate().is_some()",
+            "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(",
+            "CandidateRead::Readback",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await",
+            "fn execute_stage<'a>"
+          ],
+          [
+            "fn execute_stage<'a>",
+            "tokio::time::timeout_at(self.end.into()",
+            "self.require_live_deadline()?",
+            "if stage == Stage::Evaluation",
+            "self.common.origin != Origin::Fresh",
+            "return Err(Error::WrongScope)",
+            "return self.execute_original_evaluation(snapshot).await",
+            "if stage == Stage::Proposal",
+            "return self.execute_original_model(snapshot).await",
+            "matches!(stage, Stage::Selection | Stage::NextUse)",
+            "retention::is_evaluated_retention(snapshot)",
+            "return self.execute_original_evaluated_retention(snapshot, stage).await",
+            "matches!(stage, Stage::Selection | Stage::NextUse)",
+            "snapshot.training_no_update_v2().is_none()",
+            "return Err(Error::OwnerUnavailable(",
+            "LearningIterationStageOwnerPortsV1::execute_stage(&self.common, snapshot, stage).await",
+            "fn prepare_proposal<'a>"
+          ],
+          [
+            "fn prepare_proposal<'a>",
+            "Box::pin(async",
+            "Err(Error::OwnerUnavailable(",
+            "fn receipt_attestation<'a>"
+          ],
+          [
+            "fn receipt_attestation<'a>",
+            "tokio::time::timeout_at(self.end.into()",
+            "self.require_live_deadline()?",
+            "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+            "coordinator.candidate().is_some() && snapshot.receipts.len() >= 3",
+            "self.training_prefix(snapshot)?",
+            "receipt.observation.stage() == Stage::Evaluation",
+            "self.read_original_evaluation(snapshot).await?",
+            "original.receipt() != receipt",
+            "original.attestation().clone()",
+            "Stage::Experience | Stage::Dataset | Stage::Training",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "&self.common, &training, receipt, now_unix_seconds",
+            "retention::is_evaluated_retention(snapshot)",
+            "matches!(receipt.observation.stage(), Stage::Selection | Stage::NextUse)",
+            "return self.evaluated_retention_attestation(snapshot, receipt).await",
+            "Err(Error::OwnerUnavailable(",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "&self.common, snapshot, receipt, now_unix_seconds"
+          ]
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "required": [
+          "pub struct OriginalCellQ24CandidateStageStreamsV1",
+          "pub candidate_material: OriginalCellQ24NoUpdatePeerStreamV1",
+          "common: OriginalCellQ24NoUpdateStageOwnersV1",
+          "protocol: OriginalCellEvaluationPanelRegistrationV1",
+          "candidate: Mutex<CandidateLane>",
+          "end: Instant",
+          "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1",
+          "pub evaluator: OriginalCellQ24NoUpdatePeerStreamV1",
+          "evaluation: Mutex<EvaluationLane>",
+          "pub model: OriginalCellQ24NoUpdatePeerStreamV1",
+          "model: Mutex<ModelLane>",
+          "#[path = \"cell_q24_candidate_stage_retention.rs\"]\npub(super) mod retention;",
+          "retention: Mutex<EvaluatedLane>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "LearningEvidenceVerifierV1::new",
+          "FnOnce",
+          "FnMut",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "transmute",
+          "PreparedLearningIterationProposalV1 {",
+          "LearningIterationObservationV1::Evaluation",
+          "LearningIterationObservationV1::TrainingNoUpdateV2",
+          "impl Clone for OriginalCellQ24CandidateStageOwnersV1",
+          "pub common: OriginalCellQ24NoUpdateStageOwnersV1",
+          "pub protocol:",
+          "pub candidate:",
+          "pub fn install_fresh_resident_gate(",
+          "RootResidentLearningEffectGateV3::new",
+          "pub model: Mutex",
+          "pub fn read_original_model(",
+          "pub retention:",
+          "pub(crate) retention:",
+          "pub(super) retention:",
+          "pub fn original_resident_readback_only(",
+          "pub common: OriginalCellQ24NoUpdateStageOwnersV1",
+          "pub(crate) common: OriginalCellQ24NoUpdateStageOwnersV1",
+          "pub(super) common: OriginalCellQ24NoUpdateStageOwnersV1"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_streams(",
+            "sequence": [
+              "fn from_original_streams(",
+              "inputs::bind(material, streams, protocol, baseline, Origin::Fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_streams(",
+            "sequence": [
+              "fn recover_original_streams(",
+              "inputs::bind(material, streams, protocol, baseline, Origin::Recovered)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "fn require_initial(",
+              "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+              "initial.request.evaluation_profile != self.protocol.evaluation_profile()",
+              "self.baseline.components() != &initial.request.selected_bundle.components",
+              "Instant::now() >= self.end",
+              "return Err(Error::WrongScope)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+              "if initial.request.evaluation_profile"
+            ]
+          },
+          {
+            "function": "fn install_fresh_resident_gate(",
+            "sequence": [
+              "fn install_fresh_resident_gate(",
+              "&mut self",
+              "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(",
+              "&mut self.common, gate"
+            ],
+            "top_level": [
+              "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate("
+            ]
+          },
+          {
+            "function": "fn require_live_deadline(",
+            "sequence": [
+              "fn require_live_deadline(",
+              "Instant::now() >= self.end",
+              "return Err(Error::DeadlineExceeded)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if Instant::now() >= self.end"
+            ]
+          },
+          {
+            "function": "fn original_resident_readback_only(",
+            "sequence": [
+              "fn original_resident_readback_only(",
+              "&self) -> bool {\n        OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)\n    }"
+            ],
+            "top_level": [
+              "OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "fn validate_recovery<'a>",
+            "tokio::time::timeout_at(self.end.into()",
+            "self.require_live_deadline()?",
+            "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+            "coordinator.candidate().is_some() && retention::is_evaluated_retention(snapshot)",
+            "self.read_original_evaluated_retention(snapshot).await",
+            "coordinator.candidate().is_some() && snapshot.receipts.len() == 5",
+            "OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?",
+            "coordinator.candidate().is_some() && snapshot.receipts.len() >= 4",
+            "self.read_original_evaluation(snapshot).await?",
+            "snapshot.receipts.len() != 4",
+            "Err(Error::OwnerUnavailable(",
+            "self.common.origin == Origin::Recovered",
+            "snapshot.receipts.len() == 3 && coordinator.candidate().is_some()",
+            "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(",
+            "CandidateRead::Readback",
+            "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await",
+            "fn execute_stage<'a>"
+          ],
+          [
+            "fn execute_stage<'a>",
+            "tokio::time::timeout_at(self.end.into()",
+            "self.require_live_deadline()?",
+            "if stage == Stage::Evaluation",
+            "self.common.origin != Origin::Fresh",
+            "return Err(Error::WrongScope)",
+            "return self.execute_original_evaluation(snapshot).await",
+            "if stage == Stage::Proposal",
+            "return self.execute_original_model(snapshot).await",
+            "matches!(stage, Stage::Selection | Stage::NextUse)",
+            "retention::is_evaluated_retention(snapshot)",
+            "return self.execute_original_evaluated_retention(snapshot, stage).await",
+            "matches!(stage, Stage::Selection | Stage::NextUse)",
+            "snapshot.training_no_update_v2().is_none()",
+            "return Err(Error::OwnerUnavailable(",
+            "LearningIterationStageOwnerPortsV1::execute_stage(&self.common, snapshot, stage).await",
+            "fn prepare_proposal<'a>"
+          ],
+          [
+            "fn prepare_proposal<'a>",
+            "Box::pin(async",
+            "Err(Error::OwnerUnavailable(",
+            "fn receipt_attestation<'a>"
+          ],
+          [
+            "fn receipt_attestation<'a>",
+            "tokio::time::timeout_at(self.end.into()",
+            "self.require_live_deadline()?",
+            "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+            "coordinator.candidate().is_some() && snapshot.receipts.len() >= 3",
+            "self.training_prefix(snapshot)?",
+            "receipt.observation.stage() == Stage::Evaluation",
+            "self.read_original_evaluation(snapshot).await?",
+            "original.receipt() != receipt",
+            "original.attestation().clone()",
+            "Stage::Experience | Stage::Dataset | Stage::Training",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "&self.common, &training, receipt, now_unix_seconds",
+            "retention::is_evaluated_retention(snapshot)",
+            "matches!(receipt.observation.stage(), Stage::Selection | Stage::NextUse)",
+            "return self.evaluated_retention_attestation(snapshot, receipt).await",
+            "Err(Error::OwnerUnavailable(",
+            "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+            "&self.common, snapshot, receipt, now_unix_seconds"
+          ]
+        ]
+      }
+    }
+  ],
+  "new_boundaries": [
+    {
+      "id": "root_resident_no_update_private_origin",
+      "symbol": "OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "definition_markers": [
+        "fn original_resident_readback_only(&self) -> bool"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCellQ24NoUpdateStageOwnersV1"
+    },
+    {
+      "id": "root_resident_candidate_private_origin",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::original_resident_readback_only",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "definition_markers": [
+        "fn original_resident_readback_only(&self) -> bool"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1"
+    },
+    {
+      "id": "root_resident_stage_private_origin",
+      "symbol": "ResidentOriginalStageOwnersV3::original_resident_readback_only",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "definition_markers": [
+        "fn original_resident_readback_only(&self) -> bool"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "ResidentOriginalStageOwnersV3"
+    }
+  ],
+  "inventory_add": [
+    "root_resident_no_update_private_origin",
+    "root_resident_candidate_private_origin",
+    "root_resident_stage_private_origin"
+  ],
+  "proof": {
+    "old_boundaries_unchanged": 607,
+    "protected_count": 425,
+    "forbidden_preserved": true,
+    "duplicate_rows_preserved": true,
+    "authority_unchanged": true,
+    "verifier_unchanged": true
+  }
+}
