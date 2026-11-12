@@ -1,0 +1,49 @@
+{
+  "actual_calls_at_source_freeze": {
+    "candidate_graph_materializations": 0,
+    "dynamic_packet_steps": 0,
+    "matrix_exponentials": 0,
+    "optimizer_updates": 0,
+    "oracle_calls": 0,
+    "torch_operations": 0
+  },
+  "identity": "hcsn-n128-expm-resource-profile-20261112-c06d",
+  "input_git_blob_sha1": {
+    "qualification/hcsn_source_migration_vjp_n128/inputs/SELECTED_ORIGINAL_LAW.json": "f1cd5b59d796d49a4e1a393840d49a5b63ac0780",
+    "qualification/hcsn_source_migration_vjp_n128/inputs/seed37-c0_b1-step24-pos1-n128.json": "d3115546839851e4a47e186c1da47b5386d4b386",
+    "qualification/hcsn_source_migration_vjp_n128/inputs/seed37-c0_b1-step24-pos1-n128.npz": "faa720f434dfebe27ea772bd3fadbfd598411816"
+  },
+  "operator_identities": [
+    "895c607361d12436b3c82f8e233278f594d1de2ac032fd9534670a26f9bd5ce5",
+    "2902573f3f2423ef39483946b4594ea4c6f186b35d8c58178835beda01ac101c",
+    "6c9e1819b5e0ecdbe5157c441730dd666404cbf9508d317227e90c8baaed32bc",
+    "c61891916644dd7bba7950ef522453db02b1924d9966c8dc6c559418d29ada38"
+  ],
+  "parent_head": "4dfa569b213d02859f76128ed09cacd7a829b91e",
+  "predecessor_terminal_red": {
+    "executed_matrix_exponentials": 0,
+    "job": 131527292274,
+    "reason": "source inventory used two pre-final roster hashes",
+    "run": 43316938536,
+    "source_commit": "b7596b6a06ef6af2fe4fc8d1647f6ec8eedc80bc",
+    "unique_execution_key": "hcsn-n128-expm-resource-profile-20261112-c06d-001"
+  },
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n128-expm-profile.yml": "3858680d757762197275567dc858633a27110b434df2f59fd24760d37f956776",
+    "qualification/hcsn_currentstate_n128_engineering/candidate.py": "0152e168cd3c5581517522b972276f6317c907eb740a09adb5219a9e820a09ad",
+    "qualification/hcsn_currentstate_n128_expm_profile/README.md": "7960c5495760bbfd4b89c90fe577a33a76caf1c9db010a77f3fc724dcf728147",
+    "qualification/hcsn_currentstate_n128_expm_profile/REQUEST.json": "69ccdf32780257d9f695341480d5e8d96c95ef70e96f7ff727c032a8143b7bfe",
+    "qualification/hcsn_currentstate_n128_expm_profile/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "qualification/hcsn_currentstate_n128_expm_profile/profile.py": "0fe9d0ea64bb0ccc2e77aa051bde24f209253aa0d4964186392a0b7daacef7ad",
+    "qualification/hcsn_currentstate_n128_expm_profile/static_inspector.py": "e46fa34f1477816af0f66c9237eeef12420fa7d139ea2e6322c980ea062703f4",
+    "qualification/hcsn_currentstate_n128_roster/evidence/source-210b0ad/attempt001/CAPSULES.json": "f4351a495c6680789c18fee5910200554bdd454c63f17d7ede6ba6fb4d65b4e9",
+    "qualification/hcsn_currentstate_n128_roster/evidence/source-210b0ad/attempt001/EVENTS.jsonl": "e84d6ca273236341f6bd138bff9c199758fb8cf4ed43a0550ca3e77ff8076d0a",
+    "qualification/hcsn_currentstate_n128_roster/evidence/source-210b0ad/attempt001/PACKET_ROSTER.jsonl": "d777904084d5cfe62e0365263339385f301c2b5f5e26963a65ea0e2ab2815158",
+    "qualification/hcsn_currentstate_n128_roster/evidence/source-210b0ad/attempt001/SUMMARY.json": "be9191724b2a57e4e2828d959ccc9a1866a7dfc45b34b5f4ab4a375266fe2df2",
+    "qualification/hcsn_source_migration_vjp_n128/inputs/SELECTED_ORIGINAL_LAW.json": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+    "qualification/hcsn_source_migration_vjp_n128/inputs/seed37-c0_b1-step24-pos1-n128.json": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+    "qualification/hcsn_source_migration_vjp_n128/inputs/seed37-c0_b1-step24-pos1-n128.npz": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d"
+  },
+  "status": "INTENT_NOT_EXECUTED",
+  "unique_execution_key": "hcsn-n128-expm-resource-profile-20261112-c06d-002-after-preimport-red"
+}

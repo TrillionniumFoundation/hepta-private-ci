@@ -1,0 +1,37 @@
+{
+  "base_source_commit": "4dfa569b213d02859f76128ed09cacd7a829b91e",
+  "dt": 0.2,
+  "global_status": "HOLD",
+  "identity": "hcsn-n128-expm-resource-profile-20261112-c06d",
+  "input_sha256": {
+    "law": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+    "metadata": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+    "npz": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d"
+  },
+  "maximum_calls": {
+    "candidate_graph_materializations": 1,
+    "dynamic_packet_steps": 0,
+    "matrix_exponentials": 4,
+    "optimizer_updates": 0,
+    "oracle_calls": 0,
+    "torch_operations": 0
+  },
+  "operator_identities": [
+    "895c607361d12436b3c82f8e233278f594d1de2ac032fd9534670a26f9bd5ce5",
+    "2902573f3f2423ef39483946b4594ea4c6f186b35d8c58178835beda01ac101c",
+    "6c9e1819b5e0ecdbe5157c441730dd666404cbf9508d317227e90c8baaed32bc",
+    "c61891916644dd7bba7950ef522453db02b1924d9966c8dc6c559418d29ada38"
+  ],
+  "predecessor_terminal_red": {
+    "executed_matrix_exponentials": 0,
+    "job": 131527292274,
+    "reason": "source inventory used two pre-final roster hashes",
+    "run": 43316938536,
+    "source_commit": "b7596b6a06ef6af2fe4fc8d1647f6ec8eedc80bc",
+    "unique_execution_key": "hcsn-n128-expm-resource-profile-20261112-c06d-001"
+  },
+  "qualification": false,
+  "status": "INTENT_NOT_EXECUTED",
+  "stop_on_any_red_or_unknown": true,
+  "unique_execution_key": "hcsn-n128-expm-resource-profile-20261112-c06d-002-after-preimport-red"
+}
