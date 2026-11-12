@@ -1,0 +1,16 @@
+{
+  "child_system_cpu_seconds": 0.047271999999999995,
+  "child_user_cpu_seconds": 0.258311,
+  "children_peak_rss_kib": 15384,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "test_chat_evidence_audit",
+    "-v"
+  ],
+  "exit": 0,
+  "python": "3.12.14",
+  "scope": "test subprocess and its child CLI checks; not experiment or lifecycle cost",
+  "wall_seconds": 0.3062509989999853
+}

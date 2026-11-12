@@ -1,0 +1,55 @@
+{
+  "files": {
+    ".github/workflows/hpca-chat-evidence-admission.yml": {
+      "bytes": 1721,
+      "sha256": "9b8ab18898b513be29340fa51db6625a4e86fd7b1d03a6df3969cc0067e4416a"
+    },
+    "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py": {
+      "bytes": 10153,
+      "sha256": "9d587c2e0fa883e0de9bc90cd3413de1eeef9fd0a634907d613e8da43891dd27"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/RESULT.json": {
+      "bytes": 1108,
+      "sha256": "7c6a6ef2d5a12562d313120f21864e0747b9f048466a240af1aeab254213001d"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/attempt-000-default.log": {
+      "bytes": 60,
+      "sha256": "6933a7e0df95783acf93ed90af942334f7d1619d9a6a1f897c79ed256537f3c9"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/attempt-000-optimized.log": {
+      "bytes": 60,
+      "sha256": "d2b8980b0088552cc287e4be04f54ec94ea0599880d41e33f2d9b5f5cd98fb90"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/attempt-000.json": {
+      "bytes": 123,
+      "sha256": "0de8920fd346463ca2e8f5e487c023131cccad15a7cb2fab18284eca99200ae0"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/optimized-tests.json": {
+      "bytes": 465,
+      "sha256": "4fbbb8019f00896d686bbd15329ea71356dfa8645172c1b42755ded5ca67764d"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/optimized-tests.log": {
+      "bytes": 2361,
+      "sha256": "ed6a6cf6fbce6fb2699fbffe2eab2286146eaa138fd2472dff6949e7c4d6fb56"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/tests.json": {
+      "bytes": 457,
+      "sha256": "588fe5fb1992cebbf70ad3a45a722c5bb3e1f8817b727b09c33b5d85d3a3424b"
+    },
+    "qualification/hpca-neuroscience-20261110/evidence/chat-evidence-admission-20261112/tests.log": {
+      "bytes": 2361,
+      "sha256": "9928bf9f814f3f4f112e90d79049cfa198f09365371cc6e45baae89209a7c776"
+    },
+    "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py": {
+      "bytes": 6571,
+      "sha256": "5fad5329a12fb895a2a36427fe0b70957ef1bf6a4b789f70762c0a81b4441a63"
+    }
+  },
+  "formatting": {
+    "just_fmt": "NOT_RUN: sparse checkout lacks codex-rs/justfile; invoked just fmt returned 1, no justfile found",
+    "ruff_check": "PASS"
+  },
+  "parent": "8187f91331dd2b1b37c65116eedeed2b1b3941e5",
+  "review": "Separate same-session reviewer reproduced source/config/runtime counterexamples before fix and confirmed rejection after fix; not external custody",
+  "scope": "recorded evidence audit only; zero model forwards"
+}

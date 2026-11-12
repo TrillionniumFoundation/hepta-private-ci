@@ -1,0 +1,35 @@
+{
+  "schema": "hpca-base-native-attempt-v1",
+  "source_head": "55df4b4fe380fbdfe85ba70a56fe56c25aa2e63b",
+  "host": "ai395",
+  "durable_job_id": "1a1cd3731c3-2564-121c",
+  "idempotency_key": "hpca-base-output-e901-execute-55df4b4-20261112-v1",
+  "inference_attempts_completed": 0,
+  "interpretation": "FAILED_AT_RUNTIME_IDENTITY_GATE",
+  "files": [
+    {
+      "name": "WORKER_RESULT.json",
+      "bytes": 275,
+      "sha256": "2293bbeb1c09fabb7d745fe8c1f3c3c025bae60f24d83d0917a50be1985fbca7",
+      "original_path": "/home/qq/work/hpca-base-output-e901-20261112-evidence/WORKER_RESULT.json"
+    },
+    {
+      "name": "tests.log",
+      "bytes": 775,
+      "sha256": "449d851fe60b47883034078d0fa000b9bae23b8cbb011d5044bd7533045f57a0",
+      "original_path": "/home/qq/work/hpca-base-output-e901-20261112-evidence/tests.log"
+    },
+    {
+      "name": "execution.log",
+      "bytes": 457,
+      "sha256": "2798e9e339944c19112141e1ac1c9af68fc65760ade306458989f4871a0de375",
+      "original_path": "/home/qq/work/hpca-base-output-e901-20261112-evidence/execution.log"
+    },
+    {
+      "name": "pyvenv.cfg",
+      "bytes": 191,
+      "sha256": "6579edf4173d29ce2c68c3f096d89e5cee649ddb12c031a1b252d8e892afea48",
+      "original_path": "/home/qq/hepta-smollm2-weight-research-20261103/venv/pyvenv.cfg"
+    }
+  ]
+}
