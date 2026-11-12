@@ -160,6 +160,35 @@ impl RootHistoricalSourcePinV1 {
         ]))
     }
 
+    pub(super) fn require_original_registration(
+        &self,
+        profile: &InitialProfile,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+    ) -> io::Result<()> {
+        self.readback_digest()?;
+        let pin = &self.expected.pin;
+        if pin.initial_profile != profile.binding
+            || pin.identity != profile.identity
+            || pin.writer != profile.writer
+            || pin.target != profile.deployment.target
+            || pin.target_files != profile.target_files
+            || pin.publisher_epoch != registration.publisher_epoch
+            || pin.publisher
+                != (CognitiveCheckpointPeerLifetime {
+                    uid: config.peer_uid,
+                    pid: registration.peer_pid,
+                    boot_id: registration.boot_id.clone(),
+                    process_start_ticks: registration.process_start_ticks,
+                })
+        {
+            return Err(io::Error::other(
+                "source pin is not this original publisher",
+            ));
+        }
+        Ok(())
+    }
+
     fn retain(root: Arc<RootAuthorityDirectory>, pin: SourcePin) -> io::Result<Self> {
         original_root()?;
         let owner = owner(&pin.target)?;
@@ -205,7 +234,7 @@ impl RootHistoricalSourcePinV1 {
 impl HostAuthorityService {
     /// Capture only under this actual Initial owner's original writer/pidfd.
     /// A must still be alive, but its Source writer must have released its lock.
-    /// This internal entry has no ordinary transport or successor grant route.
+    /// Only the original fixed-input worker reaches this data-only entry.
     pub(crate) fn capture_initial_source_pin(
         &self,
         slot: &RegisteredGenerationInitial,

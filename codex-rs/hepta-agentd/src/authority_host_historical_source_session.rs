@@ -45,11 +45,21 @@ impl RootLifetime {
 /// Root's acknowledgement of one protected data pin, not a historical grant.
 pub struct RootHistoricalSourceCaptureReceiptV1 {
     pin: Digest32,
+    root: RootLifetime,
+    end: Instant,
 }
 
 impl RootHistoricalSourceCaptureReceiptV1 {
     pub fn pin_digest(&self) -> Digest32 {
         self.pin
+    }
+
+    pub(crate) fn require_original_capture_session(&self) -> io::Result<()> {
+        self.root.require_current()?;
+        if Instant::now() >= self.end {
+            return Err(io::Error::other("original source capture session expired"));
+        }
+        Ok(())
     }
 }
 
@@ -85,6 +95,11 @@ impl RootHistoricalSourceCaptureCapabilityV1 {
                 .recv_timeout(remaining)
                 .map_err(|_| io::Error::other("source capture acknowledgement uncertain"))?
                 .map_err(io::Error::other)?;
+            let receipt = RootHistoricalSourceCaptureReceiptV1 {
+                pin,
+                root: self.root.clone(),
+                end,
+            };
             self.root.require_current()?;
             if Instant::now() >= end {
                 return Err(io::Error::other(
@@ -96,7 +111,7 @@ impl RootHistoricalSourceCaptureCapabilityV1 {
                 .map_err(|_| {
                     io::Error::other("original source capture ended during acknowledgement")
                 })?;
-            Ok(RootHistoricalSourceCaptureReceiptV1 { pin })
+            Ok(receipt)
         })();
         if result.is_err() {
             self.phase.store(CLOSED, Ordering::Release);
