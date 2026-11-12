@@ -244,7 +244,7 @@ impl OriginalBRecord {
             {
                 return Err(io::Error::other("original B registration was changed"));
             }
-            enrollment.require_completed_acceptance()?;
+            OriginalBEnrollment::require_completed_acceptance(&enrollment)?;
             let mut ready = armed.clone();
             ready.phase = Phase::Ready;
             ready.enrollment = Some(enrollment);
@@ -288,11 +288,12 @@ impl OriginalBRecord {
                 "original B attempt is absent, unfinished or refused",
             ));
         }
-        let acceptance = loaded
-            .enrollment
-            .as_ref()
-            .ok_or_else(|| io::Error::other("original B enrollment absent"))?
-            .require_completed_acceptance();
+        let acceptance = OriginalBEnrollment::require_completed_acceptance(
+            loaded
+                .enrollment
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original B enrollment absent"))?,
+        );
         if let Err(error) = acceptance {
             self.poisoned.store(true, Ordering::Release);
             return Err(error);
