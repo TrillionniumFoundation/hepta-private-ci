@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "kind": "metadata-transcription-correction",
+  "preserved_original": "source-validation.tar.xz:terminal-ack-guards-first/first-protection-check.json",
+  "field": "source_commit",
+  "recorded": "568221a921aa3c5581dc4895dfdc4ccd50c3f04",
+  "actual_shared_git_commit": "568221a921aa3c5581dcf4895dfdc4ccd50c3f04",
+  "explanation": "The first uncommitted development guard-preview summary transcribed this commit with one character missing. The original summary and failure logs are retained unchanged. That preview was never exact frozen validation. The final 4cde2ffd source validation obtains HEAD/tree with git rev-parse and binds all 7,150 inputs; its source SHA, tree, receipts and results are unaffected.",
+  "formatting": "An initial just fmt invocation used the same invalid revision and exited 2 before formatting. The subsequent just fmt --base HEAD returned 0. No native tests were run."
+}
