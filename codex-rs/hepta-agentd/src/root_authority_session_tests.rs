@@ -459,8 +459,10 @@ pub(crate) async fn drop_original_production_after_idle(
     let live = Arc::clone(&inputs.session.live);
     let worker = inputs.session.worker.abort_handle();
     let phase = std::cell::Cell::new("original refresh barrier");
+    let retirement_started = std::time::Instant::now();
     tokio::time::timeout(timeout, async {
         let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
+        let barrier_wait = retirement_started.elapsed();
         phase.set("original current observation");
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
             return Err(std::io::Error::other(
@@ -476,11 +478,18 @@ pub(crate) async fn drop_original_production_after_idle(
             ));
         }
         phase.set("original session Drop");
+        let drop_started = std::time::Instant::now();
         drop(inputs);
         phase.set("original worker completion");
         while !worker.is_finished() {
             tokio::task::yield_now().await;
         }
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=retired barrier_wait_ms={} drop_join_ms={} total_ms={}",
+            barrier_wait.as_millis(),
+            drop_started.elapsed().as_millis(),
+            retirement_started.elapsed().as_millis(),
+        );
         Ok(())
     })
     .await
@@ -488,8 +497,9 @@ pub(crate) async fn drop_original_production_after_idle(
         std::io::Error::new(
             std::io::ErrorKind::TimedOut,
             format!(
-                "original Root deliberate Drop budget elapsed during {}",
-                phase.get()
+                "original Root deliberate Drop budget elapsed during {} after {}ms",
+                phase.get(),
+                retirement_started.elapsed().as_millis(),
             ),
         )
     })?
