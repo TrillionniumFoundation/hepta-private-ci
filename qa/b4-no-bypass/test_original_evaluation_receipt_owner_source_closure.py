@@ -29,7 +29,7 @@ TRAINER_SOURCE = AGENT + "neuron_cell_evaluation_training_source.rs"
 CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
-        AGENT + "cell_q24_model_proposal_admission.rs",
+        AGENT + "cell_q24_model_projection.rs",
         OWNER,
     ),
     "learning_evidence_original_owner_readback": (
