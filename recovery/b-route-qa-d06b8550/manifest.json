@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "source_commit": "d06b8550f61f2d23ae5aac7eebfef94fd9f45ea6",
+  "source_tree": "d11e243a9590c7c7e2372466c5f358210bc16c05",
+  "prerequisite": "32a7d4df970cbcae301068eef563bf7ed83c4e73",
+  "changes": "Only QA EXPECTED tuples add the actual historical B record caller; the existing index derives the source set from EXPECTED. No manifest, scanner or product changes. All deletion and unknown-caller controls retained.",
+  "before": {
+    "methods": 3,
+    "failures": 2,
+    "errors": 4
+  },
+  "after": {
+    "methods": 3,
+    "passed": 3,
+    "closed_sets_per_method": 35,
+    "rust_source_files": 40,
+    "all_inputs": 203,
+    "all_hashes_unchanged": true,
+    "head_unchanged": true,
+    "tracked_clean": true
+  },
+  "native_executed": false,
+  "full_source_suite": false,
+  "full_caller_scan": false,
+  "artifacts": {
+    "source.bundle": {
+      "bytes": 693,
+      "sha256": "ca7987a9c3f83de3b67a5892313b430c48978ee4ab280bf3ee98245e17a7d971",
+      "git_blob": "8256b56467cd5f440bd3ea683def3d243fc6ac51"
+    },
+    "source-validation.tar.xz": {
+      "bytes": 10904,
+      "sha256": "e2c44d29749a02b7004fb920e089f370b70c019a7095b0a158f73c535b1b79dc",
+      "git_blob": "6d9b5d07f31de8abb195e37480dc5806a727cdd7"
+    }
+  }
+}
