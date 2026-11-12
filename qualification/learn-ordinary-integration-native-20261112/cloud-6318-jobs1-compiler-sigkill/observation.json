@@ -1,0 +1,132 @@
+{
+  "source": "6318e12493b71bf335822cb4d932c4c056319810",
+  "tree": "e99044035ebfaa9e491985ffa359326224477179",
+  "source_before_after_equal_clean": true,
+  "helper_build": {
+    "exit_code": 0,
+    "elapsed_seconds": 90.62122052199993
+  },
+  "helper_verification_before_and_after": [
+    0,
+    0
+  ],
+  "ordinary_build": {
+    "exit_code": 101,
+    "elapsed_seconds": 778.4740201989989,
+    "actual_error": "Agentd rustc --crate-type lib received SIGKILL signal 9",
+    "new_rust_type_diagnostics": 0,
+    "tests": 0,
+    "junit": 0
+  },
+  "profile_override": null,
+  "cargo_build_jobs": 1,
+  "oom_proven": false,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 1912352,
+    "sha256": "1eae53d4678c0e99b38f427061087b67ec4b5d69748e44fecb6b6455e3188929",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "native/driver.json",
+      "bytes": 3026,
+      "sha256": "8f165e6ea81c36276e994f18a6b038a8409cf3ee593e126a36c727a04d7353ec"
+    },
+    {
+      "path": "native/exception.log",
+      "bytes": 325,
+      "sha256": "1016f81e247fa8a2ee47374b4f743e37306b99838220ce7df846babaeba73027"
+    },
+    {
+      "path": "native/helpers/bin/hepta-joint-propose",
+      "bytes": 6680656,
+      "sha256": "7956338a4c933a2d3b6a7585d7d0820076da5a1a16a42d0f715bbcc049a88618"
+    },
+    {
+      "path": "native/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1104213,
+      "sha256": "bf0e89f950d5e40c3b520d91410e9649791895d5930c38766f02b0b197e8a95d"
+    },
+    {
+      "path": "native/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 26832,
+      "sha256": "48603f57ada6a5d89c5e3be9be7816f2c0a9a3a0d5632c7b3242c93f4c047b64"
+    },
+    {
+      "path": "native/helpers/env.json",
+      "bytes": 319,
+      "sha256": "2c033b940cf3e9b084fe2539fc8ef78b16a75b6c3ac9a058f65d7f5c17630308"
+    },
+    {
+      "path": "native/helpers/manifest.json",
+      "bytes": 1946,
+      "sha256": "5b7838ee7dcc02a32af37bc02d44ae000be93125e09ec13a68f44ab66c0ad0f3"
+    },
+    {
+      "path": "native/helpers-build/command.log",
+      "bytes": 209,
+      "sha256": "7bc5aeb8c393023d52df44dada981116b84034aa0efa65f9db689ce76f148ae1"
+    },
+    {
+      "path": "native/helpers-build/run.json",
+      "bytes": 999,
+      "sha256": "e1218941995c1eda838f5d6f47baadb8e3496d645779cf363d29b65b91896fbc"
+    },
+    {
+      "path": "native/helpers-verify-after/command.log",
+      "bytes": 1184,
+      "sha256": "66202cd198f971aca0ae40aaeeeff0012c75698ae221220b212507dd70d4b665"
+    },
+    {
+      "path": "native/helpers-verify-after/run.json",
+      "bytes": 1023,
+      "sha256": "94ec73c710cd96e90a739502fd3f00ccdf32992a7830bfe1f0462248855d629f"
+    },
+    {
+      "path": "native/helpers-verify-before/command.log",
+      "bytes": 1184,
+      "sha256": "66202cd198f971aca0ae40aaeeeff0012c75698ae221220b212507dd70d4b665"
+    },
+    {
+      "path": "native/helpers-verify-before/run.json",
+      "bytes": 1023,
+      "sha256": "df6ccbb498c9089efb829a94be699a54369cf034ad7bf594fa971ba957f79400"
+    },
+    {
+      "path": "native/ordinary/command.log",
+      "bytes": 64779,
+      "sha256": "a67a507ec68d797ccf5fa62db1d815b9e3f0f74ace73562988f3ee266654c597"
+    },
+    {
+      "path": "native/ordinary/run.json",
+      "bytes": 1046,
+      "sha256": "adfed0068eb8adb2fbf3878458af1762e2e8773504f8e0e019aeb53da7e24689"
+    },
+    {
+      "path": "run_integration_6318_cloud_jobs1.py",
+      "bytes": 7765,
+      "sha256": "1814000229c1a2f8e7f30cbd4d5b96a884263bc3e747dc8c5dcd0da3d3b50620"
+    },
+    {
+      "path": "completed-pre6318-incremental-candidates.json",
+      "bytes": 53086,
+      "sha256": "72ec495c608807cfebef142e049b98986c1fe292e2db7c2423878defac5e49ee"
+    },
+    {
+      "path": "completed-pre6318-incremental-retirement.json",
+      "bytes": 71269,
+      "sha256": "b0318e821c5a03cf88894865c2bc647269fc6397f55cf89825b5872f68de01e4"
+    },
+    {
+      "path": "retired-2420-source.json",
+      "bytes": 556,
+      "sha256": "8972a87ae96327b4dfcf29769e2a006aa87be8941dfa681a1df9b496c1c87236"
+    }
+  ]
+}
