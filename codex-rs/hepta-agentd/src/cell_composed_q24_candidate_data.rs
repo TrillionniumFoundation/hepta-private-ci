@@ -3,6 +3,14 @@
 
 use super::*;
 
+pub(crate) fn require_original_head_data(bytes: &[u8]) -> Result<(), CellGenerationErrorV2> {
+    let heads = Matrix::decode(bytes)?;
+    if heads.encode() != bytes {
+        return Err(CellGenerationErrorV2::InvalidBinding);
+    }
+    Ok(())
+}
+
 impl LoadedCellQ24ModelV1 {
     pub(crate) fn original_head_bytes(&self) -> Vec<u8> {
         self.heads.encode()

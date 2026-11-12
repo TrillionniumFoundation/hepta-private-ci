@@ -72,6 +72,8 @@ fn bootstrap(mode: SourceMode, file: Option<&File>) -> io::Result<SourceBootstra
         socket_gid: 60_001,
         source_device: meta.as_ref().map_or(1, MetadataExt::dev),
         source_inode: meta.as_ref().map_or(1, MetadataExt::ino),
+        candidate_data_device: 1,
+        candidate_data_inode: 1,
         registered_at_seconds: 1,
         absolute_end_monotonic_ns: seal_original_end(Instant::now() + Duration::from_secs(5))?,
         frame_timeout_ms: 500,
