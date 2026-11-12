@@ -11,6 +11,8 @@ use std::path::PathBuf;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct InitialDeploymentData {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub learning_trust: Option<PathBuf>,
     pub schema_version: u32,
     pub mode: RootGenerationInitialModeV1,
     pub operation: String,

@@ -127,6 +127,8 @@ pub(crate) struct InitialProfile {
     pub(crate) intent: String,
     pub(crate) selection: String,
     pub(crate) final_use: FinalUseBinding,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) learning_trust: Option<crate::root_initial_learning_trust_data::LearningTrustPinV1>,
     pub(crate) binding: String,
 }
 
@@ -177,6 +179,7 @@ pub(crate) struct RegisteredGenerationInitial {
     artifacts: LearningArtifactReadViewV1,
     selected: Mutex<AgentdSelectedGenerationV1>,
     consumer: RootFinalUseObserverV1,
+    learning_trust: Option<crate::authority_host_runtime::RegisteredInitialLearningTrustV1>,
 }
 
 impl RegisteredGenerationInitial {
@@ -199,6 +202,7 @@ impl RegisteredGenerationInitial {
 
     fn require_selection(&self, now: u64) -> io::Result<()> {
         let result = (|| {
+            self.require_learning_trust(now)?;
             let mut selected: std::sync::MutexGuard<'_, AgentdSelectedGenerationV1> = self
                 .selected
                 .try_lock()
@@ -209,12 +213,22 @@ impl RegisteredGenerationInitial {
             if selected.observation().digest().to_string() != self.profile.selection {
                 return Err(io::Error::other("original initial selection changed"));
             }
-            Ok(())
+            self.require_learning_trust(now)
         })();
         if result.is_err() {
             self.fence()?;
         }
         result
+    }
+
+    fn require_learning_trust(&self, now_millis: u64) -> io::Result<()> {
+        match (&self.learning_trust, &self.profile.learning_trust) {
+            (None, None) => Ok(()),
+            (Some(original), Some(pin)) if &original.pin == pin => original.revalidate(now_millis),
+            _ => Err(io::Error::other(
+                "original learning trust custody or pin differs",
+            )),
+        }
     }
 
     fn require_genesis(&self) -> io::Result<()> {

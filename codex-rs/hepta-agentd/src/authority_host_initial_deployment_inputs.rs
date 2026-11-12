@@ -17,6 +17,7 @@ use std::io;
 use std::sync::Arc;
 
 pub(super) struct InitialOriginalFiles {
+    pub learning_trust: Option<Arc<super::RootInitialLearningTrustFilesV1>>,
     pub current: Arc<RootAuthorityDirectory>,
     pub target_journal: OriginalFile,
     pub target_witness: OriginalFile,
@@ -25,6 +26,9 @@ pub(super) struct InitialOriginalFiles {
 
 impl InitialOriginalFiles {
     pub(super) fn require_initial_files(&self) -> io::Result<()> {
+        if let Some(trust) = &self.learning_trust {
+            trust.require_original_files()?;
+        }
         self.target_journal.require_original_file()?;
         self.target_witness.require_original_file()?;
         self.withdrawal.require_original_file()
@@ -84,6 +88,7 @@ impl InitialOriginalFiles {
             return Err(io::Error::other("original Initial selected files changed"));
         }
         let inputs = RootGenerationInitialEnrollmentV1 {
+            learning_trust: self.learning_trust.clone(),
             mode: data.mode,
             current_directory: Arc::clone(&self.current),
             target: RootGenerationJournalInputsV1 {
