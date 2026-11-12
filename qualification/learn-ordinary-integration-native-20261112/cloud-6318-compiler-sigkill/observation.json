@@ -1,0 +1,115 @@
+{
+  "source": "6318e12493b71bf335822cb4d932c4c056319810",
+  "tree": "e99044035ebfaa9e491985ffa359326224477179",
+  "source_lineage": "b26 plus only Root 35c0a12; exact current CALLERS digest reconciled in existing allowlist",
+  "native": {
+    "scope": "same-source helpers before ordinary Agentd/Protocol/Ledger libraries",
+    "result": "Helper Cargo build 101; Agentd lib rustc terminated by SIGKILL signal 9",
+    "new_rust_type_diagnostics": 0,
+    "tests": 0,
+    "junit": 0,
+    "root_tests": 0,
+    "source_before_after_equal_clean": true,
+    "oom_proven": false,
+    "build_jobs": 2,
+    "profile_override": null
+  },
+  "source_qa": {
+    "run_start": "16 tests PASS",
+    "selected_changed_handoff": "1 test PASS",
+    "full_historical_module": "12 tests, 25 subtest errors, exit 1; no inferred pass count"
+  },
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 96728,
+    "sha256": "7a94754546711d3eeb5485ccd9b0698e0c5a00229c6505374b080fc3aef4649e",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "native/driver.json",
+      "bytes": 2182,
+      "sha256": "61a47278174df2c405d30c838b909a4004fcfe81cefc2fccf374818aa4cedd4c"
+    },
+    {
+      "path": "native/exception.log",
+      "bytes": 262,
+      "sha256": "da7f0d8c57242dfd633923b617bc935953468fd8bf911a83ba505608b0aa4361"
+    },
+    {
+      "path": "native/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1102385,
+      "sha256": "584609a9cf738750cbc3e7afcf54da85ae528d6617a0b29ffa6c31f17372c1e8"
+    },
+    {
+      "path": "native/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 38032,
+      "sha256": "b9a6976e80cb1ad6594ad27e738d7cb2c31d686b264f23c34426c7ac4760ea22"
+    },
+    {
+      "path": "native/helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "native/helpers/manifest.json",
+      "bytes": 1233,
+      "sha256": "e5c41d0b73502414f0edaf910b59281702b755cad0163aa62d6ba2a4d5203103"
+    },
+    {
+      "path": "native/helpers-build/command.log",
+      "bytes": 212,
+      "sha256": "1f3d4a75d2b89849eee428972d141d96ea91fe541d3d1189762f664a5a2b6e86"
+    },
+    {
+      "path": "native/helpers-build/run.json",
+      "bytes": 1002,
+      "sha256": "ce05d85a072f003b7796a5bd36bc384ddfd7e95ece0e151e55a448957bfc8dbc"
+    },
+    {
+      "path": "native/post-exit-observation.json",
+      "bytes": 2432,
+      "sha256": "22c6fc338a0473d2d15deba15bbd25bea2332565e6af41243ba86a3a88d2816e"
+    },
+    {
+      "path": "source-qa/run.json",
+      "bytes": 1034,
+      "sha256": "290766e0b231fcefd010f95c5cb90cb34b0ffe2b331482af412a82df65841b21"
+    },
+    {
+      "path": "source-qa/selected-handoff.json",
+      "bytes": 418,
+      "sha256": "6f4c7bd27d629182e855632f1a16796e28bf302938a72921bcfd7074ec225102"
+    },
+    {
+      "path": "source-qa/selected-handoff.log",
+      "bytes": 98,
+      "sha256": "ec300b6ed4c6a6f023d8e6fc572689364f88fc4582ffce1e87d2f6b3f5e16acc"
+    },
+    {
+      "path": "source-qa/test_historical_task_read_source_closure.py.log",
+      "bytes": 79164,
+      "sha256": "944f1207dae277d018dbdbd0fb0f9794f1442228d1a627b2b8b4db0b9178e6f1"
+    },
+    {
+      "path": "source-qa/test_original_run_start_retention_source_closure.py.log",
+      "bytes": 115,
+      "sha256": "8cff203eeecddc393245f77887f0adf6174261dffc75a6e01a0e0eb58e79d563"
+    },
+    {
+      "path": "run_integration_6318_cloud_limited.py",
+      "bytes": 7725,
+      "sha256": "0a74623a419a20d3d7cfca8f7759cfadd0635071116431bd8f6398e2aef86139"
+    },
+    {
+      "path": "6318e124-native-original-source.bundle",
+      "bytes": 7560,
+      "sha256": "2fae12188666c2874f3c031b9803120fe5a29b00f04acd8be30fec05e8d05047"
+    }
+  ]
+}
