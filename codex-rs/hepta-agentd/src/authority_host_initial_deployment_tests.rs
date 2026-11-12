@@ -162,6 +162,13 @@ impl RootGenerationInitialDeploymentFilesV1 {
         write_initial_metadata(&path, &bytes)?;
         let files = Self::open_original_initial_deployment(&path)?;
         assert!(!files.data.trigger.exists());
+        files.require_original_historical_root(&original_paths[0])?;
+        assert!(
+            files
+                .require_original_historical_root(&directory.join("different-root"))
+                .is_err()
+        );
+        files.require_original_historical_root(&original_paths[0])?;
 
         // Replacing an otherwise identical owned metadata file must not be
         // mistaken for the original retained descriptor. Probe only test files.

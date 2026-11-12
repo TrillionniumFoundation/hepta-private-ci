@@ -425,6 +425,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let (initial_deployment, initial_offer) = match (initial_deployment, initial_handoff) {
             (Some(path), Some(handoff)) => {
                 let files = codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(&path)?;
+                if source_deployment.is_some() {
+                    codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::require_original_historical_root(&files, &config.state_dir)?;
+                }
                 let (capability, offer) =
                     prepared.enable_generation_initial(files.deployment().clone())?;
                 let capability: codex_hepta_agentd::RootGenerationInitialEnrollmentCapabilityV1 =
