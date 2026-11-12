@@ -77,7 +77,7 @@ def basis_values(
     inf_reset, inf_coefficient = closure(phi_r_inf)
     finite_reset, finite_coefficient = closure(phi_r_finite)
     candidate_nodes, candidate_reset = model.perpetual()
-    nodes = np.linspace(0, model.spatial.endpoint, model.spatial.intervals + 1)
+    nodes = model.spatial.nodes
     edges = np.linspace(0, original_endpoint, active_cells + 1)
     candidate, finite, infinite = [], [], []
     for left, right in zip(edges[:-1], edges[1:]):

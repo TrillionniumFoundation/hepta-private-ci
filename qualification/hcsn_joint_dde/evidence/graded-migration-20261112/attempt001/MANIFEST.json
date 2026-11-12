@@ -1,0 +1,108 @@
+{
+  "schema": "hcsn-graded-raw-evidence-manifest-v1",
+  "source_local_commit": "dd7c26b",
+  "published_same_source": "b8272c7606e5bc0191a41d2d55839f9e9b62855a",
+  "timeline": "Local source was committed before execution; GitHub source publication occurred while attempt001 was running. No remote-before-run claim.",
+  "files": [
+    {
+      "path": "ALL_GRADED_256.npz",
+      "sha256": "d703ccca391a78601e9e4282116620048224c217371645d728e1d45be825df51",
+      "bytes": 1693886
+    },
+    {
+      "path": "ALL_GRADED_512.npz",
+      "sha256": "9f459e4e2b4086b66c67ee3ac42e225bf6e141ac7a07b84998e8f64ddebcc261",
+      "bytes": 1664856
+    },
+    {
+      "path": "DIRECT_DDE.json.gz",
+      "sha256": "60527a8096612624299da6ac75bf3c83592bc80719c1c06aae9e2f3e29dded11",
+      "bytes": 2391214,
+      "decoded_name": "DIRECT_DDE.json",
+      "decoded_sha256": "8b6e807f91322318f75927230f7fbc87974f10db4a2209367404b9adf14b1f84",
+      "decoded_bytes": 5484738
+    },
+    {
+      "path": "IDENTITIES.json.gz",
+      "sha256": "c43f1dafc128de18bb9c7e67e89b643fa47a5ea7a1faf937da8d7edda5f93dfc",
+      "bytes": 80927,
+      "decoded_name": "IDENTITIES.json",
+      "decoded_sha256": "9c28b0377c92b01497482b8d2ecf611120c5c59de95bac9e9b6cd4b7ed6c57d1",
+      "decoded_bytes": 1156282
+    },
+    {
+      "path": "SUMMARY.json",
+      "sha256": "aa58c596527577e45beb7bff3c47bf8c9bde3f8c5ae343e0a1049daa4f0d7474",
+      "bytes": 12623
+    },
+    {
+      "path": "BASE-TEST.stderr",
+      "sha256": "2ea84174a19cea2e7e3993899cf154448df65aa2bc125e8f245f350369a5b57a",
+      "bytes": 1720
+    },
+    {
+      "path": "BASE-TEST.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "FMT.json",
+      "sha256": "553c8406844a27d12c0be01b475c2ca64a265f67d0068160f52e4d97e394234c",
+      "bytes": 3084
+    },
+    {
+      "path": "FMT.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "FMT.stdout",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "bytes": 73
+    },
+    {
+      "path": "TEST-001.stderr",
+      "sha256": "71c2a1c01602933fa1f9d316bc07252a8fbcc2b1399c94cd8b0e75720dc23590",
+      "bytes": 1279
+    },
+    {
+      "path": "TEST-001.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "all-graded-001.EXECUTION.json",
+      "sha256": "14e6930be85f9a62f9c47e66acb457540f57e2f8eaf7ddd32b32474ab5aaab2c",
+      "bytes": 637
+    },
+    {
+      "path": "all-graded-001.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "all-graded-001.stdout",
+      "sha256": "e10a6e6389e96afa0fddd83c9b687e57e4a160e041caf6e6da8b82de05ce3e3f",
+      "bytes": 5988
+    }
+  ],
+  "runtime_source_guard_count": 9,
+  "runtime_sources": [
+    "qualification/hcsn_joint_dde/audit_graded.py",
+    "qualification/hcsn_joint_dde/graded.py",
+    "qualification/hcsn_joint_dde/graded_migration.py",
+    "qualification/hcsn_joint_dde/short_gap_reference.py",
+    "qualification/hcsn_joint_dde/model.py",
+    "qualification/hcsn_joint_dde/basis.py",
+    "qualification/hcsn_joint_dde/GRADED_PROTOCOL.json",
+    "qualification/hcsn_boundary_audit/spatial_generator.py",
+    "qualification/hcsn_boundary_audit/refractory_transport.py"
+  ],
+  "test_sources_extra": [
+    "qualification/hcsn_joint_dde/test_model.py",
+    "qualification/hcsn_joint_dde/test_graded.py",
+    "qualification/hcsn_joint_dde/reference.py"
+  ],
+  "test_source_witness": "All Python files, including the three test-only modules, are covered by identical before/after hashes in FMT.json. No new model run is inferred from formatter checks.",
+  "engineering_scope_only": true
+}
