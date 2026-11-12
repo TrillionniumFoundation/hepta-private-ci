@@ -377,7 +377,7 @@ class EvaluatedCandidateContinuationTests(unittest.TestCase):
     def test_postread_values_are_minted_only_after_final_actual_io_and_full_auth(self):
         for marker in ('dataset: common.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone()',
                        'training: current_training.clone()', 'evaluation: original.clone()',
-                       'auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?',
+                       'auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?',
                        'self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?'):
             self.rejects(EVALUATION, 'original_evaluation', marker)
         self.rejects(EVALUATION, 'original_evaluation', 'training: current_training.clone()', 'training: training.clone()')
@@ -405,7 +405,7 @@ class EvaluatedCandidateContinuationTests(unittest.TestCase):
 
     def test_c_reads_actual_s_and_separate_readiness_before_dispatch(self):
         for marker in ('OriginalCircuitEvaluatedSelectionCommandClientV1::readback(selector)',
-                       'self.read_evaluated_version(&mut lane).await?', 'lane.ensure_readiness(self, &before, &selection)?',
+                       'self.read_evaluated_version(lane).await?', 'lane.ensure_readiness(self, &before, &selection)?',
                        'observation != &current.receipt().observation', 'OriginalCircuitEvaluatedNextUseCommandClientV1::readback(observer)'):
             self.rejects(C,'original_evaluated_next_use',marker)
         for marker in ('for _ in 0..128','OriginalCircuitEvaluatedCompletionReadinessClientV1::read_current(readiness)',
@@ -432,7 +432,7 @@ class EvaluatedCandidateContinuationTests(unittest.TestCase):
         for marker in ('common.original_dataset.as_ref() != Some(&current.dataset)',
                        'common.original_training.as_ref() != Some(&current.training)',
                        'current.dataset.attestations().len() != 2',
-                       'common_auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?',
+                       'common_auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?',
                        'self.verify_original_evaluation(snapshot, &training_cut, &current.training, &current.evaluation, fresh)?',
                        'common.records.get(index).map(|record| &record.1) != Some(signature)'):
             self.rejects(BATCH,'evaluated_predecessor_signatures',marker)

@@ -25,11 +25,8 @@ impl Owners {
                 4 => {
                     let evaluation = self.read_original_evaluation(snapshot).await?;
                     let current = {
-                        let common = self
-                            .common
-                            .continuation
-                            .try_lock()
-                            .map_err(|_| Error::QueueFull)?;
+                        let common_lease = self.common.continuation.try_lease()?;
+                        let common = common_lease.value()?;
                         Predecessors {
                             dataset: common
                                 .original_dataset
@@ -58,7 +55,8 @@ impl Owners {
                     let selection = self
                         .original_evaluated_selection(snapshot, Action::Readback)
                         .await?;
-                    let lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;
+                    let lane_lease = self.retention.try_lease()?;
+                    let lane = lane_lease.value()?;
                     if lane.failed || selection.snapshot() != snapshot {
                         return Err(Error::CommitUncertain);
                     }
@@ -79,7 +77,8 @@ impl Owners {
                     let completion = self
                         .original_evaluated_next_use(snapshot, Action::Readback)
                         .await?;
-                    let lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;
+                    let lane_lease = self.retention.try_lease()?;
+                    let lane = lane_lease.value()?;
                     if lane.failed || completion.snapshot() != snapshot {
                         return Err(Error::CommitUncertain);
                     }
@@ -120,11 +119,8 @@ impl Owners {
         fresh: u64,
     ) -> Result<Vec<SignedLearningEvidenceV1>, Error> {
         let training_cut = self.training_prefix(snapshot)?;
-        let common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let common_lease = self.common.continuation.try_lease()?;
+        let common = common_lease.value()?;
         if common.original_dataset.as_ref() != Some(&current.dataset)
             || common.original_training.as_ref() != Some(&current.training)
             || current.dataset.attestations().len() != 2
@@ -133,7 +129,7 @@ impl Owners {
         {
             return Err(Error::CommitUncertain);
         }
-        common_auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
+        common_auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;
         self.verify_original_evaluation(
             snapshot,
             &training_cut,

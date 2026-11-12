@@ -16,12 +16,12 @@ use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1 as Stage;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use tokio::sync::Mutex;
 
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24NoUpdatePeerStreamV1;
 use super::OriginalCellQ24NoUpdateStageOwnersV1;
+use super::custody::OriginalStageSlot;
 use super::OriginalCellQ24NoUpdateStageStreamsV1;
 use crate::LearningIterationOwnerFutureV1;
 use crate::LearningIterationStageOwnerPortsV1;
@@ -62,10 +62,10 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     common: OriginalCellQ24NoUpdateStageOwnersV1,
     protocol: OriginalCellEvaluationPanelRegistrationV1,
     baseline: Arc<LoadedCellQ24ModelV1>,
-    candidate: Mutex<CandidateLane>,
-    evaluation: Mutex<EvaluationLane>,
-    model: Mutex<ModelLane>,
-    retention: Mutex<EvaluatedLane>,
+    candidate: OriginalStageSlot<CandidateLane>,
+    evaluation: OriginalStageSlot<EvaluationLane>,
+    model: OriginalStageSlot<ModelLane>,
+    retention: OriginalStageSlot<EvaluatedLane>,
     end: Instant,
 }
 
@@ -267,10 +267,10 @@ pub(crate) fn fixture_from_original_clients(
         common,
         protocol,
         baseline,
-        candidate: Mutex::new(CandidateLane::new(initial)),
-        evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
-        model: Mutex::new(ModelLane::fixture_unavailable()),
-        retention: Mutex::new(EvaluatedLane::new()),
+        candidate: OriginalStageSlot::new(CandidateLane::new(initial)),
+        evaluation: OriginalStageSlot::new(EvaluationLane::fixture_unavailable()),
+        model: OriginalStageSlot::new(ModelLane::fixture_unavailable()),
+        retention: OriginalStageSlot::new(EvaluatedLane::new()),
         end,
     };
     owners.require_initial(

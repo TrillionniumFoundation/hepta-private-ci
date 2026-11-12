@@ -264,6 +264,106 @@ jobs:
             -- \
             "${selected_targets[@]}"
 
+      # This optional bundle copies files from one target's output directory
+      # on success and failure; current-run action binding remains unverified.
+      - name: Preserve exec-server Windows test output
+        if: always() && !cancelled() && matrix.shard == 1
+        continue-on-error: true
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          # Python is native Windows Python here. Its argv and Path handling do
+          # not depend on Git Bash translating drive letters or backslashes.
+          MSYS2_ARG_CONV_EXCL='*' python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          target = '//codex-rs/exec-server:exec-server-exec_process-test'
+          output = Path(os.environ['RUNNER_TEMP']) / 'bazel-exec-server-windows-test-shard-1'
+          output.mkdir(parents=True, exist_ok=True)
+          # These IDs identify collection, not the producing test action.
+          report = {
+              'target': target,
+              'test_execution_binding': 'UNVERIFIED_REQUIRES_CURRENT_RUN_ACTION_DIGEST',
+              'qualification': False,
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'job': os.environ['GITHUB_JOB'],
+              'workflow_sha': os.environ['GITHUB_SHA'],
+              'files': [],
+          }
+          try:
+              report['checkout_sha'] = subprocess.check_output(
+                  ['git', 'rev-parse', 'HEAD'], text=True,
+              ).strip()
+              args = [
+                  sys.executable, '.github/scripts/run_bazel_with_buildbuddy.py',
+                  '--noexperimental_remote_repo_contents_cache', 'info',
+                  '--config=ci-windows',
+                  '--host_platform=//:local_windows_msvc',
+                  '--platforms=//:windows_x86_64_msvc',
+              ]
+              for variable, option in (
+                  ('BAZEL_REPO_CONTENTS_CACHE', '--repo_contents_cache'),
+                  ('BAZEL_REPOSITORY_CACHE', '--repository_cache'),
+              ):
+                  if os.environ.get(variable):
+                      args.append(f'{option}={os.environ[variable]}')
+              args.append('bazel-testlogs')
+              # Reuse the existing wrapper, startup root, and CI configuration.
+              # Query the configured output root; this does not establish freshness.
+              roots = subprocess.check_output(args, text=True).splitlines()
+              if len(roots) != 1 or not Path(roots[0]).is_absolute():
+                  raise ValueError('bazel info did not return one absolute testlogs path')
+              testlogs = Path(roots[0])
+              report['bazel_testlogs'] = str(testlogs)
+              source = testlogs / 'codex-rs' / 'exec-server' / 'exec-server-exec_process-test'
+              # No recursive glob: this target currently has one run and shard.
+              for name in ('test.log', 'test.xml'):
+                  entry = {'name': name, 'source': str(source / name)}
+                  report['files'].append(entry)
+                  try:
+                      data = (source / name).read_bytes()
+                  except FileNotFoundError:
+                      entry.update(status='missing')
+                      print(f'::warning::No original {name} was available for {target}')
+                      continue
+                  except OSError as error:
+                      entry.update(status='error', error=str(error))
+                      print(f'::warning::Could not read original {name} for {target}')
+                      continue
+                  try:
+                      digest = hashlib.sha256(data).hexdigest()
+                      destination = output / name
+                      destination.write_bytes(data)
+                      if hashlib.sha256(destination.read_bytes()).hexdigest() != digest:
+                          raise OSError('copied bytes did not match source')
+                      entry.update(status='retained', bytes=len(data), sha256=digest)
+                  except OSError as error:
+                      entry.update(status='error', error=str(error))
+                      print(f'::warning::Could not retain original {name} for {target}')
+          except Exception as error:
+              report['collection_error'] = f'{type(error).__name__}: {error}'
+              raise
+          finally:
+              (output / 'retention.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload exec-server Windows test output
+        if: always() && !cancelled() && matrix.shard == 1
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-exec-server-windows-test-shard-1
+          path: ${{ runner.temp }}/bazel-exec-server-windows-test-shard-1
+          if-no-files-found: warn
+
+
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
         continue-on-error: true

@@ -31,9 +31,9 @@ READBACK = AGENT + "cell_q24_candidate_stage_readback.rs"
 AUTH = AGENT + "authority_host_learning_resident_auth.rs"
 EXPECTED = {
     "learning_original_evaluation_host_consume": (),
-    "learning_original_evaluation_host_profile": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
+    "learning_original_evaluation_host_profile": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
     "learning_original_evaluation_host_receipt_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
-    "learning_original_evaluation_host_constructor": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",),
+    "learning_original_evaluation_host_constructor": ('codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
     "learning_original_evaluation_host_serve": (),
     "learning_original_evaluation_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_evaluation_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),

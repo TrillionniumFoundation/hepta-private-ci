@@ -2,6 +2,7 @@
 //! same Trainer semaphore. This is an explicit same-process transport fixture,
 //! not a fifth permit, second Trainer, or ordinary deployment proof.
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_version_mixed_trainer_purposes_share_four_sessions_and_refuse_fifth()

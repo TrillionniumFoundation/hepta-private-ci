@@ -3,9 +3,8 @@ use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
-use tokio::sync::Mutex;
-
 use super::super::auth;
+use super::super::custody::OriginalStageSlot;
 use super::CandidateLane;
 use super::Error;
 use super::EvaluatedLane;
@@ -169,10 +168,10 @@ pub(super) fn bind(
         common,
         protocol,
         baseline,
-        candidate: Mutex::new(CandidateLane::new(candidate)),
-        evaluation: Mutex::new(EvaluationLane::new(evaluator)),
-        model: Mutex::new(ModelLane::new(model)),
-        retention: Mutex::new(EvaluatedLane::new()),
+        candidate: OriginalStageSlot::new(CandidateLane::new(candidate)),
+        evaluation: OriginalStageSlot::new(EvaluationLane::new(evaluator)),
+        model: OriginalStageSlot::new(ModelLane::new(model)),
+        retention: OriginalStageSlot::new(EvaluatedLane::new()),
         end,
     })
 }

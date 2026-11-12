@@ -192,11 +192,8 @@ impl Owners {
             .await?
             .into_parts();
         let training_cut = self.training_prefix(four_cut)?;
-        let common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let common_lease = self.common.continuation.try_lease()?;
+        let common = common_lease.value()?;
         // The awaited original Evaluation read already finished its final
         // actual E/D/T pass. Consume exactly those opaque originals, and keep
         // the existing fresh full-prefix authentication without another I/O.
@@ -213,7 +210,7 @@ impl Owners {
         }
         let fresh =
             common_auth::require_material(&self.common.material, self.common.initial_binding)?;
-        common_auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
+        common_auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?;
         self.verify_original_evaluation(four_cut, &training_cut, &training, &evaluation, fresh)?;
         self.require_live_deadline()?;
         Ok(Predecessors {

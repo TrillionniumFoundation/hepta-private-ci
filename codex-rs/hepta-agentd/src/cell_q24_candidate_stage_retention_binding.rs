@@ -30,13 +30,10 @@ impl EvaluatedLane {
             next_use,
             readiness,
         } = {
-            let mut common = owners
-                .common
-                .continuation
-                .try_lock()
-                .map_err(|_| Error::QueueFull)?;
+            let mut common_lease = owners.common.continuation.try_lease()?;
+            let common = common_lease.value_mut()?;
             Continuation::take_original_evaluated_channels(
-                &mut common,
+                common,
                 &owners.common,
                 &current.evaluation,
             )?

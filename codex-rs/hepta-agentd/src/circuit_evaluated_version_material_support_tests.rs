@@ -10,6 +10,7 @@ use crate::OriginalCellQ24MaterialReceiptFilesV1;
 use crate::OriginalCellQ24MaterialReceiptOwnersV1;
 use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 pub(super) struct OriginalDataset {
     pub(super) config: OriginalCellQ24MaterialReceiptConfigV1,
