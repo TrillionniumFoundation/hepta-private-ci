@@ -9,6 +9,53 @@ use crate::AgentdMethod;
 use crate::AgentdPayload;
 
 #[tokio::test]
+async fn current_ready_daemon_cannot_promote_missing_terminal_acknowledgement() -> anyhow::Result<()>
+{
+    let (_directory, _registry, state) = fixture()?;
+    state.mark_runtime_prerequisites_ready()?;
+    let response = state
+        .response(
+            /*request_id*/ 1,
+            state.identity().spawn_generation,
+            AgentdMethod::OriginalQ24TerminalAcceptance {},
+        )
+        .await?;
+    assert_eq!(
+        Some(response.current_generation),
+        state.identity().spawn_generation.checked_add(1)
+    );
+    assert!(matches!(
+        response.payload,
+        AgentdPayload::OriginalQ24TerminalAcceptance { data: None }
+    ));
+    assert!(state.read_original_q24_completed_history()?.is_none());
+    Ok(())
+}
+
+#[test]
+fn terminal_acknowledgement_query_requires_the_actual_running_recipient() -> anyhow::Result<()> {
+    let (_directory, registry, state) = fixture()?;
+    state.mark_runtime_prerequisites_ready()?;
+    assert!(state.read_original_q24_terminal_acceptance()?.is_none());
+    let running = registry.load_agent(&state.identity().agent_id)?.lifecycle;
+    assert_eq!(running.lifecycle, AgentLifecycle::Running);
+    assert_eq!(
+        Some(running.generation),
+        state.identity().spawn_generation.checked_add(1)
+    );
+    registry.compare_and_transition(
+        &state.identity().agent_id,
+        running.generation,
+        AgentLifecycle::Draining,
+    )?;
+    assert!(matches!(
+        state.read_original_q24_terminal_acceptance(),
+        Err(AgentdError::GenerationFenced(_))
+    ));
+    Ok(())
+}
+
+#[tokio::test]
 async fn current_ready_daemon_cannot_promote_missing_completed_history() -> anyhow::Result<()> {
     let (_directory, _registry, state) = fixture()?;
     state.mark_runtime_prerequisites_ready()?;
