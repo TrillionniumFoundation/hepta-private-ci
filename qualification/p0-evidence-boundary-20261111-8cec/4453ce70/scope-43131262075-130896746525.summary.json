@@ -1,0 +1,64 @@
+{
+  "schema": "hepta-ci-original-log-derived-summary-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6036,
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "workflow": {
+    "name": "blocking-ci",
+    "path": ".github/workflows/blocking-ci.yml",
+    "run_id": 43131262075,
+    "run_attempt": 1,
+    "job_id": 130896746525,
+    "job_name": "Select blocking CI scope",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43131262075/jobs/130896746525"
+  },
+  "raw_job_log": {
+    "github_blob_sha": "b193fbe9c750918ea370f63f8f01dae992fae61e",
+    "encoding": "utf-8",
+    "byte_count": 33432,
+    "retrieval": "github_fetch_workflow_job_logs structuredContent.content preserved without edits"
+  },
+  "scope_record": {
+    "base": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "paths": [
+      "CALLERS.toml",
+      "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "codex-rs/hepta-agentd/src/control.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "codex-rs/hepta-learning-artifacts/src/selection.rs"
+    ],
+    "scope": {
+      "derived": true,
+      "effects": true,
+      "full_repo": false,
+      "inference": true,
+      "learning": true,
+      "lifecycle": true,
+      "native": true,
+      "objective": true
+    },
+    "source_head": "4453ce7089168c583553c434ce1bee92e209f8dd"
+  },
+  "regressions": {
+    "scope_dependency_tree_tests_passed": 53,
+    "readiness_semantics_tests_passed": 11,
+    "raw_summary_lines": [
+      "2026-11-12T01:49:35.4969078Z Ran 53 tests in 2.222s",
+      "2026-11-12T01:49:35.4969282Z OK",
+      "2026-11-12T01:49:35.5940724Z Ran 11 tests in 0.019s",
+      "2026-11-12T01:49:35.5940912Z OK"
+    ]
+  },
+  "interpretation": {
+    "full_repository_lanes": "repo-checks, Bazel, rust-ci, cargo-deny, and sdk were skipped by the existing frozen-source scope policy, not passed.",
+    "required_selected_lanes": "Hepta scoped native checks, Hepta contract gate, Blob size policy, Codespell, and final CI required fan-in remain governed by the workflow. Derived projection verification is required because derived=true.",
+    "caller_marker_repair": "The full verify_hepta_callers command is not run by this scope job and requires independent original execution evidence; no source-guard success is claimed here."
+  }
+}

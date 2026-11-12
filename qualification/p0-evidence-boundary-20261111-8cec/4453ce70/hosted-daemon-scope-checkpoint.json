@@ -1,0 +1,71 @@
+{
+  "schema": "hepta-fixed-source-hosted-daemon-scope-checkpoint-v1",
+  "recorded_at_utc": "2026-11-12T02:07:32.985Z",
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "evidence_carrier_note": "This branch is an append-only evidence carrier. Its root source tree is not the tested candidate; use the explicit source_sha and source_tree in each execution record.",
+  "original_provider_log_retrieved_independently_by_root": true,
+  "provider_content_matched_archived_git_blobs": true,
+  "daemon": {
+    "source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "rawSummariesPresent": true,
+    "snapshotCount": 6,
+    "snapshotsExactAndClean": true,
+    "allChangedTestsObserved": true,
+    "originalUidObserved": true,
+    "observedRootParents": 12,
+    "maintenanceChanged": false
+  },
+  "scope": {
+    "base": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "paths": [
+      "CALLERS.toml",
+      "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "codex-rs/hepta-agentd/src/control.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "codex-rs/hepta-learning-artifacts/src/selection.rs"
+    ],
+    "scope": {
+      "derived": true,
+      "effects": true,
+      "full_repo": false,
+      "inference": true,
+      "learning": true,
+      "lifecycle": true,
+      "native": true,
+      "objective": true
+    },
+    "source_head": "4453ce7089168c583553c434ce1bee92e209f8dd"
+  },
+  "files": [
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/daemon-43131262049-130895700073.log",
+      "blob_sha": "9a7819cfb9c2fde50a0eeaf6ee03741749503d5d"
+    },
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/scope-43131262075-130896746525.log",
+      "blob_sha": "b193fbe9c750918ea370f63f8f01dae992fae61e"
+    },
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/daemon-43131262049-130895700073.summary.json",
+      "blob_sha": "172dea81fb3c25c05a5f28993df7007a4efca1cb"
+    },
+    {
+      "path": "qualification/p0-evidence-boundary-20261111-8cec/4453ce70/scope-43131262075-130896746525.summary.json",
+      "blob_sha": "ab57b25e1232d7c86a250216702b6fde8af6d56d"
+    }
+  ],
+  "pending": [
+    "shared-framework final source execution",
+    "architecture source-head original execution",
+    "blocking scoped-native and contract original execution",
+    "CI required fan-in"
+  ],
+  "interpretation": "Engineering mechanisms only. No real document-to-Notes A/B/C chain, independent task-source clusters, accepted update, positive net utility or RSI is established."
+}
