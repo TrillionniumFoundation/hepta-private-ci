@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.original-model-caller-scope.v1",
+  "source_commit": "057c0ebaaefa74b0d4ad405c558c89841d19b7b0",
+  "source_tree": "c6218800c03a79bd3f4bed09ce8af6a60b36d96a",
+  "parent_commit": "60e13af431d7e948c26f78aa178bee1272717c79",
+  "scope": "43 affected boundaries, subset of production source index; not full caller proof",
+  "result": "43 passed, 0 failed",
+  "local_check_tree_equal": true,
+  "full_source_qa": "not run",
+  "rustfmt": "not run",
+  "native": "not run",
+  "protected_rows_unchanged": 368,
+  "source_changes": [
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+  ]
+}
