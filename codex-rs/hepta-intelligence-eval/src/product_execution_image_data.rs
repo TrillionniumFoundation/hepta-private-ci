@@ -35,3 +35,38 @@ pub fn decode_original_product_evaluation_execution_image_v1(
     }
     Ok(state)
 }
+
+/// Project the bounded original records in one exact physical image.
+///
+/// This is data inspection for an independently admitted original file. It does
+/// not acquire an owner or infer authentication from a header or witness. The
+/// caller must authenticate each completed payload against its full original
+/// operation, scope and signer. Pending records remain pending. At most 64
+/// records can be returned; this does not widen the underlying journal format.
+pub fn decode_original_product_evaluation_execution_records_v1(
+    bytes: &[u8],
+    binding: Digest32,
+    exact: ProductEvaluationExecutionAnchorV1,
+) -> Result<Vec<(ProductEvaluationExecutionKeyV1, State)>, StoreError> {
+    if binding.is_zero() || exact.history_digest.is_zero() || bytes.len() as u64 > MAX_FILE_BYTES {
+        return Err(StoreError::Indeterminate);
+    }
+    let replayed =
+        physical::replay_image(bytes, binding, exact).map_err(|_| StoreError::Indeterminate)?;
+    if replayed.anchor != exact || replayed.records.len() > 64 {
+        return Err(StoreError::Indeterminate);
+    }
+    Ok(replayed
+        .records
+        .into_iter()
+        .map(|(plan_id, (binding_digest, state))| {
+            (
+                ProductEvaluationExecutionKeyV1 {
+                    plan_id,
+                    binding_digest,
+                },
+                state,
+            )
+        })
+        .collect())
+}
