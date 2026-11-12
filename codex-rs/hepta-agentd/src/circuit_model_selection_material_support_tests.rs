@@ -17,6 +17,18 @@ pub(super) struct Credentials {
     dataset: TrustedLearningSignerV1,
 }
 
+impl Credentials {
+    // Retain the exact original fixture actors without exposing private fields.
+    pub(super) fn resident_checkpoint_signers(&self) -> [TrustedLearningSignerV1; 4] {
+        [
+            self.experience.clone(),
+            self.dataset.clone(),
+            self.generator.clone(),
+            self.evaluator.clone(),
+        ]
+    }
+}
+
 fn signer(name: &str, role: LearningEvidenceRoleV1, seed: u8, at: u64) -> TrustedLearningSignerV1 {
     let key = SigningKey::from_bytes(&[seed; 32]);
     TrustedLearningSignerV1 {
