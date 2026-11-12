@@ -1,0 +1,150 @@
+{
+  "source": "b4437e4d6f7042f1f06e273e05c0568e5561706e",
+  "tree": "32966d46d12031f35dd2e1c5d0ac0f62033b3e90",
+  "base": "11fa8d83b36e049e6886d5409a0f602513c926cd",
+  "source_commits": [
+    "1a22be1023b9e791744a535734d41b15a50b4fd9",
+    "08afc8992016d945884e4ac4d73cb08ac2548fce",
+    "832c4c5adcbb9464f1e127387667a799b3c16be8",
+    "5ccc62a036ad8aa4c57abb60dfdd73ef982da99e",
+    "3fb1eeaffb13644548df4ec78be11a636de8ee5c",
+    "6f97c4c4e7af4a03a7d75f91d4639c337133c396",
+    "b4437e4d6f7042f1f06e273e05c0568e5561706e"
+  ],
+  "attempts": [
+    {
+      "name": "initial-owners-5ccc62a0",
+      "source_head": "5ccc62a036ad8aa4c57abb60dfdd73ef982da99e",
+      "exit_code": 1,
+      "log_sha256": "20f99887ac45b86c82f2b019dff434ece3974fbf240743983b76e7a6191d0827",
+      "summary": [
+        "----------------------------------------------------------------------\nRan 53 tests in 3.793s",
+        "FAILED (failures=12, errors=105)\n"
+      ]
+    },
+    {
+      "name": "initial-owners-guard-wip1",
+      "source_head": "3fb1eeaffb13644548df4ec78be11a636de8ee5c",
+      "exit_code": 1,
+      "log_sha256": "dd6a0977962448ac016af12dd7fa18413b377d6108e5391778fa4df9a334aa1b",
+      "summary": [
+        "----------------------------------------------------------------------\nRan 55 tests in 5.541s",
+        "FAILED (errors=3)\n"
+      ]
+    },
+    {
+      "name": "initial-owners-guard-wip2",
+      "source_head": "6f97c4c4e7af4a03a7d75f91d4639c337133c396",
+      "exit_code": 1,
+      "log_sha256": "f53bf3791f4e5b52315e35c80ed53eda69e2a4711fe36f428d8ba05e5e5eab1b",
+      "summary": [
+        "----------------------------------------------------------------------\nRan 55 tests in 5.196s",
+        "FAILED (errors=2)\n"
+      ]
+    },
+    {
+      "name": "initial-owners-b4437e4d",
+      "source_head": "b4437e4d6f7042f1f06e273e05c0568e5561706e",
+      "exit_code": 0,
+      "log_sha256": "85e039e8ee9ade2fa2ac92b385fed4ed6b642bb5e4200c3094cd2f10308a8c24",
+      "summary": [
+        "----------------------------------------------------------------------\nRan 55 tests in 5.737s",
+        "OK\n"
+      ]
+    }
+  ],
+  "final_affected_source_tests": 55,
+  "final_affected_source_exit": 0,
+  "final_before_after_unchanged": true,
+  "full_rust_caller_scan": false,
+  "new_real_file_native_tests": 4,
+  "native_executed": false,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 96055,
+    "sha256": "0d44b7a0771bf61b2303994a4c372cc29c92d587690c6197e3efbbc88ae7b24b",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "initial-owners-5ccc62a0/source-qa.json",
+      "bytes": 839,
+      "sha256": "a3e0ebedd7b51dd89ead70c8c8daac56b6acb75217960ee43526fa53376b8157"
+    },
+    {
+      "path": "initial-owners-5ccc62a0/source-qa.log",
+      "bytes": 229694,
+      "sha256": "20f99887ac45b86c82f2b019dff434ece3974fbf240743983b76e7a6191d0827"
+    },
+    {
+      "path": "initial-owners-guard-wip1/source-qa.json",
+      "bytes": 823,
+      "sha256": "d2dbc192070b6bdd3f83143f7ba5335a54ba4e12bccf4c1fcdbbf84c568b349a"
+    },
+    {
+      "path": "initial-owners-guard-wip1/source-qa.log",
+      "bytes": 16534,
+      "sha256": "dd6a0977962448ac016af12dd7fa18413b377d6108e5391778fa4df9a334aa1b"
+    },
+    {
+      "path": "initial-owners-guard-wip1/source.patch",
+      "bytes": 143911,
+      "sha256": "f089a6f3dd51cf084aaf6d599d88eecf3d10e90e6768a27f4ffba562f1cf9eee"
+    },
+    {
+      "path": "initial-owners-guard-wip1/test_original_owner_initialization_source_closure.py",
+      "bytes": 11742,
+      "sha256": "01a5d36365fa2960711718af121141e4a2f195ec446d27a6477de593dccae2af"
+    },
+    {
+      "path": "initial-owners-guard-wip2/source-qa.json",
+      "bytes": 998,
+      "sha256": "15a727636a5204dc0b9ea96403290625c0cb64e10cc9ca58f8b1b75c125f1ba6"
+    },
+    {
+      "path": "initial-owners-guard-wip2/source-qa.log",
+      "bytes": 15043,
+      "sha256": "f53bf3791f4e5b52315e35c80ed53eda69e2a4711fe36f428d8ba05e5e5eab1b"
+    },
+    {
+      "path": "initial-owners-guard-wip2/source.patch",
+      "bytes": 144175,
+      "sha256": "c3016cebd04f168ae3c25414f6d8834ee7331b5e6d37718c7a29c91613ce201c"
+    },
+    {
+      "path": "initial-owners-guard-wip2/test_original_owner_initialization_source_closure.py",
+      "bytes": 11742,
+      "sha256": "01a5d36365fa2960711718af121141e4a2f195ec446d27a6477de593dccae2af"
+    },
+    {
+      "path": "initial-owners-b4437e4d/bundle-verify.log",
+      "bytes": 332,
+      "sha256": "856552428d4901a1da7b841ae73cc612b773d5839b89d660b59707061ede282d"
+    },
+    {
+      "path": "initial-owners-b4437e4d/source-bundle.json",
+      "bytes": 291,
+      "sha256": "d9301d1fe221780599047ebd361a8b6622287d37912d99d8ccc40d5d9daea762"
+    },
+    {
+      "path": "initial-owners-b4437e4d/source-qa.json",
+      "bytes": 1537,
+      "sha256": "85a443d3effff14c38b7f4bdc7f6385a8db89793129b943f9b5c560f7113804e"
+    },
+    {
+      "path": "initial-owners-b4437e4d/source-qa.log",
+      "bytes": 12384,
+      "sha256": "85e039e8ee9ade2fa2ac92b385fed4ed6b642bb5e4200c3094cd2f10308a8c24"
+    },
+    {
+      "path": "initial-owners-b4437e4d/source.bundle",
+      "bytes": 29590,
+      "sha256": "500ca77241a1d6b6b4a97c5f1247c8d9e717ed0050ea8ab0013f6e0bddce1c8e"
+    }
+  ]
+}
