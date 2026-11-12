@@ -173,6 +173,9 @@ pub(crate) use successor::OriginalQ24SuccessorContext;
 #[path = "learning_iteration_historical_context.rs"]
 pub(crate) mod historical_context;
 #[cfg(target_os = "linux")]
+#[path = "learning_iteration_historical_runtime.rs"]
+mod historical_runtime;
+#[cfg(target_os = "linux")]
 #[path = "learning_iteration_historical_source.rs"]
 pub(crate) mod historical_source;
 
@@ -418,7 +421,7 @@ impl LearningIterationRuntimeBootstrapV1 {
 
     async fn process_with_deadline(
         &self,
-        state: &AgentdState,
+        state: &Arc<AgentdState>,
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
@@ -440,6 +443,12 @@ impl LearningIterationRuntimeBootstrapV1 {
             }
         };
         tokio::time::timeout(Duration::from_secs(timeout_seconds), async {
+            #[cfg(target_os = "linux")]
+            if self.historical_source.is_some() {
+                return self
+                    .process_original_historical(Arc::clone(state), request, mode)
+                    .await;
+            }
             match mode {
                 LearningIterationModeV1::Readback => {
                     self.process_readback(state, request, now_unix_seconds)

@@ -35,7 +35,7 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, SIGNING, ROOT_OWNER, ROOT_MODEL, DISPATCH)
+            for path in (OWNER, SIGNING, ROOT_OWNER, ROOT_MODEL, DISPATCH, AGENT + "cell_q24_learning_historical_operation.rs", AGENT + "cell_q24_learning_historical_receipts.rs", AGENT + "cell_q24_learning_stage_owners.rs")
         }
 
     def rejects(self, path, function, marker):
@@ -83,7 +83,7 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
             "q24_local_root_attest": (ROOT_MODEL,),
             "q24_local_root_read": (ROOT_MODEL,),
             "q24_model_root_dispatch": (DISPATCH,),
-            "q24_model_root_operation": (),
+            "q24_model_root_operation": (AGENT + "cell_q24_learning_historical_operation.rs", AGENT + "cell_q24_learning_historical_receipts.rs"),
         }
         for identifier, callers in expected.items():
             with self.subTest(boundary=identifier):

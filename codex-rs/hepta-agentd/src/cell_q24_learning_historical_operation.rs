@@ -82,7 +82,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
             OriginalHistoricalWorkV1::ConfirmRecovery(expected) => {
                 let actual = self.runtime.block_on(
                     self.context
-                        .restore_original(&self.inner.prepared.initial().request),
+                        .restore_checkpoint(&self.inner.prepared.initial().request),
                 )?;
                 if actual.as_ref() != Some(&expected) {
                     return Err(Error::CommitUncertain);
@@ -107,7 +107,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         let initial = self.inner.prepared.initial();
         let restored = self
             .runtime
-            .block_on(self.context.restore_original(&initial.request))?;
+            .block_on(self.context.restore_checkpoint(&initial.request))?;
         let Some(snapshot) = restored else {
             if matches!(mode, OriginalHistoricalRestoreModeV1::Readback) {
                 return Err(Error::CommitUncertain);
@@ -116,7 +116,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
                 .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
             let committed = self.runtime.block_on(
                 self.context
-                    .checkpoint_original(codex_hepta_types::Digest32::ZERO, initial),
+                    .commit_checkpoint(codex_hepta_types::Digest32::ZERO, initial),
             )?;
             if committed != initial.head_digest {
                 return Err(Error::CommitUncertain);
@@ -179,7 +179,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         coordinator.record(receipt, self.context.current_time()?)?;
         let committed = self.runtime.block_on(
             self.context
-                .checkpoint_original(previous, coordinator.snapshot()),
+                .commit_checkpoint(previous, coordinator.snapshot()),
         )?;
         if committed != coordinator.snapshot().head_digest {
             return Err(Error::CommitUncertain);

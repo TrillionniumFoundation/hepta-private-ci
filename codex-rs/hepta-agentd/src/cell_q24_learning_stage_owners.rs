@@ -43,6 +43,8 @@ use evaluation_root::OriginalRootBEvaluationActionV1;
 
 #[path = "cell_q24_learning_historical_operation.rs"]
 mod historical_operation;
+#[path = "cell_q24_learning_historical_stage.rs"]
+mod historical_stage;
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
 #[path = "cell_q24_learning_model_root.rs"]
