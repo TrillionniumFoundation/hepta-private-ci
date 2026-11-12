@@ -346,5 +346,21 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
     original.finish().await
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes()
+-> anyhow::Result<()> {
+    let (original, mut primary, _retention, registration) = preregistered().await?;
+    primary.populate(&original, ObservationMode::NonCanonicalOrder, /*changed_candidate_action*/ false).await?;
+    let config = primary.config(&original, &registration)?;
+    let source_before = primary.all_source_bytes()?;
+    let mut cohort = CohortAt::read(primary.owners(), config, primary.at)?;
+    let ledger_before = cohort.bytes()?;
+    let manifest = cohort.original.observed_manifest_digest()?;
+    assert_eq!(cohort.current()?, manifest);
+    assert_eq!(cohort.bytes()?, ledger_before);
+    assert_eq!(primary.all_source_bytes()?, source_before);
+    original.finish().await
+}
+
 #[path = "circuit_original_evaluation_panel_tests.rs"]
 mod panel_members;
