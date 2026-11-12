@@ -60,6 +60,8 @@ pub(crate) use bootstrap::encode_original_publication_bootstrap;
 #[path = "authority_host_publication_refusal.rs"]
 mod refusal;
 use refusal::PublicationRefusal;
+#[path = "authority_host_publication_acceptance.rs"]
+mod acceptance;
 #[path = "authority_host_publication_registration.rs"]
 mod registration;
 #[path = "authority_host_publication_successor.rs"]
