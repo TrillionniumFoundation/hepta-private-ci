@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn-hosted-artifact-recovery-pointer-v1",
+  "source_commit": "4962e28c1ffa073e5e994194f3b5785659af236c",
+  "source_head_changed_by_archiver": false,
+  "pull_request": 6241,
+  "run_id": 43200740354,
+  "job_id": 131123196305,
+  "artifact_id": 13936125116,
+  "artifact_name": "initial-amplitude-originals",
+  "artifact_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13936125116/zip",
+  "expected_zip_bytes": 11597,
+  "expected_zip_sha256_from_github_metadata": "1dd17c8ac54cab00242af1d7ce88a1cefcde24c7ecaf3ba8634fd1bdcf978e7c",
+  "zip_bytes_sha256_verification": "UNKNOWN_PENDING_EXECUTOR",
+  "raw_artifact_member_and_npz_readback": "UNKNOWN_PENDING_EXECUTOR",
+  "local_executor_state": "unavailable",
+  "persisted_now": [
+    "complete decoded job log",
+    "original GitHub API run/jobs/artifact metadata",
+    "JSON substring of logged result, explicitly not raw artifact RESULT.json",
+    "13 immutable original source blobs and content-addressed source witness"
+  ],
+  "reported_existing_execution": {
+    "api_forward_calls": 39,
+    "basis_dde_forwards": 39,
+    "uniform_oracle_forwards": 2,
+    "optimizer_updates": 0,
+    "probe_wall_seconds": 9.160633599,
+    "probe_cpu_seconds": 8.614676007,
+    "probe_maximum_rss_kib": 423980,
+    "runtime": {
+      "python": "3.12.16",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "torch": "2.8.0+cpu",
+      "torch_build": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+      "device": "cpu",
+      "threads": 1
+    }
+  },
+  "new_archiver_execution": {
+    "candidate": 0,
+    "model": 0,
+    "dde": 0,
+    "torch": 0,
+    "optimizer": 0
+  },
+  "recovery_steps": [
+    "Download only existing artifact 13936125116; do not rerun or dispatch workflow/native/model work.",
+    "Verify complete 11597-byte ZIP SHA256 against the expected digest before retaining original.zip.",
+    "Retain actual raw RESULT.json/CALLS.json/ARRAYS.npz/initial-source.json members and verify CRC/member/source/array commitments.",
+    "Preserve LOG-RESULT.json as a log-derived record; do not rename it to a raw artifact result.",
+    "Append a new evidence-only successor under this path, keeping source head4962 and all earlier receipts unchanged."
+  ],
+  "admission": "HOLD_NO_GO",
+  "added_independent_complete_training_replays": 0,
+  "normalized_raw_gradient_vectors_claimed": false
+}
