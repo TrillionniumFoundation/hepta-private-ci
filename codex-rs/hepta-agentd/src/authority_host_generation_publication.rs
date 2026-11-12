@@ -71,6 +71,7 @@ pub(crate) use completed::OriginalCompletedPublicationDataV1;
 pub(crate) use completed::OriginalCompletedPublicationModeV1;
 pub(crate) use completed::OriginalCompletedPublicationReadV1;
 pub(crate) use completed::with_original_publication_history;
+pub(crate) use completed_files::OriginalControlRecord;
 #[path = "authority_host_publication_registration.rs"]
 mod registration;
 #[path = "authority_host_publication_successor.rs"]

@@ -4,6 +4,7 @@
 //! first initialization and before the independent attempt can become Ready.
 
 use std::io;
+use std::path::Path;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -145,6 +146,7 @@ impl CompletedLearningRecord {
 
     pub(super) fn read<T>(
         root: Arc<RootAuthorityDirectory>,
+        root_path: &Path,
         target: &CellGenerationOwnerBindingV1,
         initial: &LearningIterationSnapshotV1,
         end: Instant,
@@ -157,10 +159,12 @@ impl CompletedLearningRecord {
             initial.head_digest,
             || {
                 let owner = completed_learning_acceptance_owner(initial);
+                let pin = crate::authority_host_service::generation_publication::OriginalControlRecord::open(root_path, &owner)?;
                 let store: HostAuthorityFrontierStore<RootCompletedLearningAcceptanceDataV1> =
                     HostAuthorityFrontierStore::open(root, owner.clone())
                         .map_err(io::Error::other)?;
                 let accepted = store.load(&owner).map_err(io::Error::other)?;
+                pin.require_unchanged()?;
                 accepted.require_original(initial, target)?;
                 let value = action(&accepted);
                 // Even a swallowed callback failure cannot skip the physical
@@ -168,6 +172,7 @@ impl CompletedLearningRecord {
                 if store.load(&owner).map_err(io::Error::other)? != accepted {
                     return Err(io::Error::other("original terminal acceptance changed"));
                 }
+                pin.require_unchanged()?;
                 require_end(end)?;
                 Ok((accepted.data_digest()?, value?))
             },
