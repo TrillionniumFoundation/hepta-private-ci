@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="d5f9c9d2-97bf-4155-b11a-d2b659a28829" timestamp="2026-11-13T07:36:14.012+08:00" time="2.700">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes" classname="codex-hepta-agentd" timestamp="2026-11-13T07:36:14.018+08:00" time="2.693">
+            <failure message="Error: original child lifetime is no longer live" type="test failure with exit code 101">Error: original child lifetime is no longer live</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1293 filtered out; finished in 2.69s
+
+</system-out>
+            <system-err>ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1996981, start_ticks: 155233571, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=Error: agentd protocol error: prompt pipeline durable owners failed to open: RuntimeOpen(Unavailable)
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-cWI616
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1996980, start_ticks: 155233570, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(0))) stdout= stderr=original Initial phase=worker.accept-before; elapsed_micros=1; remaining_micros=299999473
+original Initial phase=worker.accept-returned; elapsed_micros=71002; remaining_micros=299928471
+original Initial phase=ready.channel-before; elapsed_micros=0; remaining_micros=299928460
+original Initial phase=ready.channel-returned; elapsed_micros=22; remaining_micros=299928437
+original Initial phase=ready.frame-received; elapsed_micros=33; remaining_micros=499994
+original Initial phase=ready.context-returned; elapsed_micros=1693; remaining_micros=498334
+original Initial phase=enrollment.context-before; elapsed_micros=0; remaining_micros=492785
+original Initial phase=enrollment.profile-before; elapsed_micros=1034; remaining_micros=491751
+original Initial phase=enrollment.profile-returned; elapsed_micros=12427; remaining_micros=480357
+original Initial phase=enrollment.profile-context-returned; elapsed_micros=13324; remaining_micros=479460
+original Initial phase=enrollment.run-start-before; elapsed_micros=13328; remaining_micros=479457
+original Initial phase=enrollment.run-start-returned; elapsed_micros=23658; remaining_micros=469127
+original Initial phase=enrollment.cell-before; elapsed_micros=23661; remaining_micros=469124
+original Initial phase=enrollment.cell-returned; elapsed_micros=32365; remaining_micros=460420
+original Initial phase=enrollment.ledger-before; elapsed_micros=32367; remaining_micros=460418
+original Initial phase=enrollment.ledger-returned; elapsed_micros=47083; remaining_micros=445701
+original Initial phase=enrollment.profile-recheck-before; elapsed_micros=47086; remaining_micros=445699
+original Initial phase=enrollment.profile-recheck-returned; elapsed_micros=47464; remaining_micros=445321
+original Initial phase=enrollment.final-context-before; elapsed_micros=47466; remaining_micros=445319
+original Initial phase=enrollment.final-context-returned; elapsed_micros=48395; remaining_micros=444389
+original Initial phase=ready.enrollment-returned; elapsed_micros=55644; remaining_micros=444383
+original Initial phase=ready.registration-context-returned; elapsed_micros=57487; remaining_micros=442540
+original Initial phase=ready.response-encoded; elapsed_micros=57896; remaining_micros=442132
+original Initial phase=ready.exchange-returned; elapsed_micros=57908; remaining_micros=299870552
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-CyoZj4
+Error: original child lifetime is no longer live
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

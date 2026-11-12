@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "codex/learn-native-evidence-recovered-20261112-ff41",
+  "commit": "12355d51971096a9b136d6f9d9c3ce4e9cfa1e37",
+  "tree": "c947053cadba2f3aa94ab8ca47327a59d48d89b0",
+  "parent": "12fe8ce312e6b94b0168aeb96875f72e611801cb",
+  "lease_expected_sha": "12fe8ce312e6b94b0168aeb96875f72e611801cb",
+  "lease_success": true,
+  "ref_get_verified": true,
+  "commit_get_verified": true,
+  "old_evidence_unchanged": true,
+  "lease_response_reconciliation": "The update returned structuredContent.success=true. A local generic response parser expected sha and stopped; a fresh GET confirmed the original update succeeded. No update was replayed.",
+  "scope": "Completed full source QA only at frozen561; separate full caller CLI pending at this checkpoint; no native execution",
+  "files": [
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/source-qa-originals.tar.xz",
+      "local_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-561d95bd-full-source-caller-ci-evidence-v1/source-qa-originals.tar.xz",
+      "mode": "100644",
+      "bytes": 26820,
+      "sha256": "b3af47480a82d98a6c0534022367ed6fc2d83537f50c45cbab8501b46d207831",
+      "blob_sha": "93d70a966472555fd944a947da2091cbe305e9ea",
+      "encoding": "base64"
+    },
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/source-qa-manifest.json",
+      "local_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-561d95bd-full-source-caller-ci-evidence-v1/source-qa-manifest.json",
+      "mode": "100644",
+      "bytes": 2670,
+      "sha256": "23ae63f70df7e39c18de4c19a513502c6e9bfd0f87ea7d5b82fa2096ff130005",
+      "blob_sha": "549b8200ed5f87a1e933379b214b1dc7f311b07b",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/source-qa-verification.json",
+      "local_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-561d95bd-full-source-caller-ci-evidence-v1/source-qa-verification.json",
+      "mode": "100644",
+      "bytes": 1029,
+      "sha256": "4087d46a1740d2fe3165177a66965d2dd80da667178ee8252343cde6a45f7131",
+      "blob_sha": "92fad563f2824a4ac6fe4152bc3be55b721df3d3",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/README.md",
+      "local_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-561d95bd-full-source-caller-ci-evidence-v1/source-qa-README.md",
+      "mode": "100644",
+      "bytes": 1655,
+      "sha256": "e0c87f3bdf00a34772d043242ead6bc659193feeb7ee9033e40aa76a3c9dc1fc",
+      "blob_sha": "f8ddcdcb2323699a1e5ad5cadadac625e1cb55da",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "qualification/learn-native-originals-d53f7678-20261112/remote-readback-receipt.json",
+      "local_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-native-originals-d53f7678-v1/publication-receipt.json",
+      "mode": "100644",
+      "bytes": 7409,
+      "sha256": "2f82448d03d3d59747f6ca607455ddc7dfaf7e0f22e1797d125027299ee73899",
+      "blob_sha": "e4157a61a59e43d01427a770165241da5a0494b2",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "qualification/learn-retirement-ordinary-fd053351-20261112/retirement-receipt.json",
+      "local_path": "/workspace/scratch/ff41dfc0f7bf/tooling/retirement/ordinary-fd053351-v1/retirement-receipt.json",
+      "mode": "100644",
+      "bytes": 777,
+      "sha256": "f7bf502e876f6e3762b55fa31e4bc697704f1c77bf019c057baf1e79601181fd",
+      "blob_sha": "2c14a687a60c5f522b31a0bfd56885fba03d3a17",
+      "encoding": "utf-8"
+    }
+  ],
+  "actual_remote_file_bytes_verified": true,
+  "remote_verified_files": [
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/source-qa-originals.tar.xz",
+      "bytes": 26820,
+      "sha256": "b3af47480a82d98a6c0534022367ed6fc2d83537f50c45cbab8501b46d207831",
+      "blob_sha": "93d70a966472555fd944a947da2091cbe305e9ea"
+    },
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/source-qa-manifest.json",
+      "bytes": 2670,
+      "sha256": "23ae63f70df7e39c18de4c19a513502c6e9bfd0f87ea7d5b82fa2096ff130005",
+      "blob_sha": "549b8200ed5f87a1e933379b214b1dc7f311b07b"
+    },
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/source-qa-verification.json",
+      "bytes": 1029,
+      "sha256": "4087d46a1740d2fe3165177a66965d2dd80da667178ee8252343cde6a45f7131",
+      "blob_sha": "92fad563f2824a4ac6fe4152bc3be55b721df3d3"
+    },
+    {
+      "path": "qualification/learn-source-561d95bd-20261112/README.md",
+      "bytes": 1655,
+      "sha256": "e0c87f3bdf00a34772d043242ead6bc659193feeb7ee9033e40aa76a3c9dc1fc",
+      "blob_sha": "f8ddcdcb2323699a1e5ad5cadadac625e1cb55da"
+    },
+    {
+      "path": "qualification/learn-native-originals-d53f7678-20261112/remote-readback-receipt.json",
+      "bytes": 7409,
+      "sha256": "2f82448d03d3d59747f6ca607455ddc7dfaf7e0f22e1797d125027299ee73899",
+      "blob_sha": "e4157a61a59e43d01427a770165241da5a0494b2"
+    },
+    {
+      "path": "qualification/learn-retirement-ordinary-fd053351-20261112/retirement-receipt.json",
+      "bytes": 777,
+      "sha256": "f7bf502e876f6e3762b55fa31e4bc697704f1c77bf019c057baf1e79601181fd",
+      "blob_sha": "2c14a687a60c5f522b31a0bfd56885fba03d3a17"
+    }
+  ],
+  "remote_get_completed_utc": "2026-11-12T23:39:18.476329+00:00"
+}
