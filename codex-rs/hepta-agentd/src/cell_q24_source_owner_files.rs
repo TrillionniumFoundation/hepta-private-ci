@@ -34,7 +34,7 @@ impl OriginalCellQ24SourceFilesV1 {
         prepared: Arc<CellQ24PreparedLearningV1>,
         verifier: LearningEvidenceVerifierV1,
     ) -> Result<(Source, Source), Error> {
-        self.open(prepared, verifier, Mode::Create)
+        self.open_original_source_files(prepared, verifier, Mode::Create)
     }
 
     /// Recovery consumes the retained files and witnesses. It never creates a
@@ -44,10 +44,10 @@ impl OriginalCellQ24SourceFilesV1 {
         prepared: Arc<CellQ24PreparedLearningV1>,
         verifier: LearningEvidenceVerifierV1,
     ) -> Result<(Source, Source), Error> {
-        self.open(prepared, verifier, Mode::Recover)
+        self.open_original_source_files(prepared, verifier, Mode::Recover)
     }
 
-    fn open(
+    fn open_original_source_files(
         self,
         prepared: Arc<CellQ24PreparedLearningV1>,
         verifier: LearningEvidenceVerifierV1,
@@ -59,8 +59,11 @@ impl OriginalCellQ24SourceFilesV1 {
         let dataset = self
             .dataset
             .config(OriginalCellQ24SourceStageV1::Dataset, verifier);
-        validate_config(&prepared, &experience, &self.experience.key)?;
-        validate_config(&prepared, &dataset, &self.dataset.key)?;
+        CellQ24PreparedLearningV1::with_original_prepared_operation(&prepared, |read| {
+            validate_config(&prepared, &experience, &self.experience.key, read)?;
+            validate_config(&prepared, &dataset, &self.dataset.key, read)?;
+            Ok::<_, Error>(())
+        })??;
         let experience = self
             .experience
             .open(Arc::clone(&prepared), experience, mode)?;

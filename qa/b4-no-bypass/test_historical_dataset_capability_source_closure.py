@@ -108,6 +108,15 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
             "OriginalPreparedReadV1::require_prepared(read, &self.prepared)?",
             "OriginalPreparedReadV1::require_prepared(read, prepared)?"))
 
+    def test_both_real_signers_are_checked_before_either_original_file_is_opened(self):
+        self.check_markers(AGENT + "cell_q24_source_owner_files.rs", "fn open_original_source_files(", (
+            "CellQ24PreparedLearningV1::with_original_prepared_operation(&prepared, |read|",
+            "validate_config(&prepared, &experience, &self.experience.key, read)?",
+            "validate_config(&prepared, &dataset, &self.dataset.key, read)?",
+            ".open(Arc::clone(&prepared), experience, mode)?",
+            "self.dataset.open(Arc::clone(&prepared), dataset, mode)?",
+            "prepared.revalidate_source()?"))
+
     def test_source_signing_stays_after_actual_claim_and_between_complete_reads(self):
         self.check_markers(SOURCE, "fn attest_at(", (
             "self.original_observation(read)?", "self.journal.read(&self.saved)",
