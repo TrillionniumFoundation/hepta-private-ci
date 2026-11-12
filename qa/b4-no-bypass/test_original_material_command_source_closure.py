@@ -34,12 +34,12 @@ EXPECTED = {
     "learning_original_material_command_serve_experience_readback": (),
     "learning_original_material_command_serve_dataset_readback": (),
     "learning_original_material_command_serve_dataset_source": (),
-    "learning_original_material_command_client_from_original_experience_stream": (),
-    "learning_original_material_command_client_from_original_dataset_stream": (),
-    "learning_original_material_command_client_recover_original_experience_stream": (),
-    "learning_original_material_command_client_recover_original_dataset_stream": (),
-    "learning_original_material_command_client_execute": (),
-    "learning_original_material_command_client_readback": (AGENT + "cell_q24_material_dataset_readback.rs",),
+    "learning_original_material_command_client_from_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_from_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_recover_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_recover_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+    "learning_original_material_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
+    "learning_original_material_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",),
     "learning_original_material_command_client_receipt_attestation": (),
 }
 

@@ -82,7 +82,7 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
         verifier: &LearningEvidenceVerifierV1,
     ) -> Result<(), Error> {
         if initial != &self.material.initial
-            || scope.binding() != self.material.scope.binding()
+            || scope != &self.material.scope
             || verifier.trust_digest() != self.material.verifier.trust_digest()
             || verifier.scope_digest() != self.material.verifier.scope_digest()
             || verifier.objective_digest() != self.material.verifier.objective_digest()
@@ -133,7 +133,7 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
         // Every fence check lives inside this future, at the actual I/O edge.
         Box::pin(async move {
             tokio::time::timeout_at(self.end.into(), async {
-                self.execute_original_stage(snapshot, stage).await
+                OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage).await
             }).await.map_err(|_| Error::CommitUncertain)?
         })
     }

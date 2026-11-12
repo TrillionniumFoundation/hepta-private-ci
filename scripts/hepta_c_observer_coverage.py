@@ -252,6 +252,23 @@ NEXT_USE_COMMAND_CASES = tuple(
     )
 )
 
+ORDINARY_NO_UPDATE_MATERIAL_CASES = tuple(
+    MATERIAL_COMMAND_PREFIX + "ordinary_stage::" + name
+    for name in (
+        "ordinary_stage_without_resident_gate_never_dispatches_original_material",
+        "ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim",
+    )
+)
+C_COMPLETION_READINESS_CASES = tuple(
+    NEXT_USE_COMMAND_PREFIX + "readiness::" + name
+    for name in (
+        "q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch",
+        "q24_readiness_withdrawal_is_fatal_and_never_becomes_pending",
+        "q24_readiness_completed_identity_cannot_revert_or_change_publication",
+        "q24_readiness_requires_original_selection_and_consumes_wrong_purpose",
+    )
+)
+
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -278,6 +295,8 @@ OWNER_GROUPS = (
     ("original_task_source_current", PACKAGE, SOURCE_CURRENT_CASES),
     ("original_selector_command", PACKAGE, SELECTOR_COMMAND_CASES),
     ("original_next_use_command", PACKAGE, NEXT_USE_COMMAND_CASES),
+    ("ordinary_no_update_material_guard", PACKAGE, ORDINARY_NO_UPDATE_MATERIAL_CASES),
+    ("original_c_completion_readiness", PACKAGE, C_COMPLETION_READINESS_CASES),
 )
 EXPECTED_CASES = tuple(
     (package, name) for _, package, names in OWNER_GROUPS for name in names

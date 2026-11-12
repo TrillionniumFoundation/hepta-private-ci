@@ -11,7 +11,7 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1 as Stage;
 
 use super::Error;
 use super::Origin;
-use super::OriginalCellQ24NoUpdateStageOwnersV1 as Owners;
+use super::OriginalCellQ24NoUpdateStageOwnersV1;
 use super::auth;
 use super::state::Continuation;
 use crate::OriginalCellQ24MaterialCommandClientV1;
@@ -21,7 +21,7 @@ use crate::OriginalCircuitNextUseCommandClientV1;
 use crate::OriginalCircuitSelectionCommandClientV1;
 use crate::RootResidentLearningEffectGateV3;
 
-impl Owners {
+impl OriginalCellQ24NoUpdateStageOwnersV1 {
     pub(super) async fn execute_original_stage(
         &self, snapshot: &LearningIterationSnapshotV1, stage: Stage,
     ) -> Result<LearningIterationReceiptV1, Error> {
@@ -34,7 +34,8 @@ impl Owners {
         }
         auth::stage_index(stage)?;
         let gate = self.root.as_ref().ok_or(Error::OwnerUnavailable("fresh resident continuation"))?;
-        RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?;
+        let before_readback = RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await;
+        before_readback?;
         let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
         if !snapshot.receipts.is_empty() {
             state.read_prefix(self, snapshot).await?;
@@ -57,7 +58,8 @@ impl Owners {
         };
         // These original reads may take time. Root's actual grant/registry
         // check therefore occurs again afterward, immediately before dispatch.
-        RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?;
+        let before_dispatch = RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await;
+        before_dispatch?;
         let fresh = auth::require_material(&self.material, self.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
         auth::verify_prefix(&self.material, snapshot, &state, fresh)?;
@@ -117,7 +119,8 @@ impl Owners {
         };
         // A post-effect loss of Root authority cannot be called NoEffect and
         // cannot reopen an execution bit. Preserve the operation as uncertain.
-        if RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await.is_err() {
+        let after_dispatch = RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await;
+        if after_dispatch.is_err() {
             return Err(Error::CommitUncertain);
         }
         let fresh = auth::require_material(&self.material, self.initial_binding)?;
