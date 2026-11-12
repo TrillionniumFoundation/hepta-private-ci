@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "overlay": "Exact 57b product sources and verifier; only three actual registry additions and seventeen QA migrations.",
+  "registry": {
+    "bytes": 1835944,
+    "sha256": "a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757",
+    "blob": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e"
+  },
+  "tests": 147,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 75.21684185699996,
+  "started_utc": "2026-11-12T17:50:28.562040+00:00",
+  "finished_utc": "2026-11-12T17:51:43.809727+00:00",
+  "suites": [
+    "test_cell_learning_evaluation_source_closure",
+    "test_evaluated_retention_command_source_closure",
+    "test_evaluated_version_source_closure",
+    "test_generation_learning_evidence_source_closure",
+    "test_original_candidate_stage_source_closure",
+    "test_original_evaluation_host_source_closure",
+    "test_original_evaluation_receipt_owner_source_closure",
+    "test_original_model_root_source_closure",
+    "test_original_next_use_command_source_closure",
+    "test_original_no_update_stage_source_closure",
+    "test_original_published_read_source_closure",
+    "test_original_selector_command_source_closure",
+    "test_original_training_bootstrap_source_closure",
+    "test_original_training_command_source_closure",
+    "test_original_training_initial_connection_source_closure",
+    "test_original_training_owner_source_closure",
+    "test_resident_root_source_closure"
+  ],
+  "log": {
+    "bytes": 33979,
+    "sha256": "803f408df4ba2c15b2e9732f74319a7a6c183f55cff45d9afb20765b167c607d",
+    "blob": "a3fc5f3bfd3eb3cbf881aa7ba4918bf0ea11c438"
+  },
+  "inputs": 293,
+  "source_unchanged": true,
+  "full_source_gate": false,
+  "fullcaller": false,
+  "native": false,
+  "ordinary_qualification": 0
+}

@@ -1,0 +1,647 @@
+{
+  "schema": "hepta.candidate.seven-source-qa-repair.v1",
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "status": "SCOPED_51_PASS_SOURCE_QA_ONLY",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "base": {
+        "bytes": 13863,
+        "sha256": "968be0e590860028e4487de3e0860adef0d29dc58f2c29c26365c3f66e3c8b21",
+        "git_blob": "db6c9de84b1a9a53163c12770a4a2024c5c6a1c6"
+      },
+      "after": {
+        "bytes": 14143,
+        "sha256": "2a5ad9c43d6ccde0e24046e376d0cb1ed2debf7098d5bace42daffbb09b428eb",
+        "git_blob": "f57a5ec7d5fedd79317e26fdcbf4ed722cb17e6a"
+      },
+      "test_names": [
+        "OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact",
+        "OriginalCandidateStageClosureTests.test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time",
+        "OriginalCandidateStageClosureTests.test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material",
+        "OriginalCandidateStageClosureTests.test_last_root_and_source_io_precede_fresh_full_original_signature_checks",
+        "OriginalCandidateStageClosureTests.test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success",
+        "OriginalCandidateStageClosureTests.test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority"
+      ],
+      "changed_test_bodies": [],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "base": {
+        "bytes": 15087,
+        "sha256": "159db48c8a27cc4ad2e568cc8add39a7580be3529442fc1ed5f1bfa3d64c032f",
+        "git_blob": "0d97fec5c1bd09509ba1e70c5163e2de5fe494aa"
+      },
+      "after": {
+        "bytes": 15713,
+        "sha256": "e71d3a3fb1a6949bd8101cb228e4909dc503b84b17100f640efdae39c3aac6be",
+        "git_blob": "5ef7afa1bbee77d496a0dae0c240f57cefcc7d2f"
+      },
+      "test_names": [
+        "OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted",
+        "OriginalEvaluationHostClosureTests.test_original_brand_and_all_current_reads_precede_final_full_authentication",
+        "OriginalEvaluationHostClosureTests.test_initial_original_connection_cannot_renew_or_promote_recovery",
+        "OriginalEvaluationHostClosureTests.test_wrong_context_queued_cancellation_and_completed_regression_never_rearm",
+        "OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch",
+        "OriginalEvaluationHostClosureTests.test_full_evaluator_role_payload_and_original_generator_separation_remain_required"
+      ],
+      "changed_test_bodies": [
+        "OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch"
+      ],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base": {
+        "bytes": 24715,
+        "sha256": "6c512ab711d8a896382078517c3279109fe2efb88bc01901c21ca9a4ac7aaf3d",
+        "git_blob": "0d0a6b84559e2e825edcf37b7d3a835e9b470dba"
+      },
+      "after": {
+        "bytes": 26722,
+        "sha256": "149e7e94db275829407540f40a71f7b8ddf9ac9b9ee1d7f4826b67897a23b881",
+        "git_blob": "177b9b28471afc8d5af5235c373dfdde8490b435"
+      },
+      "test_names": [
+        "OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+        "OriginalModelRootClosureTests.test_root_projection_requires_the_original_complete_model_and_full_context",
+        "OriginalModelRootClosureTests.test_every_non_model_receipt_keeps_one_original_role_signature",
+        "OriginalModelRootClosureTests.test_dispatch_rereads_dte_then_original_model_and_preserves_unknown",
+        "OriginalModelRootClosureTests.test_initial_model_stream_and_final_root_io_cannot_be_replaced_by_future_dtos",
+        "OriginalModelRootClosureTests.test_cold_model_pin_is_readonly_and_wire_none_preserves_prior_shape",
+        "OriginalModelRootClosureTests.test_model_record_codec_reconstructs_only_original_proposal"
+      ],
+      "changed_test_bodies": [],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "base": {
+        "bytes": 16719,
+        "sha256": "a222f9fb7353ae82a71ebd78bd9d9e86843bb0ca8f12b97b32ed4b6d3f93ecaa",
+        "git_blob": "72f7fb5fd868654655f813d6d817e9207f17077c"
+      },
+      "after": {
+        "bytes": 18087,
+        "sha256": "d7088341e05f766eb1052a84343b3bbe05f387f0c088327184a30723b98589ca",
+        "git_blob": "59e7be329a50c98191fc0cad12b078118902fab0"
+      },
+      "test_names": [
+        "OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "OriginalNextUseCommandClosureTests.test_fresh_context_pins_actual_selection_and_both_original_signatures",
+        "OriginalNextUseCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+        "OriginalNextUseCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+        "OriginalNextUseCommandClosureTests.test_attestation_and_readback_use_live_original_owners_without_running_c",
+        "OriginalNextUseCommandClosureTests.test_response_requires_actual_retained_c_with_new_run_and_original_roles",
+        "OriginalNextUseCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+      ],
+      "changed_test_bodies": [],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "base": {
+        "bytes": 21007,
+        "sha256": "1bb122415f0d9d6a749d6f8893224c78b0c2ec497ef848b92561f4c3896b2c9f",
+        "git_blob": "000b30f33d64ded1d803484679d0df3ccfbc06c3"
+      },
+      "after": {
+        "bytes": 22143,
+        "sha256": "f5355a68201a002549724ec97f9ada80965e150f283b61a42ee77b5c67b91bdf",
+        "git_blob": "5d4fcb1bfa815d1bc6566f6295d85c8fb92d7e27"
+      },
+      "test_names": [
+        "OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered",
+        "OriginalNoUpdateStageClosureTests.test_initial_fixed_context_and_original_deadlines_precede_all_late_binding",
+        "OriginalNoUpdateStageClosureTests.test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges",
+        "OriginalNoUpdateStageClosureTests.test_recovery_and_attestation_use_real_owner_reads_and_final_clock",
+        "OriginalNoUpdateStageClosureTests.test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+        "OriginalNoUpdateStageClosureTests.test_readiness_only_original_unresolved_publication_remains_pending",
+        "OriginalNoUpdateStageClosureTests.test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+        "OriginalNoUpdateStageClosureTests.test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added"
+      ],
+      "changed_test_bodies": [],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "base": {
+        "bytes": 15502,
+        "sha256": "be1bd559531d574fcc0d405402c38cc1bfb3e08d84b6cafc80a2dd69b681cd87",
+        "git_blob": "9f210f8bb9a459ba1f83bba80186f425bee344bc"
+      },
+      "after": {
+        "bytes": 17022,
+        "sha256": "52c399674502f7d4b56357ce9ae8ff68d2be708022115f45981adee00ebe27d6",
+        "git_blob": "ba9addbae286ee3ed550b393df8bf5ab0d9e30e1"
+      },
+      "test_names": [
+        "OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+        "OriginalSelectorCommandClosureTests.test_fresh_context_uses_opaque_actual_training_and_full_original_binding",
+        "OriginalSelectorCommandClosureTests.test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+        "OriginalSelectorCommandClosureTests.test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+        "OriginalSelectorCommandClosureTests.test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+        "OriginalSelectorCommandClosureTests.test_response_verifies_exact_extension_baseline_and_independent_original_roles",
+        "OriginalSelectorCommandClosureTests.test_no_key_writer_callback_or_readback_effect_factory_can_be_added"
+      ],
+      "changed_test_bodies": [],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "base": {
+        "bytes": 27663,
+        "sha256": "d334c4528d6f5287ae1bd61e651d7478692768a6eaaf849cd9f3045b8b2d50f5",
+        "git_blob": "f5e1e190546e15ca6802338446a12de414154f49"
+      },
+      "after": {
+        "bytes": 28033,
+        "sha256": "09c4b4b9cbe9abd5e8550a5852cb1477a7a11c8cbbcd787af0f3909bdf6a9c72",
+        "git_blob": "f93b355d806949ee1bc4f8f6ad6306271f3038a5"
+      },
+      "test_names": [
+        "ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed",
+        "ResidentRootSourceClosureTests.test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding",
+        "ResidentRootSourceClosureTests.test_only_actual_strict_cas_can_mint_the_nonrecoverable_token",
+        "ResidentRootSourceClosureTests.test_original_grant_registry_revocation_and_local_only_fence_are_mandatory",
+        "ResidentRootSourceClosureTests.test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect",
+        "ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate",
+        "ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission",
+        "ResidentRootSourceClosureTests.test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires",
+        "ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads",
+        "ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+      ],
+      "changed_test_bodies": [
+        "ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads"
+      ],
+      "all_test_names_preserved": true,
+      "all_existing_caller_order_and_duplicates_preserved": true
+    }
+  ],
+  "qa_files": 7,
+  "tests": 51,
+  "unique_added_caller_edges": 38,
+  "actual_typed_call_sites": 55,
+  "changed_expected_rows": 27,
+  "authority_unchanged": true,
+  "product_files_changed": 0,
+  "verifier_changed": false,
+  "central_callers_owned_by": "profile_audit",
+  "registry": {
+    "owner": "/root/profile_audit",
+    "source_path": "/tmp/hepta-learn-037c-20261112/profile-source-57b-repair-v1/registry/CALLERS.toml",
+    "source_base": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+    "bytes": 1835944,
+    "sha256": "a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757",
+    "git_blob": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e",
+    "exact_boundary_changes": [
+      "learning_original_owner_command_channel",
+      "learning_original_evaluation_host_profile",
+      "learning_original_evaluation_host_constructor"
+    ],
+    "all_other_toml_fields_unchanged": true,
+    "qa_updates": [
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "boundary": "learning_original_evaluation_host_profile",
+        "before": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "after": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+        ],
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "boundary": "learning_original_evaluation_host_constructor",
+        "before": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "after": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+        ],
+        "added": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "boundary": "learning_original_owner_command_channel",
+        "before": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs"
+        ],
+        "after": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+        ],
+        "added": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "boundary": "learning_original_owner_command_channel",
+        "before": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs"
+        ],
+        "after": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+        ],
+        "added": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "boundary": "learning_original_owner_command_channel",
+        "before": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs"
+        ],
+        "after": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+        ],
+        "added": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "boundary": "learning_original_owner_command_channel",
+        "before": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs"
+        ],
+        "after": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+        ],
+        "added": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+      }
+    ]
+  },
+  "all_original_tests_and_negative_attack_purposes_preserved": true,
+  "changed_test_methods_only": [
+    "OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch",
+    "ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads"
+  ],
+  "scope_check": "after-01/EXACT_CHANGE_SCOPE.json proves non-EXPECTED text reverses byte-exactly with only two explicit locator/delegation edits; final test bodies equal after-01 AST",
+  "validation": {
+    "before-01": {
+      "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "suites": 7,
+      "tests_run": 51,
+      "failures": 25,
+      "errors": 2,
+      "skipped": 0,
+      "success": false,
+      "elapsed_seconds": 21.559651839001162,
+      "input_count": 280,
+      "inputs_unchanged": true,
+      "failure_cases": [
+        "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact (boundary='learning_original_material_initial_context_check')",
+        "test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact (boundary='root_resident_gate_effect_current')",
+        "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted (boundary='learning_original_evaluation_connection_training')",
+        "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted (boundary='learning_original_evaluation_command_readback')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='root_resident_gate_effect_current')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='root_resident_gate_training_cancel')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_original_owner_command_channel')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_original_owner_snapshot_encode')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_original_owner_snapshot_decode')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_original_material_initial_context_check')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_original_material_dataset_context_check')",
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_source_bound_training_stage_readback')",
+        "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_next_use_command_owner_profile')",
+        "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_owner_command_channel')",
+        "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_owner_snapshot_encode')",
+        "test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_owner_snapshot_decode')",
+        "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered (boundary='learning_original_owner_command_channel')",
+        "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered (boundary='learning_original_material_initial_context_check')",
+        "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered (boundary='learning_original_material_dataset_context_check')",
+        "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_selector_command_owner_profile')",
+        "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_owner_command_channel')",
+        "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_owner_snapshot_encode')",
+        "test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed (boundary='learning_original_owner_snapshot_decode')",
+        "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed (boundary='root_resident_gate_effect_current')",
+        "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed (boundary='root_resident_gate_training_cancel')"
+      ],
+      "error_cases": [
+        "test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch",
+        "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (function='fn original_attestations(', marker='stages\\n                .receipt_attestation(snapshot, receipt, now / 1_000)\\n                .await?')"
+      ],
+      "raw_log_sha256": "e19fc9b759f1d54913311c9956e19092804dc240a15b69411e009ea5ad8c6b92"
+    },
+    "after-01": {
+      "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "suites": 7,
+      "tests_run": 51,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0,
+      "success": false,
+      "elapsed_seconds": 23.635942403998342,
+      "input_count": 280,
+      "inputs_unchanged": true,
+      "failure_cases": [],
+      "error_cases": [
+        "test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (boundary='learning_original_owner_command_channel')"
+      ],
+      "raw_log_sha256": "6570915708ca306bd1bc393a76b40aed8319fb8f2ece1bb2c79f6101d3288b74"
+    },
+    "after-02": {
+      "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+      "suites": 7,
+      "tests_run": 51,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "success": true,
+      "elapsed_seconds": 23.783755819000362,
+      "input_count": 281,
+      "inputs_unchanged": true,
+      "failure_cases": [],
+      "error_cases": [],
+      "raw_log_sha256": "97c5e3272bc3d8a8b2badd426716a85fb76e48cc721b3a1c8a91140933139424"
+    }
+  },
+  "strict_replay": {
+    "bytes": 2437,
+    "sha256": "9eb5f6afccbdbc079a8a97cb01cefb6cd79a06ccdb9f56e9198016136981b0c2",
+    "git_blob": "ffa86e1411954cdd5eb07aeeb27e316029883e37"
+  },
+  "patch": {
+    "bytes": 52552,
+    "sha256": "031342460c63c0934a1b24ecb714b218b1c8ff4c9b5ba884fe9edd148427ecc0",
+    "git_blob": "c9c2c21d7450dd7e8becfd42a7f5564130b71d91"
+  },
+  "typed_edge_evidence": {
+    "bytes": 40805,
+    "sha256": "17e7d2bf2ff704c076e37c0230beeb2e17d6bfef7e6018fc4fe2af1b80ff1dcc",
+    "git_blob": "c06a14db7e23bf4bb777ea30b3df0abacdd0ca73"
+  },
+  "qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "daemon_root_cold_recovery": 0
+  },
+  "not_run": [
+    "full-source after this patch",
+    "fullcaller",
+    "Rust/native"
+  ],
+  "limitations": [
+    "Scoped physical overlay; 51 tests do not replace the full source suite or complete Rust index caller proof.",
+    "Before failures and after-01 discovery remain immutable evidence."
+  ]
+}

@@ -1,0 +1,649 @@
+[
+  {
+    "boundary": "root_resident_gate_effect_current",
+    "symbol": "RootResidentLearningEffectGateV3::require_current",
+    "receiver_type": "RootResidentLearningEffectGateV3",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+    "bytes": 10762,
+    "sha256": "67039a757a8393f59fec34b63f8d333a9ff5c5e858f3318229e28337ac1907e7",
+    "git_blob": "02bc38551e1ccb6e574567277f902c05ca83dd86",
+    "actual_typed_calls": [
+      {
+        "line": 61,
+        "code": "n == Action::Execute {\n            let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n            RootResidentLearningEffectGateV3::require_current(\n                gate,\n                &four_cut,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 70,
+        "code": "OriginalCircuitEvaluatedSelectionCommandClientV1::execute_selection(selector).await;\n            if RootResidentLearningEffectGateV3::require_current(\n                gate,\n                &four_cut,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 107,
+        "code": "= Action::Execute {\n            let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n            if RootResidentLearningEffectGateV3::require_current(\n                gate,\n                &four_cut,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 134,
+        "code": ",\n    ) -> Result<(), Error> {\n        let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n        RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )\n        .await?;",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 147,
+        "code": "nt,\n            RootResidentLearningEffectGateV3::training_cancellation(gate),\n        )\n        .await;\n        if RootResidentLearningEffectGateV3::require_current(\n            gate,\n            four_cut,\n            &self.common.material.scope,\n        )\n        .await",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 173,
+        "code": "s pending until S is\n                // verified and checkpointed. Never ask it to accept future S.\n                RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    four_cut,\n                    &self.common.material.scope,",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 190,
+        "code": "scheduling hint as an original readback.\n            tokio::time::sleep(Duration::from_secs(2)).await;\n            RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 200,
+        "code": "ogress =\n                OriginalCircuitRetainedVersionClientV1::publication_progress(client).await;\n            if RootResidentLearningEffectGateV3::require_current(\n                gate,\n                four_cut,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 217,
+        "code": "complete, actual publication.\n                    self.read_evaluated_version(lane).await?;\n                    if RootResidentLearningEffectGateV3::require_current(\n                        gate,\n                        four_cut,\n                        &self.common.material",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "root_resident_gate_effect_current",
+    "symbol": "RootResidentLearningEffectGateV3::require_current",
+    "receiver_type": "RootResidentLearningEffectGateV3",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+    "bytes": 9481,
+    "sha256": "609ad9b1b9ed3a393636e564d1cced803adccc1c443d12e562dd7f040bd51177",
+    "git_blob": "bd28119fd00c39ecb246bad3bf500aece080160f",
+    "actual_typed_calls": [
+      {
+        "line": 77,
+        "code": "n == Action::Execute {\n            let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n            RootResidentLearningEffectGateV3::require_current(\n                gate,\n                supplied,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 88,
+        "code": "lCircuitEvaluatedNextUseCommandClientV1::attest_completed_task(observer)\n                    .await;\n            if RootResidentLearningEffectGateV3::require_current(\n                gate,\n                supplied,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 126,
+        "code": "= Action::Execute {\n            let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n            if RootResidentLearningEffectGateV3::require_current(\n                gate,\n                supplied,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 157,
+        "code": "let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\n        for _ in 0..128 {\n            RootResidentLearningEffectGateV3::require_current(\n                gate,\n                five_cut,\n                &self.common.material.scope,\n            )",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 192,
+        "code": "&current_selection,\n                    common_auth::now()?,\n                )?;\n                RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    five_cut,\n                    &self.common.material.scope,",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "root_resident_gate_training_cancel",
+    "symbol": "RootResidentLearningEffectGateV3::training_cancellation",
+    "receiver_type": "RootResidentLearningEffectGateV3",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+    "bytes": 10762,
+    "sha256": "67039a757a8393f59fec34b63f8d333a9ff5c5e858f3318229e28337ac1907e7",
+    "git_blob": "02bc38551e1ccb6e574567277f902c05ca83dd86",
+    "actual_typed_calls": [
+      {
+        "line": 144,
+        "code": "let result = OriginalCircuitRetainedVersionClientV1::prepare_original_version(\n            client,\n            RootResidentLearningEffectGateV3::training_cancellation(gate),\n        )\n        .await;\n        if RootResidentLearningEffectGateV3::require_current(\n            gat",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+    "bytes": 14504,
+    "sha256": "c070bd8c06defc675a1a48e762a136330cfc6db3b1a0653ea3696d76920d8738",
+    "git_blob": "8fd80cbd54c2ef59102edf7f6ef9e1f9efe7688e",
+    "actual_typed_calls": [
+      {
+        "line": 197,
+        "code": "napshot().owners.next_use_observer {\n            return Err(Error::Binding(\"original evaluated C Observer process\"));\n        }\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+    "bytes": 10870,
+    "sha256": "3326cd8250d844cf0dd821a7de5faf41a425e72016231f0f287cafaec74169d2",
+    "git_blob": "ef3b58e0f12c82c65bb66c72acc12adfb70b8752",
+    "actual_typed_calls": [
+      {
+        "line": 121,
+        "code": ".map_err(|_| Error::Busy)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            let mut channel = original_owner_command_channel_v1(\n                stream,\n                consumer,\n                consumer_uid,\n                original_cons",
+        "type_proof": "exact free function call"
+      },
+      {
+        "line": 156,
+        "code": ".map_err(|_| Error::Busy)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            let mut channel = original_owner_command_channel_v1(\n                stream,\n                consumer,\n                consumer_uid,\n                original_cons",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+    "bytes": 14609,
+    "sha256": "bcf2752be01f07dd882b939cf34cc2c66ca831ccf8528afe08cf465e8b53a390",
+    "git_blob": "3d53b56ca6430a79fa5b5f2b9b28cba0bb3976d7",
+    "actual_typed_calls": [
+      {
+        "line": 199,
+        "code": ".original.snapshot().owners.selector {\n            return Err(Error::Binding(\"original evaluated Selector process\"));\n        }\n        let channel = original_owner_command_channel_v1(\n            stream,\n            AgentdRootAuthorityPeer {\n                pid: peer.pid,\n                boot",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+    "bytes": 10070,
+    "sha256": "be8223ec9f9de03edccc2972371017501724ddeb8598a45e2e54cea42a4b1b39",
+    "git_blob": "35165a906c7d7d3469ee5888aa2e7b2bf383c927",
+    "actual_typed_calls": [
+      {
+        "line": 105,
+        "code": ".map_err(|_| Error::Busy)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            let mut channel = original_owner_command_channel_v1(\n                stream,\n                consumer,\n                consumer_uid,\n                original_cons",
+        "type_proof": "exact free function call"
+      },
+      {
+        "line": 140,
+        "code": ".map_err(|_| Error::Busy)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            let mut channel = original_owner_command_channel_v1(\n                stream,\n                consumer,\n                consumer_uid,\n                original_cons",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+    "bytes": 7122,
+    "sha256": "144bd9c04ac366cabf2fc9633fde6345cf375429602a41fee092a8ef387c25cd",
+    "git_blob": "a06965c829e2af6603cbd007a1fb658e7477173e",
+    "actual_typed_calls": [
+      {
+        "line": 127,
+        "code": ".map_err(|_| Error::Busy)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            let mut channel = original_owner_command_channel_v1(\n                stream,\n                consumer,\n                consumer_uid,\n                original_cons",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+    "bytes": 4573,
+    "sha256": "6eb2033e2b562d88ceef859a9ec53c1e6bab75b93f88008f9c6c605ce8c39a4f",
+    "git_blob": "5a4f15029a607278663add228efb0bdf8e4fa2ea",
+    "actual_typed_calls": [
+      {
+        "line": 68,
+        "code": ".map_err(|_| Error::Busy)?;\n        tokio::task::spawn_blocking(move || {\n            let _permit = permit;\n            let mut channel = original_owner_command_channel_v1(\n                stream,\n                consumer,\n                consumer_uid,\n                original_cons",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs",
+    "bytes": 8049,
+    "sha256": "f56c7d203442a1a8cb94649f72d5ca9013025cf7aa7d19da0ab8fc9dc3c911f0",
+    "git_blob": "703556738f5fc6adf866c568ff26bcbc06f83081",
+    "actual_typed_calls": [
+      {
+        "line": 52,
+        "code": "ation::from_secs(300)\n        {\n            return Err(Error::Binding(\"original evaluated readiness server bounds\"));\n        }\n        let channel = original_owner_command_channel_v1(\n            stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_command_channel",
+    "symbol": "original_owner_command_channel_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs",
+    "bytes": 3816,
+    "sha256": "5143cbef1fda9413ff0202c5ce06df41f7368e364d7511b72c5399a45e43dde6",
+    "git_blob": "050353a0d1dc31f96db00fdc0fc7f672308e92e4",
+    "actual_typed_calls": [
+      {
+        "line": 37,
+        "code": "let _permit = self\n            .connections\n            .try_acquire()\n            .map_err(|_| Error::Unavailable)?;\n        let mut channel = original_owner_command_channel_v1(\n            stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_encode",
+    "symbol": "encode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "bytes": 9177,
+    "sha256": "623dbc1494d5ecb62265fcea73bfc651fe3a8e26b487b428768fccddbe47b844",
+    "git_blob": "382844a32227c48a752ecf053d0cf9d293f1b3f4",
+    "actual_typed_calls": [
+      {
+        "line": 140,
+        "code": "}\n        Ok(Digest32::of_parts(&[\n            b\"hepta.agentd.original-circuit-evaluated-current-read.v1\\0\",\n            domain,\n            &encode_original_owner_snapshot_v1(prefix)?,\n            self.scope.binding().as_array(),\n            original.as_array(),\n        ]))\n    }",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_encode",
+    "symbol": "encode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_context.rs",
+    "bytes": 5742,
+    "sha256": "d4ce0246cde6343880af4f026a01980e587789b1425be95d5ddd5cf69151d4c7",
+    "git_blob": "79ee8a504c7ba1473955ea4b58ac3db0e4054eb4",
+    "actual_typed_calls": [
+      {
+        "line": 56,
+        "code": "f.authenticate(current)?;\n        Ok(Digest32::of_parts(&[\n            b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\",\n            &encode_original_owner_snapshot_v1(self.selection.snapshot())?,\n            self.selection.original_receipt_binding().as_array(),\n        ]))",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_encode",
+    "symbol": "encode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs",
+    "bytes": 7336,
+    "sha256": "4087bc9babe18d9871f6ddfeb882f9d59d142b82accf396070518cf353577b83",
+    "git_blob": "3e82215d5ca9939b0222647ce010a1bd10abef13",
+    "actual_typed_calls": [
+      {
+        "line": 171,
+        "code": "rn Err(Error::Binding(\"same original evaluated C Observer output\"));\n    }\n    Ok(CommandResult::Completed {\n        snapshot: STANDARD_NO_PAD.encode(encode_original_owner_snapshot_v1(original.snapshot())?),\n        evidence: evidence_wire::Evidence::from_original(original.attestation()),",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_encode",
+    "symbol": "encode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_context.rs",
+    "bytes": 5841,
+    "sha256": "d66b1fd85f08bfb2d2da8f4a2aa732450767b3aa66f0ca5c1e85d3df4c803282",
+    "git_blob": "0cc5df594557a5e18d3563159889bed1d45f5bfd",
+    "actual_typed_calls": [
+      {
+        "line": 55,
+        "code": ".authenticate(current)?;\n        Ok(Digest32::of_parts(&[\n            b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\",\n            &encode_original_owner_snapshot_v1(self.original.snapshot())?,\n            self.original.receipt_context_binding().as_array(),\n        ]))\n    }",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_encode",
+    "symbol": "encode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_wire.rs",
+    "bytes": 7263,
+    "sha256": "6ff970fd0e5f1e010e882f49afd0b7aeddee54b1258ce2e3da972ae7678bfe07",
+    "git_blob": "b02a459c35d609e977bf9de9d5cc0ff4b5bf8f0a",
+    "actual_typed_calls": [
+      {
+        "line": 169,
+        "code": "turn Err(Error::Binding(\"same original evaluated Selector output\"));\n    }\n    Ok(CommandResult::Completed {\n        snapshot: STANDARD_NO_PAD.encode(encode_original_owner_snapshot_v1(original.snapshot())?),\n        evidence: evidence_wire::Evidence::from_original(original.attestation()),",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_encode",
+    "symbol": "encode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs",
+    "bytes": 5852,
+    "sha256": "e176f14ec8900edb88f6d1967a59e76defc8574ea83b62fa64be11f03a14d2d6",
+    "git_blob": "a355506982c79af07aaa4b20d0fe9de6d9575f75",
+    "actual_typed_calls": [
+      {
+        "line": 103,
+        "code": "(Digest32::of_parts(&[\n            b\"hepta.agentd.original-evaluated-version.command.v1\\0\",\n            self.initial_binding.as_array(),\n            &encode_original_owner_snapshot_v1(prefix)?,\n            scope.binding().as_array(),\n            verifier.trust_digest().as_array(),",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_decode",
+    "symbol": "decode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs",
+    "bytes": 7336,
+    "sha256": "4087bc9babe18d9871f6ddfeb882f9d59d142b82accf396070518cf353577b83",
+    "git_blob": "3e82215d5ca9939b0222647ce010a1bd10abef13",
+    "actual_typed_calls": [
+      {
+        "line": 191,
+        "code": "TANDARD_NO_PAD.encode(&bytes) != snapshot {\n        return Err(Error::Binding(\"canonical original evaluated NextUse cut\"));\n    }\n    let completed = decode_original_owner_snapshot_v1(&bytes)?;\n    let signed = evidence\n        .decode()\n        .map_err(|_| Error::Binding(\"original evaluated",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_owner_snapshot_decode",
+    "symbol": "decode_original_owner_snapshot_v1",
+    "receiver_type": null,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_wire.rs",
+    "bytes": 7263,
+    "sha256": "6ff970fd0e5f1e010e882f49afd0b7aeddee54b1258ce2e3da972ae7678bfe07",
+    "git_blob": "b02a459c35d609e977bf9de9d5cc0ff4b5bf8f0a",
+    "actual_typed_calls": [
+      {
+        "line": 189,
+        "code": "NDARD_NO_PAD.encode(&bytes) != snapshot {\n        return Err(Error::Binding(\"canonical original evaluated Selection cut\"));\n    }\n    let completed = decode_original_owner_snapshot_v1(&bytes)?;\n    let signed = evidence\n        .decode()\n        .map_err(|_| Error::Binding(\"original evaluated",
+        "type_proof": "exact free function call"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_initial_context_check",
+    "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial",
+    "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs",
+    "bytes": 5852,
+    "sha256": "e176f14ec8900edb88f6d1967a59e76defc8574ea83b62fa64be11f03a14d2d6",
+    "git_blob": "a355506982c79af07aaa4b20d0fe9de6d9575f75",
+    "actual_typed_calls": [
+      {
+        "line": 58,
+        "code": "evaluation,\n                )?\n            }\n        };\n        let (initial_binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;\n        require_clock(started, fresh)?;\n        let mut cut = Self {\n            material,",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 119,
+        "code": "u64,\n        access: PublicationAccess,\n    ) -> Result<(), Error> {\n        let (binding, at) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        let fresh = OriginalCellQ24MaterialCommandReceiptV1::",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_initial_context_check",
+    "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial",
+    "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs",
+    "bytes": 7227,
+    "sha256": "6f28395f86a7efa9ed46f54cc507bb4351b905068feadc8e873b7cb570d902ae",
+    "git_blob": "a40815ded1b9df20d4086c4b845a8d9969494358",
+    "actual_typed_calls": [
+      {
+        "line": 70,
+        "code": "lt<Self, Error> {\n        let started = super::super::now()?;\n        let (initial_binding, at) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;\n        super::super::require_clock(started, at)?;\n        OriginalCellQ24DatasetCommandReadbackV",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 123,
+        "code": "V1,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {\n        let (initial_binding, _) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;\n        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_dataset_context_check",
+    "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+    "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs",
+    "bytes": 9510,
+    "sha256": "6ee820eb0e121ef2fca1262e98871ea8205784332cb388829d23aaa147eb2d7a",
+    "git_blob": "b88c24459cf738d83487e26a5ecb0a370f31d28e",
+    "actual_typed_calls": [
+      {
+        "line": 151,
+        "code": "owner)\n    }\n\n    fn require_current_context(&self, started: u64) -> Result<(), Error> {\n        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            &self.dataset,\n            &self.material,\n        )\n        .map_err(|_| Error::Binding(\"same or",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_dataset_context_check",
+    "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+    "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_context.rs",
+    "bytes": 5742,
+    "sha256": "d4ce0246cde6343880af4f026a01980e587789b1425be95d5ddd5cf69151d4c7",
+    "git_blob": "79ee8a504c7ba1473955ea4b58ac3db0e4054eb4",
+    "actual_typed_calls": [
+      {
+        "line": 124,
+        "code": "t original D/T/B/S evaluated C prefix\"));\n        }\n        peer.check_peer_lifetime()?;\n        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            dataset, material,\n        )\n        .map_err(|_| Error::Binding(\"original Dataset custody before",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_dataset_context_check",
+    "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+    "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_context.rs",
+    "bytes": 5841,
+    "sha256": "d66b1fd85f08bfb2d2da8f4a2aa732450767b3aa66f0ca5c1e85d3df4c803282",
+    "git_blob": "0cc5df594557a5e18d3563159889bed1d45f5bfd",
+    "actual_typed_calls": [
+      {
+        "line": 135,
+        "code": "luated Selection prefix\",\n            ));\n        }\n        peer.check_peer_lifetime()?;\n        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            dataset, material,\n        )\n        .map_err(|_| Error::Binding(\"original Dataset custody before",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_dataset_context_check",
+    "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+    "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs",
+    "bytes": 5852,
+    "sha256": "e176f14ec8900edb88f6d1967a59e76defc8574ea83b62fa64be11f03a14d2d6",
+    "git_blob": "a355506982c79af07aaa4b20d0fe9de6d9575f75",
+    "actual_typed_calls": [
+      {
+        "line": 36,
+        "code": "origin: RetainedVersionOriginV1,\n    ) -> Result<Self, Error> {\n        let started = now()?;\n        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            &dataset, &material,\n        )?;\n        let evaluated = match origin {\n            RetainedVersi",
+        "type_proof": "fully qualified original receiver type"
+      },
+      {
+        "line": 122,
+        "code": "figV1::require_original_command_initial(\n                &self.material,\n            )?;\n        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            &self.dataset,\n            &self.material,\n        )?;\n        require_clock(started, at)?;",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_material_dataset_context_check",
+    "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+    "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs",
+    "bytes": 7227,
+    "sha256": "6f28395f86a7efa9ed46f54cc507bb4351b905068feadc8e873b7cb570d902ae",
+    "git_blob": "a40815ded1b9df20d4086c4b845a8d9969494358",
+    "actual_typed_calls": [
+      {
+        "line": 125,
+        "code": "l)?;\n        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;\n        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\n            &original.dataset,\n            &material,\n        )?;\n        let evaluation = original.evaluatio",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_source_bound_training_stage_readback",
+    "symbol": "SourceBoundCellQ24TrainingStageV1::readback",
+    "receiver_type": "SourceBoundCellQ24TrainingStageV1",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+    "bytes": 3137,
+    "sha256": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c",
+    "git_blob": "fae852c8a1d5022347e632787172b99f9d119307",
+    "actual_typed_calls": [
+      {
+        "line": 78,
+        "code": "est(&request, &self.context, request_id)?;\n        let completed = self\n            .runtime\n            .block_on(SourceBoundCellQ24TrainingStageV1::readback(\n                &self.stage,\n                &self.context.dataset,\n            ));\n        let result = self",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_selector_command_owner_profile",
+    "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_command_profile",
+    "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+    "bytes": 10070,
+    "sha256": "be8223ec9f9de03edccc2972371017501724ddeb8598a45e2e54cea42a4b1b39",
+    "git_blob": "35165a906c7d7d3469ee5888aa2e7b2bf383c927",
+    "actual_typed_calls": [
+      {
+        "line": 66,
+        "code": "wnerV1::original_evaluated_command_context(&owner)?,\n        )?;\n        let (_, readback_only) =\n            OriginalCircuitSelectionReceiptOwnerV1::original_command_profile(&owner);\n        OriginalCircuitLearningReadClientV1::require_original_evaluated_selection(\n            &live,",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_selector_command_owner_profile",
+    "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_command_profile",
+    "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+    "bytes": 7122,
+    "sha256": "144bd9c04ac366cabf2fc9633fde6345cf375429602a41fee092a8ef387c25cd",
+    "git_blob": "a06965c829e2af6603cbd007a1fb658e7477173e",
+    "actual_typed_calls": [
+      {
+        "line": 91,
+        "code": "ainingCommandClientV1>,\n        evaluator: Arc<OriginalCellEvaluationCommandClientV1>,\n    ) -> Result<Self, Error> {\n        let (config, _) = owner.original_command_profile();\n        let (initial_head, binding) = binding::original_context(config, &selection)?;\n        Ok(Self {",
+        "type_proof": "function parameter exact original receiver type",
+        "function_signature": "fn from_original_receipt_owner(\n        owner: OriginalCircuitSelectionReceiptOwnerV1<W>,\n        selection: OriginalCircuitEvaluatedSelectionReceiptV1,\n        cell: PublishedCircuitCellOwnerV1<C>,\n        trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,\n        evaluator: Arc<OriginalCellEvaluationCommandClientV1>,\n    ) -> Result<Self, Error>"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_selector_command_owner_profile",
+    "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_command_profile",
+    "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs",
+    "bytes": 4573,
+    "sha256": "6eb2033e2b562d88ceef859a9ec53c1e6bab75b93f88008f9c6c605ce8c39a4f",
+    "git_blob": "5a4f15029a607278663add228efb0bdf8e4fa2ea",
+    "actual_typed_calls": [
+      {
+        "line": 32,
+        "code": "ainingCommandClientV1>,\n        evaluator: Arc<OriginalCellEvaluationCommandClientV1>,\n    ) -> Result<Self, Error> {\n        let (config, _) = owner.original_command_profile();\n        let (initial_head, binding) = binding::original_context(config, &selection)?;\n        live.require_",
+        "type_proof": "function parameter exact original receiver type",
+        "function_signature": "fn from_original_receipt_owner(\n        owner: OriginalCircuitSelectionReceiptOwnerV1<W>,\n        selection: OriginalCircuitEvaluatedSelectionReceiptV1,\n        live: Arc<OriginalCircuitLearningReadClientV1>,\n        trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,\n        evaluator: Arc<OriginalCellEvaluationCommandClientV1>,\n    ) -> Result<Self, Error>"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_selector_command_owner_profile",
+    "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_command_profile",
+    "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+    "bytes": 10460,
+    "sha256": "629ed2a81f74193696ed9fd6a69c5c590ee4564fc8f4712b64f0c32763196a88",
+    "git_blob": "c09af8045788a82ff53b3824e0521acb2e98e066",
+    "actual_typed_calls": [
+      {
+        "line": 51,
+        "code": "iptOwnerV1::original_evaluated_command_context(&owner)?;\n            let (_, readback_only) =\n                OriginalCircuitSelectionReceiptOwnerV1::original_command_profile(&owner);\n            if self.origin == RetainedVersionOriginV1::Recovered && !readback_only {",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_evaluation_connection_training",
+    "symbol": "OriginalCellEvaluationCommandConnectionV1::bind_original_training",
+    "receiver_type": "OriginalCellEvaluationCommandConnectionV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "bytes": 13208,
+    "sha256": "2a2b8bfff18ba006223c10ca566c9a521e8781aa3e6b566818d82a5c0c83fb74",
+    "git_blob": "226e0ea70d356f1950a5fc6f1c103cf6615f008e",
+    "actual_typed_calls": [
+      {
+        "line": 78,
+        "code": ".take()\n                    .ok_or(Error::ReadbackRequired)?;\n                let evaluator = OriginalCellEvaluationCommandConnectionV1::bind_original_training(\n                    original,\n                    dataset.snapshot().clone(),\n                    &training,",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_evaluation_command_readback",
+    "symbol": "OriginalCellEvaluationCommandClientV1::readback",
+    "receiver_type": "OriginalCellEvaluationCommandClientV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "bytes": 13208,
+    "sha256": "2a2b8bfff18ba006223c10ca566c9a521e8781aa3e6b566818d82a5c0c83fb74",
+    "git_blob": "226e0ea70d356f1950a5fc6f1c103cf6615f008e",
+    "actual_typed_calls": [
+      {
+        "line": 85,
+        "code": ")?;\n                let evaluation = self\n                    .runtime\n                    .block_on(OriginalCellEvaluationCommandClientV1::readback(&evaluator))?;\n                let cut = OriginalEvaluatedVersionCut::from_original(\n                    self.",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_next_use_command_owner_profile",
+    "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_command_profile",
+    "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+    "bytes": 10870,
+    "sha256": "3326cd8250d844cf0dd821a7de5faf41a425e72016231f0f287cafaec74169d2",
+    "git_blob": "ef3b58e0f12c82c65bb66c72acc12adfb70b8752",
+    "actual_typed_calls": [
+      {
+        "line": 69,
+        "code": "wnerV1::original_evaluated_command_selection(&owner)?,\n        )?;\n        let (_, readback_only) =\n            OriginalCircuitNextUseReceiptOwnerV1::original_command_profile(&owner);\n        OriginalCircuitLearningReadClientV1::require_original_evaluated_next_use(\n            &live,",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  },
+  {
+    "boundary": "learning_original_next_use_command_owner_profile",
+    "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_command_profile",
+    "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+    "bytes": 10460,
+    "sha256": "629ed2a81f74193696ed9fd6a69c5c590ee4564fc8f4712b64f0c32763196a88",
+    "git_blob": "c09af8045788a82ff53b3824e0521acb2e98e066",
+    "actual_typed_calls": [
+      {
+        "line": 122,
+        "code": "iptOwnerV1::original_evaluated_command_selection(&owner)?;\n            let (_, readback_only) =\n                OriginalCircuitNextUseReceiptOwnerV1::original_command_profile(&owner);\n            if self.origin == RetainedVersionOriginV1::Recovered && !readback_only {",
+        "type_proof": "fully qualified original receiver type"
+      }
+    ]
+  }
+]

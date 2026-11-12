@@ -1,0 +1,628 @@
+
+======================================================================
+ERROR: test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch (test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 193, in test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch
+    self.rejects(EVALUATION, "fn read_original_evaluation(", "Action::Readback")
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 75, in rejects
+    selected = source.index(marker, offset, end + 1)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_resident_root_source_closure.py", line 381, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_resident_root_source_closure.py", line 137, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+FAIL: test_product_callers_are_exact_without_granting_stage_authority (test_cell_learning_evaluation_source_closure.CellLearningEvaluationSourceClosureTests.test_product_callers_are_exact_without_granting_stage_authority) (boundary='learning_evidence_original_owner_readback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py", line 99, in test_product_callers_are_exact_without_granting_stage_authority
+    self.assertEqual(row.product_callers, callers)
+AssertionError: Tuples differ: ('cod[533 chars]s.rs', 'codex-rs/hepta-agentd/src/circuit_eval[22 chars].rs') != ('cod[533 chars]s.rs')
+
+First tuple contains 1 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs'
+
+Diff is 880 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_original_evidence_and_new_reader_caller_sets_remain_closed (test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_original_evidence_and_new_reader_caller_sets_remain_closed) (boundary='learning_evidence_original_owner_readback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py", line 94, in test_original_evidence_and_new_reader_caller_sets_remain_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[533 chars]s.rs', 'codex-rs/hepta-agentd/src/circuit_eval[22 chars].rs') != ('cod[533 chars]s.rs')
+
+First tuple contains 1 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs'
+
+Diff is 880 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_candidate_and_shared_original_edges_remain_exact (test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='learning_original_material_initial_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py", line 92, in test_actual_candidate_and_shared_original_edges_remain_exact
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[629 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[84 chars].rs') != ('cod[629 chars]t.rs')
+
+First tuple contains 2 additional elements.
+First extra element 10:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs'
+
+Diff is 996 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_candidate_and_shared_original_edges_remain_exact (test_original_candidate_stage_source_closure.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='root_resident_gate_effect_current')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py", line 92, in test_actual_candidate_and_shared_original_edges_remain_exact
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[324 chars]l.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[108 chars].rs') != ('cod[324 chars]l.rs')
+
+First tuple contains 2 additional elements.
+First extra element 5:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs'
+
+Diff is 709 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_actual_concrete_consumers_and_readback_edges_are_admitted (test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted) (boundary='learning_original_evaluation_connection_training')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 93, in test_only_actual_concrete_consumers_and_readback_edges_are_admitted
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[58 chars].rs', 'codex-rs/hepta-agentd/src/circuit_retai[17 chars].rs') != ('cod[58 chars].rs',)
+
+First tuple contains 1 additional elements.
+First extra element 1:
+'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'
+
+- ('codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs',
++ ('codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs',)
+?                                                                     +
+
+-  'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs')
+
+======================================================================
+FAIL: test_only_actual_concrete_consumers_and_readback_edges_are_admitted (test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted) (boundary='learning_original_evaluation_command_readback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 93, in test_only_actual_concrete_consumers_and_readback_edges_are_admitted
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[125 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_reta[18 chars].rs') != ('cod[125 chars]t.rs')
+
+First tuple contains 1 additional elements.
+First extra element 2:
+'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'
+
+  ('codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs',
+?                                                                    ^
+
++  'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs')
+?                                                                    ^
+
+-  'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs')
+
+======================================================================
+FAIL: test_four_original_read_edges_have_exact_typed_registered_callers (test_original_evaluation_receipt_owner_source_closure.OriginalEvaluationReceiptOwnerSourceClosureTests.test_four_original_read_edges_have_exact_typed_registered_callers) (boundary='learning_evidence_original_owner_readback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py", line 119, in test_four_original_read_edges_have_exact_typed_registered_callers
+    self.assertEqual(row.product_callers, callers)
+AssertionError: Tuples differ: ('cod[533 chars]s.rs', 'codex-rs/hepta-agentd/src/circuit_eval[22 chars].rs') != ('cod[533 chars]s.rs')
+
+First tuple contains 1 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs'
+
+Diff is 880 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='root_resident_gate_effect_current')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[324 chars]l.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[108 chars].rs') != ('cod[324 chars]l.rs')
+
+First tuple contains 2 additional elements.
+First extra element 5:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs'
+
+Diff is 709 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='root_resident_gate_training_cancel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[117 chars]l.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[32 chars].rs') != ('cod[117 chars]l.rs')
+
+First tuple contains 1 additional elements.
+First extra element 2:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs'
+
+  ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs',
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs',
+?                                                               ^
+
++  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs')
+?                                                               ^
+
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs')
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_owner_snapshot_encode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1038 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[381 chars].rs') != ('cod[1038 chars]t.rs')
+
+First tuple contains 6 additional elements.
+First extra element 16:
+'codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs'
+
+Diff is 1783 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_owner_snapshot_decode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[604 chars]y.rs', 'codex-rs/hepta-agentd/src/circuit_eval[100 chars].rs') != ('cod[604 chars]y.rs')
+
+First tuple contains 2 additional elements.
+First extra element 9:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs'
+
+Diff is 1035 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_material_initial_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[629 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[84 chars].rs') != ('cod[629 chars]t.rs')
+
+First tuple contains 2 additional elements.
+First extra element 10:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs'
+
+Diff is 996 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_original_material_dataset_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[531 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[306 chars].rs') != ('cod[531 chars]t.rs')
+
+First tuple contains 5 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs'
+
+Diff is 1132 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed (test_original_model_root_source_closure.OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed) (boundary='learning_source_bound_training_stage_readback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_model_root_source_closure.py", line 125, in test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[115 chars]e.rs', 'codex-rs/hepta-agentd/src/cell_q24_tra[30 chars].rs') != ('cod[115 chars]e.rs')
+
+First tuple contains 1 additional elements.
+First extra element 2:
+'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs'
+
+  ('codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs',
+-  'codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs',
+?                                                            ^
+
++  'codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs')
+?                                                            ^
+
+-  'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs')
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_next_use_command_owner_profile')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_next_use_command_source_closure.py", line 85, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[55 chars].rs', 'codex-rs/hepta-agentd/src/circuit_evalu[96 chars].rs') != ('cod[55 chars].rs',)
+
+First tuple contains 2 additional elements.
+First extra element 1:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs'
+
+- ('codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs',
++ ('codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs',)
+?                                                                  +
+
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs')
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_next_use_command_source_closure.py", line 85, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_owner_snapshot_encode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_next_use_command_source_closure.py", line 85, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1038 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[381 chars].rs') != ('cod[1038 chars]t.rs')
+
+First tuple contains 6 additional elements.
+First extra element 16:
+'codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs'
+
+Diff is 1783 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_next_use_command_source_closure.OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_owner_snapshot_decode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_next_use_command_source_closure.py", line 85, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[604 chars]y.rs', 'codex-rs/hepta-agentd/src/circuit_eval[100 chars].rs') != ('cod[604 chars]y.rs')
+
+First tuple contains 2 additional elements.
+First extra element 9:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs'
+
+Diff is 1035 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_edges_and_resident_installation_are_registered (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 111, in test_only_concrete_original_edges_and_resident_installation_are_registered
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_edges_and_resident_installation_are_registered (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_material_initial_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 111, in test_only_concrete_original_edges_and_resident_installation_are_registered
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[629 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[84 chars].rs') != ('cod[629 chars]t.rs')
+
+First tuple contains 2 additional elements.
+First extra element 10:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs'
+
+Diff is 996 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_edges_and_resident_installation_are_registered (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_material_dataset_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 111, in test_only_concrete_original_edges_and_resident_installation_are_registered
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[531 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[306 chars].rs') != ('cod[531 chars]t.rs')
+
+First tuple contains 5 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs'
+
+Diff is 1132 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed (test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed) (boundary='learning_original_published_read_client_current')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_published_read_source_closure.py", line 97, in test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[183 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[88 chars].rs') != ('cod[183 chars]e.rs')
+
+First tuple contains 2 additional elements.
+First extra element 3:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs'
+
+  ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs',
+   'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs',
+?                                                                   ^
+
++  'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs')
+?                                                                   ^
+
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs')
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_selector_command_owner_profile')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_selector_command_source_closure.py", line 86, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[56 chars].rs', 'codex-rs/hepta-agentd/src/circuit_evalu[248 chars].rs') != ('cod[56 chars].rs',)
+
+First tuple contains 4 additional elements.
+First extra element 1:
+'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs'
+
+- ('codex-rs/hepta-agentd/src/circuit_selection_command_service.rs',
++ ('codex-rs/hepta-agentd/src/circuit_selection_command_service.rs',)
+?                                                                   +
+
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs',
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs')
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_selector_command_source_closure.py", line 86, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_owner_snapshot_encode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_selector_command_source_closure.py", line 86, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1038 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[381 chars].rs') != ('cod[1038 chars]t.rs')
+
+First tuple contains 6 additional elements.
+First extra element 16:
+'codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs'
+
+Diff is 1783 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_owner_edges_open_and_factories_stay_closed (test_original_selector_command_source_closure.OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed) (boundary='learning_original_owner_snapshot_decode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_selector_command_source_closure.py", line 86, in test_only_concrete_original_owner_edges_open_and_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[604 chars]y.rs', 'codex-rs/hepta-agentd/src/circuit_eval[100 chars].rs') != ('cod[604 chars]y.rs')
+
+First tuple contains 2 additional elements.
+First extra element 9:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs'
+
+Diff is 1035 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed (test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed) (boundary='learning_original_dataset_readback_context')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py", line 114, in test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[177 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[18 chars].rs') != ('cod[177 chars]t.rs')
+
+First tuple contains 1 additional elements.
+First extra element 3:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs'
+
+  ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs',
+   'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs',
+-  'codex-rs/hepta-agentd/src/circuit_retained_version_host.rs',
+?                                                              ^
+
++  'codex-rs/hepta-agentd/src/circuit_retained_version_host.rs')
+?                                                              ^
+
+-  'codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs')
+
+======================================================================
+FAIL: test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed (test_original_training_bootstrap_source_closure.OriginalTrainingBootstrapClosureTests.test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py", line 114, in test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_internal_edges_open_host_factories_stay_closed (test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_command_source_closure.py", line 80, in test_only_concrete_internal_edges_open_host_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_internal_edges_open_host_factories_stay_closed (test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed) (boundary='learning_original_owner_snapshot_encode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_command_source_closure.py", line 80, in test_only_concrete_internal_edges_open_host_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1038 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[381 chars].rs') != ('cod[1038 chars]t.rs')
+
+First tuple contains 6 additional elements.
+First extra element 16:
+'codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs'
+
+Diff is 1783 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_internal_edges_open_host_factories_stay_closed (test_original_training_command_source_closure.OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed) (boundary='learning_original_owner_snapshot_decode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_command_source_closure.py", line 80, in test_only_concrete_internal_edges_open_host_factories_stay_closed
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[604 chars]y.rs', 'codex-rs/hepta-agentd/src/circuit_eval[100 chars].rs') != ('cod[604 chars]y.rs')
+
+First tuple contains 2 additional elements.
+First extra element 9:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs'
+
+Diff is 1035 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_initial_handoff_checks_open (test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open) (boundary='learning_original_material_initial_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py", line 80, in test_only_concrete_initial_handoff_checks_open
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[629 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[84 chars].rs') != ('cod[629 chars]t.rs')
+
+First tuple contains 2 additional elements.
+First extra element 10:
+'codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs'
+
+Diff is 996 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_initial_handoff_checks_open (test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open) (boundary='learning_original_material_dataset_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py", line 80, in test_only_concrete_initial_handoff_checks_open
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[531 chars]t.rs', 'codex-rs/hepta-agentd/src/circuit_eval[306 chars].rs') != ('cod[531 chars]t.rs')
+
+First tuple contains 5 additional elements.
+First extra element 8:
+'codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs'
+
+Diff is 1132 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_initial_handoff_checks_open (test_original_training_initial_connection_source_closure.OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py", line 80, in test_only_concrete_initial_handoff_checks_open
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1591 chars]e.rs', 'codex-rs/hepta-agentd/src/circuit_eval[539 chars].rs') != ('cod[1591 chars]e.rs')
+
+First tuple contains 8 additional elements.
+First extra element 24:
+'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs'
+
+Diff is 2527 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_pair_and_model_lane_keep_exact_native_callers (test_original_training_owner_source_closure.OriginalTrainingOwnerSourceClosureTests.test_pair_and_model_lane_keep_exact_native_callers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_original_training_owner_source_closure.py", line 74, in test_pair_and_model_lane_keep_exact_native_callers
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[106 chars]e.rs', 'codex-rs/hepta-agentd/src/cell_q24_tra[22 chars].rs') != ('cod[106 chars]e.rs')
+
+First tuple contains 1 additional elements.
+First extra element 2:
+'codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs'
+
+  ('codex-rs/hepta-agentd/src/cell_q24_training_stage.rs',
+-  'codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs',
+?                                                             ^
+
++  'codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs')
+?                                                             ^
+
+-  'codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs')
+
+======================================================================
+FAIL: test_exact_new_callers_and_external_registration_stay_closed (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_gate_effect_current')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_resident_root_source_closure.py", line 160, in test_exact_new_callers_and_external_registration_stay_closed
+    self.assertEqual(row.product_callers, tuple(expected))
+AssertionError: Tuples differ: ('cod[324 chars]l.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[108 chars].rs') != ('cod[324 chars]l.rs')
+
+First tuple contains 2 additional elements.
+First extra element 5:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs'
+
+Diff is 709 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_exact_new_callers_and_external_registration_stay_closed (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_gate_training_cancel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/qa/b4-no-bypass/test_resident_root_source_closure.py", line 160, in test_exact_new_callers_and_external_registration_stay_closed
+    self.assertEqual(row.product_callers, tuple(expected))
+AssertionError: Tuples differ: ('cod[117 chars]l.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[32 chars].rs') != ('cod[117 chars]l.rs')
+
+First tuple contains 1 additional elements.
+First extra element 2:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs'
+
+  ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs',
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs',
+?                                                               ^
+
++  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs')
+?                                                               ^
+
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs')
+
+----------------------------------------------------------------------
+Ran 482 tests in 301.385s
+
+FAILED (failures=38, errors=2)
+evaluated command source mutations rejected: 681

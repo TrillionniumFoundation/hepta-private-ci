@@ -1,0 +1,107 @@
+{
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "base": {
+        "bytes": 13863,
+        "sha256": "968be0e590860028e4487de3e0860adef0d29dc58f2c29c26365c3f66e3c8b21",
+        "git_blob": "db6c9de84b1a9a53163c12770a4a2024c5c6a1c6"
+      },
+      "after01": {
+        "bytes": 14143,
+        "sha256": "2a5ad9c43d6ccde0e24046e376d0cb1ed2debf7098d5bace42daffbb09b428eb",
+        "git_blob": "f57a5ec7d5fedd79317e26fdcbf4ed722cb17e6a"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "base": {
+        "bytes": 15087,
+        "sha256": "159db48c8a27cc4ad2e568cc8add39a7580be3529442fc1ed5f1bfa3d64c032f",
+        "git_blob": "0d97fec5c1bd09509ba1e70c5163e2de5fe494aa"
+      },
+      "after01": {
+        "bytes": 15559,
+        "sha256": "1be70343e8903e770666637aa33c67087c15eeaf67a9934c363bb31dbf4709b1",
+        "git_blob": "ee6c375e007f7f091e8289accebc7aef0deabc8d"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base": {
+        "bytes": 24715,
+        "sha256": "6c512ab711d8a896382078517c3279109fe2efb88bc01901c21ca9a4ac7aaf3d",
+        "git_blob": "0d0a6b84559e2e825edcf37b7d3a835e9b470dba"
+      },
+      "after01": {
+        "bytes": 26647,
+        "sha256": "de4ddeafeb45be1f42487c977efc59698006c0e5d26712fa50d7a93b6175cbb7",
+        "git_blob": "f5bf0fb046aa8b671628455e83822fe51fae6e3d"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "base": {
+        "bytes": 16719,
+        "sha256": "a222f9fb7353ae82a71ebd78bd9d9e86843bb0ca8f12b97b32ed4b6d3f93ecaa",
+        "git_blob": "72f7fb5fd868654655f813d6d817e9207f17077c"
+      },
+      "after01": {
+        "bytes": 18012,
+        "sha256": "08147fa06848d4b0fd29b4a345ea9acbc5fcf1a322a5276e2777da5c3e4efc61",
+        "git_blob": "1c00ecf9e314f66da4912aff3adb3f869ffcd48a"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "base": {
+        "bytes": 21007,
+        "sha256": "1bb122415f0d9d6a749d6f8893224c78b0c2ec497ef848b92561f4c3896b2c9f",
+        "git_blob": "000b30f33d64ded1d803484679d0df3ccfbc06c3"
+      },
+      "after01": {
+        "bytes": 22068,
+        "sha256": "f455bb26e4810107db261a165da2a46b0dda24f0cfc7c070c2eca5779cd9ad1b",
+        "git_blob": "6ffedc720f72e2ba4e92d0fc4b9a70328e634ca2"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "base": {
+        "bytes": 15502,
+        "sha256": "be1bd559531d574fcc0d405402c38cc1bfb3e08d84b6cafc80a2dd69b681cd87",
+        "git_blob": "9f210f8bb9a459ba1f83bba80186f425bee344bc"
+      },
+      "after01": {
+        "bytes": 16947,
+        "sha256": "aff35da982cd88d72bd796b2ff859c293e0bbada6f87e899d46169c03b1239ae",
+        "git_blob": "8c9ec9b8ee6ffd4ba2f24ebca68a35dced6b98c5"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "base": {
+        "bytes": 27663,
+        "sha256": "d334c4528d6f5287ae1bd61e651d7478692768a6eaaf849cd9f3045b8b2d50f5",
+        "git_blob": "f5e1e190546e15ca6802338446a12de414154f49"
+      },
+      "after01": {
+        "bytes": 28033,
+        "sha256": "09c4b4b9cbe9abd5e8550a5852cb1477a7a11c8cbbcd787af0f3909bdf6a9c72",
+        "git_blob": "f93b355d806949ee1bc4f8f6ad6306271f3038a5"
+      },
+      "non_expected_text_matches_base_after_only_explicit_locator_reversal": true
+    }
+  ],
+  "all_old_test_names_preserved": true,
+  "only_two_test_methods_changed": "readonly helper/delegation + original_attestations existing legacy read indentation and added evaluated batch delegation",
+  "test_methods_remaining_ast_identical": 49,
+  "qa_status": "after01 failed on confirmed actual caller omission; not marked PASS"
+}
