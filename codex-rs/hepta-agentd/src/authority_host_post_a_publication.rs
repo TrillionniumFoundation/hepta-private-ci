@@ -32,6 +32,10 @@ mod material;
 use material::MaterialData;
 use material::RetainedMaterial;
 
+#[path = "authority_host_completed_publication_deployment.rs"]
+mod completed;
+pub(in crate::authority_host_runtime::session) use completed::with_original_completed_publication;
+
 #[path = "authority_host_successor_deployment_files.rs"]
 mod successor;
 pub(crate) use successor::RootOriginalSuccessorFilesV1;

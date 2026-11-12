@@ -60,6 +60,7 @@ impl OriginalPublicationHistoryProofV1<'_> {
 impl PublicationRefusal {
     pub(in super::super) fn with_completed_history<T>(
         root: Arc<RootAuthorityDirectory>,
+        root_path: &std::path::Path,
         initial: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
         end: Instant,
@@ -74,9 +75,11 @@ impl PublicationRefusal {
         );
         // The first read is only this independently retained control marker.
         // No publication primary, material, Artifact, or C file precedes arm.
+        let pin = super::super::completed_files::OriginalControlRecord::open(root_path, &owner)?;
         let store = HostAuthorityFrontierStore::<RefusalRecord>::open(root, owner.clone())
             .map_err(io::Error::other)?;
         let retained = store.load(&owner).map_err(io::Error::other)?;
+        pin.require_unchanged()?;
         if retained.binding.schema != 1
             || retained.binding.purpose != PURPOSE
             || retained.binding.publication_purpose != PublicationVersion::DurableV2.purpose()
@@ -126,6 +129,7 @@ impl PublicationRefusal {
             // The caller must let the actual new recipient's complete Root
             // context return and finish its physical reads before returning.
             let result = action(&proof)?;
+            pin.require_original_lock()?;
             if held.load_matching()? != armed {
                 return Err(io::Error::other(
                     "publication changed during completed read",
@@ -137,7 +141,7 @@ impl PublicationRefusal {
         let ready = held.load_matching()?;
         let mut expected = armed;
         expected.phase = Phase::Ready;
-        if ready != expected || require_end(end).is_err() {
+        if ready != expected || pin.require_original_lock().is_err() || require_end(end).is_err() {
             held.refuse_locked()?;
             return Err(io::Error::other(
                 "completed publication Ready readback differs",
