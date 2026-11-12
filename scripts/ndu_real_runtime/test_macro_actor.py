@@ -42,6 +42,7 @@ def fixture_deployment(
     for row in train + calibration:
         row["context_sha256"] = context_digest(context)
         row["state"]["features"] *= width
+        row["state"]["context_belief"] = [1.0, 0.0, 0.0, 0.0]
         for branch in row["branches"].values():
             branch["public_state_sha256"] = digest(row["state"])
             branch["initial_public_state_sha256"] = digest(
@@ -85,6 +86,12 @@ def state(step=0, remaining=10.0):
     }
 
 
+def next_action(actor, features, public, legal):
+    return actor.next(
+        features, public, legal, public_metadata=[1.0, 0.0, 0.0, 0.0] + [0.0] * 12
+    )
+
+
 class FrozenMacroActorTests(unittest.TestCase):
     def test_fitted_adapter_executes_whole_macro_without_forced_actions(self):
         for policy, macro in (("STOP", "STOP"), ("tuned-fixed", "READ")):
@@ -95,7 +102,7 @@ class FrozenMacroActorTests(unittest.TestCase):
                     legal = ["STOP", "WRITE_TEXT", "PREPARE_ROI"]
                     if index:
                         legal.append("READ_ROI")
-                    action, detail = actor.next([0.5], state(index), legal)
+                    action, detail = next_action(actor, [0.5], state(index), legal)
                     observed.append(action)
                     self.assertEqual(detail["macro_deployment_sha256"], actor.sha256)
                     if index == 0:
@@ -106,39 +113,42 @@ class FrozenMacroActorTests(unittest.TestCase):
                     self.assertEqual(detail["macro_public_state_sha256"], public_pin)
                 self.assertEqual(observed, SEQUENCES[macro])
                 with self.assertRaises(ValueError):
-                    actor.next([0.5], state(len(observed)), legal)
+                    next_action(actor, [0.5], state(len(observed)), legal)
 
     def test_forced_action_resume_and_boolean_chronology_are_refused(self):
         for changed in ({"forced_action": "STOP"}, {"step": 1}, {"step": False}):
             actor = load_fixture(fixture_deployment())
             with self.subTest(changed=changed), self.assertRaises(ValueError):
-                actor.next(
-                    [0.5], {**state(), **changed}, ["STOP", "WRITE_TEXT", "PREPARE_ROI"]
+                next_action(
+                    actor,
+                    [0.5],
+                    {**state(), **changed},
+                    ["STOP", "WRITE_TEXT", "PREPARE_ROI"],
                 )
 
     def test_budget_and_actual_legal_support_control_continuation(self):
         actor = load_fixture(fixture_deployment())
         self.assertEqual(
-            actor.next([0.5], state(), ["STOP", "WRITE_TEXT"])[0], "WRITE_TEXT"
+            next_action(actor, [0.5], state(), ["STOP", "WRITE_TEXT"])[0], "WRITE_TEXT"
         )
         actor = load_fixture(fixture_deployment())
         self.assertEqual(
-            actor.next(
-                [0.5], state(remaining=2), ["STOP", "WRITE_TEXT", "PREPARE_ROI"]
+            next_action(
+                actor, [0.5], state(remaining=2), ["STOP", "WRITE_TEXT", "PREPARE_ROI"]
             )[0],
             "WRITE_TEXT",
         )
         actor = load_fixture(fixture_deployment())
-        actor.next([0.5], state(), ["STOP", "WRITE_TEXT", "PREPARE_ROI"])
-        action, detail = actor.next(
-            [0.5], state(1, 0.5), ["STOP", "WRITE_TEXT", "READ_ROI"]
+        next_action(actor, [0.5], state(), ["STOP", "WRITE_TEXT", "PREPARE_ROI"])
+        action, detail = next_action(
+            actor, [0.5], state(1, 0.5), ["STOP", "WRITE_TEXT", "READ_ROI"]
         )
         self.assertEqual(action, "STOP")
         self.assertIn("macro_aborted", detail)
         actor = load_fixture(fixture_deployment())
-        actor.next([0.5], state(), ["STOP", "WRITE_TEXT", "PREPARE_ROI"])
+        next_action(actor, [0.5], state(), ["STOP", "WRITE_TEXT", "PREPARE_ROI"])
         with self.assertRaises(ValueError):
-            actor.next([0.5], state(1), ["STOP", "WRITE_TEXT"])
+            next_action(actor, [0.5], state(1), ["STOP", "WRITE_TEXT"])
 
     def test_content_control_codec_and_frozen_checkpoint_drift_refuse(self):
         original = fixture_deployment()

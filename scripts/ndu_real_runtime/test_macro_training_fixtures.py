@@ -120,7 +120,11 @@ def collection(root, *, modern=True):
         save(directory / "launch.json", launch)
         steps = read(directory / "trajectory.json")["steps"]
         for step in steps:
-            step.update(profile, remaining_seconds=10.0)
+            step.update(
+                profile,
+                remaining_seconds=10.0,
+                public_metadata=[1.0, 0.0, 0.0, 0.0] + [0.0] * 12,
+            )
         sync_steps(directory, steps)
         branch = observe_branch(
             directory, result, SEQUENCES[macro], 0.2 + i, 0.01, config

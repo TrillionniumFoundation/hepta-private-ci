@@ -12,11 +12,19 @@ from pathlib import Path
 from ndu_real_materials.common import strict_json
 
 from .critic_context import CriticContext
+from .macro_public_state import project
 from .metacontrol_macro_contract import SEQUENCES, digest
 
 
 def codec_sha256():
-    return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    return digest(
+        {
+            name: hashlib.sha256(
+                Path(__file__).with_name(name).read_bytes()
+            ).hexdigest()
+            for name in ("macro_actor.py", "macro_public_state.py")
+        }
+    )
 
 
 def host_context(config, utility_sha256):
@@ -139,7 +147,7 @@ class FrozenMacroControl:
         self.deployment, self.sha256 = value, expected_sha256
         self.macro, self.sequence, self.index = None, None, 0
 
-    def next(self, features, state, legal):
+    def next(self, features, state, legal, *, public_metadata):
         if (
             type(state["step"]) is not int
             or state["step"] != self.index
@@ -152,16 +160,9 @@ class FrozenMacroControl:
             )
         detail = {}
         if self.sequence is None:
-            public = {
-                "features": list(features),
-                "context_belief": [1.0],
-                "pending_evidence": False,
-                "freshness_seconds": 0.0,
-                "remaining_seconds": state["remaining_seconds"],
-                "legal_macros": ["STOP", "READ"]
-                if "PREPARE_ROI" in legal
-                else ["STOP"],
-            }
+            public = project(
+                features, public_metadata, state["remaining_seconds"], legal
+            )
             self.macro, detail = self.model.choose(
                 public,
                 self.deployment["policy"],
