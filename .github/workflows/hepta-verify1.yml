@@ -84,6 +84,7 @@ jobs:
           set -euo pipefail
           python -B -m experiments.verification_cell_verify1.observation_smoke --output "$VERIFY5_OBSERVATION_OUTPUT" 2>&1 | tee "$VERIFY1_RECORDS/observation.log"
           python -B -m experiments.verification_cell_verify1.observation_audit --input "$VERIFY5_OBSERVATION_OUTPUT" --output "$VERIFY1_RECORDS/observation-audit.json" 2>&1 | tee "$VERIFY1_RECORDS/observation-audit.log"
+          python -B -m experiments.verification_cell_verify1.observation_attribution --input "$VERIFY5_OBSERVATION_OUTPUT" --output "$VERIFY1_RECORDS/observation-attribution.json"
           git diff --exit-code
       - name: Preserve all receipts including failures
         if: always()
