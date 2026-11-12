@@ -189,6 +189,10 @@ impl OriginalIndependentBEvaluationInputs {
     pub(super) fn business_files(&self) -> Vec<PathBuf> {
         self.files.business_files()
     }
+
+    pub(super) fn preserve_original_business_directory(self) -> PathBuf {
+        self.business_directory.keep()
+    }
 }
 
 pub(super) fn produce(
