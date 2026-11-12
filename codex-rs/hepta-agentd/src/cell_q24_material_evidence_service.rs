@@ -333,3 +333,5 @@ mod tests;
 
 #[cfg(test)]
 pub(crate) use command::bootstrap_ports;
+#[cfg(test)]
+pub(crate) use command::retained_version_dataset_fixture;

@@ -39,12 +39,16 @@ pub enum OriginalCircuitRetainedVersionErrorV1 {
     CommitUncertain,
     #[error("original retained Version dispatch was already requested; readback only")]
     ReadbackRequired,
+    #[error("the original FinalUse issuer explicitly denied this prepared operation")]
+    FinalUseDenied,
     #[error("original retained Version was cancelled before its queued send")]
     Cancelled,
     #[error("original retained Version clock regressed or is unavailable")]
     Clock,
     #[error("original retained Version transport: {0}")]
     Transport(#[from] codex_hepta_contracts::HostIssuerTransportError),
+    #[error("original retained Version FinalUse issuer: {0}")]
+    Issuer(#[from] crate::AgentdFinalUseIssuerError),
     #[error("original retained publication: {0}")]
     Publication(#[from] super::OriginalCircuitRetainedPublicationErrorV1),
     #[error("original Material: {0}")]

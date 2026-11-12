@@ -10,10 +10,16 @@ use super::super::initial::initial_head_and_prepared;
 use super::ArtifactFiles;
 use super::CurrentHead;
 use super::Fixture;
-use super::NOW;
 use super::RECORDS;
 
 impl Fixture {
+    pub(crate) fn new_initial_with_live_artifacts(
+        config: CellGenerationConfigV2,
+        operation_id: &str,
+    ) -> anyhow::Result<Self> {
+        Self::create_with_clock(config.clone(), config, Some(operation_id), /*research*/ true)
+    }
+
     pub(crate) fn new_initial(
         config: CellGenerationConfigV2,
         operation_id: &str,
@@ -39,9 +45,10 @@ pub(super) fn current_head(
     target: &CellGenerationConfigV2,
     artifacts: &ArtifactFiles,
     initial_operation: Option<&str>,
+    observed_unix_millis: u64,
 ) -> anyhow::Result<CurrentHead> {
     if let Some(operation) = initial_operation {
-        let selected = artifacts.selection(NOW)?;
+        let selected = artifacts.selection(observed_unix_millis)?;
         let binding = CellGenerationOwnerBindingV1::new(target, RECORDS)?;
         let (head, _) = initial_head_and_prepared(operation.into(), binding, &selected)?;
         Ok(head)
