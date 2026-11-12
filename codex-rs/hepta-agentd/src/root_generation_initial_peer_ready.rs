@@ -17,7 +17,9 @@ impl RootGenerationInitialClient {
     ) -> Result<Self, AgentdError> {
         connection.require_original_publication_session()?;
         let binding = ready::bootstrap_binding(bootstrap)?;
-        let response = stream.exchange(&ready::request(&binding)?)?;
+        let response = stream
+            .exchange(&ready::request(&binding)?)
+            .map_err(readiness_exchange_error)?;
         let acknowledged = ready::require_response(&response, &binding)?;
         connection.require_original_publication_session()?;
         let client: RootGenerationInitialClient =
@@ -28,4 +30,11 @@ impl RootGenerationInitialClient {
         client.connection.require_original_publication_session()?;
         Ok(client)
     }
+}
+
+fn readiness_exchange_error(error: std::io::Error) -> std::io::Error {
+    std::io::Error::new(
+        error.kind(),
+        format!("original Initial readiness frame exchange: {error}"),
+    )
 }

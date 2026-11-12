@@ -187,7 +187,7 @@ class InitialPeerReadySourceTests(unittest.TestCase):
             "self.require_original_context(end)?", "self.service.enroll_generation_initial(",
             "let enrollment_post = self.require_original_context(end)", "enrolled?",
             "self.service.register_initial_run_start_retention(",
-            "source.register_original_source_cell(context)?", "source.register_original_source_ledger(context)?",
+            "source .register_original_source_cell(context)", "source .register_original_source_ledger(context)",
             "RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?",
             "let post = self.require_original_context(end)", "post.map(|()| run_start)",
         ))
@@ -221,7 +221,7 @@ class InitialPeerReadySourceTests(unittest.TestCase):
 
     def test_ready_client_returns_only_after_real_observe_of_same_profile(self):
         self.check(CLIENT, "from_original_ready_stream", (
-            "ready::bootstrap_binding(bootstrap)?", "stream.exchange(&ready::request(&binding)?)?",
+            "ready::bootstrap_binding(bootstrap)?", "stream .exchange(&ready::request(&binding)?) .map_err(readiness_exchange_error)?",
             "ready::require_response(&response, &binding)?", "Self::from_original_initial_stream(stream, bootstrap, connection)?",
             "client.profile.binding != acknowledged", "client.connection.require_original_publication_session()?",
         ))

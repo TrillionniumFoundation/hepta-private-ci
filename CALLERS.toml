@@ -12892,18 +12892,6 @@ caller_markers = []
 receiver_type = "RootGenerationInitialDeploymentFilesV1"
 
 [[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_initial_enrollment_runtime.rs"
-required = []
-forbidden = []
-required_function_order = [{ function = "fn enroll_original(", sequence = ["self.require_original_context(end)?", "self.service.enroll_generation_initial(", "let enrollment_post = self.require_original_context(end)", "let slot: RegisteredGenerationInitial = enrolled?", "self.service.register_initial_run_start_retention(", "Arc::clone(files)", "end,", "source.register_original_source_cell(context)?", "source.register_original_source_ledger(context)?", "RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?", "let post = self.require_original_context(end)", "result.and_then(", "post.map(|()| run_start)", "Ok(run_start) => Ok((slot, run_start))", "RegisteredGenerationInitial::refuse_original_enrollment(&slot)?"] }]
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_initial_enrollment_runtime.rs"
-required = []
-forbidden = []
-required_function_order = [{ function = "fn enroll_original(", sequence = ["self.service.enroll_generation_initial(", "self.initial.runtime.source_capture.as_ref()", "let context = source_capture::SourceCaptureContext {", "slot: &slot", "stopping: self.stopping", "end,", "source.register_original_source_cell(context)?", "source.register_original_source_ledger(context)?", "let post = self.require_original_context(end)", "Ok(run_start) => Ok((slot, run_start))"] }]
-
-[[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_initial_peer_deployment.rs"
 required = []
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "FinalUseAuthority::", "open_registered_writer(", "HostAuthorityService::open(", "NeuronGenerationCurrentOwnerV1::prepare_initial", "claim_final_use(", "serde_json::from_slice", "File::open", "capability.register(", ".recv_timeout(", "MetadataFile::open_metadata("]
@@ -12920,12 +12908,6 @@ path = "codex-rs/hepta-agentd/src/authority_host_initial_peer_runtime.rs"
 required = []
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "FinalUseAuthority::", "open_registered_writer(", "HostAuthorityService::open(", "NeuronGenerationCurrentOwnerV1::prepare_initial", "claim_final_use(", "File::open", "OpenOptions", "serde_json::from_slice", "register(inputs)", "Instant::now() +"]
 required_function_order = [{ function = "fn register_original_peer(", sequence = ["HostAuthorityPeerChannel::from_stream(", "stream.try_clone()?", "context.peer_policy()?", "context.owner.try_clone()?", "HostAuthorityPeerChannel::limit_original_end(&mut channel, context.end)", "channel.exchange_with_original_deadline(|bytes, request_end|", "ready::require_request(bytes, &context.initial.runtime.ready_binding)?", "context.require_original_context(request_end)?", "deployment.with_original_peer_enrollment(request_end, |inputs|", "context.enroll_original(inputs, request_end)?", "let post = context.require_original_context(request_end)", "registration?", "post?", "RegisteredGenerationInitial::require_original_enrollment_profile(slot)?", "ready::response(", "if !matches!(result, Ok(true))", "RegisteredGenerationInitial::refuse_original_enrollment(slot)?", "return Err(", "drop(channel)", "enrolled.ok_or_else("] }]
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/root_generation_initial_peer_ready.rs"
-required = []
-forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "FinalUseAuthority::", "open_registered_writer(", "HostAuthorityService::open(", "NeuronGenerationCurrentOwnerV1::prepare_initial", "claim_final_use(", "File::open", "UnixStream::connect", "Instant::now()", "Duration::", "loop {"]
-required_function_order = [{ function = "fn from_original_ready_stream(", sequence = ["connection.require_original_publication_session()?", "ready::bootstrap_binding(bootstrap)?", "stream.exchange(&ready::request(&binding)?)?", "ready::require_response(&response, &binding)?", "connection.require_original_publication_session()?", "Self::from_original_initial_stream(stream, bootstrap, connection)?", "client.profile.binding != acknowledged", "return Err(uncertain())", "client.connection.require_original_publication_session()?", "Ok(client)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs"
@@ -15831,3 +15813,21 @@ definition_markers = ["fn original_broker_head(", "self.store.is_original_host()
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs", "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs", "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs", "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs", "codex-rs/hepta-agentd/src/authority_host_publication_acceptance.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_broker_head\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_initial_enrollment_runtime.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn enroll_original(", sequence = ["self.require_original_context(end)?", "self.service.enroll_generation_initial(", "let enrollment_post = self.require_original_context(end)", "let slot: RegisteredGenerationInitial = enrolled?", "self.service.register_initial_run_start_retention(", "Arc::clone(files)", "end,", "source\n                    .register_original_source_cell(context)\n                    .map_err(|error| enrollment_error(", ", error))?", "source\n                    .register_original_source_ledger(context)\n                    .map_err(|error| enrollment_error(", ", error))?", "RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?", "let post = self.require_original_context(end)", "result.and_then(", "post.map(|()| run_start)", "Ok(run_start) => Ok((slot, run_start))", "RegisteredGenerationInitial::refuse_original_enrollment(&slot)?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_initial_enrollment_runtime.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn enroll_original(", sequence = ["self.service.enroll_generation_initial(", "self.initial.runtime.source_capture.as_ref()", "let context = source_capture::SourceCaptureContext {", "slot: &slot", "stopping: self.stopping", "end,", "source\n                    .register_original_source_cell(context)\n                    .map_err(|error| enrollment_error(", ", error))?", "source\n                    .register_original_source_ledger(context)\n                    .map_err(|error| enrollment_error(", ", error))?", "let post = self.require_original_context(end)", "Ok(run_start) => Ok((slot, run_start))"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_initial_peer_ready.rs"
+required = []
+forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "FinalUseAuthority::", "open_registered_writer(", "HostAuthorityService::open(", "NeuronGenerationCurrentOwnerV1::prepare_initial", "claim_final_use(", "File::open", "UnixStream::connect", "Instant::now()", "Duration::", "loop {"]
+required_function_order = [{ function = "fn from_original_ready_stream(", sequence = ["connection.require_original_publication_session()?", "ready::bootstrap_binding(bootstrap)?", "stream\n            .exchange(&ready::request(&binding)?)\n            .map_err(readiness_exchange_error)?", "ready::require_response(&response, &binding)?", "connection.require_original_publication_session()?", "Self::from_original_initial_stream(stream, bootstrap, connection)?", "client.profile.binding != acknowledged", "return Err(uncertain())", "client.connection.require_original_publication_session()?", "Ok(client)"] }]

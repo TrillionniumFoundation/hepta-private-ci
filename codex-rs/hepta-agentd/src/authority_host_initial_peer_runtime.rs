@@ -31,37 +31,53 @@ pub(super) fn register_original_peer(
         RegisteredGenerationInitial,
         Option<RegisteredInitialRunStartRetentionV1>,
     )> = None;
+    let mut handler_error = None;
+    let mut stage = "receive original readiness frame";
     let result = channel.exchange_with_original_deadline(|bytes, request_end| {
-        let action = (|| {
+        let action: io::Result<Vec<u8>> = (|| {
+            stage = "validate original readiness binding";
             ready::require_request(bytes, &context.initial.runtime.ready_binding)?;
+            stage = "check original Root context before enrollment";
             context.require_original_context(request_end)?;
+            stage = "open original deployment inputs";
             let registration = deployment.with_original_peer_enrollment(request_end, |inputs| {
+                stage = "register original Initial inputs and baselines";
                 enrolled = Some(context.enroll_original(inputs, request_end)?);
+                stage = "check original deployment after enrollment";
                 Ok(())
             });
             // Check the original Root context even when enrollment or the
             // fixed-input postcheck failed. Never ACK an uncertain attempt.
             let post = context.require_original_context(request_end);
             registration?;
+            stage = "check original Root context after enrollment";
             post?;
+            stage = "verify original enrolled profile";
             let (slot, _) = enrolled
                 .as_ref()
                 .ok_or_else(|| io::Error::other("original Initial registration missing"))?;
             RegisteredGenerationInitial::require_original_enrollment_profile(slot)?;
-            ready::response(
+            stage = "encode original readiness acknowledgement";
+            let response = ready::response(
                 &context.initial.runtime.ready_binding,
                 &slot.profile.binding,
-            )
+            )?;
+            stage = "write acknowledgement and check original peer deadline";
+            Ok(response)
         })();
-        action.map_err(|_| HostIssuerTransportError::Unavailable)
+        action.map_err(|error| {
+            handler_error = Some(error);
+            HostIssuerTransportError::Unavailable
+        })
     });
     if !matches!(result, Ok(true)) {
         if let Some((slot, _)) = &enrolled {
             RegisteredGenerationInitial::refuse_original_enrollment(slot)?;
         }
-        return Err(io::Error::other(
-            "original Initial readiness acknowledgement uncertain",
-        ));
+        return Err(io::Error::other(format!(
+            "original Initial readiness acknowledgement uncertain: stage={stage}; enrolled={}; transport={result:?}; handler={handler_error:?}",
+            enrolled.is_some()
+        )));
     }
     // The framing clone is dropped without shutdown; the same original
     // socket now carries Observe. No second accept or renewed deadline exists.
