@@ -13,6 +13,7 @@ OPERATION = AGENT + "cell_q24_dataset_operation.rs"
 PREPARED = AGENT + "cell_q24_prepared_operation.rs"
 SOURCE = AGENT + "cell_q24_source_receipt_owner.rs"
 SIGNATURE = AGENT + "cell_q24_source_signature.rs"
+SOURCE_OPERATION = AGENT + "cell_q24_source_receipt_operation.rs"
 
 
 class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
@@ -98,7 +99,7 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
         self.assertEqual(rows["q24_original_source_receipt_signature"]["product_callers"], [SOURCE])
         self.assertIn(SOURCE, rows["q24_original_prepared_operation"]["product_callers"])
         self.assertEqual(rows["q24_original_prepared_operation_owner"]["product_callers"],
-                         [AGENT + "cell_q24_prepared_learning.rs", SOURCE])
+                         [AGENT + "cell_q24_prepared_learning.rs", SOURCE_OPERATION, SOURCE])
         self.check_markers(SOURCE, "fn require_prepared(", (
             "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",
             "self.prepared.scope() != prepared.scope()", "!std::ptr::eq(self.prepared.as_ref(), prepared)",
@@ -151,16 +152,18 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
 
     def test_dataset_still_reads_actual_experience_on_both_sides_of_work(self):
         self.check_markers(SOURCE, "fn with_original_experience(", (
+            "Arc::clone(&self.prepared)", "prepared.with_original_prepared_operation(",
+            "self.with_original_experience_in_operation(experience, read, operation)"))
+        self.check_markers(SOURCE_OPERATION, "fn with_original_experience_in_operation(", (
             "experience.config.stage != OriginalCellQ24SourceStageV1::Experience",
             "!Arc::ptr_eq(&self.prepared, &experience.prepared)",
-            "prepared.with_original_prepared_operation(",
             "receipt.operation_id != initial.request.operation_id",
             "receipt.predecessor != initial.head_digest", "receipt.actor_id != initial.owners.experience",
             "facts.experience_evidence_digest()",
             "receipt.observed_unix_seconds != before.attestation.issued_at",
             "LearningEvidenceRoleV1::Observer", "operation(self, &before.snapshot, read)?"))
         for occurrence in (0, 1):
-            self.reject_removal(SOURCE, "fn with_original_experience(",
+            self.reject_removal(SOURCE_OPERATION, "fn with_original_experience_in_operation(",
                                 "experience.read_at(prepared.initial(), read)?", occurrence)
         self.check_markers(SOURCE, "fn authenticate_completed(", (
             "learning_owner_evidence::decode(bytes)?",

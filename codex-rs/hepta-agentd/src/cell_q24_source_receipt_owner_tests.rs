@@ -21,6 +21,9 @@ use crate::OriginalCellQ24SourceSigningConfigV1 as SigningConfig;
 use crate::OriginalCellQ24SourceStageV1 as Stage;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
+#[path = "cell_q24_source_receipt_operation_tests.rs"]
+mod operation;
+
 async fn source_fixture(
     root: &Path,
     run: &str,

@@ -34,6 +34,8 @@ use crate::learning_owner_journal::LearningOwnerJournalV1;
 
 #[path = "cell_q24_source_owner_files.rs"]
 mod files;
+#[path = "cell_q24_source_receipt_operation.rs"]
+mod operation;
 #[path = "cell_q24_source_signature.rs"]
 mod signature;
 pub use files::OriginalCellQ24SourceFilesV1;
@@ -213,11 +215,8 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
     }
 
     pub fn read_experience(&mut self) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
-        if self.config.stage != OriginalCellQ24SourceStageV1::Experience {
-            return Err(binding("original Experience owner"));
-        }
         let prepared = Arc::clone(&self.prepared);
-        prepared.with_original_prepared_operation(|read| self.read_at(prepared.initial(), read))?
+        prepared.with_original_prepared_operation(|read| self.read_experience_in_operation(read))?
     }
 
     /// Borrow the actual predecessor owner, not a cached receipt. Its live
@@ -234,7 +233,10 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         &mut self,
         experience: &mut OriginalCellQ24SourceReceiptOwnerV1<EW>,
     ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
-        self.with_original_experience(experience, Self::read_at)
+        let prepared = Arc::clone(&self.prepared);
+        prepared.with_original_prepared_operation(|read| {
+            self.read_dataset_in_operation(experience, read)
+        })?
     }
 
     fn attest_at(
@@ -314,51 +316,9 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
             &OriginalPreparedReadV1<'_>,
         ) -> Result<OriginalCellQ24SourceCompletionV1, Error>,
     ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
-        if self.config.stage != OriginalCellQ24SourceStageV1::Dataset
-            || experience.config.stage != OriginalCellQ24SourceStageV1::Experience
-            || !Arc::ptr_eq(&self.prepared, &experience.prepared)
-        {
-            return Err(binding("original Dataset and Experience owners"));
-        }
         let prepared = Arc::clone(&self.prepared);
         prepared.with_original_prepared_operation(|read| {
-            let before = experience.read_at(prepared.initial(), read)?;
-            OriginalPreparedReadV1::require_prepared(read, &self.prepared)?;
-            let facts = OriginalPreparedReadV1::read_validated_facts(read)?;
-            let initial = self.prepared.initial();
-            let receipt = &before.receipt;
-            if receipt.operation_id != initial.request.operation_id
-                || receipt.predecessor != initial.head_digest
-                || receipt.actor_id != initial.owners.experience
-                || &receipt.observation != facts.experience()
-                || receipt.evidence_digest != facts.experience_evidence_digest()
-                || receipt.observed_unix_seconds != before.attestation.issued_at
-            {
-                return Err(binding("original Experience predecessor"));
-            }
-            let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-            let verified = self.config.verifier.verify(
-                LearningEvidenceRoleV1::Observer,
-                &before.attestation,
-                &payload,
-                now()?,
-            )?;
-            if verified.principal().principal_id != initial.owners.experience {
-                return Err(binding("original Experience Observer"));
-            }
-            let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
-            coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
-            self.prepared
-                .scope()
-                .validate_snapshot(coordinator.snapshot())?;
-            if coordinator.snapshot() != &before.snapshot {
-                return Err(binding("original Experience checkpoint"));
-            }
-            let completed = operation(self, &before.snapshot, read)?;
-            if experience.read_at(prepared.initial(), read)? != before {
-                return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
-            }
-            Ok(completed)
+            self.with_original_experience_in_operation(experience, read, operation)
         })?
     }
 
