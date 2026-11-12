@@ -64,6 +64,7 @@ pub struct CellGenerationJournalObserverV1 {
     witness_pin: FilePin,
     config: CellGenerationObserverConfigV1,
     binding: CellGenerationOwnerBindingV1,
+    header: Vec<u8>,
 }
 
 /// An observed complete physical cut. There is no public constructor or
@@ -118,6 +119,7 @@ impl CellGenerationJournalObserverV1 {
             journal_pin,
             witness_pin,
             config,
+            header: binding.header(),
             binding,
         })
     }
@@ -172,8 +174,8 @@ impl CellGenerationJournalObserverV1 {
         self.journal
             .read_exact_at(&mut bytes, 0)
             .map_err(unavailable)?;
-        let header = self.binding.header();
-        if bytes[..HEADER_BYTES] != header {
+        let header = &self.header;
+        if &bytes[..HEADER_BYTES] != header.as_slice() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
         let mut state = GenerationState::new(&self.config.generation)?;
@@ -198,7 +200,7 @@ impl CellGenerationJournalObserverV1 {
                 return Err(CellGenerationErrorV2::Pending);
             }
             let payload = &bytes[offset + 4..end - 32];
-            let next = next_anchor(&header, head, payload)?;
+            let next = next_anchor(header, head, payload)?;
             if next.sequence > self.config.journal_records
                 || next.checkpoint_digest.as_array() != &bytes[end - 32..end]
             {
@@ -219,7 +221,7 @@ impl CellGenerationJournalObserverV1 {
         let observation = CellGenerationObservationV1::capture(
             &self.config.generation,
             &state,
-            continuity_checkpoint(&header, head, length),
+            continuity_checkpoint(header, head, length),
         )?;
         if self.witness_head()? != expected || self.stamps()? != before {
             return Err(CellGenerationErrorV2::Pending);
@@ -278,3 +280,7 @@ fn readonly(original: File) -> Result<(File, FilePin), CellGenerationErrorV2> {
 fn unavailable(_: std::io::Error) -> CellGenerationErrorV2 {
     CellGenerationErrorV2::Unavailable
 }
+
+#[path = "cell_generation_unpublished_observer.rs"]
+mod unpublished;
+pub use unpublished::CellGenerationUnpublishedObserverV1;
