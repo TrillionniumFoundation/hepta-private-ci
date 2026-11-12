@@ -1,0 +1,48 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "qualification.hcsn_graded.test_model",
+    "qualification.hcsn_initial_law.test_migration",
+    "qualification.hcsn_joint_dde.test_model",
+    "qualification.hcsn_joint_dde.test_retained_values",
+    "-v"
+  ],
+  "exit": 0,
+  "python": "3.12.14",
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/model.py": "a81139ed340b58ce61533d3d8f30eb316ac7abafc12b9a8e67485078c3d92548",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/probe_migration.py": "477b17fb052cd2344baf603cf0e1e2ff625058a83fb1b21d64787964f7883989",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/reference.py": "326e32c5903cb077a57d52ccef6b2e618f49bd20dc782842e61f2162a0d34056",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/spatial.py": "f5d28cde16f1cf8de58572951dcf17846ae64c24d8fd8adeb8c602003c73f464",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/test_model.py": "26b1f40b0b8bb63a8f587004c721a66b0f1263e8dbff3a2508c3bde49bba949f",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_initial_law/migration.py": "3acf7cc6cc00b6193e92af48f9374dbfe5788ca919b786a18894072fc2a4b8d0",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_initial_law/test_migration.py": "eabbe854cc57d2191a94f44623cab08c31671a0de09f10afdfc1d0623c217520",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/basis.py": "efaffeaf2192813115f90c6bf8c93bb54c53318cd28d1df0ff3f829639ed99ee",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/test_retained_values.py": "159362d83e5bbdf8a9661bac4df62a5094a7d0faf9e0cd2535d6f69a34d3cc82",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/verify_retained_values.py": "10da6146fa67a73b479d03eb52121df89e414bf5de24437053fc0400f7c7f5a9"
+  },
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/model.py": "a81139ed340b58ce61533d3d8f30eb316ac7abafc12b9a8e67485078c3d92548",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/probe_migration.py": "477b17fb052cd2344baf603cf0e1e2ff625058a83fb1b21d64787964f7883989",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/reference.py": "326e32c5903cb077a57d52ccef6b2e618f49bd20dc782842e61f2162a0d34056",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/spatial.py": "f5d28cde16f1cf8de58572951dcf17846ae64c24d8fd8adeb8c602003c73f464",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/test_model.py": "26b1f40b0b8bb63a8f587004c721a66b0f1263e8dbff3a2508c3bde49bba949f",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_initial_law/migration.py": "3acf7cc6cc00b6193e92af48f9374dbfe5788ca919b786a18894072fc2a4b8d0",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_initial_law/test_migration.py": "eabbe854cc57d2191a94f44623cab08c31671a0de09f10afdfc1d0623c217520",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/basis.py": "efaffeaf2192813115f90c6bf8c93bb54c53318cd28d1df0ff3f829639ed99ee",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/test_retained_values.py": "159362d83e5bbdf8a9661bac4df62a5094a7d0faf9e0cd2535d6f69a34d3cc82",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/verify_retained_values.py": "10da6146fa67a73b479d03eb52121df89e414bf5de24437053fc0400f7c7f5a9"
+  },
+  "source_unchanged": true,
+  "status": "HOLD_NO_GO",
+  "wall_seconds": 22.826165337999555
+}
