@@ -10474,7 +10474,7 @@ id = "root_post_a_enable"
 symbol = "PreparedHostAuthoritySession::enable_original_post_a_learning_from_deployment"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs"
 definition_markers = ["pub fn enable_original_post_a_learning_from_deployment(", "post_a::PostALearningRuntime::retain_original_plan(", "post_a_worker::prepare("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = []
 receiver_type = "PreparedHostAuthoritySession"
 
@@ -10489,3 +10489,9 @@ path = "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs"
 required = []
 forbidden = []
 required_function_order = [{ function = "fn serve_optional(", sequence = ["post_a_worker::serve_optional(", "bound.runtime.post_a_worker.as_ref(),", "session_end,", "|| {", "bound.listener.accept()", "HostAuthorityPeerChannel::from_stream(", "HostAuthorityPeerChannel::limit_original_end(&mut channel, session_end)", "let mut sequence = 1_u64", "while channel", "let result = original()", "stopping.store(true, Ordering::Release)", "stream.shutdown(Shutdown::Both)", "worker\n                    .join()", "result.and(historical)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+required = ["--post-a-learning-deployment", "enable_original_post_a_learning_from_deployment("]
+forbidden = []
+required_function_order = [{ function = "fn main() -> Result", sequence = ["let post_a_deployment = options", "if post_a_deployment.is_some()", "historical_deployment.is_none()", "learning_handoff.is_none()", "model_handoff.is_none()", "root_fd.is_none()", "learning_profile.is_some()", "model_reservation.is_some()", "publication_deployment.is_some()", "publication_handoff.is_some()", "let mut claimed =", "let mut learning_handoff =", "inherited_descriptor(fd, &mut claimed)", "let mut model_handoff =", "inherited_descriptor(fd, &mut claimed)", "if post_a_deployment.is_none()", "model_reservation.is_some() != model_handoff.is_some()", "if post_a_deployment.is_none()", "learning_profile.is_some() != learning_handoff.is_some()", "enable_original_historical_task_read_from_deployment(&mut prepared, &path)?", "if let Some(post_a_path) = post_a_deployment.as_deref()", "learning_handoff\n                        .take()", "model_handoff\n                        .take()", "root_fd\n                        .as_ref()", ".try_clone()?", "enable_original_post_a_learning_from_deployment(", "&mut prepared,", "post_a_path,", "UnixDatagram::from(learning)", "UnixDatagram::from(model)", "root,", "seal_original_historical_task_read(&prepared)?"] }]

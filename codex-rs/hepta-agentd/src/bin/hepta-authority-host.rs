@@ -150,6 +150,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .remove(std::ffi::OsStr::new("--q24-model-reservation"))
             .map(PathBuf::from);
         let model_handoff = options.remove(std::ffi::OsStr::new("--root-q24-model-handoff-fd"));
+        let post_a_deployment = options
+            .remove(std::ffi::OsStr::new("--post-a-learning-deployment"))
+            .map(PathBuf::from);
         let publication_deployment = options
             .remove(std::ffi::OsStr::new("--generation-publication-deployment"))
             .map(PathBuf::from);
@@ -210,6 +213,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         {
             return Err("historical task reads require their fixed Root deployment, independent purpose handoff and original Root pidfd in the recipient session".into());
         }
+        if post_a_deployment.is_some()
+            && (historical_deployment.is_none()
+                || learning_handoff.is_none()
+                || model_handoff.is_none()
+                || root_fd.is_none()
+                || learning_profile.is_some()
+                || model_reservation.is_some()
+                || publication_deployment.is_some()
+                || publication_handoff.is_some())
+        {
+            return Err("post-A serving requires its fixed Root plan, original historical route and two late handoffs without eager owner profiles".into());
+        }
         if publication_deployment.is_some() != publication_handoff.is_some()
             || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())
         {
@@ -226,11 +241,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
-        let learning_handoff = learning_handoff
+        let mut learning_handoff = learning_handoff
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
-        let model_handoff = model_handoff
+        let mut model_handoff = model_handoff
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
@@ -246,13 +261,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
-        if model_reservation.is_some() != model_handoff.is_some()
-            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())
+        if post_a_deployment.is_none()
+            && (model_reservation.is_some() != model_handoff.is_some()
+                || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none()))
         {
             return Err("Model serving requires its reserved Root profile and separate handoff beside original learning".into());
         }
-        if learning_profile.is_some() != learning_handoff.is_some()
-            || learning_profile.is_some() && root_fd.is_none()
+        if post_a_deployment.is_none()
+            && (learning_profile.is_some() != learning_handoff.is_some()
+                || learning_profile.is_some() && root_fd.is_none())
         {
             return Err("learning serving requires its Root profile, separate handoff and original Root pidfd".into());
         }
@@ -366,6 +383,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let historical_offer = match (historical_deployment, historical_handoff) {
             (Some(path), Some(handoff)) => {
                 codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)?;
+                if let Some(post_a_path) = post_a_deployment.as_deref() {
+                    let learning = learning_handoff
+                        .take()
+                        .ok_or("original late learning handoff missing")?;
+                    let model = model_handoff
+                        .take()
+                        .ok_or("original late Model handoff missing")?;
+                    let root = root_fd
+                        .as_ref()
+                        .ok_or("original post-A Root pidfd missing")?
+                        .try_clone()?;
+                    codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_post_a_learning_from_deployment(
+                        &mut prepared,
+                        post_a_path,
+                        std::os::unix::net::UnixDatagram::from(learning),
+                        std::os::unix::net::UnixDatagram::from(model),
+                        root,
+                    )?;
+                }
                 Some((handoff, codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?))
             }
             (None, None) => None,
