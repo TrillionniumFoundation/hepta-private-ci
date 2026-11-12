@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.native-original-byte-transfer.failed-reads.v1",
+  "status": "original-transport-errors-retained",
+  "archive_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+  "fixed_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180",
+  "read_only": true,
+  "failures": [
+    {
+      "index": 13,
+      "attempt": 1,
+      "tool": "h_binary_read",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 638976,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "index": 14,
+      "attempt": 1,
+      "tool": "h_binary_read",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 688128,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "index": 15,
+      "attempt": 1,
+      "tool": "h_binary_read",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 737280,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "index": 16,
+      "attempt": 1,
+      "tool": "h_binary_read",
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 786432,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ]
+}

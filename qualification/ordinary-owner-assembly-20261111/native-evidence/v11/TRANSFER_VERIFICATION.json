@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.original-transfer-git-verification.v11",
+  "status": "COMPLETE_BYTE_TRANSFER_VERIFIED_WITH_ALL_FAILED_READS_RETAINED",
+  "transfer_index": {
+    "name": "transfer-index.json",
+    "git_blob": "eee404b45f6db1715413e839cb7efb2f9bc23a30",
+    "bytes": 38698,
+    "sha256": "1223103766c6110a23575d840482f8afb6970a5e2c683a755ead48a866c24b23"
+  },
+  "archive": {
+    "bytes": 1202304,
+    "sha256": "51c7123fb7841a952d25a4113c3e5119bb76d9b12a0f9f54ff376d9840cadbce",
+    "git_blob": "c26f525c5bbecffcb783db6cd42c7e470a35e085",
+    "server_sha": "c26f525c5bbecffcb783db6cd42c7e470a35e085",
+    "encoding": "base64",
+    "uploaded": true
+  },
+  "archive_upload_validation": "Complete decoded bytes matched the pre-pinned size/SHA256/Git; create_blob returned the same Git object ID. A second Git archive download is not claimed.",
+  "utf8_git_readbacks": [
+    {
+      "name": "export_json",
+      "git_blob": "cc2a9cd49aace26a19119093187e78ff02d9d66c",
+      "bytes": 5018,
+      "sha256": "ea47b6e260208a98c2a2679764ca6fb2f9798bcac2d882ff32be0ba98c232fe3",
+      "readback_exact": true
+    },
+    {
+      "name": "metadata_read_receipts",
+      "git_blob": "4c7adc049830ea86f075b857707b103d6cfe1a56",
+      "bytes": 8581,
+      "sha256": "84744aa63ad08e3b30bf9af03bf741dbdc9f90908ff654c74ae6daf53dfaeb47",
+      "readback_exact": true
+    },
+    {
+      "name": "pure_byte_helpers",
+      "git_blob": "4305696fa6156d6a50da3a4dc8a42d8446496845",
+      "bytes": 3763,
+      "sha256": "d14c6be18cf181ea5a4f0f981346b40f9e2db2afbac54fecfaf8b9ad358536d8",
+      "readback_exact": true
+    },
+    {
+      "name": "archive-read-failures-013-016.json",
+      "git_blob": "2553ec14b5f0b09c28ddfbd1628db70c56825d72",
+      "bytes": 3216,
+      "sha256": "2f3b47fa40b0803aa570030f516dfe60733a5f9445f1264846af73ead09763c0",
+      "readback_exact": true
+    },
+    {
+      "name": "transfer-index.json",
+      "git_blob": "eee404b45f6db1715413e839cb7efb2f9bc23a30",
+      "bytes": 38698,
+      "sha256": "1223103766c6110a23575d840482f8afb6970a5e2c683a755ead48a866c24b23",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-000-006.json",
+      "git_blob": "1fe349a3b853985ae387d63f3345277d0c4374ab",
+      "bytes": 467780,
+      "sha256": "ff2b0c35780bdde421825f25297a429913815ec0144ce8893b7078993179b322",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-007-012.json",
+      "git_blob": "2d7fbbbc1db0a676cf14b7473fe56f3808093057",
+      "bytes": 401156,
+      "sha256": "6e54669e9980c2dfd97b674b22dbd59b9e74eb8b28bd2aa9691e53ec4510b297",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-013-019.json",
+      "git_blob": "75e1bc6e654b8f81aaf491b76130ced189e8ec8c",
+      "bytes": 467904,
+      "sha256": "f5529e74fa22884c5af13ff879b2d8452c23be57cf37b89b34bd2b4fc221a75d",
+      "readback_exact": true
+    },
+    {
+      "name": "binary-read-receipts-020-024.json",
+      "git_blob": "579aba6698dd29f069ffbdd7293112908f5c2916",
+      "bytes": 299101,
+      "sha256": "e8de5b75043204ec52cb041e823756f8e8dc362f942ee07a08b69e6c75d70e6e",
+      "readback_exact": true
+    }
+  ],
+  "initial_small_file_read": {
+    "request": {
+      "host": "ai395",
+      "paths": [
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/export.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "multi-file read could not complete; verify configured read roots, regular single-link files, strict UTF-8 and byte budgets"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    },
+    "complete_receipts": {
+      "name": "metadata_read_receipts",
+      "git_blob": "4c7adc049830ea86f075b857707b103d6cfe1a56",
+      "bytes": 8581,
+      "sha256": "84744aa63ad08e3b30bf9af03bf741dbdc9f90908ff654c74ae6daf53dfaeb47"
+    },
+    "cause": "Unknown; no diagnosis of permissions, link count, roots, UTF-8, or byte budget is made."
+  },
+  "read_history": {
+    "archive_successes": 25,
+    "archive_original_timeouts": 4,
+    "same_request_retries": 4,
+    "metadata_small_read_failure": 1,
+    "metadata_binary_fallback_success": 1,
+    "total_h_reads": 31,
+    "total_h_errors": 5,
+    "pty_calls": 0
+  },
+  "verification_boundary": "60 tar members/59 payloads/no exclusions and manifest digest are the original exporter's result in the preserved export.json. This transfer verified the complete 1202304 raw archive bytes and did not decompress or independently parse the archive.",
+  "no_remote_files_or_permissions_changed": true,
+  "no_export_rerun": true,
+  "no_native_or_cargo": true,
+  "no_ref_changes": true,
+  "business_acceptance_unchanged": {
+    "ordinary_complete": 0,
+    "ordinary_adoption": 0,
+    "ordinary_no_update_rollback": 0,
+    "independent_c": false,
+    "physical_daemon_root_restart": false
+  }
+}

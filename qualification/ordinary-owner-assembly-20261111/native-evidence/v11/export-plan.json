@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.original-records-export-plan.v11",
+  "status": "PREPARED_ONLY_NOT_DISPATCHED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "purpose": "Read-only preservation of the one completed original 80871cc full-caller failure. No qualification is rerun and no previous pass is inherited by any later source.",
+  "artifacts": {
+    "config": {
+      "name": "config",
+      "git_blob": "e084ab56a4d111ecc4369b0b96f80c0aa800a5cc",
+      "bytes": 100462,
+      "sha256": "98845b24d185270c9cab4afdba56df9f85393b34bab9c102fcd85e7ec31e4985"
+    },
+    "exact_h_pty_start_request": {
+      "name": "request",
+      "git_blob": "6fd6a576eff6a8e6b6554e32492eb3ccf978418e",
+      "bytes": 113855,
+      "sha256": "54ed0ca60e09029563b4d3fb4c2cfb6d3c8a95d19bfc56e52f628e39a6fb52c6"
+    },
+    "unchanged_exporter": {
+      "name": "exporter",
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    "unchanged_wrapper": {
+      "name": "wrapper",
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    }
+  },
+  "proposed_request_envelope": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-80871cc-original-records-export-v11-20261112",
+    "rows": 24,
+    "cols": 200,
+    "python_arguments_prefix": [
+      "-B",
+      "-c"
+    ],
+    "argument_mapping": {
+      "arg_2": "Exact unchanged 146-byte wrapper",
+      "arg_3": "Exact unchanged 4370-byte exporter",
+      "args_4_onward": "Three chunks whose exact concatenation is the independently pinned config JSON"
+    },
+    "config_chunk_bytes": [
+      48000,
+      48000,
+      4462
+    ],
+    "maximum_argument_bytes": 48000
+  },
+  "output": {
+    "owned_new_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112",
+    "predicted_archive_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+    "predicted_export_json_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/export.json",
+    "existence_not_probed": true,
+    "existing_directory_policy": "Unchanged exporter immediately refuses an existing output directory; never delete or overwrite it and never retry under an invented new key.",
+    "archive_size": null,
+    "archive_git_blob": null,
+    "archive_sha256": null,
+    "member_count": null,
+    "pending": "These values can be known only from the actual export result, after Root dispatches the exact reviewed request."
+  },
+  "reads": {
+    "clean_anchor": {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/source",
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+      "status": ""
+    },
+    "records_sources": [
+      {
+        "name": "ordinary-80871cc-seven-final-v4",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/records",
+        "terminal": "progress.json",
+        "sha256": "532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c",
+        "expected": {
+          "status": "failed",
+          "source_sha": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+          "source_tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+        }
+      }
+    ],
+    "recursive_input_scope": "Only this one original records directory is recursively archived; the source checkout is queried by original read-only git identity commands. Paths embedded in the native request are archive data and are not traversed or executed.",
+    "original_identity_evidence": {
+      "name": "finalidentity",
+      "git_blob": "9ff3b8d15b87da56ab51b6f99ef3edc2395d06ba",
+      "bytes": 127,
+      "sha256": "975db38875e21412ba81f4e92fb55ab5977a16e7b8b76b376a83f53b9ac04cc7"
+    },
+    "original_progress_pin": {
+      "name": "progress",
+      "git_blob": "7430987e5d17c50f966589df1f58c4ac2768f172",
+      "bytes": 30884,
+      "sha256": "532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c"
+    }
+  },
+  "original_terminal": {
+    "source": {
+      "commit": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+    },
+    "progress_status": "failed",
+    "precise_failure": "FAIL_HEPTA_CALLER_PROOF: root_live_admin_original_bounded_lease_revoke: missing definition marker '.try_lock()'",
+    "maintenance_and_bins": "Passed clean on this exact source, as recorded by the original progress/result.",
+    "qa": "236 tests passed (221 B4 plus three five-test suites), as recorded by the pinned original Root result; four QA process exits are independently present as zero in the original progress.",
+    "caller_self_test": "Passed on this exact source",
+    "caller_full": {
+      "exit_code": 1,
+      "timed_out": false,
+      "truncated": false,
+      "seconds": 232.59621237008832
+    },
+    "not_reached": [
+      "same-source helper build and preverify",
+      "ordinary seven-package tests",
+      "Root metadata/list and seventeen parent tests",
+      "post-test helper verification"
+    ],
+    "final_identity": {
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "status": "",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+    },
+    "ordinary_acceptance": {
+      "complete": 0,
+      "positive_adoption": 0,
+      "no_update_rollback": 0,
+      "independent_c": false,
+      "physical_daemon_root_restart": false
+    },
+    "all_failures_preserved": true
+  },
+  "original_raw_inputs": {
+    "progress": {
+      "name": "progress",
+      "git_blob": "7430987e5d17c50f966589df1f58c4ac2768f172",
+      "bytes": 30884,
+      "sha256": "532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c"
+    },
+    "final_identity": {
+      "name": "finalidentity",
+      "git_blob": "9ff3b8d15b87da56ab51b6f99ef3edc2395d06ba",
+      "bytes": 127,
+      "sha256": "975db38875e21412ba81f4e92fb55ab5977a16e7b8b76b376a83f53b9ac04cc7"
+    },
+    "native_request": {
+      "name": "original_request",
+      "git_blob": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e",
+      "bytes": 56726,
+      "sha256": "f404bb63a9eed2131e67c492050e58ec3c8c22209fa5672ea6feb4236cea86b0"
+    },
+    "pty_observation": {
+      "name": "pty_observation",
+      "git_blob": "32d06aeefd780f662bc2f5cc5cdbac46de78eae8",
+      "bytes": 26792,
+      "sha256": "28b2ca51eef60efacf3b4e3e6f68fb165e3498ee5610fba321869e965d0168d4"
+    },
+    "raw_pty": {
+      "name": "raw_pty",
+      "git_blob": "05d4e9d61a85c598fdc62e5560cb540e756fc08d",
+      "bytes": 6987,
+      "sha256": "d5d683dce1f83d82a559f5b5e89f87849dd44986d7f0dc3f48ed0e94e2d762ea"
+    },
+    "root_result_summary": {
+      "name": "original_result",
+      "git_blob": "dec3782f110f4723abe321b58dde0ac5a3614810",
+      "bytes": 3210,
+      "sha256": "ff45a3804196eeba1d2b4858afe816432744e0ba49731bbe7ca634767fca1d87"
+    }
+  },
+  "raw_and_normalized_distinction": {
+    "raw_native_request_blob": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e",
+    "raw_native_request_bytes": 56726,
+    "raw_native_request_sha256": "f404bb63a9eed2131e67c492050e58ec3c8c22209fa5672ea6feb4236cea86b0",
+    "archive_member": "requests/ordinary-80871cc-seven-final-v4.json",
+    "archive_member_serialization": "Unchanged exporter reserializes the complete parsed original request object with Python json.dumps(indent=2, sort_keys=True) and trailing newline. Values, including complete original argv strings, are preserved. This member is not claimed byte-identical to the separately pinned raw JSON request.",
+    "observations": "Original PTY observation, raw PTY text, and Root result are included as data with their independent raw Git/size/SHA pins. JSON observation envelopes are normalized by the unchanged exporter."
+  },
+  "unchanged_exporter_guards": [
+    "Exact clean anchor HEAD/tree/status before and after gathering records",
+    "Hard SHA256 plus status/source_sha/source_tree checks on the one original progress.json",
+    "Original regular-file and single-link requirements; 32 MiB per file and 128 MiB total limits",
+    "Original helper executable exclusion rule, with explicit exclusion records; do not assume the actual exclusion count before execution",
+    "Original file inode/device/size/mtime plus content SHA256 stability checks",
+    "Original tar reopen, exact member set, file-kind and byte-by-byte payload checks",
+    "New exclusive output files and unchanged failure.json retention"
+  ],
+  "static_preparation_checks": {
+    "unchanged_exporter": {
+      "name": "exporter",
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    "unchanged_wrapper": {
+      "name": "wrapper",
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    },
+    "config_chunks": [
+      {
+        "index": 0,
+        "bytes": 48000,
+        "sha256": "ebeb1f7d1b1613d5936209414fe0c7bce76bddf0dca54ddf05fa3a4077eb30ce"
+      },
+      {
+        "index": 1,
+        "bytes": 48000,
+        "sha256": "c7d1d0710ca17f112b405ebfdf82466cdf943857e11d3884065f24a5f737e09c"
+      },
+      {
+        "index": 2,
+        "bytes": 4462,
+        "sha256": "3e8667d9e4d3a7753a3036d60b4644ea7a215847b8e48131a7abcee82665aa4c"
+      }
+    ],
+    "total_config_bytes": 100462,
+    "wrapper_sys_argv_equivalence": "Exact wrapper source sets sys.argv to [original argv[0], concatenated config chunks], then executes the unchanged exporter. The reconstructed config string and complete native-request object were checked equal without executing Python.",
+    "original_harness_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "original_native_request_raw_pin": {
+      "name": "original_request",
+      "git_blob": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e",
+      "bytes": 56726,
+      "sha256": "f404bb63a9eed2131e67c492050e58ec3c8c22209fa5672ea6feb4236cea86b0"
+    },
+    "prepared_only": true,
+    "python_ast_not_executed": true,
+    "no_h_or_pty_calls": true,
+    "no_native": true,
+    "no_ref_change": true,
+    "original_input_bindings": {
+      "source": {
+        "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+        "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/source",
+        "clean_final_identity_git": "9ff3b8d15b87da56ab51b6f99ef3edc2395d06ba"
+      },
+      "progress": {
+        "name": "progress",
+        "git_blob": "7430987e5d17c50f966589df1f58c4ac2768f172",
+        "bytes": 30884,
+        "sha256": "532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c"
+      },
+      "original_request": {
+        "name": "original_request",
+        "git_blob": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e",
+        "bytes": 56726,
+        "sha256": "f404bb63a9eed2131e67c492050e58ec3c8c22209fa5672ea6feb4236cea86b0"
+      },
+      "pty": {
+        "session": "dpty-afcb40fe7d0bc4a6637a3ef749b643a5c3c520368a79e2f7682cdf96389e83ae",
+        "chunks": [
+          {
+            "index": 0,
+            "offset": 0,
+            "next_offset": 3139,
+            "bytes": 3139,
+            "sha256": "34b2d98629c96c437a8faa796933d1029d3145363b73b5a5f9cf87d9257fc02f"
+          },
+          {
+            "index": 1,
+            "offset": 3139,
+            "next_offset": 3947,
+            "bytes": 808,
+            "sha256": "39146e928193df6981f8f0f140b2fd959b33fafe8c9a2f559b5ee4f955291331"
+          },
+          {
+            "index": 2,
+            "offset": 3947,
+            "next_offset": 6421,
+            "bytes": 2474,
+            "sha256": "d7d11e1e6eca1b4a998a73f9352cdb75628e1d8650bce40d30eb04320e661723"
+          },
+          {
+            "index": 3,
+            "offset": 6421,
+            "next_offset": 6987,
+            "bytes": 566,
+            "sha256": "a73290ec2f176ed7e64e662539d97811634cfb7ab3bc4501fed2aa04fb81001b"
+          }
+        ],
+        "joined_bytes": 6987,
+        "git_blob": "05d4e9d61a85c598fdc62e5560cb540e756fc08d",
+        "sha256": "d5d683dce1f83d82a559f5b5e89f87849dd44986d7f0dc3f48ed0e94e2d762ea",
+        "exit_code": 1,
+        "output_complete": true,
+        "capture_error": null
+      },
+      "all_input_git_hashes_verified": true,
+      "member_validation_not_yet_executed": true
+    },
+    "exporter_and_wrapper_byte_identical_to_v10": true,
+    "complete_source_count": 1,
+    "planned_native_request_objects": 1,
+    "archive_parse_or_member_verification_executed_here": false,
+    "actual_dispatch_performed": false
+  },
+  "changed_relative_to_v10": [
+    "Exactly one original records source: terminal 80871cc full-caller failure instead of the previous three terminal attempts",
+    "Clean anchor HEAD/tree/path now points to that same original 80871cc checkout",
+    "New uniquely named V11 output directory and exact idempotency key supplied by Root",
+    "Only the corresponding original raw request, PTY, progress, final identity, and Root result are embedded or pinned",
+    "Config is transmitted in three ASCII JSON chunks of 48000, 48000, and 4462 bytes; wrapper and exporter bytes do not change"
+  ],
+  "operations_performed_by_preparation": {
+    "git_blob_reads_and_unreferenced_blob_writes": true,
+    "h_calls": 0,
+    "pty_calls": 0,
+    "process_execution": 0,
+    "native_execution": 0,
+    "branch_or_ref_changes": 0
+  }
+}

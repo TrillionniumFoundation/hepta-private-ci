@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.root-v11-original-export-request-review.v1",
+  "request": "6fd6a576eff6a8e6b6554e32492eb3ccf978418e",
+  "config": "e084ab56a4d111ecc4369b0b96f80c0aa800a5cc",
+  "plan": "7ca790a787d23b2937ccc509fab1ffcb2c430f34",
+  "unchanged_exporter": "79494fe659157c453d4f0804cb01581eecce6052",
+  "unchanged_wrapper": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+  "root_read_plan_and_config": true,
+  "source": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/source",
+  "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+  "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+  "output": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112",
+  "sources": [
+    {
+      "name": "ordinary-80871cc-seven-final-v4",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/records",
+      "terminal": "progress.json",
+      "sha256": "532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c",
+      "expected": {
+        "status": "failed",
+        "source_sha": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+        "source_tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+      }
+    }
+  ],
+  "request_object_equal": true,
+  "observations": {
+    "summary": true,
+    "pty_observation": true,
+    "pty_raw": true,
+    "final_identity": true,
+    "progress_pin": true,
+    "request_pin": true
+  },
+  "scope": "Readonly source identity and single terminal records tree; writes only fresh uniquely named V11 output directory. Existing source and files are not modified; contained native request is only JSON data.",
+  "native_state": "V31 full7 is a separate active candidate. This exporter only preserves the terminated immutable V30 records and cannot confer a pass on V31.",
+  "dispatch": "pending independent review; not dispatched",
+  "derived_scope": {
+    "purpose": "Preserve the one terminal original 80871cc full seven-package attempt and its complete records.",
+    "actual_result": "Maintenance, binary checks, four QA suites (236 tests), and caller self-test passed on this exact clean source; original full caller verification failed at its definition marker. Ordinary and Root behavior suites were not reached.",
+    "restrictions": "The nested native request is archive data only. No native rerun, source change, permission change, reference mutation, failure exemption, or result inheritance is authorized by this export configuration.",
+    "ordinary_acceptance": {
+      "complete_chains": 0,
+      "positive_adoption": 0,
+      "no_update_rollback": 0,
+      "independent_c": false,
+      "physical_daemon_root_restart": false
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schema": "hepta.original-v11-evidence-integration.v1",
+  "scope": "Preserve the complete terminated 80871 full-caller failure and exact export/transfer provenance; no source, checker or runtime changes.",
+  "branch_parent": "82845bf14df58280a6099c55dd9783beffa01eb7",
+  "original_source": {
+    "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+    "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+  },
+  "native_outcome": {
+    "source": {
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+      "status": ""
+    },
+    "result": "FAILED_FULL_CALLER_DEFINITION_MARKER",
+    "original_error": "FAIL_HEPTA_CALLER_PROOF: root_live_admin_original_bounded_lease_revoke: missing definition marker '.try_lock()'",
+    "passed_prefix": "Maintenance, bins, 236 QA tests and caller self-test, on this exact original source only.",
+    "not_reached": [
+      "ordinary seven-package behavior tests",
+      "Root metadata/list and seventeen parent tests"
+    ],
+    "no_result_inheritance_to_later_source": true
+  },
+  "archive": {
+    "bytes": 1202304,
+    "sha256": "51c7123fb7841a952d25a4113c3e5119bb76d9b12a0f9f54ff376d9840cadbce",
+    "git_blob": "c26f525c5bbecffcb783db6cd42c7e470a35e085",
+    "server_sha": "c26f525c5bbecffcb783db6cd42c7e470a35e085",
+    "encoding": "base64",
+    "uploaded": true
+  },
+  "original_export": {
+    "status": "verified-original-record-export",
+    "members": 60,
+    "payload_files": 59,
+    "excluded": [],
+    "manifest_sha256": "25a60b627c37948ecdeae01624427640fd89423318381efb4ece8a40d34b9fd4",
+    "git_blob": "cc2a9cd49aace26a19119093187e78ff02d9d66c"
+  },
+  "actual_export_terminal": {
+    "session": "dpty-c89c0ecd26a6a62d7725713334b10f1316f5f97b300567c104d0b971bf1598ec",
+    "exit_code": 0,
+    "bytes": 4819,
+    "capture_error": null,
+    "complete": true
+  },
+  "transfer": {
+    "index": "eee404b45f6db1715413e839cb7efb2f9bc23a30",
+    "verification": "31f2a50fb324616c9098889a0f473d5ee577ea01",
+    "reads": 31,
+    "original_errors": 5,
+    "archive_successful_chunks": 25,
+    "archive_original_timeouts": 4,
+    "same_parameter_version_read_retries": 4,
+    "metadata_small_read": "INVALID_ARGUMENT; original cause unknown; full request/response retained",
+    "metadata_binary_read": "same original file succeeded; exact bytes/version/hash retained"
+  },
+  "verification_boundary": "Original exporter validated all60 members and source before/after; independent transfer verified full fixed-version bytes/SHA/Git. No independent tar decompression or native rerun is claimed. Original terminal bytes are losslessly wrapped as base64 JSON and also retained in the full PTY observation.",
+  "evidence_branch_note": "This branch retains its separate older code base. Only the source named in each record owns its result. V31/894138 qualification is separately recorded; no result inherited from this failed source.",
+  "artifacts": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-records.tar.xz",
+      "git_blob": "c26f525c5bbecffcb783db6cd42c7e470a35e085"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-export.json",
+      "git_blob": "cc2a9cd49aace26a19119093187e78ff02d9d66c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/TRANSFER.json",
+      "git_blob": "eee404b45f6db1715413e839cb7efb2f9bc23a30"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/TRANSFER_VERIFICATION.json",
+      "git_blob": "31f2a50fb324616c9098889a0f473d5ee577ea01"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/metadata-read-receipts.json",
+      "git_blob": "4c7adc049830ea86f075b857707b103d6cfe1a56"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/read-receipts/archive-read-failures-013-016.json",
+      "git_blob": "2553ec14b5f0b09c28ddfbd1628db70c56825d72"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/transfer-byte-helpers.json",
+      "git_blob": "4305696fa6156d6a50da3a4dc8a42d8446496845"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/root-byte-helpers.json",
+      "git_blob": "e818c11b3d0a53c5ab5582786d89a7f3aa0c6e16"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/export-config.json",
+      "git_blob": "e084ab56a4d111ecc4369b0b96f80c0aa800a5cc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/exact-export-request.json",
+      "git_blob": "6fd6a576eff6a8e6b6554e32492eb3ccf978418e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/export-plan.json",
+      "git_blob": "7ca790a787d23b2937ccc509fab1ffcb2c430f34"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/export-root-review.json",
+      "git_blob": "91ac8e4a701dd94b2625292635cdb45d31d7c0e7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/export-independent-review.json",
+      "git_blob": "78d9ea001a64f62664823ffc6a0bb8146d47c55c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-exporter.py",
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-export-wrapper.py",
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-native-request.json",
+      "git_blob": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-native-result.json",
+      "git_blob": "dec3782f110f4723abe321b58dde0ac5a3614810"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-native-progress.json",
+      "git_blob": "7430987e5d17c50f966589df1f58c4ac2768f172"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-final-source-identity.json",
+      "git_blob": "9ff3b8d15b87da56ab51b6f99ef3edc2395d06ba"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/caller-full-verify-original-error.txt",
+      "git_blob": "4131779af8026bf76f2da40deb96654a8561214e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/read-receipts/binary-read-receipts-000-006.json",
+      "git_blob": "1fe349a3b853985ae387d63f3345277d0c4374ab"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/read-receipts/binary-read-receipts-007-012.json",
+      "git_blob": "2d7fbbbc1db0a676cf14b7473fe56f3808093057"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/read-receipts/binary-read-receipts-013-019.json",
+      "git_blob": "75e1bc6e654b8f81aaf491b76130ced189e8ec8c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/read-receipts/binary-read-receipts-020-024.json",
+      "git_blob": "579aba6698dd29f069ffbdd7293112908f5c2916"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/PTY_OBSERVATION.json",
+      "git_blob": "e6ba56f4fd78789ba8c759dc2c20087fbf90594d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v11/original-terminal.bytes.json",
+      "git_blob": "02cd7e5c1f5fb953945d443565000f925d1a79b6"
+    }
+  ],
+  "ordinary": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_c": false,
+    "physical_daemon_root_restart": false
+  },
+  "draft_only": true
+}

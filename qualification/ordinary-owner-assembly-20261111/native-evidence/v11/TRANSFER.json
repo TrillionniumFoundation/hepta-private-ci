@@ -1,0 +1,921 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.original-evidence-transfer.v11",
+  "status": "COMPLETE_BYTE_TRANSFER_VERIFIED_WITH_ORIGINAL_READ_FAILURES_RETAINED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original_export": {
+    "exact_request_blob": "6fd6a576eff6a8e6b6554e32492eb3ccf978418e",
+    "config_blob": "e084ab56a4d111ecc4369b0b96f80c0aa800a5cc",
+    "plan_blob": "7ca790a787d23b2937ccc509fab1ffcb2c430f34",
+    "unchanged_exporter_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+    "unchanged_wrapper_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+    "root_reported_terminal": {
+      "session_id": "dpty-c89c0ecd26a6a62d7725713334b10f1316f5f97b300567c104d0b971bf1598ec",
+      "owner_pid": 3011408,
+      "pid": 3011410,
+      "created_unix_ms": 1794462745129,
+      "exit_code": 0,
+      "output_complete": true,
+      "capture_error": null,
+      "output_bytes": 4819,
+      "provenance": "Supplied by Root from its original terminal observation. This transfer performed zero PTY calls; Root separately preserves that original observation."
+    },
+    "output_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112"
+  },
+  "archive": {
+    "name": "original-records.tar.xz",
+    "bytes": 1202304,
+    "sha256": "51c7123fb7841a952d25a4113c3e5119bb76d9b12a0f9f54ff376d9840cadbce",
+    "git_blob": "c26f525c5bbecffcb783db6cd42c7e470a35e085",
+    "fixed_remote_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180",
+    "github_create_blob_response_sha": "c26f525c5bbecffcb783db6cd42c7e470a35e085",
+    "uploaded_encoding": "base64",
+    "complete_upload_hash_matched": true,
+    "separate_archive_git_download_not_claimed": true
+  },
+  "metadata_reads": {
+    "original_export_json": {
+      "name": "export_json",
+      "git_blob": "cc2a9cd49aace26a19119093187e78ff02d9d66c",
+      "bytes": 5018,
+      "sha256": "ea47b6e260208a98c2a2679764ca6fb2f9798bcac2d882ff32be0ba98c232fe3",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/export.json",
+      "version": "66306:75281618:5018:1794462745513184024:1794462745513184024"
+    },
+    "initial_small_read": {
+      "tool": "h_read_multiple_files",
+      "original_request": {
+        "host": "ai395",
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/export.json"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 131072
+      },
+      "original_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "multi-file read could not complete; verify configured read roots, regular single-link files, strict UTF-8 and byte budgets"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    "initial_error_cause": "Undetermined. The generic INVALID_ARGUMENT response is preserved exactly. No inference is made about permissions, hard links, configured roots, UTF-8, or response budget.",
+    "successful_binary_fallback": {
+      "tool": "h_binary_read",
+      "original_request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/export.json",
+        "offset": 0,
+        "limit": 65536
+      },
+      "actual_response_metadata": {
+        "chunk_sha256": "ea47b6e260208a98c2a2679764ca6fb2f9798bcac2d882ff32be0ba98c232fe3",
+        "eof": true,
+        "next_offset": 5018,
+        "offset": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/export.json",
+        "size": 5018,
+        "version": "66306:75281618:5018:1794462745513184024:1794462745513184024"
+      },
+      "strict_utf8_decode_and_roundtrip_verified": true,
+      "export_json_metadata_matched_all_pre_pinned_expected_values": true
+    },
+    "complete_original_request_response_receipts": {
+      "name": "metadata_read_receipts",
+      "git_blob": "4c7adc049830ea86f075b857707b103d6cfe1a56",
+      "bytes": 8581,
+      "sha256": "84744aa63ad08e3b30bf9af03bf741dbdc9f90908ff654c74ae6daf53dfaeb47"
+    },
+    "file_path_or_permissions_changed": false,
+    "scope": "The binary fallback records only its actual bytes/version/hash for the same authorized file. It is not a claim to have changed the file or bypassed the failed small-read constraints."
+  },
+  "archive_read_history": {
+    "successful_chunks": 25,
+    "first_chunk_bytes": 49152,
+    "regular_chunk_bytes": 49152,
+    "last_chunk_bytes": 22656,
+    "failed_attempts": 4,
+    "same_request_retries": 4,
+    "initial_maximum_concurrency": 4,
+    "recovery_and_remaining_reads_concurrency": 1,
+    "successful_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "failures_receipt": {
+      "name": "archive-read-failures-013-016.json",
+      "git_blob": "2553ec14b5f0b09c28ddfbd1628db70c56825d72",
+      "bytes": 3216,
+      "sha256": "2f3b47fa40b0803aa570030f516dfe60733a5f9445f1264846af73ead09763c0"
+    },
+    "retried_original_requests": [
+      {
+        "index": 13,
+        "attempt": 2,
+        "request": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+          "offset": 638976,
+          "limit": 49152,
+          "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+        }
+      },
+      {
+        "index": 14,
+        "attempt": 2,
+        "request": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+          "offset": 688128,
+          "limit": 49152,
+          "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+        }
+      },
+      {
+        "index": 15,
+        "attempt": 2,
+        "request": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+          "offset": 737280,
+          "limit": 49152,
+          "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+        }
+      },
+      {
+        "index": 16,
+        "attempt": 2,
+        "request": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+          "offset": 786432,
+          "limit": 49152,
+          "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+        }
+      }
+    ],
+    "preservation": "All four original timeout request/reply pairs are retained in the failure receipt. Each retried request was compared byte-for-byte as JSON with its original request, including expected_version, path, offset and limit. Successful reply values for all 25 chunks remain in the four receipt batches."
+  },
+  "independent_byte_verification": {
+    "checks_for_every_successful_chunk": [
+      "tool result success",
+      "exact file path",
+      "same version",
+      "same total file size",
+      "contiguous requested and returned offset",
+      "exact returned length",
+      "next_offset",
+      "correct eof flag",
+      "independently recomputed chunk SHA256"
+    ],
+    "full_join_checks": [
+      "1202304-byte exact complete coverage",
+      "SHA256 over every decoded byte",
+      "SHA1 over literal Git blob header plus every decoded byte",
+      "re-decoded concatenated base64 yields the same full SHA256"
+    ],
+    "verified": {
+      "bytes": 1202304,
+      "sha256": "51c7123fb7841a952d25a4113c3e5119bb76d9b12a0f9f54ff376d9840cadbce",
+      "git_blob": "c26f525c5bbecffcb783db6cd42c7e470a35e085"
+    },
+    "original_expected_values": "c26f525c5bbecffcb783db6cd42c7e470a35e085 / 51c7123fb7841a952d25a4113c3e5119bb76d9b12a0f9f54ff376d9840cadbce",
+    "verification_functions": {
+      "name": "pure_byte_helpers",
+      "git_blob": "4305696fa6156d6a50da3a4dc8a42d8446496845",
+      "bytes": 3763,
+      "sha256": "d14c6be18cf181ea5a4f0f981346b40f9e2db2afbac54fecfaf8b9ad358536d8"
+    },
+    "helper_recovery": {
+      "known_vectors": 8,
+      "fixed_exporter": {
+        "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+        "bytes": 4370,
+        "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+      },
+      "method": "Pure JavaScript within the existing functions code-mode; no subprocess, filesystem, parser channel, or native execution."
+    }
+  },
+  "original_member_verification": {
+    "attribution": "Original exporter verification, as recorded in the exact transferred export.json. This transfer did not decompress, extract, or independently parse the tar.",
+    "original_export_status": "verified-original-record-export",
+    "members": 60,
+    "payload_files": 59,
+    "excluded": [],
+    "manifest_sha256": "25a60b627c37948ecdeae01624427640fd89423318381efb4ece8a40d34b9fd4"
+  },
+  "source_binding": {
+    "attribution": "Read from original export.json and compared field-by-field with the fixed expected Root values. No new source identity command was executed by this transfer.",
+    "before": {
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "status": "",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+    },
+    "after": {
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "status": "",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+    },
+    "original_progress_blob": "7430987e5d17c50f966589df1f58c4ac2768f172",
+    "original_clean_identity_blob": "9ff3b8d15b87da56ab51b6f99ef3edc2395d06ba",
+    "original_result_blob": "dec3782f110f4723abe321b58dde0ac5a3614810"
+  },
+  "original_outcome": {
+    "source": {
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+      "status": ""
+    },
+    "result": "FAILED_FULL_CALLER_DEFINITION_MARKER",
+    "original_error": "FAIL_HEPTA_CALLER_PROOF: root_live_admin_original_bounded_lease_revoke: missing definition marker '.try_lock()'",
+    "passed_prefix": "Maintenance, bins, 236 QA tests and caller self-test, on this exact original source only.",
+    "not_reached": [
+      "ordinary seven-package behavior tests",
+      "Root metadata/list and seventeen parent tests"
+    ],
+    "no_result_inheritance_to_later_source": true
+  },
+  "receipt_storage": {
+    "format": "Complete original h request objects and MCP response values, including original response text and base64 data. JSON envelopes and validation summaries are reviewer-created.",
+    "groups": [
+      {
+        "name": "binary-read-receipts-000-006.json",
+        "git_blob": "1fe349a3b853985ae387d63f3345277d0c4374ab",
+        "bytes": 467780,
+        "sha256": "ff2b0c35780bdde421825f25297a429913815ec0144ce8893b7078993179b322",
+        "indices": {
+          "first": 0,
+          "last_inclusive": 6
+        },
+        "byte_range": {
+          "start": 0,
+          "end_exclusive": 344064
+        }
+      },
+      {
+        "name": "binary-read-receipts-007-012.json",
+        "git_blob": "2d7fbbbc1db0a676cf14b7473fe56f3808093057",
+        "bytes": 401156,
+        "sha256": "6e54669e9980c2dfd97b674b22dbd59b9e74eb8b28bd2aa9691e53ec4510b297",
+        "indices": {
+          "first": 7,
+          "last_inclusive": 12
+        },
+        "byte_range": {
+          "start": 344064,
+          "end_exclusive": 638976
+        }
+      },
+      {
+        "name": "binary-read-receipts-013-019.json",
+        "git_blob": "75e1bc6e654b8f81aaf491b76130ced189e8ec8c",
+        "bytes": 467904,
+        "sha256": "f5529e74fa22884c5af13ff879b2d8452c23be57cf37b89b34bd2b4fc221a75d",
+        "indices": {
+          "first": 13,
+          "last_inclusive": 19
+        },
+        "byte_range": {
+          "start": 638976,
+          "end_exclusive": 983040
+        }
+      },
+      {
+        "name": "binary-read-receipts-020-024.json",
+        "git_blob": "579aba6698dd29f069ffbdd7293112908f5c2916",
+        "bytes": 299101,
+        "sha256": "e8de5b75043204ec52cb041e823756f8e8dc362f942ee07a08b69e6c75d70e6e",
+        "indices": {
+          "first": 20,
+          "last_inclusive": 24
+        },
+        "byte_range": {
+          "start": 983040,
+          "end_exclusive": 1202304
+        }
+      }
+    ],
+    "largest_group_bytes": 467904,
+    "all_group_bytes_strictly_less_than_512000": true,
+    "partial_checkpoint_superseded_for_completion_status": {
+      "git_blob": "07e40c776d8d8325de3e55bdc1cd9e06b9138710",
+      "bytes": 3890,
+      "sha256": "39d2cf16be97b3b377914dd540740f25e52ce6a2f37cfe0ed5de53a790fc692e"
+    }
+  },
+  "successful_chunk_index": [
+    {
+      "index": 0,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 0,
+        "limit": 49152
+      },
+      "response_metadata": {
+        "chunk_sha256": "d493fe11ae94574434897190530c45f41d2f360f66172bf87050e6276b6d55ee",
+        "eof": false,
+        "next_offset": 49152,
+        "offset": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "d493fe11ae94574434897190530c45f41d2f360f66172bf87050e6276b6d55ee"
+    },
+    {
+      "index": 1,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 49152,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "5631eb6321464c3059d0aba67b7a782ea148a029aa5e2951e35d6835140cd96b",
+        "eof": false,
+        "next_offset": 98304,
+        "offset": 49152,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "5631eb6321464c3059d0aba67b7a782ea148a029aa5e2951e35d6835140cd96b"
+    },
+    {
+      "index": 2,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 98304,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "8cb4cc5f923520210678b2014194e7db60983722c80a75dd1c295fcefeeaf50e",
+        "eof": false,
+        "next_offset": 147456,
+        "offset": 98304,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "8cb4cc5f923520210678b2014194e7db60983722c80a75dd1c295fcefeeaf50e"
+    },
+    {
+      "index": 3,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 147456,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "fade064a91af63f667f44d7af21cfcd11aef38a98a9de92637e872a837ad230f",
+        "eof": false,
+        "next_offset": 196608,
+        "offset": 147456,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "fade064a91af63f667f44d7af21cfcd11aef38a98a9de92637e872a837ad230f"
+    },
+    {
+      "index": 4,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 196608,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "901599fa93e6ce50f32687c4dc774376396e392dd97ca25f15708463d7ef59a4",
+        "eof": false,
+        "next_offset": 245760,
+        "offset": 196608,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "901599fa93e6ce50f32687c4dc774376396e392dd97ca25f15708463d7ef59a4"
+    },
+    {
+      "index": 5,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 245760,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "162368f1058d42724dc37f0634462da6a135f41880461350c2b9a18e72f53989",
+        "eof": false,
+        "next_offset": 294912,
+        "offset": 245760,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "162368f1058d42724dc37f0634462da6a135f41880461350c2b9a18e72f53989"
+    },
+    {
+      "index": 6,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 294912,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "f23d4e501cc7b15d2862646f54d5ef60232228eb09fb15743f6e580d9830807c",
+        "eof": false,
+        "next_offset": 344064,
+        "offset": 294912,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "f23d4e501cc7b15d2862646f54d5ef60232228eb09fb15743f6e580d9830807c"
+    },
+    {
+      "index": 7,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 344064,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "04693e4c60c848042303e3b6de6f19f505232c8cd1b4700a37ae20700caad962",
+        "eof": false,
+        "next_offset": 393216,
+        "offset": 344064,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "04693e4c60c848042303e3b6de6f19f505232c8cd1b4700a37ae20700caad962"
+    },
+    {
+      "index": 8,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 393216,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "bf8c2dc69f8589483eb5f2e0f553f6fdadf005fd7dbc950bf08e6b9d8d090698",
+        "eof": false,
+        "next_offset": 442368,
+        "offset": 393216,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "bf8c2dc69f8589483eb5f2e0f553f6fdadf005fd7dbc950bf08e6b9d8d090698"
+    },
+    {
+      "index": 9,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 442368,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "7984a7ea46d88cbe412a61aa1f8bac7a05b1ad1e0c13bad1d12e15bf2392badc",
+        "eof": false,
+        "next_offset": 491520,
+        "offset": 442368,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "7984a7ea46d88cbe412a61aa1f8bac7a05b1ad1e0c13bad1d12e15bf2392badc"
+    },
+    {
+      "index": 10,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 491520,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "a543e10850f6b07389cd7b15df5cc13aa521f4adf557a1c980ab84c1ff6bab71",
+        "eof": false,
+        "next_offset": 540672,
+        "offset": 491520,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "a543e10850f6b07389cd7b15df5cc13aa521f4adf557a1c980ab84c1ff6bab71"
+    },
+    {
+      "index": 11,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 540672,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "2d134a2e87bf5272d2f9098937b382fac5abf337a1c3310bce25cc544d047d3f",
+        "eof": false,
+        "next_offset": 589824,
+        "offset": 540672,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "2d134a2e87bf5272d2f9098937b382fac5abf337a1c3310bce25cc544d047d3f"
+    },
+    {
+      "index": 12,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 589824,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "8245ae49fc267a1e68d6983467da5b5f612f0e104703678c06f01e546c20fd8e",
+        "eof": false,
+        "next_offset": 638976,
+        "offset": 589824,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "8245ae49fc267a1e68d6983467da5b5f612f0e104703678c06f01e546c20fd8e"
+    },
+    {
+      "index": 13,
+      "successful_attempt": 2,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 638976,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "dd407715481ae7b83a8a55be07b1fb8535e8477a65f022d44fe9c7c57f81da5e",
+        "eof": false,
+        "next_offset": 688128,
+        "offset": 638976,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "dd407715481ae7b83a8a55be07b1fb8535e8477a65f022d44fe9c7c57f81da5e"
+    },
+    {
+      "index": 14,
+      "successful_attempt": 2,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 688128,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "fd3ac70994969c2f81cb5f71774cca76163e1599a912df39b3a26def7faf2370",
+        "eof": false,
+        "next_offset": 737280,
+        "offset": 688128,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "fd3ac70994969c2f81cb5f71774cca76163e1599a912df39b3a26def7faf2370"
+    },
+    {
+      "index": 15,
+      "successful_attempt": 2,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 737280,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "acda45b82447898e1cf007d8acf5b2e25d42ae6da3ebf01edf3310736918040e",
+        "eof": false,
+        "next_offset": 786432,
+        "offset": 737280,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "acda45b82447898e1cf007d8acf5b2e25d42ae6da3ebf01edf3310736918040e"
+    },
+    {
+      "index": 16,
+      "successful_attempt": 2,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 786432,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "19e2bb7adf56a8acbe4a01942d49a996b6a42c89b9558e33ddeee88684f5246a",
+        "eof": false,
+        "next_offset": 835584,
+        "offset": 786432,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "19e2bb7adf56a8acbe4a01942d49a996b6a42c89b9558e33ddeee88684f5246a"
+    },
+    {
+      "index": 17,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 835584,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "f10a5b35f917823901601246c9fa3a91a627f1096242561508fd8dd4d33b4bba",
+        "eof": false,
+        "next_offset": 884736,
+        "offset": 835584,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "f10a5b35f917823901601246c9fa3a91a627f1096242561508fd8dd4d33b4bba"
+    },
+    {
+      "index": 18,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 884736,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "a11e165610e029cbd208666b929bf74637b3d27afaca2d0aee03b76c4f3e65d6",
+        "eof": false,
+        "next_offset": 933888,
+        "offset": 884736,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "a11e165610e029cbd208666b929bf74637b3d27afaca2d0aee03b76c4f3e65d6"
+    },
+    {
+      "index": 19,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 933888,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "0a5b5dc8f8e9dfe4565ca7862c17542da2759db21bf306daf1a1a1d70ac89dad",
+        "eof": false,
+        "next_offset": 983040,
+        "offset": 933888,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "0a5b5dc8f8e9dfe4565ca7862c17542da2759db21bf306daf1a1a1d70ac89dad"
+    },
+    {
+      "index": 20,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 983040,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "e5f3bdf6dbc49f7f9532e029df7e97a89d0852d023ae36dae16c9a843e5f328b",
+        "eof": false,
+        "next_offset": 1032192,
+        "offset": 983040,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "e5f3bdf6dbc49f7f9532e029df7e97a89d0852d023ae36dae16c9a843e5f328b"
+    },
+    {
+      "index": 21,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 1032192,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "e5b8f88156e6ff523732e59b5314efafed1ad87c203a86c89272707857c56874",
+        "eof": false,
+        "next_offset": 1081344,
+        "offset": 1032192,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "e5b8f88156e6ff523732e59b5314efafed1ad87c203a86c89272707857c56874"
+    },
+    {
+      "index": 22,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 1081344,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "66620a8adc14724f012069c37ea31d592e3d9be501afba99ddf5509c839dd7e4",
+        "eof": false,
+        "next_offset": 1130496,
+        "offset": 1081344,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "66620a8adc14724f012069c37ea31d592e3d9be501afba99ddf5509c839dd7e4"
+    },
+    {
+      "index": 23,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 1130496,
+        "limit": 49152,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "6afe9c47d8b6c32819bdc60d0f71e66892ff059a124e5f8aa8f638e098792835",
+        "eof": false,
+        "next_offset": 1179648,
+        "offset": 1130496,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 49152,
+      "verified_sha256": "6afe9c47d8b6c32819bdc60d0f71e66892ff059a124e5f8aa8f638e098792835"
+    },
+    {
+      "index": 24,
+      "successful_attempt": 1,
+      "request": {
+        "host": "ai395",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "offset": 1179648,
+        "limit": 22656,
+        "expected_version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "response_metadata": {
+        "chunk_sha256": "bc61483f50da9ee605aec2058f928b06e497e647b32fcf490959f48f5825e773",
+        "eof": true,
+        "next_offset": 1202304,
+        "offset": 1179648,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112/original-records.tar.xz",
+        "size": 1202304,
+        "version": "66306:75281568:1202304:1794462745502165180:1794462745502165180"
+      },
+      "verified_bytes": 22656,
+      "verified_sha256": "bc61483f50da9ee605aec2058f928b06e497e647b32fcf490959f48f5825e773"
+    }
+  ],
+  "operation_counts": {
+    "h_read_multiple_files": {
+      "calls": 1,
+      "success": 0,
+      "errors": 1
+    },
+    "h_binary_read_export_json": {
+      "calls": 1,
+      "success": 1,
+      "errors": 0
+    },
+    "h_binary_read_archive": {
+      "calls": 29,
+      "success": 25,
+      "errors": 4,
+      "retries": 4
+    },
+    "total_h_reads": 31,
+    "total_original_h_errors": 5,
+    "h_pty_calls": 0,
+    "h_mutations": 0,
+    "native_or_cargo_executions": 0,
+    "new_execution_channels": 0,
+    "ref_changes": 0,
+    "git_operations": "Read fixed existing blobs and create unreferenced evidence blobs only."
+  },
+  "acceptance": {
+    "archive_transfer_completed": true,
+    "new_business_qualification": false,
+    "ordinary_complete": 0,
+    "ordinary_positive_adoption": 0,
+    "ordinary_no_update_rollback": 0,
+    "independent_c": false,
+    "physical_daemon_root_restart": false,
+    "original_failure_not_reclassified": true
+  }
+}

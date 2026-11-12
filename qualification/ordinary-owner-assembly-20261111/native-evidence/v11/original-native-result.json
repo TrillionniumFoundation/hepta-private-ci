@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.ordinary-owner-source-full-seven-result.v30",
+  "source": {
+    "commit": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+    "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+  },
+  "status": "FAILED_FULL_CALLER_DEFINITION_MARKER",
+  "request": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e",
+  "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "terminal": {
+    "session": "dpty-afcb40fe7d0bc4a6637a3ef749b643a5c3c520368a79e2f7682cdf96389e83ae",
+    "exit_code": 1,
+    "complete_bytes": 6987,
+    "capture_error": null
+  },
+  "maintenance": {
+    "format_before": "passed clean",
+    "fix_seven": "passed clean",
+    "format_after": "passed clean",
+    "bins_check": "passed clean"
+  },
+  "qa": {
+    "b4": {
+      "tests": 221,
+      "passed": 221,
+      "errors": 0
+    },
+    "fault_matrix": {
+      "tests": 5,
+      "passed": 5
+    },
+    "performance": {
+      "tests": 5,
+      "passed": 5
+    },
+    "vertical_slice": {
+      "tests": 5,
+      "passed": 5
+    },
+    "total": 236,
+    "raw_b4_log": {
+      "git_blob": "6fb5b5ad04b2b7c15ba9e7483490dbb7f22afb79",
+      "bytes": 43789,
+      "sha256": "325dbc2f309f0858af257f1e0f755c6748f2832a8d15020fba01aad1f7a02797"
+    }
+  },
+  "caller_self_test": "passed",
+  "caller_full": {
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "exit_code": 1,
+    "seconds": 232.59621237008832,
+    "started_at": "2026-11-12T05:28:30.466387+00:00",
+    "finished_at": "2026-11-12T05:32:23.063812+00:00",
+    "timed_out": false,
+    "truncated": false,
+    "raw_error": "FAIL_HEPTA_CALLER_PROOF: root_live_admin_original_bounded_lease_revoke: missing definition marker '.try_lock()'\n",
+    "raw_log": {
+      "git_blob": "4131779af8026bf76f2da40deb96654a8561214e",
+      "bytes": 112,
+      "sha256": "3fbdc3777133f562e8b2092834e717e306850add70301ffa66c949031b222671"
+    }
+  },
+  "not_reached": [
+    "same-source helper build and preverify",
+    "ordinary seven-package tests",
+    "Root metadata/list and seventeen parent tests",
+    "post-test helper verification"
+  ],
+  "final_source_identity": {
+    "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+    "status": "",
+    "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+  },
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "classification": "Original full gate stopped at its first failed boundary definition marker. No test, source guard, caller matcher or timeout was bypassed. All preceding passes belong only to this exact source.",
+  "ordinary_business": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_c": false,
+    "physical_daemon_root_restart": false
+  },
+  "following_candidate": "Two existing raw definition markers are being aligned to their already-present original call sites. No full-verify result is predicted."
+}

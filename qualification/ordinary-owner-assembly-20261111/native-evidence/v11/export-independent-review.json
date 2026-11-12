@@ -1,0 +1,271 @@
+{
+  "schema": "hepta.independent-original-record-export-review.v11",
+  "reviewer": "/root/runtime_access",
+  "conclusion": "No confirmed static blocker in this exact V11 request/config binding. It may be dispatched only as the reviewed preservation operation; this review does not execute it, prove the remote output exists, or qualify the failed source.",
+  "candidate": {
+    "plan": {
+      "git_blob": "7ca790a787d23b2937ccc509fab1ffcb2c430f34",
+      "bytes": 13865,
+      "sha256": "ab78bc6922404613df7b3ea2fa1358add5a05f7f02436fac2eb54b58f0c1970b"
+    },
+    "config": {
+      "git_blob": "e084ab56a4d111ecc4369b0b96f80c0aa800a5cc",
+      "bytes": 100462,
+      "sha256": "98845b24d185270c9cab4afdba56df9f85393b34bab9c102fcd85e7ec31e4985"
+    },
+    "request": {
+      "git_blob": "6fd6a576eff6a8e6b6554e32492eb3ccf978418e",
+      "bytes": 113855,
+      "sha256": "54ed0ca60e09029563b4d3fb4c2cfb6d3c8a95d19bfc56e52f628e39a6fb52c6"
+    },
+    "exporter": {
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815"
+    },
+    "wrapper": {
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d"
+    }
+  },
+  "exact_request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-80871cc-original-records-export-v11-20261112",
+    "rows": 24,
+    "cols": 200,
+    "args": "Exactly seven arguments: -B, -c, the 146-byte pinned wrapper, the 4370-byte pinned exporter, then the three exact config chunks.",
+    "checks": {
+      "exactlySevenArgs": true,
+      "interpreter": true,
+      "wrapperExact": true,
+      "exporterExact": true,
+      "configExact": true,
+      "configChunkHashes": [
+        {
+          "bytes": 48000,
+          "sha256": "ebeb1f7d1b1613d5936209414fe0c7bce76bddf0dca54ddf05fa3a4077eb30ce",
+          "agrees": true
+        },
+        {
+          "bytes": 48000,
+          "sha256": "c7d1d0710ca17f112b405ebfdf82466cdf943857e11d3884065f24a5f737e09c",
+          "agrees": true
+        },
+        {
+          "bytes": 4462,
+          "sha256": "3e8667d9e4d3a7753a3036d60b4644ea7a215847b8e48131a7abcee82665aa4c",
+          "agrees": true
+        }
+      ],
+      "nativeRequestDataExact": true,
+      "sourceCount": 1,
+      "sourceStatus": "failed",
+      "identityExact": true,
+      "outputNewSibling": true,
+      "sourcesExact": true,
+      "outputEqualsPlan": true,
+      "progressHashExact": true,
+      "expectedTerminalExact": true,
+      "originalIdentityData": true,
+      "originalPtyData": true,
+      "originalRawPtyText": true,
+      "originalResultData": true,
+      "nativeSourceMatches": true,
+      "noInheritedAcceptance": true,
+      "ptyRequestMatches": true,
+      "ptyTerminal": {
+        "exit_code": 1,
+        "capture_error": null
+      }
+    }
+  },
+  "execution_surface": {
+    "wrapper": "The pinned wrapper takes only its designated argv[1] exporter, joins argv[2:] as the one JSON config argument, and compile/execs that exact exporter. It does not select or execute the native-request argv nested in the config.",
+    "exporter": "Personally read the entire original exporter. It JSON-loads config; requests/observations are json.dumps data payloads only. No exec, eval, compile, shell command, network action, native invocation or code import is derived from those nested values.",
+    "subprocesses": "The exporter's sole subprocess site is the fixed argv-list git identity comprehension: git -C <the one pinned source> rev-parse HEAD, rev-parse HEAD^{tree}, and status --porcelain=v1 --untracked-files=all, before and after collection. No shell is enabled.",
+    "originals": "The only recursively read input is the exact one completed records directory. Paths and scripts in the preserved native request are not traversed or executed. There is no Cargo/Root test rerun, chmod/chown, mount, process kill, ref change, or original-record write.",
+    "writes": "Writes are confined to the specified fresh output directory: original-records.tar.xz, base64 part files, export.json or failure.json. The directory is created once at mode0700 and an existing path is refused; the operation is not filesystem-write-free.",
+    "framing": "No extra argv, second config, alternate script or additional records source is present. Config chunk byte lengths/hashes and exact concatenation were independently recomputed."
+  },
+  "file_and_archive_contract": {
+    "output": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-original-records-export-v11-20261112",
+    "original_records": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/records",
+    "anchor": "/home/qq/af52-learning-local-decision-20261111/ordinary-80871cc-seven-final-v4/source",
+    "exact_source": {
+      "head": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+      "tree": "dd0234485d40f9109e46394c94d505952a07cb08",
+      "status": ""
+    },
+    "input_terminal": "The hard-pinned original progress bytes must match SHA256 532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c and exact failed/source_sha/source_tree. Running or a different terminal postimage is rejected.",
+    "retained_guards": [
+      "Exact source HEAD/tree/clean status before collection, then equality after collection.",
+      "Original lstat regular-file and single-link checks; 32MiB per input file and 128MiB payload limit.",
+      "Original helpers/bin exclusion is recorded explicitly; no actual count is predicted.",
+      "Original file inode/device/size/mtime and content-SHA rechecks before output.",
+      "Reopen actual tar; verify exact member-name set, each regular file, and every payload byte.",
+      "Persist actual archive length/SHA/Git hash/member count and part paths only after creation and verification; preserve failure.json on errors."
+    ],
+    "precise_limit": "These are the unchanged exporter's lstat/read_bytes/recheck guards. This report does not relabel them as a new descriptor-pinned O_NOFOLLOW implementation or claim remote runtime checks have already passed.",
+    "no_retry": "If output exists or mutation completion is uncertain, preserve the original result and reconcile that request. No alternate key, overwrite or deletion is authorized by this review."
+  },
+  "original_data_checks": {
+    "raw_pins": {
+      "progress": {
+        "git_blob": "7430987e5d17c50f966589df1f58c4ac2768f172",
+        "bytes": 30884,
+        "sha256": "532900a7a764ee97fbde7dfb894be3d7b5d1dc45ef96e334e24c392b627ce63c"
+      },
+      "finalidentity": {
+        "git_blob": "9ff3b8d15b87da56ab51b6f99ef3edc2395d06ba",
+        "bytes": 127,
+        "sha256": "975db38875e21412ba81f4e92fb55ab5977a16e7b8b76b376a83f53b9ac04cc7"
+      },
+      "original_request": {
+        "git_blob": "8949c7a2f0947915fca5feb9c7d33e5c1671e58e",
+        "bytes": 56726,
+        "sha256": "f404bb63a9eed2131e67c492050e58ec3c8c22209fa5672ea6feb4236cea86b0"
+      },
+      "pty_observation": {
+        "git_blob": "32d06aeefd780f662bc2f5cc5cdbac46de78eae8",
+        "bytes": 26792,
+        "sha256": "28b2ca51eef60efacf3b4e3e6f68fb165e3498ee5610fba321869e965d0168d4"
+      },
+      "raw_pty": {
+        "git_blob": "05d4e9d61a85c598fdc62e5560cb540e756fc08d",
+        "bytes": 6987,
+        "sha256": "d5d683dce1f83d82a559f5b5e89f87849dd44986d7f0dc3f48ed0e94e2d762ea"
+      },
+      "original_result": {
+        "git_blob": "dec3782f110f4723abe321b58dde0ac5a3614810",
+        "bytes": 3210,
+        "sha256": "ff45a3804196eeba1d2b4858afe816432744e0ba49731bbe7ca634767fca1d87"
+      }
+    },
+    "normalized_pin_checks": [
+      {
+        "key": "original_progress_pin",
+        "agrees": true
+      },
+      {
+        "key": "original_final_source_identity",
+        "agrees": true
+      },
+      {
+        "key": "original_terminal_pty",
+        "agrees": true
+      },
+      {
+        "key": "original_terminal_pty_raw",
+        "agrees": true
+      },
+      {
+        "key": "original_terminal_result",
+        "agrees": true
+      }
+    ],
+    "request": "The complete parsed nested native-request object is structurally equal to the independently fetched original 8949c7a2f0947915fca5feb9c7d33e5c1671e58e, including all argv strings. The archive reserializes that object; it is not claimed byte-identical to the separately pinned raw JSON.",
+    "observations": "PTY observation object, raw PTY text including CRLFs, final identity and Root result match the separately fetched original inputs. Their stored Git/size/SHA pins all agree.",
+    "pty": {
+      "chunks": [
+        {
+          "index": 0,
+          "offset": 0,
+          "next_offset": 3139,
+          "bytes": 3139,
+          "sha256": "34b2d98629c96c437a8faa796933d1029d3145363b73b5a5f9cf87d9257fc02f"
+        },
+        {
+          "index": 1,
+          "offset": 3139,
+          "next_offset": 3947,
+          "bytes": 808,
+          "sha256": "39146e928193df6981f8f0f140b2fd959b33fafe8c9a2f559b5ee4f955291331"
+        },
+        {
+          "index": 2,
+          "offset": 3947,
+          "next_offset": 6421,
+          "bytes": 2474,
+          "sha256": "d7d11e1e6eca1b4a998a73f9352cdb75628e1d8650bce40d30eb04320e661723"
+        },
+        {
+          "index": 3,
+          "offset": 6421,
+          "next_offset": 6987,
+          "bytes": 566,
+          "sha256": "a73290ec2f176ed7e64e662539d97811634cfb7ab3bc4501fed2aa04fb81001b"
+        }
+      ],
+      "joined_bytes": 6987,
+      "joined_sha256": "d5d683dce1f83d82a559f5b5e89f87849dd44986d7f0dc3f48ed0e94e2d762ea",
+      "joined_git_blob": "05d4e9d61a85c598fdc62e5560cb540e756fc08d",
+      "continuous": true,
+      "raw_exact": true,
+      "terminal_exit": 1,
+      "last_output_complete": true,
+      "capture_error": null
+    },
+    "caller_failure_log": {
+      "git_blob": "4131779af8026bf76f2da40deb96654a8561214e",
+      "bytes": 112,
+      "sha256": "3fbdc3777133f562e8b2092834e717e306850add70301ffa66c949031b222671",
+      "text": "FAIL_HEPTA_CALLER_PROOF: root_live_admin_original_bounded_lease_revoke: missing definition marker '.try_lock()'\n"
+    }
+  },
+  "result_boundary": {
+    "source": "80871cc70dbde29e61aa655b18957bfcc36056d3 / dd0234485d40f9109e46394c94d505952a07cb08",
+    "status": "FAILED at original full caller verification, not timeout/truncation. Failure is preserved rather than exempted.",
+    "preceding": "Pinned progress records clean maintenance/bins, all four QA process exits zero and caller self-test passing. The independently fetched Root result reports 236 QA tests: 221 B4 plus three five-test suites. These belong only to 80871.",
+    "not_reached": [
+      "same-source helper build and preverify",
+      "ordinary seven-package tests",
+      "Root metadata/list and seventeen parent tests",
+      "post-test helper verification"
+    ],
+    "cleanup": [
+      {
+        "name": "retain-source-and-drift",
+        "status": "passed"
+      },
+      {
+        "name": "original-tool-sources",
+        "status": "passed"
+      },
+      {
+        "name": "final-physical-source",
+        "status": "passed"
+      },
+      {
+        "name": "read-only-reference",
+        "status": "passed"
+      },
+      {
+        "name": "external-tools",
+        "status": "passed"
+      }
+    ],
+    "ordinary": {
+      "complete": 0,
+      "positive_adoption": 0,
+      "no_update_rollback": 0,
+      "independent_c": false,
+      "physical_daemon_root_restart": false
+    },
+    "export_status": "verified-original-record-export, if produced by an actual run, means successful preservation only. It cannot convert this full-gate failure into qualification or transfer its earlier stage results to V31."
+  },
+  "activity": {
+    "git_reads": true,
+    "unreferenced_review_blob_write": true,
+    "in_memory_v8_hash_and_data_comparison": true,
+    "python_ast_or_execution": false,
+    "h_or_pty_calls": 0,
+    "native_or_cargo_runs": 0,
+    "refs_changed": 0,
+    "source_or_original_record_mutations": 0,
+    "archive_created_or_examined": false,
+    "remote_output_existence_probed": false
+  }
+}
