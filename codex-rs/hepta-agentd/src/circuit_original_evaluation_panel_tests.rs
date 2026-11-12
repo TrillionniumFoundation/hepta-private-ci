@@ -56,7 +56,9 @@ async fn completed_member(
         BFixture::original_manifests(original),
     )?;
     let provider = cohort.consume(runner.plan.clone())?;
-    PanelMemberFixture::complete(
+    // Keep the owned runner/provider setup out of this enclosing member
+    // future; the original inputs and the retention-first order are unchanged.
+    Box::pin(PanelMemberFixture::complete(
         runner,
         provider,
         &original.initial,
@@ -67,13 +69,17 @@ async fn completed_member(
         &original.credentials.evaluator,
         original.config.verifier.clone(),
         retention_receipt_digests,
-    )
+    ))
     .await
 }
 
 impl PanelFixture {
     async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
-        Self::completed_for_publication(peer, PublicationMode::AdoptCandidate).await
+        Box::pin(Self::completed_for_publication(
+            peer,
+            PublicationMode::AdoptCandidate,
+        ))
+        .await
     }
 
     async fn completed_for_publication(
