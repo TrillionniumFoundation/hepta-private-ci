@@ -22,9 +22,9 @@ class HistoricalRecipientTrustSourceTests(unittest.TestCase):
     def test_actual_activation_uses_the_shared_signed_genesis_codec(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertIn(DATA, rows["root_initial_learning_trust_activation"]["product_callers"])
-        self.assertEqual(rows["root_historical_recipient_trust_activation"]["product_callers"], [FILES])
+        self.assertEqual(rows["root_historical_recipient_trust_activation"]["product_callers"], [FILES, AGENT + "authority_host_post_a_derive.rs"])
         self.assertEqual(rows["root_historical_recipient_trust_files"]["product_callers"], [AGENT + "authority_host_historical_read.rs"])
-        self.assertEqual(rows["root_historical_recipient_trust_payload"]["product_callers"], [AGENT + "authority_host_historical_read.rs"])
+        self.assertEqual(rows["root_historical_recipient_trust_payload"]["product_callers"], [AGENT + "authority_host_historical_read.rs", AGENT + "authority_host_post_a_derive.rs"])
         self.check_markers(DATA, "fn activate_for_recipient(", (
             "self.signed.activate_pinned_genesis(now_seconds)?", "!initial.receipts.is_empty()",
             "activated.verifier().trust_digest() != initial.owners.evidence_trust_digest",

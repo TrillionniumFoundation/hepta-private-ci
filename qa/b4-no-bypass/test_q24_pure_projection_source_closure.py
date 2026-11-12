@@ -21,7 +21,7 @@ class PureProjectionSourceTests(unittest.TestCase):
 
     def test_only_actual_materializer_calls_the_private_data_kernel(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"], [MATERIALIZER])
+        self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"], [MATERIALIZER, AGENT + "authority_host_post_a_derive.rs"])
 
     def test_kernel_keeps_complete_frozen_records_and_sequence(self):
         self.check_markers(PURE, "fn project_original_q24_dataset_v1(", (

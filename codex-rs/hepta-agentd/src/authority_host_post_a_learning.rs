@@ -24,6 +24,9 @@ use crate::HostAuthorityQ24ModelFactoryReservationV1;
 use crate::authority_host_service::OriginalDerivedLearningMode;
 use crate::authority_host_service::generation_initial::original_root;
 
+#[path = "authority_host_post_a_derive.rs"]
+mod derive;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PostALearningDeploymentData {
