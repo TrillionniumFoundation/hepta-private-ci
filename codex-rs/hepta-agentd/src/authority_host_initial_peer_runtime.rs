@@ -47,7 +47,7 @@ pub(super) fn register_original_peer(
             let (slot, _) = enrolled
                 .as_ref()
                 .ok_or_else(|| io::Error::other("original Initial registration missing"))?;
-            slot.require_profile()?;
+            RegisteredGenerationInitial::require_original_enrollment_profile(slot)?;
             ready::response(
                 &context.initial.runtime.ready_binding,
                 &slot.profile.binding,
@@ -57,7 +57,7 @@ pub(super) fn register_original_peer(
     });
     if !matches!(result, Ok(true)) {
         if let Some((slot, _)) = &enrolled {
-            slot.fence()?;
+            RegisteredGenerationInitial::refuse_original_enrollment(slot)?;
         }
         return Err(io::Error::other(
             "original Initial readiness acknowledgement uncertain",

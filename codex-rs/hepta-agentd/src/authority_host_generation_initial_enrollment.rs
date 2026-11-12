@@ -14,7 +14,7 @@ impl HostAuthorityService {
         inputs: RootGenerationInitialEnrollmentV1,
     ) -> io::Result<RegisteredGenerationInitial> {
         original_root()?;
-        let mut enrolled_result = None;
+        let mut enrolled_result: Option<RegisteredGenerationInitial> = None;
         let result = self.with_initial_publication_context(config, registration, owner, |proof| {
             let profile_owner = format!(
                 "generation-initial/{}",
