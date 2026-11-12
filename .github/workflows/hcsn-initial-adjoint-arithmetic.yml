@@ -39,6 +39,7 @@ jobs:
           package = Path('qualification/hcsn_initial_adjoint')
           output = Path(os.environ['RUNNER_TEMP'])/'adjoint-arithmetic'
           output.mkdir()
+          (output/'ADMISSION.json').write_text(json.dumps(dict(source_head=os.environ['CANDIDATE_COMMIT'], arithmetic_only=True, candidate_calls=0, adjoint_calls=0, torch_calls=0, optimizer_updates=0), indent=2, sort_keys=True)+'\n')
           inputs = output/'inputs'
           inputs.mkdir()
           sha = lambda path: hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -57,7 +58,8 @@ jobs:
           with tarfile.open(review, 'r:gz') as archive:
               assert len(archive.getmembers()) == 9
               assert archive.extractfile('inspect_retained.py').read() == inspector.read_bytes()
-              assert archive.extractfile('GIT-FORMAT.json').read() == (package/'evidence/FORMAT.json').read_bytes()
+              # The inspector's retained metadata copy has one documented extra final LF.
+              assert archive.extractfile('GIT-FORMAT.json').read() == (package/'evidence/FORMAT.json').read_bytes() + b'\n'
           shutil.copyfile(original, inputs/'GIT-LOCAL001-ORIGINALS.tar.gz')
           shutil.copyfile(baseline, inputs/'GIT-BASELINE-ORIGINALS.tar.gz')
           shutil.copyfile(package/'evidence/FORMAT.json', inputs/'GIT-FORMAT.json')
@@ -73,7 +75,7 @@ jobs:
               completed = subprocess.run(command, stdout=stdout, stderr=stderr)
           after = {name: sha(name) for name in names}
           (output/'SOURCE-AFTER.json').write_text(json.dumps(after, indent=2, sort_keys=True)+'\n')
-          receipt = dict(source_head=head, retained_input_head='06856b0bba5c26c8aa72dc15a4f2a6e34e253bc5', retained_candidate_tested_source='caba5a3f3a77d0a6eb7d54b5a906ae3bbb4fb772', exit_code=completed.returncode, source_unchanged=before==after, checked_source_files=len(names), candidate_imports=0, adjoint_calls=0, forward_dde_calls=0, matrix_exponentials=0, static_solves=0, torch_calls=0, optimizer_updates=0)
+          receipt = dict(source_head=head, retained_input_head='06856b0bba5c26c8aa72dc15a4f2a6e34e253bc5', retained_candidate_tested_source='caba5a3f3a77d0a6eb7d54b5a906ae3bbb4fb772', exit_code=completed.returncode, source_unchanged=before==after, checked_source_files=len(names), retained_format_alias_extra_final_lf=True, candidate_imports=0, adjoint_calls=0, forward_dde_calls=0, matrix_exponentials=0, static_solves=0, torch_calls=0, optimizer_updates=0)
           if completed.returncode == 0:
               result = json.loads((output/'REVIEW.json').read_text())
               assert result['passed'] and result['compared_scalar_count'] == 345
