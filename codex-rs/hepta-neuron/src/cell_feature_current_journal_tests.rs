@@ -14,6 +14,10 @@ use pretty_assertions::assert_eq;
 #[path = "cell_feature_current_readback_tests.rs"]
 mod readback;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_journal_observer_tests.rs"]
+mod original_data;
+
 fn profile() -> (Vec<CellJournalPartitionV1>, CellGenerationOwnerBindingV1) {
     let spec = CellJournalPartitionV1 {
         scope: cell::scope("feature"),
