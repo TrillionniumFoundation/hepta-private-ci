@@ -12,6 +12,7 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_paths::HeptaFleetRoot;
 
 use super::post_a_plan::OriginalPostAPlan;
+use crate::ordinary_q24_process_child_tests::ExitedOriginalProcess;
 use crate::ordinary_q24_process_child_tests::OriginalChild;
 use crate::ordinary_q24_process_child_tests::OriginalChildDescriptors;
 
@@ -19,7 +20,7 @@ pub(super) struct RunningOrdinaryPostA {
     pub(super) plan: OriginalPostAPlan,
     pub(super) daemon: OriginalChild,
     pub(super) root: OriginalChild,
-    pub(super) source: OriginalChild,
+    source: Option<OriginalChild>,
 }
 
 impl RunningOrdinaryPostA {
@@ -117,7 +118,7 @@ impl RunningOrdinaryPostA {
             plan,
             daemon,
             root,
-            source,
+            source: Some(source),
         };
         running.require_live()?;
         Ok(running)
@@ -130,6 +131,18 @@ impl RunningOrdinaryPostA {
             identity.agent_id.clone(),
             identity.spawn_generation,
         )?)
+    }
+
+    pub(super) fn join_original_source(&mut self) -> anyhow::Result<ExitedOriginalProcess> {
+        self.require_live()?;
+        let source = self
+            .source
+            .take()
+            .ok_or_else(|| anyhow::anyhow!("original source process already joined"))?;
+        let exited = source.wait_success_until(self.plan.resources.end)?;
+        self.require_live()?;
+        exited.require_dead()?;
+        Ok(exited)
     }
 
     pub(super) fn require_live(&self) -> anyhow::Result<()> {
