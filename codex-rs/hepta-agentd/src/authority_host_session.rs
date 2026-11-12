@@ -21,7 +21,9 @@ mod learning;
 #[path = "authority_host_historical_read.rs"]
 mod historical_read;
 pub(crate) use historical_read::OriginalCompletedLearningContextV1;
+#[cfg(test)]
 pub(crate) use historical_read::RootCompletedLearningAcceptanceDataV1;
+#[cfg(test)]
 pub(crate) use historical_read::completed_learning_acceptance_owner;
 
 #[path = "authority_host_q24_model_session.rs"]
