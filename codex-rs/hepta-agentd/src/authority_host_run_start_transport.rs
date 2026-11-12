@@ -90,7 +90,7 @@ impl<'a> OriginalRunStartRetentionExchange<'a> {
         if result.is_err() {
             // Refusal does not read the primary. An interrupted inspect is
             // already Armed; a preflight failure must also stay ineligible.
-            retained.refusal.refuse()?;
+            RootDataRefusalV1::refuse(&retained.refusal)?;
         }
         result
     }

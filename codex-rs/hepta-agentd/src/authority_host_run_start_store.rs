@@ -175,7 +175,7 @@ impl RootRetainedRunStartDataV1 {
         original_root()?;
         let refusal =
             RootDataRefusalV1::open_existing(Arc::clone(&root), RootDataKind::RunStart, target)?;
-        let state = refusal.inspect(|| {
+        let state = RootDataRefusalV1::inspect(&refusal, || {
             let owner = owner(target)?;
             let store =
                 HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?;
@@ -198,7 +198,7 @@ impl RootRetainedRunStartDataV1 {
     }
 
     pub(crate) fn readback_digest(&self) -> io::Result<Digest32> {
-        self.refusal.inspect(|| {
+        RootDataRefusalV1::inspect(&self.refusal, || {
             self.state.require_exact_unchecked()?;
             record_digest(&self.state.expected)
         })
@@ -213,7 +213,7 @@ impl RootRetainedRunStartDataV1 {
         files: &RootInitialRunStartFilesV1,
         original_identity: &crate::AgentdIdentity,
     ) -> io::Result<RunStartReadOnlyFrameV1> {
-        self.refusal.inspect(|| {
+        RootDataRefusalV1::inspect(&self.refusal, || {
             self.state.require_exact_unchecked()?;
             let original = &self.state.expected.original;
             if original.identity
@@ -230,7 +230,8 @@ impl RootRetainedRunStartDataV1 {
             let observed = self.state.expected.observed.as_ref().ok_or_else(|| {
                 io::Error::other("original finalized RunStart observation missing")
             })?;
-            let frame = original.inputs.observe(
+            let frame = OriginalInputPin::observe(
+                &original.inputs,
                 files,
                 original_identity,
                 &original.target,

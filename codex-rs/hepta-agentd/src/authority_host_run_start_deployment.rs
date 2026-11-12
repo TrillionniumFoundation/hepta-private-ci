@@ -46,7 +46,7 @@ impl RootInitialRunStartFilesV1 {
             profile: OriginalFile::open_original(&data.objective_profile)?,
             trust: OriginalFile::open_original(&data.authbus_trust)?,
         };
-        files.with_original_files(|_, _, _| Ok(()))?;
+        RootInitialRunStartFilesV1::with_original_files(&files, |_, _, _| Ok(()))?;
         Ok(files)
     }
 
@@ -94,7 +94,7 @@ impl PreparedHostAuthoritySession {
             |_| {
                 // These are custody checks only. No journal/profile/trust
                 // content is observed until the durable registration arm.
-                files.with_original_files(|_, _, _| Ok(()))
+                RootInitialRunStartFilesV1::with_original_files(&files, |_, _, _| Ok(()))
             },
         )?;
         let initial = self
