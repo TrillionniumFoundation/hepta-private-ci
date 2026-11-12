@@ -19,6 +19,8 @@ pub(super) fn register_original_peer(
     RegisteredGenerationInitial,
     Option<RegisteredInitialRunStartRetentionV1>,
 )> {
+    let started = std::time::Instant::now();
+    context.trace_phase("ready.channel-before", started, context.end);
     let mut channel = HostAuthorityPeerChannel::from_stream(
         stream.try_clone()?,
         context.peer_policy()?,
@@ -27,6 +29,7 @@ pub(super) fn register_original_peer(
     .map_err(io::Error::other)?;
     HostAuthorityPeerChannel::limit_original_end(&mut channel, context.end)
         .map_err(io::Error::other)?;
+    context.trace_phase("ready.channel-returned", started, context.end);
     let mut enrolled: Option<(
         RegisteredGenerationInitial,
         Option<RegisteredInitialRunStartRetentionV1>,
@@ -34,21 +37,25 @@ pub(super) fn register_original_peer(
     let mut handler_error = None;
     let mut stage = "receive original readiness frame";
     let result = channel.exchange_with_original_deadline(|bytes, request_end| {
+        context.trace_phase("ready.frame-received", started, request_end);
         let action: io::Result<Vec<u8>> = (|| {
             stage = "validate original readiness binding";
             ready::require_request(bytes, &context.initial.runtime.ready_binding)?;
             stage = "check original Root context before enrollment";
             context.require_original_context(request_end)?;
+            context.trace_phase("ready.context-returned", started, request_end);
             stage = "open original deployment inputs";
             let registration = deployment.with_original_peer_enrollment(request_end, |inputs| {
                 stage = "register original Initial inputs and baselines";
                 enrolled = Some(context.enroll_original(inputs, request_end)?);
+                context.trace_phase("ready.enrollment-returned", started, request_end);
                 stage = "check original deployment after enrollment";
                 Ok(())
             });
             // Check the original Root context even when enrollment or the
             // fixed-input postcheck failed. Never ACK an uncertain attempt.
             let post = context.require_original_context(request_end);
+            context.trace_phase("ready.registration-context-returned", started, request_end);
             registration?;
             stage = "check original Root context after enrollment";
             post?;
@@ -63,6 +70,7 @@ pub(super) fn register_original_peer(
                 &slot.profile.binding,
             )?;
             stage = "write acknowledgement and check original peer deadline";
+            context.trace_phase("ready.response-encoded", started, request_end);
             Ok(response)
         })();
         action.map_err(|error| {
@@ -70,6 +78,7 @@ pub(super) fn register_original_peer(
             HostIssuerTransportError::Unavailable
         })
     });
+    context.trace_phase("ready.exchange-returned", started, context.end);
     if !matches!(result, Ok(true)) {
         if let Some((slot, _)) = &enrolled {
             RegisteredGenerationInitial::refuse_original_enrollment(slot)?;

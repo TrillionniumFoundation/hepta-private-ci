@@ -116,9 +116,12 @@ pub(in super::super) fn serve_optional(
             };
             let (slot, run_start, ready_stream) =
                 if let Some(deployment) = &initial.runtime.peer_deployment {
+                    let started = Instant::now();
+                    context.trace_phase("worker.accept-before", started, end);
                     let Some(stream) = context.accept_original(&active)? else {
                         return Ok(());
                     };
+                    context.trace_phase("worker.accept-returned", started, end);
                     let (slot, run_start) =
                         peer_ready::register_original_peer(&context, deployment, &stream)
                             .inspect_err(|error| {
