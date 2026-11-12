@@ -1,0 +1,27 @@
+{
+  "source_head": "624420687740a7071339571ec8e3dd0ba456f521",
+  "source_tree": "4e43a5c24ef29aea69c830470805c6cf61377a4c",
+  "source_branch": "codex/learn-original-proposal-guards-ce434-20261112-v1",
+  "source_parent": "3d11546f76bdba9e61280740fe2d7c95f60ddd96",
+  "source_clean_before_and_after": true,
+  "scoped_tests": 57,
+  "passed": 57,
+  "failed": 0,
+  "returncode": 0,
+  "seconds": 23.18385394699999,
+  "changed_python_py_compile": {
+    "files": 12,
+    "returncode": 0
+  },
+  "git_diff_check_parent_to_child": 0,
+  "boundary_count_static": 513,
+  "protected_rows_static": 373,
+  "full_source_methods_static": 317,
+  "not_run": [
+    "full source-closure collection",
+    "full repository caller proof",
+    "Rust build/test/clippy",
+    "deployed ordinary A/B/C or cold Root experiment"
+  ],
+  "known_unqualified_source_dependency": "Original source uses rustix in production/support; Root is integrating existing libc helper fixes separately. Scoped Python passing does not establish compilation."
+}
