@@ -16,7 +16,7 @@
 | 原真实 fit 与模型 cold-load | frozen/adapted 各 126 pairs、UNKNOWN0，fit72/cal54；两个 checkpoint 的完整字节、pin 和独立子进程 cold-load 一致。 | 两份 calibration.complete=false；不是已选模型在普通 C／Root 重启后使用。 |
 | 实际公开输入回归 | [#6221](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6221) exact 2d1f610f...：新的 ai395 原入口实际 19 policy＋7 checkpoint 全通过，原日志与 source-before/after 已归档。 | source inventory SHA256 ea34e33b...，执行环境与 hosted 不同。生产归一化修复来自上游 3c94，不冒充本 PR 新修复。 |
 | 开发输出 HOLD 语义 | [#6240](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6240) exact 24112612...：11 factorial＋5 analysis＋3 summary，共 19 项实际通过，原日志／请求／source inventory 已归档。 | 仅影响未来明确版本。原 3c94 campaign 的硬编码 NoUpdate 标签原样保留；完整 hosted suite 尚未据此证明。 |
-| evaluated CURRENT 源码回归 | [#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 7efec4f... 实际 375/376，另 parser16/16；旧五 caller tuple 少了真实第六项。088aad... 仅修该 tuple，复验实际 376/376＋16/16。 | 成功复验原件正在归档；不是 Rust compile/native 或普通 owner 整链通过。上一失败日志已在 088 commit 保留。 |
+| evaluated CURRENT 源码回归 | [#6213](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6213) 7efec4f... 实际 375/376，另 parser16/16；旧五 caller tuple 少了真实第六项。088aad... 仅修该 tuple，复验实际 376/376＋16/16。 | 376与16的完整原日志及原执行JSON已归档，root独立读回验SHA；全源码inventory的原gzip分片仍在转运。这不是Rust compile/native或普通owner整链通过。上一失败日志已在 088 commit 保留。 |
 | MEM v3 原生成终态 | [#6201](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6201) 的 7 个原文件独立读取，Git blob、字节数和原 receipt SHA256 全一致；原 execution fa3b624... 返回 exit0、1 次 model call。 | 仅这一个生成终态闭合；原 process registry 仍 UNKNOWN／job_id=null；旧 v1/v2 等身份保留。记忆效益0。 |
 
 完整原件入口：[终态与 root 核验](evidence/terminal-20261112/README.md)、[无损 REPORT](evidence/report-lossless-archive-20261112/)、[content receipt](evidence/content-receipt-lossless-archive-20261112/)、[原只读分析](evidence/report-readonly-analysis-20261112/)、[19/26 实际验证清单](../runtime-validation-20261112/PR6240_PR6221_EVIDENCE_MANIFEST.json)、[MEM 原件](evidence/mem11-v3-reconciliation-20261112/)。
@@ -48,7 +48,7 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 
 [#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243) exact 7e6affec... 增加显式 finite-v2 seed 启动配置，拒绝与其他 owner/执行配置或 Root launch 混合，运行前重新检查，保留 Standard 与原 verifier。已完成独立源码／字节审查，原 positive＋5 项新回归、实际两 bin build、caller proof 与 fix/fmt 仍待实际结果。完整原失败日志已随修复发布。
 
-截至此页快照，#6213 的原生准备按 exact088 进行；真实上游已前进 b29869e...，#6221/#6240 的实际上游已前进928a260...。原始 GitHub /pulls API 已确认 #6221、#6240、#6243 均 mergeable=true/unstable，只有 #6213 为 dirty。仅 #6213 按固定 commit 整合，保留新 NextUse/readback 链与全部 caller 边界。旧 head 的通过结果不会迁移给新实现；新 tree 必须单独验证。
+此前088只受理源码QA和独立工具准备，没有受理Rust/native测试。#6213现已发布双亲合并0e4617b.../tree5709473...（088＋精确b298），完整保留上游NextUse/readback与537个caller边界，只补一条真实漏登的通道caller。下一源码/原生验证绑定新0e461，088结果不转记。#6221/#6240的实际上游已前进928a260...。原始 GitHub /pulls API 已确认 #6221、#6240、#6243 均 mergeable=true/unstable，此前只有#6213为dirty；该精确冲突现已通过双亲合并闭合，更新后metadata为mergeable=true。保留新NextUse/readback链与全部caller边界。旧 head 的通过结果不会迁移给新实现；新 tree 必须单独验证。
 
 ## 4. 原 scope 的12项完整资格门
 
@@ -72,3 +72,9 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 原记录按精确source/tree/blob、请求key、host、session/job与成本域绑定；完整压缩载荷解码后核对原SHA再引用。JSON中大于2^53的纳秒整数保留原始文本，不用解析后重新序列化的副本冒充原件。原19/26 suite使用ai395 Python3.12.16、numpy1.26.4、Pillow12.0.0；不能声称等同hosted3.12.14/2.3.5/11.3.0，原unittest没有产生JUnit。
 
 既有 UNKNOWN 身份继续只读对账；禁止换key/目录重派。所有科学结局继续HOLD，只有原owner真实评估并签发的决定才改变owner_decision。没有合并PR、部署或默认采用。
+
+### 后续源码与专用 CI 绑定
+
+ACT #6243现head8514d475.../tree47e03dcd...，生产及测试Rust相对7e6不变；原专用workflow增加本修复分支触发、原caller-proof和五项独立regression最低计数/逐名PASS回执。原positive及其receipt、两bin实际build、原锁和format门保持。push run43200801767在最近读回时queued，不计为通过。#6240原27套件＋summary最低200门另以独立checkout准备，不能把19项受影响测试写作200项。
+
+19/26归档中的module_origins来自同cwd/env的独立预执行probe，不是测试PID内部import轨迹；真实测试命令、source-before/after和原日志另行绑定。完整088通过日志见[归档清单](../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json)。

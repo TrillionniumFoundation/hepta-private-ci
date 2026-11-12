@@ -1,6 +1,6 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 10:23:06 UTC",
+  "observed_at_utc": "2026-11-12 10:35:07 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "publication_parent": "cac146ca8a080cf3389576dc6808dc6f1b3f819c",
   "scope": "Evidence and documentation only. Exact original campaign reconciled without redispatch; raw research labels retained.",
@@ -328,7 +328,7 @@
       "job": "1a1cf3462ea-2564-19c4",
       "source_contract_tests_passed": 376,
       "owner_evidence_parser_tests_passed": 16,
-      "result_provenance": "Runtime audit agent observed original succeeded/exit0 output; full source log archival pending at this snapshot.",
+      "result_provenance": "Root retrieved complete original source and parser logs plus execution records; exact bytes, SHA256 and Git blobs verified.",
       "native_compile": "NOT_PROVEN",
       "ordinary_adopt": 0,
       "ordinary_evaluated_no_update": 0,
@@ -340,7 +340,17 @@
         "failed": 1,
         "parser_passed": 16,
         "fix": "One stale five-caller expected tuple corrected to the six actual original callers."
-      }
+      },
+      "full_raw_test_logs_archived": true,
+      "original_source_log_bytes": 85110,
+      "original_source_log_sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
+      "full_inventory_payload_archive": "pending multipart transfer; the original compressed inventory is retained and separately SHA verified on ai395",
+      "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
+      "current_head": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+      "current_tree": "570947319b5d0842f23f099c12bf9f8eac734d04",
+      "current_native_status": "NOT_RUN_AT_SNAPSHOT",
+      "current_source_gate_status": "NEW_SOURCE_REVALIDATION_PENDING",
+      "previous_source_results_transferred": false
     }
   ],
   "runtime_environment": {
@@ -353,7 +363,8 @@
     "hosted_python": "3.12.14",
     "hosted_numpy": "2.3.5",
     "hosted_pillow": "11.3.0",
-    "junit": "not_emitted_by_original_unittest_commands"
+    "junit": "not_emitted_by_original_unittest_commands",
+    "module_origin_probe_scope": "The archived19/26 runtime.log origins came from a separate pre-execution probe with the same cwd/env, not an in-test-PID import trace. Original commands and clean source inventories bind the actual tests separately."
   },
   "upstream_replay": {
     "mem11_v3": {
@@ -384,10 +395,12 @@
       },
       "fix": {
         "pr": 6243,
-        "head": "7e6affec5ffa987f561f431988cfdb3e2c25ba83",
-        "tree": "31535af9bb14ec0e8fb389400495fe506d37b4f2",
+        "head": "8514d4754790e642f5f083d56696921b0628a313",
+        "tree": "47e03dcd2e5bb99783998b01d591b6f404daf90b",
         "static_review": true,
-        "execution": "NOT_RUN_AT_SNAPSHOT"
+        "execution": "QUEUED_AT_LAST_OBSERVATION",
+        "dedicated_push_run": 43200801767,
+        "required_methods": 6
       }
     }
   },
@@ -398,12 +411,12 @@
     "affected_prs": [
       6213
     ],
-    "merge_integration": "IN_PROGRESS",
+    "merge_integration": "COMPLETED_FOR_EXACT_b298",
     "prior_test_results_do_not_qualify_new_code": true,
     "raw_github_merge_states": {
       "6213": {
-        "mergeable": false,
-        "mergeable_state": "dirty"
+        "mergeable": true,
+        "observation": "post-update PR metadata; exact two-parent integration checked"
       },
       "6221": {
         "mergeable": true,
@@ -418,7 +431,10 @@
         "mergeable_state": "unstable"
       }
     },
-    "note": "Normalized PR snapshots initially reported false; subsequent original raw /pulls API confirms only #6213 is dirty. Do not create a new integration or inherit test results from that transient normalized field."
+    "note": "Normalized PR snapshots initially reported false; subsequent original raw /pulls API confirms only #6213 is dirty. Do not create a new integration or inherit test results from that transient normalized field.",
+    "owner_merged_head": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+    "owner_merged_tree": "570947319b5d0842f23f099c12bf9f8eac734d04",
+    "owner_ref_update_leased_against": "088aadac3c88a5be6299ece1561d1ed54dd7d494"
   },
   "remaining_gates": [
     "Original source/exposure custody",

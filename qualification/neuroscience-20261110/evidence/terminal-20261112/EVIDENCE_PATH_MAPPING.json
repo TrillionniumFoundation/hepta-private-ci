@@ -1,6 +1,6 @@
 {
   "schema": "hepta.evidence-path-mapping.v1",
-  "note": "Original source snapshots are archived as .py.txt without byte changes. Original manifests retain their original paths. Use this explicit path map to locate preserved blobs.",
+  "note": "Original source snapshots are archived as .py.txt without byte changes. Original manifests retain original paths. Use this mapping to locate each exact preserved blob.",
   "files": [
     {
       "source_tree": "5f22b3604d12a2f3f5e98814282ab6d7c4a35fd7",
@@ -552,6 +552,134 @@
       "repository_path": "qualification/neuroscience-20261110/evidence/v-calibration-domain-20261112/v_calibration_preconditions.json",
       "git_blob": "ae275a984fe0892f4cd59aace05eb35d76a9e78a",
       "bytes": 5393,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
+      "git_blob": "4c2f273e746e04b2b04f6bac40e5f12e7de63e22",
+      "bytes": 6782,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/RESULT.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/RESULT.json",
+      "git_blob": "1f289227e9896a3c6efd470b91933f1901478313",
+      "bytes": 7614,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/checkout.log",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/checkout.log",
+      "git_blob": "4739d1a12504350f28839940edf2889ee0dc485c",
+      "bytes": 99,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/clone.log",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/clone.log",
+      "git_blob": "6bb9aea32ca0633342ea0f9b39e3eb12b705fdb5",
+      "bytes": 65,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/fetch.log",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/fetch.log",
+      "git_blob": "1325e4bf36f45576904fbffc30da96bcef596539",
+      "bytes": 146,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-request.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-request.json",
+      "git_blob": "d37fe3f1a667b7843deb029524a8d9d704ccb7be",
+      "bytes": 7748,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-status.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-status.json",
+      "git_blob": "924fc6eeea8d6d9baa579892cd6b780e51a7f6e3",
+      "bytes": 732,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-stdout.jsonl",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/h-stdout.jsonl",
+      "git_blob": "e893f324c85ae56dc1c8d8887863a36e9462077a",
+      "bytes": 6493,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json",
+      "git_blob": "b5c1197574536b2f5e2ff49642b3623851c8ffa1",
+      "bytes": 1553,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json.a2d7c7a8ab36401d8310cc6dfa2eb73b.log",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.json.a2d7c7a8ab36401d8310cc6dfa2eb73b.log",
+      "git_blob": "7fbacd68a2b0d8544b164ea313c4738f5779a88d",
+      "bytes": 3123,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.runner.log",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/owner-evidence-parser.runner.log",
+      "git_blob": "4fa2db6d035891fb063456df3a7e610a656924e6",
+      "bytes": 4512,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/runner-source.py",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/runner-source.py.txt",
+      "git_blob": "c4537f6431d2c8383f2db6943d78c9bb7d04690f",
+      "bytes": 6423,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-after.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-after.json",
+      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147",
+      "bytes": 376,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-before.json",
+      "git_blob": "4c335b49b3c3c50adf028108b4db41d0209f0147",
+      "bytes": 376,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json",
+      "git_blob": "045da97d146a87cd6d045ed4529bda330a34bf46",
+      "bytes": 1539,
+      "content_transformed": false
+    },
+    {
+      "source_tree": "6700bacc31ef3322465ba409c1e2f812d5d7537d",
+      "original_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json.e19b718df8b74e7592127ee9f1900ff9.log",
+      "repository_path": "qualification/evaluated-current-read-20261112/source-closure-088aada/source-closure.json.e19b718df8b74e7592127ee9f1900ff9.log",
+      "git_blob": "df2e06f650647e5d59ac5060c47fb4a7b1b12b7f",
+      "bytes": 85110,
       "content_transformed": false
     }
   ]
