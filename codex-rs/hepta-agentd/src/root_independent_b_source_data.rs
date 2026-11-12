@@ -16,7 +16,7 @@ pub(super) fn write_original_source(
     bytes: &[u8],
     end: Instant,
 ) -> io::Result<()> {
-    require_file(&file, bootstrap)?;
+    require_original_source_file(&file, bootstrap)?;
     if bytes.is_empty() || bytes.len() > SOURCE_BOUND || Instant::now() >= end {
         return Err(io::Error::other("bounded original source bytes required"));
     }
@@ -28,7 +28,7 @@ pub(super) fn write_original_source(
         file.write_all_at(bytes, /*offset*/ 0)?;
         file.sync_all()?;
         for _ in 0..2 {
-            require_file(&file, bootstrap)?;
+            require_original_source_file(&file, bootstrap)?;
             let before = file.metadata()?;
             let mut observed = vec![0; bytes.len()];
             file.read_exact_at(&mut observed, /*offset*/ 0)?;
@@ -51,7 +51,10 @@ pub(super) fn write_original_source(
     unlocked
 }
 
-fn require_file(file: &File, bootstrap: &SourceBootstrap) -> io::Result<()> {
+pub(crate) fn require_original_source_file(
+    file: &File,
+    bootstrap: &SourceBootstrap,
+) -> io::Result<()> {
     let metadata = file.metadata()?;
     // SAFETY: F_GETFL observes this actual owned descriptor's access flags.
     let flags = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_GETFL) };

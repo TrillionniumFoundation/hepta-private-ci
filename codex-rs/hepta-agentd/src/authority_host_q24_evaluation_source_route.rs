@@ -8,6 +8,7 @@ use crate::root_independent_b_source_protocol::*;
 pub(super) struct OriginalBSourceRoute {
     pub(super) bootstrap: SourceBootstrap,
     pub(super) peer: Option<OriginalBSourcePeer>,
+    pub(super) flow: OriginalBSourceFlow,
 }
 
 impl OriginalBSourceRoute {
@@ -18,7 +19,7 @@ impl OriginalBSourceRoute {
         config: &HostAuthorityServiceConfig,
         original_end: Instant,
         no_update: bool,
-    ) -> io::Result<(Self, RootIndependentBSourceOfferV1)> {
+    ) -> io::Result<(Self, RootIndependentBSourceOfferV1, File)> {
         let mode = if no_update {
             SourceMode::NoUpdate
         } else if let Some(cut) = &enrollment.admitted_source {
@@ -43,7 +44,7 @@ impl OriginalBSourceRoute {
         };
         let metadata = files.source.original_readonly()?.metadata()?;
         let bootstrap = SourceBootstrap {
-            schema: 1,
+            schema: 2,
             purpose: crate::root_independent_b_source_protocol::PURPOSE.into(),
             mode,
             root: original.root.clone(),
@@ -72,12 +73,40 @@ impl OriginalBSourceRoute {
             peer.require_live()?;
         }
         files.require_original_files()?;
+        let retained = if mode == SourceMode::Retained {
+            let cut = enrollment
+                .admitted_source
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original retained B source absent"))?;
+            cut.require_original(files)?;
+            Some(
+                cut.acknowledgement(crate::root_independent_b_protocol::digest(
+                    &original.binding,
+                )?),
+            )
+        } else {
+            None
+        };
+        let (flow, candidate_notice, source_admitted) =
+            OriginalBSourceFlow::prepare(mode, retained)?;
+        let candidate_data = if mode == SourceMode::FreshInput {
+            Some(files.candidate_data.original_readonly()?)
+        } else {
+            None
+        };
         Ok((
-            Self { bootstrap, peer },
+            Self {
+                bootstrap,
+                peer,
+                flow,
+            },
             RootIndependentBSourceOfferV1 {
                 bootstrap: sealed,
                 source,
+                candidate_data,
+                candidate_notice,
             },
+            source_admitted,
         ))
     }
 }

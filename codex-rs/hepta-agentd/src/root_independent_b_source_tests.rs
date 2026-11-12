@@ -46,7 +46,7 @@ fn bootstrap(mode: SourceMode, file: Option<&File>) -> io::Result<SourceBootstra
     let initial = Digest32::of_bytes(b"source wire component Initial only");
     let meta = file.map(File::metadata).transpose()?;
     Ok(SourceBootstrap {
-        schema: 1,
+        schema: 2,
         purpose: PURPOSE.into(),
         mode,
         root: root.clone(),
@@ -91,6 +91,8 @@ fn handoff(
         crate::RootIndependentBSourceOfferV1 {
             bootstrap: sealed,
             source,
+            candidate_data: None,
+            candidate_notice: None,
         },
         &pin()?,
         Duration::from_millis(500),
@@ -140,17 +142,7 @@ fn original_b_source_closed_notice_rejects_an_added_writer() -> Result<(), Agent
     let path = directory.path().join("source");
     let file = private_file(&path)?;
     let original = bootstrap(SourceMode::Retained, Some(&file))?;
-    let received = handoff(&original, Some(file))?;
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()?;
-    assert!(
-        runtime
-            .block_on(submit_original_root_b_source(received, || {
-                panic!("a mismatched source right must be rejected before input reads")
-            }))
-            .is_err()
-    );
+    assert!(handoff(&original, Some(file)).is_err());
     assert_eq!(std::fs::read(path)?, b"");
     Ok(())
 }

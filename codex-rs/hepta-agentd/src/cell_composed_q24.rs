@@ -126,11 +126,11 @@ pub struct CellQ24GenerationWorkerV1 {
 mod benchmark;
 #[path = "cell_composed_q24_candidate_data.rs"]
 mod candidate_data;
-pub(crate) use candidate_data::require_original_head_data;
 #[cfg(target_os = "linux")]
 pub(crate) use benchmark::OriginalQ24BenchmarkMeterV1;
 #[cfg(target_os = "linux")]
 pub(crate) use benchmark::original_q24_benchmark_meter_contract;
+pub(crate) use candidate_data::require_original_head_data;
 
 impl LoadedCellQ24ModelV1 {
     /// Consume already opened files. No path is reopened and no executable is
