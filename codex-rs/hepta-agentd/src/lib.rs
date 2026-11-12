@@ -177,6 +177,34 @@ pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
 #[cfg(target_os = "linux")]
+pub(crate) use circuit_learning_delivery::AgentdRootResidentDeliveryV3;
+#[cfg(target_os = "linux")]
+pub use circuit_learning_delivery::AgentdRootResidentEnrollmentV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::AgentdRootResidentLearningClientV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::ROOT_RESIDENT_LEARNING_EXECUTE_V3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::ROOT_RESIDENT_LEARNING_READBACK_V3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningHandleV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningObservationV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningProfileV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningReadbackAuthorizationV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningRegistrationV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningRuntimeV3;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_service::resident::RootResidentLearningEffectGateV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::register_host_resident_learning_v3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::recover_host_resident_learning_v3;
+#[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
 mod root_production_inputs;

@@ -74,6 +74,12 @@ pub async fn run_with_shutdown(
     let circuit_learning_delivery = learning_iteration
         .as_mut()
         .and_then(crate::LearningIterationRuntimeBootstrapV1::take_circuit_delivery);
+    #[cfg(target_os = "linux")]
+    let resident_learning = config.take_root_resident_learning_delivery();
+    #[cfg(target_os = "linux")]
+    if resident_learning.is_some() && (learning_iteration.is_some() || circuit_task.is_none()) {
+        return Err(AgentdError::Invalid("resident learning requires exclusive ordinary delivery".into()));
+    }
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
     if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
@@ -470,6 +476,19 @@ pub async fn run_with_shutdown(
             })?;
             tasks.spawn_required(
                 "circuit-learning-delivery",
+                delivery.run(store, Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(delivery) = resident_learning {
+            if state.objective_runtime.get().is_none() {
+                return Err(AgentdError::Invalid("resident learning requires its original Objective owner".into()));
+            }
+            let store = automation_store.clone().ok_or_else(|| {
+                AgentdError::Invalid("resident learning requires its original AutomationStore".into())
+            })?;
+            tasks.spawn_required(
+                "root-resident-learning-delivery",
                 delivery.run(store, Arc::clone(&state), cancellation.clone()),
             )?;
         }

@@ -46,6 +46,7 @@ pub(super) fn verify_attestations(
     signatures: &[SignedLearningEvidenceV1],
     now: u64,
 ) -> Result<(), Error> {
+    profile.require_verifier(verifier).map_err(|_| Error::WrongScope)?;
     profile.scope.validate_snapshot(snapshot)?;
     if snapshot.request != profile.initial.request || snapshot.owners != profile.initial.owners
         || signatures.len() != snapshot.receipts.len()

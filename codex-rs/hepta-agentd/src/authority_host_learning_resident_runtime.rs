@@ -81,6 +81,7 @@ pub(super) fn compose(
     capacity: usize,
 ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), AgentdError> {
     let profile = &owner.authority.profile;
+    profile.require_verifier(&verifier).map_err(|error| AgentdError::Invalid(error.to_string()))?;
     if !(1..=8).contains(&capacity)
         || verifier.trust_digest() != profile.initial.owners.evidence_trust_digest
     {

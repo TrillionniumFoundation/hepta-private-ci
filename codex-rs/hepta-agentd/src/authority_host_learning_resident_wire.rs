@@ -21,7 +21,7 @@ use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 pub(super) const OPERATION: &str = "runtime.learning.resident.v3";
 pub(super) const BOUND: usize = 16_384;
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(super) enum Action {
     Admit,
@@ -47,6 +47,7 @@ pub(super) struct Response {
     pub request_id: u64,
     pub profile: String,
     pub authorization: String,
+    pub action: Action,
     pub result: Reply,
 }
 

@@ -11,6 +11,7 @@ use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use std::io;
 
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
@@ -35,40 +36,25 @@ pub struct RootResidentLearningProfileV3 {
     pub(super) operation: Digest32,
     pub(super) binding: Digest32,
     pub(super) deadline_ms: u64,
+    evidence_scope: Digest32,
+}
+
+struct ResidentProfileIdentityV3 {
+    storage: Digest32,
+    operation: Digest32,
+    deadline_ms: u64,
 }
 
 impl RootResidentLearningProfileV3 {
     pub fn new(
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
+        verifier: &LearningEvidenceVerifierV1,
         intent: SignedFinalUseGrant,
         lease: AuthorityLease,
     ) -> io::Result<Self> {
-        let expected = LearningIterationCoordinatorV1::new(
-            initial.request.clone(),
-            initial.owners.clone(),
-        ).map_err(io::Error::other)?;
-        if expected.snapshot() != &initial {
-            return Err(invalid("resident profile requires the exact empty initial cut"));
-        }
-        scope.validate_snapshot(&initial).map_err(io::Error::other)?;
-        let bytes = encode_original_owner_snapshot_v1(&initial).map_err(io::Error::other)?;
-        let deadline_ms = initial.request.envelope.expiry_unix_seconds
-            .checked_mul(1_000).ok_or_else(|| invalid("resident deadline overflow"))?;
-        let stable = serde_json::to_vec(&[
-            initial.request.principal_id.as_str(),
-            initial.request.agent_id.as_str(),
-            initial.request.operation_id.as_str(),
-        ]).map_err(io::Error::other)?;
-        let storage = Digest32::of_parts(&[
-            b"hepta.root.learning.resident-storage.v3\0", &stable,
-        ]);
-        let operation = Digest32::of_parts(&[
-            b"hepta.root.learning.resident-operation.v3\0",
-            &bytes,
-            scope.binding().as_array(),
-            &deadline_ms.to_be_bytes(),
-        ]);
+        let ResidentProfileIdentityV3 { storage, operation, deadline_ms } =
+            profile_identity(&initial, &scope, verifier)?;
         let expected = expected_binding(&initial, &scope, operation, ResidentPurposeV3::Execute)?;
         require_artifacts(&intent, &lease, &expected, ROOT_RESIDENT_LEARNING_EXECUTE_V3)?;
         if intent.grant.expires_at_unix_ms < deadline_ms
@@ -85,7 +71,36 @@ impl RootResidentLearningProfileV3 {
             &intent.signature,
             &lease_bytes,
         ]);
-        Ok(Self { initial, scope, intent, lease, storage, operation, binding, deadline_ms })
+        Ok(Self { initial, scope, intent, lease, storage, operation, binding, deadline_ms,
+            evidence_scope: verifier.scope_digest() })
+    }
+
+    /// Canonical public data for an explicit original Root authorization.
+    /// This validates the empty initial cut and complete verifier context, but
+    /// does not sign, register a lease, initialize a store or admit execution.
+    pub fn admission_binding(
+        initial: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+        verifier: &LearningEvidenceVerifierV1,
+    ) -> io::Result<FinalUseBinding> {
+        let identity = profile_identity(initial, scope, verifier)?;
+        expected_binding(initial, scope, identity.operation, ResidentPurposeV3::Execute)
+    }
+
+    /// The separate read-only purpose uses the same original operation bytes.
+    /// A caller must still obtain its own current Root grant and Registry lease.
+    pub fn readback_binding(&self) -> io::Result<FinalUseBinding> {
+        self.expected(ResidentPurposeV3::Readback)
+    }
+
+    pub(super) fn require_verifier(&self, verifier: &LearningEvidenceVerifierV1) -> io::Result<()> {
+        if verifier.trust_digest() != self.initial.owners.evidence_trust_digest
+            || verifier.objective_digest() != self.initial.request.envelope.objective_digest
+            || verifier.scope_digest() != self.evidence_scope
+        {
+            return Err(invalid("resident retained verifier full context differs"));
+        }
+        Ok(())
     }
 
     pub fn initial(&self) -> &LearningIterationSnapshotV1 {
@@ -137,6 +152,45 @@ impl RootResidentLearningReadbackAuthorizationV3 {
         )?;
         Ok(Self { intent, lease })
     }
+}
+
+fn profile_identity(
+    initial: &LearningIterationSnapshotV1,
+    scope: &FrozenLearningScopeV2,
+    verifier: &LearningEvidenceVerifierV1,
+) -> io::Result<ResidentProfileIdentityV3> {
+    let expected = LearningIterationCoordinatorV1::new(
+        initial.request.clone(),
+        initial.owners.clone(),
+    ).map_err(io::Error::other)?;
+    if expected.snapshot() != initial {
+        return Err(invalid("resident profile requires the exact empty initial cut"));
+    }
+    scope.validate_snapshot(initial).map_err(io::Error::other)?;
+    if verifier.trust_digest() != initial.owners.evidence_trust_digest
+        || verifier.objective_digest() != initial.request.envelope.objective_digest
+    {
+        return Err(invalid("resident original evidence verifier differs"));
+    }
+    let bytes = encode_original_owner_snapshot_v1(initial).map_err(io::Error::other)?;
+    let deadline_ms = initial.request.envelope.expiry_unix_seconds
+        .checked_mul(1_000).ok_or_else(|| invalid("resident deadline overflow"))?;
+    let stable = serde_json::to_vec(&[
+        initial.request.principal_id.as_str(),
+        initial.request.agent_id.as_str(),
+        initial.request.operation_id.as_str(),
+    ]).map_err(io::Error::other)?;
+    let storage = Digest32::of_parts(&[
+        b"hepta.root.learning.resident-storage.v3\0", &stable,
+    ]);
+    let operation = Digest32::of_parts(&[
+        b"hepta.root.learning.resident-operation.v3\0",
+        &bytes,
+        scope.binding().as_array(),
+        verifier.scope_digest().as_array(),
+        &deadline_ms.to_be_bytes(),
+    ]);
+    Ok(ResidentProfileIdentityV3 { storage, operation, deadline_ms })
 }
 
 fn expected_binding(

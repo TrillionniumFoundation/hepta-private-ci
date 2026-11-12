@@ -51,6 +51,11 @@ enum ClientOriginV3 {
     Readback(RootResidentLearningReadbackAuthorizationV3),
 }
 
+enum ResidentExchangeV3 {
+    Observed(RootResidentLearningObservationV3),
+    Refused(Error),
+}
+
 /// No owner writer or execution token crosses this process boundary. A lost
 /// exchange consumes the connection; only a new explicit original readback
 /// handoff may reconcile the same operation after A or Root exits.
@@ -106,9 +111,7 @@ impl AgentdRootResidentLearningClientV3 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        if verifier.trust_digest() != profile.initial.owners.evidence_trust_digest {
-            return Err(Error::WrongScope);
-        }
+        profile.require_verifier(&verifier).map_err(|_| Error::WrongScope)?;
         let readonly = matches!(&origin, ClientOriginV3::Readback(_));
         let (intent, lease) = artifacts(&profile, &origin);
         let authorization = profile::authorization_binding(&profile, intent, lease)
@@ -135,6 +138,43 @@ impl AgentdRootResidentLearningClientV3 {
         self.exchange(wire::Action::Readback).await
     }
 
+    pub(crate) fn original_readback_only(&self) -> bool {
+        matches!(self.origin.as_ref(), ClientOriginV3::Readback(_))
+    }
+
+    /// Inspect only this private channel's actual once state before the A
+    /// outbox claim. A structured refusal or prior cut can never become fresh
+    /// again, even if a later original read succeeds.
+    pub(crate) fn require_fresh_admission_channel(&self) -> Result<(), Error> {
+        if !matches!(self.origin.as_ref(), ClientOriginV3::Fresh) {
+            return Err(Error::CommitUncertain);
+        }
+        let current = now()?;
+        require_window(&self.profile, &self.origin, current)?;
+        if current >= self.profile.deadline_ms {
+            return Err(Error::DeadlineExceeded);
+        }
+        let channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
+        if channel.as_ref().is_none_or(|channel| channel.execution_requested) {
+            return Err(Error::CommitUncertain);
+        }
+        Ok(())
+    }
+
+    /// The original reply stays only a point-in-time observation. Recheck
+    /// its unchanged signed windows after the local outbox-owner CURRENT I/O.
+    pub(crate) fn revalidate_original_observation(
+        &self,
+        observed: &RootResidentLearningObservationV3,
+    ) -> Result<(), Error> {
+        let current = now()?;
+        require_window(&self.profile, &self.origin, current)?;
+        let snapshot = observed.snapshot.as_ref().ok_or(Error::CommitUncertain)?;
+        authentication::verify_attestations(
+            &self.profile, &self.verifier, snapshot, &observed.attestations, current / 1_000,
+        )
+    }
+
     /// Only the ordinary post-claim source join calls this entry. Recovered
     /// clients translate that local delivery into readback, never fresh work.
     pub(crate) async fn admit_after_original_claim(
@@ -154,7 +194,7 @@ impl AgentdRootResidentLearningClientV3 {
         let verifier = self.verifier.clone();
         let origin = Arc::clone(&self.origin);
         let authorization = self.authorization;
-        let (observed, channel) = tokio::task::spawn_blocking(move || {
+        let (outcome, channel, observed_at) = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let started = now()?;
             require_window(&profile, &origin, started)?;
@@ -167,6 +207,9 @@ impl AgentdRootResidentLearningClientV3 {
                 channel.execution_requested = true;
             }
             let id = channel.next;
+            if !(1..=128).contains(&id) {
+                return Err(Error::Unavailable);
+            }
             channel.next = id.checked_add(1).ok_or(Error::Unavailable)?;
             let request = wire::request(action, id, profile.binding, authorization);
             let bytes = serde_json::to_vec(&request).map_err(|_| Error::Unavailable)?;
@@ -179,6 +222,7 @@ impl AgentdRootResidentLearningClientV3 {
             if response.schema != 3 || response.operation != wire::OPERATION
                 || response.request_id != id || response.profile != profile.binding.to_string()
                 || response.authorization != authorization.to_string()
+                || response.action != action
             {
                 return Err(Error::WrongScope);
             }
@@ -190,24 +234,49 @@ impl AgentdRootResidentLearningClientV3 {
                 return Err(Error::Unavailable);
             }
             require_window(&profile, &origin, fresh)?;
-            let observed = wire::decode_current(response.result, &profile, &verifier, fresh / 1_000)?;
-            wire::require_original_prefix(&channel.retained, &observed)?;
-            if let Some(snapshot) = &observed.snapshot {
-                channel.retained = Some((snapshot.clone(), observed.attestations.clone()));
-            }
-            Ok((observed, channel))
+            let outcome = match response.result {
+                wire::Reply::Uncertain => {
+                    channel.execution_requested = true;
+                    ResidentExchangeV3::Refused(Error::CommitUncertain)
+                }
+                wire::Reply::Unavailable => {
+                    channel.execution_requested = true;
+                    ResidentExchangeV3::Refused(Error::Unavailable)
+                }
+                reply @ wire::Reply::Current { .. } => {
+                    let observed = wire::decode_current(reply, &profile, &verifier, fresh / 1_000)?;
+                    wire::require_original_prefix(&channel.retained, &observed)?;
+                    if let Some(snapshot) = &observed.snapshot {
+                        channel.execution_requested = true;
+                        channel.retained = Some((snapshot.clone(), observed.attestations.clone()));
+                    }
+                    ResidentExchangeV3::Observed(observed)
+                }
+            };
+            Ok((outcome, channel, fresh))
         }).await.map_err(|_| Error::CommitUncertain)??;
         // If this await was cancelled, the returned channel is dropped with
         // the unobserved JoinHandle result. It is never silently restored.
         let fresh = now()?;
+        if fresh < observed_at {
+            return Err(Error::Unavailable);
+        }
         require_window(&self.profile, &self.origin, fresh)?;
-        if let Some(snapshot) = &observed.snapshot {
+        if let ResidentExchangeV3::Observed(observed) = &outcome
+            && let Some(snapshot) = &observed.snapshot
+        {
             authentication::verify_attestations(
                 &self.profile, &self.verifier, snapshot, &observed.attestations, fresh / 1_000,
             )?;
         }
+        // Only a fully bound, freshly checked explicit Root reply reaches this
+        // point. Refused replies permanently retain readback-only state. An
+        // unknown socket result, malformed reply or cancelled await never does.
         *self.channel.lock().map_err(|_| Error::Unavailable)? = Some(channel);
-        Ok(observed)
+        match outcome {
+            ResidentExchangeV3::Observed(observed) => Ok(observed),
+            ResidentExchangeV3::Refused(error) => Err(error),
+        }
     }
 }
 
@@ -231,8 +300,8 @@ impl RootResidentLearningHandleV3 {
         let mut channel = original_owner_command_channel_v1(
             stream, consumer, consumer_uid, held_consumer_pidfd, timeout, lifetime,
         ).map_err(|_| Error::Unavailable)?;
-        let mut next = 1_u64;
-        while channel.exchange(|bytes| {
+        for next in 1..=128_u64 {
+            if !channel.exchange(|bytes| {
             let request: wire::Request = serde_json::from_slice(bytes)
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
             if bytes.len() > wire::BOUND || request.schema != 3
@@ -243,8 +312,6 @@ impl RootResidentLearningHandleV3 {
             {
                 return Err(codex_hepta_contracts::HostIssuerTransportError::InvalidRequest);
             }
-            next = next.checked_add(1)
-                .ok_or(codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
             let mode = match request.action {
                 wire::Action::Admit => ResidentRequestModeV3::Admit,
                 wire::Action::Readback => ResidentRequestModeV3::Readback,
@@ -257,14 +324,18 @@ impl RootResidentLearningHandleV3 {
             };
             let response = serde_json::to_vec(&wire::Response {
                 schema: 3, operation: wire::OPERATION.into(), request_id: request.request_id,
-                profile: request.profile, authorization: request.authorization, result,
+                profile: request.profile, authorization: request.authorization,
+                action: request.action, result,
             }).map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
             if response.len() > wire::BOUND {
                 return Err(codex_hepta_contracts::HostIssuerTransportError::Unavailable);
             }
             Ok(response)
-        }).map_err(|_| Error::Unavailable)? {}
-        Ok(())
+            }).map_err(|_| Error::Unavailable)? {
+                return Ok(());
+            }
+        }
+        Err(Error::Unavailable)
     }
 }
 

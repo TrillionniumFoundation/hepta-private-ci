@@ -47,6 +47,11 @@ pub use session::RootNotesPolicyPredecessor;
 mod writer_rotation;
 pub use writer_rotation::rotate_host_writer_authorization;
 
+#[path = "authority_host_resident_registration.rs"]
+mod resident_registration;
+pub use resident_registration::recover_host_resident_learning_v3;
+pub use resident_registration::register_host_resident_learning_v3;
+
 #[path = "authority_host_issuer_renewal.rs"]
 mod issuer_renewal;
 pub use issuer_renewal::HostIssuerLeaseRenewalPlan;
@@ -259,7 +264,8 @@ pub(super) fn open_registered_writer(
         owner_pidfd,
         Instant::now() + std::time::Duration::from_secs(30),
     )?;
-    let (clock, leases, issuer) = open_registered_issuer(config)?;
+    let OriginalHostIssuerCustodyV3 { clock, leases, issuer, root } =
+        open_original_issuer_custody(config)?;
     let service = HostAuthorityService::from_registered_owner(
         issuer,
         clock,
@@ -270,7 +276,8 @@ pub(super) fn open_registered_writer(
     } else {
         service
     };
-    Ok(service.retain_original_root_registry(Arc::new(leases)))
+    Ok(service.retain_original_root_registry(Arc::new(leases))
+        .retain_original_resident_root(root))
 }
 
 /// Explicit root administration authorizes a new original registry writer
@@ -325,6 +332,23 @@ pub(super) fn open_registered_issuer(
     AuthorityLeaseRegistry,
     Arc<DeploymentFinalUseIssuer>,
 )> {
+    let OriginalHostIssuerCustodyV3 { clock, leases, issuer, .. } =
+        open_original_issuer_custody(config)?;
+    Ok((clock, leases, issuer))
+}
+
+/// Private original factory result. No external caller can substitute a
+/// directory, Registry, issuer key or initialization routine.
+struct OriginalHostIssuerCustodyV3 {
+    clock: Arc<HostAuthorityClock>,
+    leases: AuthorityLeaseRegistry,
+    issuer: Arc<DeploymentFinalUseIssuer>,
+    root: Arc<RootAuthorityDirectory>,
+}
+
+fn open_original_issuer_custody(
+    config: &HostAuthorityServiceConfig,
+) -> io::Result<OriginalHostIssuerCustodyV3> {
     if config.schema_version != 1 || config.lease_revision == 0 {
         return Err(io::Error::other("invalid service config"));
     }
@@ -340,7 +364,7 @@ pub(super) fn open_registered_issuer(
         HostAuthorityClock::open(root.clone(), CLOCK_OWNER.into()).map_err(io::Error::other)?,
     );
     let frontier = Arc::new(
-        HostAuthorityFrontierStore::open(root, LEASE_OWNER.into()).map_err(io::Error::other)?,
+        HostAuthorityFrontierStore::open(Arc::clone(&root), LEASE_OWNER.into()).map_err(io::Error::other)?,
     );
     let lease_path = config.state_dir.join("leases");
     // Original registry has initialization behavior; require all original state
@@ -373,7 +397,7 @@ pub(super) fn open_registered_issuer(
     if key.key_id != config.signer_id || key.verifying_key != config.expected_verifying_key {
         return Err(io::Error::other("issuer public key pin mismatch"));
     }
-    Ok((clock, leases, issuer))
+    Ok(OriginalHostIssuerCustodyV3 { clock, leases, issuer, root })
 }
 
 fn read_existing_private(path: &Path) -> io::Result<()> {

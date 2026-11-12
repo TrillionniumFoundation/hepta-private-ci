@@ -79,9 +79,44 @@ impl HostAuthorityService {
             .ok_or_else(|| profile::invalid("original Root directory custody is absent"))?);
         let registry = Arc::clone(self.root_registry.as_ref()
             .ok_or_else(|| profile::invalid("original Root Registry custody is absent"))?);
-        let authority = ResidentRootAuthorityV3::new(
-            profile, Arc::clone(&self.issuer), registry, authorization,
-        )?;
+        RootResidentLearningRegistrationV3::from_original_root(
+            root, Arc::clone(&self.issuer), registry, profile, authorization,
+        )
+    }
+}
+
+impl RootResidentLearningRegistrationV3 {
+    /// The original Root runtime factory is the only external caller. Neither
+    /// entry creates a grant, lease, issuer, trust key or writable directory.
+    pub(crate) fn register_original_root(
+        root: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        issuer: Arc<crate::DeploymentFinalUseIssuer>,
+        registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
+        profile: RootResidentLearningProfileV3,
+    ) -> io::Result<Self> {
+        Self::from_original_root(root, issuer, registry, profile, ResidentAuthorizationV3::Fresh)
+    }
+
+    pub(crate) fn recover_original_root(
+        root: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        issuer: Arc<crate::DeploymentFinalUseIssuer>,
+        registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
+        profile: RootResidentLearningProfileV3,
+        authorization: RootResidentLearningReadbackAuthorizationV3,
+    ) -> io::Result<Self> {
+        Self::from_original_root(
+            root, issuer, registry, profile, ResidentAuthorizationV3::Readback(authorization),
+        )
+    }
+
+    fn from_original_root(
+        root: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        issuer: Arc<crate::DeploymentFinalUseIssuer>,
+        registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
+        profile: RootResidentLearningProfileV3,
+        authorization: ResidentAuthorizationV3,
+    ) -> io::Result<Self> {
+        let authority = ResidentRootAuthorityV3::new(profile, issuer, registry, authorization)?;
         let action = if authority.readonly() {
             ResidentStoreActionV3::Recover(root)
         } else {
