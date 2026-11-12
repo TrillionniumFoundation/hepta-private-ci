@@ -43,6 +43,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: ${{ github.workspace }}/scripts
       OMP_NUM_THREADS: "1"
+      OMP_THREAD_LIMIT: "1"
       OPENBLAS_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
       RUSTUP_TOOLCHAIN: "1.96.0"
@@ -76,6 +77,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
+          test ! -e "$GITHUB_WORKSPACE/.perc1-legacy-v2"
+          test ! -L "$GITHUB_WORKSPACE/.perc1-legacy-v2"
           git diff --check
           python - <<'PY'
           import hashlib, json, os, subprocess
@@ -101,6 +104,49 @@ jobs:
               'source_sha256': pins,
           }, indent=2) + '\n')
           PY
+      - name: Check out the exact published v2 source for compatibility testing
+        id: legacy_checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39
+          path: .perc1-legacy-v2
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: /scripts/perc1/active_capture.py
+          sparse-checkout-cone-mode: false
+      - name: Verify and retain the published v2 source before execution
+        id: legacy
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, shutil, subprocess
+          from pathlib import Path
+          legacy = Path(os.environ['GITHUB_WORKSPACE']) / '.perc1-legacy-v2'
+          expected_commit = 'a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39'
+          actual_commit = subprocess.check_output(['git', '-C', str(legacy), 'rev-parse', 'HEAD'], text=True).strip()
+          if actual_commit != expected_commit:
+              raise SystemExit('published v2 checkout commit mismatch')
+          raw = (legacy / 'scripts/perc1/active_capture.py').read_bytes()
+          expected_sha = 'fa0edc0b0fe696f0b7e71a1f6a2f3ff7ccc8ca3d1d0334bb552839275a419eb6'
+          if hashlib.sha256(raw).hexdigest() != expected_sha:
+              raise SystemExit('published v2 source SHA256 mismatch')
+          retained = Path(os.environ['PERC_CI_PRIVATE']) / 'legacy-source'
+          retained.mkdir(mode=0o700)
+          fixture = retained / 'active_capture.py'
+          with fixture.open('xb') as stream:
+              stream.write(raw)
+          shutil.rmtree(legacy)
+          with Path(os.environ['GITHUB_ENV']).open('a') as stream:
+              stream.write('PERC1_LEGACY_ACTIVE_CAPTURE=' + str(fixture) + '\n')
+          Path(os.environ['PERC_CI_PUBLIC'], 'LEGACY_V2_SOURCE.json').write_text(json.dumps({
+              'schema': 'perc1.legacy-source-fixture.v1', 'commit': actual_commit,
+              'path': 'scripts/perc1/active_capture.py', 'sha256': expected_sha,
+              'bytes': len(raw), 'retrieval': 'exact-commit sparse checkout; original bytes verified before execution',
+          }, indent=2) + '\n')
+          PY
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
       - name: Install pinned CPU runtime, OCR, browser and native toolchain
         id: runtime
         run: |
@@ -144,6 +190,18 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/perc1_ci_inputs.py --output "$PERC_CI_PRIVATE/inputs" > "$PERC_CI_PUBLIC/INPUTS.json"
+      - name: Build the trained MLP native control before contract discovery
+        id: trained_native
+        run: |
+          set -euo pipefail
+          python scripts/perc1_trained_native.py --repo "$GITHUB_WORKSPACE" \
+            --source-ref "$SOURCE_SHA" --build-dir "$PERC_CI_PRIVATE/trained-native-build" \
+            --cargo "$(rustup which --toolchain 1.96.0 cargo)" \
+            --rustc "$(rustup which --toolchain 1.96.0 rustc)" --online \
+            > "$PERC_CI_PRIVATE/trained-native-build-driver.stdout.log" \
+            2> "$PERC_CI_PRIVATE/trained-native-build-driver.stderr.log"
+          test -x "$PERC_CI_PRIVATE/trained-native-build/perc1-trained-native"
+          printf 'PERC1_TRAINED_NATIVE_BINARY=%s\n' "$PERC_CI_PRIVATE/trained-native-build/perc1-trained-native" >> "$GITHUB_ENV"
       - name: Run all PERC Python cases with real weight, document and browser prerequisites
         id: tests
         run: |
@@ -180,16 +238,34 @@ jobs:
               'test_perc1_document_actor.DocumentExecutedTests.test_real_train_document_all_seven_conditions',
               'test_perc1_source_capture.SourceCaptureTests.test_actual_tesseract_retains_executed_output_without_correctness_claim',
           ]
+          required_regression_cases = [
+              'test_perc1_source_feature_profile.SourceFeatureProfileTests.test_exact_published_v2_generates_history_that_new_reader_reopens',
+              'test_perc1_source_feature_profile.SourceFeatureProfileTests.test_actual_mlp_changes_capture_choice_and_replays_after_reopen',
+              'test_perc1_profiled_source_entry.ProfiledSourceEntryTests.test_large_fitted_artifact_runs_cli_and_cold_reads_retained_head',
+          ]
+          required_regression_modules = {
+              module: sorted(name for name in cases if name.startswith(module + '.'))
+              for module in (
+                  'test_perc1_source_freeze', 'test_perc1_source_feature_profile',
+                  'test_perc1_profiled_source_entry', 'test_perc1_terminal_comparison',
+                  'test_perc1_cord_task', 'test_perc1_source_reuse', 'test_perc1_repeat_training',
+                  'test_perc1_cord_training', 'test_perc1_trained_native',
+              )
+          }
           producer = [name for name in cases if name.startswith('test_perc1_producer.ProducerExecutionTests.')]
           complete = (result.wasSuccessful() and result.testsRun >= 127 and not result.skipped
                       and not result.expectedFailures and not result.unexpectedSuccesses
-                      and producer and all(cases.get(name) == 'passed' for name in required + producer))
+                      and producer and all(required_regression_modules.values())
+                      and all(cases.get(name) == 'passed' for name in required + producer + required_regression_cases))
           report = {
               'schema': 'perc1.scoped-ci-tests.v1', 'status': 'PASS' if complete else 'FAIL',
               'tests_run': result.testsRun, 'passed': sum(s == 'passed' for s in cases.values()),
               'failures': len(result.failures), 'errors': len(result.errors), 'skipped': len(result.skipped),
               'wall_ns': time.perf_counter_ns() - started, 'cases': cases,
               'required_real_cases': required + producer, 'scientific_qualified': False,
+              'required_regression_cases': required_regression_cases,
+              'required_regression_modules': required_regression_modules,
+              'cord_network_pilot_executed': False,
               'raw_log_policy': 'raw assertion output stays runner-private; published log contains case IDs/statuses only',
           }
           (public / 'TESTS.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -279,8 +355,14 @@ jobs:
               if path.is_file():
                   shutil.copyfile(path, public / ('native-' + name))
           manifest = {}
-          for folder in ('inputs', 'document-smoke', 'source-qualification', 'active-qualification'):
+          for name in ('build.json', 'build.stdout.log', 'build.stderr.log'):
+              path = private / 'trained-native-build' / name
+              if path.is_file():
+                  shutil.copyfile(path, public / ('trained-native-' + name))
+          for folder in ('inputs', 'legacy-source', 'trained-native-build', 'document-smoke', 'source-qualification', 'active-qualification'):
               for path in sorted((private / folder).rglob('*')):
+                  if folder == 'trained-native-build' and 'target' in path.relative_to(private / folder).parts:
+                      continue
                   if path.is_file() and not path.is_symlink():
                       with path.open('rb') as stream:
                           fingerprint = hashlib.file_digest(stream, 'sha256').hexdigest()
@@ -306,7 +388,7 @@ jobs:
               'source_failure_type': source_failure.get('error_type') if source_failure else None,
               'active_qualification_status': active['status'] if active else 'NOT_COMPLETED',
               'stage_outcomes': {name: stages.get(name, {}).get('outcome', 'unknown')
-                                 for name in ('checkout', 'python', 'bind', 'runtime', 'browser', 'inputs', 'tests', 'native', 'source', 'active')},
+                                 for name in ('checkout', 'python', 'bind', 'legacy_checkout', 'legacy', 'runtime', 'browser', 'inputs', 'trained_native', 'tests', 'native', 'source', 'active')},
               'scientific_status': 'HOLD', 'adoption': 'NoUpdate',
               'source_independence_verified': False, 'production_daemon_integrated': False,
               'publication_scope': 'case-status and compiler logs, selected summaries and SHA/size provenance only; no FUNSD images/crops, OCR content, wire, RGB, or owner journals',

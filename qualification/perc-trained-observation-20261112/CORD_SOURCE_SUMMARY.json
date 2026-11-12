@@ -1,0 +1,1059 @@
+{
+  "bindings": {
+    "download_plan_sha256": "c602a012d70d841d091d236de9ef31138e9c18a74811a61cde99acef19f8a2ce",
+    "executed_download_source_sha256": "e9286db949b6c1db013bfe67a89bab498e0f67a75a238c2eabb5431539b3530c",
+    "executed_extraction_source_sha256": "1d123539e4e33128e82e200fbf67170d49fa1d72925a7c82e2f23acb814c63b9",
+    "executed_freeze_source_sha256": "62cd57c01b97f4eaeffa85191fbf00dae2b0f718b20832edbc6ca94976d9d0a6",
+    "final_downloader_source_sha256": "13e989533a247d43569bc59e083fb88355d19522dfc509b36566d10dda00818d",
+    "freeze_plan_sha256": "ac337619c4ea0897d2cbafa91dca14e140499bac4a2812f1262594c66b56f450",
+    "freeze_report_sha256": "9719e305f777dbbccdc45505dca511e3fb5217ddd54f060caf3141bde9446c6e",
+    "funsd_archive_sha256": "c31735649e4f441bcbb4fd0f379574f7520b42286e80b01d80b445649d54761f",
+    "index_sha256": "dcfe5b3db254b208017a6d7bf37d142ebaad2869f130793ef40aa14fb30d1874",
+    "materialization_report_sha256": "c368ac580294a1fe1e09c57798b00038891fda3ef12732c2ce3a519e1f77d2a7",
+    "source_manifest_sha256": "e95f5b401eda2af8741294b7547ea19f55eb504856b7b91921852eb30a90a9b5"
+  },
+  "dataset": {
+    "id": "naver-clova-ix/cord-v2",
+    "license": "cc-by-4.0",
+    "materialization": "exact image bytes embedded in the original revision-pinned Parquet shards",
+    "revision": "7f0115a4b758a71d6473b8d085751692da2fef98",
+    "scanner_original_authenticated": false,
+    "url": "https://huggingface.co/datasets/naver-clova-ix/cord-v2",
+    "viewer_derivative_used": false
+  },
+  "downloads": {
+    "completed_shards": 3,
+    "cost_scope": "Per-shard wall intervals overlap; do not add them. Complete process-tree CPU, energy and billing are unmeasured.",
+    "failed_shards": 0,
+    "full_shards": [
+      {
+        "attempts": 1,
+        "bytes": 234202795,
+        "complete_file_hash_verified": true,
+        "git_blob_sha1": "a674a6aef479b0c87cbfe428baa603cfc2901391",
+        "repo_commit_headers": [
+          "7f0115a4b758a71d6473b8d085751692da2fef98"
+        ],
+        "repository_path": "data/test-00000-of-00001-9c204eb3f4e11791.parquet",
+        "retries": 0,
+        "sha256": "51c65f1788faff392abe2a0b55b023eb23e9be551c509138eaa3a832514224e7",
+        "split": "test",
+        "wall_ns": 22169140857
+      },
+      {
+        "attempts": 1,
+        "bytes": 490224630,
+        "complete_file_hash_verified": true,
+        "git_blob_sha1": "6388701a7274587219ca7ff2dd313eb1257fd1c3",
+        "repo_commit_headers": [
+          "7f0115a4b758a71d6473b8d085751692da2fef98"
+        ],
+        "repository_path": "data/train-00000-of-00004-b4aaeceff1d90ecb.parquet",
+        "retries": 0,
+        "sha256": "da3994eee1bf9bd3c57f0d53a72c3a6812c8696c5ba26245987949ddf73483cc",
+        "split": "train",
+        "wall_ns": 27661506759
+      },
+      {
+        "attempts": 1,
+        "bytes": 242080800,
+        "complete_file_hash_verified": true,
+        "git_blob_sha1": "dcc838661ffafc4c647b8c7c751f934f971a4944",
+        "repo_commit_headers": [
+          "7f0115a4b758a71d6473b8d085751692da2fef98"
+        ],
+        "repository_path": "data/validation-00000-of-00001-cc3c5779fe22e8ca.parquet",
+        "retries": 0,
+        "sha256": "0d0f6dac11fdcc549de2746aa9f53136a3bc22a2a1aff2b0b847f7622ad60c15",
+        "split": "validation",
+        "wall_ns": 23166041580
+      }
+    ],
+    "parallel": true,
+    "total_bytes": 966508225
+  },
+  "fixed_sampling": {
+    "counts": {
+      "confirmation": 12,
+      "dev": 8,
+      "train": 24
+    },
+    "exposed_before_plan": {
+      "test": [],
+      "train": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "validation": []
+    },
+    "indices": {
+      "test": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "train": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "validation": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "policy": "first rows of first original shard, without replacement or skipping",
+    "preplan_exposure_scope": "root saw HF train viewer rows 0-4 before this plan; absence of other global exposure is unverified",
+    "source_extraction_failures": 0,
+    "source_rows_materialized": 44,
+    "source_rows_replaced": 0,
+    "source_rows_selected": 44,
+    "source_rows_skipped": 0
+  },
+  "freeze_results": {
+    "all_candidates_without_exact_known_reuse": true,
+    "baseline_ledgers": 4,
+    "bounds": {
+      "image_bytes": 16777216,
+      "image_pixels": 16777216,
+      "json_bytes": 4194304,
+      "prior_ledgers": 32,
+      "source_count_per_ledger": 64,
+      "total_original_bytes_per_ledger": 33554432
+    },
+    "candidate_images": 44,
+    "candidate_ledgers": 15,
+    "candidate_statuses": {
+      "NO_EXACT_REUSE_OBSERVED": 15
+    },
+    "cold_read_verified": 19,
+    "decoder": {
+      "library": "Pillow",
+      "pixels": "RGB8-no-EXIF-transpose-v1",
+      "version": "10.2.0"
+    },
+    "exact_known_overlap_count": 0,
+    "failed_ledger_attempts": 0,
+    "total_ledgers": 19,
+    "wall_ns": 80476362569
+  },
+  "images": {
+    "count": 44,
+    "formats": {
+      "PNG": 44
+    },
+    "maximum_bytes": 10288666,
+    "maximum_pixels": 9437184,
+    "total_bytes": 100391314,
+    "unique_decoded_rgb_sha256": 44,
+    "unique_raw_sha256": 44
+  },
+  "known_history": {
+    "all_preceding_ledger_ancestors_required": true,
+    "baseline_chunks": [
+      64,
+      64,
+      64,
+      7
+    ],
+    "baseline_distinct_raw_images": 199,
+    "baseline_distinct_rgb_images": 199,
+    "baseline_images": 199,
+    "candidate_chunk_size": 3,
+    "candidate_chunks": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      2
+    ],
+    "global_history_complete": false,
+    "historical_panel_groups_matched": 112,
+    "historical_panel_roles": {
+      "confirmation": 32,
+      "dev": 16,
+      "train": 64
+    },
+    "policy": "All 199 official FUNSD images conservatively registered as exposed; preserve actual roles for the 112-source historical panel.",
+    "registered_baseline_roles": {
+      "confirmation": 50,
+      "dev": 16,
+      "train": 133
+    }
+  },
+  "ledgers": [
+    {
+      "kind": "baseline",
+      "ledger_sha256": "74f6ee2be6e067f74d38854b804b9bb4676a39f6bdbaf52157521a498dfa44ce",
+      "name": "funsd-baseline-00",
+      "source_count": 64,
+      "status": "BASELINE_EXPOSURE_ONLY"
+    },
+    {
+      "kind": "baseline",
+      "ledger_sha256": "8f8868fd4696b5671ec283add03c8bc16b5b9861c238b4d13e074c65851f769e",
+      "name": "funsd-baseline-01",
+      "source_count": 64,
+      "status": "BASELINE_EXPOSURE_ONLY"
+    },
+    {
+      "kind": "baseline",
+      "ledger_sha256": "61bb10da1a658fa702ce351301428cb5e081f1a815754d88e438f504e34afa11",
+      "name": "funsd-baseline-02",
+      "source_count": 64,
+      "status": "BASELINE_EXPOSURE_ONLY"
+    },
+    {
+      "kind": "baseline",
+      "ledger_sha256": "4dfb2c3247bc9ca45f4b9e1c78b1c0adb1604237cff832dba6f37755a0451e2a",
+      "name": "funsd-baseline-03",
+      "source_count": 7,
+      "status": "BASELINE_EXPOSURE_ONLY"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "156c7e489e23d90c0944a8ceb1c226f6758d5c3a01804625267d6e04de454062",
+      "name": "cord-candidate-00",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "3b517a5cfc62d9b796d64bfeb265e3168ed0f445c5323bff7e9fce963f791048",
+      "name": "cord-candidate-01",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "b249d23fcfb7b6336613bede73b345e221d47c03f72f1d6bf474fb80062232d1",
+      "name": "cord-candidate-02",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "462018201750a27b113a928b4d78a3e1189ae1d80f0e22860b1db202c32f606e",
+      "name": "cord-candidate-03",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "ea23790168ad7448bbe92f3bbb8a536d76110f7c1739fe012c505d1b2779e8c2",
+      "name": "cord-candidate-04",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "cd3519424d628127b47b8bf3ddf23128bca92faf55b656a7b2d9ee8177216fb8",
+      "name": "cord-candidate-05",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "e659636ace214a1d7f315116acd20a1727f57a90bce545b589ef3c0aecdbae15",
+      "name": "cord-candidate-06",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "6bb7b39a4dea67d3d82fc8e6fd590b2a48dad53ba7a90371b38ec2bde6497858",
+      "name": "cord-candidate-07",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "1ae79ee6cab5ddb946fe6a9ec729fbd959e68c644176ca8d889b9d2530071c33",
+      "name": "cord-candidate-08",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "ebfe394189a4e8614ad9d9751afc16f64fe59a101103c5da3993c47dddb44d6b",
+      "name": "cord-candidate-09",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "2f674cae667a2a6fa5466a978e3b75decac0231bef918a2434b72ef49e097527",
+      "name": "cord-candidate-10",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "fe3ebfbfc67826a38373d3fdcd1e2eacb87fa47ba63f2c2759028b461d219e57",
+      "name": "cord-candidate-11",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "5930a2c52bf37e895f718a8496672ad24244a4484d51574dfce5c96cbdacd2a9",
+      "name": "cord-candidate-12",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "cdfd2807397f5d57dc244ec771413add541521b6c497e57247a9260fab565820",
+      "name": "cord-candidate-13",
+      "source_count": 3,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    },
+    {
+      "kind": "candidate",
+      "ledger_sha256": "8957a3498582b5a20693fb3c108bee95a24797ac58439b1103316ccd2501bf6a",
+      "name": "cord-candidate-14",
+      "source_count": 2,
+      "status": "NO_EXACT_REUSE_OBSERVED"
+    }
+  ],
+  "qualification": {
+    "adoption": "NoUpdate",
+    "confirmation_candidate_rows_with_no_exact_known_reuse": 12,
+    "fresh_independent_confirmation_groups": 0,
+    "fresh_independent_confirmation_tasks": 0,
+    "limits": [
+      "No exact reuse among supplied pinned history does not establish independence.",
+      "Known history is bounded to declared records; organization/template dependence and near duplicates remain unverified.",
+      "A metadata plan and retained bytes do not attest evaluator secrecy or an independent source custodian.",
+      "Train rows 0-4 were displayed before the plan and are recorded as exposed training sources.",
+      "Stored dataset image bytes are preserved; scanner-origin authenticity is unverified.",
+      "No fresh independent confirmation, production daemon enrollment, terminal-task net benefit or causal visual-feature contribution is established by this acquisition stage."
+    ],
+    "prior_registry_complete": false,
+    "production_qualified": false,
+    "scientific_qualified": false,
+    "source_independence_verified": false,
+    "task_evaluations_executed_in_source_acquisition_stage": 0
+  },
+  "schema": "perc1.cord-source-summary.v1",
+  "sources": [
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "61e10645004a104719ffc6efc87f59d070d9745aa3e0d37b2e6eb14a857a6f85",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": true,
+      "format": "PNG",
+      "id": "cord-v2-train-00000",
+      "image_bytes": 1728383,
+      "image_sha256": "a36cd6a022b3ddce17c8bc9639c9cc19fbede010ea89c3357a8c8c81a06939eb",
+      "row_index": 0,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "8905e77a004afb6deee0f26e70fdc5270bcdaa25fb2616b4b2eeef5937367319",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": true,
+      "format": "PNG",
+      "id": "cord-v2-train-00001",
+      "image_bytes": 1780003,
+      "image_sha256": "a43a430908190f38a8e4145298ec09f60a112906ab4f33840894ff5700a758bc",
+      "row_index": 1,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "0a7f0b643c66008050399ec3362daafff087c7f91d8eb209d65e910be87f6c2c",
+      "dimensions": [
+        720,
+        1280
+      ],
+      "exposed_before_plan": true,
+      "format": "PNG",
+      "id": "cord-v2-train-00002",
+      "image_bytes": 461805,
+      "image_sha256": "9357a493f210849c518ab32de56de1f056f2b9f836ad1dd1970588cde9e353cb",
+      "row_index": 2,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "7790a3077868aa68b25dc67e244a59365623df32a6401a7d396dd0bb9e9f2594",
+      "dimensions": [
+        1108,
+        1478
+      ],
+      "exposed_before_plan": true,
+      "format": "PNG",
+      "id": "cord-v2-train-00003",
+      "image_bytes": 1934099,
+      "image_sha256": "91a6b599b27f4049cc4e56997ffce29da8efe9b4e30038d2a500fa068b4eb781",
+      "row_index": 3,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "b0caac225876af71c84d12895215e0e40f8785a3331f520803d491f89f16bfe4",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": true,
+      "format": "PNG",
+      "id": "cord-v2-train-00004",
+      "image_bytes": 1354017,
+      "image_sha256": "9e200c30d71d9cdf673319abf9740d5b3847a79857d91a1a2049c49269f912b9",
+      "row_index": 4,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "9fed85f07410f9346671dbe219c19d548989d19d7010bf6a30f203eb490b7a11",
+      "dimensions": [
+        2304,
+        4096
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00005",
+      "image_bytes": 7247213,
+      "image_sha256": "869d1c7dbbf3cc89fd5e84bcd8b14751341d8adbd89bef9a7d4a72060954e540",
+      "row_index": 5,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "8d8f5d8e603ca769b8bd275f96b2964dec329e4aadae52fcc2480ea4a2c38ea2",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00006",
+      "image_bytes": 1706105,
+      "image_sha256": "ad04e4f531ad5f58a944cd30d166d2373d518101bd0efaa4e82a257c33255c83",
+      "row_index": 6,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "44101a8c37931d38a4c59ac83f2061c3d84b55013e774344f8ce4eeedc8bfb62",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00007",
+      "image_bytes": 1617993,
+      "image_sha256": "b2ee6dafc47fe6d597ea2e3c0df1e2e36c3df14082af2807ea0719f2b2635585",
+      "row_index": 7,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "e3d1aae8d5f261afc25e0899e0af02ea101dfc8fec82bbcc47e7627a33c60d48",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00008",
+      "image_bytes": 1675101,
+      "image_sha256": "a2071158a469ec678f67c70e29c9c8ab600a1f905167000c0106b2beac408530",
+      "row_index": 8,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "1937c8b41f5e108a2867075a2f892ff39837e036b700125a7236e720f77e59b3",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00009",
+      "image_bytes": 1964317,
+      "image_sha256": "0422ba24bb9491b49c2f0e9e39379d6adb32792633519ef884bcc8baf8d98936",
+      "row_index": 9,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "c97ed4bc16b9da06b3d6fbbc803b8f82898beeb9b84238592705f48a9ecd9fab",
+      "dimensions": [
+        432,
+        648
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00010",
+      "image_bytes": 425449,
+      "image_sha256": "5a489d5a1bf4da72c4f603b84784f9bd7cfe8779ecb333d507bd1974dd95b813",
+      "row_index": 10,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "14391d7d7618c55e180d68c30457f2e79c1205506595a67f1cf2e53da1fcaf73",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00011",
+      "image_bytes": 1950505,
+      "image_sha256": "f376cbc7f370ce5d17b8b4f4a04a07d6528aeefdc5615f9aa04b6368d92ca2d4",
+      "row_index": 11,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "d3387aa27c00fff138dfb9d2e220939f80fedf7ce77ae5fdbd259d22841106b5",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00012",
+      "image_bytes": 867499,
+      "image_sha256": "79d2dc2e4118ec1c7a3620c79885eded2929f76055ad5f5d81cbc2f19fe2597b",
+      "row_index": 12,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "fb5299b48dab67b1af2c48f1011f77c319e75e89f8c93ae41dd8fc66ada29c83",
+      "dimensions": [
+        2304,
+        4096
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00013",
+      "image_bytes": 8793289,
+      "image_sha256": "06d0e69a4f784b11ac76351ead3ebee7bee6156d5e217684cc74ce2565d0e9aa",
+      "row_index": 13,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "2bb2757dbfe4117dbd55a1376bf2f9968a21af40a7459078b9bd1ff1451517b3",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00014",
+      "image_bytes": 794066,
+      "image_sha256": "005e9d9e8b7aa5f12648a23136c9a269feec148f0f970c0703f475e49e6fda6c",
+      "row_index": 14,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "b8dc74e689c69b514271654d360b054f1dd374f8b0f634962b703e00f661b42a",
+      "dimensions": [
+        2304,
+        4096
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00015",
+      "image_bytes": 7597460,
+      "image_sha256": "5d670211f51f14ffe05609b036abe67254f88262f9cba08c2d7c680d5f9bb18f",
+      "row_index": 15,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "b4adf61da8afe6c5626bbfc329d5f1f9320a9d6fa88f7c6feb1ffcdefdc83421",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00016",
+      "image_bytes": 1394723,
+      "image_sha256": "763c62b1641d150477617137d9719b58d5eb2c4294f8e66d69fe2cb74070ede5",
+      "row_index": 16,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "2924a98f137c6a7e282fe289b05d5871b923fdafb4b4d288d8635913fada3dd2",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00017",
+      "image_bytes": 942559,
+      "image_sha256": "0a163171afef516072127f6d8374a4c206cc8351b6a739ed28751eb9b70dec91",
+      "row_index": 17,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "88068168b58b58a724aa7b2d955a38963a96f1f3f519de8a11f759188f7db5e6",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00018",
+      "image_bytes": 1412127,
+      "image_sha256": "3fd9c2b1175941d32f1151920176002e4a607e6d6f3d2b3c3f937b3ad67bfc22",
+      "row_index": 18,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "5db8d7c2efe82610f2ffe1699f7f84dcd26c47e84b3b91d05fd7891b6d3a7ed4",
+      "dimensions": [
+        960,
+        1280
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00019",
+      "image_bytes": 1936781,
+      "image_sha256": "0f9ec32a7610abd218813a9f89abd88718a3adab73fb15f38114b259540e01b1",
+      "row_index": 19,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "6b57ff266b6f9538549d81b94f1dac28fe36fa1c4200af4a48ce5f277b644b77",
+      "dimensions": [
+        2304,
+        4096
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00020",
+      "image_bytes": 9821295,
+      "image_sha256": "693bcc5ac5d66f4cbe55afc9242d8a776450c66a0169774bd968dddd7841f8cb",
+      "row_index": 20,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "f466bdc3c09569303a59b391eabb2b1e87650306e4fadee5c31de5c53f454d74",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00021",
+      "image_bytes": 779841,
+      "image_sha256": "c4ec4636d99470459e2814d682028d756741b138b781cb3a7f529d84f8eeda96",
+      "row_index": 21,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "2fe58d1160ecbc08e3c7cda6d28aba2308d53147cc3e6981b41ef52206ab8fe2",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00022",
+      "image_bytes": 1756001,
+      "image_sha256": "94957704e9e5a5e983ab404485c3a3eb84338ebe63745558d98b265c73391704",
+      "row_index": 22,
+      "split": "train"
+    },
+    {
+      "dataset_split": "train",
+      "decoded_rgb_sha256": "89f1d1a7fb0a80e5262f7c5b7aa5e3479678bdad646745fccab6b8138f82fa1a",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-train-00023",
+      "image_bytes": 889658,
+      "image_sha256": "a532b281b2f3227af7d03e5d617c85b03868d454a3c0da6b9469ddda53e7219f",
+      "row_index": 23,
+      "split": "train"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "fa045180247a9013825f7e683584bd93271c5a88d2761d158322562fb216b61d",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00000",
+      "image_bytes": 1382793,
+      "image_sha256": "2423ea6be07e0d8a8c0d041c70f6880e68b424f5efb02b0568a517074af04db7",
+      "row_index": 0,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "3a9f13e8940bedc9c8a6c9284df2976a0ae25e6f39ac77812d06b2c4ddc939f9",
+      "dimensions": [
+        1108,
+        1478
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00001",
+      "image_bytes": 2158700,
+      "image_sha256": "945e505a3416b7578abeed11ad6a112b6600b24816dfb75bddbc369000b1eef9",
+      "row_index": 1,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "99705c2b1d57949572344be0afa4cd4f7e9de116b92d636861fdb9a1ffd2011e",
+      "dimensions": [
+        418,
+        740
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00002",
+      "image_bytes": 311172,
+      "image_sha256": "3d9bdf850a9b04fc1faf023667225c28af4c75d62511c6c410ee34ad801dfd95",
+      "row_index": 2,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "d6414c79fed7853e024b2612a7fb12a88e9266187f486d0a865148f017a48a1c",
+      "dimensions": [
+        2304,
+        4096
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00003",
+      "image_bytes": 10288666,
+      "image_sha256": "e2dfa54e0af1fe1234e98d45026c7b7f82db7bb0299196b8f4fe4b29ee8b218b",
+      "row_index": 3,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "e131ccc9fd4c5a18e2ec9542a9394dd0937c3d0e2149ee9ba66a06aaf24d42b3",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00004",
+      "image_bytes": 830715,
+      "image_sha256": "395a4aada020d241e38ab175c6b2c230897d0197b3e78a14a6de763ad192ea2a",
+      "row_index": 4,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "cc160878a61de0877dd04c250771085366ca25f4a01f25bc60ade6e5729c28c7",
+      "dimensions": [
+        960,
+        1280
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00005",
+      "image_bytes": 1594771,
+      "image_sha256": "f2f39d5f12253390f4c8264a8fa96e9bfdde78009e57068cb05ca5ad3c5b7d02",
+      "row_index": 5,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "309eb2f95efab1d351ad22d68646a5dbb89dbf937fea85561a299c12777ca213",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00006",
+      "image_bytes": 1675847,
+      "image_sha256": "76a8ab6bc5d3baa31643474a851277fccacb13dd9a4915c5c0e82be4b63fecf6",
+      "row_index": 6,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "validation",
+      "decoded_rgb_sha256": "3d59b02a1295018e466ff2542e455f69c933202a040b1e3b75cae9909cc047c6",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-validation-00007",
+      "image_bytes": 786559,
+      "image_sha256": "52adf3336878fbd558951660d6ce52268dd3e636563ca1d7d7e004ccab96bff7",
+      "row_index": 7,
+      "split": "dev"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "2ded09088f45b510df304b552f518c6fd3862118ffef264a207919cd4c31b49c",
+      "dimensions": [
+        432,
+        648
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00000",
+      "image_bytes": 338392,
+      "image_sha256": "8612d04b70f430f3aef07fbbd5200e382dcc4152b344cc2eff9f735f05a257c8",
+      "row_index": 0,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "1a1c7e330e36963e6bb44c89ab27f0731edd3145adf1d0b6154fd2cebfc67b2b",
+      "dimensions": [
+        960,
+        1280
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00001",
+      "image_bytes": 734233,
+      "image_sha256": "5852cbe48df03646524e717e987eb3d0ac329a52fd192070b5fda1222a053789",
+      "row_index": 1,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "6e69d8c514c007d94bdda2468b75f8aef9a3fa263992fc29d168946eb7db4d69",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00002",
+      "image_bytes": 1387299,
+      "image_sha256": "571ac6af26e75de8c06747a8c536c778f19a4562879090813571eddc74603d34",
+      "row_index": 2,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "f1b2387dbed5c2e52062a60553bda6ebee632ced161d18063e64cae5ce59a62f",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00003",
+      "image_bytes": 1278906,
+      "image_sha256": "8f73f0c4803ea8815040a50e3389d4f3fa15e8c28cb6d50ea9854f6f6c22bd63",
+      "row_index": 3,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "3e481f1ff97f7a72ec1d3761fb623c5b2c1e54f24c9b23b979fc6a2cc16b6a22",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00004",
+      "image_bytes": 1643699,
+      "image_sha256": "8f3eee7068c96e86cdb2e4b5c53085cb5e1439462edd55c373548cb1962801ad",
+      "row_index": 4,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "4f1828ca9fcbac22adc4f31edc1736d55c76bc559774055c8725aa1f4fdc0d1c",
+      "dimensions": [
+        2304,
+        4096
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00005",
+      "image_bytes": 7725898,
+      "image_sha256": "0b63b666b54ea615d1d05733ee2c6fc24f20e1a6c77b333872fa80fff28b2c48",
+      "row_index": 5,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "860a644f396387ce473c1568af78ce52fddd32a62a7f6a223bb04655d5f8efef",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00006",
+      "image_bytes": 2002836,
+      "image_sha256": "1c091eb7436b3e5a813eb6492c0350ef4eb14e3fdad78d42da35df669c757292",
+      "row_index": 6,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "ab08b59f55640d2e5260f5fb42dd0d968fec8e6af90a0f18ce3e94ce4bc8d27b",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00007",
+      "image_bytes": 987476,
+      "image_sha256": "810d3545f4105b19757c4b8b35934a477cde8cd1875302d9092315d2f960ef93",
+      "row_index": 7,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "bb95ae2c6749d6c19323142461e848017b54a707a9158ca4da1fd6a164247b03",
+      "dimensions": [
+        864,
+        1296
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00008",
+      "image_bytes": 1853544,
+      "image_sha256": "58716693a6c0733358e66e64d7064a5a845424280bb55f9b5fa137b1af8c92fe",
+      "row_index": 8,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "06db0928ebdb3f12a961e9356a49277c6719e770d1234664012d89c14d9b49ef",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00009",
+      "image_bytes": 816325,
+      "image_sha256": "0411c4d9beb9be65165fdb70c2b60f8bbf9035cc9661be2b8d4c73bbfcff7972",
+      "row_index": 9,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "01379400746f4330eef378748616d4b81fa146681e037721c7422a009d27f346",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00010",
+      "image_bytes": 743998,
+      "image_sha256": "2a5d18c199bdbb75010a54430429cf694b35bdca8bf560d1d0db1fbb090dedb8",
+      "row_index": 10,
+      "split": "confirmation"
+    },
+    {
+      "dataset_split": "test",
+      "decoded_rgb_sha256": "bd610c9944a5ea04064b32b6250f8c990464cf105e0ecbfd437185d55dcc6ee5",
+      "dimensions": [
+        576,
+        864
+      ],
+      "exposed_before_plan": false,
+      "format": "PNG",
+      "id": "cord-v2-test-00011",
+      "image_bytes": 1019196,
+      "image_sha256": "d92479ab212713e7a65e56aacc5e68c0713597476608cbc394d997971043010b",
+      "row_index": 11,
+      "split": "confirmation"
+    }
+  ],
+  "status": "EXACT_KNOWN_SOURCE_REUSE_CHECK_PASSED_ONLY",
+  "validation": {
+    "original_test_log_sha256": "e0299cd58fe170ef319914fe6f636aedb0a1912d3cce5aab191ae5f5e803c658",
+    "passed": 15,
+    "ruff_check": "PASS",
+    "scope": "Source integrity behavior, including real PNG/JPEG encodings and large-image bounds; no task-quality or neural-benefit test in this stage.",
+    "skipped": 0,
+    "source_freeze_tests": 15
+  }
+}

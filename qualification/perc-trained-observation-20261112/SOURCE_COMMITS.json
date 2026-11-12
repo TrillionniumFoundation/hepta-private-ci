@@ -1,0 +1,168 @@
+{
+  "parent": "e4e2f2a654410feee62a85e5fdf60a6add73db81",
+  "tree": "61414f06649f05d81b6a3d880c2665640f9ce9cb",
+  "commits": [
+    {
+      "sha": "c0800cd47d8f14c4a1a84668d9d6afbfcdb51151",
+      "files": [
+        "scripts/perc1/source_freeze.py"
+      ],
+      "title": "freeze source identity"
+    },
+    {
+      "sha": "d868ad23ca0bcfb096ada90e9353471124d8a8c3",
+      "files": [
+        "scripts/test_perc1_source_freeze.py"
+      ],
+      "title": "perc: verify source freeze cold reads, overlap rejection and bounded originals"
+    },
+    {
+      "sha": "47e77a68343f474ba80e4be14a9a91901130446c",
+      "files": [
+        "scripts/perc1/source_feature_profile.py",
+        "scripts/perc1/active_capture.py"
+      ],
+      "title": "perc: bind trained acquisition features to retained source evidence"
+    },
+    {
+      "sha": "5dce611d23f9500c0199578f37e32dd559b26b67",
+      "files": [
+        "scripts/test_perc1_source_feature_profile.py"
+      ],
+      "title": "perc: test trained visual choice and exact legacy decision cold reads"
+    },
+    {
+      "sha": "88c841341a064f5b904410bc317f36c5f0afee24",
+      "files": [
+        "scripts/perc1/source_entry.py",
+        "scripts/test_perc1_profiled_source_entry.py"
+      ],
+      "title": "perc: accept pinned trained head artifacts through ordinary source CLI"
+    },
+    {
+      "sha": "ecfb07929cf56748cc65ca00ceb5debd2158b97b",
+      "files": [
+        "scripts/perc1/terminal_comparison.py"
+      ],
+      "title": "perc: require complete paired terminal controls and inclusive cost evidence"
+    },
+    {
+      "sha": "d008168be18eeb835da3345a9f2f371a4ba22de0",
+      "files": [
+        "scripts/test_perc1_terminal_comparison.py"
+      ],
+      "title": "perc: test missing controls, failed tasks and double-counted costs"
+    },
+    {
+      "sha": "c629d57631626aaec13b4a1ccd7b7361e8994adf",
+      "files": [
+        "scripts/perc1/cord_source.py"
+      ],
+      "title": "perc: acquire a pinned CORD panel without replacing source rows"
+    },
+    {
+      "sha": "202c7ee7c665c915581fdcab0fa0e016f45bf4cb",
+      "files": [
+        "scripts/perc1/cord_task.py",
+        "scripts/test_perc1_cord_task.py"
+      ],
+      "title": "perc: retain annotation-free receipt views and ordinary OCR observations"
+    },
+    {
+      "sha": "75748fcf9f22893830659c23ba66479fbbe45990",
+      "files": [
+        "scripts/perc1/cord_active.py",
+        "scripts/perc1/cord_evaluate.py"
+      ],
+      "title": "perc: train real observation utility and execute fixed visual interventions"
+    },
+    {
+      "sha": "55462820b151ee045b9cde22f231f5ae79d59cf2",
+      "files": [
+        "scripts/perc1/cord_training.py"
+      ],
+      "title": "perc: retain failed OCR attempts separately from valid training pairs"
+    },
+    {
+      "sha": "2931ff38f02a9be169faf53e47733fb7cb3897ac",
+      "files": [
+        "scripts/perc1/cord_active.py",
+        "scripts/perc1/cord_evaluate.py"
+      ],
+      "title": "perc: preserve failed-run provenance before restarting the fixed panel"
+    },
+    {
+      "sha": "b5b3553e33f6567092ec9335da27f963ef9f81e5",
+      "files": [
+        "scripts/perc1/cord_oracle.py"
+      ],
+      "title": "perc: gate hidden-ROI OCR on complete frozen actor evidence"
+    },
+    {
+      "sha": "2ab51348374d890ac48649d51ff3562fa840b173",
+      "files": [
+        ".github/workflows/hepta-perc-real-source.yml"
+      ],
+      "title": "ci: execute trained-source regressions with exact published legacy bytes"
+    },
+    {
+      "sha": "c69ae0439f926c797b9ddca4d1ebf250ecb9d22f",
+      "files": [
+        "scripts/test_perc1_cord_training.py"
+      ],
+      "title": "perc: regress incomplete training receipts without retry or fabricated labels"
+    },
+    {
+      "sha": "c7a1d2e18ccd63b30fbebc82caf9017749f4657a",
+      "files": [
+        "scripts/perc1_trained_native_model.rs"
+      ],
+      "title": "perc: execute the trained normalized MLP with bounded lossless native features"
+    },
+    {
+      "sha": "1538b7369a88557f40a47366a5e8e9e9a446b5ca",
+      "files": [
+        "scripts/perc1_trained_native_control.rs"
+      ],
+      "title": "perc: retain native head outputs and adapt exact policy ordering to Cell drives"
+    },
+    {
+      "sha": "4121d827349f32cf3faf71544bcc48af863d4f89",
+      "files": [
+        "scripts/perc1_trained_native.rs",
+        "scripts/perc1_trained_native_definition.rs"
+      ],
+      "title": "perc: run trained inference through original Cell owner durability"
+    },
+    {
+      "sha": "9ceb6e3bf65ea2dc5472873917c6360d7fe375fc",
+      "files": [
+        "scripts/perc1_trained_native.py",
+        "scripts/perc1_trained_native_qualification.py"
+      ],
+      "title": "perc: freeze native builds and reconstruct real owner features before export"
+    },
+    {
+      "sha": "8d625b1121f8dec0d23da09f95a427b0535fd12d",
+      "files": [
+        "scripts/test_perc1_trained_native.py"
+      ],
+      "title": "perc: exercise trained native parity, thresholds and original-output recovery"
+    },
+    {
+      "sha": "5f8440f1db9c486dbfff802ab5e6dc1b7b86de4d",
+      "files": [
+        ".github/workflows/hepta-perc-real-source.yml",
+        "qualification/perc-trained-observation-20261112/summarize_cord.py"
+      ],
+      "title": "ci: build exact-source trained native contracts before all PERC cases"
+    },
+    {
+      "sha": "e4e2f2a654410feee62a85e5fdf60a6add73db81",
+      "files": [
+        "scripts/perc1_cord_cli_qualification.py"
+      ],
+      "title": "perc: preserve the real trained-head CLI and cold-read qualification driver"
+    }
+  ]
+}

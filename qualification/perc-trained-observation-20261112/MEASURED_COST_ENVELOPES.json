@@ -1,0 +1,40 @@
+{
+  "schema": "perc1.campaign-measured-envelopes.v1",
+  "scope": "Independent nonoverlapping measured invocations. Actor, training, decoding, and recovery sub-times nested inside each envelope must not be added again. Download, prior scanning/model training, energy, billing and machine contention remain outside complete qualification.",
+  "attempts": {
+    "cord-pilot-001": {
+      "returncode": 1,
+      "inclusive_wall_ns": 458243153891,
+      "terminated_process_tree_cpu_ns": 290292482000,
+      "energy_joules": null,
+      "provider_billing": null,
+      "finished_utc": "2026-11-12T06:47:38Z",
+      "scope": "process envelope includes preparation/train/dev/all confirmation actor effects; excludes official data download, historical model training and original image capture"
+    },
+    "cord-pilot-002": {
+      "returncode": 0,
+      "inclusive_wall_ns": 236864618835,
+      "terminated_process_tree_cpu_ns": 177492043000,
+      "energy_joules": null,
+      "provider_billing": null,
+      "finished_utc": "2026-11-12T06:55:10Z",
+      "scope": "process envelope includes preparation/train/dev/all confirmation actor effects; excludes official data download, prior failed run 001, historical model training and original image capture"
+    },
+    "cord-oracle-002": {
+      "returncode": 0,
+      "inclusive_wall_ns": 3356846066,
+      "terminated_child_cpu_ns": 3118787000
+    }
+  },
+  "runtime": {
+    "OMP_THREAD_LIMIT": {
+      "attempt001": null,
+      "attempt002": "1"
+    },
+    "unchanged_ocr_deadline_seconds": 30,
+    "shared_host_contention_controlled": false
+  },
+  "full_cost_qualified": false,
+  "scientific_status": "HOLD",
+  "adoption": "NoUpdate"
+}

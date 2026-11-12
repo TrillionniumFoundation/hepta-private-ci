@@ -183,19 +183,44 @@ def run_source_capture(config_path, operation_id, request=None, *, active=None):
             else:
                 from .active_capture import observe
 
-                exact(
-                    active,
-                    "head head_sha256 task_sha256 observed_operations candidates",
-                )
+                fields = "head head_sha256 task_sha256 observed_operations candidates"
+                feature_profile = None
+                if type(active) is dict and "schema" in active:
+                    exact(
+                        active,
+                        "schema feature_profile head_artifact head_sha256 "
+                        "task_sha256 observed_operations candidates",
+                    )
+                    require(
+                        active["schema"] == "perc1.profiled-source-active.v1",
+                        "unknown profiled source request",
+                    )
+                    feature_profile = active["feature_profile"]
+                    require(type(feature_profile) is dict, "feature profile required")
+                    artifact = exact(active["head_artifact"], "path sha256")
+                    require(
+                        type(artifact["path"]) is str
+                        and Path(artifact["path"]).is_absolute(),
+                        "absolute trained head path required",
+                    )
+                    head = _json(
+                        read_pinned(
+                            artifact["path"], artifact["sha256"], 2 * 1024 * 1024
+                        )
+                    )
+                else:
+                    exact(active, fields)
+                    head = active["head"]
                 decision = observe(
                     adapter,
                     operation_id,
-                    active["head"],
+                    head,
                     active["candidates"],
                     capture,
                     expected_head_sha256=active["head_sha256"],
                     task_sha256=active["task_sha256"],
                     observed_operations=active["observed_operations"],
+                    feature_profile=feature_profile,
                 )
                 receipt = decision["owner_receipt"]
                 mode, status = "active_observation", decision["outcome"]

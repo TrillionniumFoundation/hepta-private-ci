@@ -1,0 +1,767 @@
+{
+  "adoption": "NoUpdate",
+  "baseline": {
+    "commit": "a5583f0f4a12d9618a3a5bc5ed0e7062a7463f39",
+    "legacy_active_capture_sha256": "fa0edc0b0fe696f0b7e71a1f6a2f3ff7ccc8ca3d1d0334bb552839275a419eb6",
+    "prior_native_diagnostic_chain_executed": true,
+    "scope": "Prior native diagnostic execution is acknowledged. The trained-native stage has its own final exact-source TRAIN mechanism report."
+  },
+  "candidate_git_commit": "e4e2f2a654410feee62a85e5fdf60a6add73db81",
+  "candidate_identity_policy": "This exact source checkpoint contains the executed implementation. SOURCE_COMMITS.json maps the implementation commits through this checkpoint; later evidence-only commits and final hosted status are read from PR #6179.",
+  "ci": {
+    "automatic_test_discovery": "scripts/test_perc1*.py",
+    "claimed_hosted_pass": false,
+    "cord_network_pilot_in_unit_ci": false,
+    "final_source_links": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6179 ; exact implementation checkpoint e4e2f2a654410feee62a85e5fdf60a6add73db81",
+    "legacy_fixture_step_locally_executed": true,
+    "legacy_source_commit_and_byte_drift_refused": true,
+    "required_regression_modules": [
+      "test_perc1_source_freeze",
+      "test_perc1_source_feature_profile",
+      "test_perc1_profiled_source_entry",
+      "test_perc1_terminal_comparison",
+      "test_perc1_cord_task",
+      "test_perc1_source_reuse",
+      "test_perc1_repeat_training",
+      "test_perc1_cord_training",
+      "test_perc1_trained_native"
+    ],
+    "status": "PENDING_FINAL_SOURCE_HOSTED_REPORT",
+    "trained_native_build_before_test_discovery": true,
+    "workflow_sha256": "ec67c4e5290bbddd0392715a8469100ff7b1a2860e35107e91cf49bd5d299603",
+    "yaml_shell_python_syntax_checks_passed": true
+  },
+  "cost_accounting": {
+    "aggregation_policy": "Retain failed and successful envelopes separately. Arm and subcommand times are nested, and concurrent envelopes may overlap; do not add them as complete end-to-end wall time.",
+    "arm_cost_scope": "Ratios are measured invocation envelopes, never sums of nested phases. Learned also retains and cold-verifies its active decision; zero_visual timing does not isolate visual-input cost. Shared preparation, energy, billing and prior capture remain outside complete net-benefit accounting.",
+    "energy_joules": null,
+    "extra_train_cli_driver_wall_ns": 7154502038,
+    "final_native_train_driver_wall_ns": 793392176,
+    "full_cost_qualified": false,
+    "measured_net_benefit": null,
+    "oracle_posthoc": {
+      "inclusive_wall_ns": 3356846066,
+      "original_ref": "oracle_execution",
+      "returncode": 0,
+      "terminated_child_cpu_ns": 3118787000
+    },
+    "pilot_002": {
+      "energy_joules": null,
+      "finished_utc": "2026-11-12T06:55:10Z",
+      "inclusive_wall_ns": 236864618835,
+      "original_ref": "pilot_execution",
+      "provider_billing": null,
+      "returncode": 0,
+      "scope": "process envelope includes preparation/train/dev/all confirmation actor effects; excludes official data download, prior failed run 001, historical model training and original image capture",
+      "terminated_process_tree_cpu_ns": 177492043000
+    },
+    "prior_failed_001": {
+      "completed_training_attempts": 7,
+      "confirmation_actor_results": 0,
+      "energy_joules": null,
+      "finished_utc": "2026-11-12T06:47:38Z",
+      "inclusive_wall_ns": 458243153891,
+      "original_ref": "prior_failed_execution",
+      "provider_billing": null,
+      "returncode": 1,
+      "scope": "process envelope includes preparation/train/dev/all confirmation actor effects; excludes official data download, historical model training and original image capture",
+      "terminated_process_tree_cpu_ns": 290292482000
+    },
+    "provider_billing": null,
+    "source_freeze_wall_ns": 80476362569
+  },
+  "date": "2026-11-12",
+  "holds": {
+    "default_adoption": false,
+    "dynamic_environment_qualified": false,
+    "full_cost_qualified": false,
+    "learned_decoder_qualified": false,
+    "production_daemon_integrated": false,
+    "source_independence_verified": false,
+    "task_net_benefit_established": false
+  },
+  "native_stage": {
+    "actual_native_mlp_executions": 2,
+    "binary_sha256": "a8c9afb739a9bcf603d4f6096cbb8f7a89269e19edc9b9b0968870f2d09a2f8c",
+    "claimed_pass": true,
+    "cold_replays": 2,
+    "eleven_unit_contracts_on_pre_format_binary": true,
+    "eleven_unit_contracts_rerun_on_final_formatted_binary": false,
+    "final_source_real_train_execution_passed": true,
+    "hosted_exact_head_contract_gate_pending": true,
+    "max_raw_output_absolute_error": 6.661338147750939e-16,
+    "original_readbacks": 1,
+    "report": "NATIVE_TRAINED_REPORT_FINAL.json",
+    "report_attached": true,
+    "report_sha256": "4eb58bfbc1a97c0ec7337050911a994e6fbae41f8cf11acb4f71d2785f79c554",
+    "scope": "Final formatted binary; already-used TRAIN00000 only. No native control of original 84 actors, ParameterV3, daemon enrollment, independent confirmation or task-benefit claim.",
+    "status": "PASS_TRAIN_NUMERIC_AND_DURABILITY_ONLY"
+  },
+  "original_artifact_pins": {
+    "CI_SYNTAX_FINAL.json": {
+      "bytes": 350,
+      "logical_artifact": "CI_SYNTAX_FINAL.json",
+      "sha256": "02e9d63bd3d3d4b4c528e1df4912d464244091773dce65cea82355a3ab4a0ec1"
+    },
+    "NATIVE_TRAINED_PROVENANCE_FINAL.json": {
+      "bytes": 3988,
+      "logical_artifact": "NATIVE_TRAINED_PROVENANCE_FINAL.json",
+      "sha256": "6392f8049cd182910a215a0e1e3db2984386abdc3be9d3a85a2e69bb6895eb93"
+    },
+    "NATIVE_TRAINED_REPORT_FINAL.json": {
+      "bytes": 2417,
+      "logical_artifact": "NATIVE_TRAINED_REPORT_FINAL.json",
+      "sha256": "4eb58bfbc1a97c0ec7337050911a994e6fbae41f8cf11acb4f71d2785f79c554"
+    },
+    "NATIVE_TRAINED_SUMMARY.json": {
+      "bytes": 12262,
+      "logical_artifact": "NATIVE_TRAINED_SUMMARY.json",
+      "sha256": "043398914f4ce9103e2857ae50d1ec8534cb134a55f0acd4e56edd822e9d4750"
+    },
+    "cli_driver_source": {
+      "bytes": 17782,
+      "logical_artifact": "perc-cord-cli-driver.py",
+      "sha256": "43218fc08ba3a3b39c7c6d406ca799f9febc4b2d42c8c3ed24bdf9ec856e056e"
+    },
+    "cord_source_summary": {
+      "bytes": 32799,
+      "logical_artifact": "CORD_SOURCE_SUMMARY.json",
+      "sha256": "4d7276ca0ee92075d58960f5deb6103be2822cdccc2bce7f69d4ba34fb88904c"
+    },
+    "cord_synthesis": {
+      "bytes": 20427,
+      "logical_artifact": "CORD_SYNTHESIS.json",
+      "sha256": "09637f1d6bd07e10e80dea0dda6fa60c235caf4f684edab36ea54a12347ca1be"
+    },
+    "failure_3_log": {
+      "bytes": 654,
+      "logical_artifact": "perc-cord-training-validation/stderr.log",
+      "sha256": "14cfd7cc436897a8697a5bbb323bb70bdce88c223845c7a554e268ea5e50fc59"
+    },
+    "failure_3_tests": {
+      "bytes": 1199,
+      "logical_artifact": "perc-cord-training-validation/RESULT.json",
+      "sha256": "4d6d2b9c3fc3397ea91e82fe166a18401d2b922f5a87e787327ca532251cf8be"
+    },
+    "legacy_source_step": {
+      "bytes": 1041,
+      "logical_artifact": "perc-workflow-validation/LEGACY_STEP.json",
+      "sha256": "20bba3cd5cc6de66601fc53cb4c4aee3ca70aa3bfa8d6c991e5e19cba0213ef5"
+    },
+    "oracle_execution": {
+      "bytes": 97,
+      "logical_artifact": "cord-oracle-002-execution.json",
+      "sha256": "af869a770ea72c34f10d08a0181befd3888fba0b064fa1092e2c869b55e99d34"
+    },
+    "oracle_report": {
+      "bytes": 2811,
+      "logical_artifact": "cord-oracle-002/REPORT.json",
+      "sha256": "702ca11b6065976a179f1b13b643de2507d4a7bf5765bd18fadd47d853aba50c"
+    },
+    "pilot_execution": {
+      "bytes": 405,
+      "logical_artifact": "cord-pilot-002-execution.json",
+      "sha256": "43810a218ad901e6a981e758aa32f97c8694b953e956439999aebd414f0a4ccc"
+    },
+    "prior_failed_execution": {
+      "bytes": 383,
+      "logical_artifact": "cord-pilot-001-execution.json",
+      "sha256": "553641f3903129e9c71729e431387b0f4cdbdef5537c32a38aac039d10a424aa"
+    },
+    "real_cli_active_meter": {
+      "bytes": 9301,
+      "logical_artifact": "cord-cli-002/active/receipt.json",
+      "sha256": "62efddc22356c9f7fbd7f22798acef49d6ebfb15d13342052ba935baed4991b3"
+    },
+    "real_cli_active_request": {
+      "bytes": 4262,
+      "logical_artifact": "cord-cli-002/active/request.json",
+      "sha256": "8fb5178f9ed0627ed049c0a0767f23a1edbed027abda99a636ad2c8c50544f5d"
+    },
+    "real_cli_active_stderr": {
+      "bytes": 0,
+      "logical_artifact": "cord-cli-002/active/stderr.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "real_cli_active_stdout": {
+      "bytes": 107938,
+      "logical_artifact": "cord-cli-002/active/stdout.bin",
+      "sha256": "99587a9a6de21002ca689ebb007826cec6f51dead8a1b1eeed9c74bf2855549f"
+    },
+    "real_cli_decision_read_meter": {
+      "bytes": 9294,
+      "logical_artifact": "cord-cli-002/decision-cold/receipt.json",
+      "sha256": "5c37fa6f51db0ee4572360001b7d2360020e17fe6cddd1b3257b465e2c986eea"
+    },
+    "real_cli_decision_read_stdout": {
+      "bytes": 10965,
+      "logical_artifact": "cord-cli-002/decision-cold/stdout.bin",
+      "sha256": "4dadbd1cfc874adb001b3f5af25dbcb317ef2ccba58a50b19ecad5d5c86a85a7"
+    },
+    "real_cli_delivery_manifest": {
+      "bytes": 12478,
+      "logical_artifact": "cord-cli-002/DELIVERY_MANIFEST.json",
+      "sha256": "1a8ee06851669e2e1cb430d4b81859ee68f78825adc0882a984210171815f86c"
+    },
+    "real_cli_report": {
+      "bytes": 4430,
+      "logical_artifact": "cord-cli-002/REPORT.json",
+      "sha256": "fc728328f93d837d990e3c6110759e0804ecd9f3fbbf0fc9bad71fbf2c03bd2e"
+    },
+    "real_cli_source_pins": {
+      "bytes": 3288,
+      "logical_artifact": "cord-cli-002/SOURCE_PINS.json",
+      "sha256": "5a0210ee13fecb44830bd04f096295aacaebfe9ea9c33bad70e5db5852fd1d71"
+    },
+    "real_cli_source_read_meter": {
+      "bytes": 9292,
+      "logical_artifact": "cord-cli-002/source-cold/receipt.json",
+      "sha256": "93d713e84d1030a4a6b09ffdb628c3b6fdbacd9295514d73607190c76ffc5025"
+    },
+    "real_cli_source_read_stdout": {
+      "bytes": 48627,
+      "logical_artifact": "cord-cli-002/source-cold/stdout.bin",
+      "sha256": "e4b2503724e64fc3735d2592aa4f5f717f00e20fa152227e3c9f2fca98244261"
+    },
+    "real_head": {
+      "bytes": 88087,
+      "logical_artifact": "cord-pilot-002/HEAD.json",
+      "sha256": "2a7aa2549d8102fc033e5026b959c804d07ad5f1ae41a0d5d887bffc66668f5e"
+    },
+    "real_pilot_actor_done": {
+      "bytes": 13374,
+      "logical_artifact": "cord-pilot-002/ACTOR_DONE.json",
+      "sha256": "fef10706dd920849defc15079784b9714ff148881dc6ad88294121b8153b18a3"
+    },
+    "real_pilot_plan": {
+      "bytes": 3054,
+      "logical_artifact": "cord-pilot-002/PLAN.json",
+      "sha256": "3a9b73b2d62ed18f594e043400b6fb820539707dc2cfef87fcca2a2371b32b3a"
+    },
+    "real_pilot_report": {
+      "bytes": 25443,
+      "logical_artifact": "cord-pilot-002/REPORT.json",
+      "sha256": "7c7215f7e64cf43db61ac7e6c88ff1c7a792a532e77ac54df1bd6eaee7fd93a4"
+    },
+    "real_profile": {
+      "bytes": 433,
+      "logical_artifact": "cord-pilot-002/PROFILE.json",
+      "sha256": "a62a4a2541a178edb06bae084eed397f3d5b06fbe12d4cf8e721ce3c83b26e96"
+    },
+    "real_training_attempts": {
+      "bytes": 62711,
+      "logical_artifact": "cord-pilot-002/TRAINING_ATTEMPTS.json",
+      "sha256": "3477ee9d9d8f2c1bd0e22c5a0d3ffb5ed03cdba5d96930ecd79db9405dfbdda1"
+    },
+    "real_training_pairs": {
+      "bytes": 301125,
+      "logical_artifact": "cord-pilot-002/PAIRS.json",
+      "sha256": "a0462c86fddeee5dfef5971321c46d4145fbad926ae79c9882654c29f13cb7c2"
+    },
+    "scoped_47_log": {
+      "bytes": 7921,
+      "logical_artifact": "perc-workflow-validation/regression.stderr.log",
+      "sha256": "d91946c6977d6f4df891c6a35a92870a7eedb79adde83cb671a75466e2ed56e5"
+    },
+    "scoped_47_tests": {
+      "bytes": 7812,
+      "logical_artifact": "perc-workflow-validation/REGRESSION.json",
+      "sha256": "db2d091a96ab23445eb2d305e6ec13a011e39ed5f3e3aeb57a49e698e2870168"
+    },
+    "synthetic_profile_experiment": {
+      "bytes": 1389,
+      "logical_artifact": "perc-profile-experiment/REPORT.json",
+      "sha256": "43789ff5a9bfcb576678d0e9422cce9eb8870b3d8e4ae2fa5a11b018e7e38a57"
+    },
+    "workflow_syntax": {
+      "bytes": 1833,
+      "logical_artifact": "perc-workflow-validation/SYNTAX.json",
+      "sha256": "8b55155742a29fa8702bce8aeb7d6f5469faa02f39025df17be63dd110d5456e"
+    }
+  },
+  "profile_bridge": {
+    "cli_request_schema": "perc1.profiled-source-active.v1",
+    "compatibility": "Exact published v2 code may cold-read only in v2 with every other required pin matching. No-profile requests still use v2. Historical CLI operator configs require matching current backend pins; direct journal compatibility does not promise unchanged legacy CLI config acceptance.",
+    "decision_schema": "perc1.active-capture-decision.v3",
+    "default_adoption": false,
+    "head_artifact_identities": [
+      "raw-file SHA256",
+      "canonical-model SHA256"
+    ],
+    "head_schema": "perc1.acquisition-mlp-head.v1",
+    "parameter_v3_claim": false,
+    "profile_fields": [
+      "observation",
+      "aggregation",
+      "representation",
+      "token_count",
+      "token_dimension",
+      "task_goal_width",
+      "encoder_digest",
+      "latent_model_digest",
+      "projection_sha256"
+    ],
+    "profile_schema": "perc1.source-feature-profile.v1",
+    "profiled_head_max_bytes": 2097152,
+    "request_max_bytes": 65536,
+    "source_mapping": "Validate selected owner receipt, original wire, source/OCR evidence and ordered token-to-evidence references; preserve dense flatten layout.",
+    "training_binding": "training_receipt.feature_extractor_sha256 must equal the profile and pinned extractor fingerprint generated before fitting."
+  },
+  "publication": {
+    "absolute_workspace_paths_in_this_summary": false,
+    "private_originals": "Original reports and command logs are retained separately; archival links are attached by the integrator.",
+    "scope": "Derived aggregate metrics, status/boolean comparisons and original artifact hashes only. No OCR text, answers, annotation bytes, images, wire bytes or owner journal contents."
+  },
+  "real_cord_training": {
+    "dataset": "naver-clova-ix/cord-v2",
+    "dataset_revision": "7f0115a4b758a71d6473b8d085751692da2fef98",
+    "decoder_learned": false,
+    "dev_pairs": 24,
+    "head_bytes": 88087,
+    "head_file_sha256": "2a7aa2549d8102fc033e5026b959c804d07ad5f1ae41a0d5d887bffc66668f5e",
+    "head_schema": "perc1.acquisition-mlp-head.v1",
+    "head_sha256": "dd12c8183f6bf1efa26f51e2a09bb93650e7b5c333d473c1e010a59814f08465",
+    "incomplete_training_observations": 0,
+    "optimizer_updates": 200,
+    "original_report_ref": "real_pilot_report",
+    "profile_file_sha256": "a62a4a2541a178edb06bae084eed397f3d5b06fbe12d4cf8e721ce3c83b26e96",
+    "profile_sha256": "1340eaad3459a2980b6827bdd8b6f36bfd88537d8455a1340592875247b733f9",
+    "source_groups": {
+      "dev": {
+        "attempted": 8,
+        "fitted": 8
+      },
+      "train": {
+        "attempted": 24,
+        "fitted": 24
+      }
+    },
+    "train_pairs": 72
+  },
+  "real_task_comparison": {
+    "actor_records": 84,
+    "all_tasks_quality_mean": null,
+    "arms": 7,
+    "dynamic_environment": "not exercised",
+    "encoding_path_comparison": {
+      "all_12_observation_selection_answer_equality_checks_passed": true,
+      "left": "fixed_selection",
+      "right": "fixed_region",
+      "scope": "Encoding path includes model load, latent/wire persistence and cold verification; not isolated neural compute.",
+      "wall_ratio": 1.7294835156040442
+    },
+    "known_quality_tasks": 11,
+    "learned_decoder_ablation": "not run",
+    "occlusion_protocol": "not exercised",
+    "oracle": {
+      "classification": "oracle_upper_bound",
+      "correct_known": 5,
+      "fair_comparator": false,
+      "known_quality_tasks": 11,
+      "measured_net_benefit": null,
+      "report_sha256": "702ca11b6065976a179f1b13b643de2507d4a7bf5765bd18fadd47d853aba50c",
+      "scope": "Post-freeze annotation-assisted ROI; separate oracle upper bound, not a fair main-task comparator.",
+      "summary": {
+        "correct": 5,
+        "quality_mean": null,
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 11,
+          "FAILED": 0,
+          "UNKNOWN": 1
+        },
+        "tasks": 12,
+        "totals": {
+          "inclusive_wall_ns": 3067671122,
+          "process_cpu_ns": 1152664985,
+          "terminated_child_cpu_ns": null
+        },
+        "unknown_quality": 1
+      },
+      "target_rectangle_public_to_main_actors": false
+    },
+    "original_report_ref": "real_pilot_report",
+    "quality_rubric": "exact ASCII digit-string match after removing punctuation and leading zeros; not a currency-aware monetary equivalence test",
+    "rows": [
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "learned",
+        "completed": 12,
+        "correct_known": 1,
+        "inclusive_wall_ns": 9200741450,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 4796438453,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 3847321000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 1.987057835989419
+      },
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "full_ocr",
+        "completed": 12,
+        "correct_known": 4,
+        "inclusive_wall_ns": 4630333996,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 1032512729,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 3270294000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 1.0
+      },
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "public_feature_rule",
+        "completed": 12,
+        "correct_known": 4,
+        "inclusive_wall_ns": 6504805569,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 1297407482,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 4703491000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 1.4048242685342562
+      },
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "fixed_region",
+        "completed": 12,
+        "correct_known": 4,
+        "inclusive_wall_ns": 6209380603,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 1408601612,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 4253084000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 1.3410221829276439
+      },
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "random_region",
+        "completed": 12,
+        "correct_known": 1,
+        "inclusive_wall_ns": 5863629006,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 1197623533,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 4223797000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 1.2663511986533595
+      },
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "zero_visual",
+        "completed": 12,
+        "correct_known": 4,
+        "inclusive_wall_ns": 9265383253,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 4639152152,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 4196130000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 2.0010183414423395
+      },
+      {
+        "all_tasks_quality_mean": null,
+        "arm": "fixed_selection",
+        "completed": 12,
+        "correct_known": 4,
+        "inclusive_wall_ns": 10739021395,
+        "known_quality_tasks": 11,
+        "process_cpu_ns": 5002693361,
+        "tasks_retained": 12,
+        "terminated_child_cpu_ns": 5181211000,
+        "unknown_quality": 1,
+        "wall_ratio_vs_full_ocr": 2.319275759432711
+      }
+    ],
+    "selection_comparison": {
+      "all_tasks_mean_quality_delta": null,
+      "correct_known": [
+        1,
+        4
+      ],
+      "known_quality_losses": 3,
+      "left": "learned",
+      "right": "fixed_selection"
+    },
+    "synthesis_ref": "cord_synthesis",
+    "tasks_retained": 12,
+    "unknown_quality_tasks": 1,
+    "visual_intervention": {
+      "all_tasks_mean_quality_delta": null,
+      "comparison_direction": "learned minus zero_visual",
+      "kind": "Zero 64 visual inputs after real encoding, same trained head; execute resulting actions. Not a separately retrained model without vision.",
+      "known_quality_improvements": 0,
+      "known_quality_losses": 3,
+      "loss_task_ids": [
+        "cord-v2-test-00003",
+        "cord-v2-test-00005",
+        "cord-v2-test-00010"
+      ],
+      "selection_changed": 7,
+      "tasks": 12,
+      "unknown_quality_pairs": 1
+    }
+  },
+  "real_train_cli_diagnostic": {
+    "actual_entry_effects": {
+      "encoder_completed_calls": 1,
+      "encoder_loaded": true,
+      "source_callback_invocations": 1
+    },
+    "after": {
+      "binding_sha256": "b02dad77361a64106ac5ed8b47b5f0ef83559fe032aaea0eb6838274f0ae278b",
+      "remaining_units": 3,
+      "reserved_units": 5,
+      "states": {
+        "settled": {
+          "operations": 5,
+          "units": 5
+        }
+      },
+      "unresolved_dispatch": false
+    },
+    "before": {
+      "binding_sha256": "b02dad77361a64106ac5ed8b47b5f0ef83559fe032aaea0eb6838274f0ae278b",
+      "remaining_units": 4,
+      "reserved_units": 4,
+      "states": {
+        "settled": {
+          "operations": 4,
+          "units": 4
+        }
+      },
+      "unresolved_dispatch": false
+    },
+    "budget_units": 8,
+    "commands": [
+      {
+        "command_wall_ns": 6261855288,
+        "measurement_valid": true,
+        "name": "active",
+        "returncode": 0,
+        "sources_unchanged": true,
+        "waited_cpu_ns": 5432519000
+      },
+      {
+        "command_wall_ns": 375785176,
+        "measurement_valid": true,
+        "name": "decision-cold",
+        "returncode": 0,
+        "sources_unchanged": true,
+        "waited_cpu_ns": 358431000
+      },
+      {
+        "command_wall_ns": 102702458,
+        "measurement_valid": true,
+        "name": "source-cold",
+        "returncode": 0,
+        "sources_unchanged": true,
+        "waited_cpu_ns": 92213000
+      }
+    ],
+    "confirmation_rows_added": 0,
+    "decision_cold_effects": {
+      "encoder_completed_calls": 0,
+      "encoder_loaded": false,
+      "source_callback_invocations": 0
+    },
+    "driver_process_cpu_ns": 513597362,
+    "driver_wall_ns": 7154502038,
+    "external_head_removed_before_cold_read": true,
+    "extra_acquisition_attempts": 1,
+    "feature_width": 64,
+    "fresh_confirmation_groups": 0,
+    "frozen_input_scope": [
+      "HEAD.json",
+      "PROFILE.json",
+      "PUBLIC_TASKS.json",
+      "PLAN.json",
+      "cord-v2-train-00000-config.json",
+      "cord-v2-train-00000-attempt-completed.json"
+    ],
+    "frozen_pilot_inputs_unchanged": true,
+    "head_bytes": 88087,
+    "head_file_sha256": "2a7aa2549d8102fc033e5026b959c804d07ad5f1ae41a0d5d887bffc66668f5e",
+    "head_sha256": "dd12c8183f6bf1efa26f51e2a09bb93650e7b5c333d473c1e010a59814f08465",
+    "labels_opened": false,
+    "manifest_ref": "real_cli_delivery_manifest",
+    "operation_id": "cli-trained-choice",
+    "original_report_ref": "real_cli_report",
+    "original_store_bytes_unchanged": true,
+    "owner_binding_preserved": true,
+    "predicted_cost": 0.0,
+    "predicted_gain": 0.20201272798380027,
+    "prediction_scope": "Advisory model outputs; predicted cost zero does not replace measured execution cost or establish task benefit.",
+    "profile_sha256": "1340eaad3459a2980b6827bdd8b6f36bfd88537d8455a1340592875247b733f9",
+    "same_decision_cold_read": true,
+    "scope": "A complete fixed TRAIN store copy; only config state_dir changes. Original TRAIN bytes and six listed metadata inputs remain unchanged. No claim that all external model/source files were exhaustively rehashed afterwards.",
+    "selected_action": "ACQUIRE",
+    "selected_candidate": "lower",
+    "selected_source_cold_effects": {
+      "encoder_completed_calls": 0,
+      "encoder_loaded": false,
+      "source_callback_invocations": 0
+    },
+    "source_code_unchanged": true,
+    "status": "PASS_REAL_TRAIN_CLI_ONLY",
+    "task_id": "cord-v2-train-00000",
+    "task_split": "train",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OMP_THREAD_LIMIT": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "train_reuse": true,
+    "training_rows_added": 0
+  },
+  "schema": "perc1.trained-observation-engineering-summary.v1",
+  "scientific_status": "HOLD",
+  "source_freshness": {
+    "fresh_independent_confirmation_groups": 0,
+    "global_history_complete": false,
+    "known_history_raw_images": 199,
+    "no_exact_known_reuse_rows": 44,
+    "preplan_exposure": {
+      "test": [],
+      "train": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "validation": []
+    },
+    "replaced_rows": 0,
+    "selected_rows": 44,
+    "skipped_rows": 0,
+    "source_independence_verified": false,
+    "source_summary_ref": "cord_source_summary",
+    "split_rows": {
+      "confirmation": 12,
+      "dev": 8,
+      "train": 24
+    }
+  },
+  "source_pins": {
+    "failure_3_tests": {
+      "scripts/test_perc1_cord_training.py": "d72108ce3d83e43dc611c95561e39683c971591634bc02641196c0a4be7c3589"
+    },
+    "locally_checked_workflow": {
+      ".github/workflows/hepta-perc-real-source.yml": "40adfd07f3a39107165bce1a915af228191004a1a3f990e74267a8802815685d"
+    },
+    "real_cli_driver": {
+      "perc-cord-cli-driver.py": "43218fc08ba3a3b39c7c6d406ca799f9febc4b2d42c8c3ed24bdf9ec856e056e"
+    },
+    "real_pilot_002": {
+      "scripts/perc1/acquisition.py": "131e2053789066c2d3e20f834fc097f2a6cd4b40e653f2cd2b9a3f97a270aa5f",
+      "scripts/perc1/active_capture.py": "7823e3191c931a002e648056300463d3c8a99c6e1f4025c367a821786c47fd50",
+      "scripts/perc1/browser_capture.py": "ed88e48870297397bb2d733960bdc53aada3fe16da420ef2c78c9e9579ba1460",
+      "scripts/perc1/capture_entry.py": "b9305655d1e98972b6d0e68a5f4299caa6c218e5123c7291c8a63a0448416835",
+      "scripts/perc1/cord_active.py": "76b5623d3b8444047b408261cc30c78f426574023e77fefc3989900720e55a80",
+      "scripts/perc1/cord_evaluate.py": "1c9122040980dfc5a0823fc78327af817833cc66e3118cf12d9b386ad18b565d",
+      "scripts/perc1/cord_task.py": "1ed94101ff9c47fedfd4acd53aa23a42c69548e306c13083ed6ae8befbea2c59",
+      "scripts/perc1/cord_training.py": "edd63c05bdff3b5d9bfecaa7c08a6de3a572efd31576bafd096583024f743225",
+      "scripts/perc1/entry.py": "6009af2f9ba03a84150886493d1915e71000ea89fab9f6c37a4825db9a445e15",
+      "scripts/perc1/mlp_head.py": "03b110038ec43026625f2efbbc08ef075cd16e918e62631c2d9409073209e91d",
+      "scripts/perc1/native.py": "b5b6e8e4d8301d90344f065796447b6e7eefa3cda524cb1b354de38d799ba355",
+      "scripts/perc1/owner.py": "d5113523792068436224d842f09982dcb41b30ce004f966d3884a7de0b83658b",
+      "scripts/perc1/producer.py": "8d321a2f050ab5669f9d58ba7cef76c9abb5110eda41cba16d1f584ba2320361",
+      "scripts/perc1/projection.py": "78923a55fe9ecd5548bd362f18bb85e852c60e793fca54261d83cc8b81f6c5a6",
+      "scripts/perc1/raster.py": "ca7a6cf35a5c737070f39203c681c150ba3c6f4965d3482f05001f6cee7cff82",
+      "scripts/perc1/schema.py": "9ed8f7cab76407d7070a79ee3fbed00060447a68cef8726b60b266c4fffdf04e",
+      "scripts/perc1/source_capture.py": "6170fe866ced25c1472f415f1c476800704935a127cc9b2ede93ce08ae8b834a",
+      "scripts/perc1/source_entry.py": "0d068800ba1bc6f5e7cf5894f48a0ac00c4de7fafd992bb8788736e8e240723e",
+      "scripts/perc1/source_feature_profile.py": "8ba113e1429d64a5dcc5e1ab04afcf349201b7410577fea8e5f4c10e7a0dfe94"
+    },
+    "scoped_47_tests": {
+      "scripts/test_perc1_cord_task.py": "a208ea8bb31dbbe6bef292e301f32d97bd9601b5812cde0cdbf7a9259a3b51c6",
+      "scripts/test_perc1_profiled_source_entry.py": "8d8e1b682ac6b0984d00cb012a2660fb56c1727c181fa0136856a312ac17c7ae",
+      "scripts/test_perc1_repeat_training.py": "535819d4023e32b299194f23df2195e28d48958775cf6af93eb04135de2df4ff",
+      "scripts/test_perc1_source_feature_profile.py": "9c92bf27e0d89086e105ed54081c85a78594a5dccef044426cbd4bc4db41fedc",
+      "scripts/test_perc1_source_freeze.py": "8cc07f79f03bcb97a0044ed2b14f27330cba91ad0fef1743b1d6b9e3a9ad05b1",
+      "scripts/test_perc1_source_reuse.py": "0466b2c5f9f47832d428db1fdd9a1ac44afbb31e5f24cefb525ff9c969f847fa",
+      "scripts/test_perc1_terminal_comparison.py": "b76b9f926a5811ccb890475de4554261de01348685ac4d827d744d5ba067c2ec"
+    },
+    "synthetic_profile_experiment": {
+      "scripts/perc1/active_capture.py": "7823e3191c931a002e648056300463d3c8a99c6e1f4025c367a821786c47fd50",
+      "scripts/perc1/source_feature_profile.py": "8ba113e1429d64a5dcc5e1ab04afcf349201b7410577fea8e5f4c10e7a0dfe94",
+      "scripts/test_perc1_source_feature_profile.py": "9c92bf27e0d89086e105ed54081c85a78594a5dccef044426cbd4bc4db41fedc"
+    }
+  },
+  "status": "PYTHON_TRAINED_OWNER_ENGINEERING_EXECUTED_TASK_BENEFIT_HOLD",
+  "synthetic_engineering_experiment": {
+    "actual_visual_backbone_executions": 0,
+    "cold_read_scope": "No new capture adapter/backbone; retained head selection is recomputed and is not zero head inference.",
+    "dense_feature_width": 64,
+    "dev_rows": 3,
+    "final_parameters_sha256": "45c5551cb932b1595e378b3cbd94db7a11b9ed8c31b2118db3e189e7189b7c2f",
+    "fixture_scope": "Synthetic source/latent/utility fixtures; actual optimizer and durable owner execution. Counts are not pooled with CORD data or confirmation.",
+    "fresh_real_source_confirmations": 0,
+    "full_driver_wall_ns": 806540655,
+    "initial_parameters_sha256": "0c1872ef88c85620103e96359b2b386490165f4d9ef1f6b601a54df55cb31098",
+    "native_cell_owner_executions": 0,
+    "negative_action": "STOP",
+    "original_capture_callbacks": 1,
+    "original_report_ref": "synthetic_profile_experiment",
+    "positive_action": "ACQUIRE",
+    "public_numeric_features_except_latent_equal": true,
+    "retained_head_bytes": 102889,
+    "runtime_probes": 2,
+    "separate_process_capture_adapter_constructed": false,
+    "separate_process_readback_returncode": 0,
+    "status": "PASS_SYNTHETIC_TRAINED_SOURCE_OWNER_INTEGRATION_ONLY",
+    "training_rows": 4,
+    "training_steps": 256
+  },
+  "test_runs": {
+    "aggregation_policy": "Runs are reported separately at their recorded source pins. Earlier 30-case and two-case executions overlap these runs and are not added as new independent tests or datasets.",
+    "failure_3": {
+      "original_log_ref": "failure_3_log",
+      "original_report_ref": "failure_3_tests",
+      "passed": 3,
+      "scope": "Controlled TimeoutExpired dispatch through real Owner; retain failed/result=None original receipts, errors and costs; no retries; no failed pair enters fit. Prefix/text are fixtures and optimizer is stubbed; no real OCR/backbone/confirmation.",
+      "skipped": 0,
+      "source_unchanged": true,
+      "tests_run": 3,
+      "threshold_subcases": 3,
+      "valid_pair_threshold_cases": [
+        [
+          23,
+          6
+        ],
+        [
+          24,
+          5
+        ],
+        [
+          21,
+          6
+        ]
+      ],
+      "wall_ns": 650965520
+    },
+    "scoped_47": {
+      "module_counts": {
+        "test_perc1_cord_task": 2,
+        "test_perc1_profiled_source_entry": 2,
+        "test_perc1_repeat_training": 1,
+        "test_perc1_source_feature_profile": 5,
+        "test_perc1_source_freeze": 15,
+        "test_perc1_source_reuse": 11,
+        "test_perc1_terminal_comparison": 11
+      },
+      "original_log_ref": "scoped_47_log",
+      "original_report_ref": "scoped_47_tests",
+      "passed": 47,
+      "scope": "Engineering fixtures and actual local owner/CLI execution; no independent task-efficacy evidence. Includes the five profile and two profiled-CLI cases.",
+      "skipped": 0,
+      "source_unchanged": true,
+      "tests_run": 47,
+      "wall_ns": 32703025136
+    }
+  }
+}
