@@ -20,13 +20,19 @@ use crate::LearningIterationRuntimeErrorV1;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::PreparedLearningIterationProposalV1;
 
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_q24_checkpoint.rs"]
+mod q24;
+#[cfg(target_os = "linux")]
+pub(crate) use q24::OriginalRootQ24CheckpointV1;
+
 enum Checkpoint {
     Registered {
         owner: Arc<LearningIterationCheckpointOwnerV1>,
         persistence: Arc<Semaphore>,
     },
     #[cfg(target_os = "linux")]
-    RootClient(Box<AgentdLearningCheckpointClientV1>),
+    RootClient(Arc<AgentdLearningCheckpointClientV1>),
 }
 
 struct CheckpointedIterationPorts {
@@ -67,7 +73,7 @@ impl AgentdLearningCheckpointClientV1 {
     ) -> Arc<dyn LearningIterationOwnerPortsV1> {
         Arc::new(CheckpointedIterationPorts {
             initial: self.initial.clone(),
-            checkpoint: Checkpoint::RootClient(Box::new(self)),
+            checkpoint: Checkpoint::RootClient(Arc::new(self)),
             stages,
         })
     }

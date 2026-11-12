@@ -28,6 +28,8 @@ mod codec;
 
 #[path = "learning_iteration_checkpoint_ports.rs"]
 mod ports;
+#[cfg(target_os = "linux")]
+pub(crate) use ports::OriginalRootQ24CheckpointV1;
 
 #[cfg(target_os = "linux")]
 #[path = "authority_host_learning_profile.rs"]
