@@ -43,6 +43,8 @@ use evaluation_root::OriginalRootBEvaluationActionV1;
 
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
+#[path = "cell_q24_learning_model_root.rs"]
+mod model_root;
 #[path = "cell_q24_publication_material.rs"]
 mod publication_material;
 #[path = "cell_q24_training_material.rs"]

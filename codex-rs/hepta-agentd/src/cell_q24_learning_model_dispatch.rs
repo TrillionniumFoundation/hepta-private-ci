@@ -106,6 +106,9 @@ impl Q24StageOwners {
         snapshot: &LearningIterationSnapshotV1,
         action: Action,
     ) -> Result<(LearningIterationReceiptV1, Option<SignedLearningEvidenceV1>), Error> {
+        if self.root_evaluation.is_some() {
+            return self.original_root_model_action(inner, training, runtime, snapshot, action);
+        }
         let completed = runtime
             .block_on(training.readback(&inner.dataset_cut))
             .map_err(unavailable)?;

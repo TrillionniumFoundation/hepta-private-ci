@@ -34,6 +34,8 @@ use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as Error;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
 
+#[path = "cell_q24_local_decision_root.rs"]
+mod original_root;
 #[path = "cell_q24_local_decision_signing.rs"]
 mod signing;
 
