@@ -30,7 +30,6 @@ impl OriginalCellQ24RootPublicationDriverV1 {
         slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
     ) -> Result<OriginalCellQ24PreparedPublicationV1, Error> {
         let original: &OriginalDecision = &self.driver.original;
-        original.require_current().await?;
         original.decision.require_new_work()?;
         validation::feature_target(
             &original.decision,
@@ -81,7 +80,6 @@ impl OriginalCellQ24PreparedPublicationV1 {
         slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
         let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         original.decision.require_new_work()?;
         if &signed.grant.binding != self.prepared.final_use_binding() {
             return Err(Error::Binding(

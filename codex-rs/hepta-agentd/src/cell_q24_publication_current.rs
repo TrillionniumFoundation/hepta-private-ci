@@ -11,8 +11,6 @@ impl OriginalCellQ24PublicationDriverV1 {
         selection: OriginalCellQ24SelectionInputsV1,
         recovery: OriginalCellQ24FeatureRecoveryV1,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
-        let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         validation::feature_target(
             &self.original.decision,
             &recovery.target,
@@ -39,8 +37,6 @@ impl OriginalCellQ24SelectionDriverV1 {
         predecessor: AgentdGenerationUpdatePredecessorFilesV1<FileAnchorWitnessStore>,
         target: OriginalCellQ24FeatureTargetV1,
     ) -> Result<OriginalCellQ24PreparedPublicationV1, Error> {
-        let original: &OriginalDecision = &self.driver.original;
-        original.require_current().await?;
         self.driver.original.decision.require_new_work()?;
         validation::feature_target(
             &self.driver.original.decision,
@@ -85,8 +81,6 @@ impl OriginalCellQ24PreparedPublicationV1 {
         self,
         signed: SignedFinalUseGrant,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
-        let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         self.original.decision.require_new_work()?;
         if &signed.grant.binding != self.prepared.final_use_binding() {
             return Err(Error::Binding("exact original FinalUse operation"));

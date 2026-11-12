@@ -33,7 +33,6 @@ use crate::AgentdSelectedGenerationV1;
 use crate::CircuitFeaturePredecessorFilesV1;
 use crate::CircuitTaskSourceInputV1;
 use crate::CircuitTaskSourceReadbackV1;
-use crate::LearningIterationStageOwnerPortsV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::OriginalCellQ24LearningStageOwnersV1;
@@ -149,18 +148,8 @@ impl OriginalDecision {
 
     async fn require_current(&self) -> Result<(), Error> {
         self.owners
-            .validate_recovery(&self.decision.snapshot)
+            .require_original_publication_material(&self.decision.snapshot, &self.manifest)
             .await?;
-        if let Some(expected) = &self.manifest
-            && self
-                .owners
-                .original_publication_manifest(&self.decision.snapshot)
-                .await?
-                != *expected
-        {
-            return Err(Error::Binding("original B full manifest changed"));
-        }
-        self.owners.require_current().await?;
         Ok(())
     }
 }
@@ -204,22 +193,14 @@ impl OriginalCellQ24PublicationDriverV1 {
         authorities: AgentdGenerationUpdateAuthoritiesV1,
     ) -> Result<Self, Error> {
         let decision = Decision::new(snapshot)?;
-        owners.validate_recovery(&decision.snapshot).await?;
-        let manifest = if decision.adopts() {
-            Some(
-                owners
-                    .original_publication_manifest(&decision.snapshot)
-                    .await?,
-            )
-        } else {
-            None
-        };
+        let manifest = owners
+            .read_original_publication_material(&decision.snapshot)
+            .await?;
         let original: OriginalDecision = OriginalDecision {
             owners,
             decision,
             manifest,
         };
-        original.require_current().await?;
         Ok(Self {
             original,
             current,
@@ -259,8 +240,6 @@ impl OriginalCellQ24PublicationDriverV1 {
         ),
         Error,
     > {
-        let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         self.original.decision.require_new_work()?;
         validation::artifact_request(
             &self.original.decision,

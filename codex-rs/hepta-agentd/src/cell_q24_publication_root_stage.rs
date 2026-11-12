@@ -56,16 +56,15 @@ impl OriginalCellQ24ArtifactPublicationDriverV1 {
                 "retained result does not enroll Root candidate publication",
             ));
         }
-        owners.validate_recovery(&decision.snapshot).await?;
         let manifest = owners
-            .original_publication_manifest(&decision.snapshot)
-            .await?;
+            .read_original_publication_material(&decision.snapshot)
+            .await?
+            .ok_or(Error::Binding("original adopted B manifest absent"))?;
         let original: OriginalDecision = OriginalDecision {
             owners,
             decision,
             manifest: Some(manifest),
         };
-        original.require_current().await?;
         Ok(Self {
             original,
             authorities,
@@ -87,7 +86,6 @@ impl OriginalCellQ24ArtifactPublicationDriverV1 {
         mut request: LearningArtifactPublishRequestV1,
     ) -> Result<OriginalCellQ24PublishedArtifactForRootV1, Error> {
         let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         original.decision.require_new_work()?;
         validation::artifact_request(
             &original.decision,
@@ -129,7 +127,6 @@ impl OriginalCellQ24ArtifactPublicationDriverV1 {
         self,
     ) -> Result<OriginalCellQ24PublishedArtifactForRootV1, Error> {
         let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         let owners: Arc<OriginalCellQ24LearningStageOwnersV1> = Arc::clone(&original.owners);
         let snapshot = original.decision.snapshot.clone();
         let manifest = original.manifest.clone();
@@ -170,7 +167,6 @@ impl OriginalCellQ24PublishedArtifactForRootV1 {
         input: OriginalCellQ24SelectionInputsV1,
     ) -> Result<OriginalCellQ24SelectedArtifactForRootV1, Error> {
         let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         let owners: Arc<OriginalCellQ24LearningStageOwnersV1> = Arc::clone(&original.owners);
         let snapshot = original.decision.snapshot.clone();
         let manifest = original.manifest.clone();
@@ -264,7 +260,6 @@ impl OriginalCellQ24RootPublicationDriverV1 {
         target: OriginalCellQ24FeatureTargetV1,
     ) -> Result<OriginalCellQ24PreparedPublicationV1, Error> {
         let original: &OriginalDecision = &self.driver.original;
-        original.require_current().await?;
         original.decision.require_new_work()?;
         validation::feature_target(
             &original.decision,
@@ -297,7 +292,6 @@ impl OriginalCellQ24RootPublicationDriverV1 {
         recovery: OriginalCellQ24FeatureRecoveryV1,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
         let original: &OriginalDecision = &self.driver.original;
-        original.require_current().await?;
         validation::feature_target(
             &original.decision,
             &recovery.target,
@@ -359,13 +353,18 @@ impl OriginalCellQ24RetainedArtifactForRootV1 {
                 "adopted model requires the actual Artifact publication phase",
             ));
         }
-        owners.validate_recovery(&decision.snapshot).await?;
+        if owners
+            .read_original_publication_material(&decision.snapshot)
+            .await?
+            .is_some()
+        {
+            return Err(Error::Binding("retained result has candidate material"));
+        }
         let original: OriginalDecision = OriginalDecision {
             owners,
             decision,
             manifest: None,
         };
-        original.require_current().await?;
         Ok(Self {
             original,
             authorities,
@@ -381,7 +380,6 @@ impl OriginalCellQ24RetainedArtifactForRootV1 {
         input: OriginalCellQ24SelectionInputsV1,
     ) -> Result<OriginalCellQ24SelectedArtifactForRootV1, Error> {
         let original: &OriginalDecision = &self.original;
-        original.require_current().await?;
         original.decision.require_root_publication()?;
         let owners: Arc<OriginalCellQ24LearningStageOwnersV1> = Arc::clone(&original.owners);
         let snapshot = original.decision.snapshot.clone();

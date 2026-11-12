@@ -14,7 +14,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         let inner = Arc::clone(&self.inner);
         let weak = Arc::downgrade(slot);
         self.inner
-            .in_lane(move |owners, _training, _runtime| {
+            .in_original_prepared_lane(move |owners, _runtime, _read| {
                 session
                     .require_current_successor_session()
                     .map_err(unavailable)?;
@@ -25,7 +25,32 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 if owners.generation.is_some() || inner.successor.set(weak).is_err() {
                     return Err(Error::WrongScope);
                 }
+                session
+                    .require_current_successor_session()
+                    .map_err(unavailable)?;
                 Ok(())
+            })
+            .await
+    }
+
+    pub(crate) async fn with_original_successor_read<T: Send + 'static>(
+        &self,
+        context: Arc<crate::learning_iteration::OriginalQ24SuccessorContext>,
+        work: impl FnOnce() -> Result<T, crate::AgentdError> + Send + 'static,
+    ) -> Result<T, Error> {
+        if !std::ptr::eq(self, context.owners().as_ref()) {
+            return Err(Error::WrongScope);
+        }
+        self.inner
+            .in_original_prepared_lane(move |_, _, read| {
+                context
+                    .require_original_successor_operation(read)
+                    .map_err(unavailable)?;
+                let result = work();
+                context
+                    .require_original_successor_operation(read)
+                    .map_err(unavailable)?;
+                result.map_err(unavailable)
             })
             .await
     }

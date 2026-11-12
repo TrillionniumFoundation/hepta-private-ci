@@ -62,36 +62,23 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
                 if !snapshot.receipts.starts_with(&original.snapshot().receipts) {
                     return Err(Error::WrongScope);
                 }
-                let observed = self.owners.complete_original_root_evaluation(
-                    &original,
-                    self.inner.prepared.scope(),
-                    OriginalRootBEvaluationActionV1::Readback,
-                )?;
+                self.require_original_b_read()?;
+                let observed = self.original_b.as_ref().ok_or(Error::CommitUncertain)?;
                 (
                     observed.receipt().clone(),
                     Some(observed.attestation().clone()),
                 )
             }
-            LearningIterationStageV1::Proposal => self.owners.model_root_action_in_operation(
-                self.inner,
-                self.runtime,
-                self.training,
-                snapshot,
-                model::Action::ReadProposal,
-            )?,
+            LearningIterationStageV1::Proposal => {
+                self.model_root_action(snapshot, model::Action::ReadProposal)?
+            }
             LearningIterationStageV1::Selection
                 if matches!(
                     expected.observation,
                     LearningIterationObservationV1::LocalDecisionV2(_)
                 ) =>
             {
-                self.owners.model_root_action_in_operation(
-                    self.inner,
-                    self.runtime,
-                    self.training,
-                    snapshot,
-                    model::Action::ReadDecision,
-                )?
+                self.model_root_action(snapshot, model::Action::ReadDecision)?
             }
             LearningIterationStageV1::Selection | LearningIterationStageV1::NextUse => {
                 let (selection, next_use) = self
@@ -127,9 +114,8 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         let signed = self
             .read_receipt(snapshot, receipt)?
             .ok_or(Error::Evidence(SignedEvidenceError::RoleMismatch))?;
-        let verification =
-            OriginalReceiptVerificationV1::new(self.context.verifier(), snapshot, receipt)?;
-        OriginalReceiptVerificationV1::verify(&verification, &signed, self.context.current_time()?)
+        let verification = OriginalReceiptVerificationV1::new(self.verifier(), snapshot, receipt)?;
+        OriginalReceiptVerificationV1::verify(&verification, &signed, self.current_time()?)
     }
 
     pub(super) fn authenticate_receipt(
@@ -160,7 +146,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
                 .find(|earlier| earlier.observation.stage() == *stage)
                 .ok_or(Error::Evidence(SignedEvidenceError::ContextMismatch))?;
             let prior = self.verify_receipt(snapshot, earlier)?;
-            verify_signed_actor_separation(&prior, &current, self.context.current_time()?)
+            verify_signed_actor_separation(&prior, &current, self.current_time()?)
                 .map_err(Error::Evidence)?;
         }
         Ok(())
