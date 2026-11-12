@@ -220,6 +220,81 @@ def terminal_result_gate(row, path, parent, contract):
                 artifact = path.parent / filename
                 require(artifact.is_file() and not artifact.is_symlink()
                         and sha(artifact) == result.get(field), 'exit0 checkpoint artifact differs: ' + filename)
+            # Hash agreement alone cannot corroborate claimed optimizer work.
+            # Parse the exact bounded journal and match the runner's protocol.
+            # This is structural corroboration, not independent training replay.
+            event_path = path.parent / 'events.jsonl'
+            require(0 < event_path.stat().st_size <= 64 * 1024 * 1024,
+                    'exit0 event journal missing/empty/oversized')
+            event_identity = identity(event_path)
+            require(event_identity == result['events'], 'exit0 event journal changed before parse')
+            completed, epoch_index, in_epoch, phase = 0, 0, False, 'resume'
+            event_digest, event_bytes = hashlib.sha256(), 0
+            with event_path.open('rb') as event_stream:
+                for line_number, line in enumerate(iter(lambda: event_stream.readline(1024 * 1024 + 1), b''), 1):
+                    event_digest.update(line)
+                    event_bytes += len(line)
+                    require(line_number <= 1000000 and len(line) <= 1024 * 1024
+                            and event_bytes <= 64 * 1024 * 1024
+                            and line.endswith(b'\n'), 'exit0 event journal truncated/oversized')
+                    event = json.loads(line, object_pairs_hook=unique_pairs,
+                                       parse_constant=no_nonfinite_constant, parse_float=finite_float)
+                    require(type(event) is dict, 'exit0 event journal row is not an object')
+                    kind = event.get('kind')
+                    if phase == 'resume':
+                        require(kind == 'resume_start_committed'
+                                and event.get('receipt') == result['resume_start_receipt']
+                                and event.get('checkpoint') == result['resume_start_checkpoint'],
+                                'exit0 event journal lacks its bound resume witness')
+                        phase = 'between_epochs'
+                    elif kind == 'epoch_started':
+                        require(phase == 'between_epochs' and not in_epoch
+                                and epoch_index < len(result['epochs'])
+                                and type(event.get('epoch')) is int
+                                and event['epoch'] == retained + epoch_index + 1,
+                                'exit0 event epoch start differs')
+                        in_epoch, phase = True, 'update'
+                    elif kind == 'update_started':
+                        require(in_epoch and phase == 'update' and event.get('phase') == 'main'
+                                and completed < (epoch_index + 1) * steps,
+                                'exit0 event update start is out of order')
+                        phase = 'optimizer'
+                    elif kind == 'optimizer_started':
+                        require(in_epoch and phase == 'optimizer' and event.get('phase') == 'main'
+                                and type(event.get('logical_next_update')) is int
+                                and event['logical_next_update'] == retained * steps + completed + 1,
+                                'exit0 event optimizer start differs')
+                        phase = 'completion'
+                    elif kind == 'optimizer_completed':
+                        require(in_epoch and phase == 'completion' and event.get('phase') == 'main'
+                                and type(event.get('number')) is int
+                                and type(event.get('new_number')) is int
+                                and event['number'] == retained * steps + completed + 1
+                                and event['new_number'] == completed + 1,
+                                'exit0 event optimizer completion differs')
+                        completed, phase = completed + 1, 'update'
+                    elif kind == 'epoch_completed':
+                        require(in_epoch and phase == 'update' and completed == (epoch_index + 1) * steps
+                                and {key: value for key, value in event.items()
+                                     if key not in ('kind', 'commit')} == result['epochs'][epoch_index],
+                                'exit0 event complete epoch differs')
+                        epoch_index, in_epoch, phase = epoch_index + 1, False, 'between_epochs'
+                    elif kind == 'finished':
+                        require(phase == 'between_epochs' and not in_epoch
+                                and epoch_index == len(result['epochs'])
+                                and event.get('status') == result['status'],
+                                'exit0 event finished state differs')
+                        phase = 'finished'
+                    else:
+                        raise ValueError('exit0 event journal unknown/out-of-order row')
+            require(phase == 'finished' and completed == result['new_main_updates']
+                    and {'bytes': event_bytes, 'sha256': event_digest.hexdigest()} == event_identity
+                    and identity(event_path) == event_identity,
+                    'exit0 event journal incomplete, counters differ or bytes changed')
+            output['event_accounting'] = {'schema': 'hcsn-c2-terminal-event-accounting-v1',
+                'journal': event_identity, 'rows': line_number,
+                'new_main_updates_completed': completed, 'complete_new_epochs': epoch_index,
+                'scope': 'producer journal consistency only; no independent optimizer/checkpoint replay'}
         else:
             require(result.get('status') in ('failed', 'budget_exhausted', 'budget_exhausted_finalization',
                     'recording_hold', 'source_or_parent_changed'), 'nonzero exit has unexpected result state')
