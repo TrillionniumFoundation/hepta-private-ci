@@ -178,6 +178,120 @@ class ObservationAuditTests(unittest.TestCase):
         )
         self.rejected()
 
+    def rewrite_checker_report(self, kind, update):
+        events_path, rows_path = (
+            self.path / "events.jsonl",
+            self.path / "trajectories.jsonl",
+        )
+        events = [json.loads(s) for s in events_path.read_text().splitlines()]
+        rows = [json.loads(s) for s in rows_path.read_text().splitlines()]
+        eligible = {r["trajectory_id"] for r in rows if r["phase"] == "confirm"}
+        event = next(
+            e for e in events if e["kind"] == kind and e["trajectory_id"] in eligible
+        )
+        event["value"].update(update)
+        row = next(r for r in rows if r["trajectory_id"] == event["trajectory_id"])
+        if kind == "optional_property_check":
+            row["optional_report"] = deepcopy(event["value"])
+        plan = json.loads((self.path / "PLAN.json").read_text())
+        case = next(c for c in plan["cases"] if c["case_id"] == row["case_id"])
+        goal = {
+            "task_id": row["trajectory_id"],
+            "left": case["left"],
+            "right": case["right"],
+        }
+        terminal = next(
+            e["value"]
+            for e in reversed(events)
+            if e["trajectory_id"] == row["trajectory_id"]
+            and e["kind"] in ("mandatory_terminal_check", "mandatory_terminal_readback")
+        )
+        row["terminal_label"]["evidence_sha256"] = _digest(
+            {"goal": goal, "error": row["terminal_error"], "terminal": terminal}
+        )
+        events_path.write_text("\n".join(json.dumps(e) for e in events) + "\n")
+        rows_path.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+
+    def test_coordinated_checker_contract_rewrites_are_rejected(self):
+        original = {
+            name: (self.path / name).read_bytes()
+            for name in ("events.jsonl", "trajectories.jsonl")
+        }
+        for kind, update in (
+            ("mandatory_terminal_check", {"subject_sha256": "0" * 64}),
+            ("mandatory_terminal_check", {"checker_id": "untrusted-checker"}),
+            ("mandatory_terminal_check", {"checker_version": "999"}),
+            ("mandatory_terminal_check", {"state_version": 999}),
+            ("mandatory_terminal_check", {"checked_step": 0}),
+            ("mandatory_terminal_check", {"production_authority": "ALLOW"}),
+            ("mandatory_terminal_check", {"accepted": 1}),
+            ("optional_property_check", {"subject_sha256": "0" * 64}),
+            ("optional_property_check", {"accepted": True}),
+            ("mandatory_terminal_readback", {"checked_step": 3}),
+        ):
+            with self.subTest(kind=kind, update=update):
+                for name, raw in original.items():
+                    (self.path / name).write_bytes(raw)
+                self.rewrite_checker_report(kind, update)
+                self.rejected()
+
+    def test_reconciliation_cannot_claim_effect_replay(self):
+        self.mutate(
+            "events.jsonl",
+            lambda rows: next(
+                e for e in rows if e["kind"] == "mandatory_reconciliation"
+            )["value"].update(effects_replayed=1),
+        )
+        self.rejected()
+
+    def test_wall_totals_cannot_undercut_sequential_operation_costs(self):
+        result_path = self.path / "RESULT.json"
+        original = result_path.read_bytes()
+        for mutation in ("overall", "phase", "train_fit", "wrong_scope"):
+            with self.subTest(mutation=mutation):
+                result = json.loads(original)
+                if mutation == "overall":
+                    result["overall_wall_ns"] = 0
+                    for phase in result["phase_timings"]:
+                        phase["started_monotonic_ns"] = phase[
+                            "completed_monotonic_ns"
+                        ] = 0
+                elif mutation == "phase":
+                    phase = result["phase_timings"][1]
+                    phase["completed_monotonic_ns"] = phase["started_monotonic_ns"]
+                elif mutation == "train_fit":
+                    costs = [
+                        json.loads(s)
+                        for s in (self.path / "costs.jsonl").read_text().splitlines()
+                    ]
+                    rows = [
+                        json.loads(s)
+                        for s in (self.path / "trajectories.jsonl")
+                        .read_text()
+                        .splitlines()
+                    ]
+                    train_ids = {
+                        r["trajectory_id"] for r in rows if r["phase"] == "train"
+                    }
+                    phase = result["phase_timings"][0]
+                    phase["completed_monotonic_ns"] = phase[
+                        "started_monotonic_ns"
+                    ] + sum(
+                        c["wall_ns"] for c in costs if c["trajectory_id"] in train_ids
+                    )
+                else:
+                    result["overall_wall_scope"] = "caller_excluded_paid_checks"
+                result_path.write_text(json.dumps(result))
+                self.rejected()
+        result_path.write_bytes(original)
+
+    def test_relative_event_clock_cannot_hide_paid_operation_time(self):
+        self.mutate(
+            "events.jsonl",
+            lambda rows: [e.update(available_monotonic_ns=0) for e in rows],
+        )
+        self.rejected()
+
     def test_report_arithmetic_and_diagnostics_are_recomputed(self):
         self.mutate(
             "RESULT.json",

@@ -8,6 +8,7 @@ import argparse
 from collections import defaultdict
 from fractions import Fraction
 import hashlib
+from itertools import islice
 import json
 from pathlib import Path
 
@@ -70,7 +71,7 @@ def _summary(rows):
 
 def attribute_rows(rows):
     """Analyze a complete supplied projection; this function authenticates no source."""
-    rows = list(rows)
+    rows = list(islice(rows, 100001))
     if not 0 < len(rows) <= 100000:
         raise ValueError("bounded nonempty attribution rows required")
     seen, phases = set(), {}
@@ -160,7 +161,13 @@ def attribute_run(directory):
     # probe trajectories, never the four repeated policy arms as new samples.
     saved = {}
     for name in ("trajectories.jsonl", "events.jsonl"):
-        raw = (directory / name).read_bytes()
+        path = directory / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("saved records missing or indirect after audit")
+        with path.open("rb") as stream:
+            raw = stream.read(16_000_001)
+        if len(raw) > 16_000_000:
+            raise ValueError("saved records exceed byte bound after audit")
         if hashlib.sha256(raw).hexdigest() != audit_result["inputs"][name]["sha256"]:
             raise ValueError("saved records changed after their consistency audit")
         saved[name] = [json.loads(line) for line in raw.decode("utf-8").splitlines()]

@@ -32,6 +32,36 @@ def row(
 
 
 class ObservationDiagnosticsTests(unittest.TestCase):
+    def test_row_generator_is_stopped_at_bound_plus_one(self):
+        consumed = 0
+
+        def rows():
+            nonlocal consumed
+            while True:
+                consumed += 1
+                if consumed > 100001:
+                    raise AssertionError("diagnostics consumed beyond its row bound")
+                yield row("a")
+
+        with self.assertRaisesRegex(ValueError, "bounded nonempty"):
+            analyze_observations(rows())
+        self.assertEqual(consumed, 100001)
+
+    def test_bin_generator_is_stopped_at_bound_plus_one(self):
+        consumed = 0
+
+        def bins():
+            nonlocal consumed
+            while True:
+                consumed += 1
+                if consumed > 22:
+                    raise AssertionError("diagnostics consumed beyond its bin bound")
+                yield 0.0
+
+        with self.assertRaisesRegex(ValueError, "frozen bins"):
+            analyze_observations([row("a")], bins=bins())
+        self.assertEqual(consumed, 22)
+
     def test_ack_ambiguity_and_later_readback_are_separate(self):
         rows = []
         for case, error in (("a", False), ("b", True)):

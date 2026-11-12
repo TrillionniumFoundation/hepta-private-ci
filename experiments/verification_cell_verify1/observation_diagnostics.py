@@ -9,6 +9,7 @@ it is neither a future-information oracle nor evidence of generalization.
 """
 
 from collections import Counter, defaultdict
+from itertools import islice
 import math
 
 
@@ -218,7 +219,7 @@ def analyze_observations(rows, *, bins=(0.0, 0.25, 0.5, 0.75, 1.0)):
     A check on a later-clean case is an association, not a causal false rejection.
     Missing-label bounds are logical dataset bounds, never confidence intervals.
     """
-    rows, bins = list(rows), tuple(bins)
+    rows, bins = list(islice(rows, 100001)), tuple(islice(bins, 22))
     _validate(rows, bins)
     groups = defaultdict(list)
     for row in rows:
