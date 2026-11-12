@@ -193,7 +193,18 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             "self.journal.complete(&key, &payload)",
         ):
             with self.subTest(marker=marker):
-                self.rejects(OWNER, "fn commit_or_readback<", marker)
+                self.rejects(OWNER, "fn commit_admitted(", marker)
+
+    def test_shared_model_journal_kernels_keep_original_witness_and_pending(self):
+        for function, marker in (
+            ("fn create_bound(", "witness.current()?.is_some()"),
+            ("fn create_bound(", "compare_and_swap(None, anchor(journal.anchor())?)"),
+            ("fn recover_bound(", "compare_and_swap(Some(minimum), current)"),
+            ("fn commit_or_readback<", "self.commit_admitted(&admission, now)"),
+            ("fn readback<", "self.read_admitted(&admission)"),
+        ):
+            with self.subTest(function=function, marker=marker):
+                self.rejects(OWNER, function, marker)
 
     def test_owner_creation_cannot_skip_original_trainer(self):
         self.rejects(

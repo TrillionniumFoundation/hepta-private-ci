@@ -144,11 +144,21 @@ pub struct CellQ24ModelProposalOwnerV1<W: AnchorWitnessStore> {
 impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     pub fn create<T: AnchorWitnessStore>(
         file: File,
-        mut witness: W,
+        witness: W,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         dataset_cut: LearningIterationSnapshotV1,
     ) -> Result<Self, Error> {
         let (scope, binding) = admission::owner_binding(trainer, &dataset_cut)?;
+        Self::create_bound(file, witness, dataset_cut, scope, binding)
+    }
+
+    fn create_bound(
+        file: File,
+        mut witness: W,
+        dataset_cut: LearningIterationSnapshotV1,
+        scope: Digest32,
+        binding: Digest32,
+    ) -> Result<Self, Error> {
         if witness.current()?.is_some() {
             return Err(Error::Binding("proposal witness already initialized"));
         }
@@ -172,11 +182,21 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     /// becomes a new proposal; completed bytes keep their original timestamp.
     pub fn recover<T: AnchorWitnessStore>(
         file: File,
-        mut witness: W,
+        witness: W,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         dataset_cut: LearningIterationSnapshotV1,
     ) -> Result<Self, Error> {
         let (scope, binding) = admission::owner_binding(trainer, &dataset_cut)?;
+        Self::recover_bound(file, witness, dataset_cut, scope, binding)
+    }
+
+    fn recover_bound(
+        file: File,
+        mut witness: W,
+        dataset_cut: LearningIterationSnapshotV1,
+        scope: Digest32,
+        binding: Digest32,
+    ) -> Result<Self, Error> {
         let minimum = witness
             .current()?
             .ok_or(Error::Binding("original proposal witness"))?;
@@ -216,9 +236,17 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let now = self.now()?;
         let admission = self.admit(trainer, inputs, now)?;
+        self.commit_admitted(&admission, now)
+    }
+
+    fn commit_admitted(
+        &mut self,
+        admission: &Admission,
+        now: u64,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let key = admission.key(self.binding);
         match self.journal.readback(&key) {
-            Ok(state) => return self.decode_current(&admission, state),
+            Ok(state) => return self.decode_current(admission, state),
             Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {}
             Err(error) => return Err(error.into()),
         }
@@ -228,7 +256,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         match self.journal.claim(&key) {
             Ok(ProductEvaluationExecutionClaimV1::Claimed) => self.anchor_append(before)?,
             Ok(ProductEvaluationExecutionClaimV1::Existing(state)) => {
-                return self.decode_current(&admission, state);
+                return self.decode_current(admission, state);
             }
             Err(_) => {
                 self.fenced = true;
@@ -242,7 +270,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         }
         self.anchor_append(before)?;
         let state = self.journal.readback(&key)?;
-        self.decode_current(&admission, state)
+        self.decode_current(admission, state)
     }
 
     /// Read-only: Missing and Pending remain errors, including after expiry.
@@ -253,8 +281,15 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let admission = self.admit(trainer, inputs, self.now()?)?;
+        self.read_admitted(&admission)
+    }
+
+    fn read_admitted(
+        &mut self,
+        admission: &Admission,
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let state = self.journal.readback(&admission.key(self.binding))?;
-        self.decode_current(&admission, state)
+        self.decode_current(admission, state)
     }
 
     fn admit<T: AnchorWitnessStore, S: FinalHoldoutCasStoreV1>(
