@@ -9,6 +9,7 @@ ROOT = component.ROOT
 AGENT = component.AGENT
 CLIENT = AGENT + "root_historical_task_read_client.rs"
 TRUST = AGENT + "root_historical_learning_trust_client.rs"
+OPERATION = AGENT + "root_historical_learning_operation.rs"
 
 
 class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
@@ -21,7 +22,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
 
     def test_current_capsule_has_no_unimplemented_product_caller(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        self.assertEqual(rows["root_historical_current_trust_capsule"]["product_callers"], [])
+        self.assertEqual(rows["root_historical_current_trust_capsule"]["product_callers"], [AGENT + "production_post_a_q24.rs"])
         for key in ("root_historical_current_trust_read", "root_historical_current_trust_receipt"):
             self.assertEqual(rows[key]["product_callers"], [AGENT + "cell_q24_dataset_historical_ledger.rs"])
         self.assertEqual(rows["root_historical_fixed_client_exchange"]["product_callers"], [TRUST, AGENT + "root_post_a_learning_client.rs"])
@@ -40,14 +41,38 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
             "response.payload.require_activation_pin(", "receipt: Arc::clone(self)", "self.client.fence()"))
 
     def test_each_trust_operation_reactivates_before_and_after_the_callback(self):
-        for marker in ("self.clock.now_unix_ms()", "self.require_same_activation(&activated, &evaluator)?"):
-            for occurrence in (0, 1):
-                self.reject_removal(TRUST, "fn with_current_trust<T>(", marker, occurrence)
         self.check_markers(TRUST, "fn with_current_trust<T>(", (
-            "OriginalHistoricalTaskReadReceiptV1::with_current_read(&self.receipt, |data|",
+            "self.with_original_operation(", "operation.read_for(self, &self.receipt, action)"))
+        for occurrence in (0, 1):
+            self.reject_removal(OPERATION, "fn with_original_operation<T, E>(",
+                                "self.current_operation_activation()?", occurrence)
+            self.reject_removal(OPERATION, "fn read_for<T>(",
+                                "self.trust.current_operation_activation()?", occurrence)
+        self.check_markers(OPERATION, "fn current_operation_activation(", (
+            "OriginalHistoricalLearningTrustV1::original_unix_seconds(self)?",
             "activate_for_recipient(self.initial_snapshot(), now)?",
-            "action(data, activated.verifier(), &evaluator, now)?",
-            "activate_for_recipient(self.initial_snapshot(), after)?"))
+            "self.require_same_activation(&activated, &evaluator)?"))
+        self.check_markers(OPERATION, "fn read_for<T>(", (
+            "!std::ptr::eq(self.trust, trust)", "!Arc::ptr_eq(&self.trust.receipt, receipt)",
+            "let value = action(self.data, activated.verifier(), &evaluator, now);",
+            "self.trust.receipt.client.fence()"))
+
+    def test_borrow_cannot_escape_the_actual_root_operation(self):
+        self.check_markers(OPERATION, "fn with_original_operation<T, E>(", (
+            "action: impl for<'read> FnOnce(&OriginalHistoricalOperationV1<'read>)",
+            "OriginalHistoricalTaskReadReceiptV1::with_current_read(&self.receipt",
+            "trust: self", "let value = action(&operation);",
+            "!matches!(&result, Ok(Ok(_)))", "self.receipt.client.fence()"))
+
+    def test_failed_callback_and_unwind_cannot_skip_the_root_postcheck(self):
+        for occurrence in (0, 1):
+            self.reject_removal(CLIENT, "fn with_current_read<T>(",
+                                "self.client.observe()? != self.data", occurrence)
+        self.check_markers(CLIENT, "fn with_current_read<T>(", (
+            "let mut fence = FenceReadOnDrop", "client: &self.client", "armed: true",
+            "let value = action(&self.data.ledger);", "if result.is_err()",
+            "self.client.fence()", "fence.armed = false"))
+        self.check_markers(CLIENT, "fn drop(", ("if self.armed", "self.client.fence()"))
 
     def test_current_authority_cannot_switch_receipt_or_signer(self):
         self.check_markers(TRUST, "fn require_original_receipt(", (
