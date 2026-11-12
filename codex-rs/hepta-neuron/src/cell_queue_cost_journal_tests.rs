@@ -3,6 +3,7 @@ use pretty_assertions::assert_eq;
 use super::*;
 use crate::cell_inference::admission_for_step;
 use crate::cell_inference::feature_request;
+use crate::cell_journal_codec::apply_record;
 use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 
 #[test]
