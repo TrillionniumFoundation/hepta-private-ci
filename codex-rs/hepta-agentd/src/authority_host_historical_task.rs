@@ -225,7 +225,9 @@ impl RootOriginalHistoricalCompleteTaskObservationV1 {
 
     /// The transport may project only the exact Ledger data observed in the
     /// complete task. This object itself grants no Dataset or current access.
-    pub(crate) fn ledger_observation(&self) -> &RootOriginalHistoricalLedgerObservationV1 {
-        &self.ledger
+    pub(crate) fn ledger_read_data(
+        &self,
+    ) -> io::Result<crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1> {
+        RootOriginalHistoricalLedgerObservationV1::ledger_read_data(&self.ledger)
     }
 }
