@@ -1,0 +1,39 @@
+{
+  "source": "92817b2fee9f088a44831ee894d973eff3333853",
+  "tree": "c73fae7021766799925e38d6e4ef9268fc5c61f0",
+  "job": "1a1cf357421-2564-19c6",
+  "scope": "original helper Cargo build only",
+  "actual_errors": [
+    "E0433 rustix::fs::OFlags",
+    "E0433 rustix::fs::fcntl_getfl",
+    "E0308 Sha256Digest passed as &str",
+    "E0624 inspect_exact private"
+  ],
+  "cargo_exit": 101,
+  "ordinary_tests": 0,
+  "root_tests": 0,
+  "junit": 0,
+  "remaining_unretrieved": [
+    "helpers/codex-hepta-infer-worker-host.jsonl"
+  ],
+  "source_of_files": "h.read_multiple_files; local bytes verified against returned SHA-256",
+  "prior_metadata": "../root-928-h-helper-v2-observed/",
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 12229,
+    "sha256": "ac0fe0ed02ecc959e062763cf484be79f4bc7a144f35817f498729c5f3b8e500",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "manifest.json",
+      "bytes": 1195,
+      "sha256": "389ebb58c4dc70ffbe20a4f95f251bbdde15b2fa7db09359e1441e2d9ca5f347"
+    },
+    {
+      "path": "codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 63797,
+      "sha256": "9d709a69d52b0f6e14071c1538b64f55496510edcb928f4b192eb53c306febc2"
+    }
+  ]
+}
