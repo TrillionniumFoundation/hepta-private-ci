@@ -7699,8 +7699,8 @@ required_function_order = [{function = "fn read(",sequence = ["file.metadata()?.
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_initial_q24_clock.rs"
 required = []
-forbidden = ["SystemTime", "CLOCK_REALTIME", "unwrap_or(0)"]
-required_function_order = [{function = "fn now(",sequence = ["libc::clock_gettime(libc::CLOCK_MONOTONIC", "time.assume_init()", "time.tv_sec < 0", "checked_mul(1_000_000)", ".checked_add(time.tv_nsec as u64 / 1_000)"]},{function = "fn sample(",sequence = ["now()", ".unwrap_or(u64::MAX)"]},{function = "fn require_source_deadline(",sequence = ["let observed = now()?", "source.monotonic_micros > observed", "observed >= source.deadline_micros"]}]
+forbidden = ["CLOCK_REALTIME", "unwrap_or(0)", "as_millis() as u64", "circuit_millis: cell_micros", "cell_micros: circuit_millis"]
+required_function_order = [{function = "fn now(",sequence = ["libc::clock_gettime(libc::CLOCK_MONOTONIC", "time.assume_init()", "time.tv_sec < 0", "checked_mul(1_000_000)", ".checked_add(time.tv_nsec as u64 / 1_000)"]},{function = "fn sample(",sequence = ["let cell_micros = now().unwrap_or(u64::MAX)", "let circuit_millis = SystemTime::now()", ".duration_since(UNIX_EPOCH)", "u64::try_from(elapsed.as_millis()).ok()", ".unwrap_or(u64::MAX)", "cell_micros == u64::MAX || circuit_millis == u64::MAX", "return CircuitCellTimeV1", "circuit_millis: u64::MAX", "cell_micros: u64::MAX", "CircuitCellTimeV1 {", "circuit_millis,", "cell_micros,"]},{function = "fn require_source_deadline(",sequence = ["let observed = now()?", "source.monotonic_micros > observed", "observed >= source.deadline_micros"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_initial_q24_load.rs"
