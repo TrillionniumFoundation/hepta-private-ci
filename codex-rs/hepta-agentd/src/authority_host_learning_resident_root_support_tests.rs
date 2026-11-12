@@ -64,6 +64,35 @@ impl ResidentRootFixture {
         scope: FrozenLearningScopeV2,
         verifier: &LearningEvidenceVerifierV1,
     ) -> anyhow::Result<Self> {
+        Self::with_test_lifetime(initial, scope, verifier, 600_000)
+    }
+
+    /// Explicit test Root authorization covers the already-original request.
+    /// No Training/Evaluation timestamp, signature or work window is changed.
+    pub(super) fn for_original_evaluation_window(
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        verifier: &LearningEvidenceVerifierV1,
+    ) -> anyhow::Result<Self> {
+        let deadline = initial.request.envelope.expiry_unix_seconds.checked_mul(1_000)
+            .ok_or_else(|| anyhow::anyhow!("original Evaluation deadline overflow"))?;
+        let current = u64::try_from(std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)?.as_millis())?;
+        let remaining = deadline.checked_sub(current)
+            .filter(|remaining| *remaining > 0)
+            .ok_or_else(|| anyhow::anyhow!("original Evaluation fixture window expired"))?;
+        let lifetime_ms = remaining.checked_add(60_000)
+            .filter(|lifetime| *lifetime <= 3_600_000)
+            .ok_or_else(|| anyhow::anyhow!("bounded explicit Root fixture window"))?;
+        Self::with_test_lifetime(initial, scope, verifier, lifetime_ms)
+    }
+
+    fn with_test_lifetime(
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        verifier: &LearningEvidenceVerifierV1,
+        lifetime_ms: u64,
+    ) -> anyhow::Result<Self> {
         assert_eq!(rustix::process::getuid().as_raw(), 0);
         assert_eq!(rustix::process::geteuid().as_raw(), 0);
         let parent = PathBuf::from(std::env::var_os(
@@ -87,13 +116,13 @@ impl ResidentRootFixture {
             crate::ROOT_RESIDENT_LEARNING_READBACK_V3,
         ].into_iter().map(|purpose| DeploymentGrantPolicy {
             subject_id: admission.subject_id.clone(), destination_id: purpose.into(),
-            scope_sha256: admission.scope_sha256, lifetime_ms: 600_000,
+            scope_sha256: admission.scope_sha256, lifetime_ms,
         }).collect();
         write_new_json(&bootstrap_file, &HostAuthorityBootstrap {
             schema_version: 1, required_bind: required_bind.clone(),
             signer_id: "resident-root-qualification".into(), policies,
             lease_id: "resident-root-issuing-execute".into(),
-            lease_binding: issuing_binding(&admission), lease_lifetime_ms: 600_000,
+            lease_binding: issuing_binding(&admission), lease_lifetime_ms: lifetime_ms,
         })?;
         let initialized = crate::initialize_host_authority(&state, &bootstrap_file)?;
         assert!(!initialized.production_ready);
@@ -119,7 +148,8 @@ impl ResidentRootFixture {
             schema_version: 1, lease_id: "resident-root-execution".into(),
             revision: 1, authority_epoch: 1,
             binding: super::super::super::profile::lease_binding(&admission),
-            issued_at_unix_ms: now, expires_at_unix_ms: now + 600_000,
+            issued_at_unix_ms: now, expires_at_unix_ms: now.checked_add(lifetime_ms)
+                .ok_or_else(|| anyhow::anyhow!("explicit Root lease window overflow"))?,
         };
         leases.put_lease(lease.clone(), /*expected_revision*/ 0)?;
         let profile = RootResidentLearningProfileV3::new(initial, scope, verifier, intent, lease)?;
@@ -127,14 +157,16 @@ impl ResidentRootFixture {
         let issuing_readback = AuthorityLease {
             schema_version: 1, lease_id: "resident-root-issuing-readback".into(),
             revision: 1, authority_epoch: 1, binding: issuing_binding(&readonly),
-            issued_at_unix_ms: now, expires_at_unix_ms: now + 600_000,
+            issued_at_unix_ms: now, expires_at_unix_ms: now.checked_add(lifetime_ms)
+                .ok_or_else(|| anyhow::anyhow!("explicit Root lease window overflow"))?,
         };
         leases.put_lease(issuing_readback.clone(), /*expected_revision*/ 0)?;
         let readback_lease = AuthorityLease {
             schema_version: 1, lease_id: "resident-root-observation".into(),
             revision: 1, authority_epoch: 1,
             binding: super::super::super::profile::lease_binding(&readonly),
-            issued_at_unix_ms: now, expires_at_unix_ms: now + 600_000,
+            issued_at_unix_ms: now, expires_at_unix_ms: now.checked_add(lifetime_ms)
+                .ok_or_else(|| anyhow::anyhow!("explicit Root lease window overflow"))?,
         };
         leases.put_lease(readback_lease.clone(), /*expected_revision*/ 0)?;
         // Explicit setup closes the original issuing owner before opening it

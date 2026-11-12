@@ -143,3 +143,47 @@ async fn original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effec
     assert!(counts.into_iter().all(|count| count >= 2));
     Ok(())
 }
+
+impl crate::OriginalCellEvaluationHostV1 {
+    /// Invoked only by the protected Root test entry, not the ordinary suite.
+    pub(crate) async fn fixture_resident_evaluation_checkpoint() -> anyhow::Result<()> {
+        let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+        let (client, peer) = fixture.commands(
+            /*readback_only*/ false, /*expected*/ None, "original",
+        )?;
+        let evaluation = client.execute_evaluation().await?;
+        assert_eq!(finish(client, peer)?, 1);
+        let original_files = fixture.original_files()?;
+        let upstream = fixture.upstream_files()?;
+        let mut signatures = fixture.original.material_evidence.to_vec();
+        signatures.push(fixture.original.config.training_evidence.clone());
+        signatures.push(evaluation.attestation().clone());
+        let credentials = &fixture.original.credentials;
+        crate::RootResidentLearningProfileV3::fixture_original_evaluation_checkpoint(
+            fixture.original.initial.clone(),
+            fixture.config.scope.clone(),
+            fixture.config.signing.verifier.clone(),
+            &evaluation,
+            signatures,
+            fixture.host.as_ref().expect("original Evaluator"),
+            [
+                credentials.experience.clone(), credentials.dataset.clone(),
+                credentials.generator.clone(), credentials.evaluator.clone(),
+            ],
+        ).await?;
+        assert_eq!(fixture.original_files()?, original_files);
+        assert_eq!(fixture.upstream_files()?, upstream);
+        fixture.recover()?;
+        let (client, peer) = fixture.commands(
+            /*readback_only*/ false, Some(evaluation.clone()), "original",
+        )?;
+        assert!(matches!(client.execute_evaluation().await, Err(CommandError::ReadbackRequired)));
+        assert_eq!(client.readback().await?, evaluation);
+        assert_eq!(finish(client, peer)?, 2);
+        assert_eq!(fixture.original_files()?, original_files);
+        assert_eq!(fixture.upstream_files()?, upstream);
+        let counts = fixture.finish().await?;
+        assert!(counts.into_iter().all(|count| count > 2));
+        Ok(())
+    }
+}

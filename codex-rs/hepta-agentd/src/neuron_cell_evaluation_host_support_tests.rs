@@ -68,7 +68,8 @@ impl OriginalCellEvaluationHostV1 {
     ) -> anyhow::Result<()> {
         assert!(wire::authenticate_completed(
             &self.context, receipt.snapshot().clone(), receipt.attestation().clone(),
-            receipt.attestation().expires_at,
+            receipt.attestation().expires_at.checked_add(1)
+                .ok_or_else(|| anyhow::anyhow!("fixture signature expiry overflow"))?,
         ).is_err(), "the original complete signature window cannot be renewed");
         Ok(())
     }

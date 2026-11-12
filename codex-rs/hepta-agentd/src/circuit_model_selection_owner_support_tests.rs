@@ -114,6 +114,9 @@ pub(super) struct PositiveFixture {
     pub(super) previous: CircuitTaskSourcePublicationV1,
     pub(super) evaluation: EvaluationFixture,
     initial: LearningIterationSnapshotV1,
+    // Retain the exact original owner signatures for the Root checkpoint
+    // mechanism; never re-sign material to make a later cut authenticate.
+    material_evidence: [SignedLearningEvidenceV1; 2],
     stage: Stage,
     model: CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>,
     ledger: Arc<Mutex<LedgerWriter>>,
@@ -394,6 +397,10 @@ impl PositiveFixture {
             previous,
             evaluation,
             initial,
+            material_evidence: [
+                source_config.experience_evidence,
+                source_config.dataset_evidence,
+            ],
             stage,
             model,
             ledger,
