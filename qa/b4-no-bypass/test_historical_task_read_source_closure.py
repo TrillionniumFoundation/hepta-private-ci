@@ -43,6 +43,8 @@ CALLERS = {
 }
 CALLERS = {"root_historical_task_read_" + key: value for key, value in CALLERS.items()}
 CALLERS["ordinary_historical_task_read_take"] = ()
+CALLERS["root_historical_task_read_cold_source"] = ('codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
+CALLERS["root_historical_task_read_profile"] = ('codex-rs/hepta-agentd/src/authority_host_historical_read.rs', 'codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs', 'codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs', 'codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs')
 
 
 def function(source, marker):
@@ -235,16 +237,16 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             self.reject(INPUTS, "connect_original", "validate_sealed(&self.bootstrap, size)?", occurrence)
 
     def test_every_exchange_is_same_session_bounded_once_and_permanently_fenced_on_error(self):
-        self.check(CLIENT, "observe", (
+        self.check(CLIENT, "exchange", (
             "self.lane.try_lock()", "held.take().ok_or_else(refused)?",
-            "!(1..=MAX_READS).contains(&request_id)", "purpose: PURPOSE.into()",
+            "!(1..=MAX_READS).contains(&request_id)", "purpose: operation.purpose().into()",
             "profile: self.profile.clone()", "lane.stream.exchange(&request)?",
             "require_complete_reply(&bytes, request_id, &self.profile)?", "request_id.checked_add(1)",
             "*held = Some(lane)", "held.take()",
         ))
         for occurrence in (0, 1):
-            self.reject(CLIENT, "observe", "self.connection.require_original_session()", occurrence)
-            self.reject(CLIENT, "observe", "self.fenced.load(Ordering::Acquire)", occurrence)
+            self.reject(CLIENT, "exchange", "self.connection.require_original_session()", occurrence)
+            self.reject(CLIENT, "exchange", "self.fenced.load(Ordering::Acquire)", occurrence)
         self.check(CLIENT, "require_original_client", ("!Arc::ptr_eq(&self.client, client)", "self.client.fence()"))
         self.mutate(CLIENT, lambda s: s.replace("    data: HistoricalTaskReadDataV1,", "    pub(crate) data: HistoricalTaskReadDataV1,", 1))
 
