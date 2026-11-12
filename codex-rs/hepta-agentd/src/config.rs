@@ -27,6 +27,10 @@ mod source_capture;
 #[path = "config_q24_successor.rs"]
 mod q24_successor;
 
+#[cfg(target_os = "linux")]
+#[path = "config_initial_q24.rs"]
+mod initial_q24;
+
 #[path = "config_q24_circuit_task.rs"]
 #[cfg(target_os = "linux")]
 mod q24_circuit_task;
