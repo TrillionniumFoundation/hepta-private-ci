@@ -47,9 +47,14 @@ def main():
     started = time.perf_counter()
 
     def write(name, value):
-        (args.output / name).write_text(
-            json.dumps(value, indent=2, sort_keys=True) + "\n"
-        )
+        destination = args.output / name
+        pending = destination.with_name(destination.name + ".pending")
+        with pending.open("w") as stream:
+            json.dump(value, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(pending, destination)
 
     def require(test, message):
         checks.append(dict(name=message, passed=bool(test)))
@@ -59,11 +64,16 @@ def main():
     def actor(geometry, mode, label, checkpoint=None, published=None):
         bounds = dict(zip(totals, expected[mode]))
         if any(
+            entry["started"] and entry["calls_status"] != "KNOWN" for entry in actors
+        ):
+            raise ValueError("no further admission after unreported actor work")
+        if any(
             totals[k] + bounds[k] > limit
             for k, limit in dict(forwards=13, adjoints=13, adam_updates=9).items()
         ):
             raise ValueError("total admission budget exceeded")
         output = args.output / label
+        nonce = f"{source['request_identity']}:{os.environ.get('GITHUB_RUN_ID', 'UNADMITTED')}:{os.environ.get('GITHUB_RUN_ATTEMPT', '0')}:{label}"
         command = [
             sys.executable,
             "-B",
@@ -79,47 +89,98 @@ def main():
             str(args.baseline),
             "--output",
             str(output),
+            "--admission-nonce",
+            nonce,
         ]
         if checkpoint:
             command += ["--checkpoint", str(checkpoint)]
         if published:
             command += ["--published", str(published)]
-        wall = time.perf_counter()
-        with (
-            (args.output / (label + ".stdout")).open("wb") as stdout,
-            (args.output / (label + ".stderr")).open("wb") as stderr,
-        ):
-            process = subprocess.Popen(command, stdout=stdout, stderr=stderr)
-            write(
-                label + "-ADMISSION.json",
-                dict(
-                    pid=process.pid,
-                    mode=mode,
-                    geometry=geometry,
-                    source_commit=source["source_commit"],
-                    expected_maximum_calls=bounds,
-                    command=command,
-                ),
-            )
-            code = process.wait()
-        result = json.loads((output / "RESULT.json").read_text())
-        for key in totals:
-            totals[key] += result["calls"][key]
         entry = dict(
             label=label,
-            pid=process.pid,
-            exit_code=code,
-            wall_seconds=time.perf_counter() - wall,
-            result=result,
+            admission_nonce=nonce,
+            geometry=geometry,
+            mode=mode,
+            command=command,
+            expected_maximum_calls=bounds,
+            started=False,
+            terminal=False,
+            pid=None,
+            exit_code=None,
+            calls_status="NOT_STARTED",
+            observed_calls=None,
+            result=None,
         )
         actors.append(entry)
         write("ACTORS.json", actors)
-        require(result["pid"] == process.pid, "authoritative_pid_" + label)
-        require(result["calls"] == bounds, "exact_actor_call_denominator_" + label)
-        require(
-            result["source_before"] == result["source_after"] == before,
-            "actor_source_unchanged_" + label,
+        write(label + "-ADMISSION.json", entry)
+        wall = time.perf_counter()
+        try:
+            with (
+                (args.output / (label + ".stdout")).open("wb") as stdout,
+                (args.output / (label + ".stderr")).open("wb") as stderr,
+            ):
+                process = subprocess.Popen(command, stdout=stdout, stderr=stderr)
+                entry.update(
+                    started=True, pid=process.pid, calls_status="UNKNOWN_PENDING_RESULT"
+                )
+                write("ACTORS.json", actors)
+                write(label + "-ADMISSION.json", entry)
+                code = process.wait()
+        except Exception as exc:
+            entry["launch_or_wait_error"] = dict(
+                type=type(exc).__name__, message=str(exc)
+            )
+            entry["calls_status"] = (
+                "UNKNOWN" if entry["started"] else "START_FAILED_NO_CHILD"
+            )
+            write("ACTORS.json", actors)
+            write(label + "-ADMISSION.json", entry)
+            raise
+        entry.update(
+            terminal=True,
+            exit_code=code,
+            wall_seconds=time.perf_counter() - wall,
+            calls_status="UNKNOWN_TERMINAL_UNREPORTED",
         )
+        write("ACTORS.json", actors)
+        write(label + "-ADMISSION.json", entry)
+        try:
+            result = json.loads((output / "RESULT.json").read_text())
+            entry["result"] = result
+            counts = result["calls"]
+            valid = (
+                result["pid"] == process.pid
+                and result["admission_nonce"] == nonce
+                and result["exit_code"] == code
+                and result["source"] == source
+                and result["source_before"] == result["source_after"] == before
+            )
+            valid = (
+                valid
+                and set(counts) == set(totals)
+                and all(
+                    type(counts[k]) is int and 0 <= counts[k] <= bounds[k]
+                    for k in totals
+                )
+            )
+            if not valid:
+                raise ValueError(
+                    "actor result lacks authoritative identity/source/call binding"
+                )
+        except Exception as exc:
+            entry["result_error"] = dict(type=type(exc).__name__, message=str(exc))
+            write("ACTORS.json", actors)
+            write(label + "-ADMISSION.json", entry)
+            raise ValueError(
+                "started actor cost is UNKNOWN; no exact aggregate"
+            ) from exc
+        entry.update(calls_status="KNOWN", observed_calls=dict(counts))
+        for key in totals:
+            totals[key] += counts[key]
+        write("ACTORS.json", actors)
+        write(label + "-ADMISSION.json", entry)
+        require(counts == bounds, "exact_actor_call_denominator_" + label)
         require(
             result["input_checkpoint_sha_before"]
             == result["input_checkpoint_sha_after"],
@@ -134,9 +195,7 @@ def main():
             else "PASS"
         )
         require(
-            code == wanted_code
-            and result["exit_code"] == code
-            and result["status"] == wanted_status,
+            code == wanted_code and result["status"] == wanted_status,
             "authoritative_terminal_" + label,
         )
         return output, result
@@ -193,7 +252,7 @@ def main():
                 )
                 require(
                     pending.is_file() and sha(pending) != old_sha,
-                    "crash_retains_durable_distinct_pending_bytes",
+                    "process_crash_retains_complete_distinct_pending_bytes",
                 )
                 require(
                     same(load(pending), load(continuous / "state.pt")),
@@ -278,6 +337,20 @@ def main():
             type=type(exc).__name__, message=str(exc), traceback=traceback.format_exc()
         )
     after = {name: sha(name) for name in before}
+    unknown = [
+        dict(
+            label=e["label"],
+            nonce=e["admission_nonce"],
+            pid=e["pid"],
+            started=e["started"],
+            terminal=e["terminal"],
+            exit_code=e["exit_code"],
+            maximum_calls=e["expected_maximum_calls"],
+        )
+        for e in actors
+        if e["started"] and e["calls_status"] != "KNOWN"
+    ]
+    exact_calls = None if unknown else totals
     result = dict(
         status="PASS" if error is None and before == after else "HOLD",
         error=error,
@@ -286,7 +359,10 @@ def main():
         source_after=after,
         actors=actors,
         checks=checks,
-        actual_calls=totals,
+        actual_calls=exact_calls,
+        observed_calls_only=totals,
+        calls_status="UNKNOWN" if unknown else "EXACT_FOR_ALL_STARTED_ACTORS",
+        unknown_actor_costs=unknown,
         wall_seconds=time.perf_counter() - started,
         full_network_qualified=False,
         full_prior_migration_qualified=False,
@@ -299,7 +375,10 @@ def main():
         json.dumps(
             dict(
                 status=result["status"],
-                actual_calls=totals,
+                actual_calls=exact_calls,
+                observed_calls_only=totals,
+                calls_status="UNKNOWN" if unknown else "EXACT_FOR_ALL_STARTED_ACTORS",
+                unknown_actor_costs=unknown,
                 actors=len(actors),
                 checks=len(checks),
                 error=error,

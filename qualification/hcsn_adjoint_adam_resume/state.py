@@ -170,6 +170,8 @@ def fingerprint(value):
         )
         return dict(
             kind="tensor",
+            device=str(value.device),
+            layout=str(value.layout),
             dtype=str(value.dtype),
             shape=list(value.shape),
             stride=list(value.stride()),

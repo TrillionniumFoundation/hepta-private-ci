@@ -36,6 +36,7 @@ from .state import (
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--admission-nonce", required=True)
     parser.add_argument("--geometry", choices=("uniform", "graded"), required=True)
     parser.add_argument(
         "--mode",
@@ -74,6 +75,7 @@ def main():
     budget = CallBudget(forward_limit=3, adjoint_limit=3)
     arrays, records = {}, []
     updates = 0
+    completed_updates = 0
     step = 0
     cursor = 0
     parameters = None
@@ -93,6 +95,11 @@ def main():
         np.savez_compressed(args.output / "ARRAYS.npz", **arrays)
         result = dict(
             status=status,
+            admission_nonce=args.admission_nonce,
+            operation_counts_are_invocations=True,
+            completed_adam_updates=completed_updates,
+            completed_forward_calls=len(budget.forward_records),
+            completed_adjoint_calls=len(budget.backward_records),
             error=error,
             geometry=args.geometry,
             mode=args.mode,
@@ -138,6 +145,11 @@ def main():
             json.dumps(
                 dict(
                     status=status,
+                    admission_nonce=args.admission_nonce,
+                    operation_counts_are_invocations=True,
+                    completed_adam_updates=completed_updates,
+                    completed_forward_calls=len(budget.forward_records),
+                    completed_adjoint_calls=len(budget.backward_records),
                     pid=os.getpid(),
                     calls=result["calls"],
                     logical_step=step,
@@ -165,6 +177,12 @@ def main():
                     exit_code=42,
                 )
                 raise SystemExit(42)
+        if (
+            payload is not None
+            and args.mode in ("resume", "crash")
+            and payload["step"] != 1
+        ):
+            raise ValueError("this restoration actor requires a step-one boundary")
         if args.mode == "reject":
             raise ValueError("omit-Adam checkpoint was unexpectedly accepted")
         parameters = [
@@ -242,8 +260,11 @@ def main():
         count = 2 if args.mode == "continuous" else 1
         for _ in range(count):
             row = evaluate("step" + str(step + 1))
-            optimizer.step()
+            if updates >= 2:
+                raise ValueError("actor Adam invocation budget exceeded")
             updates += 1
+            optimizer.step()
+            completed_updates += 1
             step += 1
             cursor += 1
             validate_values(clones(parameters), initial)

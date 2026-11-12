@@ -17,7 +17,9 @@ Each step draws a target from a fixed retained baseline plus small independent
 Python, NumPy and Torch noise. All three RNG streams affect actual loss/gradient.
 The four raw tensors use one Adam optimizer, lr=1e-4, betas=(.9,.999), eps=1e-8,
 weight decay zero, foreach=False and fused=False. One optimizer.step counts as
-one actual update of this four-tensor group. The loss is the mean squared error
+one actual invocation for this four-tensor group. Invocation counters advance
+before the call; completed-update counters are reported separately so a thrown
+optimizer call cannot disappear from failure cost accounting. The loss is the mean squared error
 of all seven output fields against that target; this is a synthetic numerical
 restoration gate and supplies no task-quality improvement claim.
 
@@ -58,7 +60,8 @@ Two negative controls use the shared uniform N=7 protocol:
   loads it, actually computes Adam step two, writes/fsyncs the complete new
   pending checkpoint, records its work, and exits with os._exit(73) immediately
   before os.replace. The published old checkpoint must remain byte-identical.
-  The pending payload must equal the continuous step-two payload semantically.
+  This tests a process crash on the same running OS, not power loss or
+  storage-controller directory durability. The pending payload must equal the continuous step-two payload semantically.
   The ordinary fresh resume actor then loads the preserved old published file,
   performs step two and its next-gradient probe, establishing real recovery.
 
@@ -86,3 +89,11 @@ Even a PASS qualifies only these four initial tensors, fixed small models,
 same exact runtime/source, Adam settings and tested process/publication boundary.
 It grants no large-grid, cross-runtime, full-network, historical-training,
 full-prior/migration or model-adoption qualification. Global HCSN remains HOLD.
+
+Every controller admission is persisted with a nonce, PID, started/terminal
+state, actual exit code and reserved maximum work. A missing, malformed or
+unbound actor RESULT leaves its cost UNKNOWN and stops further admissions.
+In that case exact total actual_calls is null; only separately labeled
+observed totals and the unknown actor bounds are reported. No unreported
+actor is counted as zero. This is a controlled generated-fixture schema,
+not hostile-checkpoint validation or dependency-binary attestation.

@@ -9,6 +9,7 @@
   "fresh_process_resume_required": true,
   "full_network_full_prior_large_grid_claim": false,
   "identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261112-c06d-stage1",
+  "invocation_and_completed_updates_separately_reported": true,
   "maximum_total_adam_updates": 9,
   "maximum_total_adjoints": 13,
   "maximum_total_forwards": 13,
@@ -29,9 +30,11 @@
     "weight_decay": 0
   },
   "original_published_bytes_must_survive_crash": true,
+  "persist_every_admission_nonce_pid_terminal": true,
   "positive_path_adam_updates": 8,
   "precommit_source_and_independent_static_review_required": true,
   "previous_run_reuse": false,
+  "process_crash_only_not_powerloss": true,
   "rng_streams": [
     "torch_cpu",
     "python",
@@ -59,5 +62,6 @@
     "phase_mass",
     "phase_content"
   ],
+  "unknown_actor_cost_must_null_exact_total": true,
   "unpublished_crash_adam_updates": 1
 }
