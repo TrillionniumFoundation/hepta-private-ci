@@ -55,10 +55,16 @@ This is post-failure repair on exposed laws. The mechanical solver accepts
 smaller times; current numerical evidence concerns the six listed gaps, with
 minimum .001. Fixed finite CTMCs cannot reproduce the relative sqrt(time)
 boundary asymptotic at arbitrarily short times. Upper return, rare-phase
-relative precision, complete observed-domain rollout, actual-migration
-continuation, graded physical gradients, filtering/full-network training,
+relative precision, complete observed-domain rollout, graded physical gradients, filtering/full-network training,
 future sources and complete costs remain separate gates.
 
 `REMAINING_GATES.json` records the source ownership and each open requirement.
 Overall status is **Draft / HOLD_NO_GO / all_closed=false**. Uniform-grid
 gradient/native successes do not transfer to this graded candidate.
+
+The next source-bound actual-migration continuation stage evaluates all 14,336
+original posteriors at n256/n512 against the unchanged 1% limit. Both profiles
+have zero failures even for the conservative spatial/mapping/truncation error
+sum; n512 maximum is 4.00959286e-6. This closes only that exposed fixed-law
+value gate after the real migration, and does not close the retained rare-phase
+relative-risk counterexample or full-trajectory/training gates.
