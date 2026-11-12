@@ -91,6 +91,17 @@ SOURCE_CASES = tuple(
         "source_bound_training_cold_identity_rejects_valid_material_signature_renewal",
     )
 )
+SOURCE_OPERATION_PREFIX = SOURCE_PREFIX + "operation::"
+SOURCE_OPERATION_CASES = tuple(
+    SOURCE_OPERATION_PREFIX + name
+    for name in (
+        "source_operation_candidate_and_model_keep_two_reads_per_lane",
+        "source_operation_after_read_withdrawal_fences_completed_native_result",
+        "source_operation_cancelled_waiter_keeps_lane_then_fences",
+        "source_operation_rejects_equal_capture_from_different_arc",
+        "source_operation_abandoned_finish_preserves_real_native_effect_and_fences",
+    )
+)
 TRAINING_COMMAND_PREFIX = SOURCE_PREFIX + "command::"
 TRAINING_COMMAND_CASES = tuple(
     TRAINING_COMMAND_PREFIX + name
@@ -434,6 +445,7 @@ OWNER_GROUPS = (
     ("original_execution_owner", PACKAGE, EXECUTION_OWNER_CASES),
     ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
     ("original_training_source", PACKAGE, SOURCE_CASES),
+    ("original_training_source_operation", PACKAGE, SOURCE_OPERATION_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
     ("original_training_readback", PACKAGE, ORIGINAL_TRAINING_READBACK_CASES),

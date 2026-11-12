@@ -11,6 +11,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_model_root_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -25,6 +27,7 @@ RECOVERY = AGENT + "authority_host_learning_resident_model_recovery.rs"
 AUTH = AGENT + "authority_host_learning_resident_auth.rs"
 WIRE = AGENT + "authority_host_learning_resident_wire.rs"
 LANE = AGENT + "cell_q24_candidate_stage_model.rs"
+OPERATION = AGENT + "cell_q24_candidate_stage_operation.rs"
 COMMAND = AGENT + "cell_q24_model_command.rs"
 COMMAND_WIRE = AGENT + "cell_q24_model_command_wire.rs"
 STAGES = AGENT + "authority_host_learning_resident_stages.rs"
@@ -33,8 +36,8 @@ EXPECTED = {
     "learning_original_model_command_initial_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_model_command_initial_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_model_command_bind": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
-    "learning_original_model_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
-    "learning_original_model_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
+    "learning_original_model_command_client_execute": (),
+    "learning_original_model_command_client_readback": ("codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",),
     "learning_original_model_root_record": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs",),
     "learning_original_candidate_stage_model_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "root_resident_concrete_stages_model_readback": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",),
@@ -58,10 +61,10 @@ EXPECTED = {
     "learning_original_training_stage_current_model_readback": ("codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",),
     "learning_source_bound_stage_current_model_readback": ("codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs",),
     "learning_original_training_command_model_training": ("codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
-    "learning_original_training_command_model_create": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",),
+    "learning_original_training_command_model_create": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
     "learning_original_training_command_model_recover": ("codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
-    "learning_original_training_command_model_commit": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",),
-    "learning_original_training_command_model_readback": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",),
+    "learning_original_training_command_model_commit": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
+    "learning_original_training_command_model_readback": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
     "cell_q24_model_material_digest": ("codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",),
     "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
     "root_resident_gate_training_cancel": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",),
@@ -101,10 +104,9 @@ class OriginalModelRootClosureTests(unittest.TestCase):
         self.assertIsNotNone(end)
         cursor = start
         for _ in range(occurrence + 1):
-            offset = source.index(marker, cursor, end + 1)
-            cursor = offset + len(marker)
+            offset, cursor = source_marker_span(source, marker, cursor, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[cursor:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -210,30 +212,42 @@ class OriginalModelRootClosureTests(unittest.TestCase):
             "evaluation_cut.snapshot() != snapshot", "if lane.failed", "lane.failed = true",
             "lane.initial.take().ok_or(Error::CommitUncertain)?",
             "OriginalCellQ24ModelCommandConnectionV1::bind_original_evaluation(",
-            "OriginalCellQ24ModelCommandClientV1::commit_model(",
+            "OriginalCellQ24ModelCommandClientV1::begin_original_model_commit(",
             "RootResidentLearningEffectGateV3::training_cancellation(gate)",
-            "if before != after", "current != actual",
+            "CandidateOriginalOperation::begin(self, snapshot).await?",
+            "before.snapshot() != evaluation_cut.snapshot()",
+            "before.training_attestation() != operation.training.attestation()",
+            "if &before != after", "current != &actual",
+            "CandidateOriginalOperation::close(operation)",
+            "original.material().original_evaluation() != &before",
+            "let actual = original.model().clone()",
+            "original.finish().await.map_err(|_| Error::CommitUncertain)?",
             "current.authority() != AuthorityPosture::DENY_ALL",
             "current.snapshot().receipts.len() != 5",
-            "common.original_dataset.as_ref() != Some(&after.0)",
-            "common.original_training.as_ref() != Some(&after.1)",
-            "auth::require_clock(started, fresh)?",
-            "auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?",
-            "self.verify_original_evaluation(snapshot, &training_cut, &after.1, &after.2, fresh)?",
             "lane.retained = Some(current.clone())", "lane.failed = false",
+            "closed.model(completed)?",
         ):
             with self.subTest(marker=marker):
                 self.rejects(LANE, "fn original_model(", marker)
+        self.rejects(LANE, "fn original_model(",
+                     "OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(")
+        self.rejects(LANE, "fn original_model(",
+                     "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(")
         for occurrence in (0, 1):
-            self.rejects(LANE, "fn original_model(",
-                         ".model_predecessors(evaluation_cut.snapshot(), &training_cut)",
-                         occurrence=occurrence)
             self.rejects(LANE, "fn original_model(",
                          "RootResidentLearningEffectGateV3::require_current(",
                          occurrence=occurrence)
         self.rejects(LANE, "fn original_model(", "lane.failed = true", "lane.failed = false")
-        self.rejects(LANE, "fn model_predecessors(",
-                     "evaluation.training_attestation() != training.attestation()")
+        for marker in (
+            "common.original_dataset.as_ref() != Some(&self.dataset)",
+            "common.original_training.as_ref() != Some(&self.training)",
+            "common.records.get(..3) != Some(self.records.as_slice())",
+            "auth::require_clock(self.started, fresh)?",
+            "auth::verify_prefix(&self.owners.common.material, &self.training_cut, &common, fresh)?",
+        ):
+            self.rejects(OPERATION, "fn close(", marker)
+        self.rejects(OPERATION, "fn authenticate_result(",
+                     "operation.owners.verify_original_evaluation(")
 
     def test_initial_model_stream_and_final_root_io_cannot_be_replaced_by_future_dtos(self):
         for marker in (
