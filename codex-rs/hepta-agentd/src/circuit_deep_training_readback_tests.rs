@@ -113,7 +113,15 @@ async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sour
     assert_eq!(published_s.join().map_err(|_| anyhow::anyhow!("original S publication"))??, 15);
     assert_eq!(trainer_s.join().map_err(|_| anyhow::anyhow!("original S Trainer"))??, 14);
     let counts = f.finish().await?;
-    assert!(counts.iter().all(|count| *count > 0));
+    assert_eq!(counts[0], 1, "the original Dataset bootstrap is read once");
+    assert_eq!(counts[1], counts[2], "same original Source/Experience sessions");
+    assert_eq!(counts[2], counts[3], "same original Experience/Dataset sessions");
+    // The twenty real T readbacks each bracket native/Generator CURRENT with
+    // two live captures; each capture reads every original Material peer twice.
+    // Bootstrap/fit may add reads. Do not replace the actual lower bound with
+    // a cached receipt, accept a timeout, or pin an incidental exact total.
+    assert!(counts[1] >= 80);
+    assert!(counts[1..].iter().all(|count| *count < 128));
     eprintln!("HEPTA_DEEP_S_C_READONLY elapsed_ms={} training_reads=20 selector_reads=6 c_commands=3",
         started.elapsed().as_millis());
     Ok(())
