@@ -15522,14 +15522,6 @@ function = "fn is_fresh("
 sequence = ["self.data.mode == CompletedMode::Accept", "self.original.is_some()"]
 
 [[protected_file]]
-path = "codex-rs/hepta-agentd/src/authority_host_completed_provider.rs"
-required = []
-forbidden = ["SigningKey", "LearningIterationCheckpointOwnerV1", "LearningOwnerJournalV1", "spawn(", "Instant::now() +"]
-[[protected_file.required_function_order]]
-function = "fn completed_learning_operation("
-sequence = ["require_end(end)?", "fixed.require_original()?", "self.deployment.initial.original_initial_data()?", "RootAuthorityDirectory::open(&config.state_dir)", "HistoricalReadOperationV1::AcceptCompletedLearning if fixed.is_fresh()", "OriginalCompletedPublicationModeV1::AcceptedPublication", "HistoricalReadOperationV1::CaptureCompletedHistory", "fixed.data.mode == CompletedMode::CaptureRetired", "HistoricalReadOperationV1::ReadCompletedHistory", "fixed.data.mode == CompletedMode::ReadFinalized", "fixed.completion_phase.load(Ordering::Acquire) == 2", "OriginalCompletedPublicationModeV1::ReadFinalized", "compare_exchange(0, 1, Ordering::AcqRel, Ordering::Acquire)", "fixed.original.as_ref()", "CompletedLearningRecord::accept(", "self.observe_completed_learning(", "None,", "fixed.require_original()?", "require_end(end)?", "checked.fact.clone()", "CompletedLearningRecord::read(", "fact.deployment != fixed.binding.to_string()", "CompletedFiles::retain_original(", "self.observe_completed_learning(", "Some(fact),", "fixed.require_original()?", "require_end(end)?", "result", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "compare_exchange(1, 2, Ordering::AcqRel, Ordering::Acquire)", "checked.publication.successor.is_some()", "CompletedLearningAcceptanceResponseV1 {", "identity_digest: self.profile.identity.clone()", "root_profile: self.profile.binding.clone()", "initial: initial.head_digest.to_string()", "terminal_head: checked.fact.terminal_head", "successor_record: successor.record_digest.clone()", "completion.validate_data()", "CompletedLearningHistoryResponseV1 {", "reply.is_empty() || reply.len() > WIRE_BOUND", "require_end(end)?", "Ok(reply)"]
-
-[[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs"
 required = []
 forbidden = ["SigningKey", "LearningIterationCheckpointOwnerV1", "LearningOwnerJournalV1", "OriginalBExecution::open", "Instant::now() +"]
@@ -15671,3 +15663,11 @@ definition_markers = ["pub(crate) struct OriginalCompletedLearningAcceptanceV1",
 product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_terminal_acceptance.rs"]
 caller_markers = []
 receiver_type = "OriginalCompletedLearningAcceptanceV1"
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_completed_provider.rs"
+required = []
+forbidden = ["SigningKey", "LearningIterationCheckpointOwnerV1", "LearningOwnerJournalV1", "spawn(", "Instant::now() +"]
+[[protected_file.required_function_order]]
+function = "fn completed_learning_operation("
+sequence = ["require_end(end)?", "self.deployment.initial.original_initial_data()?", "RootAuthorityDirectory::open(&config.state_dir)", "HistoricalReadOperationV1::AcceptCompletedLearning if fixed.is_fresh()", "OriginalCompletedPublicationModeV1::AcceptedPublication", "HistoricalReadOperationV1::CaptureCompletedHistory", "fixed.data.mode == CompletedMode::CaptureRetired", "HistoricalReadOperationV1::ReadCompletedHistory", "fixed.data.mode == CompletedMode::ReadFinalized", "fixed.completion_phase.load(Ordering::Acquire) == 2", "OriginalCompletedPublicationModeV1::ReadFinalized", "compare_exchange(0, 1, Ordering::AcqRel, Ordering::Acquire)", "fixed.original.as_ref()", "CompletedLearningRecord::accept(", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "self.observe_completed_learning(", "None,", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "checked.fact.clone()", "CompletedLearningRecord::read(", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "fact.deployment != fixed.binding.to_string()", "CompletedFiles::retain_original(", "self.observe_completed_learning(", "Some(fact),", "fixed.require_original()?", "self.metadata.require_metadata_unchanged()?", "require_end(end)?", "result", "require_end(end)?", "compare_exchange(1, 2, Ordering::AcqRel, Ordering::Acquire)", "checked.publication.successor.is_some()", "CompletedLearningAcceptanceResponseV1 {", "identity_digest: self.profile.identity.clone()", "root_profile: self.profile.binding.clone()", "initial: initial.head_digest.to_string()", "terminal_head: checked.fact.terminal_head", "successor_record: successor.record_digest.clone()", "completion.validate_data()", "CompletedLearningHistoryResponseV1 {", "reply.is_empty() || reply.len() > WIRE_BOUND", "require_end(end)?", "Ok(reply)"]

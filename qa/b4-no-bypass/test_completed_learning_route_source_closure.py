@@ -2,6 +2,7 @@
 
 from dataclasses import replace
 from pathlib import Path
+import re
 import tempfile
 import tomllib
 import unittest
@@ -27,6 +28,26 @@ UNIONS = (
     "root_publication_original_initial_data", "root_completed_learning_context",
     "root_completed_learning_same_service",
 )
+
+
+def require_metadata_inside_terminal_attempt(source):
+    code, _ = route.function(source, "fn completed_learning_operation(")
+    spans = []
+    for call, closure in (("CompletedLearningRecord::accept(", "|| {"),
+                          ("CompletedLearningRecord::read(", "|fact| {")):
+        if code.count(call) != 1:
+            raise PROOF.VerificationFailure("one original terminal attempt required")
+        begin = code.index(closure, code.index(call))
+        end = PROOF._rust_item_end(code, begin)
+        if end is None:
+            raise PROOF.VerificationFailure("original terminal callback body required")
+        spans.append((begin, end))
+    for marker in ("fixed.require_original()?", "self.metadata.require_metadata_unchanged()?"):
+        calls = list(re.finditer(re.escape(marker), code))
+        if len(calls) != 4 or any(
+            not any(begin < call.start() < end for begin, end in spans) for call in calls
+        ) or any(sum(begin < call.start() < end for call in calls) != 2 for begin, end in spans):
+            raise PROOF.VerificationFailure("physical metadata must remain inside both terminal attempts")
 
 
 class CompletedLearningRouteSourceClosure(unittest.TestCase):
@@ -151,6 +172,19 @@ class CompletedLearningRouteSourceClosure(unittest.TestCase):
         self.reject("authority_host_post_a_derive",
                     "pub(in super::super) fn with_original_derived_profile<T>(",
                     "pub(crate) fn with_original_derived_profile<T>(")
+
+    def test_no_physical_metadata_observation_escapes_terminal_armed_scope(self):
+        source = (ROOT / A / "authority_host_completed_provider.rs").read_text()
+        require_metadata_inside_terminal_attempt(source)
+        for marker in ("fixed.require_original()?;", "self.metadata.require_metadata_unchanged()?;"):
+            for position in ("let initial = self.deployment.initial.original_initial_data()?;",
+                             "let reply = if mode == OriginalCompletedPublicationModeV1::AcceptedPublication {"):
+                with self.subTest(marker=marker, position=position):
+                    self.assertEqual(source.count(position), 1)
+                    # Move a real check out of the attempt, preserving its count.
+                    mutant = source.replace(marker, "", 1).replace(position, marker + position, 1)
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        require_metadata_inside_terminal_attempt(mutant)
 
     def test_actual_new_and_old_closed_calls_are_in_inventory(self):
         selected = [r for r in PROOF._boundary_rows(self.manifest) if r.identifier in NEW + UNIONS]

@@ -28,7 +28,6 @@ impl HistoricalTaskReadRuntime {
             .completed
             .as_ref()
             .ok_or_else(|| io::Error::other("original completed deployment missing"))?;
-        fixed.require_original()?;
         let initial = self.deployment.initial.original_initial_data()?;
         let root = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
         let mode = match operation {
@@ -69,6 +68,8 @@ impl HistoricalTaskReadRuntime {
                     &initial,
                     end,
                     || {
+                        fixed.require_original()?;
+                        self.metadata.require_metadata_unchanged()?;
                         let checked = self.observe_completed_learning(
                             service,
                             config,
@@ -81,6 +82,7 @@ impl HistoricalTaskReadRuntime {
                             end,
                         )?;
                         fixed.require_original()?;
+                        self.metadata.require_metadata_unchanged()?;
                         require_end(end)?;
                         Ok((checked.fact.clone(), checked))
                     },
@@ -96,6 +98,7 @@ impl HistoricalTaskReadRuntime {
                     end,
                     |fact| {
                         fixed.require_original()?;
+                        self.metadata.require_metadata_unchanged()?;
                         if fact.deployment != fixed.binding.to_string() {
                             return Err(io::Error::other(
                                 "original completed deployment binding changed",
@@ -117,14 +120,13 @@ impl HistoricalTaskReadRuntime {
                             end,
                         );
                         fixed.require_original()?;
+                        self.metadata.require_metadata_unchanged()?;
                         require_end(end)?;
                         result
                     },
                 )?
             };
         // No response is formed from an Armed attempt or a caught error.
-        fixed.require_original()?;
-        self.metadata.require_metadata_unchanged()?;
         require_end(end)?;
         if mode != OriginalCompletedPublicationModeV1::ReadFinalized {
             fixed
