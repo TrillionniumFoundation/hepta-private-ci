@@ -1,15 +1,15 @@
-name: HCSN visit-897 N128 AST-count VJP successor
+name: HCSN visit-897 N128 inventory VJP successor
 on:
   push:
     branches:
-      - research/hcsn-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d
+      - research/hcsn-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d
 permissions:
   contents: read
 concurrency:
-  group: hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d-001
+  group: hcsn-original-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d-001
   cancel-in-progress: false
 jobs:
-  one-law-n128-ast-count-successor:
+  one-law-n128-inventory-successor:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -19,7 +19,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       CANDIDATE_COMMIT: ${{ github.sha }}
       GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
-      EXPECTED_BRANCH: research/hcsn-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d
+      EXPECTED_BRANCH: research/hcsn-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -36,8 +36,8 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
           test "$(git rev-parse HEAD)" = "$CANDIDATE_COMMIT"
-          git merge-base --is-ancestor bdb904e546d5817cb11097cb9ca6f3f88a6f6bec HEAD
-          root="$RUNNER_TEMP/visit897-n128-ast-count-successor"
+          git merge-base --is-ancestor 13d73718562795d6384ba4bde07c2d9af7edf3a9 HEAD
+          root="$RUNNER_TEMP/visit897-n128-inventory-successor"
           mkdir "$root"
           python -B qualification/hcsn_source_migration_vjp_n128_exact_migrate_successor/admission_inspector.py \
             --root . \
@@ -65,8 +65,8 @@ jobs:
               raise ValueError('request/source identity differs')
           if request['unique_execution_key'] != source['unique_execution_key']:
               raise ValueError('request/source key differs')
-          if source['parent_head'] != 'bdb904e546d5817cb11097cb9ca6f3f88a6f6bec':
-              raise ValueError('the exact #6268 RED parent differs')
+          if source['parent_head'] != '13d73718562795d6384ba4bde07c2d9af7edf3a9':
+              raise ValueError('the exact #6269 RED parent differs')
           bind = {
               'source_commit': head,
               'request_identity': request['identity'],
@@ -78,7 +78,7 @@ jobs:
               'adjoints': 0,
               'optimizer_updates': 0,
           }
-          output = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-ast-count-successor'
+          output = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-inventory-successor'
           (output / 'SOURCE-BIND.json').write_text(
               json.dumps(bind, indent=2, sort_keys=True) + '\n'
           )
@@ -90,7 +90,7 @@ jobs:
       - name: Apply exact repository format gate
         run: |
           cd codex-rs
-          just fmt --base bdb904e546d5817cb11097cb9ca6f3f88a6f6bec
+          just fmt --base 13d73718562795d6384ba4bde07c2d9af7edf3a9
           cd ..
           git diff --exit-code
           git diff --cached --exit-code
@@ -129,7 +129,7 @@ jobs:
               'adjoints': 0,
               'optimizer_updates': 0,
           }
-          output = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-ast-count-successor'
+          output = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-inventory-successor'
           (output / 'RESOURCE-PREFLIGHT.json').write_text(
               json.dumps(result, indent=2, sort_keys=True) + '\n'
           )
@@ -146,12 +146,12 @@ jobs:
           import time
           from pathlib import Path
 
-          root = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-ast-count-successor'
+          root = Path(os.environ['RUNNER_TEMP']) / 'visit897-n128-inventory-successor'
           output = root / 'admission'
           source = root / 'FROZEN-SOURCE.json'
           key = (
               'hcsn-original-visit897-source-migration-vjp-n128-'
-              'ast-count-successor-20261112-c06d-001'
+              'inventory-successor-20261112-c06d-001'
           )
           command = [
               'prlimit',
@@ -262,6 +262,6 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: visit897-source-migration-vjp-n128-ast-count-successor-originals
-          path: ${{ runner.temp }}/visit897-n128-ast-count-successor
+          name: visit897-source-migration-vjp-n128-inventory-successor-originals
+          path: ${{ runner.temp }}/visit897-n128-inventory-successor
           if-no-files-found: error

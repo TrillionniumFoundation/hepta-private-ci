@@ -1,9 +1,9 @@
 {
-  "schema": "hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-v1",
-  "identity": "hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d",
-  "unique_execution_key": "hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d-001",
-  "parent_pr": 6268,
-  "parent_head": "bdb904e546d5817cb11097cb9ca6f3f88a6f6bec",
+  "schema": "hcsn-original-visit897-source-migration-vjp-n128-inventory-successor-v1",
+  "identity": "hcsn-original-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d",
+  "unique_execution_key": "hcsn-original-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d-001",
+  "parent_pr": 6269,
+  "parent_head": "13d73718562795d6384ba4bde07c2d9af7edf3a9",
   "parent_static_clear": {
     "run_id": 43269501620,
     "job_id": 131361931939,
@@ -149,6 +149,20 @@
       "backward_attempts": 0,
       "optimizer_updates": 0,
       "status": "RED_PREIMPORT_AST_SET_COUNT_NO_ARTIFACT_NO_READMISSION"
+    },
+    {
+      "kind": "hosted_inventory_manifest_preimport_failure",
+      "run_id": 43283690593,
+      "job_id": 131411347208,
+      "artifact_id": null,
+      "artifacts_found": 0,
+      "unique_execution_key": "hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d-001",
+      "candidate_imports": 0,
+      "candidate_forwards": 0,
+      "continuous_adjoint_calls": 0,
+      "backward_attempts": 0,
+      "optimizer_updates": 0,
+      "status": "RED_PREIMPORT_SOURCE_SHA256_MISSING_NO_ARTIFACT_NO_READMISSION"
     }
   ],
   "execution_policy": {

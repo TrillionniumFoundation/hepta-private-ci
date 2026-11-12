@@ -1,4 +1,4 @@
-"""Standard-library-only pre-import review for the AST-count successor."""
+"""Standard-library-only pre-import review for the inventory successor."""
 
 import argparse
 import ast
@@ -6,11 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 
-IDENTITY = "hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d"
+IDENTITY = "hcsn-original-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d"
 KEY = f"{IDENTITY}-001"
-PARENT = "bdb904e546d5817cb11097cb9ca6f3f88a6f6bec"
+PARENT = "13d73718562795d6384ba4bde07c2d9af7edf3a9"
 BYTE_GATE_PARENT = "37672f24f828989f328de42dbd7b70603038e04a"
-BRANCH = "research/hcsn-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d"
+BRANCH = "research/hcsn-visit897-source-migration-vjp-n128-inventory-successor-20261112-c06d"
 
 
 def sha(path):
@@ -65,8 +65,8 @@ def main():
     )
     require(len(request["negative_guards"]) == 12, "twelve_negative_guards")
     require(
-        len(request["historical_red_retained"]) == 7,
-        "seven_historical_red_records_retained",
+        len(request["historical_red_retained"]) == 8,
+        "eight_historical_red_records_retained",
     )
     require(
         request["execution_policy"]
@@ -125,7 +125,7 @@ def main():
         "exact_migrate_accumulation_provenance_exact",
     )
     require(
-        request["historical_red_retained"][-2]
+        request["historical_red_retained"][-3]
         == {
             "kind": "hosted_reviewer_schema_preimport_failure",
             "run_id": 43275048169,
@@ -145,7 +145,7 @@ def main():
         "parent_reviewer_schema_red_exact",
     )
     require(
-        request["historical_red_retained"][-1]
+        request["historical_red_retained"][-2]
         == {
             "kind": "hosted_ast_set_count_preimport_failure",
             "run_id": 43277019131,
@@ -164,6 +164,27 @@ def main():
             "status": "RED_PREIMPORT_AST_SET_COUNT_NO_ARTIFACT_NO_READMISSION",
         },
         "parent_ast_set_count_red_exact",
+    )
+    require(
+        request["historical_red_retained"][-1]
+        == {
+            "kind": "hosted_inventory_manifest_preimport_failure",
+            "run_id": 43283690593,
+            "job_id": 131411347208,
+            "artifact_id": None,
+            "artifacts_found": 0,
+            "unique_execution_key": (
+                "hcsn-original-visit897-source-migration-vjp-n128-"
+                "ast-count-successor-20261112-c06d-001"
+            ),
+            "candidate_imports": 0,
+            "candidate_forwards": 0,
+            "continuous_adjoint_calls": 0,
+            "backward_attempts": 0,
+            "optimizer_updates": 0,
+            "status": "RED_PREIMPORT_SOURCE_SHA256_MISSING_NO_ARTIFACT_NO_READMISSION",
+        },
+        "parent_inventory_manifest_red_exact",
     )
     clear = source["parent_static_clear"]
     require(
