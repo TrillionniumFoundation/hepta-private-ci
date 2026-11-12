@@ -130,7 +130,13 @@ impl RootHistoricalSourcePinV1 {
             if self.store.load(&self.owner).map_err(io::Error::other)? != self.expected {
                 return Err(io::Error::other("original historical source pin changed"));
             }
-            action()
+            let result = action()?;
+            if self.store.load(&self.owner).map_err(io::Error::other)? != self.expected {
+                return Err(io::Error::other(
+                    "original historical source pin changed after action",
+                ));
+            }
+            Ok(result)
         });
         if result.is_err() {
             *poisoned = true;

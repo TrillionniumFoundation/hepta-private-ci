@@ -12,8 +12,12 @@ mod files;
 pub(crate) use files::OriginalCellFiles;
 use files::OriginalCellObservation;
 pub(crate) use files::RootHistoricalCellInputsV1;
+#[path = "authority_host_historical_cell_readback.rs"]
+mod readback;
 #[path = "authority_host_historical_cell_registration.rs"]
 mod registration;
+pub(crate) use readback::OriginalRetainedCellReadV1;
+pub(crate) use readback::RootRetainedCellDataV1;
 
 const CELL_PURPOSE: &str = "runtime.circuit.original-cell-retention.v1";
 
@@ -40,6 +44,8 @@ struct CellRecord {
     writer: String,
     publisher_epoch: u64,
     publisher: CognitiveCheckpointPeerLifetime,
+    peer_gid: u32,
+    registered_identity: String,
     target: CellGenerationOwnerBindingV1,
     files: [FilePin; 2],
     context: String,
