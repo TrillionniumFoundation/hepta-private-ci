@@ -85,7 +85,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
             material,
             started,
         )?;
-        match ProductEvaluationExecutionStoreV1::readback(
+        match <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(
             &mut self.journal,
             &admission.key(self.binding),
         ) {
@@ -126,7 +126,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
             material,
             started,
         )?;
-        let state = ProductEvaluationExecutionStoreV1::readback(
+        let state = <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(
             &mut self.journal,
             &admission.key(self.binding),
         )?;

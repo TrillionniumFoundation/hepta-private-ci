@@ -284,7 +284,12 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
         let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
         let before = cohort.bytes()?;
         if mutation == "expired-window" {
-            cohort.at = cohort.original_config().training_evidence.expires_at;
+            cohort.at = cohort
+                .original_config()
+                .training_evidence
+                .expires_at
+                .checked_add(1)
+                .ok_or_else(|| anyhow::anyhow!("original Training fixture expiry overflow"))?;
         } else {
             let mut signed = if mutation == "freeze-renewal" {
                 cohort.original_config().freeze_evidence.clone()

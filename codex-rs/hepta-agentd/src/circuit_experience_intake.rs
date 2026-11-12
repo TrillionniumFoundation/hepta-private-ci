@@ -3,9 +3,11 @@
 //! original ledger appends, not an atomic transaction: retain the same signed
 //! request and predecessor after any error, recover the original owners, and
 //! replay it. Never replace a partial pair with freshly signed identities.
-//! This is the execution-before-credit profile whose Decision snapshot is the
-//! original input's NDU snapshot. It does not relabel an existing ledger into
-//! the distinct full-RunStart-snapshot Dataset projection on the Q24 owner stack.
+//! Both explicit profiles bind the Decision to the original input's NDU
+//! snapshot. V1 additionally binds Outcome support to the Source publication;
+//! V2 preserves the independent Observer's nonzero measurement support, as
+//! required by the explicit Q24 Dataset v3 inclusion policy. Choosing V2 does
+//! not authorize a Dataset freeze or reinterpret an earlier freeze.
 //! CURRENT requires acknowledged original owners: a lagging ledger witness must
 //! first reconcile through the original exact append, never through this reader.
 
@@ -81,11 +83,55 @@ pub fn append_original_circuit_experience_v1<W: AnchorWitnessStore>(
     append_with_clock(source, identity, ledger, request, now)
 }
 
-fn append_with_clock<W: AnchorWitnessStore>(
-    source: &CircuitTaskSourceReadbackV1<W>,
+/// Admit an independently supported measured Outcome for the exact original
+/// NDU Decision. The signed request format is unchanged; this explicit entry
+/// point selects the measurement semantics shared with Q24 Dataset v3.
+/// V1 remains strict, and every original signature, owner and ledger fence
+/// is retained before, between and after the same two ledger appends.
+pub fn append_original_circuit_experience_v2(
+    source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,
     identity: &AgentdIdentity,
     ledger: &mut LedgerWriter,
     request: &OriginalCircuitExperienceRequestV1,
+) -> Result<OriginalCircuitExperienceReceiptV1, Error> {
+    append_profile_with_clock(
+        source,
+        identity,
+        ledger,
+        request,
+        OutcomeSupportProfile::IndependentMeasurementV2,
+        now,
+    )
+}
+
+enum OutcomeSupportProfile {
+    SourcePublicationV1,
+    IndependentMeasurementV2,
+}
+
+fn append_with_clock(
+    source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,
+    identity: &AgentdIdentity,
+    ledger: &mut LedgerWriter,
+    request: &OriginalCircuitExperienceRequestV1,
+    clock: impl FnMut() -> Result<u64, Error>,
+) -> Result<OriginalCircuitExperienceReceiptV1, Error> {
+    append_profile_with_clock(
+        source,
+        identity,
+        ledger,
+        request,
+        OutcomeSupportProfile::SourcePublicationV1,
+        clock,
+    )
+}
+
+fn append_profile_with_clock(
+    source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,
+    identity: &AgentdIdentity,
+    ledger: &mut LedgerWriter,
+    request: &OriginalCircuitExperienceRequestV1,
+    profile: OutcomeSupportProfile,
     mut clock: impl FnMut() -> Result<u64, Error>,
 ) -> Result<OriginalCircuitExperienceReceiptV1, Error> {
     let decision = &request.decision;
@@ -117,7 +163,12 @@ fn append_with_clock<W: AnchorWitnessStore>(
         || decision.selected_candidate_id != *policy.selected()
         || decision.selected_propensity != ProbabilityQ32::ONE
         || outcome.episode_id != decision.episode_id
-        || outcome.support_digest != publication.publication_digest()
+        || match profile {
+            OutcomeSupportProfile::SourcePublicationV1 => {
+                outcome.support_digest != publication.publication_digest()
+            }
+            OutcomeSupportProfile::IndependentMeasurementV2 => outcome.support_digest.is_zero(),
+        }
         || outcome.watermark.terminality != OutcomeTerminalityV1::Terminal
         || outcome.watermark.correction_predecessor.is_some()
         || outcome.watermark.censoring_reason.is_some()

@@ -502,7 +502,8 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     let bytes = f.f.original.bytes()?;
     let expires = f.selected.attestation().expires_at;
     tokio::time::sleep(
-        Duration::from_secs(expires.saturating_sub(now()?)) + Duration::from_millis(100),
+        Duration::from_secs(expires.saturating_sub(now()?).saturating_add(1))
+            + Duration::from_millis(100),
     )
     .await;
     assert!(client.attest_completed_task().await.is_err());

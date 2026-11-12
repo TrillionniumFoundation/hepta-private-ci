@@ -40,6 +40,7 @@ EXPECTED = {
     "learning_source_bound_training_stage_readback": (
         AGENT + "cell_q24_training_command_service.rs",
         AGENT + "cell_q24_model_command_lane.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
     ),
     "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),
@@ -57,7 +58,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
 
-    def rejects(self, path, function, marker):
+    def rejects(self, path, function, marker, replacement=""):
         source = (ROOT / path).read_text()
         start = source.index(function)
         end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
@@ -70,7 +71,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             target.parent.mkdir(parents=True)
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + source[offset + len(marker):])
+            target.write_text(source[:offset] + replacement + source[offset + len(marker):])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
@@ -155,6 +156,13 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             for marker in ("training.require_live_source_if_captured()?", "CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)"):
                 with self.subTest(path=path, marker=marker):
                     self.rejects(path, function, marker)
+
+        for path, function, marker in (
+            (STAGE, "fn in_lane<", "&& owners.require_captured_tail_current().is_err()"),
+            (MODEL, "fn in_model_lane<", "&& owners"),
+        ):
+            self.rejects(path, function, marker)
+            self.rejects(path, function, marker, marker.replace("&&", "||", 1))
 
 
 if __name__ == "__main__":

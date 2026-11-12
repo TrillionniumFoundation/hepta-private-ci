@@ -445,7 +445,7 @@ pub(super) fn material_with_profile(
     publication: &CircuitTaskSourcePublicationV1,
     evaluation_profile: Digest32,
 ) -> anyhow::Result<Material> {
-    let (config, optimizer) = unstarted_material_with_profile(
+    material_with_profile_and_observer(
         root,
         writer,
         credentials,
@@ -456,6 +456,34 @@ pub(super) fn material_with_profile(
         publication,
         evaluation_profile,
         id("unused-positive-next-use-role"),
+    )
+}
+
+// Choose C's original enrolled actor before the first material receipt is
+// signed. No completed cut or predecessor signature is rewritten for C.
+pub(super) fn material_with_profile_and_observer(
+    root: &std::path::Path,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+    identity: &crate::AgentdIdentity,
+    baseline: &LoadedCellQ24ModelV1,
+    bundle: &CellCompatibilityBundleV1,
+    publication: &CircuitTaskSourcePublicationV1,
+    evaluation_profile: Digest32,
+    next_use_observer: StableId,
+) -> anyhow::Result<Material> {
+    let (config, optimizer) = unstarted_material_with_profile(
+        root,
+        writer,
+        credentials,
+        source,
+        identity,
+        baseline,
+        bundle,
+        publication,
+        evaluation_profile,
+        next_use_observer,
     )?;
     let input = publication.input();
     let initial = config.initial.clone();

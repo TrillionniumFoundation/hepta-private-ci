@@ -1,0 +1,51 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "dirty": " M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n",
+    "file_count": 14739,
+    "inventory_sha256": "c5d9f748d564751e691b8210406ab03a6e5f054ec437743b68e034b3711e0b4f",
+    "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "dirty": "",
+    "file_count": 14739,
+    "inventory_sha256": "234525c929f11210c3d9c8560218cf707b8d5e7572264ca471a73acca5e49170",
+    "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+    "finished_at": "2026-11-12T08:20:31.139145+00:00",
+    "log_bytes": 147766,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "72bf45f0964759c1354ba28488569e62da6cc134ac2cdad18214a6882ccefbb5",
+    "returncode": 101,
+    "started_at": "2026-11-12T08:17:25.024012+00:00"
+  },
+  "exit_code": 101,
+  "finished_at": "2026-11-12T08:20:40.393309+00:00",
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 10,
+    "patch_bytes": 9852,
+    "patch_sha256": "0f5946a4e90af81c98d32298c7e1c913656db9e7ca5498bf44f61f6c580498ae"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-maintenance-726af8f4a345-v1",
+  "source_sha": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+  "source_tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+  "started_at": "2026-11-12T08:17:19.576954+00:00",
+  "status": "failed"
+}

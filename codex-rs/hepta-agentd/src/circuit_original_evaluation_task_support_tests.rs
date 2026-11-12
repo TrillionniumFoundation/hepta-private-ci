@@ -24,6 +24,25 @@ pub(crate) async fn original_evaluation_source(
         definition.candidates[0].activation_index;
     definition.candidates[0].activation_index = selected_activation;
     let selected = definition.candidates[selected_index].candidate_id.clone();
+    // Keep the original source order and bind the complete fixture definition
+    // to it before the registry or Cell journal freezes either representation.
+    let mut candidates = std::mem::take(&mut definition.candidates);
+    anyhow::ensure!(
+        candidates.len() == input.candidates.len(),
+        "complete original fixture candidate set"
+    );
+    definition.candidates = input
+        .candidates
+        .iter()
+        .map(|mask| {
+            let index = candidates
+                .iter()
+                .position(|candidate| candidate.candidate_id == mask.candidate_id)
+                .ok_or_else(|| anyhow::anyhow!("exact original fixture candidate identity"))?;
+            Ok(candidates.remove(index))
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    anyhow::ensure!(candidates.is_empty(), "all original fixture candidates");
     let (mut circuit, mut bindings) = configuration();
     bindings[0].cell = definition.clone();
     circuit.parameter_bundle_digest =

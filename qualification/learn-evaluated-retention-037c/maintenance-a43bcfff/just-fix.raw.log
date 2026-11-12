@@ -1,0 +1,1515 @@
+cargo clippy --fix --tests --allow-dirty {args}
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+    Checking codex-hepta-agentd v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-agentd)
+       Fixed hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs (1 fix)
+warning: unused import: `host::OriginalCellEvaluationModelInputV1`
+   --> hepta-agentd/src/neuron_cell_evaluation_panel.rs:166:16
+    |
+166 | pub(crate) use host::OriginalCellEvaluationModelInputV1;
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+   |
+19 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+23 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+   |
+33 | / pub(super) enum ResidentAuthorizationV3 {
+34 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+35 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+   | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+36 | | }
+   | |_^ the entire enum is at least 480 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+   = note: `#[warn(clippy::large_enum_variant)]` on by default
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+35 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+35 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_authority.rs:71:1
+   |
+71 | / pub(super) enum ResidentStoreValueV3 {
+72 | |     Store(ResidentCheckpointV3),
+   | |     --------------------------- the largest variant contains at least 2576 bytes
+73 | |     Snapshot(ResidentSnapshotV3),
+   | |     ---------------------------- the second-largest variant contains at least 1312 bytes
+74 | |     Fresh(Option<FreshResidentCheckpointV3>),
+75 | |     Checked,
+76 | | }
+   | |_^ the entire enum is at least 2576 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+72 -     Store(ResidentCheckpointV3),
+72 +     Store(Box<ResidentCheckpointV3>),
+   |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/authority_host_learning_resident_gate.rs:143:1
+    |
+143 | / enum GateActionV3 {
+144 | |     Current,
+145 | |     Begin(LearningIterationStageV1),
+    | |     ------------------------------- the second-largest variant contains at least 1 bytes
+146 | |     Checkpoint(LearningIterationSnapshotV1),
+    | |     --------------------------------------- the largest variant contains at least 1304 bytes
+147 | | }
+    | |_^ the entire enum is at least 1304 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+146 -     Checkpoint(LearningIterationSnapshotV1),
+146 +     Checkpoint(Box<LearningIterationSnapshotV1>),
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_runtime.rs:57:1
+   |
+57 | / enum ResidentStagesV3 {
+58 | |     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+   | |     -------------------------------------------------- the largest variant contains at least 75336 bytes
+59 | |     Installed(Arc<ResidentOriginalStageOwnersV3>),
+   | |     --------------------------------------------- the second-largest variant contains at least 8 bytes
+60 | | }
+   | |_^ the entire enum is at least 75336 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+58 -     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+58 +     Uninstalled(Box<Option<ResidentOriginalStageOwnersV3>>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_stages.rs:23:1
+   |
+23 | / pub(super) enum ResidentOriginalStageOwnersV3 {
+24 | |     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
+   | |     ---------------------------------------------- the second-largest variant contains at least 35712 bytes
+25 | |     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+   | |     ------------------------------------------------ the largest variant contains at least 75336 bytes
+26 | | }
+   | |_^ the entire enum is at least 75336 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+25 -     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+25 +     Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+   |
+72 | / enum ClientOriginV3 {
+73 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+74 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+   | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+75 | | }
+   | |_^ the entire enum is at least 480 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+74 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+74 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+   |
+77 | / enum ResidentExchangeV3 {
+78 | |     Observed(RootResidentLearningObservationV3),
+   | |     ------------------------------------------- the largest variant contains at least 1480 bytes
+79 | |     Refused(Error),
+   | |     -------------- the second-largest variant contains at least 48 bytes
+80 | | }
+   | |_^ the entire enum is at least 1480 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+78 -     Observed(RootResidentLearningObservationV3),
+78 +     Observed(Box<RootResidentLearningObservationV3>),
+   |
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+    |
+131 | /     pub fn recover_original_root_stream(
+132 | |         stream: UnixStream,
+133 | |         root: AgentdRootAuthorityPeer,
+134 | |         held_root_pidfd: OwnedFd,
+...   |
+140 | |         lifetime: Duration,
+141 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+    |
+159 | /     fn bind(
+160 | |         stream: UnixStream,
+161 | |         root: AgentdRootAuthorityPeer,
+162 | |         held_root_pidfd: OwnedFd,
+...   |
+168 | |         lifetime: Duration,
+169 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+   |
+20 | /     pub fn recover_original_model_root_stream(
+21 | |         stream: UnixStream,
+22 | |         root: AgentdRootAuthorityPeer,
+23 | |         held_root_pidfd: OwnedFd,
+...  |
+33 | |         lifetime: Duration,
+34 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cell_q24_dataset.rs:193:5
+    |
+193 | /     fn read_current_at_clock(
+194 | |         &mut self,
+195 | |         initial: &LearningIterationSnapshotV1,
+196 | |         baseline: &LoadedCellQ24ModelV1,
+...   |
+201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+    | |________________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_learning_completion_readiness.rs:68:1
+   |
+68 | / pub(super) enum Readiness {
+69 | |     NotReady,
+   | |     -------- the second-largest variant carries no data at all
+70 | |     Ready { read: original::OriginalRead },
+   | |     -------------------------------------- the largest variant contains at least 288 bytes
+71 | | }
+   | |_^ the entire enum is at least 288 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+70 -     Ready { read: original::OriginalRead },
+70 +     Ready { read: Box<original::OriginalRead> },
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/circuit_retained_version_service.rs:71:5
+   |
+71 | /     pub async fn serve_original_ordinary(
+72 | |         self: Arc<Self>,
+73 | |         stream: UnixStream,
+74 | |         consumer: AgentdRootAuthorityPeer,
+...  |
+79 | |         arg0_paths: codex_arg0::Arg0DispatchPaths,
+80 | |     ) -> Result<u64, Error> {
+   | |___________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_retained_version_host.rs:156:5
+    |
+156 | /     pub fn from_original_owners(
+157 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+158 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+159 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+...   |
+164 | |         lifetime: Duration,
+165 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_feature_current.rs:123:1
+    |
+123 | /  enum Publication {
+124 | |      Initial(PublishedNeuronGenerationInitialV1),
+    | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+125 | |/     Update {
+126 | ||         original: PublishedNeuronGenerationUpdateV1,
+127 | ||         previous: PublishedCircuitFeatureCompletionV1,
+128 | ||     },
+    | ||_____- the largest variant contains at least 2744 bytes
+129 | |  }
+    | |__^ the entire enum is at least 2744 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+127 -         previous: PublishedCircuitFeatureCompletionV1,
+127 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+    |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+    |
+143 | /     pub(crate) fn require_original_member(
+144 | |         &self,
+145 | |         registration: &OriginalCellEvaluationPanelRegistrationV1,
+146 | |         task: &OriginalCellEvaluationPanelTaskV1,
+...   |
+151 | |         verifier: &LearningEvidenceVerifierV1,
+152 | |     ) -> Result<(), Error> {
+    | |__________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+   |
+48 | / pub(super) fn assemble(
+49 | |     config: &OriginalCircuitEvaluationCohortConfigV1,
+50 | |     ledger: &LedgerWriter,
+51 | |     dataset: &DatasetSnapshotReceiptV3,
+...  |
+56 | |     current: u64,
+57 | | ) -> Result<TemporalComparisonInputsV1, Error> {
+   | |______________________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+    |
+227 | /     fn read_episode(
+228 | |         config: &OriginalCircuitEvaluationCohortConfigV1,
+229 | |         ledger: &LedgerWriter,
+230 | |         requested: &OriginalCircuitEvaluationEpisodeV1,
+...   |
+236 | |         current: u64,
+237 | |     ) -> Result<Episode<'a>, Error> {
+    | |___________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+   --> hepta-agentd/src/circuit_task_source_codec.rs:508:36
+    |
+508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+    |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+    = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+
+warning: large size difference between variants
+  --> hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+   |
+17 | / pub(super) enum OriginalCommandEvidenceV1 {
+18 | |     Training(OriginalTrainingReadbackV1),
+   | |     ------------------------------------ the second-largest variant contains at least 6928 bytes
+19 | |     Selection(OriginalSelectionReadbackV1),
+   | |     -------------------------------------- the largest variant contains at least 8776 bytes
+20 | | }
+   | |_^ the entire enum is at least 8776 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+19 -     Selection(OriginalSelectionReadbackV1),
+19 +     Selection(Box<OriginalSelectionReadbackV1>),
+   |
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_no_update_stage_execute.rs:49:13
+   |
+49 |         let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+   |             ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+   = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_candidate_stage_readback.rs:93:13
+   |
+93 |         let mut state = self
+   |             ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+  --> hepta-agentd/src/cell_q24_candidate_stage_readback.rs:98:13
+   |
+98 |         let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;
+   |             ^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:128:13
+    |
+128 |         let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;
+    |             ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:147:17
+    |
+147 |             let mut common = self
+    |                 ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:228:13
+    |
+228 |         let mut common = self
+    |             ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:134:17
+    |
+134 |             let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+    |                 ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:169:17
+    |
+169 |             let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
+    |                 ^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:247:13
+    |
+247 |         let mut common = self
+    |             ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_no_update_stage_owners.rs:124:21
+    |
+124 |                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+    |                     ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/cell_q24_no_update_stage_owners.rs:172:21
+    |
+172 |                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+    |                     ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_training_command_connection.rs:41:1
+   |
+41 | / enum Origin {
+42 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+43 | |     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+   | |     ------------------------------------------------------------------------- the largest variant contains at least 656 bytes
+44 | | }
+   | |_^ the entire enum is at least 656 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+43 -     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+43 +     Recovered(Box<Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+   |
+13 | / pub(super) enum Observed {
+14 | |     Missing,
+   | |     ------- the second-largest variant carries no data at all
+15 | |     Pending,
+16 | |     Completed(CellQ24ModelProposalReceiptV1),
+   | |     ---------------------------------------- the largest variant contains at least 384 bytes
+17 | | }
+   | |_^ the entire enum is at least 384 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+16 -     Completed(CellQ24ModelProposalReceiptV1),
+16 +     Completed(Box<CellQ24ModelProposalReceiptV1>),
+   |
+
+warning: this `if` has identical blocks
+   --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:135:9
+    |
+135 | /         {
+136 | |             wire::CommandResult::ReadbackRequired
+137 | |         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+    | |_________^
+    |
+note: same as this
+   --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:137:100
+    |
+137 |           } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+    |  ____________________________________________________________________________________________________^
+138 | |             wire::CommandResult::ReadbackRequired
+139 | |         } else {
+    | |_________^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#if_same_then_else
+    = note: `#[warn(clippy::if_same_then_else)]` on by default
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_training_bootstrap.rs:96:1
+    |
+ 96 | / enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+ 97 | |     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+    | |     ----------------------------------------------------------- the largest variant contains at least 22984 bytes
+ 98 | |     Starting,
+ 99 | |     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
+    | |     --------------------------------------------------------- the second-largest variant contains at least 8 bytes
+100 | |     Fenced,
+101 | | }
+    | |_^ the entire enum is at least 22984 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+ 97 -     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+ 97 +     Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_model_command_connection.rs:26:1
+   |
+26 | / enum Origin {
+27 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+28 | |     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+   | |     ---------------------------------------------------------- the largest variant contains at least 1336 bytes
+29 | | }
+   | |_^ the entire enum is at least 1336 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+28 -     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+28 +     Recovered(Box<Option<(LearningIterationSnapshotV1, Digest32)>>),
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+   |
+61 | /     pub fn recover_from_original_stream(
+62 | |         stream: UnixStream,
+63 | |         peer: LearningIterationEvidencePeerV1,
+64 | |         original_owner_pidfd: OwnedFd,
+...  |
+69 | |         lifetime: Duration,
+70 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+   |
+82 | /     fn bind_original_stream(
+83 | |         stream: UnixStream,
+84 | |         peer: LearningIterationEvidencePeerV1,
+85 | |         original_owner_pidfd: OwnedFd,
+...  |
+90 | |         origin: Origin,
+91 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+    |
+141 | /  pub(super) enum CommandResult {
+142 | |/     Completed {
+143 | ||         snapshot: String,
+144 | ||         evidence: evidence_wire::Evidence,
+145 | ||     },
+    | ||_____- the largest variant contains at least 240 bytes
+146 | |      Missing,
+    | |      ------- the second-largest variant carries no data at all
+...   |
+152 | |      Unavailable,
+153 | |  }
+    | |__^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+144 -         evidence: evidence_wire::Evidence,
+144 +         evidence: Box<evidence_wire::Evidence>,
+    |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cell_q24_training_command.rs:232:5
+    |
+232 | /     fn bind_original_stream(
+233 | |         stream: UnixStream,
+234 | |         peer: LearningIterationEvidencePeerV1,
+235 | |         original_owner_pidfd: OwnedFd,
+...   |
+240 | |         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+241 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+    |
+136 | /  pub(super) enum CommandResult {
+137 | |/     Completed {
+138 | ||         snapshot: String,
+139 | ||         evidence: evidence_wire::Evidence,
+140 | ||     },
+    | ||_____- the largest variant contains at least 240 bytes
+141 | |      Missing,
+    | |      ------- the second-largest variant carries no data at all
+...   |
+147 | |      Unavailable,
+148 | |  }
+    | |__^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+139 -         evidence: evidence_wire::Evidence,
+139 +         evidence: Box<evidence_wire::Evidence>,
+    |
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/circuit_selection_command.rs:272:5
+    |
+272 | /     pub fn recover_from_original_stream(
+273 | |         stream: UnixStream,
+274 | |         peer: LearningIterationEvidencePeerV1,
+275 | |         original_owner_pidfd: OwnedFd,
+...   |
+282 | |         lifetime: Duration,
+283 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_selection_command.rs:307:5
+    |
+307 | /     fn bind_original_stream(
+308 | |         stream: UnixStream,
+309 | |         peer: LearningIterationEvidencePeerV1,
+310 | |         original_owner_pidfd: OwnedFd,
+...   |
+315 | |         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
+316 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+    |
+136 | /  pub(super) enum CommandResult {
+137 | |/     Completed {
+138 | ||         snapshot: String,
+139 | ||         evidence: evidence_wire::Evidence,
+140 | ||     },
+    | ||_____- the largest variant contains at least 240 bytes
+141 | |      Missing,
+    | |      ------- the second-largest variant carries no data at all
+...   |
+147 | |      Unavailable,
+148 | |  }
+    | |__^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+139 -         evidence: evidence_wire::Evidence,
+139 +         evidence: Box<evidence_wire::Evidence>,
+    |
+
+warning: this function has too many arguments (11/7)
+   --> hepta-agentd/src/circuit_next_use_command.rs:291:5
+    |
+291 | /     pub fn recover_from_original_stream(
+292 | |         stream: UnixStream,
+293 | |         peer: LearningIterationEvidencePeerV1,
+294 | |         original_owner_pidfd: OwnedFd,
+...   |
+302 | |         lifetime: Duration,
+303 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_next_use_command.rs:328:5
+    |
+328 | /     fn bind_original_stream(
+329 | |         stream: UnixStream,
+330 | |         peer: LearningIterationEvidencePeerV1,
+331 | |         original_owner_pidfd: OwnedFd,
+...   |
+336 | |         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+337 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+    |
+119 | /     fn serve_role_commands(
+120 | |         &self,
+121 | |         role: Role,
+122 | |         stream: UnixStream,
+...   |
+127 | |         lifetime: Duration,
+128 | |     ) -> Result<u64, Error> {
+    | |___________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/cell_q24_material_command.rs:236:5
+    |
+236 | /     fn bind_original_stream(
+237 | |         stream: UnixStream,
+238 | |         peer: LearningIterationEvidencePeerV1,
+239 | |         original_owner_pidfd: OwnedFd,
+...   |
+245 | |         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+246 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+   |
+35 | /     pub fn from_original_stream(
+36 | |         stream: UnixStream,
+37 | |         peer: LearningIterationEvidencePeerV1,
+38 | |         original_owner_pidfd: OwnedFd,
+...  |
+43 | |         lifetime: Duration,
+44 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/artifact_original_head_client.rs:31:1
+   |
+31 | / enum Origin {
+32 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+33 | |     Readonly(Option<SignedCurrentArtifactHeadV1>),
+   | |     --------------------------------------------- the largest variant contains at least 304 bytes
+34 | | }
+   | |_^ the entire enum is at least 304 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+33 -     Readonly(Option<SignedCurrentArtifactHeadV1>),
+33 +     Readonly(Box<Option<SignedCurrentArtifactHeadV1>>),
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+   |
+20 | / pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
+21 | |     trainer: &mut CellQ24TrainingOwnerV1<T>,
+22 | |     dataset_cut: &LearningIterationSnapshotV1,
+23 | |     scope: Digest32,
+...  |
+28 | |     now: u64,
+29 | | ) -> Result<Admission, Error> {
+   | |_____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_training_source.rs:143:1
+    |
+143 | / enum OriginalMaterialSource {
+144 | |     Local(Box<dyn OriginalMaterialReadback>),
+    | |     ---------------------------------------- the second-largest variant contains at least 16 bytes
+145 | |     Remote(OriginalCellQ24RemoteMaterialClientV1),
+    | |     --------------------------------------------- the largest variant contains at least 3056 bytes
+146 | | }
+    | |_^ the entire enum is at least 3056 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+145 -     Remote(OriginalCellQ24RemoteMaterialClientV1),
+145 +     Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
+    |
+
+warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes
+  --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:85:9
+   |
+85 |         drop(sources);
+   |         ^^^^^^^^^^^^^
+   |
+note: argument has type `neuron_cell_evaluation_qualification_owner::sources::OriginalCellEvaluationQualificationSourcesV1<'_, C, F, X>`
+  --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:85:14
+   |
+85 |         drop(sources);
+   |              ^^^^^^^
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#drop_non_drop
+   = note: `#[warn(clippy::drop_non_drop)]` on by default
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:51:5
+   |
+51 | /     pub fn from_original_stream(
+52 | |         stream: UnixStream,
+53 | |         peer: LearningIterationEvidencePeerV1,
+54 | |         original_owner_pidfd: OwnedFd,
+...  |
+60 | |         lifetime: Duration,
+61 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+   |
+76 | /     pub fn recover_from_original_stream(
+77 | |         stream: UnixStream,
+78 | |         peer: LearningIterationEvidencePeerV1,
+79 | |         original_owner_pidfd: OwnedFd,
+...  |
+85 | |         lifetime: Duration,
+86 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+    |
+101 | /     fn bind_initial(
+102 | |         stream: UnixStream,
+103 | |         peer: LearningIterationEvidencePeerV1,
+104 | |         original_owner_pidfd: OwnedFd,
+...   |
+111 | |         origin: Origin,
+112 | |     ) -> Result<Self, Error> {
+    | |____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+   |
+47 | /     pub fn from_original_stream(
+48 | |         stream: UnixStream,
+49 | |         peer: LearningIterationEvidencePeerV1,
+50 | |         original_owner_pidfd: OwnedFd,
+...  |
+56 | |         lifetime: Duration,
+57 | |     ) -> Result<Self, Error> {
+   | |____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:300:1
+    |
+300 | / pub(super) fn publication(
+301 | |     member: &Member,
+302 | |     context: &Context,
+303 | |     bundle: &Bundle,
+...   |
+309 | |     signatures: [&SignedLearningEvidenceV1; 3],
+310 | | ) -> Result<(), Error> {
+    | |______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: `codex-hepta-agentd` (lib) generated 62 warnings (run `cargo clippy --fix --lib -p codex-hepta-agentd -- --no-deps` to apply 1 suggestion)
+    Checking codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs/hepta-infer-worker-host)
+       Fixed hepta-agentd/src/neuron_cell_evaluation_panel.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_completion_readiness_owner_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_next_use_command_owner_tests.rs (1 fix)
+       Fixed hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_task_source_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_next_use_command_support_tests.rs (1 fix)
+       Fixed hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs (2 fixes)
+       Fixed hepta-agentd/src/cell_q24_training_readback_tests.rs (1 fix)
+       Fixed hepta-agentd/src/authority_host_learning_resident_root_tests.rs (1 fix)
+       Fixed hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_model_selection_owner_support_tests.rs (2 fixes)
+       Fixed hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs (2 fixes)
+       Fixed hepta-agentd/src/circuit_original_evaluation_host_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_model_selection_material_support_tests.rs (4 fixes)
+       Fixed hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs (1 fix)
+       Fixed hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs (1 fix)
+       Fixed hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs (1 fix)
+warning: unused import: `model_material::OriginalCellEvaluationModelInputV1`
+   --> hepta-agentd/src/neuron_cell_evaluation_host.rs:293:16
+    |
+293 | pub(crate) use model_material::OriginalCellEvaluationModelInputV1;
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: redundant field names in struct initialization
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:424:9
+    |
+424 |         initial: initial,
+    |         ^^^^^^^^^^^^^^^^ help: replace it with: `initial`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names
+    = note: `#[warn(clippy::redundant_field_names)]` on by default
+
+warning: redundant field names in struct initialization
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:425:9
+    |
+425 |         scope: scope,
+    |         ^^^^^^^^^^^^ help: replace it with: `scope`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names
+
+warning: redundant field names in struct initialization
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:427:9
+    |
+427 |         freeze_plan: freeze_plan,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `freeze_plan`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names
+
+warning: redundant field names in struct initialization
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:428:9
+    |
+428 |         freeze_evidence: freeze_evidence,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `freeze_evidence`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/circuit_credit_ledger_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+  = note: `#[warn(clippy::duplicate_mod)]` on by default
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/neuron_generation_runtime_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+
+warning: associated items `with_unlearning_authority` and `bytes` are never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+    |
+ 84 | impl LedgerFixture {
+    | ------------------ associated items in this implementation
+...
+ 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+    |                   ^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `append_decision` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+    |
+177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+    |               ^^^^^^^^^^^^^^^
+
+warning: function `closure` is never used
+   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+    |
+212 | pub(super) fn closure(
+    |               ^^^^^^^
+
+warning: associated function `with_unlearning_authority` is never used
+  --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+   |
+84 | impl LedgerFixture {
+   | ------------------ associated function in this implementation
+...
+89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `at` is never read
+  --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+   |
+91 | pub(super) struct Fixture {
+   |                   ------- field in this struct
+92 |     root: PathBuf,
+93 |     pub(super) at: u64,
+   |                ^^
+
+warning: associated function `from_research_store` is never used
+   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+    |
+133 | impl LearningIterationCheckpointOwnerV1 {
+    | --------------------------------------- associated function in this implementation
+...
+141 |     pub(crate) fn from_research_store(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: function `ledger` is never used
+  --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+   |
+80 | pub(super) fn ledger(
+   |               ^^^^^^
+
+warning: function `material` is never used
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+    |
+302 | pub(super) fn material(
+    |               ^^^^^^^^
+
+warning: type alias `Selector` is never used
+  --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+   |
+43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+   |                 ^^^^^^^^
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_model_command_root_support_tests.rs:91:1
+   |
+91 | / enum FixtureAccess {
+92 | |     Fresh,
+   | |     ----- the second-largest variant carries no data at all
+93 | |     Readonly(OriginalCellQ24ModelCommandReceiptV1),
+   | |     ---------------------------------------------- the largest variant contains at least 2536 bytes
+94 | | }
+   | |_^ the entire enum is at least 2536 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+93 -     Readonly(OriginalCellQ24ModelCommandReceiptV1),
+93 +     Readonly(Box<OriginalCellQ24ModelCommandReceiptV1>),
+   |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_model_selection_evaluation_support_tests.rs:103:5
+    |
+103 | /     pub(crate) async fn new(
+104 | |         initial: &LearningIterationSnapshotV1,
+105 | |         training: LearningIterationSnapshotV1,
+106 | |         training_evidence: SignedLearningEvidenceV1,
+...   |
+111 | |         [candidate_manifest, baseline_manifest]: [CellBackendManifestV2; 2],
+112 | |     ) -> anyhow::Result<Self> {
+    | |_____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (10/7)
+  --> hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs:51:5
+   |
+51 | /     pub(crate) async fn complete(
+52 | |         original_plan: ProviderPlanFixture,
+53 | |         mut provider: ProviderAt,
+54 | |         initial: &LearningIterationSnapshotV1,
+...  |
+61 | |         retention_receipt_digests: Vec<Digest32>,
+62 | |     ) -> anyhow::Result<Self> {
+   | |_____________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:26:18
+   |
+26 |         plan_id: StableId::new("original-execution-plan").expect("test plan id"),
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:77:13
+   |
+77 |             self.existing_file("raw").expect("existing raw"),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:78:13
+   |
+78 | /             self.witness(self.existing_file("witness").expect("existing witness"))
+79 | |                 .expect("valid original witness file"),
+   | |______________________________________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:78:26
+   |
+78 |             self.witness(self.existing_file("witness").expect("existing witness"))
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#expect_used
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs:140:1
+    |
+140 | / enum RetainedIssuerReplyV1 {
+141 | |     Signed(SignedFinalUseGrant),
+    | |     --------------------------- the largest variant contains at least 280 bytes
+142 | |     Denied,
+    | |     ------ the second-largest variant carries no data at all
+143 | |     LoseAck,
+144 | | }
+    | |_^ the entire enum is at least 280 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+141 -     Signed(SignedFinalUseGrant),
+141 +     Signed(Box<SignedFinalUseGrant>),
+    |
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:1
+    |
+302 | / pub(super) fn material(
+303 | |     root: &std::path::Path,
+304 | |     writer: &mut LedgerWriter,
+305 | |     credentials: &Credentials,
+...   |
+310 | |     publication: &CircuitTaskSourcePublicationV1,
+311 | | ) -> anyhow::Result<Material> {
+    | |_____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:325:1
+    |
+325 | / pub(super) fn unstarted_material_with_profile(
+326 | |     _root: &std::path::Path,
+327 | |     writer: &mut LedgerWriter,
+328 | |     credentials: &Credentials,
+...   |
+338 | |     crate::CellQ24SgdRuleV1,
+339 | | )> {
+    | |__^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:1
+    |
+437 | / pub(super) fn material_with_profile(
+438 | |     root: &std::path::Path,
+439 | |     writer: &mut LedgerWriter,
+440 | |     credentials: &Credentials,
+...   |
+446 | |     evaluation_profile: Digest32,
+447 | | ) -> anyhow::Result<Material> {
+    | |_____________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: `codex-hepta-agentd` (lib test) generated 88 warnings (60 duplicates) (run `cargo clippy --fix --lib -p codex-hepta-agentd --tests -- --no-deps` to apply 5 suggestions)
+    Finished `dev` profile [unoptimized] target(s) in 5m 03s

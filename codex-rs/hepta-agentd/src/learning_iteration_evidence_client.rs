@@ -62,6 +62,11 @@ pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
 pub use training_command::OriginalCellQ24TrainingReadbackConnectionV1;
 
+#[path = "circuit_evaluated_selection_readback_owner.rs"]
+mod evaluated_selection_readback;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackErrorV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackOwnerV1;
+
 #[path = "circuit_selection_command.rs"]
 mod selection_command;
 pub use selection_command::OriginalCircuitSelectionCommandClientV1;
@@ -295,7 +300,7 @@ mod tests;
 pub(crate) use tests::fixture_original_receipt_client;
 
 #[cfg(test)]
-pub(crate) use material::bootstrap_ports as material_bootstrap_test_ports;
+pub(crate) use material::bootstrap_ports as original_material_bootstrap_test_ports;
 #[cfg(test)]
 pub(crate) use material::retained_version_dataset_fixture;
 #[cfg(test)]

@@ -1,0 +1,21 @@
+{
+  "file": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+  "base": {
+    "bytes": 6754,
+    "sha256": "58481d6fac3d30a5b36131149577d278f1e2615b9e152a4c51b45b38171674d7",
+    "git_blob": "f73ef8dfc9abedabf47c94e3bc582aec2e96d1f1"
+  },
+  "postimage": {
+    "bytes": 7004,
+    "sha256": "282e58e8a39c29939c1515c54711a08a858d71ebc9b8d6be1b9164deeb1d0e6e",
+    "git_blob": "d32eb1681ce8e51b823ed483955d69257a25d981"
+  },
+  "patch": {
+    "bytes": 1141,
+    "sha256": "d3cfa55c0457e3dabe1706c959bf8b7984d21a2e810cbf3f04607c0d8eaf3c38",
+    "git_blob": "70b2afc32b65a4a1e887eb1fdd66f871fdf6368c"
+  },
+  "rustfmt": "PASS: actual rustfmt 1.9.0-stable (Rust 1.96 ac68faa20c), zero change",
+  "change": "two storage-trait calls explicitly identify original concrete journal; no boundary/manifest/verifier change",
+  "boundary_proof": "PASS full 6588-file source index; exact boundary before fail / after pass / unregistered actual caller fail; source before/after unchanged"
+}

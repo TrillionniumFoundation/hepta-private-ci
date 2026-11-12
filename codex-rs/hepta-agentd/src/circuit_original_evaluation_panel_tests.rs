@@ -72,53 +72,57 @@ async fn completed_member(
 }
 
 impl PanelFixture {
-    async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
-        Self::completed_for_publication(peer, PublicationMode::AdoptCandidate).await
+    fn completed(peer: TrainingPeer) -> impl std::future::Future<Output = anyhow::Result<Self>> {
+        Self::completed_for_publication(peer, PublicationMode::AdoptCandidate)
     }
 
-    async fn completed_for_publication(
+    fn completed_for_publication(
         peer: TrainingPeer,
         publication: PublicationMode,
-    ) -> anyhow::Result<Self> {
-        let (original, mut primary_b, mut retention_b, registration) =
-            Box::pin(preregistered_for_publication(publication)).await?;
-        assert_eq!(primary_b.at, retention_b.at);
-        let at = primary_b.at;
-        // Actual retention completes first. Only its original publication
-        // digest enters the primary B's signed product declaration.
-        let mut retention = Box::pin(completed_member(
-            &mut retention_b,
-            &original,
-            &registration,
-            Vec::new(),
-        ))
-        .await?;
-        let retained = retention.qualification.product().evidence_digest;
-        let mut primary = Box::pin(completed_member(
-            &mut primary_b,
-            &original,
-            &registration,
-            vec![retained],
-        ))
-        .await?;
-        if matches!(peer, TrainingPeer::RenewedRetention) {
-            let renewed = original.evaluation.renewed_qualification_training()?;
-            assert_ne!(renewed, retention.config.training_evidence);
-            retention.renewed_training_peer(renewed)?;
-        }
-        let panel = Panel::from_original_owners(
-            registration,
-            primary.take_original_member(),
-            vec![retention.take_original_member()],
-        )?;
-        Ok(Self {
-            panel,
-            original,
-            primary_b,
-            retention_b,
-            primary,
-            retention,
-            at,
+    ) -> impl std::future::Future<Output = anyhow::Result<Self>> {
+        // Keep the complete panel construction future out of enclosing tests.
+        // Returning it directly also avoids an extra async forwarding frame.
+        Box::pin(async move {
+            let (original, mut primary_b, mut retention_b, registration) =
+                Box::pin(preregistered_for_publication(publication)).await?;
+            assert_eq!(primary_b.at, retention_b.at);
+            let at = primary_b.at;
+            // Actual retention completes first. Only its original publication
+            // digest enters the primary B's signed product declaration.
+            let mut retention = Box::pin(completed_member(
+                &mut retention_b,
+                &original,
+                &registration,
+                Vec::new(),
+            ))
+            .await?;
+            let retained = retention.qualification.product().evidence_digest;
+            let mut primary = Box::pin(completed_member(
+                &mut primary_b,
+                &original,
+                &registration,
+                vec![retained],
+            ))
+            .await?;
+            if matches!(peer, TrainingPeer::RenewedRetention) {
+                let renewed = original.evaluation.renewed_qualification_training()?;
+                assert_ne!(renewed, retention.config.training_evidence);
+                retention.renewed_training_peer(renewed)?;
+            }
+            let panel = Panel::from_original_owners(
+                registration,
+                primary.take_original_member(),
+                vec![retention.take_original_member()],
+            )?;
+            Ok(Self {
+                panel,
+                original,
+                primary_b,
+                retention_b,
+                primary,
+                retention,
+                at,
+            })
         })
     }
 

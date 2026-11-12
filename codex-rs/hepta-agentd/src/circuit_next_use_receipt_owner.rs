@@ -8,6 +8,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
@@ -55,11 +56,34 @@ pub enum OriginalCircuitNextUseReceiptErrorV1 {
     Evidence(#[from] SignedEvidenceError),
     #[error("original published Circuit read capability: {0}")]
     PublishedRead(#[from] OriginalCircuitLearningReadErrorV1),
+    #[error("original evaluated retention predecessor: {0}")]
+    Evaluated(#[from] crate::OriginalCircuitRetainedPublicationErrorV1),
+    #[error("original evaluated Selector predecessor: {0}")]
+    EvaluatedSelection(#[from] crate::OriginalCircuitSelectionReceiptErrorV1),
 }
 type Error = OriginalCircuitNextUseReceiptErrorV1;
 
+#[path = "circuit_next_use_receipt_binding.rs"]
+mod binding;
+use binding::authenticate_predecessors;
+use binding::evidence_id;
+use binding::now;
+use binding::prior;
+use binding::receipt;
+use binding::receipt_with_domain;
+use binding::require_new_attestation;
+use binding::sign_original;
+use binding::validate_config;
+
 #[path = "circuit_next_use_readback_host.rs"]
 mod readback_host;
+
+#[path = "circuit_evaluated_next_use_receipt.rs"]
+mod evaluated;
+pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
+pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
+pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptV1;
+use evaluated::Profile;
 
 /// Fixed original Selection cut and host-enrolled Observer. An immutable trust
 /// snapshot is not an enrollment operation or evidence of independent operators.
@@ -99,8 +123,16 @@ pub struct OriginalCircuitNextUseRemoteSourcesV1<'a> {
 
 trait NextUseSources {
     fn snapshot(&self) -> &LearningIterationSnapshotV1;
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1;
+    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1>;
     fn selector(&self) -> &LearningIterationEvidenceClientV1;
+    fn evaluated_owners(
+        &self,
+    ) -> Option<(
+        &crate::OriginalCellQ24TrainingCommandClientV1,
+        &crate::OriginalCellEvaluationCommandClientV1,
+    )> {
+        None
+    }
     fn location(&self) -> ObservationLocation;
     async fn observe(
         &self,
@@ -114,6 +146,7 @@ trait NextUseSources {
 enum ObservationLocation {
     LocalOwner,
     RemoteOwner,
+    EvaluatedOwner,
 }
 
 impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
@@ -122,8 +155,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
     fn snapshot(&self) -> &LearningIterationSnapshotV1 {
         self.snapshot
     }
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
-        self.trainer
+    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
+        Some(self.trainer)
     }
     fn selector(&self) -> &LearningIterationEvidenceClientV1 {
         self.selector
@@ -143,8 +176,8 @@ impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_> {
     fn snapshot(&self) -> &LearningIterationSnapshotV1 {
         self.snapshot
     }
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
-        self.trainer
+    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
+        Some(self.trainer)
     }
     fn selector(&self) -> &LearningIterationEvidenceClientV1 {
         self.selector
@@ -197,6 +230,7 @@ enum CommandOrigin {
 pub struct OriginalCircuitNextUseReceiptOwnerV1<W: AnchorWitnessStore> {
     journal: LearningOwnerJournalV1<W>,
     config: OriginalCircuitNextUseReceiptConfigV1,
+    profile: Profile,
     key: SigningKey,
     saved: ProductEvaluationExecutionKeyV1,
     command_origin: CommandOrigin,
@@ -215,6 +249,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         Ok(Self {
             journal,
             config,
+            profile: Profile::Legacy,
             key,
             saved,
             command_origin: CommandOrigin::FreshCreate,
@@ -235,6 +270,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         Ok(Self {
             journal,
             config,
+            profile: Profile::Legacy,
             key,
             saved,
             command_origin: CommandOrigin::Recovered,
@@ -302,6 +338,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         if self.completion_fenced {
             return Err(OwnerError::CommitUncertain.into());
         }
+        self.profile.require_new(started_at)?;
         require_new_attestation(&self.config, started_at, started_at)?;
         let observed = self.prepare(&source).await?;
         // A completed coordinator can only recover an existing owner result.
@@ -309,19 +346,22 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             return self.readback_source(source).await;
         }
         let evidence = self.predecessors(&source).await?;
-        authenticate_predecessors(&self.config, &evidence, now()?)?;
+        evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;
         if self.prepare(&source).await? != observed {
             return Err(OwnerError::CommitUncertain.into());
         }
         let config = &self.config;
+        let profile = &self.profile;
         let key = &self.key;
         let identity = self.saved.binding_digest;
         let bytes = self.journal.commit_once(&self.saved, || {
             let issued_at = now()?;
+            profile.require_new(issued_at)?;
             require_new_attestation(config, started_at, issued_at)?;
-            let predecessors = authenticate_predecessors(config, &evidence, issued_at)
-                .map_err(|_| OwnerError::Binding("current original predecessor roles"))?;
-            let receipt = receipt(config, &observed, issued_at)
+            let predecessors =
+                evaluated::authenticate_predecessors(config, profile, &evidence, issued_at)
+                    .map_err(|_| OwnerError::Binding("current original predecessor roles"))?;
+            let receipt = evaluated::receipt(config, profile, &observed, issued_at)
                 .map_err(|_| OwnerError::Binding("original C receipt"))?;
             let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)
                 .map_err(|_| OwnerError::Binding("original C receipt bytes"))?;
@@ -332,6 +372,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
                 &payload,
                 issued_at,
             )?;
+            profile
+                .require_signed_separation(&verified, issued_at)
+                .map_err(|_| OwnerError::Binding("original evaluated C role separation"))?;
             for predecessor in &predecessors {
                 verify_signed_actor_separation(predecessor, &verified, issued_at)?;
             }
@@ -380,9 +423,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             return Err(OwnerError::CommitUncertain.into());
         }
         let observed = self.prepare(&source).await?;
-        if matches!(source.location(), ObservationLocation::RemoteOwner) {
+        if matches!(
+            source.location(),
+            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner
+        ) {
             let before = self.predecessors(&source).await?;
-            authenticate_predecessors(&self.config, &before, now()?)?;
+            evaluated::authenticate_predecessors(&self.config, &self.profile, &before, now()?)?;
         }
         let bytes = self.journal.read(&self.saved)?;
         let result = self
@@ -400,6 +446,14 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         &self,
         source: &impl NextUseSources,
     ) -> Result<LearningIterationObservationV1, Error> {
+        match (&self.profile, source.location()) {
+            (
+                Profile::Legacy,
+                ObservationLocation::LocalOwner | ObservationLocation::RemoteOwner,
+            )
+            | (Profile::Evaluated(_), ObservationLocation::EvaluatedOwner) => {}
+            _ => return Err(OwnerError::Binding("same original C source profile").into()),
+        }
         LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?;
         self.config.scope.validate_snapshot(source.snapshot())?;
         if source.snapshot().request != self.config.selection.request
@@ -420,22 +474,37 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         &self,
         source: &impl NextUseSources,
     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
-        let trainer: &LearningIterationEvidenceClientV1 = source.trainer();
+        let training = match &self.profile {
+            Profile::Legacy => {
+                let trainer: &LearningIterationEvidenceClientV1 = source
+                    .trainer()
+                    .ok_or(OwnerError::Binding("original C Trainer source"))?;
+                trainer
+                    .readback(
+                        source.snapshot(),
+                        prior(&self.config, LearningIterationStageV1::Training)?,
+                    )
+                    .await?
+            }
+            Profile::Evaluated(selection) => {
+                let (trainer, evaluator) = source
+                    .evaluated_owners()
+                    .ok_or(OwnerError::Binding("original C evaluated sources"))?;
+                selection
+                    .original_context()
+                    .require_original_receipt_owners(trainer, evaluator)
+                    .await?;
+                self.config.training_evidence.clone()
+            }
+        };
         let selector: &LearningIterationEvidenceClientV1 = source.selector();
-        Ok([
-            trainer
-                .readback(
-                    source.snapshot(),
-                    prior(&self.config, LearningIterationStageV1::Training)?,
-                )
-                .await?,
-            selector
-                .readback(
-                    source.snapshot(),
-                    prior(&self.config, LearningIterationStageV1::Selection)?,
-                )
-                .await?,
-        ])
+        let selection = selector
+            .readback(
+                source.snapshot(),
+                prior(&self.config, LearningIterationStageV1::Selection)?,
+            )
+            .await?;
+        Ok([training, selection])
     }
 
     async fn finish_original_readback(
@@ -451,7 +520,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         // before the final physical journal read. No nested prepare or role
         // authentication sends another predecessor request.
         let evidence = match source.location() {
-            ObservationLocation::LocalOwner => {
+            ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {
                 let evidence = self.predecessors(source).await?;
                 if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
@@ -486,7 +555,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         Error,
     > {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
-        let receipt = receipt(&self.config, observed, signed.issued_at)?;
+        let receipt = evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
             || source
                 .snapshot()
@@ -516,9 +585,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             return Err(OwnerError::Binding("original Observer clock moved backwards").into());
         }
         if new_attestation {
+            self.profile.require_new(current)?;
             require_new_attestation(&self.config, started_at, current)?;
         }
-        let predecessors = authenticate_predecessors(&self.config, evidence, current)?;
+        let predecessors =
+            evaluated::authenticate_predecessors(&self.config, &self.profile, evidence, current)?;
         let verified = self.config.verifier.verify(
             LearningEvidenceRoleV1::Observer,
             &signed,
@@ -531,200 +602,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         {
             return Err(OwnerError::Binding("original C Observer identity").into());
         }
+        self.profile.require_signed_separation(&verified, current)?;
         for predecessor in &predecessors {
             verify_signed_actor_separation(predecessor, &verified, current)?;
         }
         Ok((receipt, signed))
     }
-}
-
-fn validate_config(
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-    key: &SigningKey,
-) -> Result<ProductEvaluationExecutionKeyV1, Error> {
-    let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?;
-    config.scope.validate_snapshot(&config.selection)?;
-    if coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)
-        || key.verifying_key().to_bytes() != config.signer.verifying_key
-        || config.signer.principal.principal_id != config.selection.owners.next_use_observer
-        || config.selection.owners.evidence_trust_digest != config.verifier.trust_digest()
-        || config.selection.request.envelope.objective_digest != config.verifier.objective_digest()
-        || !(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)
-    {
-        return Err(OwnerError::Binding("original C Observer capability").into());
-    }
-    let current = now()?;
-    authenticate_predecessors(
-        config,
-        &[
-            config.training_evidence.clone(),
-            config.selection_evidence.clone(),
-        ],
-        current,
-    )?;
-    Ok(ProductEvaluationExecutionKeyV1 {
-        plan_id: config.selection.request.operation_id.clone(),
-        binding_digest: Digest32::of_parts(&[
-            b"hepta.agentd.original-circuit-next-use-receipt.v1\0",
-            config.selection.head_digest.as_array(),
-            config.scope.binding().as_array(),
-            config.verifier.trust_digest().as_array(),
-            config.signer.principal.principal_id.as_str().as_bytes(),
-            &config.signer.verifying_key,
-            &config.training_evidence.signing_bytes(),
-            &config.training_evidence.signature,
-            &config.selection_evidence.signing_bytes(),
-            &config.selection_evidence.signature,
-            &config.maximum_signature_lifetime_seconds.to_be_bytes(),
-        ]),
-    })
-}
-
-fn prior(
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-    stage: LearningIterationStageV1,
-) -> Result<&LearningIterationReceiptV1, Error> {
-    config
-        .selection
-        .receipts
-        .iter()
-        .find(|receipt| receipt.observation.stage() == stage)
-        .ok_or_else(|| OwnerError::Binding("original predecessor receipt").into())
-}
-
-fn authenticate_predecessors(
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-    evidence: &[SignedLearningEvidenceV1; 2],
-    current: u64,
-) -> Result<[VerifiedLearningEvidenceV1; 2], Error> {
-    if evidence[0] != config.training_evidence || evidence[1] != config.selection_evidence {
-        return Err(OwnerError::Binding("changed original predecessor signatures").into());
-    }
-    config.verifier.require_signer_binding(
-        LearningEvidenceRoleV1::Observer,
-        &config.signer,
-        current,
-    )?;
-    let verify = |index, stage, role| -> Result<VerifiedLearningEvidenceV1, Error> {
-        let original = prior(config, stage)?;
-        let verified = config.verifier.verify(
-            role,
-            &evidence[index],
-            &learning_iteration_receipt_signing_bytes_v1(original)?,
-            current,
-        )?;
-        if verified.principal().principal_id != original.actor_id {
-            return Err(OwnerError::Binding("original predecessor actor").into());
-        }
-        verify_independent_roles(verified.principal(), &config.signer.principal, current)
-            .map_err(SignedEvidenceError::from)?;
-        if verified.controller_id() == &config.signer.controller_id {
-            return Err(SignedEvidenceError::ControllerCollision.into());
-        }
-        Ok(verified)
-    };
-    Ok([
-        verify(
-            0,
-            LearningIterationStageV1::Training,
-            LearningEvidenceRoleV1::Generator,
-        )?,
-        verify(
-            1,
-            LearningIterationStageV1::Selection,
-            LearningEvidenceRoleV1::Selector,
-        )?,
-    ])
-}
-
-fn receipt(
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-    observation: &LearningIterationObservationV1,
-    observed_unix_seconds: u64,
-) -> Result<LearningIterationReceiptV1, Error> {
-    let committed = match observation {
-        LearningIterationObservationV1::NextUse {
-            committed_step_receipt,
-            ..
-        }
-        | LearningIterationObservationV1::RetainedModelNextUse {
-            committed_step_receipt,
-            ..
-        } => committed_step_receipt,
-        _ => return Err(OwnerError::Binding("actual original C completion").into()),
-    };
-    if committed.is_zero() {
-        return Err(OwnerError::Binding("empty original C completion").into());
-    }
-    let receipt = LearningIterationReceiptV1 {
-        operation_id: config.selection.request.operation_id.clone(),
-        predecessor: config.selection.head_digest,
-        actor_id: config.selection.owners.next_use_observer.clone(),
-        evidence_digest: Digest32::of_parts(&[
-            b"hepta.agentd.original-circuit-next-use-evidence.v1\0",
-            config.selection.head_digest.as_array(),
-            committed.as_array(),
-        ]),
-        observed_unix_seconds,
-        observation: observation.clone(),
-    };
-    let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?;
-    coordinator.record(receipt.clone(), observed_unix_seconds)?;
-    config.scope.validate_snapshot(coordinator.snapshot())?;
-    Ok(receipt)
-}
-
-fn sign_original(
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-    key: &SigningKey,
-    payload: &[u8],
-    identity: Digest32,
-    issued_at: u64,
-) -> Result<SignedLearningEvidenceV1, OwnerError> {
-    let expires_at = issued_at
-        .checked_add(config.maximum_signature_lifetime_seconds)
-        .ok_or(OwnerError::Binding("signature deadline overflow"))?
-        .min(config.signer.principal.expires_at);
-    let mut signed = SignedLearningEvidenceV1 {
-        evidence_id: evidence_id(identity)?,
-        principal_id: config.signer.principal.principal_id.clone(),
-        role: LearningEvidenceRoleV1::Observer,
-        trust_digest: config.verifier.trust_digest(),
-        scope_digest: config.verifier.scope_digest(),
-        objective_digest: config.verifier.objective_digest(),
-        authority_epoch: config.signer.principal.authority_epoch,
-        issued_at,
-        expires_at,
-        payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
-    };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-    Ok(signed)
-}
-
-fn require_new_attestation(
-    config: &OriginalCircuitNextUseReceiptConfigV1,
-    started_at: u64,
-    current: u64,
-) -> Result<(), OwnerError> {
-    if current < started_at || current >= config.selection.request.envelope.expiry_unix_seconds {
-        return Err(OwnerError::Binding(
-            "new C attestation outside original deadline",
-        ));
-    }
-    Ok(())
-}
-
-fn evidence_id(identity: Digest32) -> Result<StableId, OwnerError> {
-    StableId::new(format!("original-circuit-next-use:{identity}"))
-        .map_err(|_| OwnerError::Binding("original C evidence id"))
-}
-
-fn now() -> Result<u64, OwnerError> {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_secs())
-        .map_err(|_| OwnerError::Binding("original Observer clock"))
 }
 
 #[cfg(test)]

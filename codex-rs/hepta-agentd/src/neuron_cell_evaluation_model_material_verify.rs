@@ -223,6 +223,19 @@ pub(super) fn material(
             "original E binds the entire actual signed retention panel",
         ));
     }
+    // Current material cannot turn a positive primary result plus a complete
+    // negative retention result into Model input. Preserve the original
+    // decisions and fail closed; this is not a synthesized NoUpdate.
+    if primary.qualified
+        && checked_members
+            .iter()
+            .skip(1)
+            .any(|member| !member.qualified)
+    {
+        return Err(Error::Binding(
+            "qualified original B requires eligible retention",
+        ));
+    }
     let disposition = if primary.qualified {
         LearningEvaluationDispositionV1::Qualified
     } else {

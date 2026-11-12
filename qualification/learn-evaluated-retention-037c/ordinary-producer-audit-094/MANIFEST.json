@@ -1,0 +1,54 @@
+{
+  "base_commit": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+  "kind": "ordinary producer implementation feasibility audit",
+  "files": [
+    {
+      "path": "REPORT.md",
+      "sha256": "02a6a22c66b90f401dd97c03f9c8727e44bf8234145a845ccd45452b0c0a9b41",
+      "git_blob": "1a79787910eec590092301d183051e382390993c",
+      "bytes": 22141
+    },
+    {
+      "path": "SOURCE_MANIFEST.json",
+      "sha256": "c94627fb6f6070d6121a7e6d473a2211405cf439655e522287fbdeba1bdfef43",
+      "git_blob": "78a156cc20857ac9e6476b6df93c91aabee48cc1",
+      "bytes": 25525
+    },
+    {
+      "path": "verify_sources.py",
+      "sha256": "997229c60528f19b353371e2a7f2dd072a181ffa0c6d134321e9e9b8ce91baa3",
+      "git_blob": "0aa7d20cdef255a237cee26a4519aee238b0074f",
+      "bytes": 1723
+    },
+    {
+      "path": "VERIFICATION.json",
+      "sha256": "8abdd8d1c98b8a6cd81686753691622ded13811d90af32d13e73fa4cb5e367a2",
+      "git_blob": "129da6c4739e2b313334c198ec703029cf1c823b",
+      "bytes": 347
+    },
+    {
+      "path": "UPSTREAM_SOURCE_MANIFEST.json",
+      "sha256": "9f1bc43b1da8a850695508dcab8da5689b4e1a3896e3a8270f26e2eb7f2a3cb6",
+      "git_blob": "5a7073efc8c918ec320c9dcf8066649d587ee8bb",
+      "bytes": 17284
+    },
+    {
+      "path": "UPSTREAM_REPORT.md",
+      "sha256": "ec6ced134f0a15b3a85245c07d6a4faeb741b5633ce8cb8114cc120d7a80a6a7",
+      "git_blob": "90eaa046813dca831ab478321d956532dc747657",
+      "bytes": 11734
+    },
+    {
+      "path": "EXTRA_SOURCE_MANIFEST.json",
+      "sha256": "75a48b65d8312910027e5c655eb96a601e284a869df0bf26d6659fea227ed884",
+      "git_blob": "b9f353c8137001377eb9b9610b60c4c09ce3c85f",
+      "bytes": 1734
+    }
+  ],
+  "result": "BLOCKED_BY_MISSING_ORIGINAL_PRODUCERS",
+  "source_files_verified": 47,
+  "boundary_rows_verified": 22,
+  "production_changes": 0,
+  "native": "UNRUN",
+  "ordinary_qualification_added": 0
+}

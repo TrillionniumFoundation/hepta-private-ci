@@ -403,7 +403,8 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     ));
     let before = f.bytes()?;
     tokio::time::sleep(
-        Duration::from_secs(expires_at.saturating_sub(now()?)) + Duration::from_millis(100),
+        Duration::from_secs(expires_at.saturating_sub(now()?).saturating_add(1))
+            + Duration::from_millis(100),
     )
     .await;
     assert!(client.execute_selection().await.is_err());

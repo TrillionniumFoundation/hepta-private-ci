@@ -137,6 +137,25 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
                 "original B signed the complete actual retention panel",
             ));
         }
+        // A complete negative retention result cannot authorize a positive B
+        // decision. It is not rewritten as NoUpdate: the original signed
+        // primary decision and every frozen member contract remain unchanged.
+        if observed[0]
+            .qualification
+            .product()
+            .decision
+            .decision
+            .disposition
+            == IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+            && observed.iter().skip(1).any(|member| {
+                member.qualification.product().decision.decision.disposition
+                    != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+            })
+        {
+            return Err(Error::Binding(
+                "qualified original B requires eligible retention",
+            ));
+        }
         Ok(())
     }
 

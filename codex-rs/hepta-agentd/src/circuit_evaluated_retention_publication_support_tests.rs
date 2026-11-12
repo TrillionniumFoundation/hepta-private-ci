@@ -13,8 +13,6 @@ use std::sync::atomic::AtomicBool;
 
 use codex_hepta_neuron::JournalScope;
 use codex_hepta_types::Generation;
-use pretty_assertions::assert_eq;
-use pretty_assertions::assert_ne;
 
 use super::*;
 use crate::OriginalCellEvaluationCommandClientV1;
@@ -28,6 +26,8 @@ use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::OriginalCircuitEvaluatedRetentionRecoveryV1;
 use crate::OriginalCircuitRetainedPublicationInputsV1;
 use crate::learning_iteration_evidence_client::command_test_support as commands;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 type Trainer =
     OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
@@ -332,3 +332,6 @@ impl PublicationFixture {
         Ok(())
     }
 }
+
+#[path = "circuit_evaluated_retention_receipt_tests.rs"]
+mod receipt_tests;
