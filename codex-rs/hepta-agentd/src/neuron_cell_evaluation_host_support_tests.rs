@@ -49,6 +49,27 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
 }
 
 impl OriginalCellEvaluationHostV1 {
+    /// Same-process connection admission only. The actual original host still
+    /// reads its complete B/retention panel and original evaluator journal.
+    pub(crate) fn fixture_original_version_connection(
+        self: &Arc<Self>,
+    ) -> anyhow::Result<(crate::OriginalCellEvaluationCommandConnectionV1, Thread)> {
+        let (stream, server) = UnixStream::pair()?;
+        let connection = crate::OriginalCellEvaluationCommandConnectionV1 {
+            channel: channel(stream)?,
+            initial: self.context.initial()?,
+            scope: self.context.scope.clone(),
+            registration: self.context.registration.clone(),
+            verifier: self.context.verifier.clone(),
+            origin: super::Origin::ReadbackOnly,
+            observed_at: now()?,
+        };
+        let owner = Arc::clone(self);
+        let mut peer = channel(server)?;
+        let thread = std::thread::spawn(move || Ok(owner.fixture_serve_channel(&mut peer)?));
+        Ok((connection, thread))
+    }
+
     pub(crate) fn fixture_original_clock(&mut self, at: u64) -> anyhow::Result<()> {
         self.owners
             .get_mut()

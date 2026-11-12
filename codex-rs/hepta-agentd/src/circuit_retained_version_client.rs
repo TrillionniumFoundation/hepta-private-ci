@@ -10,12 +10,19 @@ use codex_hepta_types::Digest32;
 
 use super::super::context::PublicationAccess;
 use super::Error;
+use super::OriginalCircuitEvaluatedVersionProgressV1;
 use super::OriginalCircuitRetainedVersionPublicationV1;
 use super::OriginalCircuitRetainedVersionReadbackV1;
 use super::RetainedVersionOriginV1;
 use super::context::OriginalVersionCut;
+use super::evaluated_context::OriginalEvaluatedVersionCut;
+use super::evaluated_wire::EvaluatedProgressResult;
+use super::evaluated_wire::VersionRequest;
+use super::evaluated_wire::decode_result;
 use super::now;
+use super::profile::VersionCut;
 use super::wire;
+use crate::OriginalCellEvaluationCommandReceiptV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
@@ -51,11 +58,22 @@ impl From<&OriginalCircuitRetainedVersionPublicationV1> for OriginalVersionInsta
 enum RequestMode {
     Prepare(Arc<AtomicBool>),
     Readback,
+    PublicationProgress,
+}
+
+enum OriginalVersionResponse {
+    Readback(wire::OriginalResult),
+    Progress(EvaluatedProgressResult),
+}
+
+enum OriginalVersionValue {
+    Readback(OriginalCircuitRetainedVersionReadbackV1),
+    Progress(OriginalCircuitEvaluatedVersionProgressV1),
 }
 
 pub struct OriginalCircuitRetainedVersionClientV1 {
     channel: Mutex<Option<OriginalVersionChannel>>,
-    cut: Arc<OriginalVersionCut>,
+    cut: Arc<VersionCut>,
     retained: Mutex<Option<OriginalVersionPin>>,
 }
 impl OriginalCircuitRetainedVersionClientV1 {
@@ -91,6 +109,61 @@ impl OriginalCircuitRetainedVersionClientV1 {
         )
     }
 
+    /// Consume the initial Version channel after actual opaque D/T/B. This
+    /// purpose never reinterprets a legacy TrainingNoUpdate wire request.
+    pub(crate) fn bind_original_evaluated_stage_channel(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+    ) -> Result<Self, Error> {
+        Self::bind_evaluated(
+            peer,
+            material,
+            dataset,
+            training,
+            evaluation,
+            RetainedVersionOriginV1::Fresh,
+        )
+    }
+
+    pub(crate) fn recover_original_evaluated_stage_channel(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+    ) -> Result<Self, Error> {
+        Self::bind_evaluated(
+            peer,
+            material,
+            dataset,
+            training,
+            evaluation,
+            RetainedVersionOriginV1::Recovered,
+        )
+    }
+
+    fn bind_evaluated(
+        peer: HostAuthorityPeerChannel,
+        material: &OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+        training: &OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &OriginalCellEvaluationCommandReceiptV1,
+        origin: RetainedVersionOriginV1,
+    ) -> Result<Self, Error> {
+        let started = now()?;
+        let cut = VersionCut::Evaluated(OriginalEvaluatedVersionCut::from_original(
+            material.clone(),
+            dataset.clone(),
+            training,
+            evaluation,
+            origin,
+        )?);
+        Self::from_original_cut(peer, cut, origin, started)
+    }
+
     fn bind(
         peer: HostAuthorityPeerChannel,
         material: &OriginalCellQ24MaterialReceiptConfigV1,
@@ -99,8 +172,21 @@ impl OriginalCircuitRetainedVersionClientV1 {
         origin: RetainedVersionOriginV1,
     ) -> Result<Self, Error> {
         let started = now()?;
-        let cut =
-            OriginalVersionCut::from_original(material.clone(), dataset.clone(), training, origin)?;
+        let cut = VersionCut::TrainingNoUpdate(OriginalVersionCut::from_original(
+            material.clone(),
+            dataset.clone(),
+            training,
+            origin,
+        )?);
+        Self::from_original_cut(peer, cut, origin, started)
+    }
+
+    fn from_original_cut(
+        peer: HostAuthorityPeerChannel,
+        cut: VersionCut,
+        origin: RetainedVersionOriginV1,
+        started: u64,
+    ) -> Result<Self, Error> {
         peer.check_peer_lifetime()?;
         cut.require_fresh(started, PublicationAccess::Readback)?;
         Ok(Self {
@@ -128,14 +214,43 @@ impl OriginalCircuitRetainedVersionClientV1 {
         self.exchange(RequestMode::Readback).await
     }
 
+    /// Wait only for this session's publication worker. A successful hint is
+    /// never CURRENT, a FinalUse result, or an executable Fresh capability.
+    /// The caller must obtain full original readback before it advances S/C.
+    pub(crate) async fn publication_progress(
+        &self,
+    ) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {
+        if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {
+            return Err(Error::Binding("evaluated-only Version progress purpose"));
+        }
+        match self
+            .exchange_original(RequestMode::PublicationProgress)
+            .await?
+        {
+            OriginalVersionValue::Progress(value) => Ok(value),
+            OriginalVersionValue::Readback(_) => {
+                Err(Error::Binding("original Version progress response type"))
+            }
+        }
+    }
+
     async fn exchange(
         &self,
         mode: RequestMode,
     ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
+        match self.exchange_original(mode).await? {
+            OriginalVersionValue::Readback(value) => Ok(value),
+            OriginalVersionValue::Progress(_) => {
+                Err(Error::Binding("original Version readback response type"))
+            }
+        }
+    }
+
+    async fn exchange_original(&self, mode: RequestMode) -> Result<OriginalVersionValue, Error> {
         let started = now()?;
         let access = match &mode {
             RequestMode::Prepare(_) => PublicationAccess::NewWork,
-            RequestMode::Readback => PublicationAccess::Readback,
+            RequestMode::Readback | RequestMode::PublicationProgress => PublicationAccess::Readback,
         };
         self.cut.require_fresh(started, access)?;
         let action = match &mode {
@@ -143,14 +258,15 @@ impl OriginalCircuitRetainedVersionClientV1 {
                 if cancelled.load(Ordering::Acquire) {
                     return Err(Error::Cancelled);
                 }
-                wire::Action::Prepare
+                Some(wire::Action::Prepare)
             }
-            RequestMode::Readback => wire::Action::Readback,
+            RequestMode::Readback => Some(wire::Action::Readback),
+            RequestMode::PublicationProgress => None,
         };
         let mut channel = {
             let mut slot = self.channel.try_lock().map_err(|_| Error::Busy)?;
             let original = slot.as_mut().ok_or(Error::Unavailable)?;
-            if action == wire::Action::Prepare && original.preparation_requested {
+            if action == Some(wire::Action::Prepare) && original.preparation_requested {
                 return Err(Error::ReadbackRequired);
             }
             // Even an initial read permanently attenuates this client. Existing
@@ -161,8 +277,11 @@ impl OriginalCircuitRetainedVersionClientV1 {
         if !(1..=128).contains(&channel.next_request_id) {
             return Err(Error::Unavailable);
         }
-        let request = wire::Request::new(&self.cut, channel.next_request_id, action);
-        let encoded = serde_json::to_vec(&request)?;
+        let request = match action {
+            Some(action) => VersionRequest::new(&self.cut, channel.next_request_id, action),
+            None => VersionRequest::publication_progress(&self.cut, channel.next_request_id)?,
+        };
+        let encoded = request.encode()?;
         if encoded.is_empty() || encoded.len() > 16_384 {
             return Err(Error::Binding("bounded Version request"));
         }
@@ -195,30 +314,43 @@ impl OriginalCircuitRetainedVersionClientV1 {
         .await
         .map_err(|_| Error::CommitUncertain)??;
         drop(queued);
-        let response: wire::Response = serde_json::from_slice(&raw)?;
-        if response.request != request {
-            return Err(Error::Binding("exact original Version response"));
-        }
+        let response = if request.is_publication_progress() {
+            OriginalVersionResponse::Progress(request.decode_progress_response(&raw)?)
+        } else {
+            OriginalVersionResponse::Readback(request.decode_response(&raw)?)
+        };
         channel.peer.check_peer_lifetime()?;
         self.cut
             .require_fresh(started, access)
             .map_err(|_| Error::CommitUncertain)?;
-        // Structured Pending/Busy/Uncertain may keep only this original read
-        // channel. No bit is reset and no second preparation becomes possible.
-        let structured_error = matches!(
-            &response.result,
-            wire::OriginalResult::Busy
-                | wire::OriginalResult::ReadbackRequired
-                | wire::OriginalResult::Uncertain
-                | wire::OriginalResult::Unavailable
-                | wire::OriginalResult::FinalUseDenied
-        );
-        let decoded = response.result.decode(&self.cut);
-        match &decoded {
-            Ok(value) => self.pin(value)?,
-            Err(_) if structured_error => {}
-            Err(_) => return decoded,
-        }
+        let decoded = match response {
+            OriginalVersionResponse::Progress(response) => match response.decode() {
+                Ok(value) => Ok(OriginalVersionValue::Progress(value)),
+                Err(Error::Busy) => Err(Error::Busy),
+                // A progress hint never repairs denial, missing custody or
+                // uncertainty. Those results consume this original channel.
+                Err(error) => return Err(error),
+            },
+            OriginalVersionResponse::Readback(response) => {
+                // Keep the original full-readback contract unchanged. No bit
+                // is reset and no second preparation becomes possible.
+                let structured_error = matches!(
+                    &response,
+                    wire::OriginalResult::Busy
+                        | wire::OriginalResult::ReadbackRequired
+                        | wire::OriginalResult::Uncertain
+                        | wire::OriginalResult::Unavailable
+                        | wire::OriginalResult::FinalUseDenied
+                );
+                let decoded = decode_result(response, &self.cut);
+                match &decoded {
+                    Ok(value) => self.pin(value)?,
+                    Err(_) if structured_error => {}
+                    Err(_) => return decoded.map(OriginalVersionValue::Readback),
+                }
+                decoded.map(OriginalVersionValue::Readback)
+            }
+        };
         *self
             .channel
             .try_lock()

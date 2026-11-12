@@ -54,6 +54,7 @@ type PeerThread = std::thread::JoinHandle<anyhow::Result<usize>>;
 enum PublicationMode {
     AdoptCandidate,
     RetainOriginalA,
+    RetainOriginalAWithLiveArtifacts,
 }
 
 // The retained-publication fixture consumes the same completed A session.
@@ -219,7 +220,19 @@ impl PositiveFixture {
         assert_eq!(source_a.objective_digest, preview.objective_digest);
         assert_eq!(source_a.scope.run_id, run);
         let config_a = support::configuration(&baseline, &bundle, &definition_a, &source_a, 1)?;
-        let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
+        // Choose the real-time Artifact owner before publishing the original A.
+        // No later fixture replaces its custody or renews a signed selection.
+        let version = match publication {
+            PublicationMode::RetainOriginalAWithLiveArtifacts => {
+                VersionFixture::new_initial_with_live_artifacts(
+                    config_a.clone(),
+                    "ordinary-q24-initial",
+                )?
+            }
+            PublicationMode::AdoptCandidate | PublicationMode::RetainOriginalA => {
+                VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?
+            }
+        };
         let published_a =
             support::publish_initial(&version, definition_a.clone(), source_a.clone())?;
         let mut a = support::start(a, published_a, Arc::clone(&baseline), bundle.clone()).await?;
@@ -245,7 +258,8 @@ impl PositiveFixture {
             &previous,
             evaluation_profile,
             match publication {
-                PublicationMode::RetainOriginalA => {
+                PublicationMode::RetainOriginalA
+                | PublicationMode::RetainOriginalAWithLiveArtifacts => {
                     credentials.observer.principal.principal_id.clone()
                 }
                 PublicationMode::AdoptCandidate => id("unused-positive-next-use-role"),
@@ -394,7 +408,8 @@ impl PositiveFixture {
             a.runtime.identity.home_root.join("q24-source.witness"),
         ];
         let (session, source_home) = match publication {
-            PublicationMode::RetainOriginalA => (a, tempfile::tempdir()?),
+            PublicationMode::RetainOriginalA
+            | PublicationMode::RetainOriginalAWithLiveArtifacts => (a, tempfile::tempdir()?),
             PublicationMode::AdoptCandidate => {
                 let completion_a = a.retirement.drain_completed_task(
                     &a.cell,

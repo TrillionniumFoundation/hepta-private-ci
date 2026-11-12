@@ -624,3 +624,6 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
 
 #[path = "cell_q24_candidate_stage_tests.rs"]
 mod ordinary_stages;
+
+#[path = "cell_q24_training_candidate_current_tests.rs"]
+mod current;

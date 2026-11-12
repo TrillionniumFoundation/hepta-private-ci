@@ -8,6 +8,7 @@ use tokio::sync::Mutex;
 use super::super::auth;
 use super::CandidateLane;
 use super::Error;
+use super::EvaluatedLane;
 use super::EvaluationLane;
 use super::ModelLane;
 use super::Origin;
@@ -171,6 +172,7 @@ pub(super) fn bind(
         candidate: Mutex::new(CandidateLane::new(candidate)),
         evaluation: Mutex::new(EvaluationLane::new(evaluator)),
         model: Mutex::new(ModelLane::new(model)),
+        retention: Mutex::new(EvaluatedLane::new()),
         end,
     })
 }

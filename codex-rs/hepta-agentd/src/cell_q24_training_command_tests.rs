@@ -347,3 +347,6 @@ async fn original_training_command_public_bootstrap_refuses_same_process_custody
     assert!(!fixture.root.join("training-receipt").exists());
     Ok(())
 }
+
+#[path = "cell_q24_training_source_read_tests.rs"]
+mod source_read;

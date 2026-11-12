@@ -61,6 +61,8 @@ pub use model_command::OriginalCellQ24ModelCommandReceiptV1;
 mod wire;
 pub use serving::OriginalCellQ24TrainingCommandOwnerV1;
 
+#[path = "cell_q24_training_candidate_current.rs"]
+mod candidate_current;
 #[path = "cell_q24_training_candidate_readback.rs"]
 mod candidate_readback;
 #[path = "cell_q24_training_candidate_wire.rs"]

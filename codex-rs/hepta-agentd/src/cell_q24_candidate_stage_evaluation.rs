@@ -21,6 +21,7 @@ use crate::OriginalCellEvaluationCommandClientV1;
 use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellEvaluationCommandErrorV1;
 use crate::OriginalCellEvaluationCommandReceiptV1;
+use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::RootResidentLearningEffectGateV3;
 
@@ -56,6 +57,27 @@ impl EvaluationLane {
 enum Action {
     Execute,
     Readback,
+}
+
+/// The original opaque values observed by this completed read's final E/D/T
+/// pass. This private move contains no live owner or reusable CURRENT grant.
+/// Only the actual Evaluation read constructs it; no lane stores this type.
+pub(super) struct PostEvaluationOriginals {
+    dataset: OriginalCellQ24MaterialCommandReceiptV1,
+    training: OriginalCellQ24TrainingCommandReceiptV1,
+    evaluation: OriginalCellEvaluationCommandReceiptV1,
+}
+
+impl PostEvaluationOriginals {
+    pub(super) fn into_parts(
+        self,
+    ) -> (
+        OriginalCellQ24MaterialCommandReceiptV1,
+        OriginalCellQ24TrainingCommandReceiptV1,
+        OriginalCellEvaluationCommandReceiptV1,
+    ) {
+        (self.dataset, self.training, self.evaluation)
+    }
 }
 
 impl OriginalCellQ24CandidateStageOwnersV1 {
@@ -102,13 +124,23 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::WrongScope);
         }
         let original = self.original_evaluation(snapshot, Action::Execute).await?;
-        Ok(original.receipt().clone())
+        Ok(original.evaluation.receipt().clone())
     }
 
     pub(super) async fn read_original_evaluation(
         &self,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
+        Ok(self
+            .read_original_evaluation_with_originals(snapshot)
+            .await?
+            .evaluation)
+    }
+
+    pub(super) async fn read_original_evaluation_with_originals(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<PostEvaluationOriginals, Error> {
         self.original_evaluation(snapshot, Action::Readback).await
     }
 
@@ -116,7 +148,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         &self,
         snapshot: &LearningIterationSnapshotV1,
         action: Action,
-    ) -> Result<OriginalCellEvaluationCommandReceiptV1, Error> {
+    ) -> Result<PostEvaluationOriginals, Error> {
         let started_at = auth::now()?;
         self.require_live_deadline()?;
         let training_cut = self.training_prefix(snapshot)?;
@@ -265,9 +297,21 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
+        // Copy the actual post-I/O originals while the same common guard is
+        // held. Pre-dispatch values or an unrelated later cached read cannot
+        // substitute for this completed invocation's final owner pass.
+        let post = PostEvaluationOriginals {
+            dataset: common
+                .original_dataset
+                .as_ref()
+                .ok_or(Error::CommitUncertain)?
+                .clone(),
+            training: current_training.clone(),
+            evaluation: original.clone(),
+        };
         lane.retained = Some(original.clone());
         lane.failed = false;
-        Ok(original)
+        Ok(post)
     }
 
     pub(super) fn verify_original_evaluation(

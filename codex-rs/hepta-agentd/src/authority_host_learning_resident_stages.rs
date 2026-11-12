@@ -5,6 +5,8 @@
 use std::sync::Arc;
 
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
+use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1 as Stage;
@@ -75,9 +77,12 @@ impl ResidentOriginalStageOwnersV3 {
                 if matches!(self, Self::Candidate(_))
                     && snapshot.training_no_update_v2().is_none() =>
             {
-                Err(Error::OwnerUnavailable(
-                    "original Candidate selection and adoption route is absent",
-                ))
+                let Self::Candidate(stages) = self else {
+                    return Err(Error::WrongScope);
+                };
+                OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retention_stage(
+                    stages, snapshot, stage,
+                )
             }
             Stage::Experience
             | Stage::Dataset
@@ -96,6 +101,34 @@ impl ResidentOriginalStageOwnersV3 {
                 OriginalCellQ24CandidateStageOwnersV1::read_original_model(stages, snapshot).await
             }
             Self::NoUpdate(_) => Err(Error::OwnerUnavailable("NoUpdate has no Model record")),
+        }
+    }
+
+    /// One concrete original Candidate read supplies the full evaluated set.
+    /// No caller-supplied StageOwner trait implementation can enter this path.
+    pub(super) async fn read_original_evaluated_attestations(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<Option<Vec<SignedLearningEvidenceV1>>, Error> {
+        if snapshot.training_no_update_v2().is_some()
+            || !matches!(
+                snapshot.receipts.get(3).map(|receipt| &receipt.observation),
+                Some(LearningIterationObservationV1::Evaluation {
+                    disposition: LearningEvaluationDispositionV1::NoUpdate,
+                    ..
+                })
+            )
+        {
+            return Ok(None);
+        }
+        match self {
+            Self::Candidate(stages) => Ok(Some(
+                OriginalCellQ24CandidateStageOwnersV1::read_original_evaluated_attestations(
+                    stages, snapshot,
+                )
+                .await?,
+            )),
+            Self::NoUpdate(_) => Err(Error::WrongScope),
         }
     }
 }

@@ -6,6 +6,9 @@ use crate::OriginalCellQ24TrainingSourceV1;
 
 use super::*;
 
+#[path = "cell_q24_training_source_owner_read.rs"]
+mod readonly;
+
 impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     /// Bind a new original native job to actual source custody. Construction is
     /// synchronous owner I/O; the host must use a bounded blocking lane. The

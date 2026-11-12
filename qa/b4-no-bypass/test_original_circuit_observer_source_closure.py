@@ -31,6 +31,7 @@ READERS = (
     AGENT + "cell_q24_training_source.rs",
         AGENT + "circuit_model_selection_receipt_sources.rs",
     AGENT + "neuron_cell_evaluation_qualification_sources.rs",
+    AGENT + "circuit_evaluated_version_commands.rs",
 )
 FUNCTIONS = {
     OWNER: {
@@ -40,7 +41,7 @@ FUNCTIONS = {
         "fn attest_original_completion(", "fn attest_original_remote_completion(",
         "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
         "fn read_remote_next_use(", "fn original_command_profile(",
-        "fn into_command_owner(",
+        "fn into_command_owner(", "fn require_profile(", "fn evaluated_owners(",
     },
     BINDING: {
         "fn validate_config(", "fn authenticate_predecessors(", "fn receipt(",

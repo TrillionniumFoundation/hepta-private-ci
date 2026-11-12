@@ -13,7 +13,6 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
-use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 use tokio::runtime::Handle;
@@ -47,6 +46,21 @@ pub enum OriginalCircuitEvaluatedSelectionReadbackErrorV1 {
 }
 type Error = OriginalCircuitEvaluatedSelectionReadbackErrorV1;
 
+#[path = "circuit_evaluated_selection_readback_binding.rs"]
+mod binding;
+#[path = "circuit_evaluated_selection_remote_readback.rs"]
+mod remote;
+pub use remote::OriginalCircuitEvaluatedSelectionRemoteReadbackOwnerV1;
+
+#[path = "circuit_evaluated_selection_command.rs"]
+mod command;
+pub use command::OriginalCircuitEvaluatedSelectionCommandClientV1;
+pub use command::OriginalCircuitEvaluatedSelectionCommandErrorV1;
+pub use command::OriginalCircuitEvaluatedSelectionCommandOwnerV1;
+
+#[cfg(test)]
+pub(crate) use command::command_test_support;
+
 pub struct OriginalCircuitEvaluatedSelectionReadbackOwnerV1<
     W: AnchorWitnessStore,
     C: AnchorWitnessStore,
@@ -74,34 +88,15 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
         trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,
         evaluator: Arc<OriginalCellEvaluationCommandClientV1>,
     ) -> Result<Self, Error> {
-        selection.original_receipt_predecessors(now()?)?;
         let (config, _) = owner.original_command_profile();
-        let (scope, verifier, training) = selection.original_context().receipt_configuration();
-        if config.decision != *selection.original_context().snapshot()
-            || config.scope.binding() != scope.binding()
-            || config.verifier.trust_digest() != verifier.trust_digest()
-            || config.verifier.scope_digest() != verifier.scope_digest()
-            || config.verifier.objective_digest() != verifier.objective_digest()
-            || config.training_evidence != training
-            || config.signer.principal.principal_id != selection.receipt().actor_id
-        {
-            return Err(Error::Binding(
-                "same original evaluated Selector readback context",
-            ));
-        }
-        let initial = LearningIterationCoordinatorV1::new(
-            selection.snapshot().request.clone(),
-            selection.snapshot().owners.clone(),
-        )
-        .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
-        let binding = selection.original_receipt_binding();
+        let (initial_head, binding) = binding::original_context(config, &selection)?;
         Ok(Self {
             owner: Mutex::new(owner),
             cell,
             trainer,
             evaluator,
             selection,
-            initial_head: initial.snapshot().head_digest,
+            initial_head,
             binding,
             runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
             connections: Arc::new(Semaphore::new(4)),
@@ -156,29 +151,12 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
     }
 
     fn evidence_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
-        let request: wire::Request = serde_json::from_slice(bytes)?;
-        let snapshot_head: Digest32 = request
-            .snapshot_head
-            .parse()
-            .map_err(|_| Error::Binding("original evaluated Selector correlation head"))?;
-        if request.schema != 1
-            || request.operation != wire::OPERATION
-            || request.request_id != request_id
-            || !(1..=128).contains(&request_id)
-            || request.binding != self.initial_head.to_string()
-            || request.operation_id != self.selection.snapshot().request.operation_id.as_str()
-            || request.actor_id != self.selection.snapshot().owners.selector.as_str()
-            || request.predecessor != self.selection.receipt().predecessor.to_string()
-            || request.receipt_digest != self.selection.attestation().payload_digest.to_string()
-            || snapshot_head.is_zero()
-            || request.snapshot_head != snapshot_head.to_string()
-        {
-            return Err(Error::Binding(
-                "same original evaluated Selector evidence request",
-            ));
-        }
-        let started_at = now()?;
-        self.selection.original_receipt_predecessors(started_at)?;
+        let binding = binding::ReadbackBinding::from_original_pins(
+            &self.selection,
+            self.initial_head,
+            self.binding,
+        );
+        let (request, started_at) = binding.before_read(bytes, request_id)?;
         let original = {
             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             self.runtime.block_on(
@@ -193,29 +171,7 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
                 ),
             )?
         };
-        let current = now()?;
-        original.original_receipt_predecessors(current)?;
-        if current < started_at
-            || original.snapshot() != self.selection.snapshot()
-            || original.receipt() != self.selection.receipt()
-            || original.attestation() != self.selection.attestation()
-            || original.original_receipt_binding() != self.binding
-        {
-            return Err(Error::Binding(
-                "unchanged original evaluated Selector result",
-            ));
-        }
-        // snapshot_head is correlation only, as in the existing evidence wire.
-        // C validates its full same-prefix history before it issues this read.
-        Ok(serde_json::to_vec(&wire::Response {
-            schema: 1,
-            operation: request.operation,
-            request_id: request.request_id,
-            binding: request.binding,
-            snapshot_head: request.snapshot_head,
-            receipt_digest: request.receipt_digest,
-            evidence: wire::Evidence::from_original(original.attestation()),
-        })?)
+        binding.after_read(request, started_at, original)
     }
 }
 
