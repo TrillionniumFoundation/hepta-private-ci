@@ -315,7 +315,7 @@ fn directory(path: &Path, uid: u32, gid: u32, mode: u32) -> anyhow::Result<()> {
     owned_mode(path, uid, gid, mode)
 }
 
-fn monotonic_micros() -> anyhow::Result<u64> {
+pub(super) fn monotonic_micros() -> anyhow::Result<u64> {
     let mut time = std::mem::MaybeUninit::<libc::timespec>::uninit();
     // SAFETY: successful clock_gettime initializes this complete timespec.
     anyhow::ensure!(
