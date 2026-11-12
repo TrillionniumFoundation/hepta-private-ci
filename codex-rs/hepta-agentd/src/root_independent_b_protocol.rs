@@ -57,6 +57,7 @@ pub(crate) enum Command {
         training_head: String,
         training_attestation: Vec<u8>,
         plan_attestation: Vec<u8>,
+        source_admission: Box<crate::root_independent_b_source_ready::SourceReadyData>,
     },
     Readback {
         training_head: String,

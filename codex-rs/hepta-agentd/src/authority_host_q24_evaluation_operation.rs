@@ -10,6 +10,7 @@ enum Operation<'a> {
     Complete {
         training: &'a SignedLearningEvidenceV1,
         plan: &'a SignedLearningEvidenceV1,
+        source: &'a crate::root_independent_b_source_ready::SourceReadyData,
     },
     Readback,
 }
@@ -25,6 +26,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
         plan_attestation: &SignedLearningEvidenceV1,
+        source_admission: &crate::root_independent_b_source_ready::SourceReadyData,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
         self.with_operation(
@@ -37,6 +39,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             Operation::Complete {
                 training: attestation,
                 plan: plan_attestation,
+                source: source_admission,
             },
             action,
         )
@@ -120,7 +123,26 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     super::super::benchmark::restore_original_cells(
                         files, enrollment, &training, &protocol,
                     )?;
-                    if let Operation::Complete { plan, .. } = &operation {
+                    if let Operation::Complete { plan, source, .. } = &operation {
+                        let admitted = enrollment.admitted_source.as_ref().ok_or_else(|| {
+                            io::Error::other("original B source was not retained")
+                        })?;
+                        let candidate =
+                            LearningIterationCoordinatorV1::from_snapshot(training.clone())
+                                .map_err(io::Error::other)?;
+                        source.require_original_observation(
+                            actual.head_digest,
+                            self.original_binding(),
+                            scope.binding(),
+                            training.head_digest,
+                            candidate
+                                .candidate()
+                                .ok_or_else(|| io::Error::other("original B candidate absent"))?
+                                .digest()
+                                .map_err(io::Error::other)?,
+                            &admitted.acknowledgement(self.original_binding()),
+                        )?;
+                        admitted.require_original(files)?;
                         super::prepare::retain_original_plan_statement(
                             files,
                             enrollment,
@@ -270,6 +292,18 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 .as_ref()
                 .ok_or_else(|| io::Error::other("original B release absent"))?
                 .require_original(files)?;
+            if let Operation::Complete { source, .. } = &operation {
+                let admitted = enrollment
+                    .admitted_source
+                    .as_ref()
+                    .ok_or_else(|| io::Error::other("original B source disappeared"))?;
+                if source.source != admitted.acknowledgement(self.original_binding()) {
+                    return Err(io::Error::other(
+                        "original B source cut changed after Root context",
+                    ));
+                }
+                admitted.require_original(files)?;
+            }
             let training = completed
                 .training
                 .receipts

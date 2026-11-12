@@ -27,6 +27,31 @@ pub(crate) struct SourceReadyData {
 }
 
 impl SourceReadyData {
+    pub(crate) fn require_original_observation(
+        &self,
+        initial: codex_hepta_types::Digest32,
+        binding: codex_hepta_types::Digest32,
+        scope: codex_hepta_types::Digest32,
+        training: codex_hepta_types::Digest32,
+        candidate: codex_hepta_types::Digest32,
+        source: &SourceAcknowledgement,
+    ) -> io::Result<()> {
+        if self.schema != 1
+            || self.purpose != PURPOSE
+            || self.initial != initial.to_string()
+            || self.binding != binding.to_string()
+            || self.scope != scope.to_string()
+            || self.training_head != training.to_string()
+            || self.candidate_bundle != candidate.to_string()
+            || &self.source != source
+        {
+            return Err(io::Error::other(
+                "original B retained source differs from notification DATA",
+            ));
+        }
+        Ok(())
+    }
+
     pub(crate) fn from_original_source(
         candidate: &CandidateNotice,
         source: SourceAcknowledgement,

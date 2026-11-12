@@ -174,7 +174,10 @@ fn serve_evaluation_until(
                             training_head,
                             training_attestation,
                             plan_attestation,
+                            source_admission,
                         } => {
+                            bound.runtime.source.flow.require_admitted(&source_admission)
+                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
                             let head = digest(&training_head)
                                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             let (_, signed) =
@@ -192,6 +195,7 @@ fn serve_evaluation_until(
                                     head,
                                     &signed,
                                     &plan_signed,
+                                    &source_admission,
                                     |actual| {
                                         encode_response(
                                             sequence,

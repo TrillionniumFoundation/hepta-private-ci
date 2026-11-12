@@ -18,6 +18,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
             let challenge = self.prepare_from_original_training(original, scope)?;
             let statement = sign_original(&challenge)?;
             let plan = challenge.require_original_training(original, scope)?;
+            let source = challenge.wait_original_source(original, scope)?;
             self.original_training(
                 original.snapshot(),
                 scope,
@@ -25,6 +26,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                 TrainingMode::Complete {
                     plan,
                     statement: &statement,
+                    source,
                 },
             )
         })();

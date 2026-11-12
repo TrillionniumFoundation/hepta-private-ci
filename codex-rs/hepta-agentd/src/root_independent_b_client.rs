@@ -23,6 +23,7 @@ use crate::OriginalRootBEvaluationConnectionV1;
 use crate::learning_owner_evidence;
 use crate::root_generation_current_client::OriginalPublicationStream;
 use crate::root_independent_b_protocol::*;
+use crate::root_independent_b_source_ready::SourceReadyData;
 
 #[path = "root_independent_b_candidate_data.rs"]
 mod candidate_data;
@@ -44,6 +45,7 @@ pub(crate) struct OriginalRootIndependentBEvaluationClientV1 {
     connection: OriginalRootBEvaluationConnectionV1,
     lane: Mutex<Lane>,
     candidate_data: Mutex<std::fs::File>,
+    source_admitted: Mutex<Option<std::fs::File>>,
     refused: AtomicBool,
     end: std::time::Instant,
 }
@@ -131,12 +133,17 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                 return Err(Error::WrongScope);
             }
             let command = match mode {
-                TrainingMode::Complete { plan, statement } => Command::Complete {
+                TrainingMode::Complete {
+                    plan,
+                    statement,
+                    source,
+                } => Command::Complete {
                     training_head: snapshot.head_digest.to_string(),
                     training_attestation: learning_owner_evidence::encode(&payload, signed)
                         .map_err(unavailable)?,
                     plan_attestation: learning_owner_evidence::encode(plan.as_array(), statement)
                         .map_err(unavailable)?,
+                    source_admission: Box::new(source),
                 },
                 TrainingMode::Readback => Command::Readback {
                     training_head: snapshot.head_digest.to_string(),
@@ -218,6 +225,7 @@ enum TrainingMode<'a> {
     Complete {
         plan: Digest32,
         statement: &'a SignedLearningEvidenceV1,
+        source: SourceReadyData,
     },
     Readback,
 }
