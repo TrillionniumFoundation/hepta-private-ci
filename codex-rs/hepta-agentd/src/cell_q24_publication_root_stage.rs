@@ -105,6 +105,7 @@ impl OriginalCellQ24ArtifactPublicationDriverV1 {
                     let mut locked = self
                         .authorities
                         .artifacts
+                        .writer()?
                         .lock()
                         .map_err(|_| Error::CommitUncertain)?;
                     let artifacts: &mut LearningArtifactOwnerService = &mut locked;
@@ -135,6 +136,7 @@ impl OriginalCellQ24ArtifactPublicationDriverV1 {
                     let locked = self
                         .authorities
                         .artifacts
+                        .writer()?
                         .lock()
                         .map_err(|_| Error::CommitUncertain)?;
                     let artifacts: &LearningArtifactOwnerService = &locked;
@@ -298,6 +300,7 @@ fn revalidate(
     let locked = driver
         .authorities
         .artifacts
+        .writer()?
         .lock()
         .map_err(|_| Error::CommitUncertain)?;
     let artifacts: &LearningArtifactOwnerService = &locked;

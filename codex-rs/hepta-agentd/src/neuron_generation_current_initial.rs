@@ -25,6 +25,8 @@ use super::store::CurrentStore;
 use super::types::CurrentHead;
 use super::types::invalid;
 use crate::AgentdError;
+use crate::neuron_generation_update_live::artifacts::InitialArtifactPublicationV1;
+use crate::neuron_generation_update_live::artifacts::InitialArtifactReadbackV1;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
 impl NeuronGenerationCurrentOwnerV1 {
@@ -53,6 +55,26 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &mut AgentdSelectedGenerationV1,
         publication: NeuronGenerationUpdatePublicationV1<'_>,
     ) -> Result<PublishedNeuronGenerationInitialV1, AgentdError> {
+        self.publish_initial_with_original_artifacts(
+            prepared,
+            new,
+            selected,
+            InitialArtifactPublicationV1 {
+                artifacts: InitialArtifactReadbackV1::Writer(publication.artifacts),
+                authority: publication.authority,
+                signed: publication.signed,
+                clock: publication.clock,
+            },
+        )
+    }
+
+    pub(crate) fn publish_initial_with_original_artifacts<W: AnchorWitnessStore>(
+        &self,
+        prepared: &PreparedNeuronGenerationInitialV1,
+        new: &CellGenerationJournalV2<W>,
+        selected: &mut AgentdSelectedGenerationV1,
+        publication: InitialArtifactPublicationV1<'_>,
+    ) -> Result<PublishedNeuronGenerationInitialV1, AgentdError> {
         publication
             .authority
             .current_external_frontier()
@@ -62,9 +84,11 @@ impl NeuronGenerationCurrentOwnerV1 {
                 eprintln!("ROOT_INITIAL_FAILURE stage=external-frontier error={error:?}");
             })
             .map_err(invalid)?;
-        selected
-            .revalidate(
-                publication.artifacts,
+        publication
+            .artifacts
+            .revalidate_owner(
+                self,
+                selected,
                 publication
                     .clock
                     .now_unix_ms()
@@ -125,8 +149,9 @@ impl NeuronGenerationCurrentOwnerV1 {
             token,
             &prepared.binding,
             |witness| {
-                selected.revalidate(
-                    publication.artifacts,
+                publication.artifacts.revalidate_owner(
+                    self,
+                    selected,
                     publication
                         .clock
                         .now_unix_ms()

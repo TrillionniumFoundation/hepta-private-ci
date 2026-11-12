@@ -26,6 +26,7 @@ pub fn prepare_agentd_generation_initial_forward_recovery_v1<W: AnchorWitnessSto
     target: AgentdGenerationUpdateTargetV1<W>,
     request: AgentdGenerationForwardRecoveryV1,
 ) -> Result<PreparedAgentdGenerationInitialV1<W>, AgentdError> {
+    authorities.artifacts.writer()?;
     StableId::new(&request.new_operation_id).map_err(invalid)?;
     if request.new_operation_id == request.original_operation_id {
         return Err(invalid("initial forward recovery needs a new operation"));
@@ -61,7 +62,7 @@ pub fn prepare_agentd_generation_initial_forward_recovery_v1<W: AnchorWitnessSto
     )
     .map_err(invalid)?;
     journal.prepared_checkpoint().map_err(invalid)?;
-    let artifacts = authorities.artifacts.lock().map_err(invalid)?;
+    let artifacts = authorities.artifacts.writer()?.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
     let prepared =
         current.prepare_initial_forward_recovery(&original, &journal, request.new_operation_id)?;

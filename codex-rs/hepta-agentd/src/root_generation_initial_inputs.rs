@@ -3,6 +3,7 @@
 
 use std::io::Read;
 use std::io::Seek;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -16,7 +17,7 @@ use crate::RootGenerationPublicationConnectionV1;
 /// Same original Root route before any initial CURRENT exists. It is not
 /// Clone or deserializable; the distinct initial preparation consumes it.
 pub struct OriginalRootGenerationInitialV1 {
-    pub(crate) client: RootGenerationInitialClient,
+    pub(crate) client: Arc<RootGenerationInitialClient>,
 }
 use crate::authority_host_service::generation_initial::InitialBootstrap;
 use crate::authority_host_service::generation_initial::PURPOSE;
@@ -130,7 +131,9 @@ impl RootGenerationInitialHandoffV1 {
             let client = RootGenerationInitialClient::from_original_initial_stream(
                 original, &bundle, connection,
             )?;
-            Ok(OriginalRootGenerationInitialV1 { client })
+            Ok(OriginalRootGenerationInitialV1 {
+                client: Arc::new(client),
+            })
         })
         .await
         .map_err(|_| refused("initial publication connect worker lost"))?

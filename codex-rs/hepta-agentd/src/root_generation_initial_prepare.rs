@@ -33,9 +33,13 @@ impl OriginalRootGenerationInitialV1 {
         let profile = self.client.profile().clone();
         let observer = self.require_original_target(&files)?;
         observer.require_original_unwritten().map_err(invalid)?;
-        let artifact_owner = Arc::clone(&authorities.artifacts);
-        let artifacts = artifact_owner.lock().map_err(invalid)?;
-        selected.revalidate(&artifacts, authorities.now()?)?;
+        let artifact_owner = authorities.artifacts.clone();
+        let artifacts = artifact_owner.lock_initial()?;
+        artifacts.readback().revalidate_initial_client(
+            &self.client,
+            &mut selected,
+            authorities.now()?,
+        )?;
         if selected.observation().digest().to_string() != profile.selection {
             return Err(invalid("initial independent selection differs from Root"));
         }
