@@ -1,0 +1,113 @@
+{
+  "after_sha256": {
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "qualification/ctrl-real-comparison-20261112/run_campaign.py": "d1813212fc07007ecafd5c7c5ea5d17273b2da41dabbb8a16be5eaded32ed103",
+    "scripts/format.py": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "scripts/ndu_real_runtime/macro_policy.py": "179bfcd6d436e7a28d1171d58715e96993cfc81b1e3c7af9fa08e037324d885b",
+    "scripts/ndu_real_runtime/test_macro_policy.py": "acd29a5d76b262c123d1089e2f82a31a9de46bcf67462f3c3350bd413db64e3c",
+    "scripts/pyproject.toml": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+    "scripts/uv.lock": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+  },
+  "before_sha256": {
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "qualification/ctrl-real-comparison-20261112/run_campaign.py": "d1813212fc07007ecafd5c7c5ea5d17273b2da41dabbb8a16be5eaded32ed103",
+    "scripts/format.py": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "scripts/ndu_real_runtime/macro_policy.py": "179bfcd6d436e7a28d1171d58715e96993cfc81b1e3c7af9fa08e037324d885b",
+    "scripts/ndu_real_runtime/test_macro_policy.py": "acd29a5d76b262c123d1089e2f82a31a9de46bcf67462f3c3350bd413db64e3c",
+    "scripts/pyproject.toml": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+    "scripts/uv.lock": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+  },
+  "commands": [
+    {
+      "args": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts/ndu_real_runtime/macro_policy.py",
+        "scripts/ndu_real_runtime/test_macro_policy.py",
+        "qualification/ctrl-real-comparison-20261112/run_campaign.py"
+      ],
+      "cwd": "/workspace/scratch/1333bdb2e3ff/formatter-j-explicit-3c94ea8",
+      "elapsed_seconds": 0.27520047500001965,
+      "exit_code": 0
+    }
+  ],
+  "configuration_inventory": {
+    "": [],
+    "qualification": [],
+    "qualification/ctrl-real-comparison-20261112": [],
+    "scripts": [
+      {
+        "name": "pyproject.toml",
+        "path": "scripts/pyproject.toml",
+        "sha": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+      }
+    ],
+    "scripts/ndu_real_runtime": []
+  },
+  "cpu_tests_run": false,
+  "default_scoped_dispatcher_paths": [
+    [
+      "uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "--check",
+      "./scripts/ndu_real_runtime/macro_policy.py",
+      "./scripts/ndu_real_runtime/test_macro_policy.py"
+    ]
+  ],
+  "explicit_paths": [
+    "scripts/ndu_real_runtime/macro_policy.py",
+    "scripts/ndu_real_runtime/test_macro_policy.py",
+    "qualification/ctrl-real-comparison-20261112/run_campaign.py"
+  ],
+  "finished_at": "2026-11-12T08:24:07.862549+00:00",
+  "formatter_sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+  "git_checkout": false,
+  "invocation": "unmodified scripts/format.py python_scripts_formatter_group(check=True, paths=explicit_paths)",
+  "just_fmt_cli_run": false,
+  "original_log_bytes": 540,
+  "original_log_sha256": "af8fcdeb16bd64bf5b1ab6a2981abf6fdce702e668f72e6f14351a76dac53e46",
+  "passed": true,
+  "python": "3.12.14",
+  "qualification_wrapper_explicitly_added": true,
+  "remote_actions_performed": false,
+  "schema": "ctrl.explicit-python-formatter-verification.v1",
+  "scope": "exact source J macro_policy.py, test_macro_policy.py and campaign wrapper only",
+  "source_git_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "source_unchanged": true,
+  "started_at": "2026-11-12T08:24:07.519850+00:00",
+  "synthetic_git_base": false,
+  "versions": {
+    "ruff": {
+      "args": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ],
+      "exit_code": 0,
+      "output": "ruff 0.15.13"
+    },
+    "uv": {
+      "args": [
+        "uv",
+        "--version"
+      ],
+      "exit_code": 0,
+      "output": "uv 0.13.6 (x86_64-unknown-linux-gnu)"
+    }
+  }
+}

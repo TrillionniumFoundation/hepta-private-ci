@@ -1,0 +1,121 @@
+{
+  "actors_launched": false,
+  "analysis_status": "COMPLETE",
+  "decision": "NoUpdate",
+  "exported_pairs": 126,
+  "files_modified": false,
+  "independent_metrics": {
+    "delivered_content_changed": {
+      "false_pairs": 34,
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.7301587301587301,
+      "source_equal_mean": 0.7301587301587301,
+      "true_pairs": 92,
+      "unknown_pairs": 0
+    },
+    "new_recognized_text": {
+      "false_pairs": 26,
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.7936507936507937,
+      "source_equal_mean": 0.7936507936507937,
+      "true_pairs": 100,
+      "unknown_pairs": 0
+    },
+    "new_reference_matching_candidate": {
+      "false_pairs": 108,
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.14285714285714285,
+      "source_equal_mean": 0.14285714285714285,
+      "true_pairs": 18,
+      "unknown_pairs": 0
+    },
+    "read_minus_stop_observed_latency_cost": {
+      "direction_counts": {
+        "negative": 0,
+        "positive": 126,
+        "zero": 0
+      },
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.014432791228395046,
+      "source_equal_mean": 0.014432791228395046,
+      "unknown_pairs": 0
+    },
+    "read_minus_stop_observed_latency_net": {
+      "direction_counts": {
+        "negative": 113,
+        "positive": 13,
+        "zero": 0
+      },
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": -0.05808358487918869,
+      "source_equal_mean": -0.05808358487918869,
+      "unknown_pairs": 0
+    },
+    "read_minus_stop_quality": {
+      "direction_counts": {
+        "negative": 22,
+        "positive": 13,
+        "zero": 91
+      },
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": -0.04365079365079365,
+      "source_equal_mean": -0.04365079365079365,
+      "unknown_pairs": 0
+    },
+    "selected_text_changed": {
+      "false_pairs": 34,
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.7301587301587301,
+      "source_equal_mean": 0.7301587301587301,
+      "true_pairs": 92,
+      "unknown_pairs": 0
+    },
+    "terminal_quality_changed": {
+      "false_pairs": 91,
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.2777777777777778,
+      "source_equal_mean": 0.2777777777777778,
+      "true_pairs": 35,
+      "unknown_pairs": 0
+    },
+    "within_read_selected_text_changed": {
+      "false_pairs": 34,
+      "known_pairs": 126,
+      "observed_sources": 42,
+      "observed_subset_source_equal_mean": 0.7301587301587301,
+      "source_equal_mean": 0.7301587301587301,
+      "true_pairs": 92,
+      "unknown_pairs": 0
+    }
+  },
+  "matched_pairs": 126,
+  "new_source_qualification": false,
+  "original_gzip_bytes": 6550,
+  "original_gzip_sha256": "2bf8f340da042d3fc5b8251b03066ecc48f080ab9fd03d6f0352ec836b7a8974",
+  "paired_row_count": 126,
+  "planned_by_split": {
+    "calibration": 54,
+    "train": 72
+  },
+  "planned_pairs": 126,
+  "planned_sources": 42,
+  "policy_efficacy_proved": false,
+  "schema": "ctrl.collection-independent-readback.v1",
+  "source_bytes": 116904,
+  "source_path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/COLLECTION_ANALYSIS.json",
+  "source_sha256": "8a0fbe934588f5a61ff35fe01705ec68053980214146ec3685fb0e339847fe89",
+  "stored_metric_mismatches": [],
+  "unknown_pairs": 0,
+  "experiment_source_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+  "diagnostic_job_id": "1a1ced2711d-2564-1870",
+  "collection_finished_but_fit_failed": true,
+  "prospective_policy_evaluation_performed": false
+}

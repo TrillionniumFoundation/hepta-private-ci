@@ -1,0 +1,15 @@
+{
+  "host": "ai395",
+  "idempotency_key": "ctrl-1333-v1-collection-analysis-readback-v1",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-B",
+    "-"
+  ],
+  "stdin": "import base64,gzip,hashlib,json,math\nfrom pathlib import Path\npath=Path('/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/COLLECTION_ANALYSIS.json')\nraw=path.read_bytes()\nexpected='8a0fbe934588f5a61ff35fe01705ec68053980214146ec3685fb0e339847fe89'\nif hashlib.sha256(raw).hexdigest()!=expected: raise ValueError('Original analysis pin changed')\ndata=json.loads(raw)\nrows=data['paired_rows']\nfields=list(data['metrics'])\ncomputed={}\nmismatches=[]\nfor field in fields:\n known=[r for r in rows if r.get(field) is not None]\n groups={}\n for row in known: groups.setdefault(row['source_id'],[]).append(float(row[field]))\n mean=None if not groups else sum(sum(v)/len(v) for v in groups.values())/len(groups)\n item={'known_pairs':len(known),'unknown_pairs':len(rows)-len(known),'observed_sources':len(groups),'source_equal_mean':mean if len(known)==len(rows) else None,'observed_subset_source_equal_mean':mean}\n if known and all(type(r[field]) is bool for r in known):\n  item.update(true_pairs=sum(r[field] for r in known),false_pairs=sum(not r[field] for r in known))\n elif known:\n  item['direction_counts']={'negative':sum(r[field]<0 for r in known),'zero':sum(r[field]==0 for r in known),'positive':sum(r[field]>0 for r in known)}\n for key,value in data['metrics'][field].items():\n  observed=item.get(key)\n  if isinstance(value,(int,float)) and not isinstance(value,bool):\n   equal=observed is not None and math.isclose(observed,value,abs_tol=1e-12,rel_tol=1e-12)\n  else: equal=observed==value\n  if not equal: mismatches.append({'field':field,'key':key,'stored':value,'computed':observed})\n computed[field]=item\npacked=gzip.compress(raw,compresslevel=9,mtime=0)\nresult={'schema':'ctrl.collection-independent-readback.v1','source_path':str(path),'source_sha256':expected,'source_bytes':len(raw),'planned_pairs':data['planned_pairs'],'exported_pairs':data['exported_pairs'],'unknown_pairs':data['unknown_pairs'],'planned_sources':data['planned_sources'],'planned_by_split':data['planned_by_split'],'analysis_status':data['analysis_status'],'matched_pairs':data['matched_pairs'],'paired_row_count':len(rows),'independent_metrics':computed,'stored_metric_mismatches':mismatches,'policy_efficacy_proved':data['policy_efficacy_proved'],'new_source_qualification':data['new_source_qualification'],'decision':data['decision'],'original_gzip_sha256':hashlib.sha256(packed).hexdigest(),'original_gzip_bytes':len(packed),'original_gzip_base64':base64.b64encode(packed).decode('ascii'),'actors_launched':False,'files_modified':False}\nprint(json.dumps(result,sort_keys=True,allow_nan=False))\n",
+  "cwd": "/home/qq/ctrl-real-study-20261112-1333/run-v1",
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "timeout_seconds": 60
+}
