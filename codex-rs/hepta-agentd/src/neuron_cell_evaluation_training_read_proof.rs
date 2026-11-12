@@ -141,12 +141,12 @@ impl OriginalPanelTrainingCallV1 {
                 Ok(OriginalPanelTrainingReadV1::Individual)
             }
             OriginalPanelTrainingSourceV1::Bound(_)
-            | OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Ok(OriginalPanelTrainingReadV1::Panel(
-                OriginalPanelTrainingProofV1 {
+            | OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Ok(
+                OriginalPanelTrainingReadV1::Panel(OriginalPanelTrainingProofV1 {
                     call: self,
                     cursor: Cursor::Next(0),
-                },
-            )),
+                }),
+            ),
         }
     }
 }
@@ -240,7 +240,9 @@ impl OriginalPanelTrainingReadV1<'_> {
                 }
                 match &proof.call.source {
                     OriginalPanelTrainingSourceV1::Individual => Err(Error::CommitUncertain),
-                    OriginalPanelTrainingSourceV1::Bound(original) => original.authenticate(current),
+                    OriginalPanelTrainingSourceV1::Bound(original) => {
+                        original.authenticate(current)
+                    }
                     OriginalPanelTrainingSourceV1::ReadbackMembers(members) => {
                         for original in members.iter() {
                             original.authenticate(current)?;

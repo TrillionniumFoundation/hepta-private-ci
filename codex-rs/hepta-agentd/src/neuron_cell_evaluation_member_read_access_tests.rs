@@ -12,7 +12,8 @@ impl OriginalCellEvaluationHostV1 {
             .owners
             .try_lock()
             .map_err(|_| anyhow::anyhow!("original B lane"))?;
-        self.runtime.block_on(Box::pin(check_lifecycle(&mut owners)))
+        self.runtime
+            .block_on(Box::pin(check_lifecycle(&mut owners)))
     }
 
     pub(crate) fn fixture_member_readback_source_withdrawal(
@@ -40,9 +41,15 @@ async fn check_source_withdrawal(
     let call = readonly_call(owners)?;
     let mut proof = call.begin()?;
     Box::pin(owners.read_panel_with_training(&mut proof)).await?;
-    entered.send(()).map_err(|_| anyhow::anyhow!("original B read barrier"))?;
+    entered
+        .send(())
+        .map_err(|_| anyhow::anyhow!("original B read barrier"))?;
     resume.recv()?;
-    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());
+    assert!(
+        Box::pin(owners.read_panel_with_training(&mut proof))
+            .await
+            .is_err()
+    );
     assert!(matches!(
         proof.finish(&call, owners.current_time()?),
         Err(QualificationError::CommitUncertain)
@@ -60,11 +67,20 @@ fn readonly_call(owners: &Owners) -> Result<OriginalPanelTrainingCallV1, Qualifi
 }
 
 async fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {
-    assert!(matches!(&owners.training_source, OriginalPanelTrainingSourceV1::Individual));
-    assert!(!Arc::ptr_eq(&owners.panel.primary.trainer, &owners.panel.retention[0].trainer));
+    assert!(matches!(
+        &owners.training_source,
+        OriginalPanelTrainingSourceV1::Individual
+    ));
+    assert!(!Arc::ptr_eq(
+        &owners.panel.primary.trainer,
+        &owners.panel.retention[0].trainer
+    ));
     assert_eq!(
         owners.panel.primary.qualification.config.training_evidence,
-        owners.panel.retention[0].qualification.config.training_evidence
+        owners.panel.retention[0]
+            .qualification
+            .config
+            .training_evidence
     );
     let call = readonly_call(owners)?;
     let proof = call.begin()?;
@@ -133,7 +149,9 @@ async fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {
         };
         assert!(matches!(
             proof.read(&sources, &wrong).await,
-            Err(QualificationError::Binding("same original readonly panel member"))
+            Err(QualificationError::Binding(
+                "same original readonly panel member"
+            ))
         ));
     }
     assert!(matches!(
@@ -143,19 +161,37 @@ async fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {
 
     let call = readonly_call(owners)?;
     let mut proof = call.begin()?;
-    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
-    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
+    assert_eq!(
+        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
+        before
+    );
+    assert_eq!(
+        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
+        before
+    );
     let new_call = call.fixture_same_call_new_source();
     assert!(matches!(
         proof.finish(&new_call, owners.current_time()?),
-        Err(QualificationError::Binding("same completed panel Training call and Source"))
+        Err(QualificationError::Binding(
+            "same completed panel Training call and Source"
+        ))
     ));
 
     let call = readonly_call(owners)?;
     let mut proof = call.begin()?;
-    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
-    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);
-    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());
+    assert_eq!(
+        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
+        before
+    );
+    assert_eq!(
+        Box::pin(owners.read_panel_with_training(&mut proof)).await?,
+        before
+    );
+    assert!(
+        Box::pin(owners.read_panel_with_training(&mut proof))
+            .await
+            .is_err()
+    );
     assert!(matches!(
         proof.finish(&call, owners.current_time()?),
         Err(QualificationError::CommitUncertain)

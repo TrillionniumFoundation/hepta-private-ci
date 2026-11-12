@@ -41,7 +41,10 @@ async fn original_evaluation_member_proof_refuses_partial_cross_call_source_and_
     let upstream = fixture.upstream_files()?;
     let original = fixture.original_files()?;
     let host = Arc::clone(
-        fixture.host.as_ref().ok_or_else(|| anyhow::anyhow!("original host"))?,
+        fixture
+            .host
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("original host"))?,
     );
     tokio::task::spawn_blocking(move || host.fixture_member_readback_proof_lifecycle()).await??;
     assert_eq!(fixture.original_files()?, original);
@@ -59,7 +62,10 @@ async fn original_evaluation_member_readback_refuses_actual_source_withdrawal_in
     let upstream = fixture.upstream_files()?;
     let original = fixture.original_files()?;
     let host = Arc::clone(
-        fixture.host.as_ref().ok_or_else(|| anyhow::anyhow!("original host"))?,
+        fixture
+            .host
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("original host"))?,
     );
     let (entered, reached) = tokio::sync::oneshot::channel();
     let (resume, proceed) = std::sync::mpsc::channel();
