@@ -53,6 +53,31 @@ codex_rust_crate(
 
 v13_acceptance_example()
 
+# Explicit actual-Root process entry. The harness uses both default-feature
+# product binaries; its ignored native test requires the prepared protected
+# bind and is never replaced by the cognitive qualification binary.
+workspace_root_test(
+    name = "hepta-agentd-ordinary-q24-a-process-test",
+    timeout = "long",
+    args = [
+        "--ignored",
+        "--exact",
+        "neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes",
+    ],
+    runfile_env = {
+        ":codex-hepta-agentd": "CARGO_BIN_EXE_codex-hepta-agentd",
+        ":hepta-authority-host": "CARGO_BIN_EXE_hepta-authority-host",
+    },
+    tags = ["manual"],
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    test_bin = ":hepta-agentd-unit-tests-bin",
+    test_threads = 1,
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
 # Compile the local writer qualification separately from the default product
 # library. These unit fixtures need only temporary registry and SQLite state;
 # they do not start Agentd, an App Server, or a provider process.
