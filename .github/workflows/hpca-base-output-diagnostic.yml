@@ -1,0 +1,94 @@
+name: HPCA frozen base output diagnostic
+
+on:
+  push:
+    branches:
+      - research/hpca-frozen-base-output-20261112-e901
+    paths:
+      - qualification/hpca-neuroscience-20261110/base_output_diagnostic.py
+      - qualification/hpca-neuroscience-20261110/test_base_output_diagnostic.py
+      - qualification/hpca-neuroscience-20261110/BASE_OUTPUT_PLAN.json
+      - qualification/hpca-neuroscience-20261110/freegen_contract.py
+      - .github/workflows/hpca-base-output-diagnostic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hpca-base-output-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  base-output:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_HEAD: ${{ github.sha }}
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "4"
+      OPENBLAS_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact precommitted source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: qualification/hpca-neuroscience-20261110
+      - name: Record execution identity
+        run: |
+          mkdir "$RUNNER_TEMP/hpca-base"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          assert head == os.environ["SOURCE_HEAD"]
+          record = {"source_head": head, "source_tree": tree, "run_id": os.environ["GITHUB_RUN_ID"],
+                    "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                    "scope": "24 exposed public tasks; base only; zero adapters; no independent confirmation"}
+          (Path(os.environ["RUNNER_TEMP"]) / "hpca-base" / "identity.json").write_text(json.dumps(record, indent=2))
+          PY
+      - name: Set up frozen Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+      - name: Test frozen inputs and result denominators
+        run: |
+          python -m unittest discover -s qualification/hpca-neuroscience-20261110 -p 'test_base_output_diagnostic.py' -v 2>&1 | tee "$RUNNER_TEMP/hpca-base/tests.log"
+      - name: Install frozen model runtime
+        run: |
+          python -m pip install --disable-pip-version-check --progress-bar off 'torch==2.9.1+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --progress-bar off 'transformers==4.57.3' 'numpy==2.3.4'
+          python -m pip freeze --all > "$RUNNER_TEMP/hpca-base/pip-freeze.txt"
+      - name: Execute precommitted base-only diagnostic
+        run: |
+          /usr/bin/time -v -o "$RUNNER_TEMP/hpca-base/process-resource.log" \
+            python qualification/hpca-neuroscience-20261110/base_output_diagnostic.py \
+            --out "$RUNNER_TEMP/hpca-base/execution" 2>&1 | tee "$RUNNER_TEMP/hpca-base/execution.log"
+      - name: Verify source immutability
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Retain complete and interrupted observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hpca-base-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hpca-base/*.json
+            ${{ runner.temp }}/hpca-base/*.log
+            ${{ runner.temp }}/hpca-base/*.txt
+            ${{ runner.temp }}/hpca-base/execution/*.json
+            ${{ runner.temp }}/hpca-base/execution/*.jsonl
+          if-no-files-found: error
+          retention-days: 30
