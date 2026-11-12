@@ -39,6 +39,7 @@ struct ArtifactTimes {
     selection_expires: u64,
 }
 
+#[cfg(test)]
 impl ArtifactFiles {
     pub(super) fn new(root: &Path, manifest: &CellBackendManifestV2) -> anyhow::Result<Self> {
         Self::new_at(
