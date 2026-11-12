@@ -1,0 +1,1160 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+ Downloading crates ...
+  Downloaded actix-codec v0.5.2
+  Downloaded sentry-types v0.46.1
+  Downloaded sentry-panic v0.46.1
+  Downloaded block-padding v0.3.3
+  Downloaded actix-server v2.6.0
+  Downloaded actix-router v0.5.3
+  Downloaded actix-http v3.12.1
+  Downloaded actix-rt v2.11.0
+  Downloaded aws-sdk-sso v1.91.0
+  Downloaded sse-stream v0.2.5
+  Downloaded socket2 v0.5.10
+  Downloaded self_cell v1.2.2
+  Downloaded pastey v0.2.1
+  Downloaded protoc-bin-vendored v3.2.0
+  Downloaded tar v0.4.46
+  Downloaded serde-saphyr v1.3.0
+  Downloaded predicates v3.1.3
+  Downloaded darling_macro v0.24.0
+  Downloaded darling v0.24.0
+  Downloaded aws-smithy-runtime-api-macros v1.0.0
+  Downloaded rust-embed-impl v8.11.0
+  Downloaded rand_xorshift v0.4.0
+  Downloaded predicates-tree v1.0.12
+  Downloaded pin-project v1.1.10
+  Downloaded inotify-sys v0.1.5
+  Downloaded zbus_names v3.0.0
+  Downloaded xdg-home v1.3.0
+  Downloaded tree-sitter-language v0.1.7
+  Downloaded tonic-build v0.14.3
+  Downloaded symphonia-format-riff v0.6.0
+  Downloaded sentry-contexts v0.46.1
+  Downloaded actix-utils v3.0.1
+  Downloaded sentry-backtrace v0.46.1
+  Downloaded rust-embed-utils v8.11.0
+  Downloaded num_threads v0.1.7
+  Downloaded num-iter v0.1.45
+  Downloaded impl-more v0.1.9
+  Downloaded aws-smithy-async v1.2.14
+  Downloaded terminal_size v0.4.3
+  Downloaded nohash-hasher v0.2.0
+  Downloaded http-body v0.4.6
+  Downloaded arraydeque v0.5.1
+  Downloaded bytestring v1.5.0
+  Downloaded aws-smithy-observability v0.1.5
+  Downloaded sentry-debug-images v0.46.1
+  Downloaded secret-service v4.0.0
+  Downloaded aws-types v1.3.11
+  Downloaded linux-keyutils v0.2.4
+  Downloaded inotify v0.11.0
+  Downloaded env_home v0.1.0
+  Downloaded deflate64 v0.1.10
+  Downloaded dbus-secret-service v4.1.0
+  Downloaded const-hex v1.17.0
+  Downloaded aws-smithy-xml v0.60.13
+  Downloaded aws-smithy-http-client v1.1.12
+  Downloaded aws-smithy-http v0.62.6
+  Downloaded aws-credential-types v1.2.11
+  Downloaded async-broadcast v0.7.2
+  Downloaded assert_cmd v2.1.2
+  Downloaded sentry-actix v0.46.1
+  Downloaded rustc-demangle v0.1.27
+  Downloaded rmcp-macros v3.1.3
+  Downloaded predicates-core v1.0.9
+  Downloaded pin-project-internal v1.1.10
+  Downloaded pem-rfc7468 v0.7.0
+  Downloaded owo-colors v4.3.0
+  Downloaded glob v0.3.3
+  Downloaded encoding_rs_io v0.1.8
+  Downloaded cbc v0.1.2
+  Downloaded aws-smithy-query v0.60.9
+  Downloaded zvariant_utils v2.1.0
+  Downloaded tracing-appender v0.2.4
+  Downloaded symphonia-common v0.6.0
+  Downloaded symphonia v0.6.0
+  Downloaded zvariant_derive v4.2.0
+  Downloaded zbus_macros v4.4.0
+  Downloaded tonic-prost v0.14.3
+  Downloaded schemars_derive v1.2.1
+  Downloaded prost-types v0.14.3
+  Downloaded prost-build v0.14.3
+  Downloaded os_info v3.14.0
+  Downloaded which v8.0.0
+  Downloaded symphonia-format-ogg v0.6.0
+  Downloaded symphonia-metadata v0.6.0
+  Downloaded zopfli v0.8.3
+  Downloaded symphonia-format-isomp4 v0.6.0
+  Downloaded toml v1.1.4+spec-1.1.0
+  Downloaded symphonia-format-mkv v0.6.0
+  Downloaded sentry-core v0.46.1
+  Downloaded sentry v0.46.1
+  Downloaded keyring v3.6.3
+  Downloaded ignore v0.4.25
+  Downloaded headers v0.4.1
+  Downloaded darling_core v0.24.0
+  Downloaded aws-smithy-runtime-api v1.12.0
+  Downloaded aws-sdk-signin v1.2.0
+  Downloaded aws-runtime v1.5.17
+  Downloaded annotate-snippets v0.12.5
+  Downloaded ureq-proto v0.5.3
+  Downloaded toml_edit v0.24.0+spec-1.1.0
+  Downloaded rand v0.8.6
+  Downloaded opentelemetry-otlp v0.31.0
+  Downloaded clatter v2.2.0
+  Downloaded zvariant v4.2.0
+  Downloaded symphonia-bundle-mp3 v0.6.0
+  Downloaded tonic v0.14.3
+  Downloaded zbus v4.4.0
+  Downloaded aws-smithy-types v1.4.7
+  Downloaded dbus v0.9.10
+  Downloaded aws-smithy-runtime v1.9.5
+  Downloaded aws-sigv4 v1.3.7
+  Downloaded aws-sdk-ssooidc v1.93.0
+  Downloaded process-wrap v9.0.1
+  Downloaded rayon v1.11.0
+  Downloaded proptest v1.9.0
+  Downloaded granit-parser v1.3.0
+  Downloaded aws-sdk-sts v1.95.0
+  Downloaded actix-web v4.12.1
+  Downloaded axum v0.8.8
+  Downloaded ureq v3.1.4
+  Downloaded symphonia-core v0.6.0
+  Downloaded zlib-rs v0.5.5
+  Downloaded unicode-width v0.2.1
+  Downloaded rmcp v3.1.3
+  Downloaded bzip2-sys v0.1.13+1.0.8
+  Downloaded rust-embed v8.11.0
+  Downloaded sentry-tracing v0.46.1
+  Downloaded libdbus-sys v0.2.7
+  Downloaded age v0.11.2
+  Downloaded protoc-bin-vendored-macos-aarch_64 v3.2.0
+  Downloaded protoc-bin-vendored-macos-x86_64 v3.2.0
+  Downloaded protoc-bin-vendored-linux-x86_32 v3.2.0
+  Downloaded protoc-bin-vendored-win32 v3.2.0
+  Downloaded protoc-bin-vendored-linux-x86_64 v3.2.0
+  Downloaded protoc-bin-vendored-linux-aarch_64 v3.2.0
+  Downloaded protoc-bin-vendored-linux-ppcle_64 v3.2.0
+  Downloaded protoc-bin-vendored-linux-s390_64 v3.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+   Compiling syn v3.0.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+   Compiling zeroize_derive v1.5.0
+   Compiling zeroize v1.9.0
+   Compiling subtle v2.6.1
+   Compiling getrandom v0.2.17
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+   Compiling generic-array v0.14.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling lock_api v0.4.14
+   Compiling rand_core v0.6.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+   Compiling crypto-common v0.1.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+   Compiling serde_json v1.0.151
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+   Compiling mio v1.2.0
+   Compiling sha2 v0.10.9
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling thiserror v2.0.21
+   Compiling futures-macro v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling serde v1.0.229
+   Compiling smallvec v1.15.1
+   Compiling parking_lot_core v0.9.12
+   Compiling parking_lot v0.12.5
+   Compiling tokio v1.53.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+   Compiling tinystr v0.8.3
+   Compiling num_threads v0.1.7
+   Compiling time v0.3.55
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling either v1.15.0
+   Compiling ctutils v0.4.6
+   Compiling ipnet v2.11.0
+   Compiling tokio-util v0.7.19
+   Compiling icu_locale_core v2.2.0
+   Compiling hybrid-array v0.4.15
+   Compiling icu_provider v2.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+   Compiling ring v0.17.14
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+   Compiling idna_adapter v1.2.1
+   Compiling crypto-common v0.2.2
+   Compiling num-integer v0.1.46
+   Compiling rustls-pki-types v1.14.0
+   Compiling const-oid v0.10.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+   Compiling aws-lc-rs v1.18.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+   Compiling idna v1.1.0
+   Compiling sha1_smol v1.0.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+   Compiling url v2.5.8
+   Compiling uuid v1.26.1
+   Compiling rustls v0.23.46
+   Compiling rustix v1.1.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+   Compiling rustls-webpki v0.103.16
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+   Compiling block-buffer v0.12.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling digest v0.11.3
+   Compiling h2 v0.4.16
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+   Compiling futures-executor v0.3.34
+   Compiling sha1 v0.10.6
+   Compiling rustls-native-certs v0.8.3
+   Compiling tokio-rustls v0.26.4
+   Compiling tower v0.5.3
+   Compiling webpki-roots v1.0.10
+   Compiling futures v0.3.31
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+   Compiling spin v0.9.8
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+   Compiling hyper v1.8.1
+   Compiling num-bigint v0.4.6
+   Compiling hyper-util v0.1.20
+   Compiling itertools v0.14.0
+   Compiling hyper-rustls v0.27.7
+   Compiling async-trait v0.1.92
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+   Compiling nibble_vec v0.1.0
+   Compiling rand v0.10.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+   Compiling wildcard v0.3.0
+   Compiling rama-utils v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+   Compiling flume v0.12.0
+   Compiling tokio-graceful v0.2.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+   Compiling tokio-stream v0.1.19
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling radix_trie v0.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+   Compiling cookie v0.18.1
+   Compiling tokio-native-tls v0.3.1
+   Compiling tower-http v0.6.8
+   Compiling chrono v0.4.43
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling publicsuffix v2.3.0
+   Compiling tempfile v3.27.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+   Compiling cookie_store v0.22.1
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling hyper-tls v0.6.0
+   Compiling serde_urlencoded v0.7.1
+   Compiling opentelemetry v0.31.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+   Compiling reqwest v0.12.28
+   Compiling schemars v0.8.22
+   Compiling zlib-rs v0.5.5
+   Compiling ts-rs v11.1.0
+   Compiling prefix-trie v0.8.4
+   Compiling tracing-serde v0.2.0
+   Compiling matchers v0.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+   Compiling tracing-subscriber v0.3.23
+   Compiling flate2 v1.1.8
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+   Compiling hickory-proto v0.26.3
+   Compiling codex-utils-absolute-path v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/absolute-path)
+   Compiling arrayvec v0.7.8
+   Compiling moka v0.12.13
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+   Compiling lock_free_hashtable v0.1.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+   Compiling asn1-rs v0.7.1
+   Compiling hickory-net v0.26.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+   Compiling heapless v0.7.17
+   Compiling quickcheck v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+   Compiling cobs v0.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+   Compiling blake3 v1.8.7
+   Compiling sorted_vector_map v0.2.1
+   Compiling hickory-resolver v0.26.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+   Compiling dashmap v6.1.0
+   Compiling allocative v0.3.6
+   Compiling postcard v1.1.3
+   Compiling static_interner v0.1.2
+   Compiling schemafy_core v0.5.2
+   Compiling terminal_size v0.4.3
+   Compiling codex-utils-rustls-provider v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/rustls-provider)
+   Compiling triomphe v0.1.15
+   Compiling clap_builder v4.5.58
+   Compiling pagable v0.4.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+   Compiling schemafy_lib v0.5.2
+   Compiling rama-dns v0.3.0-alpha.4 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/rama-dns-0.3.0-alpha.4)
+   Compiling oid-registry v0.8.1
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling der-parser v10.0.0
+   Compiling tracing-opentelemetry v0.32.1
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling codex-http-client v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/http-client)
+   Compiling radix_trie v0.2.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+   Compiling clap v4.5.58
+   Compiling x509-parser v0.18.1
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling schemafy v0.5.2
+   Compiling starlark_map v0.14.2
+   Compiling lsp-types v0.97.0
+   Compiling tokio-test v0.4.5
+   Compiling fd-lock v4.0.4
+   Compiling yasna v0.5.2
+   Compiling rustyline v14.0.0
+   Compiling starlark v0.14.2 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/starlark-0.14.2)
+warning: warning: saw package ID `path+file:///home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling display_container v0.9.0
+   Compiling rcgen v0.14.7
+   Compiling gix-path v0.11.3
+   Compiling starlark_syntax v0.14.2
+   Compiling png v0.18.0
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling debugserver-types v0.5.0
+   Compiling codex-utils-home-dir v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/home-dir)
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling erased-serde v0.3.31
+   Compiling codex-utils-cache v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/cache)
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling icu_locale v2.2.0
+   Compiling image v0.25.9
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling fixed_decimal v0.7.2
+   Compiling multimap v0.10.1
+   Compiling icu_decimal v2.2.0
+   Compiling codex-network-proxy v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/network-proxy)
+   Compiling codex-execpolicy v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/execpolicy)
+   Compiling codex-utils-image v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/image)
+   Compiling landlock v0.4.4
+   Compiling codex-utils-path-uri v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/path-uri)
+   Compiling codex-extension-items v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/items)
+   Compiling codex-utils-redacted-string v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/redacted-string)
+   Compiling codex-utils-string v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/string)
+   Compiling codex-async-utils v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/async-utils)
+   Compiling quick-xml v0.41.0
+   Compiling prodash v31.0.0
+   Compiling gix-features v0.46.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+   Compiling zerovec v0.11.6
+   Compiling codex-protocol v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/protocol)
+   Compiling sha1-checked v0.10.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling gix-hash v0.23.0
+   Compiling curve25519-dalek v4.1.3
+   Compiling gix-date v0.15.1
+   Compiling gix-actor v0.40.0
+   Compiling gix-hashtable v0.13.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+   Compiling gix-object v0.58.0
+   Compiling gix-fs v0.19.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling gix-tempfile v21.0.2
+   Compiling gix-lock v21.0.2
+   Compiling itertools v0.13.0
+   Compiling prost-derive v0.14.4
+   Compiling gix-commitgraph v0.35.0
+   Compiling block-padding v0.3.3
+   Compiling inout v0.1.4
+   Compiling gix-revwalk v0.29.0
+   Compiling gix-ref v0.61.0
+   Compiling der v0.7.10
+   Compiling cipher v0.4.4
+   Compiling codex-utils-pty v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/pty)
+   Compiling gix-command v0.8.0
+   Compiling gix-packetline v0.21.5
+   Compiling gix-glob v0.24.0
+   Compiling gix-url v0.35.2
+   Compiling gix-pack v0.68.0
+   Compiling gix-transport v0.55.1
+   Compiling spki v0.7.3
+   Compiling gix-revision v0.43.0
+   Compiling gix-shallow v0.10.0
+   Compiling gix-config-value v0.17.1
+   Compiling headers-core v0.3.0
+   Compiling pin-project-internal v1.1.10
+   Compiling gix-config v0.54.0
+   Compiling gix-protocol v0.59.0
+   Compiling pin-project v1.1.10
+   Compiling headers v0.4.1
+   Compiling gix-refspec v0.39.0
+   Compiling pkcs8 v0.10.2
+   Compiling gix-odb v0.78.0
+   Compiling codex-file-system v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/file-system)
+   Compiling gix-discover v0.49.0
+   Compiling gix-traverse v0.55.0
+   Compiling gix-diff v0.61.0
+   Compiling utf-8 v0.7.6
+   Compiling ed25519 v2.2.3
+   Compiling gix v0.81.0
+   Compiling tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+   Compiling tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+   Compiling ed25519-dalek v2.2.0
+   Compiling hyper-timeout v0.5.2
+   Compiling codex-git-utils v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/git-utils)
+   Compiling tonic v0.14.3
+   Compiling prost v0.14.4
+   Compiling cfg_aliases v0.2.1
+   Compiling nix v0.30.1
+   Compiling codex-websocket-client v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/websocket-client)
+   Compiling tonic-prost v0.14.3
+   Compiling universal-hash v0.5.1
+   Compiling opaque-debug v0.3.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.30.1` which wasn't produced by cargo metadata
+   Compiling event-listener-strategy v0.5.4
+   Compiling eventsource-stream v0.2.3
+   Compiling concurrent-queue v2.5.0
+   Compiling async-channel v2.5.0
+   Compiling codex-client v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/codex-client)
+   Compiling hmac v0.12.1
+   Compiling codex-api v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/codex-api)
+   Compiling opentelemetry_sdk v0.31.0
+   Compiling rand_chacha v0.3.1
+   Compiling const-hex v1.17.0
+   Compiling aead v0.5.2
+   Compiling opentelemetry-proto v0.31.0
+   Compiling rand v0.8.6
+   Compiling opentelemetry-http v0.31.0
+   Compiling signature v3.0.0
+   Compiling num-complex v0.4.6
+   Compiling tree-sitter-language v0.1.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.7` which wasn't produced by cargo metadata
+   Compiling opentelemetry-otlp v0.31.0
+   Compiling os_info v3.14.0
+   Compiling opentelemetry-appender-tracing v0.31.1
+   Compiling gethostname v1.1.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling opentelemetry-semantic-conventions v0.31.0
+   Compiling toml_writer v1.0.6+spec-1.1.0
+   Compiling codex-otel v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/otel)
+   Compiling aes v0.8.4
+   Compiling unic-langid-impl v0.9.6
+   Compiling toml v0.9.11+spec-1.1.0
+   Compiling unic-langid v0.9.6
+   Compiling rustc-hash v2.1.1
+   Compiling shake v0.1.0
+   Compiling type-map v0.5.1
+   Compiling module-lattice v0.2.3
+   Compiling http v0.2.12
+   Compiling serde_path_to_error v0.1.20
+   Compiling vsimd v0.8.0
+   Compiling outref v0.5.2
+   Compiling http-body v0.4.6
+   Compiling ml-dsa v0.1.1
+   Compiling base64-simd v0.8.0
+   Compiling x25519-dalek v2.0.1
+   Compiling bytes-utils v0.1.4
+   Compiling windows_x86_64_gnu v0.52.6
+   Compiling self_cell v1.2.2
+   Compiling env_home v0.1.0
+   Compiling which v8.0.0
+   Compiling self_cell v0.10.3
+   Compiling codex-hepta-contracts v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-contracts)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+   Compiling aws-smithy-types v1.4.7
+   Compiling potential_utf v0.1.4
+   Compiling fluent-syntax v0.11.1
+   Compiling codex-utils-path v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/path-utils)
+   Compiling tree-sitter v0.25.10
+   Compiling tree-sitter-powershell v0.26.4
+   Compiling tree-sitter-bash v0.25.1
+   Compiling rustc-hash v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+   Compiling icu_collections v2.2.0
+   Compiling rust-embed-utils v8.11.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling streaming-iterator v0.1.9
+   Compiling glob v0.3.3
+   Compiling toml v1.1.4+spec-1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+   Compiling rust-embed-impl v8.11.0
+   Compiling windows-targets v0.52.6
+   Compiling poly1305 v0.8.0
+   Compiling toml v0.5.11
+   Compiling aws-smithy-async v1.2.14
+   Compiling libdbus-sys v0.2.7
+   Compiling aws-smithy-runtime-api-macros v1.0.0
+   Compiling aws-smithy-runtime-api v1.12.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling find-crate v0.6.3
+   Compiling codex-shell-command v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/shell-command)
+   Compiling windows-result v0.2.0
+   Compiling i18n-config v0.4.8 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/i18n-config-0.4.8)
+   Compiling intl-memoizer v0.5.3
+   Compiling intl_pluralrules v7.0.2
+   Compiling fluent-langneg v0.13.1
+   Compiling codex-features v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/features)
+   Compiling toml_edit v0.24.0+spec-1.1.0
+   Compiling codex-model-provider-info v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/model-provider-info)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libdbus-sys@0.2.7` which wasn't produced by cargo metadata
+   Compiling hkdf v0.12.4
+   Compiling salsa20 v0.10.2
+   Compiling dns-lookup v3.0.1
+   Compiling serde_ignored v0.1.14
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+   Compiling fluent-bundle v0.15.3
+   Compiling codex-config v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/config)
+   Compiling i18n-embed-impl v0.8.4
+   Compiling windows-strings v0.1.0
+   Compiling num-rational v0.4.2
+   Compiling num-iter v0.1.45
+   Compiling windows-implement v0.58.0
+   Compiling windows-interface v0.58.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+   Compiling windows-core v0.58.0
+   Compiling num v0.4.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.38.2` which wasn't produced by cargo metadata
+   Compiling fluent v0.16.1
+   Compiling dbus v0.9.10
+   Compiling rust-embed v8.11.0
+   Compiling cbc v0.1.2
+   Compiling chacha20 v0.9.1
+   Compiling dirs-sys-next v0.1.2
+   Compiling proc-macro-error-attr2 v2.0.0
+   Compiling cpubits v0.1.1
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/windows-sandbox-rs)
+   Compiling proc-macro-error2 v2.0.1
+   Compiling dirs-next v2.0.0
+   Compiling chacha20poly1305 v0.10.1
+   Compiling dbus-secret-service v4.1.0
+   Compiling i18n-embed v0.15.4
+   Compiling windows v0.58.0
+   Compiling pbkdf2 v0.12.2
+   Compiling polyval v0.6.2
+   Compiling tracing-appender v0.2.4
+   Compiling cookie-factory v0.3.3
+   Compiling linux-keyutils v0.2.4
+   Compiling secrecy v0.10.3
+   Compiling base64ct v1.8.3
+   Compiling io_tee v0.1.1
+   Compiling base64 v0.21.7
+   Compiling keccak v0.1.6
+   Compiling sha3 v0.10.9
+   Compiling sqlx-core v0.9.0
+   Compiling age-core v0.11.0
+   Compiling pem-rfc7468 v1.0.0
+   Compiling keyring v3.6.3
+   Compiling ghash v0.5.1
+   Compiling scrypt v0.11.0
+   Compiling i18n-embed-fl v0.9.4
+   Compiling ctr v0.9.2
+   Compiling thiserror-impl-no-std v2.0.2
+   Compiling kem v0.3.0-pre.0
+   Compiling hybrid-array v0.2.3
+   Compiling bech32 v0.9.1
+   Compiling age v0.11.2
+   Compiling ml-kem v0.2.3
+   Compiling thiserror-no-std v2.0.2
+   Compiling aes-gcm v0.10.3
+   Compiling sqlx-sqlite v0.9.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/sqlx-sqlite-0.9.0)
+   Compiling codex-sandboxing v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/sandboxing)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling codex-keyring-store v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/keyring-store)
+   Compiling der v0.8.3
+   Compiling crypto-bigint v0.7.10
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+   Compiling aws-credential-types v1.2.11
+   Compiling aws-smithy-http v0.62.6
+   Compiling axum-core v0.5.6
+   Compiling aws-types v1.3.11
+   Compiling futures-intrusive v0.5.0
+   Compiling ff v0.14.0
+   Compiling foldhash v0.1.5
+   Compiling matchit v0.8.4
+   Compiling axum v0.8.8
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11` which wasn't produced by cargo metadata
+   Compiling sqlx-macros-core v0.9.0
+   Compiling codex-secrets v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/secrets)
+   Compiling clatter v2.2.0
+   Compiling codex-exec-server-protocol v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/exec-server-protocol)
+   Compiling aws-smithy-observability v0.1.5
+   Compiling aws-smithy-http-client v1.1.12
+   Compiling debugid v0.8.0
+   Compiling aws-smithy-runtime v1.9.5
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling sentry-types v0.46.1
+   Compiling codex-exec-server v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/exec-server)
+   Compiling sqlx-macros v0.9.0
+   Compiling group v0.14.0
+   Compiling aws-sigv4 v1.3.7
+   Compiling spki v0.8.1
+   Compiling crypto_secretbox v0.1.1
+   Compiling simple_asn1 v0.6.4
+   Compiling hmac v0.13.0
+   Compiling blake2 v0.10.6
+   Compiling base16ct v1.0.0
+   Compiling prettyplease v0.2.37
+   Compiling getrandom v0.4.3
+   Compiling chunked_transfer v1.5.0
+   Compiling object v0.37.3
+   Compiling ascii v1.1.0
+   Compiling tiny_http v0.12.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+   Compiling sec1 v0.8.1
+   Compiling crypto_box v0.9.1
+   Compiling jsonwebtoken v9.3.1
+   Compiling pkcs8 v0.11.0
+   Compiling aws-runtime v1.5.17
+   Compiling sqlx v0.9.0
+   Compiling sentry-core v0.46.1
+   Compiling aws-smithy-json v0.61.9 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/aws-smithy-json-0.61.9)
+   Compiling codex-history v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/history)
+   Compiling darling_core v0.24.0
+   Compiling webbrowser v1.2.4
+   Compiling gimli v0.32.3
+   Compiling base64 v0.23.1
+   Compiling codex-utils-template v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/template)
+   Compiling addr2line v0.25.1
+   Compiling darling_macro v0.24.0
+   Compiling codex-state v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/state)
+   Compiling elliptic-curve v0.14.3
+   Compiling codex-agent-identity v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/agent-identity)
+   Compiling hashbrown v0.15.5
+   Compiling primefield v0.14.0
+   Compiling codex-workload-identity v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/workload-identity)
+   Compiling sha2 v0.11.0
+   Compiling codex-terminal-detection v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/terminal-detection)
+   Compiling findshlibs v0.10.2
+   Compiling rustc-demangle v0.1.27
+   Compiling fixedbitset v0.5.7
+   Compiling fastrand v2.3.0
+   Compiling petgraph v0.8.3
+   Compiling backtrace v0.3.76
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+   Compiling codex-login v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/login)
+   Compiling prost-types v0.14.3
+   Compiling wnaf v0.14.1
+   Compiling darling v0.24.0
+   Compiling rfc6979 v0.6.0
+   Compiling schemars_derive v1.2.1
+   Compiling sentry-contexts v0.46.1
+   Compiling xmlparser v0.13.6
+   Compiling rmcp v3.1.3
+   Compiling aws-smithy-xml v0.60.13
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+   Compiling prost-build v0.14.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.1` which wasn't produced by cargo metadata
+   Compiling schemars v1.2.1
+   Compiling ecdsa v0.17.0
+   Compiling rmcp-macros v3.1.3
+   Compiling primeorder v0.14.0
+   Compiling sentry-backtrace v0.46.1
+   Compiling tonic-build v0.14.3
+   Compiling reqwest v0.13.5
+   Compiling aws-smithy-query v0.60.9
+   Compiling oauth2 v5.0.0
+   Compiling process-wrap v9.0.1
+   Compiling codex-utils-output-truncation v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/output-truncation)
+   Compiling sse-stream v0.2.5
+   Compiling semver v1.0.27
+   Compiling hostname v0.4.2
+   Compiling uname v0.1.1
+   Compiling protoc-bin-vendored-linux-s390_64 v3.2.0
+   Compiling protoc-bin-vendored-macos-aarch_64 v3.2.0
+   Compiling pastey v0.2.1
+   Compiling protoc-bin-vendored-linux-ppcle_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-x86_32 v3.2.0
+   Compiling protoc-bin-vendored-linux-x86_64 v3.2.0
+   Compiling protoc-bin-vendored-win32 v3.2.0
+   Compiling protoc-bin-vendored-macos-x86_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-aarch_64 v3.2.0
+   Compiling protoc-bin-vendored v3.2.0
+   Compiling codex-install-context v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/install-context)
+   Compiling aws-sdk-sts v1.95.0
+   Compiling tonic-prost-build v0.14.3
+   Compiling sentry-panic v0.46.1
+   Compiling sentry-debug-images v0.46.1
+   Compiling p256 v0.14.0
+   Compiling aws-sdk-sso v1.91.0
+   Compiling aws-sdk-signin v1.2.0
+   Compiling aws-sdk-ssooidc v1.93.0
+   Compiling codex-utils-plugins v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/plugins)
+   Compiling codex-hepta-types v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-types)
+   Compiling codex-plugin v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/plugin)
+   Compiling aws-config v1.8.12 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/third_party/aws-config-1.8.12)
+   Compiling sentry v0.46.1
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/code-mode-protocol)
+   Compiling codex-collaboration-mode-templates v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/collaboration-mode-templates)
+   Compiling codex-models-manager v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/models-manager)
+   Compiling codex-aws-auth v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/aws-auth)
+   Compiling codex-feedback v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/feedback)
+   Compiling codex-response-debug-context v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/diagnostics)
+   Compiling jsonptr v0.7.1
+   Compiling predicates-core v1.0.9
+   Compiling codex-tools v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/codex-mcp)
+   Compiling symphonia-core v0.6.0
+   Compiling rayon v1.11.0
+   Compiling nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling assert_cmd v2.1.2
+   Compiling termtree v0.5.1
+   Compiling difflib v0.4.0
+   Compiling predicates v3.1.3
+   Compiling predicates-tree v1.0.12
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+   Compiling nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling codex-context-fragments v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/context-fragments)
+   Compiling ignore v0.4.25
+   Compiling wait-timeout v0.2.1
+   Compiling codex-file-search v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/file-search)
+   Compiling symphonia-metadata v0.6.0
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling codex-utils-cargo-bin v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/extension-api)
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/codex-experimental-api-macros)
+   Compiling unicode-width v0.2.1
+   Compiling arraydeque v0.5.1
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/app-server-protocol-noop-macros)
+   Compiling granit-parser v1.3.0
+   Compiling annotate-snippets v0.12.5
+   Compiling codex-app-server-protocol v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/app-server-protocol)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8` which wasn't produced by cargo metadata
+   Compiling symphonia-common v0.6.0
+   Compiling constant_time_eq v0.6.1
+   Compiling encoding_rs_io v0.1.8
+   Compiling darling_core v0.20.11
+   Compiling inout v0.2.2
+   Compiling include_dir_macros v0.7.4
+   Compiling codex-skills v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/skills)
+   Compiling nohash-hasher v0.2.0
+   Compiling serde-saphyr v1.3.0
+   Compiling include_dir v0.7.4
+   Compiling cipher v0.5.2
+   Compiling darling_macro v0.20.11
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+   Compiling libbz2-rs-sys v0.2.5
+   Compiling bzip2 v0.6.1
+   Compiling darling v0.20.11
+   Compiling aes v0.9.3
+   Compiling lzma-rust2 v0.22.0
+   Compiling pbkdf2 v0.13.0
+   Compiling zopfli v0.8.3
+   Compiling stop-words v0.9.0
+   Compiling sha1 v0.11.0
+   Compiling filetime v0.2.27
+   Compiling ppmd-rust v1.5.0
+   Compiling typed-path v0.12.3
+   Compiling extended v0.1.0
+   Compiling deflate64 v0.1.10
+   Compiling codex-analytics v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/analytics)
+   Compiling pulldown-cmark v0.10.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+   Compiling zip v9.0.5
+   Compiling symphonia-format-riff v0.6.0
+   Compiling tar v0.4.46
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+   Compiling cached_proc_macro v0.25.0
+   Compiling symphonia-format-isomp4 v0.6.0
+   Compiling symphonia-format-ogg v0.6.0
+   Compiling symphonia-format-mkv v0.6.0
+   Compiling symphonia-bundle-mp3 v0.6.0
+   Compiling codex-hooks v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hooks)
+   Compiling web-time v1.1.0
+   Compiling cached_proc_macro_types v0.1.1
+   Compiling cached v0.56.0
+   Compiling symphonia v0.6.0
+   Compiling codex-core-plugins v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/core-plugins)
+   Compiling codex-apply-patch v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/shell-escalation)
+   Compiling rust-stemmers v1.2.0
+   Compiling deunicode v1.6.2
+   Compiling bm25 v2.3.2
+   Compiling codex-thread-store v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/thread-store)
+   Compiling codex-utils-audio v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/audio)
+   Compiling codex-skills-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/skills)
+   Compiling codex-prompts v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/memories/read)
+   Compiling codex-utils-stream-parser v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/stream-parser)
+   Compiling whoami v1.6.1
+   Compiling codex-core v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/core)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-paths v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-paths)
+   Compiling codex-hepta-kg v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-kg)
+   Compiling codex-hepta-operations v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-operations)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-cognitive-read)
+   Compiling codex-backend-openapi-models v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/codex-backend-openapi-models)
+   Compiling inotify-sys v0.1.5
+   Compiling codex-linux-sandbox v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/linux-sandbox)
+   Compiling inotify v0.11.0
+   Compiling codex-backend-client v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/backend-client)
+   Compiling codex-hepta-memory-federation v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-memory-federation)
+   Compiling notify-types v2.1.0
+   Compiling codex-process-hardening v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/process-hardening)
+   Compiling is_ci v1.2.0
+   Compiling notify v8.2.0
+   Compiling codex-hepta-memory v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-memory)
+   Compiling codex-hepta-intuition v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-intuition)
+   Compiling is-terminal v0.4.17
+   Compiling owo-colors v4.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#owo-colors@4.3.0` which wasn't produced by cargo metadata
+   Compiling supports-color v2.1.0
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-learning-ledger)
+   Compiling codex-arg0 v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/arg0)
+   Compiling supports-color v3.0.2
+   Compiling codex-home v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-authbus)
+   Compiling codex-uds v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/uds)
+   Compiling constant_time_eq v0.3.1
+   Compiling codex-hepta-evidence v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-evidence)
+   Compiling codex-memories-write v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/memories/write)
+   Compiling codex-connectors-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/cli)
+   Compiling codex-chatgpt v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/chatgpt)
+   Compiling codex-mcp-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/mcp)
+   Compiling codex-external-agent-migration v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/external-agent-migration)
+   Compiling codex-app-server-transport v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/app-server-transport)
+   Compiling codex-hepta-governance v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/hepta-governance)
+   Compiling codex-guardian-v2 v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/guardian-v2)
+   Compiling codex-goal-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/goal)
+   Compiling codex-cloud-config v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/cloud-config)
+   Compiling codex-history-notes-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/history-notes)
+   Compiling codex-memories-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/memories)
+   Compiling codex-image-generation-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/image-generation)
+   Compiling codex-agent-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/agent)
+   Compiling codex-web-search-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/web-search)
+   Compiling codex-queue-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/queue)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/hepta-memory)
+   Compiling codex-file-watcher v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/file-watcher)
+   Compiling codex-git-attribution v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-wire v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-wire)
+   Compiling codex-hepta-ndu v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-ndu)
+   Compiling codex-utils-json-to-toml v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/utils/json-to-toml)
+   Compiling codex-app-server v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/app-server)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-automation)
+   Compiling codex-hepta-fleet v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-fleet)
+   Compiling codex-hepta-infer-core v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-neuron)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-control-plane v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-control-plane)
+   Compiling codex-hepta-context-compiler v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-plasticity v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-plasticity)
+   Compiling codex-hepta-objective v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-objective)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-intelligence)
+   Compiling codex-app-server-client v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-cognitive-store)
+   Compiling num_cpus v1.17.0
+   Compiling dtor-proc-macro v0.0.6
+   Compiling deadpool-runtime v0.1.4
+   Compiling deadpool v0.12.3
+   Compiling dtor v0.1.1
+   Compiling codex-hepta-agentd v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-agentd)
+   Compiling assert-json-diff v2.0.2
+   Compiling ctor-proc-macro v0.0.7
+   Compiling ctor v0.6.3
+   Compiling wiremock v0.6.5
+   Compiling codex-hepta-supervisor v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-supervisor)
+   Compiling core_test_support v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/core/tests/common)
+   Compiling codex-hepta-matrix-protocol v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-matrix-protocol)
+   Compiling app_test_support v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/app-server/tests/common)
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/work/root-provider-context-20261112-df05-v6/codex-rs/hepta-infer-worker-host)
+error[E0432]: unresolved import `pretty_assertions`
+ --> hepta-agentd/src/automation_effect_host_context_tests.rs:4:5
+  |
+4 | use pretty_assertions::assert_eq;
+  |     ^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `pretty_assertions`
+  |
+  = help: if you wanted to use a crate named `pretty_assertions`, use `cargo add pretty_assertions` to add it to your `Cargo.toml`
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `codex-hepta-agentd` (lib test) due to 1 previous error
+error: command `/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

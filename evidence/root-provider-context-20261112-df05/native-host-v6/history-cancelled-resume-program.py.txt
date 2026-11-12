@@ -1,0 +1,278 @@
+import sys,json,pathlib,subprocess,hashlib,os,shutil,time,signal,re,stat
+data=json.load(sys.stdin)
+base=data['base_sha']; expected_tree=data['expected_tree']
+repository='TrillionniumFoundation/hepta-private-ci'
+base_branch='fix/hepta-provider-operation-binding-20261030'
+branches={'journal':'fix/hepta-provider-context-journal-20261112-df05','host':'fix/hepta-provider-context-host-20261112-df05'}
+seed=pathlib.Path('/home/qian-qi/work/ctrl-security-baseline-20261110-gpt6')
+host_dir=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v3')
+journal_dir=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v3-journal')
+evidence=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v3-evidence')
+env={**os.environ,'PATH':'/home/qian-qi/.cargo/bin:'+os.environ.get('PATH',''),'RUSTUP_TOOLCHAIN':'1.96.0','CARGO_BUILD_JOBS':'2','CARGO_PROFILE_DEV_DEBUG':'0','CARGO_PROFILE_TEST_DEBUG':'0','CARGO_INCREMENTAL':'0','NEXTEST_TEST_THREADS':'2','CARGO_TERM_COLOR':'never'}
+def emit(value):print(json.dumps(value,ensure_ascii=False),flush=True)
+def git(path,*args):return subprocess.check_output(['git','-C',str(path),*args],text=True,env=env).strip()
+def write(path,value):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    blob=value.encode() if isinstance(value,str) else value
+    with path.open('wb') as f:f.write(blob);f.flush();os.fsync(f.fileno())
+def actor():
+    value=subprocess.check_output(['/usr/bin/gh','api','user','--jq','.login'],text=True,env=env).strip()
+    if value!='ProfHepta':raise RuntimeError('publishing actor mismatch: '+value)
+    return value
+def origin(path):
+    value=git(path,'remote','get-url','origin')
+    if value!='https://github.com/'+repository+'.git':raise RuntimeError('canonical HTTPS origin mismatch')
+    return value
+def clean(path,sha):return git(path,'rev-parse','HEAD')==sha and not git(path,'status','--porcelain','--untracked-files=all') and physical(path,sha)
+def tree_map(path,ref):
+    raw=subprocess.check_output(['git','-C',str(path),'ls-tree','-r','-z',ref],env=env)
+    result={}
+    for entry in raw.split(b'\0'):
+        if entry:
+            meta,name=entry.split(b'\t',1);mode,kind,oid=meta.decode().split()
+            result[name.decode()]=(mode,kind,oid)
+    return result
+def tree_digest(entries):return hashlib.sha256(json.dumps(entries,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+def alive(pgid):
+    try:os.killpg(pgid,0);return True
+    except ProcessLookupError:return False
+def command(path,args,log,source):
+    started=time.time()
+    with log.open('wb') as output:
+        output.write((json.dumps({'source_commit':source,'cwd':str(path),'command':args,'started_unix':started})+'\n').encode());output.flush()
+        process=subprocess.Popen(args,cwd=path,env=env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
+        rc=process.wait();residual=alive(process.pid)
+        if residual:
+            os.killpg(process.pid,signal.SIGTERM)
+            deadline=time.monotonic()+10
+            while alive(process.pid) and time.monotonic()<deadline:time.sleep(.1)
+            if alive(process.pid):os.killpg(process.pid,signal.SIGKILL)
+            deadline=time.monotonic()+5
+            while alive(process.pid) and time.monotonic()<deadline:time.sleep(.1)
+        result={'source_commit':source,'command':args,'exit_code':rc,'duration_seconds':time.time()-started,'process_group':process.pid,'residual_group_after_return':residual,'process_group_quiescent':not alive(process.pid)}
+        output.write(('\n'+json.dumps(result)+'\n').encode());output.flush();os.fsync(output.fileno())
+    emit({'phase':'command_finished',**result,'log':str(log)})
+    return result
+def remote_ref(path,branch):
+    result=subprocess.check_output(['git','-C',str(path),'-c','credential.helper=','-c','credential.helper=!/usr/bin/gh auth git-credential','ls-remote','--heads','origin','refs/heads/'+branch],env=env,text=True).strip()
+    rows=result.splitlines() if result else []
+    if len(rows)>1:raise RuntimeError('ambiguous remote ref')
+    return rows[0].split()[0] if rows else None
+def pr_listing(branch,base_name,state):
+    return json.loads(subprocess.check_output(['/usr/bin/gh','pr','list','--repo',repository,'--head',branch,'--base',base_name,'--state',state,'--json','number,url,state,headRefOid,baseRefName,isDraft'],env=env,text=True))
+def publish(path,branch,base_name,source_sha,evidence_sha,stage,summary):
+    actor();origin(path)
+    if not clean(path,evidence_sha):raise RuntimeError('dirty evidence checkout')
+    expected_base=base if stage=='journal' else results['journal']['evidence_commit']
+    if remote_ref(path,base_name)!=expected_base:raise RuntimeError('remote base drift')
+    current=remote_ref(path,branch)
+    if current not in (None,evidence_sha):raise RuntimeError('remote candidate ref conflict')
+    if current is None:
+        pushed=subprocess.run(['git','-C',str(path),'-c','credential.helper=','-c','credential.helper=!/usr/bin/gh auth git-credential','push','--porcelain','origin',evidence_sha+':refs/heads/'+branch],env=env,capture_output=True,text=True)
+        write(evidence/(stage+'-push.log'),pushed.stdout+pushed.stderr)
+        if remote_ref(path,branch)!=evidence_sha:raise RuntimeError('push unconfirmed; do not replay')
+    existing=pr_listing(branch,base_name,'all')
+    if existing:
+        if len(existing)!=1 or existing[0]['state']!='OPEN' or not existing[0]['isDraft'] or existing[0]['headRefOid']!=evidence_sha:
+            raise RuntimeError('pre-existing PR needs reconciliation')
+        url=existing[0]['url']
+    else:
+        title='fix(automation): retain original provider context before dispatch' if stage=='journal' else 'fix(agentd): recover effects through their original provider context'
+        change=('Persist original provider context in the existing dispatch barrier and compare the complete logical history. Schema v23 gates all four append paths, including Accepted-only binding commits from preopened v22 writers. INSERT guards reject replacement through primary keys, the grant nonce unique key, and explicit rowid collisions. Historical missing context stays missing. This journal stage is a dependency of the Agentd stage.' if stage=='journal' else 'The registered HTTP and PoN host freezes transport kind, scope, destination, verified contract digest, and verifier key separately from the existing operation key. Recovery queries only matching original context. Missing or changed context preserves Unknown; already committed terminal facts remain readable. Real HTTP fixtures cover endpoint rotation, missing context, original-provider settlement, and terminal reads.')
+        body=('## Problem\n\nA stable operation key does not identify the physical endpoint, account, or PoN store used before a crash. Reconfiguring a signed provider under the same scope can otherwise attach a replacement provider result to an old Unknown operation.\n\n## Changes\n\n'+change+
+            '\n\n## Native validation — DRAFT HOLD\n\n'+
+            '- Source commit actually supplied to the commands: '+source_sha+'.\n'+
+            '- Evidence-only child: '+evidence_sha+'.\n'+
+            '- Complete mode/blob tree comparison proves the child preserves every source entry and adds only the exact evidence allowlist.\n'+
+            '- Test exit: '+str(summary['test']['exit_code'])+'; Clippy fix exit: '+str(summary['fix']['exit_code'])+'; formatter exit: '+str(summary['fmt']['exit_code'])+'.\n'+
+            '- Expected regression PASS records observed: '+str(summary['expected_regressions_observed'])+'.\n'+
+            '- Scoped native qualification: '+('PASS' if summary['native_scope_pass'] else 'FAIL_OR_UNCONFIRMED')+'.\n'+
+            '- Raw logs, source manifest, cleanup receipts, and checksums: '+summary['evidence_prefix']+'.\n\n'+
+            'This remains Draft HOLD even when scoped tests pass. No production service, actual payment, message, merge, or deployment was activated. The operation key retains its original owner/run/step identity; recreating a business intent as a new run is not globally deduplicated. Migration gates new barriers and evidence appends; it does not retract an old process already past its durable barrier. Provider atomic deduplication/retention, independent Root state survival, and arbitrary database DDL tampering are outside this qualification.\n')
+        body_file=evidence/(stage+'-pr-body.md');write(body_file,body)
+        created=subprocess.run(['/usr/bin/gh','pr','create','--draft','--repo',repository,'--head',branch,'--base',base_name,'--title',title,'--body-file',str(body_file)],env=env,capture_output=True,text=True)
+        write(evidence/(stage+'-pr-create.log'),created.stdout+created.stderr)
+        found=pr_listing(branch,base_name,'open')
+        if len(found)!=1 or found[0]['headRefOid']!=evidence_sha or not found[0]['isDraft']:raise RuntimeError('PR creation unconfirmed; no new PR retry')
+        url=found[0]['url']
+    emit({'phase':'draft_published','stage':stage,'source_commit':source_sha,'evidence_commit':evidence_sha,'url':url})
+    return url
+
+
+def oid_bytes(value):
+    return hashlib.sha1(b'blob '+str(len(value)).encode()+b'\0'+value).hexdigest()
+def ancestor_guard(root,path):
+    if root.is_symlink() or not root.is_dir():
+        raise RuntimeError('source root is not a real directory')
+    relative=path.relative_to(root)
+    parent=root
+    for part in relative.parts[:-1]:
+        parent=parent/part
+        if parent.is_symlink():
+            raise RuntimeError('source parent is a symlink: '+str(parent))
+        if parent.exists() and not parent.is_dir():
+            raise RuntimeError('source parent is not a directory: '+str(parent))
+def physical(path,ref_or_entries):
+    entries=tree_map(path,ref_or_entries) if isinstance(ref_or_entries,str) else ref_or_entries
+    flags=subprocess.check_output(['git','-C',str(path),'ls-files','-v','-z'],env=env)
+    hidden=[row[:1].decode()+' '+row[2:].decode() for row in flags.split(b'\0') if row and (row[:1]==b'S' or row[:1].islower())]
+    if hidden:
+        raise RuntimeError('index hides physical source paths: '+repr(hidden[:8]))
+    for relative,(mode,kind,expected) in entries.items():
+        if kind!='blob' or mode not in ('100644','100755','120000'):
+            raise RuntimeError('unsupported source tree entry: '+relative+' '+mode+' '+kind)
+        full=path/relative;ancestor_guard(path,full)
+        info=full.lstat()
+        if mode=='120000':
+            if not stat.S_ISLNK(info.st_mode):
+                raise RuntimeError('source symlink type mismatch: '+relative)
+            actual=oid_bytes(os.fsencode(os.readlink(full)))
+        else:
+            if not stat.S_ISREG(info.st_mode):
+                raise RuntimeError('source regular-file type mismatch: '+relative)
+            actual_mode='100755' if info.st_mode & 0o111 else '100644'
+            if actual_mode!=mode:
+                raise RuntimeError('source executable mode mismatch: '+relative)
+            digest=hashlib.sha1(b'blob '+str(info.st_size).encode()+b'\0')
+            with full.open('rb') as file:
+                while chunk:=file.read(1024*1024):
+                    digest.update(chunk)
+            after=full.lstat()
+            signature=lambda item:(item.st_dev,item.st_ino,item.st_size,item.st_mtime_ns,item.st_ctime_ns,item.st_mode)
+            if signature(info)!=signature(after):
+                raise RuntimeError('source changed while being read: '+relative)
+            actual=digest.hexdigest()
+        if actual!=expected:
+            raise RuntimeError('physical source blob mismatch: '+relative)
+    return True
+def materialize(path,expected,receipt_path):
+    before_flags=subprocess.check_output(['git','-C',str(path),'ls-files','-v','-z'],env=env)
+    tracked=subprocess.check_output(['git','-C',str(path),'ls-files','-z'],env=env)
+    if not tracked:
+        raise RuntimeError('empty tracked source inventory')
+    before_index=git(path,'write-tree')
+    config_args=['git','-C',str(path),'-c','core.sparseCheckout=false','-c','core.sparseCheckoutCone=false','-c','core.ignorestat=false']
+    for option in ['--no-skip-worktree','--no-assume-unchanged']:
+        subprocess.run(config_args+['update-index',option,'-z','--stdin'],input=tracked,env=env,check=True)
+    missing=[]
+    for raw in tracked.split(b'\0'):
+        if not raw:
+            continue
+        relative=os.fsdecode(raw);full=path/relative;ancestor_guard(path,full)
+        if not os.path.lexists(full):
+            missing.append(raw)
+    if missing:
+        subprocess.run(config_args+['checkout-index','-z','--stdin'],input=b'\0'.join(missing)+b'\0',env=env,check=True)
+    after_index=git(path,'write-tree')
+    if after_index!=before_index:
+        raise RuntimeError('materialization changed index source tree')
+    physical(path,expected)
+    after_flags=subprocess.check_output(['git','-C',str(path),'ls-files','-v','-z'],env=env)
+    receipt={'source_directory':str(path),'index_tree_before':before_index,'index_tree_after':after_index,'tracked_entries':len(tracked.split(b'\0'))-1,'materialized_missing_paths':len(missing),'existing_files_overwritten':False,'shared_config_modified':False,'flags_before_sha256':hashlib.sha256(before_flags).hexdigest(),'flags_after_sha256':hashlib.sha256(after_flags).hexdigest(),'complete_physical_source_verified':True,'complete_expected_map_sha256':tree_digest(expected)}
+    write(receipt_path,json.dumps(receipt,indent=2))
+    emit({'phase':'materialized',**receipt})
+
+if not host_dir.is_dir() or not evidence.is_dir() or journal_dir.exists():
+    raise RuntimeError('unexpected resumed source directories')
+if json.loads((evidence/'input-v3.json').read_text())!=data:
+    raise RuntimeError('resume input differs from original durable request')
+if hashlib.sha256((evidence/'reconstruct-fmt.log').read_bytes()).hexdigest()!='77abf22867c484dc4c844fc9e9afbf442bfce19722a515d30a22dff10e78c6e2':
+    raise RuntimeError('original formatter failure evidence changed')
+origin(host_dir);actor()
+if git(host_dir,'rev-parse','HEAD')!=base or git(host_dir,'write-tree')!=git(host_dir,'rev-parse',base+'^{tree}'):
+    raise RuntimeError('resumed worktree is no longer at the original source/index')
+for branch in branches.values():
+    if subprocess.run(['git','-C',str(seed),'show-ref','--verify','--quiet','refs/heads/'+branch],env=env).returncode==0:
+        raise RuntimeError('candidate branch already exists; reconcile it')
+expected_input=tree_map(host_dir,base)
+for relative,content in data['files'].items():
+    p=host_dir/relative;ancestor_guard(host_dir,p)
+    if p.is_symlink() or not p.is_file() or p.read_bytes()!=content.encode():
+        raise RuntimeError('original candidate postimage changed: '+relative)
+    mode=expected_input.get(relative,('100644','blob',''))[0]
+    expected_input[relative]=(mode,'blob',oid_bytes(content.encode()))
+target=pathlib.Path('/data/root-provider-context-20261112-df05-v3-target')
+if target.exists():
+    raise RuntimeError('test target exists before first native build; reconcile')
+if not os.access(target.parent,os.W_OK) or shutil.disk_usage(target.parent).free<10*1024**3:
+    raise RuntimeError('isolated target capacity gate failed')
+env['CARGO_TARGET_DIR']=str(target)
+materialize(host_dir,expected_input,evidence/'materialization-host.json')
+visible=set(git(host_dir,'diff','--name-only').splitlines())|set(git(host_dir,'ls-files','--others','--exclude-standard').splitlines())
+if visible-set(data['files']):
+    raise RuntimeError('unexpected source modifications outside the candidate')
+emit({'phase':'v3_resume_preflight','base':base,'expected_tree':expected_tree,'target':str(target),'free_bytes':shutil.disk_usage(target.parent).free,'actor':actor()})
+reconstruction=command(host_dir/'codex-rs',['/home/qian-qi/.cargo/bin/just','fmt','--base',base],evidence/'reconstruct-fmt-resume-v2.log',base)
+if reconstruction['exit_code'] or not reconstruction['process_group_quiescent']:raise RuntimeError('reconstruction formatter failed')
+git(host_dir,'add','--',*data['files'])
+if git(host_dir,'write-tree')!=expected_tree or git(host_dir,'diff','--name-only'):raise RuntimeError('reconstructed tree differs from frozen source')
+git(host_dir,'reset','--mixed','HEAD','--',*data['files'])
+git(host_dir,'switch','-c',branches['journal'])
+automation=[p for p in data['files'] if p.startswith('codex-rs/hepta-automation/')]
+host_files=[p for p in data['files'] if p.startswith('codex-rs/hepta-agentd/')]
+if set(automation+host_files)!=set(data['files']):raise RuntimeError('unassigned source files')
+git(host_dir,'add','--',*automation)
+git(host_dir,'commit','-m','fix(automation): retain provider context and fence obsolete receipt writers')
+s1=git(host_dir,'rev-parse','HEAD')
+git(host_dir,'switch','-c',branches['host'])
+git(host_dir,'add','--',*host_files)
+git(host_dir,'commit','-m','fix(agentd): reconcile effects only through their original provider context')
+s2=git(host_dir,'rev-parse','HEAD')
+if git(host_dir,'rev-parse','HEAD^{tree}')!=expected_tree or not clean(host_dir,s2):raise RuntimeError('final source gate failed')
+subprocess.run(['git','-C',str(seed),'worktree','add',str(journal_dir),branches['journal']],env=env,check=True)
+materialize(journal_dir,tree_map(journal_dir,s1),evidence/'materialization-journal.json')
+if not clean(journal_dir,s1) or not clean(host_dir,s2):raise RuntimeError('physical source freeze failed')
+source_metadata={'base':base,'source_journal':s1,'source_host':s2,'expected_full_tree':expected_tree,'journal_tree':git(journal_dir,'rev-parse','HEAD^{tree}'),'host_tree':git(host_dir,'rev-parse','HEAD^{tree}'),'target':str(target)}
+write(evidence/'source-metadata.json',json.dumps(source_metadata,indent=2))
+emit({'phase':'native_sources_frozen',**source_metadata})
+results={}
+stages=[
+ ('journal',journal_dir,s1,'codex-hepta-automation',base,['preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile','altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact','taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen']),
+ ('host',host_dir,s2,'codex-hepta-agentd',s1,['host_recovery_keeps_original_target_across_signed_provider_reconfiguration','host_recovery_missing_original_context_never_queries_current_provider'])]
+for stage,path,source,pkg,fmt_base,names in stages:
+    if not clean(path,source):raise RuntimeError('dirty source before native stage')
+    stage_dir=evidence/stage;stage_dir.mkdir()
+    for source_name in ['reconstruct-fmt.log','reconstruct-fmt-resume-v2.log','materialization-host.json','materialization-journal.json']:
+        write(stage_dir/source_name,(evidence/source_name).read_bytes())
+    before=tree_map(path,source)
+    manifest={'source_commit':source,'source_tree':git(path,'rev-parse',source+'^{tree}'),'complete_entry_count':len(before),'complete_physical_verified':True,'index_hidden_entries':0,'complete_map_sha256':tree_digest(before),'candidate_entries':{p:before[p] for p in data['files'] if p in before}}
+    write(stage_dir/'source-manifest.json',json.dumps(manifest,indent=2,sort_keys=True))
+    preflight={'actor':actor(),'origin':origin(path),'source_commit':source,'target':str(target),'base':fmt_base,'tool_versions':{n:subprocess.check_output([n,'--version'],cwd=path/'codex-rs',env=env,text=True).strip() for n in ['cargo','rustc','rustfmt','just']},'flags':{k:env[k] for k in ['RUSTUP_TOOLCHAIN','CARGO_BUILD_JOBS','CARGO_PROFILE_DEV_DEBUG','CARGO_PROFILE_TEST_DEBUG','CARGO_INCREMENTAL','NEXTEST_TEST_THREADS','CARGO_TERM_COLOR']}}
+    write(stage_dir/'preflight.json',json.dumps(preflight,indent=2))
+    test=command(path/'codex-rs',['/home/qian-qi/.cargo/bin/just','test','-p',pkg,'--status-level','all','--final-status-level','all'],stage_dir/'test.log',source)
+    fix=command(path/'codex-rs',['/home/qian-qi/.cargo/bin/just','fix','-p',pkg],stage_dir/'clippy-fix.log',source)
+    fmt=command(path/'codex-rs',['/home/qian-qi/.cargo/bin/just','fmt','--base',fmt_base],stage_dir/'fmt.log',source)
+    check=subprocess.run(['git','-C',str(path),'diff','--check'],env=env,capture_output=True,text=True)
+    write(stage_dir/'source-after.patch',subprocess.check_output(['git','-C',str(path),'diff','--binary'],env=env))
+    source_equal=clean(path,source)
+    logtext=re.sub(r'\x1b\[[0-9;]*m','',(stage_dir/'test.log').read_text(errors='replace'))
+    observed={name:bool(re.search(r'\bPASS\b[^\n]*'+re.escape(name),logtext)) for name in names}
+    prefix='evidence/root-provider-context-20261112-df05/native-'+stage+'/'
+    summary={'schema_version':1,'stage':stage,'source_commit':source,'source_tree':git(path,'rev-parse',source+'^{tree}'),'base':fmt_base,'evidence_prefix':prefix,'test':test,'fix':fix,'fmt':fmt,'expected_regressions_observed':observed,'source_after_equal':source_equal,'source_after_physical_verified':source_equal,'diff_check_exit':check.returncode,'native_scope_pass':test['exit_code']==0 and fix['exit_code']==0 and fmt['exit_code']==0 and all(observed.values()),'production_activation':False,'merge_authority':False,'original_v1_job_state':'UNKNOWN','original_v1_job_id':'1a1ceb1ea74-2564-17cd'}
+    write(stage_dir/'summary.json',json.dumps(summary,indent=2))
+    write(stage_dir/'commands.json',json.dumps([test,fix,fmt],indent=2))
+    if not source_equal or check.returncode or not all(x['process_group_quiescent'] for x in [test,fix,fmt]):
+        emit({'phase':'publication_blocked','stage':stage,'reason':'source or process-group integrity','summary':summary})
+        raise RuntimeError('integrity failed; logs remain outside repository')
+    actor();origin(path)
+    files=[p for p in sorted(stage_dir.iterdir()) if p.is_file()]
+    hashes={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in files}
+    write(stage_dir/'sha256-manifest.json',json.dumps(hashes,indent=2));files.append(stage_dir/'sha256-manifest.json')
+    allowed={}
+    for file in files:
+        relative=prefix+file.name;destination=path/relative
+        if destination.exists():raise RuntimeError('evidence path collision')
+        write(destination,file.read_bytes())
+        allowed[relative]=('100644','blob',git(path,'hash-object',str(destination)))
+    git(path,'add','-f','--',*allowed)
+    if set(git(path,'diff','--cached','--name-only').splitlines())!=set(allowed):raise RuntimeError('staged evidence allowlist mismatch')
+    git(path,'commit','-m','evidence: seal '+stage+' native provider context validation')
+    e=git(path,'rev-parse','HEAD');after=tree_map(path,e)
+    if any(after.get(p)!=v for p,v in allowed.items()):raise RuntimeError('evidence mode/blob mismatch')
+    retained={p:v for p,v in after.items() if p not in allowed}
+    if retained!=before or set(after)-set(before)!=set(allowed) or not clean(path,e):raise RuntimeError('complete evidence-child source comparison failed')
+    summary['evidence_commit']=e;results[stage]=summary
+    write(evidence/(stage+'-sealed-receipt.json'),json.dumps({'source_commit':source,'evidence_commit':e,'source_preserved_complete_tree':True,'complete_source_map_sha256':tree_digest(retained),'allowed_evidence':allowed},indent=2))
+    results[stage]['url']=publish(path,branches[stage],base_branch if stage=='journal' else branches['journal'],source,e,stage,summary)
+    write(evidence/'published-receipts.json',json.dumps(results,indent=2))
+emit({'phase':'complete','source_metadata':source_metadata,'results':results,'evidence_directory':str(evidence)})
