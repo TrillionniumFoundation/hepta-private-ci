@@ -16,14 +16,17 @@ B/C ownership, full physical-cost measurement, or whole-daemon/Root recovery.
 
 | Input | Exact source | Change |
 | --- | --- | --- |
-| #6035 | 086cc7d21bb958c348e352395f0355793ba2de94 | Accepted Submit survives response-waiter loss; original supervisor cancellation wins |
+| #6035 | 307dced98e8b40c1e8321a357e1af1cde3400fef | Original formatter successor of tested 086cc7d2; accepted Submit survives waiter loss |
 | #6034 | 21d2699b7ac7831f355f5acb9570a90da077dbe3 | Stage only the affected generation record; install after original durable append |
 | #6047 | 98730dda67417a93689835f4961d3e807abf107d | Preserve typed evaluation Pending/Indeterminate through original error wrappers |
 | #6018 | 95894b8c958a1fab691f7779942f5fb25b778f9f | Exact generic control-function locator with original negative source controls |
+| #6060 | 4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f | Explicit pinned resident v1/v2 transport and immutable initial-encoder reuse |
 
-All four inputs have the same actual common base, 3c8dabe. Their changed paths
-are disjoint. A combined source requires its own qualification; separate pass
-counts are not summed into a combined or ordinary-chain result.
+The original four repairs share actual common base 3c8dabe and 15 disjoint
+changed paths. Resident is based on the exact 21d2699b journal input and adds
+19 other paths. The learning formatter successor changes only its original
+handoff test file. A combined source requires its own qualification; separate
+pass counts are not summed into a combined or ordinary-chain result.
 
 The Windows containment remains an independent candidate, #6038, based on
 ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80. Its source, original deletion
@@ -57,6 +60,35 @@ The regression cases retain a historical 64 KiB result buffer through unrelated
 transitions and inject an actual writer-file failure without dropping the
 original lock. These are mechanism checks, not a throughput or fair-batching
 benchmark. Whole-history cold replay and the owner lock are still present.
+
+### Explicit immutable model and encoder reuse
+
+The existing main-to-generation-descriptor loader selects open_resident_files
+only for the pinned resident v1/v2 profiles. Actual no-follow opened asset
+descriptors, inode checks, complete manifest, executable/device identity and the
+existing ControlledCellGenerationPortV2 remain on the production path. Default
+one-shot transport is retained.
+
+One resident child is started lazily beneath admitted execution. It retains the
+immutable weights/public pair and a OnceLock initial encoding. Each request
+receives an independent deep state clone or its own complete supplied state,
+prefix and request digest. A changed manifest is rejected without discarding the
+original cache. The existing observed V2 delivery contract, portfolio, planning
+receipt and autoregressive text transitions remain in the actual proposal code.
+
+The transport serializes exchanges through bounded frames and capacity-one pipe
+channels. Waiting work retains its own cancellation and deadline; V2 budget is
+recomputed using the checked clock after transport contention. A failed
+post-send exchange poisons the session and never triggers automatic respawn.
+Unconfirmed child/pipe termination returns an error and leaves the original
+operation unresolved. Review also found and repaired the initial observed V2
+zero-clock path: typed Unavailable is no longer converted into terminal Rejected.
+Other malformed-input rejection semantics remain.
+
+This is bounded per-worker reuse. Resident RSS is not globally metered or
+reserved for its full lifetime, and the journal's native headroom is storage,
+not RAM admission. No automatic cross-Agent pool, fair global budget, Joint
+tensor microbatching or measured speed/energy improvement is claimed.
 
 ### Typed evaluation uncertainty
 
@@ -164,10 +196,17 @@ The three actual two-parent merges are d1ed6f28a5400b98a07f004e9afb13c298c3d6d0,
 60b6608012d241e5c57e6a052ecf86c50bcb5847 and
 3094bdffa883385c45f189bc704d36a971d085a5. GitHub readback confirms their exact
 parent lists and trees. The last merge changes precisely the 15 input paths;
-every resulting blob matches its original input. The preparation child adds
+every resulting blob matches its original input. The initial preparation child adds
 only this record and the exact convergence-branch trigger for the existing
-inference-maintenance workflow. No test command, expected assertion or owner
-boundary is replaced.
+inference-maintenance workflow.
+
+The handoff formatter successor is retained by actual two-parent merge
+654cb85ae53ac9ca7ec0d1a1eeca6b48e9336555. The reviewed resident input is retained
+by two-parent merge 30ac0f6c16022744918401c95d23d74166c42f19. Readback confirms
+the two parent lists/trees and all 20 exact added or updated input blobs. The
+follow-up preparation child updates this record and enables the existing Cell
+framework native workflow for this exact convergence branch. No test command,
+expected assertion or owner boundary is replaced.
 
 ## Qualification
 
@@ -182,11 +221,22 @@ its overall formatting failure. Those are input-source results only.
 The #6035 input at 086cc7d2 passed its original Shared Cell run
 43127066547/job130881735265: 1,269 native tests passed, 0 failed, 77 skipped,
 including all four new handoff cases. Its original fresh JUnit and source
-identity checks passed. Its separate daemon/Root/maintenance workflow was still
-running at preparation time.
+identity checks passed.
 
-At preparation time, evaluation-uncertainty native CI was queued. Windows
-containment native CI was running. No combined-source
+The same 086cc7d2 input also passed original daemon run
+43127066662/job130881735381: ordinary libraries 1,235 passed / 0 failed /
+78 skipped, and the exact actual-UID0 Root roster 12 passed / 0 failed.
+There were no retries. Both fresh JUnit records and before/after-test clean
+source inventories matched. These suites overlap and must not be summed.
+
+The subsequent original scoped fix/fmt and binary compile-only checks passed.
+Only learning_iteration_handoff_tests.rs changed; complete original formatter
+postimage blob 033e0e762525c320cdd4373933048b8a4147e60c is retained in successor
+307dced98e8b40c1e8321a357e1af1cde3400fef. Behavior tests belong to the original
+086cc7d2 source, not the formatter successor or the combined candidate.
+
+At preparation time, evaluation-uncertainty, resident and common-source CI were
+queued. Windows containment native CI was running. No combined-source
 pass, ordinary Adopt/NoUpdate chain or full daemon/Root cold-restart pass is
 claimed by this document. The managed local executor was unavailable; GitHub
 source operations and the original GitHub CI are the available execution path.
