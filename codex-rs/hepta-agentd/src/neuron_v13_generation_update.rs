@@ -101,6 +101,7 @@ impl AgentdV13GenerationUpdateInputsV1<'_> {
         }
         let artifacts = authorities
             .artifacts
+            .writer()?
             .lock()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         selected.revalidate(&artifacts, authorities.now()?)

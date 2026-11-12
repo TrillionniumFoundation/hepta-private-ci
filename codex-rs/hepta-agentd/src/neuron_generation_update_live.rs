@@ -1,9 +1,9 @@
 //! Live existing-authority checks for an installed generation owner.
 //!
 //! This module carries no issuer key and cannot issue a token. It retains the
-//! concrete artifact writer and original consumed FinalUse authority, alongside
-//! the independently protected Control current owner. The supplied clock keeps
-//! the existing host time contract; its presence is no attestation claim.
+//! original Artifact writer or the actual Root Initial client's concrete read
+//! view, and the original consumed FinalUse authority. The protected Control
+//! current remains independent. A supplied clock alone is no attestation claim.
 
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -25,11 +25,16 @@ use crate::neuron_generation_current::PublishedNeuronGenerationInitialV1;
 use crate::neuron_generation_current::PublishedNeuronGenerationUpdateV1;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
-/// Existing concrete owners, supplied explicitly by the trusted host. There
-/// is no default configuration, permissive callback or serialization path.
+#[path = "neuron_generation_artifact_readback.rs"]
+pub(crate) mod artifacts;
+use artifacts::GenerationArtifactOwnerV1;
+
+/// Existing concrete owners. The public constructor retains the original
+/// writer; only the actual Root Initial client can create its read-only branch.
+/// There is no default, permissive callback or serialization path.
 #[derive(Clone)]
 pub struct AgentdGenerationUpdateAuthoritiesV1 {
-    pub(crate) artifacts: Arc<Mutex<LearningArtifactOwnerService>>,
+    pub(crate) artifacts: GenerationArtifactOwnerV1,
     pub(crate) final_use: Arc<FinalUseAuthority>,
     pub(crate) clock: Arc<dyn AuthorityClock>,
 }
@@ -45,7 +50,7 @@ impl AgentdGenerationUpdateAuthoritiesV1 {
         // This is read-only and never claims a grant or repairs a frontier.
         final_use.current_external_frontier().map_err(invalid)?;
         Ok(Self {
-            artifacts,
+            artifacts: GenerationArtifactOwnerV1::Writer(artifacts),
             final_use,
             clock,
         })
@@ -120,6 +125,7 @@ impl LiveGenerationCurrent {
         publication: PublishedNeuronGenerationUpdateV1,
         expected: FinalUseBinding,
     ) -> Result<Arc<Self>, AgentdError> {
+        authorities.artifacts.writer()?;
         Self::from_publication(
             current,
             authorities,
@@ -177,15 +183,17 @@ impl LiveGenerationCurrent {
         let artifacts = self
             .authorities
             .artifacts
-            .lock()
+            .lock_initial()
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         let mut selected = self
             .selected
             .lock()
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        selected
-            .revalidate(
-                &artifacts,
+        artifacts
+            .readback()
+            .revalidate_owner(
+                &self.current,
+                &mut selected,
                 self.authorities
                     .clock
                     .now_unix_ms()
