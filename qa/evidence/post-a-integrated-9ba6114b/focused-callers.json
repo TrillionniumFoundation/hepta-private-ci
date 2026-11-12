@@ -1,0 +1,955 @@
+{
+  "schema": "hepta.post-a-installation.focused-callers.v1",
+  "start_unix": 1794481596.180368,
+  "end_unix": 1794481931.6730042,
+  "before": {
+    "head": "9ba6114b38e49ec828d3b9f965c0407d3fbecbc5",
+    "tree": "a958f897ae8fc69451efcf7bf2d03fd9bfef5915",
+    "status": "",
+    "source_files": 7519,
+    "sha256": "bfb3fa87989a1c51455af6bb84bdba09d1316c75f433ba2c4e6c15d64f0eefed"
+  },
+  "after": {
+    "head": "9ba6114b38e49ec828d3b9f965c0407d3fbecbc5",
+    "tree": "a958f897ae8fc69451efcf7bf2d03fd9bfef5915",
+    "status": "",
+    "source_files": 7519,
+    "sha256": "bfb3fa87989a1c51455af6bb84bdba09d1316c75f433ba2c4e6c15d64f0eefed"
+  },
+  "source_unchanged": true,
+  "full_caller_checker_run": false,
+  "results": [
+    {
+      "id": "root_registered_learning_checkpoint_writer",
+      "symbol": "RegisteredWriter::exchange_learning_checkpoint",
+      "callPattern": null,
+      "receiverType": "RegisteredWriter",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+      ]
+    },
+    {
+      "id": "root_original_learning_checkpoint_exchange",
+      "symbol": "LearningIterationCheckpointOwnerV1::exchange_learning_checkpoint",
+      "callPattern": null,
+      "receiverType": "LearningIterationCheckpointOwnerV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_scope_capture",
+      "symbol": "HostAuthorityService::seal_learning_checkpoint",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_learning_checkpoint\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"
+      ]
+    },
+    {
+      "id": "root_learning_same_service_serve",
+      "symbol": "HostAuthorityService::serve_learning_checkpoint",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_learning_checkpoint\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_purpose_send",
+      "symbol": "send_root_learning_handoff",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    },
+    {
+      "id": "root_learning_scoped_profile_constructor",
+      "symbol": "HostAuthorityLearningProfileV1::new_scoped_v2",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_open_original",
+      "symbol": "HostAuthorityService::open_q24_model_factory",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_q24_model_factory\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_capture_original",
+      "symbol": "HostAuthorityService::seal_q24_model_factory_offer",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_q24_model_factory_offer\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_serve_original",
+      "symbol": "HostAuthorityService::serve_q24_model_factory",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_q24_model_factory\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_purpose_send",
+      "symbol": "send_root_q24_model_factory_handoff",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    },
+    {
+      "id": "root_learning_live_profile_action",
+      "symbol": "HostAuthorityService::with_learning_profile",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_learning_profile\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+      ]
+    },
+    {
+      "id": "root_generation_publication_original_registration",
+      "symbol": "HostAuthorityService::enroll_generation_publication",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enroll_generation_publication\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_generation_publication_original_serve",
+      "symbol": "HostAuthorityService::serve_generation_publication",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_generation_publication\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_initial_learning_trust_activation",
+      "symbol": "LearningTrustPayloadV1::activate_pinned_genesis",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)activate_pinned_genesis\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_ledger_pin.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_initial_learning_trust_files.rs",
+        "codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs",
+        "codex-rs/hepta-agentd/src/root_historical_learning_trust_data.rs"
+      ]
+    },
+    {
+      "id": "cell_original_physical_witness_codec",
+      "symbol": "observe_original_file_anchor_v1",
+      "callPattern": "(?:read_original_file|observe_original_file_anchor_v1)\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_cell_files.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_ledger_files.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_task_data.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_observer.rs",
+        "codex-rs/hepta-neuron/src/cell_journal_observer.rs"
+      ]
+    },
+    {
+      "id": "root_initial_run_start_fixed_files",
+      "symbol": "RootInitialRunStartFilesV1::open_original_deployment",
+      "callPattern": null,
+      "receiverType": "RootInitialRunStartFilesV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_original_complete_task_context",
+      "symbol": "RootRetainedHistoricalCompleteTaskV1::with_original_historical_task",
+      "callPattern": null,
+      "receiverType": "RootRetainedHistoricalCompleteTaskV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_original_complete_task_target",
+      "symbol": "RootOriginalHistoricalTaskReadV1::require_original_target",
+      "callPattern": null,
+      "receiverType": "RootOriginalHistoricalTaskReadV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_original_complete_task_observation",
+      "symbol": "RootOriginalHistoricalTaskReadV1::observe_original_task",
+      "callPattern": null,
+      "receiverType": "RootOriginalHistoricalTaskReadV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_original_complete_task_digest",
+      "symbol": "RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest",
+      "callPattern": null,
+      "receiverType": "RootOriginalHistoricalCompleteTaskObservationV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_original_complete_task_ledger_data",
+      "symbol": "RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data",
+      "callPattern": null,
+      "receiverType": "RootOriginalHistoricalCompleteTaskObservationV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_historical_task_read_cold_source",
+      "symbol": "RootHistoricalSourceInputsV1::open_original_source_deployment",
+      "callPattern": null,
+      "receiverType": "RootHistoricalSourceInputsV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_historical_task_read_profile",
+      "symbol": "HistoricalTaskReadProfileV1::require_original_context",
+      "callPattern": null,
+      "receiverType": "HistoricalTaskReadProfileV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs"
+      ]
+    },
+    {
+      "id": "root_historical_task_read_serve",
+      "symbol": "serve_optional",
+      "callPattern": "historical_read\\s*::\\s*serve_optional\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ]
+    },
+    {
+      "id": "root_historical_recipient_trust_activation",
+      "symbol": "HistoricalLearningTrustPayloadV1::activate_for_recipient",
+      "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)activate_for_recipient\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_learning_trust.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
+      ]
+    },
+    {
+      "id": "root_historical_recipient_trust_files",
+      "symbol": "RootHistoricalLearningTrustV1::open_original",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs"
+      ]
+    },
+    {
+      "id": "root_historical_recipient_trust_payload",
+      "symbol": "RootHistoricalLearningTrustV1::read_original_payload",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs"
+      ]
+    },
+    {
+      "id": "ledger_canonical_read_data_encode",
+      "symbol": "encode_readonly_ledger_data_v1",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs"
+      ]
+    },
+    {
+      "id": "ledger_canonical_read_data_decode",
+      "symbol": "decode_readonly_ledger_data_v1",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_historical_ledger_data.rs"
+      ]
+    },
+    {
+      "id": "ledger_snapshot_dataset_records",
+      "symbol": "LedgerSnapshot::read_dataset_records",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_projection.rs"
+      ]
+    },
+    {
+      "id": "q24_dataset_pure_original_projection",
+      "symbol": "project_original_q24_dataset_v1",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+      ]
+    },
+    {
+      "id": "root_original_learning_time",
+      "symbol": "HostAuthorityService::original_learning_unix_seconds",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_learning_trust.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs"
+      ]
+    },
+    {
+      "id": "original_task_data_validate",
+      "symbol": "RootHistoricalTaskPublicationDataV1::validate_against",
+      "callPattern": null,
+      "receiverType": "RootHistoricalTaskPublicationDataV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_task.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_protocol.rs"
+      ]
+    },
+    {
+      "id": "root_historical_task_publication_data",
+      "symbol": "RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data",
+      "callPattern": null,
+      "receiverType": "RootOriginalHistoricalCompleteTaskObservationV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_original_file_open",
+      "symbol": "PostAOriginalFile::retain_original_file",
+      "callPattern": null,
+      "receiverType": "PostAOriginalFile",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_original_file_read",
+      "symbol": "PostAOriginalFile::read_handle",
+      "callPattern": null,
+      "receiverType": "PostAOriginalFile",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_original_file_identity",
+      "symbol": "PostAOriginalFile::require_identity",
+      "callPattern": null,
+      "receiverType": "PostAOriginalFile",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_baseline_files_open",
+      "symbol": "PostABaselineFiles::retain_original_baseline",
+      "callPattern": null,
+      "receiverType": "PostABaselineFiles",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_baseline_files_read",
+      "symbol": "PostABaselineFiles::read_model",
+      "callPattern": null,
+      "receiverType": "PostABaselineFiles",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs"
+      ]
+    },
+    {
+      "id": "root_historical_recipient_trust_reply",
+      "symbol": "require_original_trust_reply",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+      ]
+    },
+    {
+      "id": "root_historical_fixed_operation",
+      "symbol": "HistoricalReadOperationV1::from_purpose",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_freeze_files_open",
+      "symbol": "PostAFreezeFiles::retain_original_freeze",
+      "callPattern": null,
+      "receiverType": "PostAFreezeFiles",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_freeze_completion",
+      "symbol": "PostAFreezeFiles::with_original_completion",
+      "callPattern": null,
+      "receiverType": "PostAFreezeFiles",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs"
+      ]
+    },
+    {
+      "id": "q24_dataset_pure_preparation_identity",
+      "symbol": "original_q24_dataset_preparation_identity_v1",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+      ]
+    },
+    {
+      "id": "q24_dataset_pure_freeze_execution_key",
+      "symbol": "original_q24_dataset_freeze_execution_key_v1",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_fixed_plan",
+      "symbol": "PostALearningRuntime::retain_original_plan",
+      "callPattern": null,
+      "receiverType": "PostALearningRuntime",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_derive_profile",
+      "symbol": "PostALearningRuntime::with_original_derived_profile",
+      "callPattern": null,
+      "receiverType": "PostALearningRuntime",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"
+      ]
+    },
+    {
+      "id": "root_learning_derived_checkpoint",
+      "symbol": "HostAuthorityService::prepare_original_derived_learning_checkpoint",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_reserve_same_service",
+      "symbol": "HostAuthorityService::reserve_q24_model_factory_for_profile",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs"
+      ]
+    },
+    {
+      "id": "root_historical_current_trust_capsule",
+      "symbol": "OriginalHistoricalTaskReadReceiptV1::activate_current_learning_trust",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_historical_current_trust_read",
+      "symbol": "OriginalHistoricalLearningTrustV1::with_current_trust",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+      ]
+    },
+    {
+      "id": "root_historical_current_trust_receipt",
+      "symbol": "OriginalHistoricalLearningTrustV1::require_original_receipt",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+      ]
+    },
+    {
+      "id": "root_historical_fixed_client_exchange",
+      "symbol": "RootHistoricalTaskReadClientV1::exchange",
+      "callPattern": null,
+      "receiverType": "RootHistoricalTaskReadClientV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+        "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
+      ]
+    },
+    {
+      "id": "q24_original_historical_dataset_ledger",
+      "symbol": "HistoricalDatasetLedgerV1::capture_original",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+      ]
+    },
+    {
+      "id": "q24_original_historical_dataset_read",
+      "symbol": "HistoricalDatasetLedgerV1::with_current",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+      ]
+    },
+    {
+      "id": "q24_original_historical_dataset_batch",
+      "symbol": "CellQ24TrainingBatchV1::from_original_historical_dataset",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+      ]
+    },
+    {
+      "id": "root_historical_ledger_snapshot_data",
+      "symbol": "RootHistoricalLedgerReadDataV1::read_snapshot",
+      "callPattern": null,
+      "receiverType": "RootHistoricalLedgerReadDataV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+      ]
+    },
+    {
+      "id": "q24_original_historical_preparation",
+      "symbol": "CellQ24DatasetFreezePreparationV1::capture_historical",
+      "callPattern": null,
+      "receiverType": "CellQ24DatasetFreezePreparationV1",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "q24_prepared_historical_dataset",
+      "symbol": "CellQ24PreparedLearningV1::from_historical",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+      ]
+    },
+    {
+      "id": "q24_preparation_live_writer",
+      "symbol": "OriginalDatasetLedgerV1::original_writer",
+      "callPattern": null,
+      "receiverType": "OriginalDatasetLedgerV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+      ]
+    },
+    {
+      "id": "q24_preparation_into_live_writer",
+      "symbol": "OriginalDatasetLedgerV1::into_original_writer",
+      "callPattern": null,
+      "receiverType": "OriginalDatasetLedgerV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+      ]
+    },
+    {
+      "id": "root_historical_current_trust_clock",
+      "symbol": "OriginalHistoricalLearningTrustV1::original_unix_seconds",
+      "callPattern": null,
+      "receiverType": "OriginalHistoricalLearningTrustV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+      ]
+    },
+    {
+      "id": "q24_historical_dataset_original_clock",
+      "symbol": "HistoricalDatasetLedgerV1::original_unix_seconds",
+      "callPattern": null,
+      "receiverType": "HistoricalDatasetLedgerV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs"
+      ]
+    },
+    {
+      "id": "q24_original_freeze_phase_clock",
+      "symbol": "CellQ24DatasetFreezePreparationV1::observed_unix_seconds",
+      "callPattern": null,
+      "receiverType": "CellQ24DatasetFreezePreparationV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+      ]
+    },
+    {
+      "id": "q24_historical_freeze_signing_config",
+      "symbol": "CellQ24DatasetFreezePreparationV1::original_historical_freeze_config",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "q24_historical_freeze_key_admission",
+      "symbol": "CellQ24DatasetFreezePreparationV1::validate_historical_freezer",
+      "callPattern": null,
+      "receiverType": "CellQ24DatasetFreezePreparationV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_prepare_installation",
+      "symbol": "PostALearningRuntime::prepare_original_installation",
+      "callPattern": null,
+      "receiverType": "PostALearningRuntime",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_learning_strict_reply",
+      "symbol": "require_post_a_learning_reply",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_learning_install_original",
+      "symbol": "OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_post_a_learning_scope_ack",
+      "symbol": "OriginalPostAFrozenLearningAckV1::require_prepared_scope",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_post_a_install_provider",
+      "symbol": "HistoricalTaskReadRuntime::install_original_frozen_learning",
+      "callPattern": null,
+      "receiverType": "HistoricalTaskReadRuntime",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs"
+      ]
+    },
+    {
+      "id": "root_original_owner_absolute_end",
+      "symbol": "OwnerChannel::limit_original_end",
+      "callPattern": null,
+      "receiverType": "OwnerChannel",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+      ]
+    },
+    {
+      "id": "root_original_peer_absolute_end",
+      "symbol": "HostAuthorityPeerChannel::limit_original_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityPeerChannel",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs",
+        "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+      ]
+    },
+    {
+      "id": "root_late_learning_checkpoint_until",
+      "symbol": "HostAuthorityService::serve_learning_checkpoint_until",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_late_learning_checkpoint_core",
+      "symbol": "HostAuthorityService::serve_learning_checkpoint_with_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_late_q24_model_factory_until",
+      "symbol": "HostAuthorityService::serve_q24_model_factory_until",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+      ]
+    },
+    {
+      "id": "root_late_q24_model_factory_core",
+      "symbol": "HostAuthorityService::serve_q24_model_factory_with_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_late_generation_publication_until",
+      "symbol": "HostAuthorityService::serve_generation_publication_until",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_late_generation_publication_core",
+      "symbol": "HostAuthorityService::serve_generation_publication_with_end",
+      "callPattern": null,
+      "receiverType": "HostAuthorityService",
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_late_learning_listener_until",
+      "symbol": "Session::learning::serve_optional_until",
+      "callPattern": "learning\\s*::\\s*serve_optional_until\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs"
+      ]
+    },
+    {
+      "id": "root_late_q24_model_listener_until",
+      "symbol": "Session::q24_model::serve_optional_until",
+      "callPattern": "q24_model\\s*::\\s*serve_optional_until\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_late_generation_publication_listener_until",
+      "symbol": "Session::generation_publication::serve_optional_until",
+      "callPattern": "generation_publication\\s*::\\s*serve_optional_until\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_bound_learning",
+      "symbol": "BoundLearning::bind",
+      "callPattern": null,
+      "receiverType": "BoundLearning",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_installation_prepare",
+      "symbol": "post_a_worker::prepare",
+      "callPattern": "post_a_worker\\s*::\\s*prepare\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_installation_submit",
+      "symbol": "PostALearningSubmitter::submit",
+      "callPattern": null,
+      "receiverType": "PostALearningSubmitter",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_installation_serve",
+      "symbol": "post_a_worker::serve_optional",
+      "callPattern": "post_a_worker\\s*::\\s*serve_optional\\s*\\(",
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs"
+      ]
+    },
+    {
+      "id": "root_post_a_installation_run",
+      "symbol": "run_installation",
+      "callPattern": null,
+      "receiverType": null,
+      "receiverMethods": [],
+      "productCallers": []
+    },
+    {
+      "id": "root_post_a_enable",
+      "symbol": "PreparedHostAuthoritySession::enable_original_post_a_learning_from_deployment",
+      "callPattern": null,
+      "receiverType": "PreparedHostAuthoritySession",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ]
+    }
+  ],
+  "errors": [],
+  "protected_rows": 572,
+  "inventory_rows": 727,
+  "selected_rows": 88,
+  "source_files": 6620,
+  "exit_code": 0,
+  "log_bytes": 33167,
+  "log_sha256": "48ef7f36d75348a982ee25d2f3ba750316ed25f66bae06420cff223b8ec958bc",
+  "native_executed": false
+}
