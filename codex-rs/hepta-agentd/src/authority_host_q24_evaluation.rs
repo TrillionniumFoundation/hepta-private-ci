@@ -18,3 +18,6 @@ mod record;
 
 #[path = "authority_host_q24_evaluation_deployment.rs"]
 mod deployment;
+
+#[path = "authority_host_q24_evaluation_provider.rs"]
+mod provider;

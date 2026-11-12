@@ -214,7 +214,13 @@ impl OriginalBRecord {
         if self.poisoned.load(Ordering::Acquire) {
             return Err(io::Error::other("original B owner was refused"));
         }
-        let loaded = self.store.load(&self.owner).map_err(io::Error::other)?;
+        let loaded = match self.store.load(&self.owner) {
+            Ok(loaded) => loaded,
+            Err(error) => {
+                self.poisoned.store(true, Ordering::Release);
+                return Err(io::Error::other(error));
+            }
+        };
         if loaded.schema != 1
             || loaded.purpose != "runtime.learning.independent-b-registration.v1"
             || loaded.initial_head != self.initial_head
