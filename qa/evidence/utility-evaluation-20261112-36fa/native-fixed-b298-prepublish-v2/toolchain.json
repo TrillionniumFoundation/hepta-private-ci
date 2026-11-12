@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "-c",
+    "import subprocess; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']]; [subprocess.run(c,check=True) for c in commands]"
+  ],
+  "execution": {
+    "log_bytes": 415,
+    "log_sha256": "6c72114ad2667b12c3e486c8d80e7d74876bb6757ec198df455da1536061ccbe",
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "timed_out": false
+  },
+  "finished_at": "2026-11-12T13:24:30.778960+00:00",
+  "name": "toolchain",
+  "requested_at": "2026-11-12T13:24:30.611798+00:00",
+  "timeout_seconds": 120
+}

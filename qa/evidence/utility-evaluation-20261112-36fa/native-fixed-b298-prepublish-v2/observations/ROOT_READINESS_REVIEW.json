@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.utility.native-v2-readiness-root-review.v1",
+  "observed_at": "2026-11-12 13:35:27 UTC",
+  "status": "originals-and-preparation-reviewed-maintenance-still-running",
+  "facts": [
+    {
+      "key": "native_prepublish_v2_ready",
+      "blob": "2eb5b7d26a99a4170ccbcae7a7b6758baff915b1",
+      "bytes": 3206,
+      "sha256": "af335de75d13b9d2e1d1b3c1ac8eb33c6193bb91a391028c80dcb22c32be96d5"
+    },
+    {
+      "key": "native_prepublish_v2_cache_before",
+      "blob": "99dc160e0dfc58e6fc8f4412274d4dc8c455197e",
+      "bytes": 670,
+      "sha256": "63905fd15bc3ee222b189ff98a30cfc3f32003813ec170f7435ea8e7dad097a1"
+    },
+    {
+      "key": "native_prepublish_v2_cache_after",
+      "blob": "00645b3597d4886239fee963a83a9150b62bf5cf",
+      "bytes": 470,
+      "sha256": "95c3eb5ad7044736e498dd2da40e138887d43dc38aae11da5b1f66d42786c594"
+    },
+    {
+      "key": "native_prepublish_v2_toolchain_result",
+      "blob": "d30a23ed3352b53692124bcc7b191ae4e2135b03",
+      "bytes": 673,
+      "sha256": "6a0a2d8448fd1fb7d23d66cfb01ab4ee24eb61c179917088d3a03a2667725f23"
+    },
+    {
+      "key": "native_prepublish_v2_fix_start_state",
+      "blob": "f69103e6b21b2c93c2d0df702088ba8e1f088452",
+      "bytes": 430,
+      "sha256": "3ce4d9eda20719d22bf55f46b588f2d38945edd54d8fa4be38c9a9da6de22dee"
+    },
+    {
+      "key": "native_exact_wrapper_v2",
+      "blob": "c502e3da3890cf3efbb2f29767b1007349a86686",
+      "bytes": 10298,
+      "sha256": "b0c087fa5310d75d801729b4392e10a062f34bad8a83a03e3845b32319020ed6"
+    },
+    {
+      "key": "native_exact_wrapper_v3",
+      "blob": "5be7e21dff083c19c2b56c75964d6fa1a765a412",
+      "bytes": 11299,
+      "sha256": "7242b1b797663163b3820f5a17b891d6842c401789e48b93f172384fc419f683"
+    },
+    {
+      "key": "native_exact_wrapper_v3_ordinary_review",
+      "blob": "5da31885d0e29a0afa86365616e5c06a39aa83e1",
+      "bytes": 6800,
+      "sha256": "ab4ca80ab469fa3092e44b3abae2b4b44cf659faa35b741c8841c517623c3473"
+    },
+    {
+      "key": "native_prepublish_v2_initial_compiler_prefix",
+      "blob": "bbb084b5658192da687b6048d7c5cb0f89383217",
+      "bytes": 8180,
+      "sha256": "72eb2ed25b4edc1bbb5617c471fecc026aa76a2181a4fef060b0730a4639e4ee"
+    },
+    {
+      "key": "native_prepublish_v2_initial_compiler_prefix_scope",
+      "blob": "680db67163e7e11acc4762dcbe6fad9080f730b2",
+      "bytes": 784,
+      "sha256": "aa50a923c68733f15f3887008ccc051bf503e78a472f911019db50292aabf6af"
+    },
+    {
+      "key": "literature_note",
+      "blob": "33bd3eddbda129f14ce9f95495590c4e0e5976ae",
+      "bytes": 3579,
+      "sha256": "37df1b245ff34a8a499f04dcb67716eed6ae3097083a39747943579e449869c3"
+    }
+  ],
+  "checks": [
+    "All eleven full UTF-8 Git objects independently byte/SHA256/Git verified",
+    "Complete actual a8 source and independent retained e8 inventory metadata agree with previously reconstructed original inventories",
+    "Prior maintenance failed after source application and before any Cargo command; no source replay",
+    "New dedicated cache creation recorded with original target still absent, disappearance cause Unknown",
+    "Actual toolchain command exited zero, zero tests",
+    "Original scoped fix entered with unchanged 7200-second budget",
+    "Actual 8180-byte clippy compiler prefix hash and bounded observation scope verified; not a final log",
+    "Both prepared wrappers AST-parse; root read full corrected control flow and exact diff, with independent ordinary review"
+  ],
+  "not_claimed": [
+    "maintenance completion",
+    "final source commit",
+    "source/caller/native tests",
+    "all 17 stack failures resolved",
+    "original authorized ordinary A/B/C utility",
+    "daemon/Root acceptance"
+  ]
+}

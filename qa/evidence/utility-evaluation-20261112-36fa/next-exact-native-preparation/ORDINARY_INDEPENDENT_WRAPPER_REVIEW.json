@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.utility.next-native-wrapper-independent-review.v1",
+  "reviewer": "/root/ordinary_path",
+  "status": "static_preparation_review_passed",
+  "tests_executed": false,
+  "source_mutations": 0,
+  "launches": 0,
+  "reviewed_inputs": {
+    "original_e8_wrapper": {
+      "git_blob_sha": "c7bad97b0a18847ca85db60eda66d4578e613c6f",
+      "bytes": 10151,
+      "sha256": "10c39bc2c12a56016fcb95b3ae78512ba33c20e4d8450581435e77706309f9cb"
+    },
+    "first_candidate": {
+      "git_blob_sha": "c502e3da3890cf3efbb2f29767b1007349a86686",
+      "bytes": 10298,
+      "sha256": "b0c087fa5310d75d801729b4392e10a062f34bad8a83a03e3845b32319020ed6"
+    },
+    "corrected_candidate": {
+      "git_blob_sha": "5be7e21dff083c19c2b56c75964d6fa1a765a412",
+      "bytes": 11299,
+      "sha256": "7242b1b797663163b3820f5a17b891d6842c401789e48b93f172384fc419f683"
+    },
+    "original_native_driver": {
+      "git_blob_sha": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "bytes": 14986,
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "candidate_workflow": {
+      "git_blob_sha": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+      "bytes": 27811,
+      "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334"
+    },
+    "original_e8_case_name_receipt": {
+      "git_blob_sha": "30ff8f079947065509d51037157bcf9af2831cee",
+      "bytes": 15931,
+      "sha256": "91ec17599771f48276bee37e915a7120f320231dfeee3fb34984d630c3fd933c",
+      "use": "Bind the four exact regression FQNs only; no old 163-case result is inherited."
+    }
+  },
+  "exact_delta_review": {
+    "baseline_to_first_candidate": [
+      "verify_clean additionally requires the frozen expected full file count and full inventory SHA256.",
+      "CARGO_TARGET_DIR comes from the explicit frozen INPUT target, overriding stale inherited maintenance environment.",
+      "fmt --base comes from the explicit frozen INPUT fmt_base; the final intended value is e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd."
+    ],
+    "first_to_corrected_candidate": [
+      "positive_eval_cases must be a list of exactly four strings whose sorted values equal the four frozen distinct original regression names. Empty, duplicate or substituted sets cannot remove coverage obligations.",
+      "The final source comparison is equal/different only with both actual snapshots. Missing before or failed after is source_change=null plus an explicit unknown_missing_* comparison. Actual caught execution failures and exceptions remain retained as failed."
+    ],
+    "all_other_source_bytes_unchanged_between_each_pair": true,
+    "corrected_issue": "The old and first-candidate wrappers incorrectly emitted source_change=true when before was absent. The corrected wrapper preserves Unknown comparison instead of claiming observed mutation."
+  },
+  "execution_guards_review": {
+    "maintenance": "Exact 40-character source/tree, ordinary euid, original driver hash and original maintenance environment are checked. An exclusive source lock precedes toolchain/fix/fmt; any dirty source or full inventory mismatch stops. EXACT_CHECKOUT is emitted only after both full snapshots verify exact and equal; only then is the lock downgraded to shared.",
+    "eval_lib": "Original just test runs the complete intelligence-eval lib with original 3600-second budget, no retries, and fresh JUnit after quarantining any pre-existing report. Original collector success and 163 distinct unskipped successful cases are required, including the exact four named regressions.",
+    "focused_to_all": "The unchanged native driver is executed first with focused. Nonzero exit, timeout, output limit, missing/failed driver result, failure list or missing mixed-evidence testcase prevents all. The focused mixed-evidence testcase must occur exactly once without skipped/error/failure.",
+    "all_and_root": "The original all suite performs ordinary before Root. The original driver parses packages and Root parents from the frozen source workflow rather than carrying an old static list. Root requires the fresh /run child, euid check and original bind setup; its fresh JUnit must exactly equal all requested parent names. Cleanup/helper verification and final source snapshots remain original.",
+    "workflow_inventory": {
+      "root_parent_count": 32,
+      "package_count": 5,
+      "package_arguments_count": 10,
+      "retention_auth_parent_count": 4,
+      "dynamic_workflow_ast_parse_used": true
+    },
+    "failed_vs_unknown": "The wrapper's failed status is an observed preparation/native gate failure, not product Ineligible or NoUpdate. Source comparison Unknown is explicit after the repair. Transport acknowledgment timeouts or unavailable final files remain external observation Unknown; they do not create a wrapper result or authorize relaunch.",
+    "raw_retention": "Original run records and full logs precede stage archive; actual run, collection and child-driver fields are retained. No failure is converted into PASS, no result is inherited, and no test timeout or filter changed."
+  },
+  "frozen_four": [
+    "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+    "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+    "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+    "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+  ],
+  "checks_performed": [
+    "Full immutable GitHub content reads",
+    "Independent byte count/SHA256/Git blob verification",
+    "Python AST parsing without importing or executing wrapper/driver code",
+    "Exact unified byte-level diff of the two preparation increments",
+    "Static control-flow and raw/JUnit lifecycle review",
+    "Independent equality of frozen four names to the old raw coverage record"
+  ],
+  "conditions_before_execution": [
+    "Root must publish and read back the final canonical commit and tree.",
+    "The final frozen INPUT must bind that source/tree, actual repository, dedicated external target, fmt_base=e8, complete expected file count/inventory, new records path and the exact four names.",
+    "No final input or new gate was created or launched by this review. Native maintenance is owned by the native agent; source gates still wait for the final canonical clean signal.",
+    "Any source change from future maintenance requires a new exact freeze; old candidate and diagnostic results remain bound to their own source identities."
+  ],
+  "qualification": "Preparation review only. No native behavior, original complete source gate, actual authorized A/B/C or daemon/Root cold recovery has passed by this review."
+}
