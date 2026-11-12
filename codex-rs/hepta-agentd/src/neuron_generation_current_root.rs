@@ -7,6 +7,14 @@ use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use super::*;
 
 impl NeuronGenerationCurrentOwnerV1 {
+    pub(crate) fn require_original_root_historical_receipt(
+        &self,
+        original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+    ) -> Result<(), AgentdError> {
+        self.store
+            .require_original_root_historical_receipt(original)
+    }
+
     pub(crate) fn original_broker_head(&self) -> Result<CurrentHead, AgentdError> {
         if !self.store.is_original_host() {
             return Err(invalid(

@@ -102,6 +102,28 @@ impl RootGenerationPublicationConnectionV1 {
         self.require_original_publication_session()
     }
 
+    /// Compare the actual read-only connection held by another original lane.
+    /// This predicate exports no verifier and cannot construct a connection.
+    pub(crate) fn require_original_reader_identity(
+        &self,
+        original: &HostAuthorityPublicBootstrapV1,
+        identity: &AgentdIdentity,
+        authority: &ProductionAuthorityLease,
+        verifier: &Arc<dyn ProductionAuthorityVerifier>,
+    ) -> Result<(), AgentdError> {
+        self.require_original_publication_session()?;
+        if !Arc::ptr_eq(&self.verifier, verifier)
+            || &self.identity != identity
+            || serde_json::to_vec(&self.original)? != serde_json::to_vec(original)?
+            || self.authority.grant_digest != authority.grant_digest
+        {
+            return Err(refused(
+                "historical read uses another original Root session",
+            ));
+        }
+        self.require_original_publication_session()
+    }
+
     /// This invokes only the original read-only verifier/cache. It must not
     /// enter either FinalUse owner: publication runs inside its dispatch lock.
     pub(crate) fn require_original_publication_session(&self) -> Result<(), AgentdError> {
