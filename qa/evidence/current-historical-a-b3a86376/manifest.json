@@ -1,0 +1,25 @@
+{
+  "head": "b3a86376419b8a8b9d861518aeed8075d9499ba9",
+  "tree": "c1162dd7f6765afd84ae3b57b72d3aa0e4b3a941",
+  "prerequisite": "786074d0e8e40678b4b4dfd19e3a3134f46e3673",
+  "files": [
+    "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+    "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+    "codex-rs/hepta-agentd/src/root_generation_current_history.rs",
+    "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_connection.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+  ],
+  "fmt": "actual just fmt --base 786074d0 exit0",
+  "diff_check": "PASS",
+  "source_qa": "NOT_RUN for new source",
+  "native": "NOT_RUN",
+  "product_caller": "not connected in this stage",
+  "boundary": "Recover existing published CURRENT from same-Root historical A; does not reopen A writers or recover C execution under a new identity",
+  "bundle_bytes": 5063,
+  "bundle_sha256": "73ceea1d2e9a8ed8608d7b60914ee472a237043994edb7ebf7e5bb2bbbd1b52d"
+}
