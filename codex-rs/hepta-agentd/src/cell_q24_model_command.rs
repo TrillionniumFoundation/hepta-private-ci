@@ -20,6 +20,10 @@ use codex_hepta_types::Digest32;
 mod client;
 #[path = "cell_q24_model_command_connection.rs"]
 mod connection;
+#[path = "cell_q24_model_read_operation.rs"]
+mod read_operation;
+pub(crate) use read_operation::OriginalCellQ24ModelReadV1;
+pub(crate) use read_operation::OriginalCellQ24ModelReadCompletionV1;
 #[path = "cell_q24_model_command_context.rs"]
 pub(super) mod context;
 #[path = "cell_q24_model_command_wire.rs"]

@@ -15,7 +15,7 @@ pub(super) enum Observed {
     Pending,
     Completed(CellQ24ModelProposalReceiptV1),
 }
-fn observe(result: Result<CellQ24ModelProposalReceiptV1, Error>) -> Result<Observed, Error> {
+pub(super) fn observe(result: Result<CellQ24ModelProposalReceiptV1, Error>) -> Result<Observed, Error> {
     match result {
         Ok(receipt) => Ok(Observed::Completed(receipt)),
         Err(Error::Stage(OriginalCellQ24TrainingStageErrorV1::ModelProposal(
@@ -32,6 +32,9 @@ impl OriginalCellQ24ModelCommandHostV1 {
         &self,
         request: &wire::Request,
     ) -> Result<wire::Outcome, Error> {
+        if !matches!(request.action, wire::Action::Execute | wire::Action::Readback) {
+            return Err(Error::Binding("original staged Model route required"));
+        }
         let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
         if state.fenced {
             return Err(Error::CommitUncertain);
@@ -117,6 +120,11 @@ impl OriginalCellQ24ModelCommandHostV1 {
                         &context,
                         before,
                     ))?
+                }
+                wire::Action::BeginOriginalRead
+                | wire::Action::ReadOriginalPage { .. }
+                | wire::Action::FinishOriginalRead { .. } => {
+                    return Err(Error::Binding("original staged Model route required"));
                 }
             };
             let (after, material, fresh) =

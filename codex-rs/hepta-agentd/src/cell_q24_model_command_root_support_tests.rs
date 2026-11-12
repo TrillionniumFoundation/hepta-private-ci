@@ -207,6 +207,80 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
         Ok(read)
     }
 
+    /// A genuine original Model record alone cannot release a staged result.
+    /// This peer intentionally sends invalid E data, never a qualified panel.
+    pub(crate) async fn fixture_staged_read_rejects_unsealed_material(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        registration: OriginalCellEvaluationPanelRegistrationV1,
+        completed: LearningIterationSnapshotV1,
+        signatures: [SignedLearningEvidenceV1; 4],
+        actual: CellQ24ModelProposalReceiptV1,
+        material_digest: Digest32,
+    ) -> anyhow::Result<()> {
+        let context = context(material, registration, &completed, &signatures)?;
+        let (client, mut peer) = fixture_client(context.clone(), FixtureAccess::Fresh)?;
+        let frames = Arc::new(AtomicUsize::new(0));
+        let observed = Arc::clone(&frames);
+        let server = std::thread::spawn(move || -> anyhow::Result<()> {
+            let invalid = b"{}";
+            let digest = Digest32::of_bytes(invalid).to_string();
+            for nonce in 1..=2 {
+                assert!(peer.exchange(|bytes| {
+                    let request: wire::Request = serde_json::from_slice(bytes)
+                        .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                    request.require_context(&context, nonce)
+                        .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                    let outcome = if nonce == 1 {
+                        if request.action != wire::Action::BeginOriginalRead {
+                            return Err(HostIssuerTransportError::InvalidRequest);
+                        }
+                        let wire::Outcome::Completed { record } = wire::encode_completed(
+                            &context,
+                            &actual,
+                            material_digest,
+                            now().map_err(|_| HostIssuerTransportError::InvalidRequest)?,
+                        ).map_err(|_| HostIssuerTransportError::InvalidRequest)? else {
+                            return Err(HostIssuerTransportError::InvalidRequest);
+                        };
+                        wire::Outcome::OriginalReadStarted {
+                            transfer: 1, record, total: invalid.len(), digest: digest.clone(),
+                        }
+                    } else {
+                        if request.action != (wire::Action::ReadOriginalPage { transfer: 1, index: 0 }) {
+                            return Err(HostIssuerTransportError::InvalidRequest);
+                        }
+                        wire::Outcome::OriginalReadPage {
+                            transfer: 1, index: 0, offset: 0, total: invalid.len(),
+                            digest: digest.clone(),
+                            bytes: base64::Engine::encode(
+                                &base64::engine::general_purpose::STANDARD_NO_PAD, invalid,
+                            ),
+                        }
+                    };
+                    observed.fetch_add(1, Ordering::SeqCst);
+                    serde_json::to_vec(&wire::Response { request, outcome })
+                        .map_err(|_| HostIssuerTransportError::InvalidRequest)
+                })?);
+            }
+            Ok(())
+        });
+        assert!(matches!(
+            client.begin_original_model_read().await,
+            Err(Error::Evaluation(_)),
+        ));
+        assert!(client.channel.lock().unwrap().is_none());
+        assert!(client.retained.lock().unwrap().is_none());
+        assert!(matches!(client.readback().await, Err(Error::Unavailable)));
+        assert!(matches!(
+            client.begin_original_model_read().await,
+            Err(Error::Unavailable),
+        ));
+        drop(client);
+        server.join().map_err(|_| anyhow::anyhow!("unsealed Model material peer"))??;
+        assert_eq!(frames.load(Ordering::SeqCst), 2, "no Finish or retried request");
+        Ok(())
+    }
+
     pub(crate) async fn fixture_unknown_does_not_recommit(
         material: OriginalCellQ24MaterialReceiptConfigV1,
         registration: OriginalCellEvaluationPanelRegistrationV1,

@@ -412,6 +412,8 @@ pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandErrorV1;
 pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandHostV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandReceiptV1;
+pub(crate) use learning_iteration_evidence_client::OriginalCellQ24ModelReadV1;
+pub(crate) use learning_iteration_evidence_client::OriginalCellQ24ModelReadCompletionV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdatePeerStreamV1;
 #[cfg(target_os = "linux")]
