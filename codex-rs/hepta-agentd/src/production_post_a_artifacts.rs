@@ -212,9 +212,10 @@ impl OriginalArtifactPlan {
             .map_err(refused)?
             .with_original_withdrawal_floor(Digest32::from_array(inputs.storage_binding), floor)
             .map_err(refused)?;
-            let paths = reader
-                .locate_selected_original_files(&verifier, &signed, now)
-                .map_err(refused)?;
+            let paths = LearningArtifactReadViewV1::locate_selected_original_files(
+                &reader, &verifier, &signed, now,
+            )
+            .map_err(refused)?;
             let input = OriginalCellQ24SelectionInputsV1 {
                 verifier: verifier.clone(),
                 signed: signed.clone(),
@@ -223,9 +224,10 @@ impl OriginalArtifactPlan {
                     payload: files.read(&paths.1)?,
                 },
             };
-            if reader
-                .locate_selected_original_files(&verifier, &signed, now)
-                .map_err(refused)?
+            if LearningArtifactReadViewV1::locate_selected_original_files(
+                &reader, &verifier, &signed, now,
+            )
+            .map_err(refused)?
                 != paths
             {
                 return Err(refused("actual independent selection files changed"));

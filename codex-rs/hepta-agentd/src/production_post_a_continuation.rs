@@ -84,7 +84,10 @@ impl OriginalPostAContinuationV1 {
         original: OriginalContinuationInputs,
     ) -> Result<Self, AgentdError> {
         post_a_remaining(original.end)?;
-        original.trust.require_original_receipt(&original.receipt)?;
+        OriginalHistoricalLearningTrustV1::require_original_receipt(
+            &original.trust,
+            &original.receipt,
+        )?;
         OriginalPreparedPublicationRoute::require_current(&original.publication)?;
         let recovering =
             OriginalCTaskPlan::require_original_mode(&original.task, &original.publication)?;
@@ -106,9 +109,10 @@ impl OriginalPostAContinuationV1 {
                 "continuation belongs to another actual delivery or aggregate",
             ));
         }
-        self.original
-            .trust
-            .require_original_receipt(&self.original.receipt)?;
+        OriginalHistoricalLearningTrustV1::require_original_receipt(
+            &self.original.trust,
+            &self.original.receipt,
+        )?;
         OriginalPreparedPublicationRoute::require_current(&self.original.publication)?;
         post_a_remaining(self.original.end)?;
         Ok(())
@@ -154,7 +158,7 @@ impl OriginalPostAContinuationV1 {
         RegisteredHistoricalLearningSourceV1::require_current_historical_source(
             &source, &identity,
         )?;
-        trust.require_original_receipt(&receipt)?;
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?;
         let snapshot = tokio::select! {
             _ = cancelled.cancelled() => return Ok(()),
             result = tokio::time::timeout_at(end.into(), successor.decision_snapshot()) => {
@@ -167,17 +171,17 @@ impl OriginalPostAContinuationV1 {
             selected,
             signed,
             custody: artifact_custody,
-        } = artifacts
-            .publish_and_select_original(
-                &publication,
-                Arc::clone(&owners),
-                snapshot.clone(),
-                final_use,
-                clock,
-                &mut files,
-                &cancelled,
-            )
-            .await?;
+        } = OriginalArtifactPlan::publish_and_select_original(
+            artifacts,
+            &publication,
+            Arc::clone(&owners),
+            snapshot.clone(),
+            final_use,
+            clock,
+            &mut files,
+            &cancelled,
+        )
+        .await?;
         require_continuation(&state, &identity, &cancelled, end)?;
         let recovering = OriginalCTaskPlan::require_original_mode(&task, &publication)?;
         OriginalGenerationFiles::require_original_lifecycle(&generation, recovering)?;
@@ -297,7 +301,8 @@ impl OriginalPostAContinuationV1 {
                 task_custody.require_original()?;
                 artifact_custody.require_original()?;
                 material.require_unchanged()?;
-                let original = generation.into_original_handoff(completed)?;
+                let original =
+                    OriginalGenerationFiles::into_original_handoff(generation, completed)?;
                 OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(
                     &owners, snapshot, original,
                 )
