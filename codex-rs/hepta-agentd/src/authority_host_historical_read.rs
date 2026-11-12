@@ -38,6 +38,9 @@ use crate::root_historical_task_read_protocol::WIRE_BOUND;
 
 #[path = "authority_host_completed_journal.rs"]
 mod completed_journal;
+#[path = "authority_host_completed_learning.rs"]
+mod completed_learning;
+pub(crate) use completed_learning::OriginalCompletedLearningContextV1;
 #[path = "authority_host_historical_learning_trust.rs"]
 mod learning_trust;
 #[path = "authority_host_post_a_learning.rs"]

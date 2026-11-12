@@ -20,6 +20,7 @@ mod learning;
 
 #[path = "authority_host_historical_read.rs"]
 mod historical_read;
+pub(crate) use historical_read::OriginalCompletedLearningContextV1;
 
 #[path = "authority_host_q24_model_session.rs"]
 mod q24_model;
