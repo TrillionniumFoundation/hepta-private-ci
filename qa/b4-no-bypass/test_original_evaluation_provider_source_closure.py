@@ -11,6 +11,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_evaluation_provider_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -30,17 +32,19 @@ SOURCE = AGENT + "circuit_task_source.rs"
 CURRENT = AGENT + "circuit_original_evaluation_cohort_readback.rs"
 PANEL_MEMBER = AGENT + "neuron_cell_evaluation_panel_member.rs"
 PANEL_BINDING = AGENT + "neuron_cell_evaluation_panel_binding.rs"
+CUSTODY = AGENT + "circuit_evaluation_cohort_custody.rs"
+PAIRED_EPISODE = AGENT + "circuit_on_policy_evaluation_episode.rs"
 EXPECTED = {
     "learning_original_evaluation_cohort_capture": (),
     "learning_original_evaluation_holdout_provider": (),
     "learning_original_evaluation_material_current": (CORE,),
-    "learning_original_source_policy_projection": (RECORDS,),
+    "learning_original_source_policy_projection": (RECORDS, PAIRED_EPISODE),
     "learning_original_evaluation_cohort_readback_retain": (CORE,),
     "learning_original_evaluation_cohort_readback_after_release": (),
     "learning_original_evaluation_cohort_readback_cold": (),
-    "learning_original_evaluation_cohort_readback_current": (CORE, PANEL_MEMBER),
-    "learning_original_evaluation_cohort_member_binding": (PANEL_BINDING,),
-    "learning_original_evaluation_cohort_final_authentication": (PANEL_MEMBER,),
+    "learning_original_evaluation_cohort_readback_current": (CORE, CUSTODY),
+    "learning_original_evaluation_cohort_member_binding": (CUSTODY,),
+    "learning_original_evaluation_cohort_final_authentication": (CUSTODY,),
 }
 
 
@@ -70,14 +74,14 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         marker_start = start if after is None else source.index(after, start, end + 1) + len(after)
-        offset = source.index(marker, marker_start, end + 1)
+        offset, marker_end = source_marker_span(source, marker, marker_start, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[marker_end:]
         with self.assertRaises(PROOF.VerificationFailure, msg=f"{path}: {function}: {marker}"):
             self.verifies(path, changed)
 
     def test_exact_cohort_capture_provider_and_original_policy_edges(self):
-        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, CURRENT, PANEL_MEMBER, PANEL_BINDING}
+        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, CURRENT, PANEL_MEMBER, PANEL_BINDING, CUSTODY, PAIRED_EPISODE}
         sources = {path: self.code((ROOT / path).read_text()) for path in paths}
         for identifier, expected in EXPECTED.items():
             with self.subTest(boundary=identifier):
