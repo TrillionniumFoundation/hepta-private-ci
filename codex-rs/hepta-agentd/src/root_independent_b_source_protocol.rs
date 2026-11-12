@@ -111,3 +111,27 @@ fn monotonic_ns() -> io::Result<u64> {
         .and_then(|value| value.checked_add(nanos))
         .ok_or_else(|| io::Error::other("original monotonic sample overflow"))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn original_b_source_end_transfer_never_renews_the_original_end() -> io::Result<()> {
+        let original = Instant::now() + Duration::from_millis(250);
+        let sealed = seal_original_end(original)?;
+        let received = receive_original_end(sealed)?;
+        assert!(received <= original);
+        assert!(received > Instant::now());
+        Ok(())
+    }
+
+    #[test]
+    fn original_b_source_end_rejects_expiry_and_a_new_oversized_lifetime() -> io::Result<()> {
+        assert!(seal_original_end(Instant::now()).is_err());
+        assert!(seal_original_end(Instant::now() + Duration::from_secs(301)).is_err());
+        assert!(receive_original_end(0).is_err());
+        assert!(receive_original_end(monotonic_ns()? + 301_000_000_000).is_err());
+        Ok(())
+    }
+}
