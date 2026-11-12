@@ -29,6 +29,8 @@ NAMESPACES = ("mnt", "pid", "net", "ipc", "uts", "user")
 _LOADED_LAUNCHER_SOURCE = Path(__file__).read_bytes()
 _BOOTSTRAP = r"""
 import json, os, resource, runpy
+# Bubblewrap may supply a fixed sandbox PWD after --clearenv.
+os.environ.pop("PWD", None)
 resource.setrlimit(resource.RLIMIT_FSIZE, (1048576, 1048576))
 resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 resource.setrlimit(resource.RLIMIT_NOFILE, (128, 128))
