@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-n128-engineering-static-audit-v1",
+  "status": "PASS_SOURCE_BOUND_HOLD",
+  "roster_identity": "1f874854559eea2d1eb6ac846428d5b2e3ffebabd569db4f066929e3564d6a3b",
+  "input_sha256": {
+    "law": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+    "json": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+    "npz": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d"
+  },
+  "capsules": 14,
+  "packet_tuples": 185,
+  "coordinate_spans": 625,
+  "fp64_coordinate_denominator": 4623492,
+  "conceptual_candidate_bytes": 36987936,
+  "conceptual_candidate_and_dense_oracle_bytes": 73975872,
+  "largest_capsule_bytes": 6960672,
+  "candidate_operators": 4,
+  "candidate_operator_nnz": 1522,
+  "unique_sparse_operator_bytes": 22384,
+  "templates_emitted": 71,
+  "transition_segments": 45,
+  "oracle_imports": [
+    "hashlib",
+    "json",
+    "math",
+    "struct",
+    "dataclasses",
+    "fractions",
+    "pathlib"
+  ],
+  "comparator_imports": [
+    "json",
+    "pathlib"
+  ],
+  "source_sha256": {
+    "__init__.py": "f164df35d321516f2aca47c3913d9ca360ef63db2376a5cb35278b12914ee69d",
+    "audit.py": "e8ef250d51ec377eefbc70aabb333de7a9ccedee5516db3871d80a26cf684b7b",
+    "candidate.py": "dbbd57a714ffb05166ec03e57fd3b58475374a6f06666de9d64474ad8619769c",
+    "compare.py": "018745b2080fcb112fc39291d1974c13214ae6e529bab0136789fd9a7530022c",
+    "oracle.py": "4165319631fa24a6065ae6a55000d68a33c6d2e94fe848b59e8805e824d739d6",
+    "test_engineering.py": "6f805facdfd5f743997d39844a001a09b8eb0e617f1fd7e2370bd0903f56cccc"
+  },
+  "predeclared_caps": {
+    "per_capsule_raw_bytes": 8388608,
+    "cumulative_logical_packet_bytes": 201326592,
+    "canonical_archive_bytes": 268435456,
+    "candidate_process_AS_bytes": 2147483648,
+    "oracle_process_AS_bytes": 2147483648,
+    "parent_process_AS_bytes": 536870912,
+    "total_CPU_hard_seconds": 900,
+    "wall_hard_seconds": 1200
+  },
+  "raw_size_caps_satisfied": true,
+  "dynamic_resource_safe": false,
+  "dynamic_resource_reason": "no frozen expm workspace/RSS bound or durable host+cgroup allocation",
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_numeric_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "numerical_execution_key": null,
+  "largegrid_qualification": false,
+  "admission": "HOLD_NO_NUMERICAL_EXECUTION",
+  "all_closed": false
+}

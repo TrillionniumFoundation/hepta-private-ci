@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-n128-engineering-run-receipt-v1",
+  "source_commit": "8926a9a62443ddcdc1828fd836004b353df0de77",
+  "small_fixture": {
+    "command": "python -m unittest -v qualification.hcsn_currentstate_n128_engineering.test_engineering",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "scope": "bounded fixture implementations and negative controls",
+    "timing_relation": "executed before the formatting-only source freeze; no test rerun after format per AGENTS.md"
+  },
+  "format": {
+    "just_fmt_attempt": "unavailable: just executable absent",
+    "equivalent_python_formatter": "uv run --frozen --project scripts ruff check --fix --fix-only ... && uv run --frozen --project scripts ruff format ...",
+    "format_check": "PASS",
+    "ruff_check": "PASS"
+  },
+  "frozen_source_static_audit": {
+    "status": "PASS_SOURCE_BOUND_HOLD",
+    "wall_seconds_shell_builtin": 0.128,
+    "user_cpu_seconds": 0.102,
+    "system_cpu_seconds": 0.025,
+    "output_sha256": "dba3d770ec35409df1b53ab505a5bbc59cea6bb539c97c4069e69dce52f8774e"
+  },
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_numeric_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "numerical_execution_key": null,
+  "admission": "HOLD_NO_NUMERICAL_EXECUTION",
+  "all_closed": false
+}
