@@ -119,13 +119,13 @@ impl RootDataRefusalV1 {
 
     pub(super) fn inspect<T>(&self, action: impl FnOnce() -> io::Result<T>) -> io::Result<T> {
         original_root()?;
-        if self.poisoned.load(Ordering::Acquire) {
-            return Err(io::Error::other("original data refusal handle is poisoned"));
-        }
         let _gate = self
             .gate
             .try_lock()
             .map_err(|_| io::Error::other("original data inspection is busy"))?;
+        if self.poisoned.load(Ordering::Acquire) {
+            return Err(io::Error::other("original data refusal handle is poisoned"));
+        }
         let before = self.load_matching()?;
         if before.phase != Phase::Ready {
             self.poisoned.store(true, Ordering::Release);
@@ -157,6 +157,9 @@ impl RootDataRefusalV1 {
         action: impl FnOnce() -> io::Result<T>,
     ) -> io::Result<T> {
         let result = action().and_then(|value| {
+            if self.poisoned.load(Ordering::Acquire) {
+                return Err(io::Error::other("original data poisoned before completion"));
+            }
             let mut ready = armed.clone();
             ready.phase = Phase::Ready;
             // Compare the complete attempt: a stale handle cannot clear a
@@ -164,6 +167,9 @@ impl RootDataRefusalV1 {
             self.store
                 .compare_and_set(&self.owner, armed, &ready)
                 .map_err(io::Error::other)?;
+            if self.poisoned.load(Ordering::Acquire) {
+                return Err(io::Error::other("original data changed during completion"));
+            }
             Ok(value)
         });
         if result.is_err() {
@@ -178,6 +184,10 @@ impl RootDataRefusalV1 {
     /// Failure is reported honestly if the refusal storage itself is unusable.
     pub(super) fn refuse(&self) -> io::Result<()> {
         original_root()?;
+        let _gate = self
+            .gate
+            .try_lock()
+            .map_err(|_| io::Error::other("original data refusal is busy"))?;
         self.poisoned.store(true, Ordering::Release);
         let observed = self.load_matching()?;
         if observed.phase == Phase::Refused {
@@ -245,3 +255,7 @@ fn binding(
         },
     ))
 }
+
+#[cfg(test)]
+#[path = "authority_host_data_refusal_tests.rs"]
+mod tests;
