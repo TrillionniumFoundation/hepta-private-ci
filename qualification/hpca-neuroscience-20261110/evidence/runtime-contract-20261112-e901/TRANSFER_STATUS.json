@@ -8,12 +8,27 @@
   "native_test_count": 39,
   "native_test_exit_code": 0,
   "native_test_stderr_sha256": "197317a3c9ecca539aea73812828746bec6cfbed0feb682996b91fe9e6ca5d1d",
-  "full_result_and_journal": "preserved on the original native worktree; GitHub raw-row transfer is pending",
+  "full_result_and_journal": "COMPLETE: original native bytes transferred, SHA256 verified, and stored in this tree",
   "archive_operation_key": "hpca-e901-archive-216-native-v1",
-  "archive_push_status": "UNKNOWN; never forced or replayed under a new key",
+  "archive_push_status": "UNKNOWN: original native git archival launch had no terminal receipt; normal push cannot overwrite the newer branch. No new-key replay. GitHub API transfer below is complete.",
   "source_followup": "is_assistant=False preflight guard and one synthetic counterexample; no replay of the 216 model attempts",
   "calibration": "MISSING",
   "future_sources": "MISSING",
   "old_task_retention": "MISSING",
-  "authority": "DENY_ALL_HOLD_NO_GO"
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "native_manifest_entries_verified": 13,
+  "journal_records": 433,
+  "journal_started": 216,
+  "journal_completed": 216,
+  "journal_sha256": "ceebabbcc323247c9afe2065f9f3be0fea7e09e2e261106cf524bf235c043e04",
+  "same_session_separate_reviewer": "COMPLETE: raw result, 433-record journal, source/preexecution bindings and native 39-test log checked independently by another agent; not external custody or independent task sampling",
+  "successor_source": "1609fa0c45c723fccc541e773967dc26a913c47a",
+  "successor_test_count": 40,
+  "successor_ci_last_observed": {
+    "run_id": 43133134819,
+    "head_sha": "1609fa0c45c723fccc541e773967dc26a913c47a",
+    "status": "queued",
+    "conclusion": null
+  },
+  "publication_method": "GitHub API normal fast-forward with expected parent lease; original model run was not repeated"
 }

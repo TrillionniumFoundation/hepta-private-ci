@@ -54,7 +54,8 @@ eight-token decoding and prior two-choice scoring have different work costs.
 The targeted workflow uses Python 3.12, read-only repository permissions,
 checkout of the exact source head, a five-minute timeout and retained raw test
 logs. It runs the eight inherited parser tests, five plan tests, fifteen
-archived-forward/provenance tests and eleven runtime-contract tests. The new
+archived-forward/provenance tests and twelve runtime-contract tests in the
+successor (eleven in the executed 0b75 source). The new
 negative cases cover hidden decoding controls, special-token changes, auxiliary
 asset changes, source changes, thread-budget changes, early task binding and
 interrupted/non-overwritable evidence.
@@ -64,8 +65,8 @@ At preparation time the managed executor became unavailable. The ai395
 configuration read, a read-only shell inspection and a read of two model
 configuration files returned MCP timeouts; no new native model run was
 submitted. The old replay job's retained succeeded status was readable, which
-does not establish live host access. The new 216-generation experiment remains
-NOT_STARTED until its own original process, full raw output and result exist.
+does not establish live host access. At that preparation stage the new 216-generation experiment was NOT_STARTED.
+Its later successful execution and complete retained originals are recorded below.
 
 No independent calibration set, future source or old-task retention panel has
 been supplied: all remain MISSING in PREEXECUTION. The exposed 60-prompt B2
@@ -74,7 +75,7 @@ selection, scientific gain, production adoption or native NoUpdate is claimed.
 
 ## Retained native observation and successor guard
 
-Execution source `0b75caf446a18807e527f8e2ed9937ae3cae515d` completed 39 targeted tests and the frozen 216 native generation attempts on ai395. The retained preexecution record identifies Python 3.14.4, torch 2.9.1+cpu, transformers 4.57.3, peft 0.18.0, and the original model plus eight adapters. Its effective `is_assistant` value is false. The native archive summary reports every output as token `[2]` (native EOS) and empty decoded text, yielding 0/24 valid responses in each of nine conditions on 24 public tasks. The preexecution record, original test log, native wrapper stdout and summary are retained under `evidence/runtime-contract-20261112-e901`; the transfer-status file distinguishes locally retained complete result/journal files from their still-pending GitHub transfer. An independent row-level audit must read those complete raw files before claiming a full re-score.
+Execution source `0b75caf446a18807e527f8e2ed9937ae3cae515d` completed 39 targeted tests and the frozen 216 native generation attempts on ai395. The retained preexecution record identifies Python 3.14.4, torch 2.9.1+cpu, transformers 4.57.3, peft 0.18.0, and the original model plus eight adapters. Its effective `is_assistant` value is false. The native archive summary reports every output as token `[2]` (native EOS) and empty decoded text, yielding 0/24 valid responses in each of nine conditions on 24 public tasks. The preexecution record, original test log, native wrapper stdout and summary are retained under `evidence/runtime-contract-20261112-e901`; the complete RESULT and 433-record journal are now also retained byte-for-byte in GitHub. A separate same-session reviewer checked every raw row, start/completion pair, terminal record and source/input binding. This is operator-evidence consistency review, not external custody or independent task sampling. TRANSFER_STATUS and RAW_REVIEW record the precise scope.
 
 A subsequent review of Transformers 4.57.3 found that `is_assistant=True` can activate confidence stopping while the generation mode still reports greedy. This successor adds one fail-closed field check and one counterexample test. It does not change the recorded execution source, rerun the model, or imply that confidence stopping occurred in the retained run. The earlier native 39-test result does not certify the successor test; its test result is recorded separately by the targeted workflow.
 
