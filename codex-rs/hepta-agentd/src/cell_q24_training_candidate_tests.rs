@@ -345,6 +345,14 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel()
 -> anyhow::Result<()> {
+    let started = std::time::Instant::now();
+    // Fixed test phases locate a timeout without changing its budget or coverage.
+    let report = |phase: &str, fault: Option<Fault>| {
+        eprintln!(
+            "HEPTA_CANDIDATE_MATERIAL_PHASE phase={phase} fault={fault:?} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+    };
     for fault in [
         Fault::WrongPage,
         Fault::WrongCompletion,
@@ -355,7 +363,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Fault::WrongFinishDigest,
         Fault::DropFinishAck,
     ] {
+        report("fault-fixture-start", Some(fault));
         let run = completed_candidate().await?;
+        report("fault-fixture-ready", Some(fault));
         let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
         let (connection, peer) = page_peer(
             Arc::clone(&run.owner),
@@ -372,10 +382,12 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             run.dataset.clone(),
             run.training.clone(),
         )?;
+        report("fault-readback-start", Some(fault));
         let error = match client.readback().await {
             Ok(_) => anyhow::bail!("invalid original page unexpectedly accepted: {fault:?}"),
             Err(error) => error,
         };
+        report("fault-readback-finished", Some(fault));
         match fault {
             Fault::WrongPage | Fault::WrongCompletion => assert!(matches!(
                 error,
@@ -403,6 +415,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             Err(CandidateError::Unavailable)
         ));
         drop(client);
+        report("fault-peer-join-start", Some(fault));
         if matches!(fault, Fault::DropFinishAck) {
             assert_eq!(peer.frames.load(Ordering::Acquire), 4);
             assert!(peer.finish().is_err(), "actual Finish was read before its ACK was lost");
@@ -416,14 +429,18 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
                 }
             );
         }
+        report("fault-peer-joined", Some(fault));
         assert_eq!(
             (run.fixture.training_bytes()?, run.fixture.bytes()?),
             original
         );
         run.close()?;
+        report("fault-fixture-closed", Some(fault));
     }
 
+    report("renewal-fixture-start", None);
     let run = completed_candidate().await?;
+    report("renewal-fixture-ready", None);
     let context = support::context(&run.fixture, &run.dataset);
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let mut renewed = run.training.attestation().clone();
@@ -488,19 +505,23 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Duration::from_secs(300),
     )?;
     let client = bind(connection, &run.fixture, run.dataset.clone(), renewed)?;
+    report("renewed-readback-start", None);
     assert!(matches!(
         client.readback().await,
         Err(CandidateError::Command(CommandError::Transport(_)))
     ));
+    report("renewed-readback-finished", None);
     assert!(matches!(
         client.readback().await,
         Err(CandidateError::Unavailable)
     ));
     drop(client);
+    report("renewed-peer-join-start", None);
     assert!(
         peer.finish().is_err(),
         "the actual original owner refuses a different full signature"
     );
+    report("renewed-peer-joined", None);
 
     let (connection, peer) = page_peer(
         Arc::clone(&run.owner),
@@ -525,6 +546,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     if let Ok(count) = peer.finish() {
         assert_eq!(count, 0);
     }
+    report("expired-window-peer-joined", None);
     let mut request = request(&context)?;
     request.page = candidate_wire::MAX_PAGES as u8;
     assert!(raw_page(Arc::clone(&run.owner), request).await.is_err());
@@ -533,8 +555,11 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         original
     );
     run.close()?;
+    report("renewal-fixture-closed", None);
 
+    report("withdrawal-fixture-start", None);
     let mut run = completed_candidate().await?;
+    report("withdrawal-fixture-ready", None);
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -560,24 +585,31 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         let client = Arc::clone(&client);
         async move { client.readback().await }
     });
+    report("withdrawal-first-page-wait", None);
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    report("withdrawal-first-page-reached", None);
     run.fixture.withdraw()?;
     release.send(())?;
+    report("withdrawal-readback-wait", None);
     assert!(matches!(
         pending.await?,
         Err(CandidateError::Command(CommandError::CommitUncertain))
     ));
+    report("withdrawal-readback-finished", None);
     assert!(matches!(
         client.readback().await,
         Err(CandidateError::Unavailable)
     ));
     drop(client);
+    report("withdrawal-peer-join-start", None);
     assert_eq!(peer.finish()?, 4);
+    report("withdrawal-peer-joined", None);
     assert_eq!(
         (run.fixture.training_bytes()?, run.fixture.bytes()?),
         original
     );
     drop(run.owner);
+    report("withdrawal-source-peers-join-start", None);
     let mut source_failure = false;
     for peer in run.peers {
         source_failure |= peer
@@ -589,8 +621,11 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         source_failure,
         "a real original source/evidence read must reject withdrawal"
     );
+    report("withdrawal-source-peers-joined", None);
 
+    report("cancel-fixture-start", None);
     let run = completed_candidate().await?;
+    report("cancel-fixture-ready", None);
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -616,12 +651,15 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         let client = Arc::clone(&client);
         async move { client.readback().await }
     });
+    report("cancel-first-page-wait", None);
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    report("cancel-first-page-reached", None);
     pending.abort();
     match pending.await {
         Err(error) => assert!(error.is_cancelled()),
         Ok(_) => anyhow::bail!("Candidate await was not cancelled"),
     }
+    report("cancel-waiter-aborted", None);
     assert!(matches!(
         client.readback().await,
         Err(CandidateError::Unavailable)
@@ -630,12 +668,15 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     drop(client);
     // The already-running Begin may return, but cancellation prevents every
     // later Page/Finish and the partial original channel is never restored.
+    report("cancel-peer-join-start", None);
     assert_eq!(peer.finish()?, 1);
+    report("cancel-peer-joined", None);
     assert_eq!(
         (run.fixture.training_bytes()?, run.fixture.bytes()?),
         original
     );
     run.close()?;
+    report("cancel-fixture-closed", None);
     Ok(())
 }
 

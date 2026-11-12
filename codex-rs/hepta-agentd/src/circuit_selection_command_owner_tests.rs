@@ -402,11 +402,22 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
         Err(OriginalCircuitSelectionCommandErrorV1::Missing)
     ));
     let before = f.bytes()?;
+    // Original evidence remains valid throughout its expiry second. Wait
+    // beyond that inclusive bound before testing refusal without an effect.
+    let invalid_from = expires_at
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("original evidence expiry overflow"))?;
     tokio::time::sleep(
-        Duration::from_secs(expires_at.saturating_sub(now()?)) + Duration::from_millis(100),
+        Duration::from_secs(invalid_from.saturating_sub(now()?)) + Duration::from_millis(100),
     )
     .await;
-    assert!(client.execute_selection().await.is_err());
+    assert!(now()? > expires_at);
+    assert!(matches!(
+        client.execute_selection().await,
+        Err(OriginalCircuitSelectionCommandErrorV1::Evidence(
+            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+        ))
+    ));
     assert!(matches!(
         client.readback().await,
         Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)

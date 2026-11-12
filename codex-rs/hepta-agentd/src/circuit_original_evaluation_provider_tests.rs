@@ -22,9 +22,10 @@ async fn preregistered() -> anyhow::Result<(
     BFixture,
     crate::OriginalCellEvaluationPanelRegistrationV1,
 )> {
-    let preview = support::admission("original-B-profile-preview").await?;
-    let objective = support::source(&preview, [Q, Q / 4])?.objective_digest;
-    drop(preview);
+    // Preregister against the very same signed source envelope that A uses.
+    // A second admission has its own request/time fields and semantic digest.
+    let admission = support::admission("positive-source-envelope-request").await?;
+    let objective = support::source(&admission, [Q, Q / 4])?.objective_digest;
     let at = now()?;
     let primary = BFixture::new("original-B", objective, at)?;
     let retention = BFixture::new("original-retention", objective, at)?;
@@ -32,8 +33,12 @@ async fn preregistered() -> anyhow::Result<(
         primary.task()?,
         vec![retention.task()?],
     )?;
-    let original =
-        PositiveFixture::ready_with_profile(registration.evaluation_profile(), at).await?;
+    let original = PositiveFixture::ready_with_admission(
+        admission,
+        registration.evaluation_profile(),
+        at,
+    )
+    .await?;
     assert_eq!(
         original.config.decision.request.envelope.objective_digest,
         objective

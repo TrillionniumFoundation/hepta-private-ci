@@ -1,0 +1,400 @@
+{
+  "schema": "hepta.learn.source-native-fixture-repair.v1",
+  "parent": {
+    "commit": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17",
+    "callers_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+    "boundaries": 710,
+    "protected_full_records": 489,
+    "rust_files": 6766
+  },
+  "actual_parent_result": {
+    "source_suite": "423 passed (Root original result)",
+    "native_cases": 190,
+    "native_passed": 166,
+    "native_failed": 23,
+    "native_timeout": 1,
+    "native_exit": 100,
+    "source_after": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "source_status_after": "",
+    "owner_groups": 41,
+    "ordinary_positive": 0,
+    "ordinary_no_update": 0,
+    "real_daemon_root_restart": 0
+  },
+  "evidence": [
+    {
+      "kind": "execution_log",
+      "git_blob": "a63c88170a768f85e4e5fcec1eea76ec118c9691",
+      "bytes": 189143,
+      "root_reported_sha256": "f87a4f1c5dfd62abbdebeac47a2a87a187f0cc45ce43e3b7a854f2878e78c63b",
+      "full_readback_git_sha_verified": true
+    },
+    {
+      "kind": "native_result",
+      "git_blob": "2cf7c33e6061041a898085ada79e4bb577a5bd54",
+      "bytes": 62645,
+      "full_readback_git_sha_verified": true
+    },
+    {
+      "kind": "junit",
+      "git_blob": "491e8eaaac4da3646e067d445fa403af1999c5bc",
+      "bytes": 96795,
+      "full_readback_git_sha_verified": true
+    }
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6dbc8d77b0c2a1d76268bf21b8ac9f5828bcebe",
+      "bytes": 10659,
+      "before_sha": "824d1e8396a6e5b8a240fb415a4083bd2d31796b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7643ab7bc964277d9f7672897dbd6d333d4d948",
+      "bytes": 11072,
+      "before_sha": "6ff87105ecf7aa615da59282fd4f4a169d9ba79c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1544fce1d6f863727c69e90a96829926e19ee200",
+      "bytes": 13492,
+      "before_sha": "fcb1dc7eec6dedb51f1bd46f8d88eed8ab7b2d85"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8825e69d0a6a558dc9292404c6648e21e53c8d8",
+      "bytes": 24895,
+      "before_sha": "7bec702b0bb67808cacc33f186fdeb673f4742ba"
+    }
+  ],
+  "repairs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "case": "source_operation_candidate_and_model_keep_two_reads_per_lane",
+      "original_failure": {
+        "log_lines": [
+          2335,
+          2358
+        ],
+        "test_line": 47,
+        "actual": 4108,
+        "expected": 32780
+      },
+      "before": "assert_eq!(candidate.heads().len(), 12 + 64 * 64 * 8);",
+      "after": "assert_eq!(candidate.heads().len(), 12 + 8 * 64 * 8);",
+      "reason": "The existing candidate_page_model encodes HQ24M001, two u16 dimensions, then an 8x64 i64 head matrix. This corrects the fixture shape expectation, with complete candidate/receipt/signature/physical byte comparisons retained.",
+      "basis": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_source_test_support.rs",
+        "blob": "60491689bfdfdb2d4e9551bc6a91aa2d22c7259d",
+        "function": "candidate_page_model",
+        "lines": [
+          113,
+          141
+        ]
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+      "case": "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+      "original_failure": {
+        "log_lines": [
+          2385,
+          2408
+        ],
+        "test_line": 90,
+        "actual": 4,
+        "expected": 3
+      },
+      "expectation_changes": {
+        "first_read": [
+          3,
+          4
+        ],
+        "second_read_and_final_total": [
+          6,
+          8
+        ]
+      },
+      "reason": "The same original 4108-byte body uses three 2048-byte pages plus an independent Finish frame. A second independent read uses the same full four-frame protocol. All original readback, identity, authority and unchanged-byte checks remain.",
+      "basis": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+          "blob": "79471343a115970172eac8e16de5ec7eeae2928d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+          "blob": "5e73201dba7618038f219bb25d77859c8305d3d8",
+          "lines": [
+            146,
+            196
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+      "case": "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
+      "original_failure": {
+        "log_lines": [
+          2360,
+          2383
+        ],
+        "test_line": 177,
+        "actual": 1,
+        "expected": 3
+      },
+      "expectation_changes": {
+        "completed_frames_after_cancel": [
+          3,
+          1
+        ]
+      },
+      "reason": "The cancellation test gates the actual first Begin. Aborting that waiter sets the existing cancellation fence; the begun frame may finish but every later Page/Finish must be suppressed. The original adapter's CommitUncertain assertion and original source/journal byte checks remain.",
+      "basis": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "blob": "5e73201dba7618038f219bb25d77859c8305d3d8",
+        "functions": [
+          "CancelledCandidateRead::drop",
+          "exchange"
+        ]
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "case": "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "original_failure": {
+        "log_lines": [
+          2444,
+          2462
+        ],
+        "test_line": 238,
+        "actual_counts": [
+          1,
+          64,
+          64,
+          64
+        ],
+        "old_assertion": "counts[1] >= 92"
+      },
+      "before": "assert!(counts[1] >= 92);",
+      "after": "assert!(counts[1] >= 23 * 2);",
+      "reason": "The retained test still checks 16+5+2=23 actual T channel reads. Each completed Source operation now reads every original Material peer once before native/Generator work and once after, not two standalone captures of two reads each. The production split was already present on FDE. The corrected minimum is 46; bootstrap/fit add independent real reads. Exact equality across original Source/E/D peer counts, all physical byte comparisons, original command totals, and the existing fixture <128 boundary are retained.",
+      "basis": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation.rs",
+          "blob": "a0c57dbad44e63bd996db40c72321a255e7758ac",
+          "functions": [
+            "begin_source_operation",
+            "read_after_native",
+            "material_once_for_operation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          "blob": "d74197b678e354803e10f232374d99bd67a83f1f",
+          "functions": [
+            "readback",
+            "in_lane"
+          ]
+        }
+      ],
+      "scope_limit": "This fixture's reopen is not a real daemon/Root cold restart; no ordinary acceptance is inferred."
+    }
+  ],
+  "timeout": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+    "case": "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+    "original_log_lines": [
+      2410,
+      2415
+    ],
+    "actual_seconds": 60.008,
+    "diagnostic_available": "Only running 1 test and test timed out; no branch attribution",
+    "status": "unresolved; diagnostic-only insertion",
+    "proof": {
+      "removal_exact": true,
+      "original_chars": 22986,
+      "after_chars": 24895,
+      "phase_labels": [
+        "fault-fixture-start",
+        "fault-fixture-ready",
+        "fault-readback-start",
+        "fault-readback-finished",
+        "fault-peer-join-start",
+        "fault-peer-joined",
+        "fault-fixture-closed",
+        "renewal-fixture-start",
+        "renewal-fixture-ready",
+        "renewed-readback-start",
+        "renewed-readback-finished",
+        "renewed-peer-join-start",
+        "renewed-peer-joined",
+        "expired-window-peer-joined",
+        "renewal-fixture-closed",
+        "withdrawal-fixture-start",
+        "withdrawal-fixture-ready",
+        "withdrawal-first-page-wait",
+        "withdrawal-first-page-reached",
+        "withdrawal-readback-wait",
+        "withdrawal-readback-finished",
+        "withdrawal-peer-join-start",
+        "withdrawal-peer-joined",
+        "withdrawal-source-peers-join-start",
+        "withdrawal-source-peers-joined",
+        "cancel-fixture-start",
+        "cancel-fixture-ready",
+        "cancel-first-page-wait",
+        "cancel-first-page-reached",
+        "cancel-waiter-aborted",
+        "cancel-peer-join-start",
+        "cancel-peer-joined",
+        "cancel-fixture-closed"
+      ],
+      "unchanged_prefix_and_suffix": true
+    },
+    "invariants": [
+      "The original test body is byte-for-byte restored by removing only the diagnostic closure and report lines.",
+      "All eight independent actual fault runs remain.",
+      "Renewal, expiry, wrong page bound, physical withdrawal, cancellation, Finish and lost-ACK checks remain.",
+      "No native test budget, transport deadline, source lifetime, grant, key or production behavior changes.",
+      "Only fixed phase labels, fixed Fault enum names and monotonic elapsed milliseconds are printed."
+    ],
+    "next_step": "Root may run this fixed original test on the diagnostic child under the unchanged original budget and collect its full final output. No cause, timeout fix or pass is claimed before that evidence."
+  },
+  "static_validation": {
+    "method_and_assertion_inventory": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+        "before_sha": "824d1e8396a6e5b8a240fb415a4083bd2d31796b",
+        "methods_before": [
+          "source_operation_candidate_and_model_keep_two_reads_per_lane",
+          "current",
+          "compare_and_swap",
+          "gated_completed_stage",
+          "source_operation_after_read_withdrawal_fences_completed_native_result",
+          "source_operation_cancelled_waiter_keeps_lane_then_fences",
+          "source_operation_rejects_equal_capture_from_different_arc",
+          "source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+        ],
+        "methods_after": [
+          "source_operation_candidate_and_model_keep_two_reads_per_lane",
+          "current",
+          "compare_and_swap",
+          "gated_completed_stage",
+          "source_operation_after_read_withdrawal_fences_completed_native_result",
+          "source_operation_cancelled_waiter_keeps_lane_then_fences",
+          "source_operation_rejects_equal_capture_from_different_arc",
+          "source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+        ],
+        "assertions_before": 37,
+        "assertions_after": 37
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+        "before_sha": "6ff87105ecf7aa615da59282fd4f4a169d9ba79c",
+        "methods_before": [
+          "protocol",
+          "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+          "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
+          "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch"
+        ],
+        "methods_after": [
+          "protocol",
+          "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+          "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
+          "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch"
+        ],
+        "assertions_before": 31,
+        "assertions_after": 31
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+        "before_sha": "fcb1dc7eec6dedb51f1bd46f8d88eed8ab7b2d85",
+        "methods_before": [
+          "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+          "q24_deep_original_post_commit_training_change_fences_selector_without_resigning"
+        ],
+        "methods_after": [
+          "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+          "q24_deep_original_post_commit_training_change_fences_selector_without_resigning"
+        ],
+        "assertions_before": 46,
+        "assertions_after": 46
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+        "before_sha": "7bec702b0bb67808cacc33f186fdeb673f4742ba",
+        "methods_before": [
+          "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+          "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+          "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+        ],
+        "methods_after": [
+          "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+          "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+          "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+        ],
+        "assertions_before": 83,
+        "assertions_after": 83
+      }
+    ],
+    "manifest_record_search": [],
+    "source_qa_reference_search": {
+      "examined": 63,
+      "tokens": [
+        "cell_q24_training_source_operation_tests.rs",
+        "cell_q24_candidate_stage_tests.rs",
+        "circuit_deep_training_readback_tests.rs",
+        "cell_q24_training_candidate_tests.rs",
+        "source_operation_candidate_and_model_keep_two_reads_per_lane",
+        "source_operation_after_read_withdrawal_fences_completed_native_result",
+        "source_operation_cancelled_waiter_keeps_lane_then_fences",
+        "source_operation_rejects_equal_capture_from_different_arc",
+        "source_operation_abandoned_finish_preserves_real_native_effect_and_fences",
+        "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
+        "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+        "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+        "original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"
+      ],
+      "matches": [],
+      "scope": "C7 canonical qa/b4-no-bypass 63 Python blobs cached and independently verified; FDE inherits unchanged QA paths confirmed in C7-to-FDE compare"
+    },
+    "production_files_changed": 0,
+    "manifest_changed": false,
+    "source_qa_changed": false,
+    "verifier_changed": false,
+    "native_inventory_changed": false,
+    "parent_source_qa_pass_does_not_validate_child": true,
+    "performed": [
+      "Full original failure log/result/JUnit Git blob readback and independent Git SHA verification.",
+      "Exact current FDE fixture and owner/source pin reads.",
+      "Static protocol/shape/count derivations.",
+      "Diagnostic subtraction restores the complete original timeout-test file exactly.",
+      "All affected function names and assertion counts preserved.",
+      "All 1199 CALLERS records retained untouched, including multiple records at the same path."
+    ],
+    "not_performed": [
+      "Rust compilation",
+      "just test",
+      "Python source suite",
+      "full caller scan",
+      "H execution or observation",
+      "ordinary task acceptance",
+      "real daemon/Root restart"
+    ]
+  }
+}

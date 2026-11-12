@@ -87,7 +87,8 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
         end,
     )?;
     adapter.validate_recovery(&snapshot).await?;
-    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
+    // Three actual body pages and the separate original Finish read.
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 4);
     // An independent request must perform all original reads again. The
     // previous operation's private proof never becomes a reusable cache.
     adapter.validate_recovery(&snapshot).await?;
@@ -95,7 +96,7 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
         .receipt_attestation(&snapshot, training.receipt(), command_now()?)
         .await?;
     assert_eq!(signature, *training.attestation());
-    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 6);
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 8);
     assert_eq!((fixture.bytes()?, fixture.training_bytes()?), originals);
     // Recovery remains readonly even with an actual Candidate and ready bytes.
     assert!(matches!(
@@ -104,9 +105,9 @@ async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners(
             .await,
         Err(StageError::WrongScope)
     ));
-    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 6);
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 8);
     drop(adapter);
-    assert_eq!(candidate_peer.finish()?, 6);
+    assert_eq!(candidate_peer.finish()?, 8);
     assert_eq!(material_ports::finish(e_peer)?, 4);
     assert_eq!(material_ports::finish(d_peer)?, 4);
     assert_eq!(
@@ -174,7 +175,8 @@ async fn candidate_stage_cancelled_operation_cannot_reuse_original_prefix()
     assert!(matches!(adapter.validate_recovery(&snapshot).await, Err(StageError::CommitUncertain)));
     release.send(())?;
     drop(adapter);
-    assert_eq!(candidate_peer.finish()?, 3);
+    // The admitted Begin may return; cancellation prevents every later Page/Finish.
+    assert_eq!(candidate_peer.finish()?, 1);
     assert_eq!(material_ports::finish(e_peer)?, 1);
     assert_eq!(material_ports::finish(d_peer)?, 1);
     assert_eq!(training_server.join().expect("original Trainer command peer")?, 2);

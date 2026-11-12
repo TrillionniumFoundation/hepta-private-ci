@@ -144,10 +144,18 @@ impl PositiveFixture {
         evaluation_profile: Digest32,
         trust_time: u64,
     ) -> anyhow::Result<Self> {
+        let admission = support::admission("positive-source-envelope-request").await?;
+        Self::ready_with_admission(admission, evaluation_profile, trust_time).await
+    }
+
+    async fn ready_with_admission(
+        mut a: support::Admission,
+        evaluation_profile: Digest32,
+        trust_time: u64,
+    ) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
         let (baseline, bundle, definition_a) = support::model(&root)?;
-        let mut a = support::admission("positive-source-envelope-request").await?;
         let preview = support::source(&a, [Q, Q / 4])?;
         let (mut writer, credentials) = material::ledger_at(
             &root,

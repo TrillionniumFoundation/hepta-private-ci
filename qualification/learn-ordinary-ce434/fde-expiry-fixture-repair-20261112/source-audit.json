@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.learn.original-expiry-fixture-fix.v1",
+  "source": {
+    "parent": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17"
+  },
+  "original_execution": {
+    "evidence_commit": "543542dcc8ff4e7c2d8c888ca836d749c52b7091",
+    "log_blob": "a63c88170a768f85e4e5fcec1eea76ec118c9691",
+    "log_bytes": 189143,
+    "log_sha256": "f87a4f1c5dfd62abbdebeac47a2a87a187f0cc45ce43e3b7a854f2878e78c63b",
+    "complete_utf8_read_and_independent_sha256_matched": true
+  },
+  "original_semantics": {
+    "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+    "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+    "condition": "now > evidence.expires_at",
+    "source_location": "LearningEvidenceVerifierV1::verify",
+    "explanation": "Expiry is inclusive at whole-second precision. The old fixture slept only to expires_at + 100 ms and could still be valid when Execute began. A durable claim followed by expiry cannot be asserted unchanged."
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "before": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b",
+      "after": "835e7b13894b488dbd9ab83bc85621ba47b2ca2d",
+      "bytes": 16122,
+      "edits": [
+        {
+          "before": "    tokio::time::sleep(\n        Duration::from_secs(expires_at.saturating_sub(now()?)) + Duration::from_millis(100),\n    )\n    .await;\n",
+          "after": "    // Original evidence remains valid throughout its expiry second. Wait\n    // beyond that inclusive bound before testing refusal without an effect.\n    let invalid_from = expires_at\n        .checked_add(1)\n        .ok_or_else(|| anyhow::anyhow!(\"original evidence expiry overflow\"))?;\n    tokio::time::sleep(\n        Duration::from_secs(invalid_from.saturating_sub(now()?)) + Duration::from_millis(100),\n    )\n    .await;\n    assert!(now()? > expires_at);\n"
+        },
+        {
+          "before": "    assert!(client.execute_selection().await.is_err());",
+          "after": "    assert!(matches!(\n        client.execute_selection().await,\n        Err(OriginalCircuitSelectionCommandErrorV1::Evidence(\n            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow\n        ))\n    ));"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "before": "5f2b975e10687be71840f2b3393e216dc9d701c4",
+      "after": "4274d202bdd47d261139018bd89b7cb64b0b9670",
+      "bytes": 20355,
+      "edits": [
+        {
+          "before": "    tokio::time::sleep(\n        Duration::from_secs(expires.saturating_sub(now()?)) + Duration::from_millis(100),\n    )\n    .await;\n",
+          "after": "    // Original evidence remains valid throughout its expiry second. Wait\n    // beyond that inclusive bound before testing refusal without an effect.\n    let invalid_from = expires\n        .checked_add(1)\n        .ok_or_else(|| anyhow::anyhow!(\"original evidence expiry overflow\"))?;\n    tokio::time::sleep(\n        Duration::from_secs(invalid_from.saturating_sub(now()?)) + Duration::from_millis(100),\n    )\n    .await;\n    assert!(now()? > expires);\n"
+        },
+        {
+          "before": "    assert!(client.attest_completed_task().await.is_err());",
+          "after": "    assert!(matches!(\n        client.attest_completed_task().await,\n        Err(OriginalCircuitNextUseCommandErrorV1::Evidence(\n            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow\n        ))\n    ));"
+        }
+      ]
+    }
+  ],
+  "preserved": {
+    "production_files": true,
+    "original_evidence_validity_rule": true,
+    "original_signed_lifetimes": true,
+    "original_transport_deadlines": true,
+    "all_old_test_names_attributes_and_cases": true,
+    "original_no_change_journal_assertions": true,
+    "original_unavailable_after_failed_request_assertions": true,
+    "original_server_request_count_1": true,
+    "original_external_uid_and_custody_assertions": true,
+    "callers_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1"
+  },
+  "status": {
+    "api_full_readback": true,
+    "exact_reversible_edits": true,
+    "rust_compile_executed": false,
+    "python_source_tests_executed": false,
+    "native_executed": false,
+    "h_executed": false,
+    "ordinary_acceptance": 0
+  },
+  "scope": "Only the two actual expiry fixture failures. The separate C evidence withdrawal OwnerUnavailable and all Panel stack-overflow failures remain unresolved by this patch."
+}
