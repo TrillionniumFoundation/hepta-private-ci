@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "state": "succeeded",
+  "exit_code": 0,
+  "cancelled": false,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "log_bytes": {
+    "stdout": {
+      "seen": 25508,
+      "stored": 25508
+    },
+    "stderr": {
+      "seen": 0,
+      "stored": 0
+    }
+  },
+  "original": {
+    "bytes": 733,
+    "sha256": "6992053e725241006ffe80d24261dbc582124e21b682170a99d9f90cfb177444",
+    "reference": "private native v12 control/prior-v10-terminal-native-original.json"
+  },
+  "source_commits": {
+    "journal": "813488082862657935e6d8a71e4c19b2d520d6a2",
+    "host": "346c6d7b1ebd28415ffc7a14573f7db316924922"
+  },
+  "evidence_commits": {
+    "journal": "ddc74f82a4f0f0021a13398005787300df0b52db",
+    "host": "b852e985605f9521ca52509d2e69ebf2b0188ed5"
+  },
+  "package_exits": {
+    "journal": {
+      "codex-hepta-automation": {
+        "test": 100,
+        "fix": 0
+      }
+    },
+    "host": {
+      "codex-hepta-automation": {
+        "test": 100,
+        "fix": 0
+      },
+      "codex-model-provider": {
+        "test": 0,
+        "fix": 0
+      },
+      "codex-hepta-agentd": {
+        "test": 100,
+        "fix": 0
+      }
+    }
+  },
+  "fmt_exits": {
+    "journal": 0,
+    "host": 0
+  },
+  "scope_note": "Wrapper completion is distinct from product qualification. Journal automation: 135 run, 132 passed, 3 failed. Host automation: 135 run, 131 passed, 4 failed, including an additional concurrent receipt assertion without its error detail. Host Agentd also failed the exclusive-authority reopen fixture. Each original source and log remains unchanged."
+}
