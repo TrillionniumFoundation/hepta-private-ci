@@ -178,3 +178,7 @@ fn pause(end: Instant) -> io::Result<()> {
 #[cfg(test)]
 #[path = "root_independent_b_notice_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "root_independent_b_source_terminal_tests.rs"]
+mod terminal_tests;

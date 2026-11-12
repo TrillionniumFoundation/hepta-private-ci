@@ -146,3 +146,7 @@ pub fn receive_root_independent_b_source_handoff(
         root_pid: peer.pid as u32,
     })
 }
+
+#[cfg(test)]
+#[path = "root_independent_b_fresh_rights_tests.rs"]
+mod fresh_rights_tests;
