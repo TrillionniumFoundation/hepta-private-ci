@@ -153,8 +153,10 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
     /// files and locks through the recipient's final checks and physical reread.
     pub(crate) fn observe_original_task(
         &mut self,
-        source_inputs: RootHistoricalSourceInputsV1,
-        run_start_files: Arc<RootInitialRunStartFilesV1>,
+        load_original_source: impl FnOnce(
+            &crate::AgentdIdentity,
+        ) -> io::Result<RootHistoricalSourceInputsV1>,
+        load_original_run_start: impl FnOnce() -> io::Result<Arc<RootInitialRunStartFilesV1>>,
     ) -> io::Result<RootOriginalHistoricalCompleteTaskObservationV1> {
         original_root()?;
         if !matches!(
@@ -168,7 +170,7 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
         }
         let source = self
             .source
-            .read_original_retired_source_cell(source_inputs)?;
+            .read_original_retired_source_cell(load_original_source)?;
         let pin = &self.original.source.expected.pin;
         self.run_start.require_original_publisher(
             source.source.original_identity(),
@@ -179,9 +181,10 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &pin.writer,
             &pin.target_files,
         )?;
-        let run_start = self
-            .run_start
-            .read_original_publication(run_start_files, source.source.original_identity())?;
+        let run_start = self.run_start.read_original_publication(
+            load_original_run_start()?,
+            source.source.original_identity(),
+        )?;
         if &run_start.observed.record != source.source.publication().original_record() {
             return Err(io::Error::other(
                 "Source request is not the original Root-retained RunStart",
@@ -197,11 +200,7 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
         let ledger_digest = ledger.data_cut_digest()?;
         let cut = Digest32::of_parts(&[
             b"hepta.root.original-historical-complete-task-cut.v1\0",
-            self.original
-                .target
-                .digest()
-                .map_err(io::Error::other)?
-                .as_array(),
+            &self.original.target.digest().map_err(io::Error::other)?,
             self.handoff_digest.as_array(),
             source.source_pin_digest.as_array(),
             source.cell_cut_digest.as_array(),
