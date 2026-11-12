@@ -7,6 +7,22 @@ lifecycle. The **two trainable families** reuse `SemanticComponent` and
 functional lineages organize those components. A lineage label describes an
 assigned responsibility; it does not establish that a component has learned it.
 
+## Four separate levels
+
+| Level | Existing meaning | What a change requires |
+| --- | --- | --- |
+| Dynamics kernel | GRU or diagonal recurrence inside a temporal component | Numerical, state, recovery and resource comparisons under the same interface |
+| Computation template | `SemanticComponent` or `TemporalComponent`, including its pinned representation, private parameters and update rule | A compatible bundle and explicit allowed parameter scope |
+| Functional lineage | One of the seven stable responsibilities below | A declared objective and auditable state, learning and permission boundaries |
+| Circuit / Organ | A task composition of Cell instances and deterministic services | Routing, complete costs, external-effect ownership and task-level evaluation |
+
+These levels do not each require another neural-network architecture. The frozen
+semantic provider supplies the actual features; a private head supplies its
+declared logits, association or ranking output. A head alone is not a text/image
+generator. Any content-generating circuit must bind its real base model and
+decoder. Tool hosts, transactions, authorization, signatures, schemas and meters
+keep their own deterministic mechanisms and authority boundaries.
+
 | Lineage | Initial route | Initial local plasticity |
 | --- | --- | --- |
 | PERC | Shared features and private head | Frozen |
@@ -15,13 +31,22 @@ assigned responsibility; it does not establish that a component has learned it.
 | CTRL | GRU policy/decision component | Frozen |
 | VERIFY | Shared features and private assessment head, with deterministic checks | Frozen |
 | ACT | GRU skill component, with separately injected host tool capability | Frozen |
-| LEARN | Deterministic host workflow through `ToolCell` | Frozen; organizes other Cells' training and evaluation |
+| LEARN | Deterministic host workflow through `ToolCell` | Frozen; organizes training and requests independent evaluation |
 
 This is an initial allocation for experiments, not an architecture ranking. The
 plan accepts the implemented diagonal recurrence as a temporal control. HCSN
 remains outside this admitted registry and is not a prerequisite for the seven
 lineages. Existing deterministic retrieval, rule, numerical and tool components
 can support any lineage without acquiring neural update privileges.
+
+**EVAL is a separate evaluation authority, not an eighth trainable lineage.**
+LEARN may produce a candidate and request evaluation. It must not issue its own
+qualification or replace the frozen evaluator, cohort or thresholds. The Python
+owner's explicit host callback is an experimental consistency port; it does not
+implement independent evaluator custody or a native signed Qualification owner.
+Canonical qualification values and callback consistency checks preserve that
+port's declared identity. They do not turn a trusted Python callback into an
+authentication boundary or authorize product adoption.
 
 ## What is frozen
 

@@ -28,17 +28,17 @@ def _bounded_json(value: Any, limit: int = 262144) -> str:
         nodes += 1
         if depth > 32 or nodes > 32768:
             raise CellError("JSON structure exceeds the bounded interface")
-        if item is None or isinstance(item, (bool, str)):
+        if item is None or type(item) in (bool, str):
             return
         if type(item) in (int, float):
             if abs(item) > 1e100 or not math.isfinite(item):
                 raise CellError("non-finite or excessively large number")
             return
-        if isinstance(item, list):
+        if type(item) is list:
             for child in item:
                 check(child, depth + 1)
             return
-        if isinstance(item, dict) and all(isinstance(key, str) for key in item):
+        if type(item) is dict and all(type(key) is str for key in item):
             for child in item.values():
                 check(child, depth + 1)
             return

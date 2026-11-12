@@ -34,6 +34,16 @@ class PopulationPolicy:
                 raise CellError("population differs from the retained owner policy")
             self.plan = retained
         else:
+            # Every created partition retains an initial checkpoint. A planned
+            # owner cannot become unplanned merely by losing every policy table.
+            # Existing unplanned owners have no top-level population annotation.
+            if any(
+                "population" in json.loads(checkpoint["snapshot"])
+                for checkpoint in db.execute("SELECT snapshot FROM checkpoints")
+            ):
+                raise CellError(
+                    "retained population checkpoints have lost their original policy"
+                )
             if any(
                 db.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
                 for table in (

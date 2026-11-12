@@ -711,16 +711,34 @@ class CellOwner:
         return checkpoint
 
     def adopt(self, partition, component, qualification: Qualification):
+        if type(qualification) is not Qualification:
+            raise CellError("host qualification must be a canonical Qualification")
+        expected = (
+            qualification.source_identity,
+            qualification.candidate_identity,
+            qualification.evaluation_digest,
+        )
+        for value in expected:
+            _hex(value)
+        # Freeze caller values before invoking the trusted host callback.
+        checked = Qualification(*expected)
         identity = self._identity(component)
         if (
-            qualification.candidate_identity != identity.digest
+            expected[1] != identity.digest
             or self.qualify is None
-            or self.qualify(qualification) is not True
+            or self.qualify(checked) is not True
         ):
             raise CellError("host qualification did not admit this candidate")
-        return self._transition(
-            partition, component, identity, qualification.source_identity, "adopt"
+        returned = (
+            checked.source_identity,
+            checked.candidate_identity,
+            checked.evaluation_digest,
         )
+        for value in returned:
+            _hex(value)
+        if returned != expected or self._identity(component).digest != expected[1]:
+            raise CellError("qualification or candidate changed during host validation")
+        return self._transition(partition, component, identity, expected[0], "adopt")
 
     def reset(self, partition, component, expected_identity):
         identity = self._identity(component)
