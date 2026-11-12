@@ -190,14 +190,16 @@ impl PublicationRefusal {
         end: Instant,
         action: impl FnOnce() -> io::Result<T>,
     ) -> io::Result<T> {
-        self.inspect_with_acceptance(original, end, || Ok((action()?, None)))
+        self.inspect_with_acceptance(original, end, |_| Ok((action()?, None)))
     }
 
     pub(super) fn inspect_with_acceptance<T>(
         &self,
         original: &ReservedPublicationProfile,
         end: Instant,
-        action: impl FnOnce() -> io::Result<(T, Option<PublicationAcceptance>)>,
+        action: impl FnOnce(
+            Option<&PublicationAcceptance>,
+        ) -> io::Result<(T, Option<PublicationAcceptance>)>,
     ) -> io::Result<T> {
         original_root()?;
         let _gate = self
@@ -216,7 +218,7 @@ impl PublicationRefusal {
         }
         let armed = self.arm_ready(observed)?;
         self.complete_armed(&armed, end, || {
-            let (value, publication) = action()?;
+            let (value, publication) = action(armed.publication.as_ref())?;
             Ok((value, original.clone(), publication))
         })
     }
