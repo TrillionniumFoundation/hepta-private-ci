@@ -103,11 +103,38 @@ impl NeuronGenerationCurrentOwnerV1 {
     }
 
     pub(crate) fn from_original_root_initial(
-        original: crate::root_generation_initial_client::RootGenerationInitialClient,
+        original: Arc<crate::root_generation_initial_client::RootGenerationInitialClient>,
     ) -> Result<Self, AgentdError> {
         let store = store::CurrentStore::from_original_initial(original)?;
         store.load()?;
         Ok(Self { store })
+    }
+
+    pub(crate) fn revalidate_original_initial_artifacts(
+        &self,
+        artifacts: &crate::root_generation_initial_client::OriginalInitialArtifactReadbackV1,
+        selected: &mut AgentdSelectedGenerationV1,
+        now: u64,
+    ) -> Result<(), AgentdError> {
+        artifacts.revalidate(self.store.original_initial_client()?, selected, now)
+    }
+
+    pub(crate) fn require_original_initial_source_session(
+        &self,
+        session: &crate::AgentdRootAuthoritySession,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<(), AgentdError> {
+        self.store
+            .original_initial_client()?
+            .require_source_capture_session(session, identity)
+    }
+
+    pub(crate) fn capture_original_initial_source(
+        &self,
+    ) -> Result<codex_hepta_types::Digest32, AgentdError> {
+        self.store
+            .original_initial_client()?
+            .capture_source_after_quiescence()
     }
 }
 

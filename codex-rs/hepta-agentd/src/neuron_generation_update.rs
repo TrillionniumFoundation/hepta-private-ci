@@ -143,6 +143,7 @@ where
     Old: AnchorWitnessStore,
     New: AnchorWitnessStore,
 {
+    authorities.artifacts.writer()?;
     StableId::new(&request.operation_id).map_err(invalid)?;
     // No artifact mutex is held while reading a predecessor that may already
     // carry a live guard. Its exclusive file lock remains owned throughout.
@@ -158,7 +159,7 @@ where
     let old = old.rebind_current(guard).map_err(invalid)?;
     // The drained predecessor is now private to this handoff. It cannot be
     // returned to a runtime, resumed, or admitted; the root floor still applies.
-    let artifacts = authorities.artifacts.lock().map_err(invalid)?;
+    let artifacts = authorities.artifacts.writer()?.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
     let prepared = match completion {
         NeuronGenerationPredecessorCompletionV1::ModelStopped => {
@@ -230,7 +231,12 @@ impl<Old: AnchorWitnessStore, New: AnchorWitnessStore> PreparedAgentdGenerationU
     ) -> Result<ReadyAgentdGenerationUpdateV1<New>, AgentdError> {
         let expected = self.prepared.final_use_binding().clone();
         let receipt = {
-            let mut artifacts = self.authorities.artifacts.lock().map_err(invalid)?;
+            let mut artifacts = self
+                .authorities
+                .artifacts
+                .writer()?
+                .lock()
+                .map_err(invalid)?;
             self.current.publish(
                 &self.prepared,
                 &self.old,
@@ -267,6 +273,7 @@ pub fn recover_agentd_generation_update_v1<W: AnchorWitnessStore>(
     target: AgentdGenerationUpdateTargetV1<W>,
     expected: AgentdGenerationUpdateRecoveryV1,
 ) -> Result<ReadyAgentdGenerationUpdateV1<W>, AgentdError> {
+    authorities.artifacts.writer()?;
     let prepared = current.recover_operation(&expected.operation_id, expected.intent_digest)?;
     if selected.observation().digest() != prepared.selection_observation_digest() {
         return Err(invalid(
@@ -291,7 +298,7 @@ pub fn recover_agentd_generation_update_v1<W: AnchorWitnessStore>(
         return Err(invalid("published generation journal is missing"));
     }
     {
-        let artifacts = authorities.artifacts.lock().map_err(invalid)?;
+        let artifacts = authorities.artifacts.writer()?.lock().map_err(invalid)?;
         selected.revalidate(&artifacts, authorities.now()?)?;
     }
     let live = LiveGenerationCurrent::new(

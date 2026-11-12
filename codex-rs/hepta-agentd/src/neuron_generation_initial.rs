@@ -19,7 +19,6 @@ use codex_hepta_types::StableId;
 use crate::AgentdError;
 use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;
 use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;
-use crate::neuron_generation_current::NeuronGenerationUpdatePublicationV1;
 use crate::neuron_generation_current::PreparedNeuronGenerationInitialV1;
 use crate::neuron_generation_initial_bootstrap::ReadyAgentdGenerationInitialV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
@@ -27,6 +26,7 @@ use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
 use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
 use crate::neuron_generation_update_live::LiveGenerationCurrent;
+use crate::neuron_generation_update_live::artifacts::InitialArtifactPublicationV1;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
 /// Owns the exact root preparation and actual successor lock until publication.
@@ -49,6 +49,7 @@ pub fn prepare_agentd_generation_initial_v1<W: AnchorWitnessStore>(
     target: AgentdGenerationUpdateTargetV1<W>,
     request: AgentdGenerationUpdateRequestV1,
 ) -> Result<PreparedAgentdGenerationInitialV1<W>, AgentdError> {
+    authorities.artifacts.writer()?;
     StableId::new(&request.operation_id).map_err(invalid)?;
     let binding = validate_initial_target(&selected, &target)?;
     let metadata = target.file.metadata()?;
@@ -58,7 +59,7 @@ pub fn prepare_agentd_generation_initial_v1<W: AnchorWitnessStore>(
     {
         return Err(invalid("initial generation requires an empty target"));
     }
-    let artifacts = authorities.artifacts.lock().map_err(invalid)?;
+    let artifacts = authorities.artifacts.writer()?.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
     let (current, prepared) = NeuronGenerationCurrentOwnerV1::prepare_initial(
         root,
@@ -120,13 +121,13 @@ impl<W: AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {
     ) -> Result<ReadyAgentdGenerationInitialV1<W>, AgentdError> {
         let expected = self.prepared.final_use_binding().clone();
         let receipt = {
-            let mut artifacts = self.authorities.artifacts.lock().map_err(invalid)?;
-            self.current.publish_initial(
+            let artifacts = self.authorities.artifacts.lock_initial()?;
+            self.current.publish_initial_with_original_artifacts(
                 &self.prepared,
                 &self.journal,
                 &mut self.selected,
-                NeuronGenerationUpdatePublicationV1 {
-                    artifacts: &mut artifacts,
+                InitialArtifactPublicationV1 {
+                    artifacts: artifacts.readback(),
                     authority: &self.authorities.final_use,
                     signed,
                     clock: self.authorities.clock.as_ref(),
@@ -145,12 +146,11 @@ impl<W: AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {
             #[cfg(test)]
             eprintln!("ROOT_INITIAL_FAILURE stage=live-current-guard error={error:?}");
         })?;
-        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)
-            .inspect_err(|error| {
-                let _ = error;
-                #[cfg(test)]
-                eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
-            })
+        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard).inspect_err(|error| {
+            let _ = error;
+            #[cfg(test)]
+            eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
+        })
     }
 }
 
@@ -181,8 +181,10 @@ pub fn recover_agentd_generation_initial_v1<W: AnchorWitnessStore>(
         return Err(invalid("published initial journal is missing"));
     }
     {
-        let artifacts = authorities.artifacts.lock().map_err(invalid)?;
-        selected.revalidate(&artifacts, authorities.now()?)?;
+        let artifacts = authorities.artifacts.lock_initial()?;
+        artifacts
+            .readback()
+            .revalidate_owner(&current, &mut selected, authorities.now()?)?;
     }
     let live = LiveGenerationCurrent::new_initial(
         current.clone(),
