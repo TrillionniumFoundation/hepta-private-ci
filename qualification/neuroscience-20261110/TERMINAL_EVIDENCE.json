@@ -2250,19 +2250,23 @@
     }
   },
   "latest_text_readback": {
-    "status": "ORIGINAL_IMMUTABLE_EVIDENCE_BYTES_VERIFIED_PREPUBLICATION",
+    "status": "ORIGINALS_AND_STAGED_GIT_PATHS_VERIFIED",
     "imported_blobs": 147,
     "additional_source_blobs_verified_not_imported": 11,
     "full_original_log_reconstructions": 9,
     "all_verified": true,
-    "record": "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
-    "readback_at_utc": "2026-11-12 18:41:30 UTC",
+    "record": "evidence/terminal-20261112/GIT_READBACK_EDAF_TERMINAL.json",
+    "readback_at_utc": "2026-11-12 18:57:50 UTC",
     "does_not_claim_current_source_execution": true,
     "source_only_verified_not_imported": 11,
     "records": [
       "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
       "../evaluated-current-read-20261112/edaf-caller-success/ROOT_FULL_LOG_VERIFICATION.json"
     ],
-    "new_original": "edaf caller exact2150402B reconstructed from7parts and direct-job hash"
+    "new_original": "edaf caller exact2150402B reconstructed from7parts and direct-job hash",
+    "staged_commit": "713eb225665bb243104046910df270b34363e36d",
+    "staged_tree": "80d282a942cf5029a00ca99caaa3db487de4c293",
+    "staged_changed_paths": 161,
+    "staged_text_files_independently_read": 10
   }
 }

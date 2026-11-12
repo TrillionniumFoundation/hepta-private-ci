@@ -1888,9 +1888,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
-      "bytes": 18345,
-      "sha256": "5d561b0278da1c321f613bf3b77f614744ce9bd9fd7534187b31c92499765a19",
-      "git_blob": "b7094e72670abfe33a3c5819182c6f928b349a3f"
+      "bytes": 18654,
+      "sha256": "2ebd202666ba19a753d89b3ce80bfe66602c792b163f4dd539a8cb4c50f30c6c",
+      "git_blob": "0261bf9e2d98b84e52c0dcd1d3052e23a04b3705"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/act2-upstream-20261112/BLOCKERS.ba7.original.json",
@@ -2962,9 +2962,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
-      "bytes": 2224,
-      "sha256": "ba6609ddf3c1efccc7ca37dbebbd0486d2aa78b12c127365e6ae71ee711db2b3",
-      "git_blob": "6652705d8d244318b3158710a58e6a85636fe562"
+      "bytes": 2506,
+      "sha256": "56ce816f3c9a1bc6126899eb4f91afc1a685373612798baee4a46889dbd81209",
+      "git_blob": "fc27bd58840c88ceb30a94dd15ff2f9f909321eb"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_ORIGINAL_VERIFICATION.json",
@@ -2998,9 +2998,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 98541,
-      "sha256": "d78897ffca84e730db010584cfabc72da7759fa3598a651a4b10231ffe542c8b",
-      "git_blob": "8dfb17c25b87f7630a812571012a1cf3ba3f2f13"
+      "bytes": 98731,
+      "sha256": "96eef4b8a2e2deea56381c53f0380c035495e4a0f23eda9d1414492385536a71",
+      "git_blob": "018ed165c9671f809b0a0380b139dd158e295e82"
     },
     {
       "path": "qualification/notes-seed-profile-20261112/bb8-format-fix/JOBS_1408_ORIGINAL.json",
@@ -4135,6 +4135,12 @@
       "bytes": 88059,
       "sha256": "07f1c4b394a3b3e81ded57c8531d251489dd0a310f6305c141243b171fcb56c0",
       "git_blob": "b4590894f2155fb30d3023410a2a97cfbccd04d5"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_READBACK_EDAF_TERMINAL.json",
+      "bytes": 33099,
+      "sha256": "b196304e7f098e5a386195bbc68600b7a9b4eb1f85ff52a405a170ac030f1905",
+      "git_blob": "eb9df7d5695e3d005422c33c2fe65e974dd84897"
     }
   ],
   "artifacts_existing_git_blobs": [
@@ -7062,20 +7068,24 @@
   "new_original_blob_mapping": "evidence/terminal-20261112/EVIDENCE_IMPORT_MAPPING.json",
   "additional_text_readback_record": "evidence/terminal-20261112/GIT_READBACK_EDAF_TERMINAL.json",
   "latest_text_readback": {
-    "status": "ORIGINAL_IMMUTABLE_EVIDENCE_BYTES_VERIFIED_PREPUBLICATION",
+    "status": "ORIGINALS_AND_STAGED_GIT_PATHS_VERIFIED",
     "imported_blobs": 147,
     "additional_source_blobs_verified_not_imported": 11,
     "full_original_log_reconstructions": 9,
     "all_verified": true,
-    "record": "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
-    "readback_at_utc": "2026-11-12 18:41:30 UTC",
+    "record": "evidence/terminal-20261112/GIT_READBACK_EDAF_TERMINAL.json",
+    "readback_at_utc": "2026-11-12 18:57:50 UTC",
     "does_not_claim_current_source_execution": true,
     "source_only_verified_not_imported": 11,
     "records": [
       "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
       "../evaluated-current-read-20261112/edaf-caller-success/ROOT_FULL_LOG_VERIFICATION.json"
     ],
-    "new_original": "edaf caller exact2150402B reconstructed from7parts and direct-job hash"
+    "new_original": "edaf caller exact2150402B reconstructed from7parts and direct-job hash",
+    "staged_commit": "713eb225665bb243104046910df270b34363e36d",
+    "staged_tree": "80d282a942cf5029a00ca99caaa3db487de4c293",
+    "staged_changed_paths": 161,
+    "staged_text_files_independently_read": 10
   },
   "new_readback_notes": "All147 qualification import objects were read by immutable Git identity;144 initial records include11 source-only verified leaves excluded from this branch. Ten edaf caller objects and4 additional source/audit manifests are separate."
 }

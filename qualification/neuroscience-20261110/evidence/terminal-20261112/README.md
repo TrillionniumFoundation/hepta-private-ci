@@ -13,3 +13,5 @@
 ## 历史原说明
 
 [f409 README](../history-20261112/TERMINAL_README-f409.md)、[f409完整索引](../history-20261112/TERMINAL_EVIDENCE-f409.json)与更早快照按原字节保留；其中“进行中／未推送／当前”属于各自当时观察。本页以上与机器索引是新状态。
+
+[本次发布树与字节独立核验](GIT_READBACK_EDAF_TERMINAL.json)：暂存提交161个变更路径均限于qualification，32个Git树节点及10份新文本完整字节已读回匹配。最终提交另加入该核验记录并更新索引；不代表新source测试通过。
