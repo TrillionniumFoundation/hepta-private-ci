@@ -1,11 +1,12 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[test]
-fn complete_historical_reply_binds_original_purpose_profile_and_sequence() -> anyhow::Result<()> {
+#[tokio::test]
+async fn complete_historical_reply_binds_original_purpose_profile_and_sequence()
+-> anyhow::Result<()> {
     let profile = Digest32::of_bytes(b"original recipient profile").to_string();
     let cut = Digest32::of_bytes(b"actual complete task cut");
-    let ledger = crate::root_historical_ledger_data::tests::fixture_data()?;
+    let (publication, ledger, _, _) = crate::circuit_task::publication_data_fixture().await?;
     let response = HistoricalTaskReadResponseV1 {
         schema: 1,
         purpose: PURPOSE.into(),
@@ -13,6 +14,7 @@ fn complete_historical_reply_binds_original_purpose_profile_and_sequence() -> an
         profile: profile.clone(),
         data_cut: cut.to_string(),
         ledger: ledger.clone(),
+        publication: publication.clone(),
     };
     let bytes = serde_json::to_vec(&response)?;
     assert_eq!(
@@ -20,6 +22,7 @@ fn complete_historical_reply_binds_original_purpose_profile_and_sequence() -> an
         HistoricalTaskReadDataV1 {
             data_cut: cut,
             ledger,
+            publication,
         }
     );
     for (field, value) in [
@@ -49,25 +52,27 @@ fn complete_historical_reply_binds_original_purpose_profile_and_sequence() -> an
     for request_id in [0, MAX_READS + 1] {
         assert!(require_complete_reply(&bytes, request_id, &profile).is_err());
     }
-    let mut missing = serde_json::to_value(&response)?;
-    missing
-        .as_object_mut()
-        .ok_or_else(|| io::Error::other("wire fixture object missing"))?
-        .remove("ledger");
-    assert!(
-        require_complete_reply(
-            &serde_json::to_vec(&missing)?,
-            /*request_id*/ 1,
-            &profile,
-        )
-        .is_err()
-    );
+    for field in ["ledger", "publication"] {
+        let mut missing = serde_json::to_value(&response)?;
+        missing
+            .as_object_mut()
+            .ok_or_else(|| io::Error::other("wire fixture object missing"))?
+            .remove(field);
+        assert!(
+            require_complete_reply(
+                &serde_json::to_vec(&missing)?,
+                /*request_id*/ 1,
+                &profile
+            )
+            .is_err()
+        );
+    }
     Ok(())
 }
 
-#[test]
-fn complete_historical_wire_refuses_peer_selected_sources_and_raw_authority() -> anyhow::Result<()>
-{
+#[tokio::test]
+async fn complete_historical_wire_refuses_peer_selected_sources_and_raw_authority()
+-> anyhow::Result<()> {
     let request = HistoricalTaskReadRequestV1 {
         schema: 1,
         purpose: PURPOSE.into(),
@@ -81,18 +86,21 @@ fn complete_historical_wire_refuses_peer_selected_sources_and_raw_authority() ->
         "target",
         "data_cut",
         "ledger",
+        "publication",
     ] {
         let mut altered = serde_json::to_value(&request)?;
         altered[field] = serde_json::json!("peer choice");
         assert!(serde_json::from_value::<HistoricalTaskReadRequestV1>(altered).is_err());
     }
+    let (publication, ledger, _, _) = crate::circuit_task::publication_data_fixture().await?;
     let response = HistoricalTaskReadResponseV1 {
         schema: 1,
         purpose: PURPOSE.into(),
         request_id: 1,
         profile: request.profile.clone(),
         data_cut: Digest32::of_bytes(b"complete data").to_string(),
-        ledger: crate::root_historical_ledger_data::tests::fixture_data()?,
+        ledger,
+        publication,
     };
     let mut bytes = serde_json::to_vec(&response)?;
     bytes.extend_from_slice(b"{}");

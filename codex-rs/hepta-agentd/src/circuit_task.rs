@@ -38,6 +38,8 @@ pub(crate) use source::RootHistoricalTaskPublicationDataV1;
 pub(crate) use source::source_close::OriginalCircuitSourceCloseV1;
 #[cfg(target_os = "linux")]
 pub(crate) use source::source_close::OriginalCircuitSourceClosedV1;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use source::tests::data::publication_data_fixture;
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum CircuitTaskErrorV1 {

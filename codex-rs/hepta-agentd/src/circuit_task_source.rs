@@ -436,4 +436,4 @@ fn agent_error(error: Error) -> AgentdError {
 
 #[cfg(test)]
 #[path = "circuit_task_source_tests.rs"]
-mod tests;
+pub(crate) mod tests;

@@ -14,6 +14,7 @@ use serde::Serialize;
 use crate::AgentdIdentity;
 use crate::HostAuthorityLearningProfileV1;
 use crate::HostAuthorityRegisteredIdentity;
+use crate::circuit_task::RootHistoricalTaskPublicationDataV1;
 use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
 
 pub(crate) const PURPOSE: &str = "runtime.learning.historical-task-read.v1";
@@ -111,12 +112,14 @@ pub(crate) struct HistoricalTaskReadResponseV1 {
     pub(crate) profile: String,
     pub(crate) data_cut: String,
     pub(crate) ledger: RootHistoricalLedgerReadDataV1,
+    pub(crate) publication: RootHistoricalTaskPublicationDataV1,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct HistoricalTaskReadDataV1 {
     pub(crate) data_cut: Digest32,
     pub(crate) ledger: RootHistoricalLedgerReadDataV1,
+    pub(crate) publication: RootHistoricalTaskPublicationDataV1,
 }
 
 pub(crate) fn require_complete_reply(
@@ -142,9 +145,14 @@ pub(crate) fn require_complete_reply(
     }
     canonical_digest(profile)?;
     response.ledger.validate_data()?;
+    response
+        .publication
+        .validate_against(&response.ledger)
+        .map_err(io::Error::other)?;
     Ok(HistoricalTaskReadDataV1 {
         data_cut: canonical_digest(&response.data_cut)?,
         ledger: response.ledger,
+        publication: response.publication,
     })
 }
 
