@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.framework-generation-qualification.v1",
+  "source_sha": "445a28cb3debceca7d53ddae8e04592242662f8e",
+  "source_tree": "b021eee3528526ce4ee6cc36129b8eefe7af7f90",
+  "run_id": 43127114625,
+  "job_id": 130881896252,
+  "attempt": 1,
+  "event": "push",
+  "lane": "source-head",
+  "overall_status": "completed",
+  "overall_conclusion": "failure",
+  "native": {
+    "passed": 96,
+    "failed": 0,
+    "skipped": 1,
+    "packages": {
+      "codex-hepta-infer-core": 43,
+      "codex-hepta-types": 53
+    }
+  },
+  "failure": "cargo fmt --check reported four whitespace-only postimages",
+  "source_unchanged": true,
+  "artifact": {
+    "id": 13902948575,
+    "size_bytes": 108945958,
+    "sha256": "9a36cb363e8c90f61fb6b8d6851c7acc323b0ff83b7979b2d286542de7118049"
+  },
+  "command_logs": [
+    {
+      "name": "runner",
+      "bytes": 7126,
+      "sha256": "07051749387eaebb8664df401a77f2eac0cbde1b2d9b0521705d98120874ce07",
+      "status": "passed",
+      "passed": 45,
+      "failed": 0
+    },
+    {
+      "name": "controls-scope",
+      "bytes": 8885,
+      "sha256": "27f6d3b7375c3e0d75607ab17ad29a5d26b059a2236a7f006b7153a1a685380c",
+      "status": "passed",
+      "passed": 56,
+      "failed": 0
+    },
+    {
+      "name": "owner",
+      "bytes": 16065,
+      "sha256": "cd463483e5cc699f308afa179852d6965488ce17df67cf72239e57458283c133",
+      "status": "passed",
+      "passed": 96,
+      "failed": 0
+    },
+    {
+      "name": "format",
+      "bytes": 2586,
+      "sha256": "1c941d3309df55b886c448b257c3b7fda0641e0b7eea82922270b35f202056da",
+      "status": "failed",
+      "passed": 0,
+      "failed": 0
+    }
+  ],
+  "extraction": {
+    "method": "Remove the GitHub console timestamp prefix from each command output; verify exact UTF-8 byte length and SHA-256 against its original hepta_ci_exec receipt before saving.",
+    "all_original_log_hashes_matched": true
+  },
+  "successor_sha": "21d2699b7ac7831f355f5acb9570a90da077dbe3",
+  "successor_qualification": "pending"
+}

@@ -1,0 +1,168 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+info: syncing channel updates for 1.96.0-aarch64-unknown-linux-gnu
+info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+info: downloading 6 components
+warn: the missing active toolchain `1.96.0-aarch64-unknown-linux-gnu` has been auto-installed
+warn: this might cause rustup commands to take longer time to finish than expected
+info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`
+    Updating git repository `https://github.com/openai-oss-forks/crossterm`
+    Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+    Updating crates.io index
+    Updating git repository `https://github.com/dzbarsky/rules_rust`
+    Updating git repository `https://github.com/helix-editor/nucleo.git`
+ Downloading crates ...
+  Downloaded crypto-common v0.1.7
+  Downloaded itoa v1.0.18
+  Downloaded cfg-if v1.0.5
+  Downloaded proc-macro2 v1.0.107
+  Downloaded cpufeatures v0.2.17
+  Downloaded block-buffer v0.10.4
+  Downloaded version_check v0.9.5
+  Downloaded zmij v1.0.23
+  Downloaded typenum v1.20.1
+  Downloaded serde_derive v1.0.229
+  Downloaded sha2 v0.10.9
+  Downloaded unicode-ident v1.0.27
+  Downloaded memchr v2.8.3
+  Downloaded serde v1.0.229
+  Downloaded serde_core v1.0.229
+  Downloaded serde_json v1.0.154
+  Downloaded digest v0.10.7
+  Downloaded quote v1.0.47
+  Downloaded generic-array v0.14.7
+  Downloaded syn v3.0.9
+  Downloaded libc v0.2.191
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling proc-macro2 v1.0.107
+   Compiling libc v0.2.191
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling serde_core v1.0.229
+   Compiling digest v0.10.7
+   Compiling cpufeatures v0.2.17
+   Compiling cfg-if v1.0.5
+   Compiling zmij v1.0.23
+   Compiling sha2 v0.10.9
+   Compiling syn v3.0.9
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling serde_derive v1.0.229
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling codex-hepta-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core)
+    Finished `test` profile [unoptimized] target(s) in 16.07s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 47269289-bd30-4769-8acc-26058b27d548 with nextest profile: local
+    Starting 96 tests across 3 binaries (1 test skipped)
+        PASS [   0.005s] codex-hepta-infer-core durable_control::file_tests::path_constructor_still_requires_its_actual_parent_sync
+        PASS [   0.008s] codex-hepta-infer-core durable_control::file_tests::supplied_file_keeps_the_existing_exclusive_writer_and_corruption_checks
+        PASS [   0.031s] codex-hepta-infer-core durable_control::file_tests::supplied_file_replays_from_start_and_does_not_reopen_a_replaced_path
+        PASS [   0.032s] codex-hepta-infer-core durable_control::file_tests::supplied_descriptor_requires_actual_read_and_append_flags_before_replay
+        PASS [   0.028s] codex-hepta-infer-core durable_control::file_tests::supplied_file_treats_proc_and_missing_parent_paths_as_diagnostic_labels
+        PASS [   0.025s] codex-hepta-infer-core durable_control::generation::tests::all_three_families_share_ids_capacity_and_exclusive_file_lock
+        PASS [   0.006s] codex-hepta-infer-core durable_control::generation::tests::exact_binding_payload_deadline_and_size_fail_without_writing
+        PASS [   0.009s] codex-hepta-infer-core durable_control::generation::tests::failed_generation_append_fences_without_installing_staged_state
+        PASS [   0.013s] codex-hepta-infer-core durable_control::generation::tests::corrupted_result_truncated_tail_and_cross_family_replay_fail_closed
+        PASS [   0.010s] codex-hepta-infer-core durable_control::generation::tests::live_abort_retains_real_bytes_and_reopened_owner_cannot_recreate_proof
+        PASS [   0.007s] codex-hepta-infer-core durable_control::generation::tests::original_result_and_cancel_survive_reopen_without_redispatch
+        PASS [   0.004s] codex-hepta-infer-core durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness
+        PASS [   0.003s] codex-hepta-infer-core durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success
+        PASS [   0.008s] codex-hepta-infer-core durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage
+        PASS [   0.005s] codex-hepta-infer-core durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once
+        PASS [   0.005s] codex-hepta-infer-core durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal
+        PASS [   0.005s] codex-hepta-infer-core durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven
+        PASS [   0.005s] codex-hepta-infer-core durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success
+        PASS [   0.043s] codex-hepta-infer-core durable_control::generation::tests::generation_transitions_preserve_unrelated_result_buffers
+        PASS [   0.010s] codex-hepta-infer-core durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss
+        PASS [   0.005s] codex-hepta-infer-core durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen
+        PASS [   0.007s] codex-hepta-infer-core durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success
+        PASS [   0.005s] codex-hepta-infer-core durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead
+        PASS [   0.006s] codex-hepta-infer-core durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome
+        PASS [   0.006s] codex-hepta-infer-core durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
+        PASS [   0.006s] codex-hepta-infer-core durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal
+        PASS [   0.016s] codex-hepta-infer-core durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation
+        PASS [   0.007s] codex-hepta-infer-core durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage
+        PASS [   0.005s] codex-hepta-infer-core durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage
+        PASS [   0.008s] codex-hepta-infer-core durable_control::tests::invalid_event_is_rejected_before_append
+        PASS [   0.010s] codex-hepta-infer-core durable_control::tests::missing_terminal_observation_becomes_indeterminate
+        PASS [   0.004s] codex-hepta-infer-core durable_control::tests::one_writer_is_held_until_owner_drop
+        PASS [   0.006s] codex-hepta-infer-core durable_control::tests::owner_drop_releases_lock_with_duplicate_descriptor
+        PASS [   0.006s] codex-hepta-infer-core durable_control::tests::reopens_exact_committed_state
+        PASS [   0.003s] codex-hepta-infer-core neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output
+        PASS [   0.004s] codex-hepta-infer-core neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected
+        PASS [   0.003s] codex-hepta-infer-core neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority
+        PASS [   0.003s] codex-hepta-infer-core tests::completion_requires_reservation
+        PASS [   0.003s] codex-hepta-infer-core tests::conflicting_identity_is_rejected
+        PASS [   0.004s] codex-hepta-infer-core tests::request_lifecycle_is_fenced_and_authority_free
+        PASS [   0.005s] codex-hepta-infer-core tests::stale_digest_cannot_reserve
+        PASS [   0.005s] codex-hepta-types bounded::tests::borrowed_constructors_validate_before_copy_and_count_utf8_bytes
+        PASS [   0.003s] codex-hepta-types bounded::tests::empty_nul_and_zero_maximum_fail_closed
+        PASS [   0.004s] codex-hepta-types canonical_digest::tests::canonical_byte_validator_accepts_frozen_bytes_and_returns_same_digest
+        PASS [   0.006s] codex-hepta-types bounded::tests::text_and_bytes_enforce_exact_bound
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_invalid_bool_and_unknown_tag
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_truncation_and_trailing_bytes
+        PASS [   0.004s] codex-hepta-types canonical_digest::tests::canonical_container_depth_is_exactly_bounded
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::canonical_v1_does_not_apply_unicode_normalization
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::field_and_map_order_are_canonical_but_array_order_is_semantic
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::frozen_cross_language_vector_matches_exact_bytes_and_digest
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::integer_boundaries_unicode_and_empty_containers_are_frozen
+        PASS [   0.003s] codex-hepta-types canonical_digest::tests::malformed_canonical_inputs_fail_closed
+        PASS [   0.003s] codex-hepta-types digest::stream_tests::stream_error_never_returns_a_partial_digest
+        PASS [   0.009s] codex-hepta-types digest::stream_tests::unbounded_reader_stops_after_one_overflow_byte
+        PASS [   0.006s] codex-hepta-types digest::tests::digest_parser_deterministic_fuzz_corpus_is_total_and_strict
+        PASS [   0.003s] codex-hepta-types digest::tests::multipart_hash_matches_exact_concatenation
+        PASS [   0.003s] codex-hepta-types digest::tests::sha256_round_trip_is_canonical
+        PASS [   0.003s] codex-hepta-types digest::tests::uppercase_and_wrong_length_fail_closed
+        PASS [   0.034s] codex-hepta-types digest::stream_tests::bounded_stream_digest_matches_bytes_at_buffer_boundaries
+        PASS [   0.005s] codex-hepta-types fixed::tests::arithmetic_boundaries_reject_overflow_and_division_by_zero
+        PASS [   0.003s] codex-hepta-types fixed::tests::checked_arithmetic_rejects_overflow_and_zero_division
+        PASS [   0.003s] codex-hepta-types fixed::tests::explicit_toward_zero_methods_match_legacy_compatibility_methods
+        PASS [   0.003s] codex-hepta-types fixed::tests::multiplication_and_division_are_deterministic
+        PASS [   0.003s] codex-hepta-types fixed::tests::probability_and_clamp_fail_closed
+        PASS [   0.004s] codex-hepta-types identity::tests::authority_flags_round_trip_only_as_untrusted_wire_bits
+        PASS [   0.005s] codex-hepta-types identity::tests::authority_posture_rejects_grants_at_raw_wire_ingress
+        PASS [   0.005s] codex-hepta-types identity::tests::id_profiles_and_namespaces_are_explicit_and_canonical
+        PASS [   0.004s] codex-hepta-types identity::tests::identity_bounds_and_monotonic_overflow_fail_closed
+        PASS [   0.003s] codex-hepta-types identity::tests::stable_id_and_generation_are_strict
+        PASS [   0.005s] codex-hepta-types identity::tests::non_authorizing_posture_is_structurally_deny_only
+        PASS [   0.005s] codex-hepta-types identity::tests::stable_profile_exhaustively_matches_the_v1_ascii_alphabet
+        PASS [   0.004s] codex-hepta-types numeric_conversion::tests::checked_scaling_rejects_overflow_without_mutating_input
+        PASS [   0.004s] codex-hepta-types numeric_conversion::tests::digest_binds_numerical_profile_shape_range_units_and_normalization
+        PASS [   0.003s] codex-hepta-types numeric_conversion::tests::incompatible_units_normalization_shape_and_ranges_reject
+        PASS [   0.003s] codex-hepta-types numeric_conversion::tests::malformed_shape_and_unknown_profile_cannot_enter_conversion
+        PASS [   0.021s] codex-hepta-types identity::tests::stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation
+        PASS [   0.003s] codex-hepta-types numeric_conversion::tests::ppm_q24_roundtrip_reports_exact_error_instead_of_byte_equality
+        PASS [   0.005s] codex-hepta-types numeric_conversion::tests::q24_to_q32_is_exact_and_legacy_multiply_keeps_toward_zero
+        PASS [   0.004s] codex-hepta-types numeric_conversion::tests::registered_conversion_requires_normalization_and_both_profile_definitions
+        PASS [   0.003s] codex-hepta-types numeric_conversion::tests::signed_half_ties_round_to_even_target_bins
+        PASS [   0.005s] codex-hepta-types numeric_profile::tests::profile_definition_binds_identity_version_scale_and_rounding
+        PASS [   0.004s] codex-hepta-types numeric_profile::tests::q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility
+        PASS [   0.003s] codex-hepta-types prompt_delivery::tests::delivered_and_rejected_are_mutually_exclusive
+        PASS [   0.003s] codex-hepta-types prompt_delivery::tests::rejection_reason_is_open_but_bounded
+        PASS [   0.003s] codex-hepta-types prompt_delivery::tests::semantic_digest_is_deterministic_and_field_complete
+        PASS [   0.003s] codex-hepta-types prompt_delivery::tests::token_positions_are_optional_bounded_and_canonical
+        PASS [   0.004s] codex-hepta-types registry::tests::definition_kind_is_bound_to_identifier_namespace
+        PASS [   0.005s] codex-hepta-types registry::tests::immutable_registry_resolves_exact_definition_and_numeric_profile
+        PASS [   0.004s] codex-hepta-types registry::tests::registry_digest_is_insertion_order_independent_and_definition_sensitive
+        PASS [   0.008s] codex-hepta-types topology::tests::related_module_bounds_are_checked_before_digest_allocation
+        PASS [   0.003s] codex-hepta-types topology::tests::selected_digest_cannot_hide_substituted_delta_content
+        PASS [   0.003s] codex-hepta-types topology::tests::split_requires_individually_bound_add_participants
+        PASS [   0.023s] codex-hepta-types registry::tests::registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_bytes
+        PASS [   2.835s] codex-hepta-infer-core durable_control::generation::tests::real_file_capacity_preserves_cancel_dispatch_and_maximal_result_space
+        PASS [   3.821s] codex-hepta-infer-core durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes
+────────────
+     Summary [   3.889s] 96 tests run: 96 passed, 1 skipped
