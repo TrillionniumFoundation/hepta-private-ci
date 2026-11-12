@@ -1,0 +1,79 @@
+{
+  "source": "8b83dbc88d2623c026c62509897c716e151517ae",
+  "tree": "2966b8bc42884f2f8b5ca701cc53364b1435c9f1",
+  "source_commits": [
+    "2d3a45830131ab4a43436c6509cdd3a1877eb71c",
+    "1a4ed8a2eb24b8af5a6a17744df9c73f7dd98736",
+    "8b83dbc88d2623c026c62509897c716e151517ae"
+  ],
+  "bundle_prerequisite": "6318e12493b71bf335822cb4d932c4c056319810",
+  "source_before_after_equal_clean": true,
+  "scope": "locked-file final holdout CAS physical replay and same-handle refusal only",
+  "native": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "retries": 0,
+    "exit_code": 0,
+    "elapsed_seconds": 34.934586800000034,
+    "uid": 1000,
+    "executor": "74d784910ce8"
+  },
+  "source_qa": {
+    "tests": 8,
+    "passed": 8,
+    "scope": "new physical holdout source closure only"
+  },
+  "full_caller_scan": "not performed for this candidate",
+  "independent_review": "sticky_fence reviewed exact source and tests; static review only, no independent native execution",
+  "durable_cross_process_refusal": "not claimed; fresh owner can reopen restored valid bytes at retained cut",
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 13348,
+    "sha256": "5cd7197af2d55b445188687799f3f95b6fec19d64b02a72272e21cc7e1ca2a03",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "native/junit-0.xml",
+      "bytes": 2354,
+      "sha256": "046c258d2cc46914b9c243343418f179f4d3e338df59094cafb2d77cefb7c16a"
+    },
+    {
+      "path": "native/native.log",
+      "bytes": 8764,
+      "sha256": "cb88ca2955dda84a68047b6fac7178972b4aaa4f65625aeb557ad189f29ef7aa"
+    },
+    {
+      "path": "native/run.json",
+      "bytes": 4092,
+      "sha256": "9d7fe047a507b54cdb95f4a2b5a29dab0a37f60edcb69af1196a0e94884e3262"
+    },
+    {
+      "path": "source-qa/source-qa.json",
+      "bytes": 785,
+      "sha256": "d3cf1c784bc0fa27bcca4a5bd8617b41b13ae5e4889a819fbd3f6b4cccc3fffd"
+    },
+    {
+      "path": "source-qa/source-qa.log",
+      "bytes": 106,
+      "sha256": "1d02d9f4d06123d9d989034a4e16fd73feb197c1ee2700810d474e9cc0c792b6"
+    },
+    {
+      "path": "run_holdout_cas_native.py",
+      "bytes": 3860,
+      "sha256": "0b3dcf24771edcbba662ccfb85bdd1041164997ee4fc79a87423de529e531860"
+    },
+    {
+      "path": "holdout-cas-8b83dbc8-source.bundle",
+      "bytes": 8440,
+      "sha256": "c4f2c468b2d9d09ada1d8b8ce1c99b266ab8fe576a623a22df1da0365f454497"
+    }
+  ]
+}
