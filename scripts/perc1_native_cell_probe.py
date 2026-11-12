@@ -204,7 +204,7 @@ def _source_pins(root, ref):
     return pins
 
 
-def build(root, target, ref, cargo, rustc):
+def build(root, target, ref, cargo, rustc, *, source=RUST, offline=True):
     root, target = root.resolve(), target.resolve()
     pins = _source_pins(root, ref)
     target.mkdir(parents=True, exist_ok=False)
@@ -219,6 +219,7 @@ version = "0.0.0"
 edition = "2024"
 [dependencies]
 codex-hepta-types = { path = "hepta-types" }
+codex-hepta-infer-core = { path = "hepta-infer-core" }
 codex-hepta-neuron = { path = "hepta-neuron" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.154"
@@ -248,7 +249,7 @@ debug = 0
         manifests[name + "/Cargo.toml"] = manifest
     for path, text in manifests.items():
         (target / path).write_text(text)
-    (target / "src/main.rs").write_text(RUST)
+    (target / "src/main.rs").write_text(source)
     command = [
         cargo,
         "build",
@@ -258,6 +259,8 @@ debug = 0
         "--manifest-path",
         str(target / "Cargo.toml"),
     ]
+    if not offline:
+        command.remove("--offline")
     completed = subprocess.run(
         command,
         cwd=target,
@@ -278,7 +281,7 @@ debug = 0
         "returncode": completed.returncode,
         "sources": pins,
         "sources_unchanged": unchanged,
-        "probe_source_sha256": _sha(RUST.encode()),
+        "probe_source_sha256": _sha(source.encode()),
         "manifests": {name: _sha(text.encode()) for name, text in manifests.items()},
         "rustc": subprocess.check_output([rustc, "--version"], text=True).strip(),
         "scope": "actual three repository libraries; standalone manifests; no workspace tests",
