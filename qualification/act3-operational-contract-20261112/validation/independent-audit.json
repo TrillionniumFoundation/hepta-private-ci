@@ -1,0 +1,183 @@
+{
+  "status": "PASS_RETAINED_INTERNAL_CONSISTENCY_ONLY",
+  "artifact_sha256": {
+    "FROZEN_MANIFEST.json": "1eee7962f45db6ac6d341f54e45de338393f2e84eef684c092f25410967cd7cd",
+    "RESULT.json": "1b6cc9d5d86e074e78444aaf9a6798958f59a106a2553edd01ad150adbaa99f1",
+    "episodes.jsonl.gz": "096e3261224c8e3a0dc1d3bed52db34d13655a00ccaa2c73b92dab9ab3e8eb42",
+    "destination-bytes.tar.xz": "b63c8dfd1b5d523f19ff851b328bd69b1386627aeb71e91b04c6b3981f6488f5"
+  },
+  "rows": 1536,
+  "conditions": 64,
+  "base_probes": 16,
+  "schedules_per_base": 4,
+  "seeds": [
+    700,
+    701,
+    702,
+    703,
+    704,
+    705,
+    706,
+    707
+  ],
+  "arms": [
+    "fixed",
+    "head",
+    "gru"
+  ],
+  "physical_owner_manifests": 1536,
+  "physical_payloads_checked": 3456,
+  "complete_rows_checked": 768,
+  "expired_zero_effect_rows": 384,
+  "pause_blocked_event_rows": 384,
+  "schedule_arm_results": {
+    "running": {
+      "fixed": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 416,
+        "primitive_calls": 1600,
+        "unknown": 32,
+        "repairs": 32
+      },
+      "head": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 416,
+        "primitive_calls": 1600,
+        "unknown": 32,
+        "repairs": 32
+      },
+      "gru": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 416,
+        "primitive_calls": 1600,
+        "unknown": 32,
+        "repairs": 32
+      }
+    },
+    "pause_resume": {
+      "fixed": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 416,
+        "primitive_calls": 1600,
+        "unknown": 32,
+        "repairs": 32
+      },
+      "head": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 416,
+        "primitive_calls": 1600,
+        "unknown": 32,
+        "repairs": 32
+      },
+      "gru": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 416,
+        "primitive_calls": 1600,
+        "unknown": 32,
+        "repairs": 32
+      }
+    },
+    "expired": {
+      "fixed": {
+        "episodes": 128,
+        "complete": 0,
+        "claimed_success": 0,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 0,
+        "primitive_calls": 128,
+        "unknown": 0,
+        "repairs": 0
+      },
+      "head": {
+        "episodes": 128,
+        "complete": 0,
+        "claimed_success": 0,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 0,
+        "primitive_calls": 128,
+        "unknown": 0,
+        "repairs": 0
+      },
+      "gru": {
+        "episodes": 128,
+        "complete": 0,
+        "claimed_success": 0,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 0,
+        "primitive_calls": 128,
+        "unknown": 0,
+        "repairs": 0
+      }
+    },
+    "no_repair": {
+      "fixed": {
+        "episodes": 128,
+        "complete": 64,
+        "claimed_success": 64,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 320,
+        "primitive_calls": 1312,
+        "unknown": 32,
+        "repairs": 0
+      },
+      "head": {
+        "episodes": 128,
+        "complete": 64,
+        "claimed_success": 64,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 320,
+        "primitive_calls": 1312,
+        "unknown": 32,
+        "repairs": 0
+      },
+      "gru": {
+        "episodes": 128,
+        "complete": 64,
+        "claimed_success": 64,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "physical_effects": 320,
+        "primitive_calls": 1312,
+        "unknown": 32,
+        "repairs": 0
+      }
+    }
+  },
+  "limitations": [
+    "Same-host read-only retained-bytes audit; no new model or effect execution.",
+    "Archive internal consistency is not independently signed execution provenance.",
+    "64 conditions are 16 base probes times four schedules, not independent real tasks.",
+    "Deadline only fences newly entered mutations; no in-flight interruption or goal-before-deadline qualification.",
+    "Lifecycle timing excludes model loading, campaign retention and complete lifecycle cost."
+  ],
+  "promotion": false
+}
