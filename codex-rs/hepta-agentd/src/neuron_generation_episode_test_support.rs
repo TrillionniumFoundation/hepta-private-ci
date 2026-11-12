@@ -1,6 +1,8 @@
 //! Actual journal/Fleet/ledger owners with a bounded file-backed test worker.
 //! Deterministic keys and quality values are fixtures, never adoption evidence.
 
+#![cfg(test)]
+
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;

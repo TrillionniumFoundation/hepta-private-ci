@@ -1,4 +1,6 @@
 //! Deterministic product-qualification fixtures only; no measured learning evidence.
+#![cfg(test)]
+
 use std::sync::Arc;
 use std::sync::Mutex;
 

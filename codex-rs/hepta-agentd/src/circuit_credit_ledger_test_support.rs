@@ -1,5 +1,7 @@
 //! Deterministic test keys and rewards; never production trust or evidence.
 
+#![cfg(test)]
+
 use std::fs::File;
 use std::fs::OpenOptions;
 
