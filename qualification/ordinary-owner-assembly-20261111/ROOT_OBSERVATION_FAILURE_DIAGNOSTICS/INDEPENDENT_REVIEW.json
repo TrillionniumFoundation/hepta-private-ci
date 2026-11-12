@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.root-failure-observation-only-independent-review.v1",
+  "fixed_base": {
+    "commit": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+  },
+  "scope": "Independent fixed-Git-source review only. No native, Cargo, h, subprocess or shared/ref mutation.",
+  "session": {
+    "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+    "base_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+    "post_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+    "post_bytes": 19872,
+    "post_sha256": "539c7677c4bfeb2e97d7257692d3565ff0b7c2a00ace34e6461b0f7b43ae8cf0",
+    "removed_result_observers": 16,
+    "removed_direct_cfg_test_logs": 3,
+    "original_nonwhitespace_equal": true,
+    "assessment": [
+      "Original first proof read and refresh, 100ms background feed, serial semaphore and consumer-sync order are unchanged.",
+      "All new Result inspectors retain the original result. Each output is cfg(test); the success inspector emits only for the original already-expired predicate and reuses the existing sampled value.",
+      "current pre/post pidfd tests, authority lease bounds, cache accept and final current checks remain. Drop still fences before abort and breaks consumers' Arc cycle in the original order.",
+      "No new BOOTTIME sampling, current/refresh call, blocking wait, authority read, retry, new permission or timeout adjustment was found. Logging reads immutable already-held proof metadata only.",
+      "Repeated error messages are expected unwind propagation, not distinct new failures; parse the earliest phase/cause."
+    ]
+  },
+  "initial": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "base_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+      "post_blob": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+      "post_bytes": 14342,
+      "post_sha256": "daa4fc02cc7e317ed35be72368c8dff84dc68c9fa47011f9670e64758e342b7e",
+      "removed_error_observers": 14,
+      "original_nonwhitespace_equal": true,
+      "original_call_counts": {
+        "now_unix": {
+          "before": 2,
+          "after": 2
+        },
+        "readbacks": {
+          "before": 2,
+          "after": 2
+        },
+        "claim": {
+          "before": 1,
+          "after": 1
+        },
+        "dispatch": {
+          "before": 1,
+          "after": 1
+        },
+        "prepare": {
+          "before": 1,
+          "after": 1
+        },
+        "publish": {
+          "before": 0,
+          "after": 0
+        },
+        "deadline": {
+          "before": 0,
+          "after": 0
+        }
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "base_blob": "fbf58a056a9c3f47bb521a4133eba93d5e2bcdef",
+      "post_blob": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+      "post_bytes": 9553,
+      "post_sha256": "7fc6523ff1fabe0815a3d1a01221ba1be5a4473a9d008eaee30fa90b1bf0d1d5",
+      "removed_error_observers": 2,
+      "original_nonwhitespace_equal": true,
+      "original_call_counts": {
+        "now_unix": {
+          "before": 0,
+          "after": 0
+        },
+        "readbacks": {
+          "before": 0,
+          "after": 0
+        },
+        "claim": {
+          "before": 0,
+          "after": 0
+        },
+        "dispatch": {
+          "before": 0,
+          "after": 0
+        },
+        "prepare": {
+          "before": 1,
+          "after": 1
+        },
+        "publish": {
+          "before": 0,
+          "after": 0
+        },
+        "deadline": {
+          "before": 0,
+          "after": 0
+        }
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "base_blob": "24b615a3b5be95c469d18ce80446032bede27438",
+      "post_blob": "69f1c5256c39c3831fa0ade24eb59f35a413ebd7",
+      "post_bytes": 5953,
+      "post_sha256": "06d4f55af69f6ed1fea65e7c62de7b251be59ab927eea250b2f7b3cda11f1ca1",
+      "removed_error_observers": 1,
+      "original_nonwhitespace_equal": true,
+      "original_call_counts": {
+        "now_unix": {
+          "before": 0,
+          "after": 0
+        },
+        "readbacks": {
+          "before": 0,
+          "after": 0
+        },
+        "claim": {
+          "before": 0,
+          "after": 0
+        },
+        "dispatch": {
+          "before": 0,
+          "after": 0
+        },
+        "prepare": {
+          "before": 0,
+          "after": 0
+        },
+        "publish": {
+          "before": 1,
+          "after": 1
+        },
+        "deadline": {
+          "before": 0,
+          "after": 0
+        }
+      }
+    }
+  ],
+  "initial_assessment": [
+    "All 17 added wrappers are Result::inspect_err, with only let _ = error and cfg(test) error formatting. Original non-whitespace text is exactly recovered by removing these wrappers.",
+    "Original nested dispatch Result distinction is preserved: outer dispatch-final-use-boundary logs the authority error; inner dispatch-callback logs the original effect result. Neither converts an Err to success or retries an unknown effect.",
+    "The existing external frontier, selected owner, clock, genesis, original FinalUse claim, guarded CURRENT CAS and post-readback order is preserved. Actual Feature construction remains after original publish.",
+    "No test assertions, original time limits, acceptance criteria or protected callers are removed. This review did not execute the full original CALLERS checker, rustfmt or Rust compiler."
+  ],
+  "cache_companion": {
+    "post_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+    "manifest": "b19ff38ff09002e6a162fd097691a7ad0c459d1a",
+    "independence": "Cache diagnostics authored by this reviewer and separately read by runtime_access; it is not counted as an independent self-approval."
+  },
+  "qualification": {
+    "root_v4": "17 / 15 passed / 2 failed at fixed903b; diagnostic patches unexecuted",
+    "ordinary_complete": 0,
+    "independent_C": "unaccepted",
+    "OS_restart": "unaccepted"
+  },
+  "verdict": "No source-level blocker found for these diagnostic-only changes. This is not a production behavior repair or evidence that either static cache race caused V4."
+}

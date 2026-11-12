@@ -1,0 +1,26 @@
+{
+  "status": "static-request-checks-passed",
+  "python_ast_parsed": true,
+  "program_executed": false,
+  "h_called": false,
+  "network_git_executed": false,
+  "native_tests_executed": false,
+  "archive_not_locally_read": true,
+  "program_bytes": 19712,
+  "program_sha256": "15ed7219d860927b23a9e14ef9a7b8cda20b8780e9ea03b62854cbc026f8d294",
+  "request_bytes": 251740,
+  "request_sha256": "8ad8c64d38f3f0da202bcaa28b4cd9c05100869fdee772f7d7c4ada7fa2517bf",
+  "reconstructed_h_request_bytes_equal": true,
+  "original_export_request_bytes_equal_to_pinned_blob": true,
+  "max_arg_bytes": 48000,
+  "original_request_chunk_bytes": [
+    48000,
+    48000,
+    48000,
+    48000,
+    7062
+  ],
+  "single_push_call": "git(\"push-only-new-evidence-ref\", \"push\", \"--porcelain\", \"--no-follow-tags\",\n        \"--recurse-submodules=no\", \"--force-with-lease=\" + REF + \":\",\n        REMOTE, REF + \":\" + REF, budget=300)",
+  "source_base": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "planned_delta": "A4 + M1 exact allowlist append; parent source tree retained"
+}
