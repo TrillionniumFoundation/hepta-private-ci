@@ -60,13 +60,13 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
                                 "source.require_current_historical_source(identity)?", occurrence)
 
     def test_queue_reservation_and_witnessed_claim_precede_actual_async_dispatch(self):
-        self.check_markers(SOURCE, "fn run(", (
+        self.check_markers(SOURCE, "fn run_delivery(", (
             "require_ready(&state).is_ok() && state.automation_admission_ready()?",
             "handle.reserve()", "self.journal.read(&self.key)",
             "commit_original_historical_delivery(&self.key",
             "timeout_at(source.end.into(), reservation.submit(source.request().clone()))"))
         for occurrence in (0, 1):
-            self.reject_removal(SOURCE, "fn run(",
+            self.reject_removal(SOURCE, "fn run_delivery(",
                                 "source.require_current_historical_source(state.identity())", occurrence)
         self.check_markers(JOURNAL, "fn commit_original_historical_delivery<F>(", (
             "self.journal.claim(key)", "ProductEvaluationExecutionStateV1::Pending",
@@ -76,9 +76,9 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
 
     def test_existing_pending_or_complete_uses_only_actual_root_readback(self):
         for occurrence in (0, 1):
-            self.reject_removal(SOURCE, "fn run(",
+            self.reject_removal(SOURCE, "fn run_delivery(",
                                 "self.readback(reservation, &cancellation).await?", occurrence)
-        self.check_markers(SOURCE, "fn run(", (
+        self.check_markers(SOURCE, "fn run_delivery(", (
             "saved.as_slice() != snapshot.head_digest.as_array()", "Err(JournalError::Pending)",
             "ProductEvaluationExecutionStoreErrorV1::Missing", "*observed_snapshot = Some(result)"))
         self.check_markers(SOURCE, "fn readback(", (

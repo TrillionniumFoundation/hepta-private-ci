@@ -220,7 +220,12 @@ impl AgentdProductionLaunch {
         let bootstrap = config
             .take_learning_iteration_bootstrap()
             .ok_or_else(|| refused("original successor learning bootstrap absent"))?;
-        let bootstrap = bootstrap.with_original_post_a_continuation(continuation, &identity)?;
+        let bootstrap =
+            crate::LearningIterationRuntimeBootstrapV1::with_original_post_a_continuation(
+                bootstrap,
+                continuation,
+                &identity,
+            )?;
         config = config.with_learning_iteration_bootstrap(bootstrap)?;
         // The mandatory delivery now owns both the handle and continuation.
         drop(handle);

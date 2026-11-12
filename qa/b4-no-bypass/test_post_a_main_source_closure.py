@@ -90,11 +90,12 @@ class PostAMainSourceTests(unittest.TestCase):
             "delivery.open_witness()?", "crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source(",
             "config.with_learning_iteration_bootstrap(bootstrap)?",
             "prepare_original_q24_successor(config, data.queue_capacity)",
-            "self.post_a_continuation = Some(OriginalPostAContinuationV1"))
+            "OriginalPostAContinuationV1::from_original_inputs(",
+            "crate::LearningIterationRuntimeBootstrapV1::with_original_post_a_continuation("))
         self.check_markers(AGENT + "production_launcher.rs", "fn run(", (
-            "self.post_a_handoffs.is_some()", "let post_a_continuation = self.post_a_continuation",
+            "self.post_a_handoffs.is_some()",
             "initial_q24::writer::attach(config, self.root, self.session_end).await?",
-            "let result = crate::run(config, arg0_paths).await", "drop(post_a_continuation)",
+            "let result = crate::run(config, arg0_paths).await",
             "drop((attachment, desktop_attachment, initial_attachment))"))
 
     def test_current_offer_is_retained_without_connecting_before_real_b(self):
@@ -102,9 +103,10 @@ class PostAMainSourceTests(unittest.TestCase):
             "crate::receive_root_generation_publication_handoff(", "self.publication,",
             "Ok((learning, model, publication))"))
         self.check_markers(MAIN, "fn assemble_original_post_a_q24(", (
-            "self.publication = Some(publication)", "_publication: (",
+            "self.publication = Some(publication)",
+            "crate::RootGenerationPublicationHandoffV1::retain_original_preparation(",
             "self.take_generation_publication_handoff()?",
-            "self.take_generation_publication_connection()?,\n                self.session_end,"))
+            "self.take_generation_publication_connection()?,\n            &prepared,\n            self.session_end,"))
         self.check_markers(AGENT + "root_generation_publication_inputs.rs", "fn connect_until(", (
             "timeout.min(publication_remaining(end)?)",
             "OriginalPublicationStream::from_stream_until(", "timeout,\n            end,"))
