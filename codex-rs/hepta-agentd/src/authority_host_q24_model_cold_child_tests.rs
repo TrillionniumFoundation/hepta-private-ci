@@ -11,6 +11,7 @@ use crate::authority_host_service::q24_model::WITNESS_RECORDS;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_neuron::JournalScope;
+use pretty_assertions::assert_eq;
 
 #[test]
 #[ignore = "only the actual Root cold phase transfers the original four rights"]

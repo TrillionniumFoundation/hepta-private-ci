@@ -1,6 +1,7 @@
 //! A child test owns one actual Root service for one dedicated daemon lifetime.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[test]
 #[ignore = "only the actual Root cold-recovery parent supplies a phase"]
