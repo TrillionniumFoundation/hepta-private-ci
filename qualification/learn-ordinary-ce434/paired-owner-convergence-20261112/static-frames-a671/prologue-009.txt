@@ -1,0 +1,19 @@
+
+/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000005a019d0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture18ready_with_profile17h8debf99f2059b504E>:
+ 5a019d0:	mov    %rdi,%rax
+ 5a019d3:	mov    (%rsi),%rcx
+ 5a019d6:	mov    %rcx,(%rdi)
+ 5a019d9:	mov    0x8(%rsi),%rcx
+ 5a019dd:	mov    %rcx,0x8(%rdi)
+ 5a019e1:	mov    0x10(%rsi),%rcx
+ 5a019e5:	mov    %rcx,0x10(%rdi)
+ 5a019e9:	mov    0x18(%rsi),%rcx
+ 5a019ed:	mov    %rcx,0x18(%rdi)
+ 5a019f1:	mov    %rdx,0x40(%rdi)
+ 5a019f5:	movb   $0x0,0x51(%rdi)
+ 5a019f9:	ret
