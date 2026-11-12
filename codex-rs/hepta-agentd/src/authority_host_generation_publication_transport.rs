@@ -358,7 +358,7 @@ impl HostAuthorityService {
                                     .map_err(io::Error::other)?;
                                 // Set only after the original exact CAS succeeded. The
                                 // full Root postchecks still precede acceptance production.
-                                fresh_publication = Some(before.clone());
+                                fresh_publication = Some(before);
                                 }
                             }
                         }
