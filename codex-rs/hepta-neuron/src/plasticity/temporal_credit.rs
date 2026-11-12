@@ -185,10 +185,30 @@ pub fn accumulate_temporal_credit_q24(
     contract: TemporalCreditContractV1,
     arm: TemporalCreditArmV1,
 ) -> Result<TemporalCreditReceiptV1, TemporalCreditError> {
+    accumulate_credit_with_decay(
+        actions,
+        feedback,
+        parameter_groups,
+        contract,
+        arm,
+        /*minimum_sequence*/ 1,
+        |lag| decay_power_q24(contract.decay_q24, lag),
+    )
+}
+
+pub(super) fn accumulate_credit_with_decay(
+    actions: &[TemporalEligibilityActionV1],
+    feedback: &[TemporalFeedbackV1],
+    parameter_groups: &[ParameterGroupMapV1],
+    contract: TemporalCreditContractV1,
+    arm: TemporalCreditArmV1,
+    minimum_sequence: u64,
+    decay_for_lag: impl Fn(u64) -> Result<i64, TemporalCreditError>,
+) -> Result<TemporalCreditReceiptV1, TemporalCreditError> {
     if contract.owner_scope_digest.is_zero()
         || contract.model_digest.is_zero()
         || contract.generation == 0
-        || contract.cutoff_sequence == 0
+        || contract.cutoff_sequence < minimum_sequence
         || !(0..=Q).contains(&contract.decay_q24)
         || actions.is_empty()
         || actions.len() > MAX_HISTORY
@@ -207,7 +227,7 @@ pub fn accumulate_temporal_credit_q24(
 
     let mut by_id = BTreeMap::<StableId, &TemporalEligibilityActionV1>::new();
     for action in actions {
-        if action.sequence == 0
+        if action.sequence < minimum_sequence
             || !valid_eligibility(&action.eligibility_q24)
             || action.eligibility_q24.len() != dim
             || action.source_receipt_digest.is_zero()
@@ -300,7 +320,7 @@ pub fn accumulate_temporal_credit_q24(
             continue;
         }
         matched += 1;
-        let decay = decay_power_q24(contract.decay_q24, lag)?;
+        let decay = decay_for_lag(lag)?;
         let projections = groups
             .iter()
             .map(|group| dot_q24(&group.modulator_projection_q24, &item.modulator_q24))
