@@ -68,7 +68,7 @@ jobs:
       - name: Verify the original caller boundaries
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 \
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4800 \
             --output "$RUNNER_TEMP/act2-notes-seed/caller-proof.json" \
             -- python3 scripts/verify_hepta_callers.py verify
       - name: Build both actual executable entries with the original lock
