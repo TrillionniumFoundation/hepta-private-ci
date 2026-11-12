@@ -14870,15 +14870,6 @@ required_function_order = [
   { function = "fn serve_generation_publication_with_end(", sequence = ["exchange_with_original_deadline(|bytes, end| {", "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "serde_json::from_slice(bytes)", "matches!(&request.command, Command::IssueFinalUse { .. })", "return HostAuthorityService::issue_generation_publication_grant(", "&mut sequence,", "end,", ".map(|raw| (raw, None))", "let mut successor_observed = None", "self.with_learning_profile(", "grant: None", "Ok((raw, accepted))", "let _ = RegisteredGenerationPublication::refuse(slot);"] },
 ]
 
-[[boundary]]
-id = "root_completed_learning_same_service"
-symbol = "OriginalCompletedLearningContextV1::require_original_publication_context"
-receiver_type = "OriginalCompletedLearningContextV1"
-definition_path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
-definition_markers = ["fn require_original_publication_context(", "!std::ptr::eq(self.service, service)", "self.end != end", "require_end(self.end)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_completed.rs"]
-caller_markers = []
-
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
 required = []
@@ -15186,3 +15177,12 @@ forbidden = []
 [[protected_file.required_function_order]]
 function = "fn observe("
 sequence = ["let before = self.stamps()?;", "let expected = self.witness_head()?;", "let mut feature_boundary_only = true;", "while offset < bytes.len()", "next.sequence > self.config.journal_records", "next.checkpoint_digest.as_array() != &bytes[end - 32..end]", "serde_json::from_slice(payload)", "serde_json::to_vec(&event)", "!= payload", "if !matches!(&event, GenerationEvent::Drain)", "feature_boundary_only = false;", "state.apply(&self.config.generation, &event)?;", "if head != expected", "self.witness_head()? != expected || self.stamps()? != before", "feature_boundary_only,"]
+
+[[boundary]]
+id = "root_completed_learning_same_service"
+symbol = "OriginalCompletedLearningContextV1::require_original_publication_context"
+receiver_type = "OriginalCompletedLearningContextV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
+definition_markers = ["fn require_original_publication_context(", "!std::ptr::eq(self.service, service)", "self.end != end", "require_end(self.end)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_completed.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_history.rs"]
+caller_markers = []

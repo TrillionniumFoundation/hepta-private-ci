@@ -248,7 +248,8 @@ impl RegisteredGenerationPublication {
     }
 
     fn require_previous(&self) -> io::Result<()> {
-        let observed = self.previous.observe().map_err(io::Error::other)?;
+        let observed =
+            CellGenerationJournalObserverV1::observe(&self.previous).map_err(io::Error::other)?;
         let intent = &self.profile.intent;
         if !observed.is_drained()
             || observed.owner_binding() != &intent.previous
@@ -262,7 +263,8 @@ impl RegisteredGenerationPublication {
     }
 
     fn require_genesis(&self) -> io::Result<()> {
-        let observed = self.target.observe().map_err(io::Error::other)?;
+        let observed =
+            CellGenerationJournalObserverV1::observe(&self.target).map_err(io::Error::other)?;
         if !observed.is_genesis()
             || observed.owner_binding() != &self.profile.intent.target
             || observed.observation().owner_checkpoint().into_array()
