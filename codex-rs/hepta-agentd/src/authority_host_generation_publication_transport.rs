@@ -24,6 +24,8 @@ pub(crate) struct Request {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Command {
     Observe,
+    CaptureRetiredTask {},
+    ReadFinalizedTask {},
     Prepare {
         expected: String,
         intent: String,
@@ -44,6 +46,8 @@ pub(crate) struct Response {
     pub(crate) request_id: u64,
     pub(crate) profile: PublicationProfile,
     pub(crate) head: CurrentHead,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) successor: Option<RootCompletedSuccessorDataV1>,
 }
 
 impl HostAuthorityService {
@@ -115,6 +119,7 @@ impl HostAuthorityService {
         while channel
             .exchange_with_original_deadline(|bytes, end| {
                 PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {
+                    let mut successor_observed = None;
                     let (raw, expected) = self.with_learning_profile(
                     config,
                     registration,
@@ -171,6 +176,21 @@ impl HostAuthorityService {
                         let mut after = before.clone();
                         let mut fresh_grant = None;
                         match &request.command {
+                            Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {
+                                if version != PublicationVersion::DurableV2 || before.current != intent.target {
+                                    return Err(io::Error::other("original published V2 successor required"));
+                                }
+                                let record = before.published.as_ref().filter(|record| record.intent == *intent)
+                                    .ok_or_else(|| io::Error::other("exact original successor publication missing"))?;
+                                if slot.verify_retained(&record.signed, &record.witness)? != original_revocations {
+                                    return Err(io::Error::other("original successor FinalUse differs"));
+                                }
+                                slot.target.observe().map_err(io::Error::other)?;
+                                let successor = slot.successor.as_ref()
+                                    .ok_or_else(|| io::Error::other("original successor custody not registered"))?;
+                                let cut = successor.observe_retired(matches!(&request.command, Command::CaptureRetiredTask {}))?;
+                                successor_observed = Some(successor.read_data(cut)?);
+                            }
                             Command::Observe => {
                                 if before.current == intent.target {
                                     let record = before
@@ -268,6 +288,7 @@ impl HostAuthorityService {
                             request_id: request.request_id,
                             profile: slot.profile.clone(),
                             head: after.clone(),
+                            successor: successor_observed.clone(),
                         };
                         // Check the exact success frame before crossing any CURRENT effect.
                         let raw = serde_json::to_vec(&response).map_err(io::Error::other)?;
@@ -276,6 +297,7 @@ impl HostAuthorityService {
                         }
                         match &request.command {
                             Command::Observe => {}
+                            Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {}
                             Command::Prepare { .. } => {
                                 slot.current
                                     .original_broker_prepare(intent)
@@ -314,7 +336,7 @@ impl HostAuthorityService {
                                 ));
                             }
                         }
-                        if matches!(&request.command, Command::Observe)
+                        if matches!(&request.command, Command::Observe | Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {})
                             && after.current == intent.target
                         {
                             let record = after.published.as_ref().ok_or_else(|| {
@@ -347,6 +369,13 @@ impl HostAuthorityService {
                     // writer context has returned and the exact physical cut is read
                     // again under this frame's original absolute deadline.
                     slot.require_profile()?;
+                    if let Some(observed) = successor_observed {
+                        let successor = slot.successor.as_ref().ok_or_else(|| io::Error::other("original successor custody disappeared"))?;
+                        successor.finish_observed(&observed.cut)?;
+                        if successor.read_data(observed.cut.clone())? != observed {
+                            return Err(io::Error::other("original successor record changed after Root context"));
+                        }
+                    }
                     slot.require_previous()?;
                     slot.require_selection(
                         self.clock

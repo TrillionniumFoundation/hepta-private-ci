@@ -137,7 +137,7 @@ impl RootOriginalSuccessorFilesV1 {
         original_root()?;
         self.require_original()?;
         let cold;
-        let files = if let Some(files) = &self.files {
+        let files: &[RetainedMaterial] = if let Some(files) = &self.files {
             files
         } else {
             cold = self

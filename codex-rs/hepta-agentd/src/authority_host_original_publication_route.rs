@@ -113,6 +113,7 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
             lifetime: Duration::from_millis(config.lifetime_ms),
             original_end,
             version,
+            successor: None,
         },
         crate::RootGenerationPublicationOfferV1 { bootstrap },
     ))

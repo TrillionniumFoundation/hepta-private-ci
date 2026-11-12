@@ -32,6 +32,8 @@ mod inputs;
 #[path = "authority_host_post_a_publication.rs"]
 pub(in crate::authority_host_runtime::session) mod post_a;
 pub(crate) use post_a::PreparedPublicationData;
+pub(crate) use post_a::RootOriginalSuccessorFilesV1;
+pub(crate) use post_a::RootSuccessorTaskCutV1;
 
 use data::DeploymentData;
 use data::LateMaterial;

@@ -62,6 +62,8 @@ pub use session::RootIndependentBEvaluationOfferV1;
 pub(crate) use session::RootIndependentBEvaluationRuntimeV1;
 pub(crate) use session::RootInitialRunStartFilesV1;
 pub use session::RootNotesPolicyPredecessor;
+pub(crate) use session::RootOriginalSuccessorFilesV1;
+pub(crate) use session::RootSuccessorTaskCutV1;
 pub(crate) use session::publication_data;
 pub(crate) use session::serve_independent_b_until;
 

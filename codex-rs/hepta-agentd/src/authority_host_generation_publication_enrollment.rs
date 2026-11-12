@@ -495,6 +495,7 @@ impl HostAuthorityService {
                     artifacts,
                     selected: Mutex::new(selected),
                     consumer,
+                    successor: None,
                 };
                 enrolled.require_profile()?;
                 enrolled.require_history(learning, &scope)?;

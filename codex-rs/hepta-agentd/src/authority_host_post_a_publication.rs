@@ -34,7 +34,8 @@ use material::RetainedMaterial;
 
 #[path = "authority_host_successor_deployment_files.rs"]
 mod successor;
-use successor::RootOriginalSuccessorFilesV1;
+pub(crate) use successor::RootOriginalSuccessorFilesV1;
+pub(crate) use successor::RootSuccessorTaskCutV1;
 pub(crate) use successor::RootSuccessorTaskFilesDataV1;
 
 /// Read-only fixed locations, public trust and physical pins from the private
@@ -157,7 +158,7 @@ impl OriginalPostAPublicationFiles {
     pub(in crate::authority_host_runtime::session) fn attach_original_route(
         self: &Arc<Self>,
         initial: &LearningIterationSnapshotV1,
-        capability: RootGenerationPublicationEnrollmentCapabilityV1,
+        mut capability: RootGenerationPublicationEnrollmentCapabilityV1,
     ) -> io::Result<OriginalPostAPublicationDeployment> {
         original_root()?;
         self.require_original_files()?;
@@ -165,6 +166,7 @@ impl OriginalPostAPublicationFiles {
             || self.uid != capability.consumer_uid
             || capability.version != super::super::PublicationVersion::DurableV2
             || capability.original_end.is_none()
+            || capability.successor.is_some()
             || std::process::id() != capability.root_pid
             || capability.phase.load(Ordering::Acquire) != PREPARED
         {
@@ -173,6 +175,7 @@ impl OriginalPostAPublicationFiles {
             ));
         }
         capability.operation_end()?;
+        capability.successor = Some(Arc::clone(&self.successor));
         Ok(OriginalPostAPublicationDeployment {
             files: Arc::clone(self),
             capability,
