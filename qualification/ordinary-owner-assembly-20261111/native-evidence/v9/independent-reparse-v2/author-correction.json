@@ -1,0 +1,44 @@
+# V9 read-only parser v2: bind the original log basename
+
+Status: prepared and not dispatched. This corrects one false input-format assumption in the unexecuted v1 parser. It does not change the original archive, configuration, native result, or any other validation block.
+
+## Original evidence
+
+Root identified, and this correction independently fetched and hashed, original execution blob `012b0b6ea407e2e8bc5a7759552aaefc80bcb65f`: 3,969 bytes, SHA-256 `faf4974b7b737b5f1f9b515d7fd8841c48727456bcdbcac35718f4d053feae33`.
+
+For fixed source `7666bcc2c650298f2e1d47e615a25864fe792fa1`, that original record has:
+
+- `log_file = "root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log"`
+- `log_bytes = 86411`
+- `log_sha256 = "44be455d3f9da9c493ef23cbe02f376a5d88d1f1e61dddf8b291d0148507caed"`
+- `status = "failed"` and `command_exit_code = 100`
+
+The v1 validator incorrectly required `log_file` to start with the absolute records-directory path. It would reject these valid original record bytes before reaching the existing raw-log hash check. This was found statically; v1 was never dispatched.
+
+## Narrow correction
+
+The replacement is one seven-line block replaced with ten lines. It requires the original `log_file` to equal the exact fixed basename above, pass the existing `safe_name` check, and have one path component. It addresses the tar member as the fixed original Root attempt prefix plus that basename. It accepts no alternative path or basename.
+
+The original execution's `log_bytes` and `log_sha256` are now cross-checked against both the actual in-memory tar payload and the existing independent 86,411-byte / SHA-256 pin. The existing raw-log Git blob check remains `cb2d654ea6ca913fcdf329e134dae6794e9e5b4a`.
+
+All source bytes outside that one block are unchanged. The request differs only at `args[3]`, which contains the validator source. Its four configuration chunks, executable, flags, host, cwd, dimensions, and reserved idempotency key are unchanged. The key remains unused.
+
+## Fixed v2 artifacts
+
+| Artifact | Git blob | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| v2 validator | f8780270fb99dfacd33175a400bf5b443d46b6b3 | 26461 | f5a3ce19bc3651cdb722cfc1ca976fb6f0e7fe5b446ec7d321a61f6b72846db4 |
+| v2 exact proposed request | 473c0b200bc82384c269248f7de1b188e6b64496 | 228802 | 5c11e6b02bd53c05a225cacffca2547db0b987c7024a1a54ca9941ba8f03db86 |
+| Reversible exact operations | 280061e38e1bbcd541653d584a8250ceb1054bc1 | 66365 | 96f216108cf572a729e46abfd7540503f81bc3b98a40623d09381f2db694d2e9 |
+
+Unchanged configuration: `7512eb1bb89a4168670798fcc8f9f2d5d241d853`, 186,385 bytes, SHA-256 `edd6c662c538cb9bd0be9c47f91ab5e1481283b60b4c6387d069f6de59359bce`.
+
+Unchanged complete archive: `f95aa80b21724f0462b594027eec7f361247a8c2`, 2,392,536 bytes, SHA-256 `568c36f18b539a80e9894027f774e9711303eda8470d1ee570a4a231c68502b4`.
+
+Preserved unexecuted v1 history: script `03821f099928aa51af3d3d885857ef66ed360fd7`, request `411133d9322a58a26ad9088bd259f5841ed05dc4`, plan `1156d4b63f1627b86fc1d686a8e22b0e50d7b4ff`. The v1 execution-surface review `45f827484e9571f411d2cb9a0178baaafe7ae0ea` remains a scoped historical static review; it is not proof that this record-format assumption was correct.
+
+## Verification boundary
+
+Pure V8 checks reconstructed both the validator and exact request forwards and backwards, with complete before/after Git blob, SHA-256, and length equality. The unchanged configuration chunks reconstruct the same original configuration. The original Root execution fields above were independently fetched and hashed.
+
+No Python AST check, parser execution, h/PTY dispatch, native test, source/ref change, or file permission change was performed. Root retains review and dispatch authority. The original 2ac formatter-only failure and 7666 Root 17 / 15 / 2 failure remain unchanged. Ordinary complete / positive adoption / ordinary NoUpdateRollback counts remain 0 / 0 / 0.

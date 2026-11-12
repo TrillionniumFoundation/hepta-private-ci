@@ -1,0 +1,276 @@
+{
+  "schema": "hepta.independent-readonly-parser-v2-incremental-review.v1",
+  "reviewer": "runtime_access",
+  "verdict": "The specific V1 absolute-log-path blocker is corrected in the exact V2 source and request. No new execution-surface or result-boundary blocker was found in the one-block delta. This is an incremental static review with original JSON field checks, not parser execution or a native qualification result.",
+  "historical_correction": {
+    "git_blob": "06fc2f075b2482833546cda0ad51fd9f2d57463b",
+    "bytes": 2696,
+    "sha256": "bcf7aca0da59bb77ef1a16cac049a92a5518f7e4132255648b7bf044a545a2ad"
+  },
+  "historical_review": "45f827484e9571f411d2cb9a0178baaafe7ae0ea is retained only as the undispatched V1 execution-surface/result-boundary review. Its general runnable/static-approval conclusion is withdrawn by the correction above.",
+  "artifacts": {
+    "script": {
+      "git_blob": "f8780270fb99dfacd33175a400bf5b443d46b6b3",
+      "bytes": 26461,
+      "sha256": "f5a3ce19bc3651cdb722cfc1ca976fb6f0e7fe5b446ec7d321a61f6b72846db4"
+    },
+    "proposed_request": {
+      "git_blob": "473c0b200bc82384c269248f7de1b188e6b64496",
+      "bytes": 228802,
+      "sha256": "5c11e6b02bd53c05a225cacffca2547db0b987c7024a1a54ca9941ba8f03db86"
+    },
+    "reversible_operations": {
+      "git_blob": "280061e38e1bbcd541653d584a8250ceb1054bc1",
+      "bytes": 66365,
+      "sha256": "96f216108cf572a729e46abfd7540503f81bc3b98a40623d09381f2db694d2e9"
+    },
+    "author_correction": {
+      "git_blob": "1ee1e33e20479272e96dd0bb31847a18f3b24244",
+      "bytes": 3925,
+      "sha256": "c8045d0ebf620aaa4455d0421c6078a30311cca8893becf48a356ca9a4768355"
+    },
+    "unchanged_configuration": {
+      "git_blob": "7512eb1bb89a4168670798fcc8f9f2d5d241d853",
+      "bytes": 186385,
+      "sha256": "edd6c662c538cb9bd0be9c47f91ab5e1481283b60b4c6387d069f6de59359bce"
+    }
+  },
+  "independent_verification": {
+    "fetched_utf8": "All four V2 blobs were fetched by immutable Git SHA and recomputed for Git object hash, SHA-256 and byte length.",
+    "exact_replay": [
+      {
+        "logical_path": "independent-readonly-validator.py",
+        "before": {
+          "git_blob": "03821f099928aa51af3d3d885857ef66ed360fd7",
+          "bytes": 26319,
+          "sha256": "8cf3c4237abd388b767269e2a42472e78a5c7e05f364b3b5f25a99e6e3c585e8"
+        },
+        "after": {
+          "git_blob": "f8780270fb99dfacd33175a400bf5b443d46b6b3",
+          "bytes": 26461,
+          "sha256": "f5a3ce19bc3651cdb722cfc1ca976fb6f0e7fe5b446ec7d321a61f6b72846db4"
+        },
+        "operations": 1,
+        "exact_forward": true,
+        "exact_reverse": true
+      },
+      {
+        "logical_path": "exact-independent-readonly-request.json",
+        "before": {
+          "git_blob": "411133d9322a58a26ad9088bd259f5841ed05dc4",
+          "bytes": 228657,
+          "sha256": "7343041f486319056cde3790df409432f17b7c195085e0025742f338e0cbe0cc"
+        },
+        "after": {
+          "git_blob": "473c0b200bc82384c269248f7de1b188e6b64496",
+          "bytes": 228802,
+          "sha256": "5c11e6b02bd53c05a225cacffca2547db0b987c7024a1a54ca9941ba8f03db86"
+        },
+        "operations": 1,
+        "exact_forward": true,
+        "exact_reverse": true
+      }
+    ],
+    "script_delta": "Exactly one original seven-line log lookup/check block becomes ten lines. Bytes before and after that block are unchanged. No imports, archive access, normalized request comparisons, native-result conditions, exception handling, cleanup or final status code change.",
+    "request_delta": "Exactly args[3] changes to the V2 script. The remaining request fields and all four configuration chunks are byte-identical. The chunks reconstruct the exact unchanged configuration.",
+    "execution_envelope": {
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "flags": [
+        "-I",
+        "-B",
+        "-c"
+      ],
+      "script_argument": 3,
+      "configuration_arguments": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "configuration_chunk_bytes": [
+        48000,
+        48000,
+        48000,
+        42385
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "idempotency_key": "af52-original-records-v9-independent-readonly-parse-20261112-v1",
+      "note": "The preserved key is documented as reserved/unused; neither reviewed request was dispatched by this reviewer."
+    }
+  },
+  "original_field_evidence": {
+    "execution": {
+      "git_blob": "012b0b6ea407e2e8bc5a7759552aaefc80bcb65f",
+      "bytes": 3969,
+      "sha256": "faf4974b7b737b5f1f9b515d7fd8841c48727456bcdbcac35718f4d053feae33"
+    },
+    "fields": {
+      "log_file": "root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log",
+      "log_bytes": 86411,
+      "log_sha256": "44be455d3f9da9c493ef23cbe02f376a5d88d1f1e61dddf8b291d0148507caed",
+      "status": "failed",
+      "command_exit_code": 100,
+      "timed_out": false,
+      "output_limit_exceeded": false
+    },
+    "correction_semantics": [
+      "safe_name checks the original basename for the existing relative/canonical/no-traversal contract.",
+      "The next condition requires equality to the one exact original log basename and exactly one PurePosixPath component.",
+      "root_prefix plus that basename is only an in-memory payload dictionary key. It is not opened as a filesystem path.",
+      "The payload length must equal both original execution.log_bytes and independent fixed 86411.",
+      "The payload SHA-256 must equal both original execution.log_sha256 and independent fixed 44be455d3f9da9c493ef23cbe02f376a5d88d1f1e61dddf8b291d0148507caed.",
+      "The original independent raw-log Git blob check cb2d654ea6ca913fcdf329e134dae6794e9e5b4a is unchanged."
+    ]
+  },
+  "additional_original_shape_checks": {
+    "records": [
+      {
+        "git_blob": "9081b1fa8cce4e2172a168ae07fb4c1d2cad2758",
+        "bytes": 17815,
+        "sha256": "4beee4d7602e0a5f7ede62c6656c36c519cb4e2addbeed90ccac655d6fe7c7a0"
+      },
+      {
+        "git_blob": "061afa4b50aae4ff4f5e23265459ff40b0090db5",
+        "bytes": 70565,
+        "sha256": "a74f7e1b532ce4c4f58a281d7e5feb5836717ad4f675ac9fba2d79a169258394"
+      },
+      {
+        "git_blob": "78e4dcf713b1241b180c20b1eefca7a514271dd6",
+        "bytes": 1522,
+        "sha256": "e468898ac6534985b4c47f61b80cb12e595f8819b18de249d23700c3f991b7f7"
+      }
+    ],
+    "checked": [
+      {
+        "id": "ordinary-2acdb42-full-final-v1:terminal",
+        "ok": true
+      },
+      {
+        "id": "ordinary-2acdb42-full-final-v1:complete",
+        "ok": true
+      },
+      {
+        "id": "ordinary-2acdb42-full-final-v1:sidefile-metadata-paths",
+        "ok": true
+      },
+      {
+        "id": "ordinary-2acdb42-full-final-v1:external-stable",
+        "ok": true
+      },
+      {
+        "id": "ordinary-2acdb42-full-final-v1:donor-stable",
+        "ok": true
+      },
+      {
+        "id": "ordinary-7666bcc-root17-diagnostic-v8:terminal",
+        "ok": true
+      },
+      {
+        "id": "ordinary-7666bcc-root17-diagnostic-v8:complete",
+        "ok": true
+      },
+      {
+        "id": "ordinary-7666bcc-root17-diagnostic-v8:sidefile-metadata-paths",
+        "ok": true
+      },
+      {
+        "id": "ordinary-7666bcc-root17-diagnostic-v8:external-stable",
+        "ok": true
+      },
+      {
+        "id": "ordinary-7666bcc-root17-diagnostic-v8:donor-stable",
+        "ok": true
+      },
+      {
+        "id": "root-beforeafter-clean",
+        "ok": true
+      },
+      {
+        "id": "root-counts",
+        "ok": true
+      },
+      {
+        "id": "root-cleanup9pass",
+        "ok": true
+      },
+      {
+        "id": "root-cleanupcommands4zero",
+        "ok": true
+      },
+      {
+        "id": "root-notaccepted",
+        "ok": true
+      },
+      {
+        "id": "old-dirty-failed",
+        "ok": true
+      },
+      {
+        "id": "old-fmt-executorfailed",
+        "ok": true
+      },
+      {
+        "id": "old-no-tests",
+        "ok": true
+      },
+      {
+        "id": "root-execution-field",
+        "ok": true
+      },
+      {
+        "id": "root-execution-outcome",
+        "ok": true
+      }
+    ],
+    "fmt_execution": "Original 78e4dcf: command_exit_code=0, status=failed, no timeout/truncation; before.dirty=false and after.dirty=true for exact 2ac source/tree.",
+    "limitation": "These are checks of independently fetched original JSON fields. This review did not read/decompress the remote archive, compare every archived payload, parse JUnit XML, or execute source_inventory/recorded_file. Those remain the proposed parser's work."
+  },
+  "preserved_execution_surface": {
+    "filesystem": "Only the fixed archive is application-opened, O_RDONLY|O_CLOEXEC|O_NOFOLLOW, with exact version/size/regular/single-link/whole SHA/Git and descriptor/path stability checks. Existing read-only stat/realpath calls remain.",
+    "archive": "Tar handling remains in BytesIO and direct in-memory decompressed member reads. No extract/extractall/extractfile, process spawning, network operations, file writes or permissions changes.",
+    "embedded_requests": "Configuration's original native requests and observations are parsed as JSON and compared structurally to normalized archived JSON. No contained command, shell, Python or source code is evaluated. Normalized members are not called byte-identical original raw requests.",
+    "terminal_behavior": "The only final cleanup is closing the original archive descriptor. Any check failure produces the existing failed-review result; successful validation still reports verified-original-records-still-failed-native-attempts."
+  },
+  "preserved_result_boundaries": {
+    "formatter": {
+      "source": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+      "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb",
+      "command_exit": 0,
+      "executor_exit": 1,
+      "tests": 0,
+      "dirty_files": 7,
+      "final_physical_source_check": "failed"
+    },
+    "root": {
+      "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+      "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+      "counts": {
+        "errors": 0,
+        "executed": 17,
+        "failed": 2,
+        "passed": 15,
+        "skipped": 0,
+        "total": 17
+      },
+      "command_exit": 100,
+      "status": "failed",
+      "source_before_after": "clean/stable",
+      "cleanup_checks": "9 passed",
+      "cleanup_commands": "4 exit zero",
+      "timeout": false,
+      "truncation": false
+    },
+    "no_acceptance": "No upgrade to full native qualification, ordinary complete chains, positive adoption, ordinary NoUpdateRollback, independent consumer, or physical daemon/Root restart acceptance."
+  },
+  "actions_not_performed": [
+    "Python AST check",
+    "parser execution",
+    "remote archive read",
+    "h/PTY/process dispatch",
+    "Cargo/native/Root test",
+    "source/ref change",
+    "permission change"
+  ],
+  "remaining_boundary": "Root retains scheduling authority. Static review of the corrected field shape does not assert that all runtime archive checks will pass."
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.independent-v9-archive-validation-result.v1",
+  "status": "verified-original-records-still-failed-native-attempts",
+  "scope": "Independent operator-host read-only reparse of the same immutable archive; not a new native test or a local-workspace tar parse.",
+  "archive": {
+    "bytes": 2392536,
+    "git_blob": "f95aa80b21724f0462b594027eec7f361247a8c2",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+    "sha256": "568c36f18b539a80e9894027f774e9711303eda8470d1ee570a4a231c68502b4",
+    "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+  },
+  "request": "473c0b200bc82384c269248f7de1b188e6b64496",
+  "script": "f8780270fb99dfacd33175a400bf5b443d46b6b3",
+  "root_review": "97d036392c31ee2a1bf6f437a78a5694c8d13080",
+  "independent_review": "07684bad89565ecc0ad88787f30631a91771cada",
+  "session": "dpty-a86803ee1cca96585f2b7d8e89685bb04784ce0b414dc827c88cef2b0015a207",
+  "terminal": {
+    "exit_code": 0,
+    "complete_bytes": 43821,
+    "capture_error": null
+  },
+  "raw_stdout": {
+    "git_blob": "858e73831f593a618dc99aaf859493ccf05c11d3",
+    "sha256": "3b9fe3b91a8ba1ec3d517a28bcc0c882a714bccba7414b573315d911aa240ef7"
+  },
+  "members": 116,
+  "payload_files": 115,
+  "uncompressed_total_bytes": 9354023,
+  "archive_stable": true,
+  "formatter": {
+    "command_exit": 0,
+    "dirty_source_preserved": true,
+    "executor_exit": 1,
+    "final_source_identity": {
+      "head": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+      "status": " M codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs\n M codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs\n M codex-rs/hepta-agentd/src/neuron_generation_initial.rs\n M codex-rs/hepta-agentd/src/root_authority_session.rs\n M codex-rs/hepta-agentd/src/root_authority_session_tests.rs\n M codex-rs/hepta-agentd/src/root_observation_cache.rs\n",
+      "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb"
+    },
+    "native_tests": 0,
+    "original_final_physical_source_check": "failed",
+    "postimage_count": 7
+  },
+  "root_counts": {
+    "errors": 0,
+    "executed": 17,
+    "failed": 2,
+    "passed": 15,
+    "skipped": 0,
+    "total": 17
+  },
+  "root_cleanup": [
+    {
+      "name": "unmount-witness-bind",
+      "status": "passed"
+    },
+    {
+      "name": "unmount-bind",
+      "status": "passed"
+    },
+    {
+      "name": "remove-owned-fixture",
+      "status": "passed"
+    },
+    {
+      "name": "record-ownership",
+      "status": "passed"
+    },
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "root_binary_custody_equal": true,
+  "root_helper": "original executions passed",
+  "acceptance": {
+    "full_native_qualification_accepted": false,
+    "independent_consumer_accepted": false,
+    "ordinary_complete_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "physical_daemon_root_restart_accepted": false,
+    "positive_adoption_chains": 0
+  }
+}

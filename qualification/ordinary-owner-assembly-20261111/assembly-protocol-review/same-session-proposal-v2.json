@@ -1,0 +1,532 @@
+{
+  "schema": "hepta.same-session-q24-phase-protocol-design.v2",
+  "status": "DESIGN ONLY. All proposed names, states, messages and tests below are unimplemented. No product source, checker, ref, h, Cargo, native or permission changes.",
+  "author": "hepta_audit",
+  "source": {
+    "commit": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "tree": "d0827337173581d74ec1903e0053967e01534c29",
+    "qualification_context": "Root is separately qualifying 0081; no result from that candidate is inferred here."
+  },
+  "inputs": {
+    "entry_review": "da4be619e0a9cc17387eb29de3cf19d402ee5d3a",
+    "same_live_owner_review": "dfaa66d37d88415421882c20a1a04cc3e752a6df"
+  },
+  "scope_zh": "新增一个显式、有限、预装的 A→Learning→C 同会话 profile。保持同一实际 daemon actor、PID、boot/start ticks、spawn/Fleet Running、Root PID/session、writer lease/proof 和原角色权限。只完成一次 learning scope 安装与一次后继 C；C 的原反馈可持久化，但不把该一次令牌变成无限循环或冷重启权限。",
+  "authorization_delta_zh": "必须显式新增的授权事实只有：由同一可信 Root host 在 serve 前保管的 non-Clone 一次 phase capability，允许该原 live session 在真实 A/Outcome/Prepared 后装入唯一 scope；以及预装固定 daemon controller 内的唯一任务阶段转交。不能把旧 CURRENT publication cap、字符串 source ID、JSON 或已取走的 connection 升级成该权限。原业务角色、key、FinalUse、签名窗口、scope 和 effect-owner 权限不扩大。",
+  "existing_breakpoints": [
+    {
+      "id": "root_learning_install",
+      "exists": "HostAuthorityService::{register_learning_checkpoint,open_registered_learning_checkpoint,seal_learning_checkpoint,with_learning_profile}; PreparedHostAuthoritySession::with_registered_learning",
+      "missing": "The live serving instance has no late install route; Prepared is consumed by serve. A new private live route must retain and use the same actual HostAuthorityService."
+    },
+    {
+      "id": "root_model_reserve",
+      "exists": "register_host_q24_model_factory free function; HostAuthorityService::{open_q24_model_factory,seal_q24_model_factory_offer}",
+      "missing": "The public reservation function opens another registered writer/service at its start. It must NOT be called as a live-session shortcut. Extract its unchanged reserve body into a narrow method on the retained same service, preserving all original with_learning_profile, original file/witness/CAS and before/after expiry checks."
+    },
+    {
+      "id": "late_current",
+      "exists": "PreparedHostAuthoritySession::enable_generation_publication; its one-use late material registration",
+      "missing": "It requires existing registered Learning. A narrow internal constructor from the actual newly installed RegisteredHostLearningCheckpointV1 is needed; the old cap must not acquire general Learning/Model enrollment."
+    },
+    {
+      "id": "daemon_startup",
+      "exists": "runtime::run_with_shutdown consumes Config bootstraps, sets task handle/provider and source delivery OnceLocks, then starts required owner loops",
+      "missing": "Preinstall one concrete phase controller and stable handles before A. Do not reconstruct Config after run or replace OnceLock values with arbitrary owners."
+    },
+    {
+      "id": "direct_to_pending",
+      "exists": "TaskHandleRoute::{Direct,OriginalQ24}; config_q24_successor::with_original_pending_successor requires already assembled Root owners/retained source",
+      "missing": "Add a distinct concrete phased route before A; neither changing an existing Direct enum nor starting today's Pending slot can produce A."
+    },
+    {
+      "id": "original_a_close",
+      "exists": "PublishedCircuitFeatureTaskV1::drain_completed_task with exact owner Arc, actual source/private Cell, durable drain and post-read",
+      "missing": "A controller-owned task-local admission barrier and original worker drain/join are needed around it; global Supervisor Draining is not a reversible pause."
+    },
+    {
+      "id": "learning_join",
+      "exists": "config_root_learning::with_root_q24_learning_owners performs require_prepared_q24, trust/queue checks, actual factory current, original LocalDecision/Source/Trainer creation and into_q24_learning_runtime",
+      "missing": "Extract the same closed assembly into a private phase join consuming actual original inputs; leave the Config wrapper's behavior unchanged. New running controller owns the delayed bootstrap instead of fabricating a configured Config."
+    },
+    {
+      "id": "delivery_join",
+      "exists": "ObjectiveRuntimeHost::reconcile_learning_outbox and original retained-source readiness",
+      "missing": "After real Root scope registration, activate the one exact original source in the preinstalled phase registry and call this original bounded reconciliation on the same journal/AutomationStore. No redispatch or fake startup record."
+    },
+    {
+      "id": "purpose_custody",
+      "exists": "Initial vs learned handoffs are mutually exclusive in the ordinary parser; RootGenerationPublicationConnectionV1 is non-Clone and single-take",
+      "missing": "A separate explicit phased entry needs ordered distinct phase-specific offers/context construction. The ordinary parser and old single-take API remain unchanged; no cloning, returning or rearming an already consumed connection."
+    },
+    {
+      "id": "late_worker_absolute_lifetime",
+      "exists": "authority_host_learning_session.rs::serve_optional and authority_host_q24_model_session.rs::serve_optional each compute Instant::now() + config.lifetime_ms.",
+      "missing": "All new late Learning, Model and publication phase worker adapters must inherit the original startup absolute end and apply the minimum with original cap/lease/request deadlines. Passing an old full relative lifetime or recomputing a fresh interval when a phase starts is forbidden; do not mutate the retained config to hide a renewal."
+    }
+  ],
+  "proposed_interfaces": [
+    {
+      "proposed_name": "PreparedHostAuthoritySession::enable_original_q24_phase",
+      "kind": "NEW closed Root startup method",
+      "inputs": "Original Root/daemon pins and registered identity, exact original A publication/operation/run intent, allowed Learning/C operation identities, frozen local-policy digest, original deployment paths/trust/owner identities and original absolute session end.",
+      "returns": "Non-Clone/non-Serialize RootQ24PhaseEnrollmentCapabilityV1 held only by the original Root host, plus a sealed fixed-purpose phase offer. It does not create a learning checkpoint or guess the future batch-derived scope."
+    },
+    {
+      "proposed_name": "OriginalQ24PhaseControllerV1",
+      "kind": "NEW concrete required daemon owner",
+      "inputs": "Actual original A task/runtime/ledger capabilities, full original identity and session, original task queue/store, typed future-role handoff holders, phase offer; original Primary remains mandatory.",
+      "returns": "Stable concrete task handle/provider, one-use host phase handle and scoped progress/readback. Installed once before A in the ordinary runtime; no dyn replacement owner callback."
+    },
+    {
+      "proposed_name": "RootQ24PhaseEnrollmentCapabilityV1::install_actual_scope",
+      "kind": "NEW Root-only in-process action",
+      "inputs": "Same original one-use cap and Root-owned late material describing the actual Prepared-derived initial/scope, original Model reservation/local policy and exact material digest, all checked against the fixed phase and real current authority.",
+      "effect": "Claim phase record first; register/open Learning and reserve/open Model on the same serving service; bind their actual lanes, seal the distinct purpose offers; record actual committed bindings. Existing/partial namespaces never become fresh state."
+    },
+    {
+      "proposed_name": "OriginalQ24PhaseHandleV1::join_original_learning",
+      "kind": "NEW closed daemon action",
+      "inputs": "Actual original Prepared/retained cap, original E/D/Training/LocalDecision inputs and verified same-session scoped Root offers.",
+      "effect": "Reuse exact original owner checks and bootstrap conversion once; activate same-source delivery and original outbox reconciliation inside the fixed controller. Caller data cannot manufacture these input capabilities."
+    },
+    {
+      "proposed_name": "OriginalQ24PhaseStatusV1",
+      "kind": "NEW read-only status",
+      "inputs": "Exact operation, phase and original caller/session correlation.",
+      "effect": "Return only original retained phase record/progress/digests. Status never issues a new capability, lease, signature, owner or task dispatch."
+    }
+  ],
+  "binding_and_custody": [
+    {
+      "fact": "Original identity and liveness",
+      "custody": "Root and daemon pin actual PID/boot/start ticks, full AgentdIdentity and original verifier/Root pidfd. No new Starting, peer substitution or copied serialized liveness token."
+    },
+    {
+      "fact": "Original authority",
+      "custody": "Pin exact writer proof, lease ID/generation, authority epoch and original role trust; revalidate original current authority at each mutation. No public fake-now parameter. Keep 500ms freshness, request-start age, ceiling and sticky failure."
+    },
+    {
+      "fact": "Fixed phase intent",
+      "custody": "Root reserves one operation/source-A intent and one allowed Learning/C transition before A; names/data are correlation only. Actual source, completed receipt, rule.digest(real batch), initial and FrozenLearningScope are installed only after they exist."
+    },
+    {
+      "fact": "Original A owners",
+      "custody": "Controller owns the actual PublishedTask/Cell/source/provider while A runs. Capture real Prepared and retained read-only source before relinquishing writable A custody; then actual task-local drain and bounded join. Retained facts must not keep retired writer locks alive."
+    },
+    {
+      "fact": "Original business and role materials",
+      "custody": "Authenticated Outcome is still produced by the existing independent enrolled Observer; Generator/Evaluator/Selector/trainer journals, witnesses, keys, trust and real evaluation inputs come from original owners. A phase slot does not grant their roles or presume a pre-A signer covers an unknown future scope."
+    },
+    {
+      "fact": "Root material vs daemon data",
+      "custody": "Daemon Prepared notification alone cannot invoke Root installation. The trusted same-PID Root cap holder supplies exact Root-owned pinned late material, using existing nofollow/Root0600/directory-pin practices. Keep the existing registration TCB: do not claim Root independently observed private Cell or HQ2 facts merely by receiving a digest. The daemon actual cap validates those facts; any new independent Root source reader would be a separately scoped requirement."
+    },
+    {
+      "fact": "One-shot purpose rights",
+      "custody": "Initial-A, Learning, Model and learned-C use separate purpose offers and sequence domains from the same original session. Future scope-dependent offers are sealed only after actual scope installation. Do not reuse the old generic connection or old Initial client."
+    },
+    {
+      "fact": "Original time budget",
+      "custody": "Capture the original Root session/cap absolute end at initial startup; all late accepts/exchanges use that same end, bounded also by the original lease and Learning request expiry. Both Learning and Model serve_optional currently start Instant::now()+lifetime_ms. New internal live-phase serve adapters, including any late publication route, must take the original absolute end rather than reinvoke a relative-lifetime wrapper. Do not silently renew by recomputing remaining before a later now()+remaining, changing config or resetting an existing deadline."
+    },
+    {
+      "fact": "Failure custody",
+      "custody": "A Root-protected one-use phase record distinguishes Reserved, Claimed, Scoped and Closed/Uncertain; the controller retains actual component receipts and causes. Persisted metadata is not a restorable live capability after Root/daemon restart."
+    }
+  ],
+  "root_state_machine": [
+    {
+      "state": "Reserved",
+      "allowed": "Original five lanes and original Initial-A purpose; no Learning/Model namespace yet. Actual scope is unknown.",
+      "transition": "Only the same Root cap may accept exact actual post-A material once."
+    },
+    {
+      "state": "Claimed",
+      "allowed": "One matching material digest/operation has consumed the installation right before first namespace/file mutation.",
+      "transition": "Execute original register/open/reserve/bind/seal sequence; no second create or automatic retry. Partial errors remain Claimed/Uncertain."
+    },
+    {
+      "state": "Scoped",
+      "allowed": "Original Learning/Model lanes and ordered C publication route are attached to this actual backend; each offered writable right is transferred at most once.",
+      "transition": "Continue only under original service lifetime. Readback is observational; failed/lost offer delivery does not mint another offer."
+    },
+    {
+      "state": "ClosedOrUncertain",
+      "allowed": "Original diagnostic/read-only status when its original authority permits.",
+      "transition": "Absorbing for execution. Cancellation, revocation, EOF/lost phase ACK, deadline or unknown effect cannot rearm the cap."
+    }
+  ],
+  "daemon_phase_machine": [
+    {
+      "state": "AActive",
+      "admission": "Only exact original A route and actual signed RunStart; independently arriving business Outcome uses the original producer."
+    },
+    {
+      "state": "ClosingA",
+      "admission": "Atomically stop new A drive enqueue under the same admission linearization as phase transition; preserve queued/inflight pending accounting including lost callers. Reject C and never redirect a queued A request.",
+      "work": "Wait for original admitted work/readback and real Automation unresolved blockers. Freeze actual material and capture retained source while original checks still hold."
+    },
+    {
+      "state": "MaterialReady",
+      "admission": "No task drive.",
+      "work": "Call original drain_completed_task, verify actual durable drain, stop/join only the owned A loop after pending reaches zero, release obsolete write owners. Keep actual Prepared/retained completion and original session."
+    },
+    {
+      "state": "JoiningLearning",
+      "admission": "No A/C task drive.",
+      "work": "Request/receive actual one-use Root scope join; original source/trust/factory/owner checks; register exact retained source and reconcile the original outbox. A retained source ID alone never becomes Ready."
+    },
+    {
+      "state": "Learning",
+      "admission": "Original learning worker runs under its actual required-port/admission/source gates. Ordinary app/runtime readiness is not forged.",
+      "work": "Original E/D/Training/Model/B/LocalDecision sequence; actual immutable receipts. Wait for later publication material outside the aggregate lane."
+    },
+    {
+      "state": "InstallingC",
+      "admission": "No task drive until actual installation is complete.",
+      "work": "Use original qualified or legitimate retained publication phase, actual independent Selection and FinalUse, original Root CURRENT, actual target journals and original successor channel. Same cancel/admission checks immediately before effects and after results; never return a substituted Task."
+    },
+    {
+      "state": "CActive",
+      "admission": "Only exact new C publication/source/RunStart under the same actor; A requests cannot execute via C.",
+      "work": "Original installed ingress plus actual private completion. Optional OriginalLedger feedback can persist actual C decision/independent Outcome for a future Dataset; it does not enroll a second scope."
+    },
+    {
+      "state": "CompletedOrFault",
+      "admission": "No phase rearm.",
+      "work": "Completed requires actual ordinary C evidence. Fault records exact original cause/uncertainty and invokes the required owner's existing shutdown/fence behavior; missing input or expired work is not NoUpdate."
+    }
+  ],
+  "messages": [
+    {
+      "channel": "daemon local host → concrete controller",
+      "message": "PROPOSED CloseAAndOfferPrepared",
+      "payload": "One-use local handle, exact original operation and actual Prepared/retained capabilities; independent Outcome must already have been accepted.",
+      "authority": "A real local typed capability, not a raw IPC receipt."
+    },
+    {
+      "channel": "daemon → Root phase lane",
+      "message": "PROPOSED PreparedNotice",
+      "payload": "Bounded phase/operation/sequence plus actual material and A completion/drain digests.",
+      "authority": "Advisory notification only. No caller paths, signers, replacement keys, bootstrap or authority fields may cause Root registration."
+    },
+    {
+      "channel": "trusted Root host → same serving Root worker",
+      "message": "PROPOSED InstallActualScope",
+      "payload": "Consumed original Root phase cap + fixed Root-owned late material and existing original deployment inputs.",
+      "authority": "Sole new late-scope installation authority; exact original current witnesses and process pins before/after."
+    },
+    {
+      "channel": "Root → original daemon",
+      "message": "PROPOSED ScopedPurposeOffers",
+      "payload": "Exact committed phase/scope binding and separate sealed Learning/Model/C offers with actual rights.",
+      "authority": "Received once under original same-session liveness, peer, purpose, sequence and timeout checks. All needed lanes are bound before sending; no client accept inside a held witness."
+    },
+    {
+      "channel": "either original participant",
+      "message": "PROPOSED ObservePhase / ClosePhase",
+      "payload": "Exact original operation and sequence; Close is idempotent only toward a terminal state.",
+      "authority": "No replay of a mutation, no grant renewal, no capability returned from Observe."
+    }
+  ],
+  "effect_and_failure_rules": [
+    "Root registration, factory reservation and CURRENT/FinalUse mutations remain inside their original dispatch-witness boundaries; do not relocate filesystem validation or effects outside the witness merely to shorten latency.",
+    "No holding a Root witness, original consumer lock, A task owner lock or aggregate lane while awaiting peer messages, five-lane acceptance, unknown Outcome, B execution, Selection, or phase ACK. Bind then accept in owned workers.",
+    "Root registration and Model reservation are not one filesystem transaction. Claim the outer phase before either; record partial provenance and return typed uncertainty after possible effects. Never infer Missing means permission to re-genesis.",
+    "After phase-command cancellation, lost phase ACK or revocation, keep the one-use phase closed. Inflight effects still drain/join and are recorded; no hard abort creates a false clean slot.",
+    "Existing ordinary A/C acknowledgement-loss readback remains valid observation of the same operation. It may prove an already completed task but must not replay inference, renew a signature or rearm a consumed phase. Separate task transport uncertainty from phase installation uncertainty.",
+    "Old Initial-purpose completion/EOF may finish only its own phase worker after exact expected completion; it must not silently stop the original observation/consumer service or be blanket-ignored. Unexpected closure remains a failure. Preserve ordinary non-phased EOF/Drop semantics.",
+    "Any original source withdrawal, authority failure, clock regression, request-age expiry or session Drop remains fail-closed. The phase controller does not clear a fence or update an old cache.",
+    "Do not use global Supervisor Draining/Exited or Neuron resume as this phase barrier. The actor remains the same actual Running incarnation and still must satisfy every effect's normal admission gate.",
+    "Readback after process/Root restart does not resurrect this phase. Cold recovery is outside V1; no serialized cap, same-PID reopen recipe or changed start ticks can resume execution."
+  ],
+  "decision_matrix": [
+    {
+      "result": "AdoptQualified",
+      "evidence": "Actual original qualified B execution/receipt plus LocalDecision and exact full manifest; real parent baseline, cumulative fair training budget and complete authenticated costs remain mandatory.",
+      "c_path": "OriginalCellQ24ArtifactPublicationDriverV1::for_qualified_adoption → actual publication → independent Selection → original CURRENT/FinalUse → ordinary C."
+    },
+    {
+      "result": "RetainParent",
+      "evidence": "Actual valid signed LocalDecision on the real original prefix.",
+      "c_path": "OriginalCellQ24RetainedArtifactForRootV1::from_original_result → original parent Artifact/independent Selection → actual retained CURRENT/FinalUse → C. No new model/Artifact publish."
+    },
+    {
+      "result": "DeferCandidate",
+      "evidence": "Actual valid signed DeferCandidate decision; not an unfinished operation.",
+      "c_path": "Same legitimate retained-parent C path, keeping the original decision identity."
+    },
+    {
+      "result": "Training/Evaluation NoUpdate",
+      "evidence": "Actual typed NoUpdate from the original owners and its Root checkpoint; no substitute for a failed/missing owner.",
+      "c_path": "Original retained-result path and real parent C, with original Selection/FinalUse. Preserve NoUpdate category rather than counting it as adoption."
+    },
+    {
+      "result": "Pending/missing Outcome or material/fault/uncertain",
+      "evidence": "No valid completed decision; errors retain original cause and uncertainty.",
+      "c_path": "No C authorization. Wait only within original budget for an already authorized external prerequisite, otherwise close/fail. Never coerce to NoUpdate."
+    }
+  ],
+  "minimal_implementation_slices": [
+    {
+      "slice": "1 Root phase record/cap",
+      "proposed_files": [
+        "authority_host_q24_phase_session.rs",
+        "authority_host_q24_phase_record.rs"
+      ],
+      "existing_touch": [
+        "authority_host_session.rs",
+        "authority_host_learning_registration.rs",
+        "authority_host_q24_model_registration.rs"
+      ],
+      "limit": "One purpose and one actual scope, no generic admin/install callback; reserve-body extraction on same service with exact existing guards."
+    },
+    {
+      "slice": "2 Distinct phase offers",
+      "proposed_files": [
+        "root_q24_phase_handoff.rs",
+        "root_q24_phase_connection.rs"
+      ],
+      "existing_touch": [
+        "root_production_inputs.rs",
+        "root_generation_publication_connection.rs"
+      ],
+      "limit": "New explicit profile's private inventory only; old one-shot context and existing Initial/learned parser contracts unchanged."
+    },
+    {
+      "slice": "3 Fixed daemon controller",
+      "proposed_files": [
+        "circuit_q24_phase.rs",
+        "circuit_q24_phase_runtime.rs"
+      ],
+      "existing_touch": [
+        "circuit_task_runtime.rs",
+        "state_circuit_task.rs",
+        "runtime.rs"
+      ],
+      "limit": "One concrete stable handle/provider/required worker, exact atomic queue admission cut and controlled joins; no mutable trait-owner replacement."
+    },
+    {
+      "slice": "4 Original learning/source join",
+      "proposed_files": [
+        "cell_q24_phase_learning.rs"
+      ],
+      "existing_touch": [
+        "config_root_learning.rs",
+        "learning_iteration_successor.rs",
+        "objective_learning_outbox.rs"
+      ],
+      "limit": "Reuse original actual-owner constructor checks and bounded history reconciliation. Private one-use source registration activates only after actual scope match."
+    },
+    {
+      "slice": "5 Real host entry",
+      "proposed_files": [
+        "production_q24_phase.rs"
+      ],
+      "existing_touch": [
+        "production_launcher.rs"
+      ],
+      "limit": "Explicit typed embedded-host composition first; actual original Primary, business Observer and B/Selector inputs remain required. A future CLI descriptor adapter must locate such real owners, not construct fake capabilities from JSON."
+    }
+  ],
+  "required_external_facts": [
+    "Complete actual Primary deployment (Android MCP or Notes/UI or Desktop), original Root and actual same-actor startup/process/FD proofs.",
+    "Actual original A PublishedTask/source/Cell, Circuit runtime/model/route/fence/files and authenticated ordinary Objective; no fixture source or synthetic completion.",
+    "Existing enrolled independent Observer's actual terminal business Outcome with true value/timestamps/publication binding, and original Generator/Ledger capabilities.",
+    "Actual original Evaluator freeze capabilities plus E/D Observer, Trainer/Generator, LocalDecision/Selector owner resources/trust for the actual frozen scope; unknown future scope cannot be preauthorized by this design.",
+    "For adoption: real independent B execution and holdout/parent baseline/fair budget/complete costs. For every allowed C path: actual independent selection and original FinalUse issuance.",
+    "Actual new C request/input/source distinct from A as required by existing Feature checks; a copied A observation or receipt is not independent C.",
+    "Trusted Root host material supply for the single post-A scope registration; daemon notification is not that authority."
+  ],
+  "acceptance_cases": [
+    {
+      "id": "P1",
+      "case": "Actual ordinary same-actor A→signed independent Outcome→real HQ2/Prepared→original task-local drain→late Root join→natural original TrainingNoUpdate→actual retained parent C.",
+      "assert": "Root/daemon PID, boot/start, full identity, lease/proof and original source/receipt times are unchanged; ordinary C is real, not component checkpoint fabrication."
+    },
+    {
+      "id": "P2",
+      "case": "Actual qualified adoption with original B/holdout/fair-cost material.",
+      "assert": "Original B full manifest becomes exact publication, independent Selection and actual FinalUse/CURRENT; actual C independently executes on its own input."
+    },
+    {
+      "id": "P3",
+      "case": "Real RetainParent and signed DeferCandidate branches.",
+      "assert": "Both reach permitted parent C, retain original category/receipt and publish no replacement Artifact."
+    },
+    {
+      "id": "N1",
+      "case": "Concurrent A submit at ClosingA; admitted queue, in-flight lost caller and unresolved durable Circuit work.",
+      "assert": "One admission cut, no old request redirected to C, pending does not clear before actual completion, no premature Root join."
+    },
+    {
+      "id": "N2",
+      "case": "Wrong Root/daemon PID/start/spawn, foreign scope/source/cell/lease/purpose/operation or descriptor replacement.",
+      "assert": "Reject before effect; original files/current/claims remain unchanged when no effect was entered."
+    },
+    {
+      "id": "N3",
+      "case": "Repeated scope request, pre-existing or partial namespace, lost Root registration/offer ACK.",
+      "assert": "Original phase remains consumed; no new namespace repair, second writer rights, signature or reset. Preserve exact committed/uncertain evidence."
+    },
+    {
+      "id": "N4",
+      "case": "Cancel/revoke/session Drop before claim, during registration and during actual FinalUse/CURRENT work.",
+      "assert": "Original no-effect refusal or typed post-effect uncertainty; inflight work is joined, future phase stays closed."
+    },
+    {
+      "id": "N5",
+      "case": "Missing/expired/forged Observer Outcome, wrong actor separation, stale Prepared or nonoriginal training/B source.",
+      "assert": "No Ready or NoUpdate substitution, no new business signature, original current/source/role/time gates remain."
+    },
+    {
+      "id": "N6",
+      "case": "Swap Initial and learned-C offers; replay a consumed connection; send old A objective after C activation.",
+      "assert": "Reject exact wrong phase without cloning/rearming a connection or dispatching an old task."
+    },
+    {
+      "id": "N7",
+      "case": "Original five-lane observation while post-A registration/owner work is active, including a scope that becomes available near the original session deadline.",
+      "assert": "No accept/witness/aggregate lock cycle, no clock/freshness-window extension; Learning, Model and C cannot outlive the original absolute end. All original public liveness gates remain authoritative."
+    },
+    {
+      "id": "N8",
+      "case": "C with OriginalLedger feedback plus independent C Outcome; NonLearning branch separately.",
+      "assert": "Real next Dataset only for actual enrolled feedback; NonLearning remains explicit, no automatic next Root scope or fake business label."
+    },
+    {
+      "id": "N9",
+      "case": "Drop/restart Root or daemon and replay persisted phase bytes.",
+      "assert": "No live capability restoration or cold-restart success claim; readback remains original evidence only."
+    }
+  ],
+  "qualification_limits": "All cases above are planned, not implemented or executed. Preserve prior failures. New source, caller guards, QA and actual component/ordinary tests require a later fixed candidate and Root-owned full qualification. Current ordinary complete/adoption/NoUpdate-or-rollback counts remain 0/0/0; independent C and physical daemon+Root restart remain unaccepted.",
+  "direct_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "bytes": 13390,
+      "sha256": "9b7fc5fbd163baabd4f234b8e6c1d06fcdc4ce02f024186509fbf6dfa8342e5b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "git_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e",
+      "bytes": 7919,
+      "sha256": "c95cdc98eddda6d8bcc0036630485d45e5fa01a29f2580225d9b735a45d98e66",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "git_blob": "b987852053e2ba0a252548aadb5816bbd7fcf2ad",
+      "bytes": 6598,
+      "sha256": "5562824a9d2d57fe8112ecb7ecb28c8919e4e1cd3614db97ad44de3285100481",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+      "bytes": 9155,
+      "sha256": "d1f3c508b12d85e8db9e70efc7729066cf32a2f5eccd92b600b0129019796b44",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+      "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+      "bytes": 4477,
+      "sha256": "0beba1e9cc469d86b4c3c8ee59619b1db226f8251191531a28ab26fd59a412c0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/root_generation_publication_connection.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "bytes": 2003,
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "git_blob": "9b02f4a550458e1ab1918e64f06c2ebeeedece62",
+      "bytes": 11434,
+      "sha256": "26f9e71bc316d74fa4943c923ce6e812c65be7545a34cc140903ebbc0786bbac",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "git_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "bytes": 31648,
+      "sha256": "90ef4ed86913dfea27cc1d8d0d7d80b44e5c4ceae97af5f44a6ce9a67be3448c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+      "git_blob": "31065cbfee69386a9854fcb540e04448ea64de1f",
+      "bytes": 1576,
+      "sha256": "9369228e19a22e317248a27eacaccc43fbd3a5bf6856ca4eb3a93c2d534e8264",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/config_q24_successor.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "git_blob": "2d961729c0640bdf9fb9372c90dc464cbfd68ee6",
+      "bytes": 5455,
+      "sha256": "306bc1b96470608366c13e563edc916de542f749f588955323590122c8c8541c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "git_blob": "c7e97889f1775b5e192cf2efdb38cf9d8c1719c7",
+      "bytes": 14490,
+      "sha256": "6de415c3fb1ea166236c2d70d320ac5c32b8b46baf87daac9f1c1216502613ad",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "git_blob": "1af60879f8ae2001eaa7d06b01a05016663f831d",
+      "bytes": 9723,
+      "sha256": "e19a730b1c0fcfbe63bba8d7216ec3b85c64e0ee4b7af7237bb02d95436c9992",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "git_blob": "275842b2fd966afa349697705ab90095a913d0ff",
+      "bytes": 14836,
+      "sha256": "4b17088389ad1fc8689f3d85f13047d73537e57adf54e50abb0edef22808381a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "git_blob": "0f72a32402fa990f46912ddd95872111d0a4c369",
+      "bytes": 8487,
+      "sha256": "1433d1ceea83b19a42e89004f4eea47aadd46164dcd0d92e9a3836a4772e2d6d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_outbox.rs",
+      "git_blob": "f3e3b8e986e3bd9a73f164a4ca952420fb59f9cd",
+      "bytes": 2592,
+      "sha256": "a3df883e904f8afb0bc9e8f3b5c5fbdf0c78992f166574f7d8325d7366fbc11e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/objective_learning_outbox.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "git_blob": "659036744c75d269509e134c924d6eb6fa84630f",
+      "bytes": 4054,
+      "sha256": "e805f96728bcf46e8380b421c3406426707f83986e110ab6b2859040014001a5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/config_root_learning.rs"
+    }
+  ],
+  "design_review": {
+    "reviewer": "runtime_access",
+    "kind": "Bounded peer static design review communicated to author; not an implementation/native acceptance",
+    "source_checked": [
+      "275842b2fd966afa349697705ab90095a913d0ff",
+      "debcdc14f0c329c0f753c835192fb4c15bef974e",
+      "b987852053e2ba0a252548aadb5816bbd7fcf2ad"
+    ],
+    "accepted_direction": "Same-service reserve-body extraction and explicit new fixed-controller route; original task admission cut/pending custody/task-local drain/retained source/single Root join/outbox/independent C purposes, without treating existing Direct, OnceLock or consumed Initial connection as reusable.",
+    "correction_in_v2": "Explicitly includes Model's relative-lifetime wrapper, not just Learning, in the original-absolute-deadline obligation.",
+    "limits": "No guarantee of compile/runtime feasibility or new API acceptance; no product source was changed."
+  },
+  "supersedes_design_only": "f33e04ec43190d97acfb81bee141b7a209f4ac82"
+}

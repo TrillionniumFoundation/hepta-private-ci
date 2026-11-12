@@ -1,0 +1,185 @@
+{
+  "schema": "hepta.original-record-export.preflight-review.v1",
+  "status": "prepared-not-dispatched",
+  "archive_version": "v9",
+  "original_exporter": {
+    "bytes": 4370,
+    "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815",
+    "git_blob": "79494fe659157c453d4f0804cb01581eecce6052"
+  },
+  "unchanged_wrapper": {
+    "bytes": 146,
+    "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d",
+    "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4"
+  },
+  "config": {
+    "git_blob": "75ce45a5f803361cc362148712e58dfdfc2464eb",
+    "bytes": 179362,
+    "sha256": "100321b2dc1883688148bb4aeb00e3d066731e5e83d1ab67fcc2ad0e21f1aefb"
+  },
+  "exact_request": {
+    "git_blob": "ea539b21ceb4ee443511aac55e0195e2151eb0b1",
+    "bytes": 197851,
+    "sha256": "3168af5edc995dadbe925d29325702a63ab78f3675287e0522f5fe5f90ac225b"
+  },
+  "command": {
+    "executable": "/usr/bin/python3",
+    "args_layout": [
+      "-B",
+      "-c",
+      "unchanged 146-byte wrapper",
+      "unchanged 4370-byte exporter",
+      "exact config UTF-8 segment 0",
+      "exact config UTF-8 segment 1",
+      "exact config UTF-8 segment 2",
+      "exact config UTF-8 segment 3"
+    ],
+    "actual_argument_bytes": [
+      2,
+      2,
+      146,
+      4370,
+      48000,
+      48000,
+      48000,
+      35362
+    ],
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-2ac-and-7666-original-records-export-v9-20261112"
+  },
+  "scope": {
+    "sources": [
+      {
+        "name": "ordinary-2acdb42-full-final-v1",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2acdb42-full-final-v1/records",
+        "terminal": "progress.json",
+        "sha256": "4beee4d7602e0a5f7ede62c6656c36c519cb4e2addbeed90ccac655d6fe7c7a0",
+        "expected": {
+          "status": "failed",
+          "source_sha": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+          "source_tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb"
+        }
+      },
+      {
+        "name": "ordinary-7666bcc-root17-diagnostic-v8",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records",
+        "terminal": "progress.json",
+        "sha256": null,
+        "expected": {
+          "status": "root-component-diagnostic-failed",
+          "source_sha": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+          "source_tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+        }
+      }
+    ],
+    "anchor_source": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/source",
+    "anchor_commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "anchor_tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+    "work": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112",
+    "original_2ac_source_must_remain_dirty": true,
+    "archive_reads_only_records_of_2ac": true,
+    "writes_only_new_export_work": true,
+    "new_native_or_process_test": false,
+    "git_ref_mutation": false,
+    "full_qualification": false,
+    "business_acceptance": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0
+  },
+  "before_dispatch_proofs": {
+    "exact_request_reconstruction": true,
+    "each_argv_below_128k": true,
+    "unchanged_exporter_git_verified": true,
+    "unchanged_wrapper_git_verified": true,
+    "original_native_requests_are_data": true,
+    "terminal_pty": [
+      {
+        "label": "obs7666",
+        "raw_bytes": 13413,
+        "sha256": "85376a9985f30e9771def9bef561287ebe836415bf469d6082447b3b5d4d8d04",
+        "git_blob": "4e546bb116a2572a2d606415fcefdbe77fcdc064",
+        "terminal": true,
+        "output_complete": true,
+        "text_equals_original_bytes": true,
+        "original_observation": {
+          "git_blob": "a6a592352ec2803a843b5fc5b1d960ea3f6cfa22",
+          "bytes": 42281,
+          "sha256": "bbae02497741af7b91fcc8a2069c9406386aadb26dbfa32377a80a2decdf8754"
+        }
+      },
+      {
+        "label": "obs2ac",
+        "raw_bytes": 3273,
+        "sha256": "d2fc77a432514b2fe77acb969e56587238d1e8a6163fed6767ab7875e52d5494",
+        "git_blob": "80899d9529cb2458c63b40c362c5ae22be5e39ac",
+        "terminal": true,
+        "output_complete": true,
+        "text_equals_original_bytes": true,
+        "original_observation": {
+          "git_blob": "6ae6b695fb522d1b5b7645dd02a32666a1b58ab5",
+          "bytes": 11065,
+          "sha256": "51c91dc8babcb702fc1e564146336ce6eb3691fceb6bbee1289efc5ea9d653d2"
+        }
+      }
+    ],
+    "formatter_postimages": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+        "bytes": 24933,
+        "sha256": "90dcc5f3e5c6284bec14f1e1f5f1229a4d1a5d10daf5aa4fc095327f70f123ca",
+        "git_blob": "fd70cfc012684f66b6a14660d06a738c9904b5c9",
+        "original_bytes_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+        "bytes": 32978,
+        "sha256": "ceb8dfb6e9374f644961c138b2d20cadc4ba1cd41ae5d46cdb880a27b5c37691",
+        "git_blob": "8c85c70340ce1eb95e327869d40a22a4aacb8ce8",
+        "original_bytes_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+        "bytes": 14403,
+        "sha256": "7987a54f7cfa8735dd7d5db470e67f63d560a99cf258442d0550940ef71b4a8f",
+        "git_blob": "a3967eabc57646dffde58ae6ff6c06a1156d81fa",
+        "original_bytes_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+        "bytes": 9524,
+        "sha256": "5268171d28a80c2953f03e6acd84f83f70164caa66b144eee6c2b2ad9255c676",
+        "git_blob": "cdce3889936f83e06d733124b1a840d2a265c4cf",
+        "original_bytes_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "bytes": 21031,
+        "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94",
+        "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+        "original_bytes_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "bytes": 24356,
+        "sha256": "39393346218a9e40bde0291ff78751acfacd61c583838ab0b0ccdb06855c06dd",
+        "git_blob": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+        "original_bytes_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "bytes": 16596,
+        "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387",
+        "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+        "original_bytes_verified": true
+      }
+    ]
+  },
+  "expected_output": "Original tar.xz plus export.json, manifest, 48,000-character base64 parts; exporter reopens tar and compares every member, then later independent transfer checks original parts/whole hashes.",
+  "limitations": [
+    "Original 7666 complete progress not independently retrieved yet; unchanged exporter must check exact status/source SHA/tree and preserve complete original record. Its cleanup/helper/tool/source entries must be reviewed from exported raw bytes; phase names do not imply success.",
+    "No second local tar parser is claimed unless separately executed.",
+    "Only original helper executable payloads are excluded under helpers/bin; their original custody/build records remain included.",
+    "This request is prepared for root review; no h dispatch has occurred."
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "schema": "hepta.original-records.v9.original-progress-review.v1",
+  "status": "original-terminal-progress-read-and-parsed",
+  "review_scope": "Direct immutable two-chunk read of the complete original progress.json. Side-file cross-checks inside the archive remain reserved for the separately reviewed second-parser request.",
+  "original": {
+    "bytes": 70565,
+    "sha256": "a74f7e1b532ce4c4f58a281d7e5feb5836717ad4f675ac9fba2d79a169258394",
+    "git_blob": "061afa4b50aae4ff4f5e23265459ff40b0090db5",
+    "version": "66306:58767417:70565:1794453950625378045:1794453950627377986",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/progress.json"
+  },
+  "read_requests": [
+    {
+      "host": "ai395",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/progress.json",
+      "offset": 0,
+      "limit": 65536
+    },
+    {
+      "host": "ai395",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/progress.json",
+      "offset": 65536,
+      "limit": 65536,
+      "expected_version": "66306:58767417:70565:1794453950625378045:1794453950627377986"
+    }
+  ],
+  "read_chunks": [
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/progress.json",
+      "size": 70565,
+      "version": "66306:58767417:70565:1794453950625378045:1794453950627377986",
+      "offset": 0,
+      "next_offset": 65536,
+      "bytes": 65536,
+      "sha256": "0391c43328fcd976d54861fa83e13bd724754e2764ecb01662ab48e901e52451",
+      "eof": false
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/progress.json",
+      "size": 70565,
+      "version": "66306:58767417:70565:1794453950625378045:1794453950627377986",
+      "offset": 65536,
+      "next_offset": 70565,
+      "bytes": 5029,
+      "sha256": "1111637fe0a88330efa34f9da1acb2ca7d344e4bc0c6670fc271ac7fff3e4817",
+      "eof": true
+    }
+  ],
+  "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+  "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+  "native_status": "root-component-diagnostic-failed",
+  "before_tests": {
+    "head": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "status": "",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "after_tests": {
+    "head": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "status": "",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "source_equal_and_clean": true,
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_equal_and_clean": true,
+  "original_errors": [
+    "root original JUnit collection failed",
+    "root original test execution failed"
+  ],
+  "root_counts": {
+    "errors": 0,
+    "executed": 17,
+    "failed": 2,
+    "passed": 15,
+    "skipped": 0,
+    "total": 17
+  },
+  "root_completion": [
+    {
+      "name": "root-toolchain",
+      "original_terminal": true,
+      "rejected_before_dispatch": false
+    },
+    {
+      "name": "root-cargo-metadata",
+      "original_terminal": true,
+      "rejected_before_dispatch": false
+    },
+    {
+      "name": "root-binary-list",
+      "original_terminal": true,
+      "rejected_before_dispatch": false
+    },
+    {
+      "name": "root",
+      "original_terminal": true,
+      "rejected_before_dispatch": false
+    }
+  ],
+  "root_uid_proofs": [
+    {
+      "bytes": 47,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root-toolchain.uid.json",
+      "sha256": "e33d201e113a4c2baddd1a2492b7dd182f20614d80acc68728f8a583b03ab582"
+    },
+    {
+      "bytes": 47,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root-cargo-metadata.uid.json",
+      "sha256": "f563aaea7f91e98b1615c4ef705c7e4905ec243a7c22e5f3f260a7f4de436f60"
+    },
+    {
+      "bytes": 47,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root-binary-list.uid.json",
+      "sha256": "17b9dc6147fc324504130eb3118663ad9fabee894ba69badfc5b3cbc97b5352a"
+    },
+    {
+      "bytes": 47,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root.uid.json",
+      "sha256": "15a66e11555267f553813ac4ebe6595fb0fcd794757dbf7ee2567413bd9ae8f1"
+    }
+  ],
+  "nonzero_steps": [
+    {
+      "name": "root",
+      "exit_code": 100,
+      "state": "completed",
+      "timed_out": false,
+      "log": {
+        "bytes": 90186,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root.launch.log",
+        "sha256": "dd73a7062cecabca67638c42fea433af79741f4ffe38b53ca59bfb3bc08a0d45"
+      }
+    },
+    {
+      "name": "root-junit",
+      "exit_code": 1,
+      "state": "completed",
+      "timed_out": false,
+      "log": {
+        "bytes": 3204,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root-junit.launch.log",
+        "sha256": "d4cfd4ad956b01646a6b1bd0372f48fa308dfddd8fea35cf4ce56bac754b9ee6"
+      }
+    }
+  ],
+  "helper_execution_records": [
+    {
+      "name": "same-source-helper-build",
+      "passed": true,
+      "record": {
+        "bytes": 1637,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/same-source-helper-build.execution.json",
+        "sha256": "b6ff5bba7c9ee68570f29c71717d1519851fba8e01e886f29487c23f1c75383d"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "same-source-helper-preverify",
+      "passed": true,
+      "record": {
+        "bytes": 1664,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/same-source-helper-preverify.execution.json",
+        "sha256": "cbccca4e53ddec005a2f96aaa3edcca3aa6ba4b2f02000c82bd617dbf41b9176"
+      },
+      "required_uid": 1000
+    },
+    {
+      "name": "same-source-helper-postverify",
+      "passed": true,
+      "record": {
+        "bytes": 1664,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/same-source-helper-postverify.execution.json",
+        "sha256": "39d6f9f6e5ad84d08fc624076f3b39e329a731c8f97d38954adc922493396ed7"
+      },
+      "required_uid": 1000
+    }
+  ],
+  "helper_manifest_before": {
+    "bytes": 2024,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/helpers/manifest.json",
+    "sha256": "0ca7386f1906609fa7d60813abfe3e4a984361c5fcfcb7fcc52c4836682c28cc"
+  },
+  "cleanup": [
+    {
+      "name": "unmount-witness-bind",
+      "status": "passed"
+    },
+    {
+      "name": "unmount-bind",
+      "status": "passed"
+    },
+    {
+      "name": "remove-owned-fixture",
+      "status": "passed"
+    },
+    {
+      "name": "record-ownership",
+      "status": "passed"
+    },
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "cleanup_command_steps": [
+    {
+      "name": "cleanup-unmount-witness-bind",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false,
+      "log": {
+        "bytes": 129,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/cleanup-unmount-witness-bind.launch.log",
+        "sha256": "7bb09d79a083042b51ac16586c5bc4fd86ff68d3681bee7782a0b532861a05e4"
+      }
+    },
+    {
+      "name": "cleanup-unmount-bind",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false,
+      "log": {
+        "bytes": 121,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/cleanup-unmount-bind.launch.log",
+        "sha256": "cb64af92db14052b22876b11974e9698835842cb3d877642655d83a4c0a05c65"
+      }
+    },
+    {
+      "name": "cleanup-owned-fixture",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false,
+      "log": {
+        "bytes": 102,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/cleanup-owned-fixture.launch.log",
+        "sha256": "ddc0c691a1431d41ac2638fdbbda3b524cfc609a38fb992aabcbbb63db430147"
+      }
+    },
+    {
+      "name": "cleanup-record-ownership",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/cleanup-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "external_tool_path_count": 10,
+  "external_tool_bytes_and_hashes_equal": true,
+  "external_tools_before": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "external_tools_after": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "not_run": [
+    "maintenance",
+    "product-bins-check",
+    "qa-four-folders",
+    "caller-self-test",
+    "caller-full-verify",
+    "ordinary-six-crate-tests"
+  ],
+  "acceptance": {
+    "full_qualification_accepted": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "predecessor_results_used": false,
+    "known_failure_exemptions": false
+  },
+  "interpretation": "The nine cleanup entries and four cleanup command steps are explicitly successful in the original terminal record. The Root component run still failed 15/17, with root exit 100 and the original JUnit collector exit 1. No unrun maintenance, full caller, ordinary suite, restart, or business result is inferred."
+}

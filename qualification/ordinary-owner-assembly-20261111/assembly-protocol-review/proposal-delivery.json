@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.same-session-q24-phase-design-delivery.v1",
+  "source": {
+    "commit": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "tree": "d0827337173581d74ec1903e0053967e01534c29"
+  },
+  "status": "Source-bound design delivery only. No product changes, branch/ref changes, h/native/Cargo/checker execution or new tests.",
+  "entry_audit": {
+    "git_blob": "da4be619e0a9cc17387eb29de3cf19d402ee5d3a",
+    "bytes": 16082,
+    "sha256": "6fbdc0b8acb32ddfc5c335b41a4ff2bcd31afa1f86f3ceab8af3e595d977d08e",
+    "source_files": 21,
+    "readback_equal": true
+  },
+  "same_live_owner_peer_report": "dfaa66d37d88415421882c20a1a04cc3e752a6df",
+  "final_design": {
+    "git_blob": "bfa322cdf161c184ec476e77d3b1f31402af88e1",
+    "bytes": 37654,
+    "sha256": "48e2ec5faecff263fc7f53f6bc6182cd00bf0234d98aed2e268d12e8b2132371"
+  },
+  "historical_design": {
+    "git_blob": "f33e04ec43190d97acfb81bee141b7a209f4ac82",
+    "bytes": 35789,
+    "sha256": "91cf7f3bdfb79ca8ede15e562d3f7aa39517099ab493d5e309d4c8e17e33cfc6"
+  },
+  "bounded_peer_review": {
+    "reviewer": "runtime_access",
+    "scope": "Same-instance Root reserve/install and actual A-close/retained/join sequence",
+    "finding": "No confirmed bounded design blocker; must not invoke public Model reservation that reopens a service. Both Learning and Model relative-lifetime wrappers must be replaced only in the new phase path by original-absolute-deadline adapters.",
+    "incorporated_in_final_design": true,
+    "not_claimed": "No compile/runtime proof, no full implementation review."
+  },
+  "smallest_new_contracts": [
+    "One pre-serve Root phase cap/forward-only record for the exact same original Root/daemon/lease and one actual future scope.",
+    "One concrete preinstalled required daemon controller/stable task+source route for A, original task-local close, real learning join and C.",
+    "Distinct ordered one-use phase purposes and contexts; no reuse of an Initial or generic connection.",
+    "Private same-service reservation/late worker and original owner/outbox join adapters; original witness, authority, source and expiry checks remain.",
+    "Real embedded-host deployment entry with existing Primary/Observer/Generator/Evaluator/B/Selector capabilities; none are synthesized by the controller."
+  ],
+  "known_non_goals": [
+    "Automatic infinite feedback loop or second Root scope",
+    "Physical restart or cross-incarnation cap restoration",
+    "Changing 500ms freshness/request age/ceiling or extending original session/lease",
+    "Using Supervisor Draining/Exited as a same-process pause",
+    "Manufacturing business Outcome/learning records or treating pending failure as NoUpdate"
+  ],
+  "acceptance_counts": {
+    "ordinary_complete": 0,
+    "adoption": 0,
+    "no_update_or_rollback": 0,
+    "independent_c": "not accepted",
+    "cold_daemon_and_root_restart": "not accepted"
+  },
+  "priority_qa_fix_separate": {
+    "manifest": {
+      "git_blob": "52a147db2b8802b1c81fb2ba8e9b105b8767fe1c",
+      "bytes": 5583,
+      "sha256": "6913e53e415b093ff7b7ffb31044e3889fae0393f83317c6b85dd8f8dba2d8a3"
+    },
+    "source_delta": {
+      "git_blob": "29d096eb5ae8b72bea773c8d32e93293e7ac9e37",
+      "bytes": 2373,
+      "sha256": "4640df635ca4c909eba687e6d2c7e46a91d32598ff44a79819335bc50fb400f5"
+    },
+    "qa_postimage": {
+      "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+      "bytes": 11528,
+      "sha256": "cc65d676a2f7de668e05838d421d3caeda005a0545f7a8229aa156875a27644e"
+    },
+    "peer_review": "b1be9e8f74771b864871b64e9f2f288d67994bf7",
+    "scope": "One actual C mutation marker literal only; original 0081 failure retained. This QA patch is not a phase implementation."
+  }
+}

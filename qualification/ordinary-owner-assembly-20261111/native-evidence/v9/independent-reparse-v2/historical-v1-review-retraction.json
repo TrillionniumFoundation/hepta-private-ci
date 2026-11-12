@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.independent-readonly-parser-static-review-correction.v1",
+  "reviewer": "runtime_access",
+  "historical_review": {
+    "git_blob": "45f827484e9571f411d2cb9a0178baaafe7ae0ea",
+    "bytes": 8608,
+    "sha256": "69dc7e85e75d0b13dc772afee0029a17b73ee044a0bfddbb87c4afd56ee848bb"
+  },
+  "correction": "Withdraw the historical review's general static-approval/no-blocker conclusion for V1 as a runnable request. Retain only its inspected execution-surface and fixed-result-boundary findings. V1 was not dispatched and deterministically rejects the actual original root.execution.log_file field.",
+  "limitation_of_prior_review": "The whole V1 script, configuration and request were read, but the original root.execution.log_file field shape was not independently checked before report 45f827484e9571f411d2cb9a0178baaafe7ae0ea was issued.",
+  "original_execution": {
+    "git_blob": "012b0b6ea407e2e8bc5a7759552aaefc80bcb65f",
+    "bytes": 3969,
+    "sha256": "faf4974b7b737b5f1f9b515d7fd8841c48727456bcdbcac35718f4d053feae33"
+  },
+  "actual_fields": {
+    "log_file": "root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log",
+    "log_bytes": 86411,
+    "log_sha256": "44be455d3f9da9c493ef23cbe02f376a5d88d1f1e61dddf8b291d0148507caed",
+    "status": "failed",
+    "command_exit_code": 100
+  },
+  "exact_defect": {
+    "script": {
+      "git_blob": "03821f099928aa51af3d3d885857ef66ed360fd7",
+      "bytes": 26319,
+      "sha256": "8cf3c4237abd388b767269e2a42472e78a5c7e05f364b3b5f25a99e6e3c585e8"
+    },
+    "condition": "executed[\"log_file\"].startswith(root[\"records\"] + \"/\")",
+    "actual_shape": "single basename, not an absolute path",
+    "result": "false for the exact independently fetched original execution JSON; the validator fails before its raw-log hash check"
+  },
+  "unchanged_scope": "No config-embedded native request is executed; no subprocess/network/tar extraction/file writes were found in the static execution-surface review. These findings do not repair the field-shape bug or establish parser execution success.",
+  "followup": {
+    "v2_script": "f8780270fb99dfacd33175a400bf5b443d46b6b3",
+    "v2_request": "473c0b200bc82384c269248f7de1b188e6b64496",
+    "status": "narrow incremental source and actual-field review in progress; no dispatch authorization from this correction"
+  },
+  "result_boundary": "The 2ac dirty-seven/zero-tests failure and 7666 Root 17 executed / 15 passed / 2 failed remain historical failed native attempts. No qualification result is upgraded.",
+  "actions": "Immutable Git fetch, hash verification and content-addressed review-blob creation only; no parser/Python AST/h/PTY/Cargo/native/ref or permissions operation."
+}

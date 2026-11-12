@@ -1,0 +1,239 @@
+{
+  "schema": "hepta.same-live-owner-phase-feasibility.v1",
+  "reviewer": "runtime_access",
+  "source": {
+    "commit": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "tree": "d0827337173581d74ec1903e0053967e01534c29"
+  },
+  "status": "Read-only source/design review. No product implementation, process, h, Cargo, native test, original checker or ref mutation.",
+  "conclusion": "No existing complete public production entry composes A -> newly frozen learning scope -> original Root Model/learning service -> learned C inside the same already Running daemon. The source side has real usable capabilities; the remaining boundary is a finite live-session phase protocol, not missing permission to call an existing endpoint and not inherently a need for new issuer keys.",
+  "first_reachable_prefix": [
+    {
+      "step": "Actual A completion and learning material",
+      "functions": [
+        "OriginalCellQ24TaskLedgerProducerV1::retained_learning_source",
+        "CellQ24PreparedLearningV1::from_original",
+        "CellQ24PreparedLearningV1::root_profile"
+      ],
+      "fact": "With original accepted Decision and independently accepted Terminal Outcome, original Ledger/Prepared, original source and AutomationStore, the same live process can derive the real frozen batch and retained source. The retained type contains actual original owners and validates source/DB/cut before and after reads. It is not reconstructed from a trace or copied Arc."
+    },
+    {
+      "step": "Task-local durable retirement",
+      "function": "PublishedCircuitFeatureTaskV1::drain_completed_task",
+      "fact": "The existing original publication host checks exact shared task owner, original source publication, private Cell completion and stable source, then durably drains the original version and returns its actual completion. This does not require Supervisor Draining or process retirement. It does not itself detach/reconfigure the running Circuit worker."
+    },
+    {
+      "step": "Same-incarnation source is not forbidden",
+      "function": "OriginalCellQ24RetainedLearningSourceV1::register_original_scope",
+      "fact": "The source-to-scope join requires its exact Prepared initial/scope, matching agent and nonzero consumer spawn. It does not require a different spawn. Therefore same-identity capture is not the obstacle; acquiring the real already-running scoped bootstrap is."
+    }
+  ],
+  "blocking_edges": [
+    {
+      "id": "scope_cannot_be_preinvented",
+      "location": "cell_q24_prepared_learning.rs::from_original/root_profile",
+      "fact": "The actual update rule includes rule.digest(&batch); FrozenLearningScopeV2 derives from the exact request/owner set/rule, while completed_task_receipt and source facts come from actual A. An empty initial checkpoint means zero stage receipts, not permission to guess these future source/batch values.",
+      "invariant": "Exact immutable source/request/owner/batch-derived scope."
+    },
+    {
+      "id": "root_serving_scope_is_fixed",
+      "locations": [
+        "authority_host_learning_session.rs::PreparedHostAuthoritySession::with_registered_learning",
+        "authority_host_q24_model_session.rs::with_registered_q24_model_factory",
+        "authority_host_session.rs::serve_selected"
+      ],
+      "fact": "These constructors install Learning and Model into the prepared Root object before serve consumes it and binds fixed optional lanes. The serving object provides no late Learning/Model installation capability. A second open/re-registration is not a substitute for using the same retained original service.",
+      "invariant": "One original Root owner/lifetime and one scoped installed backend; no owner reopening, scope replacement or peer substitution."
+    },
+    {
+      "id": "late_publication_cannot_create_learning",
+      "location": "authority_host_generation_publication_session.rs::enable_generation_publication",
+      "fact": "The existing one-shot late enrollment route requires self.learning already present, checks that backend's frozen binding and seals its exact operation. Its ACTIVE register path publishes CURRENT for the actual completed decision; it does not install the missing learning checkpoint/Model factory.",
+      "invariant": "Purpose-specific late CURRENT capability cannot be promoted to a general scope-enrollment authority."
+    },
+    {
+      "id": "runtime_composition_consumed",
+      "locations": [
+        "production_q24_retained_learning.rs::assemble_q24_learning_with_retained_capability",
+        "production_q24_successor.rs::prepare_original_q24_successor",
+        "runtime.rs::run_with_shutdown",
+        "state.rs::AgentdState"
+      ],
+      "fact": "Retained and successor assembly consume Config/Launch before run. Startup takes Learning/Circuit bootstraps, consumes Config into_parts, and installs original task handle, provider and delivery registry into OnceLock fields. No running method returns Config, swaps this direct task route, or starts a newly scoped learning worker.",
+      "invariant": "One explicit original task/provider and admitted source registry; no arbitrary replacement callback or duplicate owner loop."
+    },
+    {
+      "id": "pending_is_not_an_A_runner",
+      "locations": [
+        "config_q24_successor.rs::with_original_pending_successor",
+        "learning_iteration_successor.rs::prepare_original_successor_context",
+        "circuit_task_runtime.rs::TaskHandleRoute/original_direct_handle"
+      ],
+      "fact": "Pending construction already requires assembled original Root owners, the exact registered retained A and same session/scope. Pending has no executable direct owner before real installation; the existing Direct route cannot be turned into OriginalQ24. Preinstalling Pending cannot execute the A needed to construct it.",
+      "invariant": "No queued pre-install request is silently admitted under a later published owner."
+    },
+    {
+      "id": "global_drain_cannot_be_used_as_a_pause",
+      "locations": [
+        "state.rs::mark_draining/request_drain/refresh_generation",
+        "cell_q24_publication_successor_current.rs::require_successor_admission"
+      ],
+      "fact": "Global drain closes admission, sets drain_requested, drains app/owner state and accepts only the actual Supervisor Draining generation. Current generation acceptance is Starting at spawn, Running at spawn+1, Draining at spawn+2. Successor effects require actual Running admission. The inspected APIs do not reset drain_requested or make Draining a reusable live learning pause.",
+      "invariant": "Supervisor lifecycle and sticky close/fence remain authoritative."
+    },
+    {
+      "id": "initial_and_update_purposes_are_not_reusable",
+      "locations": [
+        "production_launcher_inputs.rs::parse selection checks",
+        "root_generation_publication_connection.rs::RootGenerationPublicationSlot::take_original_connection"
+      ],
+      "fact": "The current parser explicitly rejects simultaneous Initial and learned-publication handoffs; the actual five-lane receiver gives one non-Clone connection opportunity. When A itself consumes Initial in this live launch, that consumed connection cannot be cloned/rearmed to supply the later update purpose.",
+      "invariant": "One-shot purpose/connection custody; a data descriptor is not a second connection capability."
+    }
+  ],
+  "existing_controls_examined": [
+    {
+      "function": "NeuronGenerationRuntimeHandleV2::drain/resume",
+      "result": "Real existing journal control, not omitted from this review. Resume is dispatched only after require_admission and calls the same owner's journal_mut().resume(); it neither changes the frozen model/scope nor installs Root Learning/Model or ordinary Feature providers."
+    },
+    {
+      "function": "NeuronGenerationRuntimeBootstrapV2::with_service_generation + AgentdState::attach_neuron_generation",
+      "result": "A real lower-level host service replacement requires the prior projection's actual retirement checkpoint, an advancing service generation and exact opening checkpoint. It is not a live original actor phase transfer for this fixed Q24 Feature path and still does not create a scoped learning backend."
+    },
+    {
+      "function": "RootAdminAction",
+      "result": "The actual closed enum contains observation and exact revocation actions, not scope enrollment, Model reservation or owner replacement. No existing generic admin command supplies the missing action."
+    }
+  ],
+  "minimal_constrained_design_not_implemented": {
+    "extent": "One finite A -> Learning -> C transition inside the same actual daemon and Root lifetime, leaving Fleet Running/spawn, original PID/start ticks, source identity, writer lease, authority epochs and immutable old evidence unchanged. This requires explicit new product protocol/state, not merely a new caller.",
+    "root_half": "Before serving, the trusted original Root host would reserve a non-Clone, one-use late-Learning/Model phase capability attached to that same held service. It would begin vacant, accept the actual post-A profile only once through original Root-owned material checks, and reuse the original registration/Model factories and live writer witness. It must not overwrite an installed scope, let daemon wire choose arbitrary paths/roles, reopen exclusive owners or invent an issuer/grant. The new authorization fact is that this exact live instance may perform one later scope installation.",
+    "daemon_half": "Before A begins, one concrete required worker/controller would own the original direct A route and a finite future phase slot. After actual A/Outcome completion it would close only that task's admission, reconcile queued/admitted/pending work and perform original task-local drain, then join the real late scoped owners and transition the same worker/controller to the exact C installation path. Existing OnceLock fields could retain this fixed controller rather than becoming arbitrary replacement hooks. The new protocol must establish the exact old source/cut, no outstanding A use and the expected phase before each transition.",
+    "purpose_half": "If this same launch uses both Initial A and learned C, the new phase protocol must reserve distinct one-shot phase purposes/connections tied to the same actual Root session, with ordered activation and exact operation binding. Reusing or cloning the already consumed generic connection would be invalid. The existing default Initial-versus-update API should retain its current contract.",
+    "required_facts": [
+      "Actual old task completion plus stable independent Outcome, original source/Automation/ledger cut and actual batch-derived empty Learning initial/scope; no caller-computed replacement evidence.",
+      "Exact Root/daemon PID, boot/start ticks, original identity, lease/proof, one phase operation and deadline, with the live original verifier kept current; neither a new Starting nor a renewed grant.",
+      "An admission-transfer record that distinguishes task-local quiescence from process retirement and closes old queued work before allowing C. Supervisor Draining, revocation, session Drop and cancellation must still stop the transition.",
+      "Persisted or otherwise original-owner-verifiable one-shot transition state sufficient to distinguish not-started, committed and uncertain phases. Lost ACK/cancel must not rearm a slot, repeat a FinalUse claim, mint a new signature or reactivate the old task. Existing exact readback remains readback, not execution authority."
+    ],
+    "reuse_after_valid_join": "Once that new scoped phase join is real, the existing actual aggregate, Training material and original B owner, signed LocalDecision, independent Artifact/Selection, original FinalUse/CURRENT publication and installed successor channel remain reusable. Their policies, scopes, budgets, 500ms freshness, witness ranges and negative checks need no relaxation.",
+    "not_required": "This design does not intrinsically require a new signing role, default key, synthetic owner, new business comparison policy, historical-A re-signing or cross-process resurrection. Independent Observer/business inputs and existing deployment capabilities remain actual external inputs; they are not created by this transition."
+  },
+  "current_source_corrections_to_old_report": [
+    "f16 now has the real opt-in late-writer CLI consumer. It still requires an actual new Starting admission and therefore does not solve this same-Running phase edge.",
+    "f16 successor execution now supports explicit OriginalLedger feedback with actual producer/Outcome ownership. The old NonLearning-only conclusion is superseded; this feedback can form the next Prepared when installed C and original inputs exist, but it does not supply the missing live Root/runtime phase transition."
+  ],
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+      "git_blob": "af5cd79ac56102e0741a8145504e8266f5912cce"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+      "git_blob": "00ef67ff163336eb582c72d40750e32af03e470e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "git_blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "git_blob": "debcdc14f0c329c0f753c835192fb4c15bef974e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "git_blob": "b987852053e2ba0a252548aadb5816bbd7fcf2ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "git_blob": "3d7f65f119cc3aebb77fb8dc6931711f800daf50"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "git_blob": "2c2869dcfa739364ce50ab22c13cd079cedfc0e1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+      "git_blob": "31065cbfee69386a9854fcb540e04448ea64de1f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "git_blob": "659036744c75d269509e134c924d6eb6fa84630f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs",
+      "git_blob": "657f6fe7a1c0ac107cca4a69830de454b04a3932"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs",
+      "git_blob": "01085f258e95e6ac04e805c79c5789bed7b2d2a8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "git_blob": "2d961729c0640bdf9fb9372c90dc464cbfd68ee6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "git_blob": "813d8f2d9ddc5b075695d88d5b86217d0ef0a444"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "git_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "git_blob": "9b02f4a550458e1ab1918e64f06c2ebeeedece62"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "git_blob": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "git_blob": "0599202fbe0db8bef2816fcd72dc031a2c375171"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+      "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+      "git_blob": "2fde5da6bae08db988f0305be4abb1e96495e0bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "git_blob": "aee1f3d06c1e92ebcf08baefc6377a56bc36b5aa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "git_blob": "85a81e56298275e41082fc2927fa818cb91ac4f6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_neuron_generation.rs",
+      "git_blob": "210bd8761a920b420ed81336b127a8cd7cd11b5d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "git_blob": "ecba0a36c6f5e8741a7fb62aeae98dc38a8a9c65"
+    }
+  ],
+  "related_reports": {
+    "prior_retained_A": "3c4a565daee69bfc0c166e9ee161f456eac34fab",
+    "physical_restart": "b1fe8f78b03d5f55365ec2bcaf9ab6ae54949051",
+    "late_cli_V2": "1ce5d93a06b4311b9f798e9f4c24c74a7cf0970a",
+    "C_feedback": "6c3a334a6b356000a5664d73e69631d4d81b1983"
+  },
+  "limits": "No implementation or new protocol acceptance is claimed. No same-process reopen is called physical restart, no external data is promoted to authority, and ordinary complete/adoption/NoUpdate-or-rollback acceptance remains 0/0/0."
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.independent-readonly-parser-static-review.v1",
+  "reviewer": "runtime_access",
+  "verdict": "No confirmed static execution-surface or result-classification blocker in the four exact reviewed artifacts. This is static approval of the bounded parser request, not execution of the parser or a native qualification result.",
+  "artifacts": {
+    "script": {
+      "git_blob": "03821f099928aa51af3d3d885857ef66ed360fd7",
+      "bytes": 26319,
+      "sha256": "8cf3c4237abd388b767269e2a42472e78a5c7e05f364b3b5f25a99e6e3c585e8"
+    },
+    "configuration": {
+      "git_blob": "7512eb1bb89a4168670798fcc8f9f2d5d241d853",
+      "bytes": 186385,
+      "sha256": "edd6c662c538cb9bd0be9c47f91ab5e1481283b60b4c6387d069f6de59359bce"
+    },
+    "exact_request": {
+      "git_blob": "411133d9322a58a26ad9088bd259f5841ed05dc4",
+      "bytes": 228657,
+      "sha256": "7343041f486319056cde3790df409432f17b7c195085e0025742f338e0cbe0cc"
+    },
+    "plan": {
+      "git_blob": "1156d4b63f1627b86fc1d686a8e22b0e50d7b4ff",
+      "bytes": 7157,
+      "sha256": "5f661f7165c558a53b9908527bb58ebc5e360303e3804399c502992436f09779"
+    }
+  },
+  "inspection": {
+    "entire_python_source_lines": 483,
+    "entire_script_read": true,
+    "configuration_and_request_parsed_as_JSON_in_review": true,
+    "request_code_exactly_equals_script": true,
+    "four_config_chunks_reconstruct_exact_configuration_bytes": true,
+    "argument_bytes": [
+      2,
+      2,
+      2,
+      26319,
+      48000,
+      48000,
+      48000,
+      42385
+    ],
+    "no_NUL_arguments": true,
+    "all_arguments_below_128KiB": true,
+    "python_AST_or_bytecode_compilation_by_reviewer": false,
+    "parser_execution_by_reviewer": false,
+    "source_or_ref_mutation": false,
+    "h_PTY_native_or_Cargo_dispatch_by_reviewer": false,
+    "github_artifacts_read_and_review_blob_written": true
+  },
+  "actual_execution_request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "interpreter_flags": [
+      "-I",
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-original-records-v9-independent-readonly-parse-20261112-v1",
+    "extra_shell_or_command_fields": false,
+    "explanation": "The only code argument is the exact 26,319-byte reviewed script. The four later argv strings are concatenated and json.loads parses them with duplicate-key and non-finite-number rejection. There is no shell, eval, exec, compile, dynamic import from configuration, or callable dispatch through a configuration member."
+  },
+  "application_io_surface": {
+    "archive_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+    "archive_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+    "archive_bytes": 2392536,
+    "archive_sha256": "568c36f18b539a80e9894027f774e9711303eda8470d1ee570a4a231c68502b4",
+    "archive_git_blob": "f95aa80b21724f0462b594027eec7f361247a8c2",
+    "open": "Exactly one application os.open at line 104: fixed reviewed C['archive'], O_RDONLY | O_CLOEXEC | O_NOFOLLOW.",
+    "identity_checks": "Canonical absolute path; regular single-link file; exact dev/inode/size/mtime_ns/ctime_ns version; fd/path stat equality; bounded byte read plus EOF; complete SHA256 and Git blob; final fd/path stat and canonical-path recheck. Parent-path observations are metadata/realpath only.",
+    "decompression": "tarfile.open(fileobj=io.BytesIO(data), mode='r:xz') reads the compressed archive in memory. Member data comes only from the in-memory decompressed fileobj using checked offset_data and member.size. gzip.GzipFile also receives BytesIO and limits decoded inventories to 64 MiB + 1.",
+    "member_contract": "Exactly 116 safe unique regular non-symlink/non-hardlink/non-sparse members; canonical relative names; deterministic mode0644, uid/gid0, mtime0; per-member limit32MiB and aggregate payload limit128MiB. Manifest SHA pinned; 115 payload paths, length/SHA256/Git blob all cross-checked.",
+    "output": "Derived JSON only to stdout, plus normal Python stderr on pre-report failures; the exact request's PTY capture is tool transport, not a script-created evidence file.",
+    "absent_operations": [
+      "No extract/extractall/extractfile calls",
+      "No application file write/create/rename/unlink",
+      "No chmod/chown/mount/unmount or cleanup execution",
+      "No subprocess/os.system/Popen or native/Git/checker invocation",
+      "No network client/socket use",
+      "No source checkout, live target/cache, credential or Root capability file opened"
+    ],
+    "close": "The finally block only closes the single opened archive fd."
+  },
+  "embedded_historical_requests": {
+    "handling": "Lines236-243 compare parsed archive JSON objects with C.expected_requests and C.expected_observations as data. Embedded scripts, executable names, args, paths and native cleanup commands are never executed or used as filesystem paths.",
+    "normalization_boundary": "Exporter-normalized request/observation members are compared structurally. The parser explicitly does not relabel normalized member bytes as the original raw request blob bytes.",
+    "source_paths_in_records": "recorded_file treats metadata paths as selectors for already loaded archive payloads, checks the exact records prefix, safe relative name and original_path/bytes/SHA. It does not open those recorded host paths."
+  },
+  "classification_checks": {
+    "attempts_separate": true,
+    "two_ac": {
+      "source": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+      "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb",
+      "required": "status failed; formatter command_exit0 but original executor exit1; no ordinary/root test step or JUnit; exact seven formatter postimages/preimages and dirty path set retained; final physical-source cleanup status must be failed.",
+      "result": "0 native tests. Dirty source is not reset or relabeled clean."
+    },
+    "root_7666": {
+      "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+      "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+      "required_counts": {
+        "errors": 0,
+        "executed": 17,
+        "failed": 2,
+        "passed": 15,
+        "skipped": 0,
+        "total": 17
+      },
+      "parent_roster_count": 17,
+      "unique_parent_roster_count": 17,
+      "required": "Distinct exact17 JUnit names; execution failed/command_exit100/no timeout/no truncation; actual UID/EUID0 proof; identical clean source inventories and original binary-custody records; fixed original86411-byte log; helper build/preverify/postverify original passed records.",
+      "cleanup": "Requires the original nine cleanup checks passed and four cleanup command exits0. These are retained historical results, never rerun. They neither erase two Root test failures nor override the separate2ac failed final-physical-source check.",
+      "unrun": "The original not_run list is retained. It is not a current seven-crate/QA/full-caller result."
+    },
+    "final_success_string": "verified-original-records-still-failed-native-attempts",
+    "fail_closed": "Any read, content, metadata, classification or other caught failure emits independent-archive-review-failed and exits1. A successful parser exit would only attest consistency of this fixed preserved archive; it does not change native attempt outcomes.",
+    "business": {
+      "ordinary_complete_chains": 0,
+      "positive_adoption_chains": 0,
+      "ordinary_no_update_rollback_chains": 0,
+      "independent_consumer_accepted": false,
+      "physical_daemon_root_restart_accepted": false,
+      "full_native_qualification_accepted": false
+    }
+  },
+  "limits": [
+    "Reviewed source/request/configuration only; this reviewer did not open/decompress the ai395 archive, recompute its116 member digests, run the parser, or produce a derived consistency PASS.",
+    "The fixed archive whole digest is checked before tar parsing. Per-member and total-member bounds are checked after tarfile.getmembers enumerates the fixed archive; this is an immutable-archive validator, not a general untrusted archive service with a streaming decompressor preallocation bound.",
+    "Read-only regular-file access may have ordinary filesystem access-time accounting; no explicit file content, permission or namespace mutation is present.",
+    "Any execution must be Root's separate exact-request dispatch. This report does not authorize replaying the embedded old native requests, changing the idempotency key, or substituting current-source acceptance."
+  ]
+}

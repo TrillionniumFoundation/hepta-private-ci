@@ -1,0 +1,268 @@
+{
+  "schema": "hepta.ordinary-primary-task-outcome-entry-review.v1",
+  "reviewer": "hepta_audit",
+  "source": {
+    "commit": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "tree": "d0827337173581d74ec1903e0053967e01534c29"
+  },
+  "status": "Read-only fixed-source review. No source/ref/permissions changes, h, native, Cargo or checker execution. This report is an unreferenced Git artifact only.",
+  "conclusion_zh": "现有CLI已消费真实late-writer；普通ObjectiveStart与条件C OriginalLedger反馈已有真实代码。默认main仍未装配Q24学习及publication/successor能力；完整Primary、独立Observer业务Outcome和原角色/文件材料仍须真实部署提供。不能仅补main一调用就跨越仍未实现的同Running阶段协议。",
+  "current_corrections": [
+    "Late-writer now has an actual opt-in Startup/main caller; the older no-product-caller conclusion is superseded.",
+    "Successor now supports explicit OriginalLedger using its actual source/Cell/Task/full identity; the old unconditional NonLearning conclusion is superseded."
+  ],
+  "entry_findings": [
+    {
+      "id": "late_writer",
+      "actual": "main -> Startup::from_process_environment -> explicit LateWriter -> receive_original_late_writer_startup -> original three-right receive and five lanes",
+      "limit": "Requires actual original Starting, dedicated UID/GID, original writer and complete Primary. It does not create a new Starting or retire a peer."
+    },
+    {
+      "id": "default_main_assembly",
+      "actual": "main calls startup.receive and then launch.run; no Q24 owner assembly, initial/publication handoff take, or prepare_original_q24_successor",
+      "limit": "run requires assembled learning and rejects retained initial/publication/model offers. Adding descriptors alone is not assembly."
+    },
+    {
+      "id": "ordinary_task",
+      "actual": "ObjectiveStart -> ObjectiveRuntimeHost::submit -> authenticated source compilation/durable RunStart -> actual installed Circuit task",
+      "limit": "Requires actual preinstalled Q24 profile, source/Cell/PublishedTask, owner authentication and runtime readiness. No task owner is built from request IDs."
+    },
+    {
+      "id": "business_outcome",
+      "actual": "OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome accepts actual AuthenticatedOutcomeV1 and original SignedLearningEvidenceV1",
+      "limit": "No Q24 Outcome AgentdMethod or current external product caller. Exact pre-enrolled observer, source publication, episode/outcome IDs, unit/delay profile, Terminal timestamps and actual value are required."
+    },
+    {
+      "id": "not_outcome_aliases",
+      "actual": "KernelEvidenceAppend -> qualification().append_receipt; RunObserveTerminal -> runs.observe_terminal",
+      "limit": "Qualification receipts and run status do not produce Q24 business Outcome, labels or independent Observer authentication."
+    },
+    {
+      "id": "learning_inputs",
+      "actual": "receive_q24_learning / assemble_q24_learning consume real Prepared, original E/D source owners, Training and LocalDecision files/keys/verifier",
+      "limit": "Typed embedded-host capability input; descriptor JSON cannot construct these owners. Current outside-definition callers are the retained adapter only."
+    },
+    {
+      "id": "conditional_c_feedback",
+      "actual": "OriginalLedger inputs -> original successor channel -> open_original using actual Task/source/Cell/full identity -> installed.original_task_ledger",
+      "limit": "After actual signed C and accepted independent Outcome, prepare_learning can form real next Prepared. No automatic next Root scope enrollment and no fake Ready when Outcome is missing."
+    }
+  ],
+  "primary_requirements": {
+    "common": [
+      "original Root handoff (fresh two-right or original late-writer three-right route as selected)",
+      "dedicated non-Root UID/GID",
+      "actual control and app-server inherited descriptors",
+      "original Root session/process/lease proofs"
+    ],
+    "android": [
+      "actual configured MCP server and environment",
+      "independently opened read-only original payload FD",
+      "original monotonic deadline"
+    ],
+    "notes": [
+      "original Notes application handoff",
+      "sealed literal deployment FD",
+      "actual UI listener FD",
+      "actual session pidfd"
+    ],
+    "desktop": [
+      "original Desktop application handoff",
+      "sealed thread deployment FD",
+      "actual session pidfd"
+    ],
+    "limits": "No headless Primary or Notes-without-UI fallback. This review does not establish a deployed complete Primary in the present session."
+  },
+  "sender_scope": {
+    "actual_three_right_sender": "native_g2_entry/activation.rs::send_original calls seal_bootstrap, native supervisor::pin(1), original_root_writer_descriptor and send_root_production_writer_handoff; actual writer OFD is consumed.",
+    "default_root_cli": "bin/hepta-authority-host.rs fresh-session branch invokes the original two-right send_root_production_handoff.",
+    "limit": "The native role sender alone does not prove supply of all new CLI Primary/control/app-server inputs, and its PID1 role cannot be transplanted to an arbitrary host process."
+  },
+  "closed_metadata": {
+    "source_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+    "empty_external_product_callers": [
+      "q24_task_original_outcome_submit",
+      "q24_task_original_profile_install",
+      "q24_task_original_dataset_prepare",
+      "q24_task_original_learning_prepare",
+      "q24_successor_launch_prepare",
+      "q24_successor_original_feedback_ledger",
+      "q24_successor_original_c_ingress",
+      "root_generation_publication_launch_handoff_take",
+      "root_initial_launch_handoff_take",
+      "learning_original_feature_dataset_feedback"
+    ],
+    "actual_source_ledger_open_callers": [
+      "codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs",
+      "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+    ],
+    "q24_receive_assemble_callers": [
+      "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs"
+    ],
+    "limit": "These are the exact declared current closed sets plus bounded actual source reads; no full caller-checker PASS is claimed."
+  },
+  "smallest_existing_composition": [
+    "With a real installed successor and original roles/files, select OriginalLedger at original channel construction.",
+    "Use original_installed_successor_ingress and a genuinely signed AuthBusObjectiveIngress to execute C and read its actual private committed source.",
+    "Deliver an independent business Outcome through the same original producer; preserve all exact-source/signature/time/witness checks.",
+    "Call prepare_learning with actual original task history and original Evaluator freeze owner. This ends at real Prepared, not at permission to install the next live Root phase."
+  ],
+  "remaining_protocol_report": "dfaa66d37d88415421882c20a1a04cc3e752a6df",
+  "acceptance": {
+    "ordinary_complete": 0,
+    "adoption": 0,
+    "no_update_or_rollback": 0,
+    "independent_c": "not accepted",
+    "physical_daemon_and_root_restart": "not accepted",
+    "new_native": "Root owns in-progress seven-package result; no prediction"
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "git_blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "bytes": 13038,
+      "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/main.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git_blob": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "bytes": 27305,
+      "sha256": "d82f99428d4f95ae14dad69ed89fb6068d12ddf644e5ff7b8c6b8f907fb5ea68",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/production_launcher.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "git_blob": "0599202fbe0db8bef2816fcd72dc031a2c375171",
+      "bytes": 18005,
+      "sha256": "c7fc853427ee91816aaa8e89fa13ba68e738baa529cf39248f0ed4b72ec9db68",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "git_blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+      "bytes": 3013,
+      "sha256": "717ced5a05fbd931822528fcd103891060ed86dcb21bf98fbf7519b2c06b1e31",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/production_launcher_late_startup.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "git_blob": "764a69f9b9f95a1971e42a2f9fe8dd75f64ebfad",
+      "bytes": 8132,
+      "sha256": "6e54854d52c602406e237bc2e16ddcce3494c0a3a92568f3a98cc204b59f4443",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs",
+      "git_blob": "7500feb7fe1fe00749bdd401342858b98ec5e692",
+      "bytes": 6361,
+      "sha256": "7a7cc5dc7fac2273284ccf35aad86cf0ffa4df3d33a0034fdb535addb33b4c2f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "git_blob": "cd5415cf206eeb646855f35625f31d67698a495b",
+      "bytes": 23993,
+      "sha256": "728d5c50957034993558dcbb4c96579836da9fc1c47e621778698cf92b4ffe12",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "git_blob": "b1b72029b494073da34a762fef7e8a698b6699c7",
+      "bytes": 47501,
+      "sha256": "593e3aecadf254fb93e33c161e84c934a85fd728b591a03aaae478ff64ad013c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agent-protocol/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/evidence.rs",
+      "git_blob": "a76de04b4ed8080e541cc32ec46938fdceaaef79",
+      "bytes": 1701,
+      "sha256": "a2d43be217b51cd149491c1620f749c65c933a34f719e66e671bb5a8f17f02c3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agent-protocol/src/evidence.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "git_blob": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf",
+      "bytes": 59419,
+      "sha256": "f75869d195143344c052a639877efbd7d477895c8d6ec58787fb7c499be3155b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/state_control.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+      "git_blob": "8e76af9289721a1ef02d1d0087da442a0cd7adca",
+      "bytes": 9071,
+      "sha256": "8ca397ba5c8eebb10b2b1bf678280bdc4d15730f902ae914dc984a8e733b66cd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/evidence_host.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
+      "git_blob": "37ca20950ed899189f0d059b297270036a8466a8",
+      "bytes": 12827,
+      "sha256": "ba5cf5ea75bd0a9362066b1e3f563dba52c5fa407e923f1f45122004e515ae45",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/objective_submission.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "git_blob": "ba89e41c3c0c571b086094f63d1df33648bc8d35",
+      "bytes": 2100,
+      "sha256": "8ef3d947d4df56d47e16decfdae3d715d7cf96430280076b8c5804cf3e2ddf7e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs",
+      "git_blob": "021ba7c7883dc502c8b719d1cd00abf1bf6dc3dc",
+      "bytes": 3150,
+      "sha256": "e37313ad59913c7ae18ff680861e2b074b2ceadd5cd910984319448557e115a3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "git_blob": "a05394ff45a40024c1321368bedf3f1516818202",
+      "bytes": 22039,
+      "sha256": "2b3b95924fc0bdfb270fa1bed98e517bfe31105ca9f05f3805b7a92aed8f4a7b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs",
+      "git_blob": "bedfe99c27719d2198cf7f8bbc24a863ce70dd6e",
+      "bytes": 12611,
+      "sha256": "7c2ece631c68351000e7e13f49066031ef9a655376edcd48507a535a53a283cd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "git_blob": "1af60879f8ae2001eaa7d06b01a05016663f831d",
+      "bytes": 9723,
+      "sha256": "e19a730b1c0fcfbe63bba8d7216ec3b85c64e0ee4b7af7237bb02d95436c9992",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs",
+      "git_blob": "01085f258e95e6ac04e805c79c5789bed7b2d2a8",
+      "bytes": 1186,
+      "sha256": "0ab15ce4fa30fb9a5e3e7cfe5dbec1e8cc39b2e81aff566e5882107f1a9508c3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/production_q24_successor.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+      "bytes": 8224,
+      "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+      "git_blob": "606efd34bc59bfb3bf825c196eb55f48d500bd6b",
+      "bytes": 13601,
+      "sha256": "33386e33467e2bf5de8cfd0b3e422ff762e42fb4b090cbc339665f634a669a3c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+      "bytes": 668746,
+      "sha256": "7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361/CALLERS.toml"
+    }
+  ]
+}

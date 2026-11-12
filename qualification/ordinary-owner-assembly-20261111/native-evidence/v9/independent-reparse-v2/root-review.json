@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.root-readonly-v9-parser-review.v2",
+  "script": "f8780270fb99dfacd33175a400bf5b443d46b6b3",
+  "request": "473c0b200bc82384c269248f7de1b188e6b64496",
+  "config": "7512eb1bb89a4168670798fcc8f9f2d5d241d853",
+  "archive": "f95aa80b21724f0462b594027eec7f361247a8c2",
+  "original_root_execution": "012b0b6ea407e2e8bc5a7759552aaefc80bcb65f",
+  "v1_defect_identified_by_root": "log_file is an original basename, not an absolute path; unexecuted v1 would fail",
+  "v2_only_change": "    log_basename = safe_name(executed[\"log_file\"])\n    require(log_basename == \"root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log\"\n            and len(PurePosixPath(log_basename).parts) == 1,\n            \"original execution log basename differs\")\n    log_name = root_prefix + log_basename\n    require(len(raw(log_name)) == executed[\"log_bytes\"] == 86411\n            and sha(raw(log_name)) == executed[\"log_sha256\"]\n            == \"44be455d3f9da9c493ef23cbe02f376a5d88d1f1e61dddf8b291d0148507caed\"\n            and git_blob(raw(log_name)) == \"cb2d654ea6ca913fcdf329e134dae6794e9e5b4a\",\n            \"independently pinned original Root log differs\")\n",
+  "checks": {
+    "whole_script_read": true,
+    "only_exact_log_block_changed": true,
+    "forward_reverse": true,
+    "request_only_script_argument_changed": true,
+    "config_four_chunks_exact": true,
+    "original_native_requests_data_only_verified": true,
+    "exporter_request_and_observation_objects_equal": true,
+    "original_parent_roster_and_counts_equal": true,
+    "filesystem_payload_input": "fixed immutable archive",
+    "no_subprocess_or_dynamic_eval_or_network_or_extraction_or_output_file": true
+  },
+  "native_acceptance": false,
+  "dispatch_status": "not-yet-dispatched"
+}

@@ -1,0 +1,1722 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.v9.original-record-transfer-receipt.v1",
+  "status": "complete-original-archive-transferred-and-uploaded",
+  "scope": "Immutable original records only; no native build/test, source/ref, credentials, permissions, or cleanup mutation performed by transfer.",
+  "source_attempts": [
+    {
+      "source": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+      "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb",
+      "records": "ordinary-2acdb42-full-final-v1/records",
+      "result": "formatter command exit 0; original executor exit 1 after source drift; 0 tests",
+      "dirty_source_preserved": true,
+      "original_progress": {
+        "git_blob": "9081b1fa8cce4e2172a168ae07fb4c1d2cad2758",
+        "bytes": 17815,
+        "sha256": "4beee4d7602e0a5f7ede62c6656c36c519cb4e2addbeed90ccac655d6fe7c7a0"
+      },
+      "formatter_postimages": {
+        "git_blob": "c8845629d1321bb68a5b34544c86d2fd30417bca",
+        "files": 7
+      }
+    },
+    {
+      "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+      "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+      "records": "ordinary-7666bcc-root17-diagnostic-v8/records",
+      "result": "original Root component diagnostic failed",
+      "counts": {
+        "errors": 0,
+        "executed": 17,
+        "failed": 2,
+        "passed": 15,
+        "skipped": 0,
+        "total": 17
+      },
+      "original_progress": {
+        "bytes": 70565,
+        "sha256": "a74f7e1b532ce4c4f58a281d7e5feb5836717ad4f675ac9fba2d79a169258394",
+        "git_blob": "061afa4b50aae4ff4f5e23265459ff40b0090db5",
+        "version": "66306:58767417:70565:1794453950625378045:1794453950627377986",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/progress.json"
+      },
+      "progress_review": {
+        "git_blob": "c6272f019d782547864b9d047144bbe7bfe06332",
+        "bytes": 14288,
+        "sha256": "da9a2dd8db79cdaf7aa36411284371fc6b61f14ee01b32916e901709c3f4a24a"
+      },
+      "native_executor_exit": 1
+    }
+  ],
+  "export": {
+    "original_exporter": {
+      "git_blob": "79494fe659157c453d4f0804cb01581eecce6052",
+      "bytes": 4370,
+      "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815",
+      "unchanged": true
+    },
+    "wrapper": {
+      "git_blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+      "bytes": 146,
+      "sha256": "869e8b6921d4bddd27c611590f19697a2983cb03b53732a18b426f0fd32fb49d",
+      "unchanged": true
+    },
+    "exact_request": {
+      "git_blob": "ea539b21ceb4ee443511aac55e0195e2151eb0b1",
+      "bytes": 197851,
+      "sha256": "3168af5edc995dadbe925d29325702a63ab78f3675287e0522f5fe5f90ac225b"
+    },
+    "config": {
+      "git_blob": "75ce45a5f803361cc362148712e58dfdfc2464eb",
+      "bytes": 179362,
+      "sha256": "100321b2dc1883688148bb4aeb00e3d066731e5e83d1ab67fcc2ad0e21f1aefb"
+    },
+    "plan": {
+      "git_blob": "260509614e54dbd56d940041917b4a81080ac14a",
+      "bytes": 7661,
+      "sha256": "b8689223f894849adca232e0c3c80a016a8d65f61a56605e0a544e4f6571008d"
+    },
+    "root_review": "d2651e85025e741d2e12f7d6b955840ca2280488",
+    "idempotency_key": "af52-ordinary-2ac-and-7666-original-records-export-v9-20261112",
+    "persistent_session_id": "dpty-1cc2cef910118675c8d6b2bcf3ea3ddd7828add8b811e77dd8db67eac0fa1b0f",
+    "actual_terminal": {
+      "exit_code": 0,
+      "output_complete": true,
+      "capture_error": null,
+      "bytes": 9130
+    },
+    "terminal_raw": {
+      "git_blob": "7ad98021ef9dc4ef060eaf7a79315a7a71d824f6",
+      "bytes": 9130,
+      "sha256": "358404c40188c61a7e7d8dd2ae33d3e27039096a43f249fa3f24e195e6cc8188"
+    },
+    "captured_tool_observation": {
+      "git_blob": "7b16e7133f69c9de6b18ea6b24c4f96c70cf54d2",
+      "bytes": 31008,
+      "sha256": "0c5b56fc5f02b8acc255138c718fb60a167aa2907f9b041be1e0001cb2c9643d"
+    },
+    "original_export_metadata": {
+      "git_blob": "122aa1a2416c70819d3d5770a05f75f8f44a183b",
+      "bytes": 9487,
+      "sha256": "0499ea9e9946574fac9999efc673ce92b39f3029161cd97eaa563f9b322991a0"
+    },
+    "source_before": {
+      "head": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+      "status": "",
+      "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+    },
+    "source_after": {
+      "head": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+      "status": "",
+      "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+    },
+    "original_member_verification": {
+      "members": 116,
+      "payload_files": 115,
+      "manifest_sha256": "7a7e87b294a13c689de53f457ff924b06b6e921c02e5234222e0220090184bf5",
+      "status": "verified-original-record-export"
+    },
+    "excluded": [
+      {
+        "path": "ordinary-7666bcc-root17-diagnostic-v8/helpers/bin/hepta-joint-propose",
+        "reason": "helper executable is bound by its original custody manifest and native build logs"
+      }
+    ]
+  },
+  "original_archive": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+    "bytes": 2392536,
+    "sha256": "568c36f18b539a80e9894027f774e9711303eda8470d1ee570a4a231c68502b4",
+    "git_blob": "f95aa80b21724f0462b594027eec7f361247a8c2",
+    "upload_receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "f95aa80b21724f0462b594027eec7f361247a8c2"
+      },
+      "isError": false
+    },
+    "verification": {
+      "git_blob": "1c694baeef13585d811c682f12401763a33db2ee",
+      "bytes": 17837,
+      "sha256": "fab62fd2f43baaae1ccb7e590a585e155ddd601b2ca2f88faa43ab5296260cad"
+    }
+  },
+  "transport": {
+    "complete_archive_method": "h_binary_read of one immutable original file; no re-export",
+    "exact_file_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+    "binary_reads": [
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 0,
+          "limit": 65536
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 0,
+          "next_offset": 65536,
+          "bytes": 65536,
+          "sha256": "1f78c6dbf0fe128180b1048ef69ecb5bfdf42d0a159b35368a67cd74ecf0ac7f",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 65536,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 65536,
+          "next_offset": 131072,
+          "bytes": 65536,
+          "sha256": "05dbf4e0529362664b7bc46886669f6e1792f499a94672e5383d4486612a5bef",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 131072,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 131072,
+          "next_offset": 196608,
+          "bytes": 65536,
+          "sha256": "e34e6d195c8dbb05c627ec4abde6b76dd26211758b870f65b5c283f10ebcbabc",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 196608,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 196608,
+          "next_offset": 262144,
+          "bytes": 65536,
+          "sha256": "61456fdf6faeefccc67fc8387eae58c1cb5d67bbd9e20f62573b699b10e57733",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 262144,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 262144,
+          "next_offset": 327680,
+          "bytes": 65536,
+          "sha256": "7bc0cee731fe110a63baf9c055c1c74b280ecc9eb622d965006f32fb03868bef",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 327680,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 327680,
+          "next_offset": 393216,
+          "bytes": 65536,
+          "sha256": "19ba2c046d7fef876ca5807017aa86b8b2a7ff5f0494aac4fae109a39297fc6e",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 393216,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 393216,
+          "next_offset": 458752,
+          "bytes": 65536,
+          "sha256": "b71797a1be36221c745ee9eb664ac57676e4ba80b1d92d738235ed14ab2c11bd",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 458752,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 458752,
+          "next_offset": 524288,
+          "bytes": 65536,
+          "sha256": "7609874f653127129ad53ddaf529178ea1c1c5865b6f2dd3891a360457c9a637",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 524288,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 524288,
+          "next_offset": 589824,
+          "bytes": 65536,
+          "sha256": "7b4610490bb479573b970d66ec29b0f94ee568ca5883eaac4778b4cb44063860",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 589824,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 589824,
+          "next_offset": 655360,
+          "bytes": 65536,
+          "sha256": "39ef50e2200b8a354c0f32e5fa10b6af356b8d924a2e875001e233732f369372",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 655360,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 655360,
+          "next_offset": 720896,
+          "bytes": 65536,
+          "sha256": "c593029f29464e3db68ad77a1cdeb4552ea31247604d172d6547093cb9f5bf8b",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 720896,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 720896,
+          "next_offset": 786432,
+          "bytes": 65536,
+          "sha256": "21f82215fa9ff487356f1d6c079a4dafed0b884d647dfbd33aa20bf6cf7b6f1c",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 786432,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 786432,
+          "next_offset": 851968,
+          "bytes": 65536,
+          "sha256": "7869b8884e52c09a63829e0c785baf4d66e11885093c6a96dbe24834a9c0ae8f",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 851968,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 851968,
+          "next_offset": 917504,
+          "bytes": 65536,
+          "sha256": "7db183ff975f1c7c45d16bf3c5282017d3ba4b1fab5add9d1effb8c1d0d9459f",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 917504,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 917504,
+          "next_offset": 983040,
+          "bytes": 65536,
+          "sha256": "17070f9f8101d64c2b03e3dfa5cf62b6a815fbe7000e96de1f6bdc3437cdc26b",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 983040,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 983040,
+          "next_offset": 1048576,
+          "bytes": 65536,
+          "sha256": "ae0597b0d09679884a06c794007e84ccdafd00626c08fd8abc58a907af25a3d1",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1048576,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1048576,
+          "next_offset": 1114112,
+          "bytes": 65536,
+          "sha256": "82eb8602b056769e54e979d70ef0cd68ef7fa6df07634d9b1a3f4d58f223586e",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1114112,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1114112,
+          "next_offset": 1179648,
+          "bytes": 65536,
+          "sha256": "4149f8554c0a93f369234153f69bd91737def7c57105a48025ac07e93ee9ebce",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1179648,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1179648,
+          "next_offset": 1245184,
+          "bytes": 65536,
+          "sha256": "8587638f1e7ae2219bbc6060d70c81df00e4b448259d77cc6149eda5464a7ae9",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1245184,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1245184,
+          "next_offset": 1310720,
+          "bytes": 65536,
+          "sha256": "3a69684eda2f47b4b1ebe2cfa2f9211798834f9256d011fdcabd8ffc52333a22",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1310720,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1310720,
+          "next_offset": 1376256,
+          "bytes": 65536,
+          "sha256": "6c69851ec2d07268f4ce82e79b0f449ad1b28949d7862c3b3468299178326b0d",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1376256,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1376256,
+          "next_offset": 1441792,
+          "bytes": 65536,
+          "sha256": "913b4b746ee8c39553a1b0089c91377ac9b7bc808bf445dbe8b99fc4d8aef079",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1441792,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1441792,
+          "next_offset": 1507328,
+          "bytes": 65536,
+          "sha256": "fa4e1c4081e71a6f162b8bb34cbff6119ce3b1c77e81c04e0fcb51e89e12bf23",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1507328,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1507328,
+          "next_offset": 1572864,
+          "bytes": 65536,
+          "sha256": "736db5f80e73428580f33a47f42fcff7e3b1d9a2768c37608c6c37c79f0b8449",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1572864,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1572864,
+          "next_offset": 1638400,
+          "bytes": 65536,
+          "sha256": "f0f536c4305e02bfdfe812670eb3b6aeb65c702daf271737c6d08cee06c5e1f5",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1638400,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1638400,
+          "next_offset": 1703936,
+          "bytes": 65536,
+          "sha256": "52f542a5a10a35ef1942a6284971a307e2a70f5229001d7264c0b2d3c8bc54e9",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1703936,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1703936,
+          "next_offset": 1769472,
+          "bytes": 65536,
+          "sha256": "827ea593929741b7daff97408906f7681e3f2ca2cc3a6b2b3e4a890d84b5e3d4",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1769472,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1769472,
+          "next_offset": 1835008,
+          "bytes": 65536,
+          "sha256": "d829a423f57337d7538c8f688b70ce8ff263ce0cfd231069a7b35d9ce62584d5",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1835008,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1835008,
+          "next_offset": 1900544,
+          "bytes": 65536,
+          "sha256": "0485080016be85c684906eedc53cf57a371576fa06b3966eafb8ee031c3e65a2",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1900544,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1900544,
+          "next_offset": 1966080,
+          "bytes": 65536,
+          "sha256": "10487d921d87c36d2f1eae48ae9b9df1eaa98ef047efdcfeca1f28f5be1eb9d9",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 1966080,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 1966080,
+          "next_offset": 2031616,
+          "bytes": 65536,
+          "sha256": "d36434aa9f3be3a84b5841ae5fc9ae01726c84af8a6f66d383ecc33b390825db",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 2031616,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 2031616,
+          "next_offset": 2097152,
+          "bytes": 65536,
+          "sha256": "a10367af67e3e61ba6da5b73b9cc22df85f5528f9f7474ff6fc32e7029ef6e86",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 2097152,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 2097152,
+          "next_offset": 2162688,
+          "bytes": 65536,
+          "sha256": "7c5f4462328e88db505aca7bf9f59042475939a63c07b682c231512c00eda83e",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 2162688,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 2162688,
+          "next_offset": 2228224,
+          "bytes": 65536,
+          "sha256": "2bd5227adb8f0878927a59345f53913e6da4b280f910b20b58462ce383f53886",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 2228224,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 2228224,
+          "next_offset": 2293760,
+          "bytes": 65536,
+          "sha256": "b2f3adce6842a7ce812356b26e2ac6868f24fac2929d7da4d56de880ade5f589",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 2293760,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 2293760,
+          "next_offset": 2359296,
+          "bytes": 65536,
+          "sha256": "e3557f9416e5d0491804d7d4ebfb9ae3d04eac54c952e1945690b1667ea7c35f",
+          "eof": false
+        }
+      },
+      {
+        "exact_arguments": {
+          "host": "ai395",
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "offset": 2359296,
+          "limit": 65536,
+          "expected_version": "66306:55228380:2392536:1794456302624095909:1794456302624095909"
+        },
+        "result": {
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/original-records.tar.xz",
+          "size": 2392536,
+          "version": "66306:55228380:2392536:1794456302624095909:1794456302624095909",
+          "offset": 2359296,
+          "next_offset": 2392536,
+          "bytes": 33240,
+          "sha256": "5b4e4b38825f2b6e556f86c2559c78f8895c1d8e1eb3f808b8fcb49e26006b80",
+          "eof": true
+        }
+      }
+    ],
+    "binary_retry": [
+      {
+        "offset": 131072,
+        "first_tool_error": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "recovery": "Same original path, expected_version, offset and limit; second read verified."
+      }
+    ],
+    "previous_sdk_operations": [
+      {
+        "batch": 0,
+        "exact_start_arguments": {
+          "idempotency_key": "af52-v9-original-export-metadata-and-parts-000-002-20261112",
+          "operation": {
+            "tool": "read_multiple_files",
+            "arguments": {
+              "host": "ai395",
+              "paths": [
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/export.json",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-000.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-001.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-002.txt"
+              ],
+              "max_file_bytes": 65536,
+              "max_response_bytes": 262144
+            }
+          }
+        },
+        "operation_id": "cc4b4f94d171d9586600e03a9af79f1843829510fc0ac1182a2b11e9b9338fed",
+        "payload_kind": "native_result",
+        "result_bytes": 155817,
+        "result_sha256": "1b982d25eb2960ce772d712c92941491a1f83becab3121fe17a050e2164c59fa",
+        "immutable_snapshot": true,
+        "pages": [
+          {
+            "offset": 0,
+            "next_offset": 16384,
+            "bytes": 16384,
+            "sha256": "e3bcec56b8a78d9bb11a691f0bcd38c683333816a448adffa724dbf4d55f2c2c",
+            "eof": false
+          },
+          {
+            "offset": 16384,
+            "next_offset": 32768,
+            "bytes": 16384,
+            "sha256": "3038411a94d2cc88b6b935032470285a7d9074d1ef03dec8489b6d49bedccf93",
+            "eof": false
+          },
+          {
+            "offset": 32768,
+            "next_offset": 49152,
+            "bytes": 16384,
+            "sha256": "5615a1f28944f364ba0a109639dd13dc6311eb57dafdc99aa7b7c969aeea9089",
+            "eof": false
+          },
+          {
+            "offset": 49152,
+            "next_offset": 65536,
+            "bytes": 16384,
+            "sha256": "7eb622cd79abc1349577f23e88ae5ea5b96223dd1f079716ee2cedcc1781b1af",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 81920,
+            "bytes": 16384,
+            "sha256": "71a739fef3c5e7cc286d33cd38cf3b42944957de341386efafc9383d9a3a587d",
+            "eof": false
+          },
+          {
+            "offset": 81920,
+            "next_offset": 98304,
+            "bytes": 16384,
+            "sha256": "e5abfb13344a632d63406aab6df516df692356bd4bfb1fe1b04cae71e19deedc",
+            "eof": false
+          },
+          {
+            "offset": 98304,
+            "next_offset": 114688,
+            "bytes": 16384,
+            "sha256": "a8e4085ba988a80e190271351e02fc9240331272f481b5133daca40640597a85",
+            "eof": false
+          },
+          {
+            "offset": 114688,
+            "next_offset": 131072,
+            "bytes": 16384,
+            "sha256": "55cd47483831d587d41eb63e0528851f9a8b8f2b6e46761d811238f42e216f48",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 147456,
+            "bytes": 16384,
+            "sha256": "47ba033db58a5fe3cf117e816d487810a74ea8634f57c747413fa637060769e1",
+            "eof": false
+          },
+          {
+            "offset": 147456,
+            "next_offset": 155817,
+            "bytes": 8361,
+            "sha256": "32f7b613f4231fae8570bf48b09fb58d29eb263f1c0a70f55aaada3756919bea",
+            "eof": true
+          }
+        ],
+        "original_start_result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"cc4b4f94d171d9586600e03a9af79f1843829510fc0ac1182a2b11e9b9338fed\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+            }
+          ],
+          "structuredContent": null,
+          "isError": false
+        },
+        "files": [
+          {
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/export.json",
+            "bytes": 9487,
+            "sha256": "0499ea9e9946574fac9999efc673ce92b39f3029161cd97eaa563f9b322991a0",
+            "version": "66306:55228448:9487:1794456302672901618:1794456302672901618"
+          },
+          {
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-000.txt",
+            "bytes": 48000,
+            "sha256": "993fa069f179158ff1cd9d7a9852b4ad9b672c9cf8b43b069f8b1b6b224ef988",
+            "version": "66306:55228381:48000:1794456302669514391:1794456302669514391"
+          },
+          {
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-001.txt",
+            "bytes": 48000,
+            "sha256": "db11ea20126c4a6ec6de91fd2593a7bc53d18e50b9449f8d51e738596b838687",
+            "version": "66306:55228382:48000:1794456302669569459:1794456302669569459"
+          },
+          {
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-002.txt",
+            "bytes": 48000,
+            "sha256": "4307116bf0e9fac5576c49b9db4d1ae1b926ec1d9edb837688e6f52d57c3ae37",
+            "version": "66306:55228383:48000:1794456302669607328:1794456302669607328"
+          }
+        ],
+        "note": "The immutable SDK result envelope was independently reassembled and hashed; the underlying read_multiple_files batch explicitly reported atomic_snapshot=false."
+      },
+      {
+        "batch": 1,
+        "exact_start_arguments": {
+          "idempotency_key": "af52-v9-original-parts-003-006-20261112",
+          "operation": {
+            "tool": "read_multiple_files",
+            "arguments": {
+              "host": "ai395",
+              "paths": [
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-003.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-004.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-005.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-006.txt"
+              ],
+              "max_file_bytes": 65536,
+              "max_response_bytes": 262144
+            }
+          }
+        },
+        "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074",
+        "payload_kind": "native_result",
+        "result_bytes": 193529,
+        "result_sha256": "8ddb96435f2868a82290ad1679663b27605d670f6faa86aecef82e04a8305a16",
+        "immutable_snapshot": true,
+        "pages": [
+          {
+            "offset": 0,
+            "next_offset": 16384,
+            "bytes": 16384,
+            "sha256": "e041df1272a3e08ff8f34abb1c1d42d20669ec00993dfc8483e47a314e95c0ef",
+            "eof": false
+          },
+          {
+            "offset": 16384,
+            "next_offset": 32768,
+            "bytes": 16384,
+            "sha256": "b1a3abc680584c686a7c954a197f991b3484049644fe332735c27c6116e2d955",
+            "eof": false
+          },
+          {
+            "offset": 32768,
+            "next_offset": 49152,
+            "bytes": 16384,
+            "sha256": "58c2b520a3d0a7618005c90662689b25aa62ea88f43814c863691c7119508655",
+            "eof": false
+          },
+          {
+            "offset": 49152,
+            "next_offset": 65536,
+            "bytes": 16384,
+            "sha256": "c655d4de9dd718cf39dcb9a8354f93e387852a632ab57aaec959865c68f1b2d9",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 81920,
+            "bytes": 16384,
+            "sha256": "25032452a1f5e15e069fac8dde72467d6c36ea7dbb4b3c7098285cfe04acc250",
+            "eof": false
+          },
+          {
+            "offset": 81920,
+            "next_offset": 98304,
+            "bytes": 16384,
+            "sha256": "c37b259b288d29d1ee34befd48f542916ff9329a210d26ab482b2677c4782335",
+            "eof": false
+          },
+          {
+            "offset": 98304,
+            "next_offset": 114688,
+            "bytes": 16384,
+            "sha256": "94b45bac19c266c1271610f60aff0fd6a979c6d45b41a6fda04f1af3154d319a",
+            "eof": false
+          },
+          {
+            "offset": 114688,
+            "next_offset": 131072,
+            "bytes": 16384,
+            "sha256": "05e76ba5ba60b716c39a1554ea85690d1901881aebdfa2383a2b839f9025b942",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 147456,
+            "bytes": 16384,
+            "sha256": "fabaf907d89fda4080f6f51814877180277d874ce3bb5fa2e0bbaf884b666ba1",
+            "eof": false
+          },
+          {
+            "offset": 147456,
+            "next_offset": 163840,
+            "bytes": 16384,
+            "sha256": "8c514ab91ef392cc378ad363495b56b9419d5cc9959565e8ea3d9e869c375b18",
+            "eof": false
+          },
+          {
+            "offset": 163840,
+            "next_offset": 180224,
+            "bytes": 16384,
+            "sha256": "b58d3cb37944eeab853731abe17bd54fa68d26196b0dd89475276a19857f6c0e",
+            "eof": false
+          },
+          {
+            "offset": 180224,
+            "next_offset": 193529,
+            "bytes": 13305,
+            "sha256": "4b6932a38485465bb9d1bcf559167b12615ed86b8ffe55788c6e3f336fbbf6ec",
+            "eof": true
+          }
+        ],
+        "original_start_result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+            }
+          ],
+          "structuredContent": null,
+          "isError": false
+        },
+        "files": [
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-003.txt",
+            "sha256": "7fb007ef7cc84289eb85b06824116806808f118f9dd708528ed9efa74f29f8e2",
+            "size": 48000,
+            "version": "66306:55228384:48000:1794456302669627577:1794456302669627577",
+            "part_index": 3,
+            "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-004.txt",
+            "sha256": "eeb2540aafc7d7b919d920bdc2282c705c3d664e28d0cfe3be6f9cabd108888e",
+            "size": 48000,
+            "version": "66306:55228385:48000:1794456302669659026:1794456302669659026",
+            "part_index": 4,
+            "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-005.txt",
+            "sha256": "fa412a2ad4ea258e2b1e795f7de223214deb1fb70792c0f5c1758402b31f0191",
+            "size": 48000,
+            "version": "66306:55228386:48000:1794456302669676176:1794456302669676176",
+            "part_index": 5,
+            "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-006.txt",
+            "sha256": "b191da67048288e249d880fc614640e0bf74ec1523545479f2e296d7c849152c",
+            "size": 48000,
+            "version": "66306:55228387:48000:1794456302669695715:1794456302669695715",
+            "part_index": 6,
+            "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+          }
+        ],
+        "note": "The immutable SDK result envelope was independently reassembled and hashed; the underlying read_multiple_files batch explicitly reported atomic_snapshot=false."
+      },
+      {
+        "batch": 2,
+        "exact_start_arguments": {
+          "idempotency_key": "af52-v9-original-parts-007-010-20261112",
+          "operation": {
+            "tool": "read_multiple_files",
+            "arguments": {
+              "host": "ai395",
+              "paths": [
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-007.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-008.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-009.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-010.txt"
+              ],
+              "max_file_bytes": 65536,
+              "max_response_bytes": 262144
+            }
+          }
+        },
+        "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e",
+        "payload_kind": "native_result",
+        "result_bytes": 193529,
+        "result_sha256": "987fc08a25abafbba00cd97c61db6c7f3156ea2cc1547ea242764a3ce1d0c48f",
+        "immutable_snapshot": true,
+        "pages": [
+          {
+            "offset": 0,
+            "next_offset": 16384,
+            "bytes": 16384,
+            "sha256": "7d56eebe172d0ccad568e4c2b35071dabb820be57f8d2da53b43566a9b80510b",
+            "eof": false
+          },
+          {
+            "offset": 16384,
+            "next_offset": 32768,
+            "bytes": 16384,
+            "sha256": "a801165d9994c47006f94ad53f43c5ef3e8ab09d01b59213a1cd3b9bf488b3d8",
+            "eof": false
+          },
+          {
+            "offset": 32768,
+            "next_offset": 49152,
+            "bytes": 16384,
+            "sha256": "c62f945b1a9980eb8c81c657fb5bd449b9214573e959b044bd04aa3972a60d96",
+            "eof": false
+          },
+          {
+            "offset": 49152,
+            "next_offset": 65536,
+            "bytes": 16384,
+            "sha256": "2308ce6f116960375960e5ba449ff547b58204a4f194e596e66e4453708a7a4b",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 81920,
+            "bytes": 16384,
+            "sha256": "c358b038806661fef46a2f948a8409fad769e33bf33318ba33f99ec4e1fac8b4",
+            "eof": false
+          },
+          {
+            "offset": 81920,
+            "next_offset": 98304,
+            "bytes": 16384,
+            "sha256": "f8f5c3db7233aeb70a066077bc966b54ffffa3341fec241b7de12054104529b2",
+            "eof": false
+          },
+          {
+            "offset": 98304,
+            "next_offset": 114688,
+            "bytes": 16384,
+            "sha256": "63c0e5c463e90e4241a2b351307078946b54ec3cf9657f64bbd9f15a20a15780",
+            "eof": false
+          },
+          {
+            "offset": 114688,
+            "next_offset": 131072,
+            "bytes": 16384,
+            "sha256": "4a089b750355f43a66627f0a3efd6975ce2636b650037fc67966ba1ddb1a6239",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 147456,
+            "bytes": 16384,
+            "sha256": "0fafe12b4df00404ac6c1ce9ec6e3cb3dbf809dbfbe0d021f7fea5ede03005e1",
+            "eof": false
+          },
+          {
+            "offset": 147456,
+            "next_offset": 163840,
+            "bytes": 16384,
+            "sha256": "66e7b08933d5a034a7e50340b2b6a2ddf0ad19fa32fa9c0279385c4090b90440",
+            "eof": false
+          },
+          {
+            "offset": 163840,
+            "next_offset": 180224,
+            "bytes": 16384,
+            "sha256": "3243e6791100865e8e38891203bf54ac69728ec7c49130bf203ca99bcceef9b9",
+            "eof": false
+          },
+          {
+            "offset": 180224,
+            "next_offset": 193529,
+            "bytes": 13305,
+            "sha256": "270b63a8a1c577a5b18464550929758dbdd928f908126ba1551f7954e8499daf",
+            "eof": true
+          }
+        ],
+        "original_start_result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+            }
+          ],
+          "structuredContent": null,
+          "isError": false
+        },
+        "files": [
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-007.txt",
+            "sha256": "f7b37c34bddf6c04836f562fee4af3bd167d1edb7fac90c2c2a5dbd549861237",
+            "size": 48000,
+            "version": "66306:55228388:48000:1794456302669714074:1794456302669714074",
+            "part_index": 7,
+            "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-008.txt",
+            "sha256": "13ea177b9fff7e3eae3314d5e596a5283b9702d4a58f6e407c0344cef8d9ee61",
+            "size": 48000,
+            "version": "66306:55228389:48000:1794456302669740393:1794456302669740393",
+            "part_index": 8,
+            "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-009.txt",
+            "sha256": "c9444573d41bd371ea27672980ea11e0023067bd559a0ae614b07fdcffaf3576",
+            "size": 48000,
+            "version": "66306:55228390:48000:1794456302669760932:1794456302669760932",
+            "part_index": 9,
+            "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-010.txt",
+            "sha256": "746a0da0cd0759f0fd611ef1763ab8dc19fcf08947d6a8b56898f4c47393488d",
+            "size": 48000,
+            "version": "66306:55228391:48000:1794456302669777732:1794456302669777732",
+            "part_index": 10,
+            "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+          }
+        ],
+        "note": "The immutable SDK result envelope was independently reassembled and hashed; the underlying read_multiple_files batch explicitly reported atomic_snapshot=false."
+      },
+      {
+        "batch": 3,
+        "exact_start_arguments": {
+          "idempotency_key": "af52-v9-original-parts-011-014-20261112",
+          "operation": {
+            "tool": "read_multiple_files",
+            "arguments": {
+              "host": "ai395",
+              "paths": [
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-011.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-012.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-013.txt",
+                "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-014.txt"
+              ],
+              "max_file_bytes": 65536,
+              "max_response_bytes": 262144
+            }
+          }
+        },
+        "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137",
+        "payload_kind": "native_result",
+        "result_bytes": 193529,
+        "result_sha256": "76f736f843d756b633b4661e8d4d36cf3a4b4c28a8cbeb72ee0dc52070f2069f",
+        "immutable_snapshot": true,
+        "pages": [
+          {
+            "offset": 0,
+            "next_offset": 16384,
+            "bytes": 16384,
+            "sha256": "2942e02c62c21907c8a4563a81f5774fdef7c0e899c61f111faf2a0f1ed41078",
+            "eof": false
+          },
+          {
+            "offset": 16384,
+            "next_offset": 32768,
+            "bytes": 16384,
+            "sha256": "a26aa12ee305327d31104eff9149073b5130a4b57b177ac582c9c7a75b805ae1",
+            "eof": false
+          },
+          {
+            "offset": 32768,
+            "next_offset": 49152,
+            "bytes": 16384,
+            "sha256": "0092a0bc834657def613fb828cb1758827a8664b775c8ed2d17357574dd9c03e",
+            "eof": false
+          },
+          {
+            "offset": 49152,
+            "next_offset": 65536,
+            "bytes": 16384,
+            "sha256": "ec3297cb2dd1558b4f4cebeb93efce506ab53a7df0315c945dc3501d8df10100",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 81920,
+            "bytes": 16384,
+            "sha256": "58282541afb70b9e3e7d5b44323ee668316277d2537bcbdfedd363a122893494",
+            "eof": false
+          },
+          {
+            "offset": 81920,
+            "next_offset": 98304,
+            "bytes": 16384,
+            "sha256": "7ca22568121f6493deee35bc5ee2e2756cf85f6f03b67268bd4ad57e03739f36",
+            "eof": false
+          },
+          {
+            "offset": 98304,
+            "next_offset": 114688,
+            "bytes": 16384,
+            "sha256": "1235d491378de90a892e69e2d768b33cdbe289372d69c92f41f480525a37b385",
+            "eof": false
+          },
+          {
+            "offset": 114688,
+            "next_offset": 131072,
+            "bytes": 16384,
+            "sha256": "928884996bb4372b5b198178a6a0eca20a861db6bd5f3368924a0e676ff4fe9c",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 147456,
+            "bytes": 16384,
+            "sha256": "0aeb08d8795da1bfa9548432ac52241327bd0d2f25689de182c654097d9ce3ce",
+            "eof": false
+          },
+          {
+            "offset": 147456,
+            "next_offset": 163840,
+            "bytes": 16384,
+            "sha256": "b3d19bc7f8a3eaa0ae91f37ae148ba058f4fee4815bbb10628f775b7affd4d8b",
+            "eof": false
+          },
+          {
+            "offset": 163840,
+            "next_offset": 180224,
+            "bytes": 16384,
+            "sha256": "f2f30cda03e6ce55f2a63fa309507aeb063cfd603f312bebd49ce112deb2f021",
+            "eof": false
+          },
+          {
+            "offset": 180224,
+            "next_offset": 193529,
+            "bytes": 13305,
+            "sha256": "040496ae263a76a9e3c6222d4ea6f3d1620e5d2ec917709365ce7e64fbdca172",
+            "eof": true
+          }
+        ],
+        "original_start_result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+            }
+          ],
+          "structuredContent": null,
+          "isError": false
+        },
+        "files": [
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-011.txt",
+            "sha256": "3ecadc3aa7ea3a7d4a32eb0a635249b624edc90c1bbe9a8038126ee479ed6a2d",
+            "size": 48000,
+            "version": "66306:55228392:48000:1794456302669795511:1794456302669795511",
+            "part_index": 11,
+            "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-012.txt",
+            "sha256": "4105f3851d6604ff8a6778f00cb6b6687dc69084d249523017f5b86ff3e4d801",
+            "size": 48000,
+            "version": "66306:55228393:48000:1794456302669813001:1794456302669813001",
+            "part_index": 12,
+            "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-013.txt",
+            "sha256": "bb4bad095918b370d8c1d7dc01596aadcebda9d750dec94976b9b22e36624009",
+            "size": 48000,
+            "version": "66306:55228394:48000:1794456302669832860:1794456302669832860",
+            "part_index": 13,
+            "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+          },
+          {
+            "eof": true,
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-014.txt",
+            "sha256": "863b9c5b3b51d8069bc21b53573312b138dc597fc41b0cca97a26919e2c1bf22",
+            "size": 48000,
+            "version": "66306:55228395:48000:1794456302669851649:1794456302669851649",
+            "part_index": 14,
+            "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+          }
+        ],
+        "note": "The immutable SDK result envelope was independently reassembled and hashed; the underlying read_multiple_files batch explicitly reported atomic_snapshot=false."
+      }
+    ],
+    "previous_sdk_page_retry": [
+      {
+        "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137",
+        "offset": 147456,
+        "first_tool_error": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "recovery": "Same immutable operation_id and offset; no new native filesystem read operation."
+      },
+      {
+        "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137",
+        "offset": 163840,
+        "first_tool_error": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "recovery": "Same immutable operation_id and offset; no new native filesystem read operation."
+      },
+      {
+        "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137",
+        "offset": 180224,
+        "first_tool_error": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        },
+        "recovery": "Same immutable operation_id and offset; no new native filesystem read operation."
+      }
+    ],
+    "previous_parts": {
+      "read": 15,
+      "total_exported": 67,
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "parts": [
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-000.txt",
+          "sha256": "993fa069f179158ff1cd9d7a9852b4ad9b672c9cf8b43b069f8b1b6b224ef988",
+          "size": 48000,
+          "version": "66306:55228381:48000:1794456302669514391:1794456302669514391",
+          "part_index": 0,
+          "operation_id": "cc4b4f94d171d9586600e03a9af79f1843829510fc0ac1182a2b11e9b9338fed"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-001.txt",
+          "sha256": "db11ea20126c4a6ec6de91fd2593a7bc53d18e50b9449f8d51e738596b838687",
+          "size": 48000,
+          "version": "66306:55228382:48000:1794456302669569459:1794456302669569459",
+          "part_index": 1,
+          "operation_id": "cc4b4f94d171d9586600e03a9af79f1843829510fc0ac1182a2b11e9b9338fed"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-002.txt",
+          "sha256": "4307116bf0e9fac5576c49b9db4d1ae1b926ec1d9edb837688e6f52d57c3ae37",
+          "size": 48000,
+          "version": "66306:55228383:48000:1794456302669607328:1794456302669607328",
+          "part_index": 2,
+          "operation_id": "cc4b4f94d171d9586600e03a9af79f1843829510fc0ac1182a2b11e9b9338fed"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-003.txt",
+          "sha256": "7fb007ef7cc84289eb85b06824116806808f118f9dd708528ed9efa74f29f8e2",
+          "size": 48000,
+          "version": "66306:55228384:48000:1794456302669627577:1794456302669627577",
+          "part_index": 3,
+          "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-004.txt",
+          "sha256": "eeb2540aafc7d7b919d920bdc2282c705c3d664e28d0cfe3be6f9cabd108888e",
+          "size": 48000,
+          "version": "66306:55228385:48000:1794456302669659026:1794456302669659026",
+          "part_index": 4,
+          "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-005.txt",
+          "sha256": "fa412a2ad4ea258e2b1e795f7de223214deb1fb70792c0f5c1758402b31f0191",
+          "size": 48000,
+          "version": "66306:55228386:48000:1794456302669676176:1794456302669676176",
+          "part_index": 5,
+          "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-006.txt",
+          "sha256": "b191da67048288e249d880fc614640e0bf74ec1523545479f2e296d7c849152c",
+          "size": 48000,
+          "version": "66306:55228387:48000:1794456302669695715:1794456302669695715",
+          "part_index": 6,
+          "operation_id": "20c1549c627cc71fc6e58b0248119be1a172d5ac3fc1a192a4b2a557435d2074"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-007.txt",
+          "sha256": "f7b37c34bddf6c04836f562fee4af3bd167d1edb7fac90c2c2a5dbd549861237",
+          "size": 48000,
+          "version": "66306:55228388:48000:1794456302669714074:1794456302669714074",
+          "part_index": 7,
+          "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-008.txt",
+          "sha256": "13ea177b9fff7e3eae3314d5e596a5283b9702d4a58f6e407c0344cef8d9ee61",
+          "size": 48000,
+          "version": "66306:55228389:48000:1794456302669740393:1794456302669740393",
+          "part_index": 8,
+          "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-009.txt",
+          "sha256": "c9444573d41bd371ea27672980ea11e0023067bd559a0ae614b07fdcffaf3576",
+          "size": 48000,
+          "version": "66306:55228390:48000:1794456302669760932:1794456302669760932",
+          "part_index": 9,
+          "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-010.txt",
+          "sha256": "746a0da0cd0759f0fd611ef1763ab8dc19fcf08947d6a8b56898f4c47393488d",
+          "size": 48000,
+          "version": "66306:55228391:48000:1794456302669777732:1794456302669777732",
+          "part_index": 10,
+          "operation_id": "48930ef28273f1e674db90452a2202cd954b1c693e8239cbd24bc922cb582c2e"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-011.txt",
+          "sha256": "3ecadc3aa7ea3a7d4a32eb0a635249b624edc90c1bbe9a8038126ee479ed6a2d",
+          "size": 48000,
+          "version": "66306:55228392:48000:1794456302669795511:1794456302669795511",
+          "part_index": 11,
+          "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-012.txt",
+          "sha256": "4105f3851d6604ff8a6778f00cb6b6687dc69084d249523017f5b86ff3e4d801",
+          "size": 48000,
+          "version": "66306:55228393:48000:1794456302669813001:1794456302669813001",
+          "part_index": 12,
+          "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-013.txt",
+          "sha256": "bb4bad095918b370d8c1d7dc01596aadcebda9d750dec94976b9b22e36624009",
+          "size": 48000,
+          "version": "66306:55228394:48000:1794456302669832860:1794456302669832860",
+          "part_index": 13,
+          "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+        },
+        {
+          "eof": true,
+          "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2ac-and-7666-original-records-export-v9-20261112/part-014.txt",
+          "sha256": "863b9c5b3b51d8069bc21b53573312b138dc597fc41b0cca97a26919e2c1bf22",
+          "size": 48000,
+          "version": "66306:55228395:48000:1794456302669851649:1794456302669851649",
+          "part_index": 14,
+          "operation_id": "ada39a81ee50dd277629442b722dbb8898809e06c0d430d56885da0cfd9ee137"
+        }
+      ],
+      "coverage_bytes": 540000,
+      "equals_whole_prefix": true,
+      "prefix_sha256": "562a3cbabf63d910793642bafe5ac2bf478c5491cd52be7266d326976afdb1a2"
+    },
+    "whole_verification": {
+      "length_verified": true,
+      "sha256_verified": true,
+      "git_blob_verified": true,
+      "binary_chunks": 37,
+      "contiguous": true,
+      "eof": true,
+      "upload_sha_verified": true,
+      "canonical_base64_roundtrip_verified": true
+    },
+    "verifier_implementation": {
+      "git_blob": "e8dc87e68c5241d244088fdad4a3302654b991db",
+      "runtime": "functions V8; no local executor"
+    },
+    "network_failures_are_native_failures": false
+  },
+  "limits": {
+    "second_independent_tar_parse_performed": false,
+    "second_parser_request_status": "To be separately reviewed; no PTY or process dispatched.",
+    "local_executor_used": false,
+    "member_byte_verification_performed_by": "Unchanged original native exporter; separately from the independent V8 whole-byte and transport checks.",
+    "source_side_file_review": "Complete original 7666 progress.json independently transferred and parsed. Side-file archive cross-check remains pending the separate second-parser request."
+  },
+  "acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "full_native_qualification_accepted": false
+  }
+}
