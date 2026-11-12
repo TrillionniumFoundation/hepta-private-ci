@@ -101,15 +101,34 @@ pub(in super::super) fn serve_optional(
                     Err(mpsc::TryRecvError::Disconnected) => return Ok(()),
                 }
             };
-            let slot = service.enroll_generation_initial(
-                config,
-                registration,
-                owner,
-                &initial.runtime.deployment,
-                submission.inputs,
-            );
-            let slot = match slot {
-                Ok(slot) => {
+            let slot = service
+                .enroll_generation_initial(
+                    config,
+                    registration,
+                    owner,
+                    &initial.runtime.deployment,
+                    submission.inputs,
+                )
+                .and_then(|slot| {
+                    let run_start = initial
+                        .runtime
+                        .run_start
+                        .as_ref()
+                        .map(|files| {
+                            service.register_initial_run_start_retention(
+                                &slot,
+                                config,
+                                registration,
+                                owner,
+                                Arc::clone(files),
+                                end,
+                            )
+                        })
+                        .transpose()?;
+                    Ok((slot, run_start))
+                });
+            let (slot, run_start) = match slot {
+                Ok((slot, run_start)) => {
                     if let Some(source) = initial.runtime.source_capture.as_ref()
                         && let Err(error) = {
                             let context = source_capture::SourceCaptureContext {
@@ -139,7 +158,7 @@ pub(in super::super) fn serve_optional(
                             "original initial enrollment acknowledgement lost",
                         ));
                     }
-                    slot
+                    (slot, run_start)
                 }
                 Err(error) => {
                     let _ = submission.acknowledgement.try_send(Err(error.to_string()));
@@ -208,6 +227,7 @@ pub(in super::super) fn serve_optional(
                         owner.try_clone()?,
                         Some(&initial.runtime.peer_source_capture),
                         end,
+                        run_start.as_ref(),
                     );
                     // The terminal client keeps its lifetime until Root closes.
                     // Releasing this cancellation clone lets it observe EOF.

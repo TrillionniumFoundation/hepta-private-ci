@@ -48,6 +48,8 @@ pub use historical_source_pin::RootHistoricalSourceInputsV1;
 pub(crate) use historical_source_pin::cell as cell_retention;
 #[path = "authority_host_historical_source_handoff.rs"]
 mod historical_source_handoff;
+#[path = "authority_host_run_start_retention.rs"]
+pub(crate) mod run_start_retention;
 #[path = "authority_host_generation_initial_transport.rs"]
 mod transport;
 pub(crate) use transport::Command;

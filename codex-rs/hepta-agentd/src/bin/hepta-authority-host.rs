@@ -164,6 +164,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let source_deployment = options
             .remove(std::ffi::OsStr::new("--historical-source-deployment"))
             .map(PathBuf::from);
+        let run_start_deployment = options
+            .remove(std::ffi::OsStr::new("--run-start-deployment"))
+            .map(PathBuf::from);
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -188,6 +191,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if source_deployment.is_some() && initial_deployment.is_none() {
             return Err(
                 "source capture requires its original Initial deployment and session".into(),
+            );
+        }
+        if run_start_deployment.is_some() && initial_deployment.is_none() {
+            return Err(
+                "RunStart retention requires its original Initial deployment and session".into(),
             );
         }
         if publication_deployment.is_some() != publication_handoff.is_some()
@@ -332,6 +340,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         if let Some(path) = source_deployment {
             prepared.enable_initial_source_capture_from_deployment(&path)?;
+        }
+        if let Some(path) = run_start_deployment {
+            prepared.enable_initial_run_start_retention_from_deployment(&path)?;
         }
         let initial_ready = initial_deployment
             .as_ref()
