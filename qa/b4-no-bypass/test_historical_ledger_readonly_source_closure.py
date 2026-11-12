@@ -161,5 +161,39 @@ class HistoricalLedgerReadonlySourceTests(unittest.TestCase):
             "projection::outcome_event(&outcome, &outcome_signed, &self.config.observer)"))
 
 
+    def test_dataset_resolvers_have_only_actual_writer_and_physical_reader_callers(self):
+        rows = {row["id"]: row for row in self.manifest["boundary"]}
+        for identifier in ("ledger_dataset_active_sources", "ledger_dataset_sequence_records"):
+            self.assertEqual(rows[identifier]["product_callers"],
+                             [LEDGER + "production.rs", LEDGER + "durable_read_only.rs"])
+        self.assertEqual(rows["ledger_readonly_dataset_records"]["product_callers"], [])
+
+    def test_dataset_resolution_keeps_active_indexes_and_sequence_order(self):
+        self.check_markers(LEDGER + "dataset_records.rs", "fn require_active_dataset_sources(", (
+            "&receipt.snapshot.source_record_digests", "self.active_record_by_digest(digest)?.is_none()",
+            "return Err("))
+        self.check_markers(LEDGER + "dataset_records.rs", "fn resolve_active_dataset_records(", (
+            ".active_record_by_digest(digest)?", ".ok_or(ProductionLedgerError::Binding(",
+            "records.sort_unstable_by_key(|record| record.sequence)"))
+
+    def test_writer_keeps_receipt_and_record_bounds_before_shared_lookup(self):
+        self.check_markers(LEDGER + "production.rs", "fn revalidate_dataset_snapshot(", (
+            "verify_dataset_snapshot_receipt_v3(receipt, now)?", "self.backend.core()?",
+            "LearningLedger::require_active_dataset_sources(ledger, receipt)"))
+        self.check_markers(LEDGER + "production.rs", "fn read_dataset_records(", (
+            "receipt.snapshot.source_record_digests.len() > 4096",
+            "self.revalidate_dataset_snapshot(receipt, now)?", "self.backend.core()?",
+            "LearningLedger::resolve_active_dataset_records(ledger, receipt)"))
+
+    def test_readonly_dataset_lookup_replays_and_rechecks_owned_records(self):
+        self.check_markers(LEDGER + "durable_read_only.rs", "fn read_dataset_records(", (
+            "receipt.snapshot.source_record_digests.len() > 4096",
+            "verify_dataset_snapshot_receipt_v3(receipt, now)?", "let before = self.observe()?",
+            "LearningLedger::from_snapshot(before.snapshot.clone())?",
+            "LearningLedger::require_active_dataset_sources(&ledger, receipt)?",
+            "LearningLedger::resolve_active_dataset_records(&ledger, receipt)?", ".cloned()",
+            "self.observe()? != before", "DurableLedgerError::Indeterminate.into()"))
+
+
 if __name__ == "__main__":
     unittest.main()

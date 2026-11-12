@@ -10,6 +10,7 @@
 mod causal_v2;
 mod checkpoint;
 mod dataset_receipt_v3;
+mod dataset_records;
 mod durable;
 mod durable_codec;
 mod durable_lock;

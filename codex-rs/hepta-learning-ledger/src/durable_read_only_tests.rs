@@ -20,6 +20,9 @@ use crate::OutcomeObservation;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
+#[path = "durable_read_only_dataset_tests.rs"]
+mod dataset;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 const LIMIT: usize = 8;
 
