@@ -11,6 +11,9 @@ use std::os::unix::net::UnixStream;
 mod source_capture;
 
 use source_capture::OriginalSourceCaptureExchange;
+pub(crate) use source_capture::SOURCE_CAPTURE_PURPOSE;
+pub(crate) use source_capture::SourceCapturePhase;
+pub(crate) use source_capture::SourceCaptureResponse;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

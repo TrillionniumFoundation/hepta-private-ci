@@ -16,6 +16,9 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+#[path = "root_generation_initial_source_capture.rs"]
+mod source_capture;
+
 struct Lane {
     stream: OriginalPublicationStream,
     sequence: u64,

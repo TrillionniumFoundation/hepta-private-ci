@@ -50,6 +50,9 @@ mod transport;
 pub(crate) use transport::Command;
 pub(crate) use transport::Request;
 pub(crate) use transport::Response;
+pub(crate) use transport::SOURCE_CAPTURE_PURPOSE;
+pub(crate) use transport::SourceCapturePhase;
+pub(crate) use transport::SourceCaptureResponse;
 #[cfg(test)]
 pub(crate) use transport::drop_next_test_publication_ack;
 
