@@ -161,7 +161,7 @@ pub(super) fn evaluation_receipt(
         .ok_or_else(|| OwnerError::Binding("original Model Evaluation receipt").into())
 }
 
-fn authenticate_roles(
+pub(super) fn authenticate_roles(
     config: &OriginalCircuitModelSelectionReceiptConfigV1,
     evidence: &(SignedLearningEvidenceV1, SignedLearningEvidenceV1),
     current: u64,
@@ -289,6 +289,22 @@ pub(super) fn sign_original(
     identity: Digest32,
     issued_at: u64,
 ) -> Result<SignedLearningEvidenceV1, OwnerError> {
+    sign_original_until(config, key, payload, identity, issued_at, signature_expiry(config, issued_at)?)
+}
+
+/// A new remote attestation may only shorten the original owner's window.
+/// Existing completed signatures are read verbatim and are never re-signed.
+pub(super) fn sign_original_until(
+    config: &OriginalCircuitModelSelectionReceiptConfigV1,
+    key: &SigningKey,
+    payload: &[u8],
+    identity: Digest32,
+    issued_at: u64,
+    expires_at: u64,
+) -> Result<SignedLearningEvidenceV1, OwnerError> {
+    if expires_at <= issued_at || expires_at > signature_expiry(config, issued_at)? {
+        return Err(OwnerError::Binding("original Model Selector capped window"));
+    }
     let mut signed = SignedLearningEvidenceV1 {
         evidence_id: evidence_id(identity)?,
         principal_id: config.signer.principal.principal_id.clone(),
@@ -298,7 +314,7 @@ pub(super) fn sign_original(
         objective_digest: config.verifier.objective_digest(),
         authority_epoch: config.signer.principal.authority_epoch,
         issued_at,
-        expires_at: signature_expiry(config, issued_at)?,
+        expires_at,
         payload_digest: Digest32::of_bytes(payload),
         signature: [0; 64],
     };

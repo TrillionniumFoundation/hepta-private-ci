@@ -82,6 +82,21 @@ pub use next_use_command::OriginalCircuitNextUseCommandErrorV1;
 pub use next_use_command::OriginalCircuitNextUseCommandOwnerV1;
 pub use next_use_command::OriginalCircuitNextUseCommandReceiptV1;
 
+#[path = "circuit_candidate_next_use_command.rs"]
+mod candidate_next_use_command;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandClientV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandContextV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandErrorV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandOwnerV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandReceiptV1;
+
+#[path = "circuit_model_selection_command.rs"]
+mod model_selection_command;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandClientV1;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandErrorV1;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandOwnerV1;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandReceiptV1;
+
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
 pub use material::OriginalCellQ24DatasetCommandReadbackV1;

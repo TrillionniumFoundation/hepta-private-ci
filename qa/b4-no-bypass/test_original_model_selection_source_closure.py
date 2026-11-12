@@ -87,7 +87,7 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
             "learning_source_bound_training_stage_model_readback": (SOURCES,),
             "cell_original_completed_evaluation_evidence_readback": (SOURCES, AGENT + "neuron_cell_evaluation_qualification_sources.rs"),
             "product_original_execution_evidence_revalidate": (BINDING, AGENT + "neuron_cell_evaluation_qualification_binding.rs"),
-            "circuit_feature_original_selection_observation": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),
+            "circuit_feature_original_selection_observation": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs",),
             "learning_original_owner_physical_current": (
                 AGENT + "learning_owner_journal.rs",
                 AGENT + "cell_composed_q24_training_owner.rs",

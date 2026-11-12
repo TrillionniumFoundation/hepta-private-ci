@@ -37,6 +37,15 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 mod control;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
+#[path = "circuit_candidate_learning_read_capability.rs"]
+mod candidate_learning_read;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadClientV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadContextV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadErrorV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadOwnerV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadbackV1;
+pub(crate) use candidate_learning_read::OriginalCircuitCandidateCompletionReadinessClientV1;
+
 #[path = "circuit_learning_read_capability.rs"]
 mod learning_read;
 #[path = "circuit_feature_current_owner.rs"]
@@ -54,6 +63,7 @@ mod model_publication;
 pub use model_publication::OriginalCircuitModelPublicationContextV1;
 pub use model_publication::OriginalCircuitModelPublicationErrorV1;
 pub use model_publication::OriginalCircuitModelPublicationInputsV1;
+pub use model_publication::OriginalCircuitModelPublicationPredecessorsV1;
 pub use model_publication::OriginalCircuitModelPublicationRecoveryV1;
 pub use model_publication::OriginalCircuitModelPublicationSelectionV1;
 pub use model_publication::OriginalCircuitModelPublicationV1;
