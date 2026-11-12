@@ -18,13 +18,14 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 CELL = "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+ORIGINAL = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_original_observers.rs"
 PRODUCT = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
 OWNER = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
 CALLERS = {
     "cell_original_evaluation_execution": (),
-    "product_original_evaluation_execution": (CELL,),
+    "product_original_evaluation_execution": (CELL, ORIGINAL),
     "cell_completed_evaluation_readback": (OWNER,),
-    "product_completed_evaluation_readback": (CELL,),
+    "product_completed_evaluation_readback": (CELL, ORIGINAL),
 }
 
 
@@ -37,7 +38,7 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (CELL, PRODUCT, OWNER)
+            for path in (CELL, ORIGINAL, PRODUCT, OWNER)
         }
 
     def rejects(self, path, changed):
@@ -90,6 +91,24 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
                 start = source.index("fn evaluate_or_readback<") if marker.startswith(("plan.", "request.")) else 0
                 offset = source.index(marker, start)
                 self.rejects(CELL, source[:offset] + source[offset + len(marker) :])
+
+    def test_root_observers_keep_both_physical_checks_and_the_original_runner(self):
+        source = (ROOT / ORIGINAL).read_text()
+        for function in ("fn evaluate_original(", "fn read_original_execution("):
+            start = source.index(function)
+            for marker in (
+                "self.require_original_plan(plan)?;",
+                "if request.plan != &plan.product",
+                "let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;",
+                "let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;",
+            ):
+                with self.subTest(function=function, marker=marker):
+                    at = source.index(marker, start)
+                    self.rejects(ORIGINAL, source[:at] + source[at + len(marker):])
+                    self.rejects(ORIGINAL, source[:at] + "/*" + marker + "*/" + source[at + len(marker):])
+            marker = "self.require_original_plan(plan)?;"
+            at = source.index(marker, source.index(marker, start) + len(marker))
+            self.rejects(ORIGINAL, source[:at] + source[at + len(marker):])
 
     def test_pending_signed_bytes_current_consumption_and_evaluator_are_required(self):
         source = (ROOT / PRODUCT).read_text()

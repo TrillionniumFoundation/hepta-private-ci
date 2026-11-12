@@ -2875,8 +2875,8 @@ symbol = "ProductEvaluationRunnerV1::evaluate_or_readback_temporal_comparison"
 receiver_type = "ProductEvaluationRunnerV1"
 definition_path = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
 definition_markers = ["pub fn evaluate_or_readback_temporal_comparison<", "ProductEvaluationExecutionStateV1::Pending", "authenticate(request, &signed, &signing_payload(&key, body))?"]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"]
-caller_markers = ["plan.require_journals(journals)?", "request.plan != &plan.product", ".evaluate_or_readback_temporal_comparison(request, provider, executions, attestor)"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_original_observers.rs"]
+caller_markers = ["request.plan != &plan.product", ".evaluate_or_readback_temporal_comparison(request, provider, executions, attestor)"]
 
 [[boundary]]
 id = "cell_completed_evaluation_readback"
@@ -2893,12 +2893,12 @@ symbol = "ProductEvaluationRunnerV1::readback_temporal_comparison"
 receiver_type = "ProductEvaluationRunnerV1"
 definition_path = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
 definition_markers = ["pub fn readback_temporal_comparison(", "let (key, _) = self.execution_context(request)?", "executions.readback(&key)?", "self.authenticate_completed_execution(request, key, &bytes)"]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"]
-caller_markers = ["pub fn readback_completed(", "plan.require_journals(journals)?", "request.plan != &plan.product", ".readback_temporal_comparison(request, executions)"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_original_observers.rs"]
+caller_markers = ["request.plan != &plan.product", ".readback_temporal_comparison(request, executions)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
-required = ["evaluation_profile.is_zero()", "Some(evaluation_profile.into_array())"]
+required = ["plan.require_journals(journals)?", "pub fn readback_completed(", "evaluation_profile.is_zero()", "Some(evaluation_profile.into_array())"]
 forbidden = ["SigningKey", ".sign(", "UnixStream::connect", "with_root_learning_stage_owners("]
 required_order = [["pub fn evaluate_or_readback<", "plan.require_journals(journals)?", "request.plan != &plan.product", ".evaluate_or_readback_temporal_comparison(request, provider, executions, attestor)", "Ok(CellEvaluationReceiptV1"]]
 required_function_order = [{ function = "fn readback_completed(", sequence = ["plan.require_journals(journals)?", "if request.plan != &plan.product", "return Err(CellEvaluationErrorV1::Binding(", "let temporal = self", ".readback_temporal_comparison(request, executions)", ".map_err(CellEvaluationErrorV1::Execution)?", "Ok(CellEvaluationReceiptV1", "original_execution_evaluator: Some(request.evaluator.clone())"], top_level = ["plan.require_journals(journals)?", "if request.plan != &plan.product", "let temporal = self"] }]
@@ -14413,3 +14413,16 @@ path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs"
 required = []
 forbidden = []
 required_function_order = [{ function = "fn require_original_historical_deployment(", sequence = ["RootGenerationInitialDeploymentFilesV1::require_original_historical_root(", "files,", "&self.config.state_dir"], top_level = ["RootGenerationInitialDeploymentFilesV1::require_original_historical_root("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_original_observers.rs"
+required = ["let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;", "self.require_original_plan(plan)?;", "request.plan != &plan.product", "original_execution_evaluator: Some(request.evaluator.clone())"]
+forbidden = ["SigningKey", ".sign(", "ProductEvaluationRunnerV1::new(", "serde_json::from_slice"]
+[[protected_file.required_function_order]]
+function = "fn evaluate_original("
+sequence = ["self.require_original_plan(plan)?;", "if request.plan != &plan.product", "return Err(CellEvaluationErrorV1::Binding(", "let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;", ".evaluate_or_readback_temporal_comparison(request, provider, executions, attestor)", "self.require_original_plan(plan)?;", "let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;", "Ok(CellEvaluationReceiptV1", "original_execution_evaluator: Some(request.evaluator.clone())"]
+top_level = ["if request.plan != &plan.product", "let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;", "let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;"]
+[[protected_file.required_function_order]]
+function = "fn read_original_execution("
+sequence = ["self.require_original_plan(plan)?;", "if request.plan != &plan.product", "return Err(CellEvaluationErrorV1::Binding(", "let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;", ".readback_temporal_comparison(request, executions)", "self.require_original_plan(plan)?;", "let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;", "Ok(CellEvaluationReceiptV1", "original_execution_evaluator: Some(request.evaluator.clone())"]
+top_level = ["if request.plan != &plan.product", "let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;", "let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;"]

@@ -211,8 +211,8 @@ impl OriginalCellEvaluationObserversV1 {
                 "original B execution plan differs",
             ));
         }
-        let result = runner
-            .product
+        let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;
+        let result = product
             .evaluate_or_readback_temporal_comparison(request, provider, executions, attestor);
         self.require_original_plan(plan)?;
         let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;
@@ -236,9 +236,8 @@ impl OriginalCellEvaluationObserversV1 {
                 "original B readback plan differs",
             ));
         }
-        let result = runner
-            .product
-            .readback_temporal_comparison(request, executions);
+        let product: &mut ProductEvaluationRunnerV1<_> = &mut runner.product;
+        let result = product.readback_temporal_comparison(request, executions);
         self.require_original_plan(plan)?;
         let temporal = result.map_err(CellEvaluationErrorV1::Execution)?;
         Ok(CellEvaluationReceiptV1 {
