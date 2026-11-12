@@ -620,6 +620,12 @@ pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
 #[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptV1;
+#[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptErrorV1;

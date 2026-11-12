@@ -332,3 +332,6 @@ impl PublicationFixture {
         Ok(())
     }
 }
+
+#[path = "circuit_evaluated_retention_receipt_tests.rs"]
+mod receipt_tests;

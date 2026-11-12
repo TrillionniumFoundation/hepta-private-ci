@@ -8,6 +8,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
@@ -544,6 +545,34 @@ fn validate_config(
 ) -> Result<ProductEvaluationExecutionKeyV1, Error> {
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?;
     config.scope.validate_snapshot(&config.selection)?;
+    // This exact five-cut retention profile needs current original B as well
+    // as T/S. The legacy configuration cannot carry that readback capability.
+    if config.selection.receipts.len() == 5
+        && coordinator.candidate().is_some()
+        && matches!(
+            config
+                .selection
+                .receipts
+                .get(3)
+                .map(|receipt| &receipt.observation),
+            Some(LearningIterationObservationV1::Evaluation {
+                disposition: LearningEvaluationDispositionV1::NoUpdate,
+                ..
+            })
+        )
+        && matches!(
+            config
+                .selection
+                .receipts
+                .last()
+                .map(|receipt| &receipt.observation),
+            Some(LearningIterationObservationV1::Selection { .. })
+        )
+    {
+        return Err(
+            OwnerError::Binding("evaluated retention requires original T/B/S readbacks").into(),
+        );
+    }
     if coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)
         || key.verifying_key().to_bytes() != config.signer.verifying_key
         || config.signer.principal.principal_id != config.selection.owners.next_use_observer
