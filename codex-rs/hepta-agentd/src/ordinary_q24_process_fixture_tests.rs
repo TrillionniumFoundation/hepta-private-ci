@@ -103,7 +103,9 @@ impl OrdinaryAPlan {
         // otherwise adds SGID to a requested 0700 child, producing 02700.
         owned_mode(run_directory.path(), 0, 60001, 0o710)?;
         let workspace = run_directory.path().join("workspace");
-        directory(&workspace, 0, 60001, 0o710)?;
+        // The real Root handoff transfers this original empty private
+        // workspace to the dedicated daemon after validating the full scope.
+        directory(&workspace, 0, 0, 0o700)?;
         let fleet = HeptaFleetRoot::parse(run_directory.path().join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet.clone())?;
         owned_mode(fleet.as_path(), 0, 60001, 0o710)?;
