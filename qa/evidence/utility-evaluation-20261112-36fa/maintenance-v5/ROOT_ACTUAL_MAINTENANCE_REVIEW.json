@@ -1,0 +1,183 @@
+{
+  "actual_source": {
+    "dirty_source_retained": true,
+    "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "inventory": {
+      "bytes": 5614211,
+      "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+      "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+    },
+    "physical_leaves": 15188,
+    "physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc"
+  },
+  "audits": [
+    {
+      "check": "actual_complete_source_and_git",
+      "complete_final_source": {
+        "complete": true,
+        "inventory": {
+          "bytes": 5614211,
+          "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+          "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+        },
+        "postimages": {
+          "HEAD_working_patch_bytes": 189258,
+          "HEAD_working_patch_sha256": "4401a855dcf3fe655f638583af9d04b80e6997a5b7e65bc568b59c9029b01779",
+          "all_actual_physical_leaf_count": 15188,
+          "all_actual_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+          "change_count": 43,
+          "paths": [
+            "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+            "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+            "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+            "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+            "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+            "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+            "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+            "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+            "codex-rs/hepta-agentd/src/lib.rs",
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs"
+          ],
+          "tree_scope": "Every supported physical source leaf, including untracked/ignored files; no Git tree/ref was written.",
+          "untracked_are_in_exact_transition_packet": true
+        }
+      },
+      "finished_at": "2026-11-12T20:27:30.619854+00:00",
+      "git_metadata_unchanged": true,
+      "started_at": "2026-11-12T20:27:21.654045+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "original_inputs",
+      "finished_at": "2026-11-12T20:27:30.622459+00:00",
+      "input_count": 17,
+      "started_at": "2026-11-12T20:27:30.619872+00:00",
+      "status": "verified",
+      "unchanged": true
+    }
+  ],
+  "complete_stdout": {
+    "bytes": 80922,
+    "git_blob": "1f5b207331fb37e96143c0013589f457b8e4d92a",
+    "sha256": "55afcfaeb095532ff5fda588ecf2b28fc60d5b18725925ee91149f0b3d78d9a4"
+  },
+  "exact_log_recovery": {
+    "bytes": 2395,
+    "git_blob": "1297b94cb12502c288520cf972db4286428d3e5c",
+    "sha256": "deabbb45a7aac5db6e1c53af16b05030c57adfc71c709ff369a19c422d6a74ee"
+  },
+  "format": "hepta-root-v5-actual-original-maintenance-review-v1",
+  "format_static_peer_review": {
+    "git_blob": "4be399c11ac6e3c8edc68f8f50637ee53f1de3a3",
+    "placement_blob": "538e5777d49d8f63325b1c926751bbbb4a503066",
+    "scope": "43 actual Rust before/after bytes; no non-format semantic change found; no test or utility qualification transfer"
+  },
+  "inventory_recovery_review": {
+    "bytes": 7309,
+    "git_blob": "0a5eb1c462f07a23e45cade4405fb8505e6e67f6",
+    "sha256": "526e46bb3944bb66752499b939637ecc5a7b4cdbbeaf593935336d8d238ad85c"
+  },
+  "job_id": "1a1d16f37be-2564-1c4a",
+  "limits": [
+    "Compiler/formatter success is not test success or actual authorized task learning.",
+    "Dirty physical tree is not the committed HEAD tree.",
+    "Reconstructing exact retained inventory is not a new current native read.",
+    "No merge, activation, payment, fraud finding, or net utility claim."
+  ],
+  "next_required": "Actual SH capture; derive final protected rows and QA from actual source; integrate non-Rust edits; one original final fmt900; freeze exact source and run original qualification gates.",
+  "normal": {
+    "bytes": 956,
+    "git_blob": "2bb8699bae213bd97926beb6589df08e7813c79a",
+    "sha256": "c313aece99eb8d3d7eb95c9d4997b81808c8404062371ab3dc52abb9badcd675"
+  },
+  "original_commands": [
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "output_limit_exceeded": false,
+      "postimages": 0,
+      "returncode": 0,
+      "terminal": {
+        "bytes": 1320,
+        "git_blob": "932056db0298eea52d5c483a9ecf9ed4d2865a02",
+        "sha256": "c7b8a8cad9aee9172a7dad62965cf6fca6818cf3844c4ef29b7d9bd4cdc5e7c0"
+      },
+      "timed_out": false,
+      "timeout_seconds": 7200
+    },
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "c0f78493f815780f68b9bf5e390a21314d79311f"
+      ],
+      "output_limit_exceeded": false,
+      "postimages": 43,
+      "returncode": 0,
+      "terminal": {
+        "bytes": 4211,
+        "git_blob": "2f480a8f142a90c792e034dea5de816c152e1f09",
+        "sha256": "c02a686dec279527112cf850cbab7d04bf4faa62186f71dcac187e0d9f977d09"
+      },
+      "timed_out": false,
+      "timeout_seconds": 900
+    }
+  ],
+  "qualification": false,
+  "real_qualified_task_chain_outcomes": 0,
+  "result": {
+    "bytes": 15927,
+    "git_blob": "28fd9e0970a977881971a3e5c2ddaf73f69a58a0",
+    "sha256": "50d43cf8e2b3070733405e646f96eb8e17c7e0734cf8f1a7f4b065e68b463e6c"
+  },
+  "retained_history": {
+    "original_86dd_attempt": "fix101 and separate raw-index Unknown remain original outcomes",
+    "transport_timeouts": "Original MCP timeouts remain in separate observations; later complete original terminal/readback resolves current retrieval without main execution replay",
+    "v4_attempt": "normal failed precondition before fix/fmt; active/unknown guard historical PID array not retained"
+  },
+  "reviewed_at": "2026-11-12T20:50:37.464340+00:00",
+  "source_ref_updates": false,
+  "status": "ORIGINAL_FIX_AND_FMT_SUCCEEDED_WITH_COMPLETE_ACTUAL_POSTIMAGES; FINAL_SOURCE_QUALIFICATION_PENDING",
+  "test_commands_dispatched": 0
+}

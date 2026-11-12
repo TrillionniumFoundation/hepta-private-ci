@@ -1,0 +1,27 @@
+--- APPROVED_CONFIG_V4.json
++++ WAITING_CONFIG_V5.json
+@@ -1,9 +1,9 @@
+ {
+   "format": "hepta-original-scoped-maintenance-approval-v1",
+-  "status": "ROOT_APPROVED_TO_EXECUTE",
+-  "root_execution_approved": true,
+-  "driver_sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9",
+-  "driver_git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731",
++  "status": "HOLD_WAITING_FOR_ROOT_REVIEW",
++  "root_execution_approved": false,
++  "driver_sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
++  "driver_git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+   "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+   "source_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+   "source_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+@@ -186,8 +186,8 @@
+     "sha256",
+     "mode"
+   ],
+-  "waiting_for_actual_records": "Complete actual source-advance RESULT and normal supervisor have been recovered and Root-reviewed. The actual job 1a1d1490a3b-2564-1c26 succeeded, and all three final audits verified. Historical 86dd seed materialization/runtime proofs and tools remain unchanged. Root authorizes one original scoped fix/fmt maintenance execution; current preflight must independently verify the actual files and source. This approval is not maintenance or task-chain qualification.",
+-  "formal_approved_config_created": true,
++  "waiting_for_actual_records": "Actual 86dd seed materialization/runtime proofs and the actual successful 9c4 source-advance proof remain frozen unchanged. V4 failed its unchanged global same-UID build/formatter precondition before any fix/fmt command; that historical attempt did not retain its triggering PID snapshot, so the specific historical PID remains Unknown. V5 only retains the existing process observation before the same rejection check and uses new control/output names. A new current preflight and separate Root-approved create-only APPROVED_CONFIG_V5.json are required. This HOLD does not authorize execution or reuse V4 approval.",
++  "formal_approved_config_created": false,
+   "source_advance": {
+     "job_id": "1a1d1490a3b-2564-1c26",
+     "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",

@@ -1,0 +1,59 @@
+{
+  "approved_config": {
+    "bytes": 9668,
+    "git_blob": "a66ab71a3504f29240da6048ca2c45ca3735e89b",
+    "sha256": "47acb8e9130d497035fad7b90ec0a9c4d0b3277e71c6b9392b75a7107d4599e1"
+  },
+  "config_unchanged_except": "Driver pin, new approval state and accurate explanatory text. All source/inventory/tool/environment/seed/source-advance proof values and budgets are identical.",
+  "current_observation_at": "2026-11-12T20:20:36.411504+00:00",
+  "current_observation_job": "1a1d16b53d3-2564-1c45",
+  "current_observation_supervisor": {
+    "bytes": 952,
+    "git_blob": "3ab1ccbc40e25e9d85cb6919607bfde241cc488e",
+    "sha256": "48b682d837bb4d0d17c1399c1ad97f110c64c04ed56993daf4fff4998f2fb1e9"
+  },
+  "current_process_observation": {
+    "bytes": 863,
+    "git_blob": "702b5be7db4bb633e718b16b9f75362a7bbde59b",
+    "sha256": "d0993ff4d444c68fd728f69039fd9f20ec2e8d64a614eb04d0174b0da0c3cb1a"
+  },
+  "dispatch": "Native remains sole H executor. After create-only staging is confirmed to match these exact pins, dispatch the frozen typed request once. Do not infer success from admission. A lost callback can only reconcile the same original key; no automatic reexecution.",
+  "driver": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "exact_driver_delta": "Only OUT run-v5, CONFIG APPROVED_CONFIG_V5.json and one create-only BUILD_PROCESS_PREFLIGHT observation before the unchanged initial global rejection. Inverse replacements recover all v4 bytes.",
+  "format": "hepta-root-maintenance-v5-final-exact-approval-v1",
+  "guard_unmodified": true,
+  "launcher": {
+    "bytes": 4315,
+    "git_blob": "972319b7e0a5feea19f9ee582fadd6fdfb05023e",
+    "sha256": "bd1a4c958bab046566302f8e385e6fded504def49e0acd77a9550593da1aa08f"
+  },
+  "launcher_unchanged_except": "V4/v4 control-record labels become V5/v5 and the two exact input pins change. Same task-owned coordination lock EX/owner/mode/single-link checks and inherited descriptor across exec. Old originals are never overwritten.",
+  "live_revalidation_required": true,
+  "original_gate_budgets": {
+    "fix": 7200,
+    "fmt": 900,
+    "outer": 9300,
+    "preflight": 600,
+    "record": 300
+  },
+  "original_v4_failure": {
+    "bytes": 5267,
+    "git_blob": "2d385c0fa44fb4ec0b3c0479e398875df94312b4",
+    "sha256": "00965418b56ef9bd001e03414ccf5a3519d5bbaa915761cbf28e07a4c77059d2"
+  },
+  "qualification": false,
+  "reviewed_at": "2026-11-12T20:23:41.465867+00:00",
+  "source_ref_updates_authorized_by_this_control": false,
+  "status": "APPROVED_FOR_ONE_DISTINCT_V5_ORIGINAL_MAINTENANCE_ATTEMPT_AFTER_EXACT_INPUT_STAGING",
+  "test_commands_authorized_by_this_control": false,
+  "typed_request": {
+    "bytes": 4745,
+    "git_blob": "f9c5476935a9fa04e6137e12a5e924916ca4f122",
+    "sha256": "d3da477ed5c38d8e07f6575d78a265e9fe774748b18630a613231fd278efdd6b"
+  },
+  "v4_specific_historical_pid": "Unknown; original triggering array was not retained and current observations do not reconstruct it."
+}

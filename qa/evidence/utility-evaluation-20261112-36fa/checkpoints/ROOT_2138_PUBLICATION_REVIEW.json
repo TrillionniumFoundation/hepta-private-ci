@@ -1,0 +1,51 @@
+{
+  "anchors": {
+    "actual_maintenance_v4_job": "1a1d15cdf42-2564-1c3a",
+    "actual_maintenance_v4_state": "KNOWN_NORMAL_FAILED_PRECONDITION; detailed RESULT retrieval pending at checkpoint",
+    "actual_native_source": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "actual_native_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "actual_source_advance_job": "1a1d1490a3b-2564-1c26",
+    "checkpoint_observation_time": "2026-11-12 20:12:04 UTC",
+    "evidence_branch": "codex/utility-eval-evidence-20261112-36fa",
+    "evidence_file_count": 2138,
+    "evidence_head": "65fa6ecba8573854bddd3e79db7662a55b106d33",
+    "evidence_leaf": "f8769650606a14a871c053e864ae923725f887c2",
+    "evidence_parent_trees": {
+      "leaf": "f8769650606a14a871c053e864ae923725f887c2",
+      "parent-evidence": "f954705b81c7fb286bc119dfc73285d81c30d0c9",
+      "parent-qa": "c679161c5ae1b7ebb55bb2b41c9f3eda9d464f61",
+      "parent-root": "089dde0da5bc052acda7af730ff4252b55e6fecf"
+    },
+    "evidence_root": "089dde0da5bc052acda7af730ff4252b55e6fecf",
+    "pr_body_sha256": "7adbdf10b6214da3abb7f4d94eeadcfacc98aa836253a8ab185a0acbe6ae0a85",
+    "pr_number": 6203,
+    "pr_updated_at": "2026-11-12T20:14:31Z",
+    "readme": {
+      "bytes": 28206,
+      "sha": "dd7964c114f405c9d68df1e8d80f355e7cfdda99",
+      "sha256": "b66c250296a6cb194d393cb479f5c4b20754c4b1b2066056ecbd98f0f3fe1166"
+    },
+    "real_qualified_task_chain_outcomes": 0,
+    "source_branch": "codex/utility-evidence-closure-20261112-36fa",
+    "source_head": "c0f78493f815780f68b9bf5e390a21314d79311f"
+  },
+  "checks": {
+    "all_2049_previous_paths_retained": true,
+    "all_2138_file_mappings_exact_recursive_readback": true,
+    "canonical_commit_parent_and_tree_readback": true,
+    "draft_pr_exact_body_readback_equal": true,
+    "draft_true_merged_false": true,
+    "evidence_ref_compare_and_swap_force_false": true,
+    "final_evidence_ref_readback_equal": true,
+    "independent_all_directory_merkle_matches_api_trees": true,
+    "only_current_readme_replaced_with_old_bytes_archived": true,
+    "previous_exact_pr_body_archived": true,
+    "recursive_tree_entries": 2410,
+    "source_ref_remains_exact_c0f": true,
+    "tree_read_truncated": false
+  },
+  "format": "hepta-root-2138-checkpoint-publication-review-v1",
+  "limits": "This checkpoint records actual source advancement and a known failed maintenance precondition, with the specific error and original detailed RESULT still awaiting transport delivery at the recorded observation time. It does not qualify fix/fmt, tests, adoption or net utility.",
+  "reviewed_at": "2026-11-12T20:16:23.396716+00:00",
+  "status": "EVIDENCE_AND_DRAFT_PR_PUBLISHED_WITHOUT_SOURCE_REF_UPDATE"
+}

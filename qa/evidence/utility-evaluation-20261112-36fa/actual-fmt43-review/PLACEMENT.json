@@ -1,0 +1,76 @@
+{
+  "format": "hepta-actual-fmt43-review-placement-v1",
+  "status": "STATIC_REVIEW_COMPLETE_NO_NONFORMAT_SEMANTIC_DELTA_IDENTIFIED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "exact_source_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "exact_commit_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "actual_transition_stage": "fmt.after",
+  "original_native_job": "1a1d16f37be-2564-1c4a",
+  "original_native_normal_exit_observed_by_root": "2026-11-12T20:27:30.671Z",
+  "original_transition": {
+    "raw_json": {
+      "bytes": 1236802,
+      "sha256": "d14a414ea9853357e5260eadf523a9e09117e1ce19f674ff5a96baafe6a36082",
+      "computed_git_blob": "600932e6e7c974005a31272eb0c3343ef2e731fc",
+      "separately_uploaded": false
+    },
+    "durable_gzip_git_blob": "9d59f7236fa59884d5cb669afcdff6b205e90327",
+    "durable_gzip_base64_companion_git_blob": "d214d07a5ae9ddc569360f8ba33a83b992b18f56",
+    "base_inventory_sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d",
+    "after_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+    "native_reported_after_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc"
+  },
+  "artifacts": [
+    {
+      "name": "REVIEW.md",
+      "bytes": 12716,
+      "sha256": "f7e501a7f34daec20aff267aa6d4c2f6db52ddccb7be43820bf27d639230a0b8",
+      "git_blob": "4be399c11ac6e3c8edc68f8f50637ee53f1de3a3",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/actual-fmt43-review/REVIEW.md",
+      "full_git_text_readback_equal": true
+    },
+    {
+      "name": "SEMANTIC_REVIEW.json",
+      "bytes": 97240,
+      "sha256": "8fcaa71a99a024f08bf40ec51554ebb2ddcb43bce4d931cbef32b172920bd4ba",
+      "git_blob": "d4c097d3b0a3c1bdd35b70146c89a5475f34aad1",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/actual-fmt43-review/SEMANTIC_REVIEW.json",
+      "full_git_text_readback_equal": true
+    },
+    {
+      "name": "analysis-records.json.gz.b64",
+      "bytes": 169385,
+      "sha256": "75fae56ab2b890c424a53135721154224122cb4c3ba7f6953cc6fe5c2669ce2a",
+      "git_blob": "2c90fc80db1fbda6d63e8dd297484a6f9882134a",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/actual-fmt43-review/analysis-records.json.gz.b64",
+      "full_git_text_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/actual-fmt43-review/MANIFEST.json",
+      "name": "MANIFEST.json",
+      "bytes": 3368,
+      "sha256": "5b4a8bfeb153538d0921e9b541bf07aa1c1995f956977cb71c617024b48b6fe8",
+      "git_blob": "743a4331d93bf2ece968a55a69474faeeb6c2072",
+      "full_git_text_readback_equal": true
+    }
+  ],
+  "local_directory": "/tmp/hepta-36fa-fmt43-audit",
+  "review_facts": {
+    "actual_files_verified": 43,
+    "actual_raw_sides_verified": 86,
+    "macro_calls_equal_all_files": true,
+    "assertion_invocations_unchanged": 122,
+    "import_visibility_alias_attribute_bindings_equal": true,
+    "module_path_name_attribute_bindings_equal": true,
+    "single_tail_expression_blocks_individually_reviewed": 15,
+    "unclassified_body_token_changes": 0,
+    "source_or_ref_writes": false,
+    "native_or_H_calls": 0,
+    "cargo_formatter_test_or_gate_executions": 0
+  },
+  "limitations": [
+    "Static actual-byte review only; not a Rust AST/compiler or runtime proof.",
+    "Original V5 native fix/fmt results remain separate evidence; no test qualification is inferred.",
+    "Final source-sensitive CALLERS/QA updates and exact-source qualification remain pending."
+  ]
+}

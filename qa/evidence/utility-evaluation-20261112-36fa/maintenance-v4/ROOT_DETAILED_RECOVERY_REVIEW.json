@@ -1,0 +1,71 @@
+{
+  "actual_fix_fmt_dispatches": 0,
+  "actual_lease": {
+    "bytes": 813,
+    "git_blob": "54049d91f44c313322cdabac20d2cdc3d99e29a1",
+    "sha256": "cbda6e77367a56825f5e9441a4f74d035c486a4d27558b04809194fa284d1cd0"
+  },
+  "actual_tests": 0,
+  "current_readonly_observation": {
+    "active": [],
+    "job_id": "1a1d16b53d3-2564-1c45",
+    "normal": {
+      "bytes": 952,
+      "git_blob": "3ab1ccbc40e25e9d85cb6919607bfde241cc488e",
+      "sha256": "48b682d837bb4d0d17c1399c1ad97f110c64c04ed56993daf4fff4998f2fb1e9"
+    },
+    "observed_at": "2026-11-12T20:20:36.411504+00:00",
+    "result": {
+      "bytes": 863,
+      "git_blob": "702b5be7db4bb633e718b16b9f75362a7bbde59b",
+      "sha256": "d0993ff4d444c68fd728f69039fd9f20ec2e8d64a614eb04d0174b0da0c3cb1a"
+    },
+    "scope": "New time-specific observation only; successor keeps unchanged live guard.",
+    "unreadable": []
+  },
+  "direct_original_result_read": {
+    "bytes": 7491,
+    "git_blob": "8ccf9ace918328ddc6773b671cba8a8fb9cb22a2",
+    "sha256": "d7a67a18776128b74d9fa74d64e2b67ac9e81d4d873cbf8d2d05b4da01f2da80"
+  },
+  "failure_job": "1a1d15cdf42-2564-1c3a",
+  "final_git_metadata_unchanged": true,
+  "final_source": {
+    "complete": true,
+    "inventory": {
+      "bytes": 5611182,
+      "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+      "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d"
+    },
+    "postimages": {
+      "HEAD_working_patch_bytes": 0,
+      "HEAD_working_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "all_actual_physical_leaf_count": 15188,
+      "all_actual_physical_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+      "change_count": 0,
+      "paths": [],
+      "tree_scope": "Every supported physical source leaf, including untracked/ignored files; no Git tree/ref was written.",
+      "untracked_are_in_exact_transition_packet": true
+    }
+  },
+  "format": "hepta-root-maintenance-v4-detailed-recovery-and-concurrency-review-v1",
+  "historical_pid_array_retained": false,
+  "historical_specific_pid": "Unknown. Original code checked before writing ENVIRONMENT_PREFLIGHT; do not infer an exact PID, active-vs-unreadable category or continuity from later observations.",
+  "lease_original_read": {
+    "bytes": 1560,
+    "git_blob": "423e0b4eb7a23aa9f2bf075a24b8e21c9926208d",
+    "sha256": "babe15761f5c4640feb01033808e9c3c64c6a1470449eee9d50cc1d74f3a14f3"
+  },
+  "original_inputs_unchanged": 17,
+  "qualification": false,
+  "result": {
+    "bytes": 5267,
+    "git_blob": "2d385c0fa44fb4ec0b3c0479e398875df94312b4",
+    "sha256": "00965418b56ef9bd001e03414ccf5a3519d5bbaa915761cbf28e07a4c77059d2"
+  },
+  "reviewed_at": "2026-11-12T20:27:22.902463+00:00",
+  "specific_failed_predicate": "not active_matching_processes and not unreadable_matching_processes; original initial environment guard rejected before fix/fmt.",
+  "status": "KNOWN_PRECONDITION_FAILURE_WITH_COMPLETE_ORIGINAL_RESULT_RECOVERED",
+  "successor_scope": "V5 adds a create-only record of the original initial process observation before the identical rejection check, and uses fresh control/output names. All original gates, budgets, source/proof/tool/environment bindings and strict full conservation checks remain unchanged. Root approval is separate and no result is inferred from preparation.",
+  "transport_provenance": "Two original-operation page retrievals and one operation_status timed out without payload. A separate direct bounded binary_read recovered the original immutable RESULT at a fixed version in one complete chunk. It is a new read observation, not replay of the original operation or maintenance. All timeout records are preserved."
+}

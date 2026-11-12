@@ -1,0 +1,99 @@
+{
+  "actual_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "capture_packet": {
+    "bytes": 626888,
+    "git_blob": "711f4f90220c228850023947792cb407d156c6f8",
+    "name": "ACTUAL_73_FILES.json.gz",
+    "parts": [
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 0,
+        "decoded_sha256": "7582d480f5823d2c8e2205b095068b6eb92e1456fab15a467ab233cca855a90b",
+        "git_blob": "e2102115173c69f4c38d33775b631aca4305f13b",
+        "name": "ACTUAL_73_FILES.json.gz.part-001.b64",
+        "sha256": "3702b7f3609fa16116abd3fd34f65288835e4e9b549f11ca2a8ac4a4a87e8e47"
+      },
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 262144,
+        "decoded_sha256": "754952021160b89b329f8efdd7d355fbc093e599c5a7761989d92eb870a4d177",
+        "git_blob": "a2c99a08597e92cbc473bb6456b8da9002ffd02b",
+        "name": "ACTUAL_73_FILES.json.gz.part-002.b64",
+        "sha256": "848b58616ab24b52e3db4a3964fd001257fdb648483eca3e70300a99560d99cb"
+      },
+      {
+        "bytes": 136801,
+        "decoded_bytes": 102600,
+        "decoded_offset": 524288,
+        "decoded_sha256": "ba7c2498736b47e9ade4d891c2d3558bdfadf7f49447d941bc5834ac60ced6ea",
+        "git_blob": "ba6f3171e4672ae8b1ac1a26f843d27a038cc21e",
+        "name": "ACTUAL_73_FILES.json.gz.part-003.b64",
+        "sha256": "2ef9f9192c14b07ed5e5289435f772a7175d34669a044c7864b8f952daae5be3"
+      }
+    ],
+    "raw": {
+      "bytes": 3018618,
+      "git_blob": "1399f73925ee43aff84829c9ae681d0bde017e1e",
+      "sha256": "44477f7ce5ec90f2d052911745fb3b244111155a9539a22365c545b47e86c9a1"
+    },
+    "sha256": "760d8a79a868c3980baccfa45937701897852290d5e11a2aa07118f47f889df5"
+  },
+  "captured_paths": 73,
+  "complete_inventory": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "final_audits": [
+    {
+      "check": "full_source_git_and_lock",
+      "inventory": {
+        "bytes": 5614211,
+        "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+        "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+      },
+      "status": "verified"
+    },
+    {
+      "check": "all_original_inputs",
+      "count": 17,
+      "status": "verified"
+    }
+  ],
+  "format": "hepta-root-actual-sh73-normal-and-result-review-v1",
+  "job_id": "1a1d1880477-2564-1c56",
+  "limits": [
+    "Original collector succeeded; transport timeout is a separate observation, not a failed collector.",
+    "Current evidence checkpoint must not claim the original 626888-byte packet has been fully copied until its missing fixed-version chunks are recovered.",
+    "The next extractor and actual-source integration remain separately reviewed and unexecuted at this observation."
+  ],
+  "normal": {
+    "bytes": 909,
+    "git_blob": "8146d2ad99259a1965038f01dd3f8f186cd3e5a0",
+    "sha256": "1ad13e624fa88b3509d5519c26335c92449d803ff775f8f14068d65dbbfb106e"
+  },
+  "original_capture_status": "CAPTURED_ACTUAL_POSTFMT_REVIEW_REQUIRED",
+  "qualification": false,
+  "real_qualified_task_chain_outcomes": 0,
+  "result": {
+    "bytes": 22007,
+    "git_blob": "aef06c019dd96f2a8e493fa524e09183a4b215bf",
+    "sha256": "9ef6b7201eadf1a77ca3a5fda9943f75e7202dedd5b725ad64d22ffdd23a6283"
+  },
+  "reviewed_at": "2026-11-12T21:00:11.915885+00:00",
+  "root_complete_packet_readback": false,
+  "source_identity": {
+    "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "status": "M codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\n M codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_client.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_context.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_state.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs",
+    "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+  },
+  "status": "KNOWN_NORMAL_SUCCESS_AND_COMPLETE_RESULT; ORIGINAL_CAPTURE_PACKET_TRANSFER_PENDING",
+  "stdout": {
+    "bytes": 455,
+    "git_blob": "bedaec768b9787e18ace658a7ca99233cf25aa8e",
+    "sha256": "ab85d5f13e4664a90293368245f674b9f5649f4a4488184646ead3f884ff914c"
+  },
+  "test_commands_dispatched": 0
+}

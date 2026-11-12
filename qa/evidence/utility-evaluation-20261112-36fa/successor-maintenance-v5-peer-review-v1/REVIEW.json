@@ -1,0 +1,94 @@
+{
+  "all_other_config_values_identical": true,
+  "all_other_driver_bytes_identical_after_inverse_delta": true,
+  "at": "2026-11-12T20:21:46.200342+00:00",
+  "base_config": {
+    "bytes": 9384,
+    "git_blob": "ec0efd8dfbbe89d91eb36a0b35e6abe593ebdaaf",
+    "sha256": "5eae92aa481694e1df88220471ad3c4ca10a84c83e12b505ebaa1c64d7d4f6ab"
+  },
+  "base_driver": {
+    "bytes": 62957,
+    "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731",
+    "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9"
+  },
+  "candidate_driver": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "candidate_hold_config": {
+    "bytes": 9539,
+    "git_blob": "7db1d1c4ad1054f4450bc1119e22a2bcca80980a",
+    "sha256": "1f072d2af6d86344b59f25552dee74e2b292c1683790f1261665315a6c8a1567"
+  },
+  "config_changed_keys": [
+    "driver_git_blob",
+    "driver_sha256",
+    "formal_approved_config_created",
+    "root_execution_approved",
+    "status",
+    "waiting_for_actual_records"
+  ],
+  "controller_main_executions": 0,
+  "definitions": {
+    "byte_and_ast_identical": 49,
+    "changed": "environment_preflight",
+    "removing_one_new_jwrite_restores_original_ast": true,
+    "total": 50
+  },
+  "exact_driver_delta": [
+    "OUT run-v4 -> run-v5",
+    "CONFIG APPROVED_CONFIG_V4.json -> APPROVED_CONFIG_V5.json",
+    "One jwrite BUILD_PROCESS_PREFLIGHT.json with the original active value, immediately after active_build_processes and before the unchanged rejection check"
+  ],
+  "format": "hepta-maintenance-v5-observation-only-independent-peer-v1",
+  "h_calls": 0,
+  "historical_boundary": {
+    "specific_historical_pid": "Unknown; not inferred from later observations",
+    "v4_fix_and_fmt_started": false,
+    "v4_status": "FAILED_PRECONDITION",
+    "v5_approval": "HOLD; this peer does not grant native execution",
+    "v5_current_guard_result": "Unobserved at this static review"
+  },
+  "historical_v4_result": {
+    "bytes": 5267,
+    "git_blob": "2d385c0fa44fb4ec0b3c0479e398875df94312b4",
+    "sha256": "00965418b56ef9bd001e03414ccf5a3519d5bbaa915761cbf28e07a4c77059d2"
+  },
+  "original_guard": {
+    "active_build_processes_byte_identical": true,
+    "exceptions_or_allowances_added": false,
+    "initial_rejection_predicate_unchanged": true,
+    "per_stage_guard_and_record_unchanged": true
+  },
+  "qualification": false,
+  "recording": {
+    "historical_run_v4_overwritten": false,
+    "initial_environment_preflight_static_call_sites": 1,
+    "initial_preflight_static_call_sites": 1,
+    "new_record_name_occurs_once": true,
+    "output_directory": "new run-v5, existing destination rejected",
+    "write_failure_does_not_bypass_guard": true,
+    "writer": "unchanged O_CREAT|O_EXCL|O_NOFOLLOW, fsync, exact readback"
+  },
+  "reviewed_manifest": {
+    "bytes": 2427,
+    "git_blob": "39358d031b49a3b292545e99a15bd7bffe9f82b1",
+    "sha256": "3933c05856133853f39090a477f7a3781511fa92ad351043e1166704019864d4"
+  },
+  "scope": "Exact local bytes, AST, and config comparison only; no controller/module execution, native command, or source mutation.",
+  "status": "NO_BLOCKING_DELTA_FOUND_IN_SCOPED_STATIC_REVIEW",
+  "unchanged_controls": [
+    "actual 9c4 source, tree, parents and full inventory",
+    "86dd historical materialization and runtime seed proof pins",
+    "actual successful 9c4 source-advance proof",
+    "six executable source-entry pins",
+    "full source/Git/input and exact postimage collection",
+    "original raw Git equality, archive diff autoRefreshIndex=false",
+    "environment and tool pins, 32 GiB minimum target free space",
+    "original scoped fix 7200 seconds, then fmt 900 seconds",
+    "preflight 600 seconds and evidence 300 seconds",
+    "no tests, no remote refs, unchanged original execute_logged"
+  ]
+}

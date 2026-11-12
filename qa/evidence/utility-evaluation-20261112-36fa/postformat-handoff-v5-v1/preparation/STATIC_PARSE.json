@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-12T20:41:39.771676+00:00",
+  "driver": {
+    "bytes": 20431,
+    "git_blob": "ab75b51bf5a297b01504f34cd207fd5845ac5979",
+    "sha256": "e00c715a41bbf3a75c283ed45664e8e9436437edc49238bb5010109577baa694"
+  },
+  "format": "hepta-postformat-collector-preparation-static-parse-v1",
+  "qualification": false,
+  "runtime_proven": false,
+  "self_review_delta": "Retain and revalidate the executing collector bytes among all original inputs; earlier c797 draft preserved and never executed.",
+  "source_or_h_execution": false,
+  "static_checks": [
+    "Python AST parse",
+    "compile-to-code-object only; no module/main execution",
+    "configuration original record identities derived from actual local V5 records and byte-pinned ARTIFACTS metadata"
+  ]
+}

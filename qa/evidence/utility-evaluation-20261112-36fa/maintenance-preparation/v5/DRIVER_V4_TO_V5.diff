@@ -1,0 +1,21 @@
+--- driver-v4.py
++++ driver-v5.py
+@@ -9,8 +9,8 @@
+ 
+ REPO=pathlib.Path("/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1")
+ EVIDENCE=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1")
+-OUT=EVIDENCE/"run-v4"
+-CONFIG=EVIDENCE/"APPROVED_CONFIG_V4.json"
++OUT=EVIDENCE/"run-v5"
++CONFIG=EVIDENCE/"APPROVED_CONFIG_V5.json"
+ INVENTORY_FILE=EVIDENCE/"inventory-driver-v2.py"
+ ENVIRONMENT_FILE=EVIDENCE/"MAINTENANCE_STARTED.original.json"
+ GIT="/usr/bin/git"
+@@ -630,6 +630,7 @@
+     check(cfg.get("formatter_tool_files")==restored_formatter and formatter_tools==restored_formatter,
+           "approved actual external formatter bytes/paths/modes")
+     active=active_build_processes()
++    jwrite("BUILD_PROCESS_PREFLIGHT.json",active)
+     check(not active["active_matching_processes"] and not active["unreadable_matching_processes"],
+           "active/unknown same-UID Cargo/formatter process; no competing maintenance")
+     record={"historical_environment":HISTORICAL_ENV_PIN,"effective_explicit_environment":desired,

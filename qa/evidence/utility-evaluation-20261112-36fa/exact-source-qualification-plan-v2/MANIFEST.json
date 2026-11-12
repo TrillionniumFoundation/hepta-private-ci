@@ -1,0 +1,48 @@
+{
+  "format": "hepta-exact-source-qualification-plan-v2-manifest",
+  "status": "HOLD_FINAL_SOURCE_AND_REVIEW_REQUIRED",
+  "supersedes_without_deleting": {
+    "plan_v1": "5961ab4f8ebad3970c0112f1a1f16bfdeda82edf",
+    "handoff_v1": "2daefc6a2b7b8da4538f11088e9f52cf98396800"
+  },
+  "scope": "Historical163 count correction plus precise final-format sequencing; original complete library argv/four regressions/budgets/test sets preserved. No H/main/gate execution.",
+  "files": {
+    "PLAN.json": {
+      "bytes": 32246,
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619",
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+    },
+    "PLAN_V1_TO_V2.diff": {
+      "bytes": 5586,
+      "sha256": "dba8b9667660e781a3dcc9663773d71b11fc28562ad19addcfb485fcf6a99f3e",
+      "git_blob": "4bd357a4318049613412049b8d6b536257a9c5e7"
+    },
+    "HANDOFF.md": {
+      "bytes": 16385,
+      "sha256": "7b103e6ca5359ceaed344a56b8a4cfd69ac6e84a14a5adb6f5c3a4af980eceb6",
+      "git_blob": "6d9a0f87f5818ff5f4576ed817a7ada0221c9076"
+    },
+    "HANDOFF_V1_TO_V2.diff": {
+      "bytes": 9882,
+      "sha256": "659ce3dfe6641cbccf30a8f89ee29dac2d513ff354e9500fca8f41a095175c4c",
+      "git_blob": "498abdb423cff6101126fe81c0e4641a4ebd7c5c"
+    },
+    "FORMAT_ORDER.md": {
+      "bytes": 5596,
+      "sha256": "773226ad428062834771cb4d5c80efbed90533cb90df807f2412becbbea61dfe",
+      "git_blob": "b052ff846e549fe0e434d3bb6bab1c29de271e48"
+    },
+    "STATIC_REVIEW.json": {
+      "bytes": 1610,
+      "sha256": "1c7afd0c67846c87ea5181390d302a52c45f8982a677c2ce0251c889a4c03998",
+      "git_blob": "0884b8bf38faae6e82d005ffef587d47f318a04f"
+    }
+  },
+  "source_pins": {
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "scripts/format.py": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+  },
+  "actual_final_counts_unobserved": true,
+  "new_test_commands": 0,
+  "cargo_or_h_calls": 0
+}

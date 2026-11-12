@@ -1,0 +1,65 @@
+{
+  "bootstrap_change": "Only approved config None replaced by exact approved pin; native approved-config basename remains the reviewed template APPROVED_CONFIG.json.",
+  "capture_seconds": 300,
+  "files": [
+    {
+      "bytes": 5476,
+      "git_blob": "52712057e27984b2abde05179050bcf2a06c97f0",
+      "name": "ACTUAL_BOOTSTRAP.py",
+      "sha256": "4829ae3a8145e0d9ef4e757df204f933d5a3d8e460bd65ee94c8f33c5c6661bb"
+    },
+    {
+      "bytes": 68468,
+      "git_blob": "fa430b444c100c4e2074e25ded61bac8043c203b",
+      "name": "BOOTSTRAP_PAYLOAD.json",
+      "sha256": "c96e04bebfefab4f09b8038c5f7484205d44aa9b10af7147e85f611f19f0f12b"
+    },
+    {
+      "bytes": 74315,
+      "git_blob": "3739489af428a192ccfca35648288a026aff15bc",
+      "name": "ACTUAL_PROCESS_INPUT.json",
+      "sha256": "c6a0be846d4c41c2ec349a75c61c3bdc6e2c3582468fa5957a003eff818d173f"
+    }
+  ],
+  "format": "hepta-postformat-exact-launch-static-v1",
+  "native_execution": false,
+  "outer_seconds": 420,
+  "payload_original_files": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 4304,
+      "git_blob": "f774519bd146ca59e2533c72e54c7a899d19c525",
+      "sha256": "56dcf54467f4706c58e0c46bca97cfeda98b7bceffd0d05600ea50a9278e8c68"
+    },
+    "CAPTURE_PATHS.txt": {
+      "bytes": 4496,
+      "git_blob": "66a19f69967e4eb2a48488f27110ac69a2f1c8b4",
+      "sha256": "e54fd7d8c47e9fac104598c4e5ed194982d4f44f75bf7dbadb26f12f9123ff2f"
+    },
+    "POSTFORMAT_HANDOFF_REQUEST.json": {
+      "bytes": 20972,
+      "git_blob": "3480e1788552c5613ddb996459b0df070247327e",
+      "sha256": "ffa7132a6bfc6db19e0cd8d067caa4d5cdca516b4d146d5e1a07aac2ac98da39"
+    },
+    "V5_NORMAL_SUPERVISOR.original.json": {
+      "bytes": 956,
+      "git_blob": "2bb8699bae213bd97926beb6589df08e7813c79a",
+      "sha256": "c313aece99eb8d3d7eb95c9d4997b81808c8404062371ab3dc52abb9badcd675"
+    },
+    "collector.py": {
+      "bytes": 20431,
+      "git_blob": "ab75b51bf5a297b01504f34cd207fd5845ac5979",
+      "sha256": "e00c715a41bbf3a75c283ed45664e8e9436437edc49238bb5010109577baa694"
+    }
+  },
+  "retention_seconds": 60,
+  "source_writes": false,
+  "typed_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ]
+}

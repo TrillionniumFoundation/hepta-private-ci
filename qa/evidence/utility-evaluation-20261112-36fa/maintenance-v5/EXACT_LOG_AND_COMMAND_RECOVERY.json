@@ -1,0 +1,48 @@
+{
+  "files": [
+    {
+      "bytes": 80922,
+      "git_blob": "1f5b207331fb37e96143c0013589f457b8e4d92a",
+      "name": "COMPLETE_STDOUT.log",
+      "provenance": "Actual original supervisor stdout, contiguous six exact ranges; every returned hex/text pair equal, terminal size/eof matched.",
+      "sha256": "55afcfaeb095532ff5fda588ecf2b28fc60d5b18725925ee91149f0b3d78d9a4"
+    },
+    {
+      "bytes": 79195,
+      "git_blob": "0e7bdbb777024509ddb0968221c838e090b54dfe",
+      "name": "fix.raw.recovered.log",
+      "original_name": "fix.raw.log",
+      "provenance": "Exact byte slice of complete original supervisor stdout; size/SHA256/Git equal actual ARTIFACTS and execute_logged log pins; not a second native file read.",
+      "sha256": "ffa58c24b9b5226a8a618f02bbc80802d2c2fc3eeeea3b6e3c72eea23511fbc2",
+      "stdout_end": 80008,
+      "stdout_start": 813
+    },
+    {
+      "bytes": 215,
+      "git_blob": "13c0ff49c8edea3023404e080c2ea79987189f77",
+      "name": "fix.execute_logged.exact-recovered.json",
+      "original_name": "fix.execute_logged.original.json",
+      "provenance": "Exact recovery via original jbytes serializer from complete actual stage execution value; all original ARTIFACTS byte/Git/SHA pins match; not a new execution or second native read.",
+      "sha256": "29ad21c6d46e3831bb4880cacc9a138c13c49c4a6785b0dd7fc65ea69695328a"
+    },
+    {
+      "bytes": 211,
+      "git_blob": "d25d08516250c5a01853b778852340de8c3fea41",
+      "name": "fmt.execute_logged.exact-recovered.json",
+      "original_name": "fmt.execute_logged.original.json",
+      "provenance": "Exact recovery via original jbytes serializer from complete actual stage execution value; all original ARTIFACTS byte/Git/SHA pins match; not a new execution or second native read.",
+      "sha256": "576857307006836e4ec752735f3fd7a22d7bb177077b98c13184a3f76d29333a"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "name": "fmt.raw.exact-recovered.log",
+      "original_name": "fmt.raw.log",
+      "provenance": "Unique empty byte sequence fixed by observed original log_bytes=0 and all ARTIFACTS hashes; no new native read.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "format": "hepta-maintenance-v5-exact-byte-recovery-v1",
+  "new_execution": false,
+  "original_job": "1a1d16f37be-2564-1c4a"
+}

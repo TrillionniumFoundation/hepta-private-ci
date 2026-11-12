@@ -1,0 +1,98 @@
+{
+  "actual_postimages": {
+    "bytes": 1236802,
+    "git_blob": "600932e6e7c974005a31272eb0c3343ef2e731fc",
+    "sha256": "d14a414ea9853357e5260eadf523a9e09117e1ce19f674ff5a96baafe6a36082"
+  },
+  "all_original_encoded_parts_matched": 5,
+  "base": {
+    "bytes": 5611182,
+    "git_blob": "07b1d331bcc1d84c8483c3b056e88682f9252cd1",
+    "sha256": "c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d"
+  },
+  "changed_rows": 43,
+  "format": "hepta-exact-postformat-inventory-recovery-v1",
+  "gzip": {
+    "bytes": 1262815,
+    "git_blob": "978a7eaa34651b1d2921785142c616ee2b154b56",
+    "sha256": "c588c937e2d8992f99674665ee3a8d98a4d89fd96a3f5b6d6b7e51000ccfc5b9"
+  },
+  "head_preserved": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "head_tree_preserved": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "limits": "Exact recovery of previously observed native output, not a new native full-inventory download or independent task-utility evaluation. The separate SH collector must still read actual current 73 files and verify complete source stability before/final source use.",
+  "method": "Complete retained c006 pre-format inventory plus all 43 actual original before/after rows and raw bytes, unchanged remaining rows, and the exact original 511818 compact serializer and porcelain status convention. One candidate only.",
+  "parts": [
+    {
+      "original": {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 0,
+        "decoded_sha256": "b343ee8ba1509e8c382e8439319bc8288e4eb3ba6d34abc421807ad185610530",
+        "git_blob": "992d3387cc1ef98c988ccc64d6869ac8ad5ef628",
+        "name": "fmt.after.inventory.json.gz.part-001.b64",
+        "sha256": "4384c0da41b41ff0f1ed697fd00d6a75be45710cce831b38514d839fbed2f377"
+      },
+      "recovered_file": "final.inventory.json.gz.part-001.b64"
+    },
+    {
+      "original": {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 262144,
+        "decoded_sha256": "35b4a93b194183ea011178b5c57c85c2b8b3ad5866c393953f17d3c72c9de8f9",
+        "git_blob": "5c01088d6ee5abe315fba6afa40b2cc4244b1e03",
+        "name": "fmt.after.inventory.json.gz.part-002.b64",
+        "sha256": "9a3a3dc6fb7e70589b2a25bd5bc329b87a9803e793f9ce3d86e4b7305f8601d5"
+      },
+      "recovered_file": "final.inventory.json.gz.part-002.b64"
+    },
+    {
+      "original": {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 524288,
+        "decoded_sha256": "ed6b8dc88fc460fc1cb8290b9f18b3e4b844da9aa9915b724b88583e49be5999",
+        "git_blob": "9a6852f317d5840bb3d61909f6bb0cb85bb1c5e2",
+        "name": "fmt.after.inventory.json.gz.part-003.b64",
+        "sha256": "a961092a476de41affacb8db3a80187dd81e3727e5f8383e6c1603cbf1c8543f"
+      },
+      "recovered_file": "final.inventory.json.gz.part-003.b64"
+    },
+    {
+      "original": {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 786432,
+        "decoded_sha256": "c663db97bba62ac179534113e888c08014ebe726f614ba9e4a09b0ee58a4f0b0",
+        "git_blob": "952fff193519a28af721561bc6a43087c6bd78c6",
+        "name": "fmt.after.inventory.json.gz.part-004.b64",
+        "sha256": "b158d6b8eed0e99bd394294f1ae57aac36e54b575ef5111205c42cb19026bfee"
+      },
+      "recovered_file": "final.inventory.json.gz.part-004.b64"
+    },
+    {
+      "original": {
+        "bytes": 285653,
+        "decoded_bytes": 214239,
+        "decoded_offset": 1048576,
+        "decoded_sha256": "96a882c84145e2d6b44e011dea24f99da0c6f180fe381b9aca9f9790f4dabbcb",
+        "git_blob": "7f9979f3fb9ad4d561eef235478590564e5b770f",
+        "name": "fmt.after.inventory.json.gz.part-005.b64",
+        "sha256": "e5491d329f56ba526972a606ac2a62c1506b94df86b21813822a0cbec5d3e071"
+      },
+      "recovered_file": "final.inventory.json.gz.part-005.b64"
+    }
+  ],
+  "physical_rows": 15188,
+  "physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "qualification": false,
+  "raw": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "source_status_preserved": "M codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\n M codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_client.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_context.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_state.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs",
+  "source_unchanged_by_this_analysis": true,
+  "status": "ONE_CANDIDATE_MATCHED_ALL_ORIGINAL_RAW_GZIP_AND_PART_PINS",
+  "unchanged_rows": 15145
+}

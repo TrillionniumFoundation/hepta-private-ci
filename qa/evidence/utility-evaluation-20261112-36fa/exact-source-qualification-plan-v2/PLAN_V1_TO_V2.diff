@@ -1,0 +1,57 @@
+--- qualification-plan-v1/PLAN.json
++++ qualification-plan-v2/PLAN.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema": "hepta.utility.exact-source-qualification-plan.v1",
++  "schema": "hepta.utility.exact-source-qualification-plan.v2",
+   "prepared_at_utc": "2026-11-12 19:32:52 UTC",
+   "state": "HOLD_FINAL_SOURCE_AND_REVIEW_REQUIRED",
+   "scope": "Read-only recovery of existing qualification commands, budgets and evidence dependencies. No execution, no new tests, no new gate, no source or ref mutation.",
+@@ -30,7 +30,7 @@
+     },
+     "actual_c0f_outer_pipeline_input": {
+       "git_blob": "d64b521f2cfaa36039d0b4a2b4d7a5774433f0b1",
+-      "purpose": "Evidence for original ordering/budgets/coverage; do not replay its historical environment or maintenance source pins verbatim."
++      "purpose": "Evidence for original command ordering/budgets and historical observations; do not replay historical environment or maintenance source pins, and do not inherit its fixed 163-count assertion for the final source."
+     },
+     "reviewed_source_pins": {
+       "ref": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+@@ -167,16 +167,17 @@
+       "minimum_tests": 1,
+       "threads": 2,
+       "required_coverage": {
+-        "executed_unique_tests": 163,
+-        "passed_tests": 163,
+         "required_four": [
+           "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+           "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+           "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+           "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+-        ]
++        ],
++        "final_source_count_policy": "Observe executed unique names and passed/failed/skipped counts from the new fresh JUnit and actual final-source full library inventory. Run the original complete unfiltered library argv. 163 is only the recorded c0f historical count; it is not a target, filter, ceiling or expected final count.",
++        "actual_final_executed_unique_tests": null,
++        "actual_final_passed_tests": null
+       },
+-      "evidence": "Fresh original runner JSON/log + fresh JUnit and collector summary; exact 163 inventory and all four named tests. Do not borrow old 163 PASS.",
++      "evidence": "Fresh original runner JSON/log, fresh JUnit and collector summary, complete final-source library inventory and all four required regression names. Derive actual final counts from that execution. Do not select, truncate or reject the final full-library run merely to reproduce the historical 163; do not borrow old PASS.",
+       "stop_rule": "Failure, missing/stale JUnit, wrong inventory or source change stops later native suites."
+     },
+     {
+@@ -488,6 +489,7 @@
+       "Actual strict-forward source proof",
+       "Actual original scoped maintenance fix7200/fmt900 and complete raw postimages",
+       "Actual formatted-source non-Rust fencing/QA integration and review",
++      "After the last non-Rust integration, one separately recorded original just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f with the unchanged 900-second format budget; review every actual postimage before final freeze. Do not repeat fix or add Cargo tests. If protected bytes change, stop final freeze and reconcile markers against those actual bytes.",
+       "Canonical final commit/tree plus actual clean materialization and complete original inventories",
+       "Frozen exact-source launch input and current dependency/process/resource observations"
+     ],
+@@ -514,7 +516,7 @@
+   "reusable_controls_and_actual_outputs": {
+     "source_gates_5118": "Code can be reused unchanged: fill exact final source_sha/source_tree, pinned driver/helper hash, unique run identity/new paths, budgets unchanged. Its main constructs and validates the full clone inventory; config has no expected-inventory-hash enforcement. A native_ready handoff remains externally reviewed actual evidence, not a truth created by adding a JSON field.",
+     "native_b92": "Code can be reused unchanged with exact --source/paths/suite/fresh Root parent and actual fixed environment. It extracts final workflow arrays. Surrounding exact-source handoff must bind tree and full initial materialization; b92 itself takes SHA, not an expected tree/inventory CLI parameter.",
+-    "eval_existing_original_call": "Use original run(timeout=3600, minimum=1), collector and original 163/four-name checks. Supply final source identity and fresh output paths; actual execution remains required.",
++    "eval_existing_original_call": "Use the original complete unfiltered library argv, run(timeout=3600, minimum=1), collector and the four required names. Derive and record counts from the new fresh JUnit and actual final-source library inventory. The old c0f 163 equality check is historical and is not a final-source gate or selection rule. Supply final source identity and fresh output paths; actual execution remains required.",
+     "historical_outer_pipeline": "Do not blindly replay d64: it embeds historical MAINTENANCE_STARTED, fmt_base and source pins and performs maintenance. Current reviewed maintenance v4 is a distinct prerequisite. Any small successor qualification launcher must preserve these original commands/budgets/order and be reviewed with real final identity/environment.",
+     "source_outputs_that_cannot_be_filled_from_metadata": [
+       "Maintenance terminal and actual formatted postimages",

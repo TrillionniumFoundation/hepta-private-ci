@@ -1,0 +1,87 @@
+{
+  "format": "hepta-actual-fmt43-audit-manifest-v1",
+  "scope": "Read-only semantic review of actual fmt.after Rust postimages, not qualification execution.",
+  "input": {
+    "bytes": 1236802,
+    "sha256": "d14a414ea9853357e5260eadf523a9e09117e1ce19f674ff5a96baafe6a36082",
+    "git_blob": "600932e6e7c974005a31272eb0c3343ef2e731fc"
+  },
+  "input_gzip_blob": "9d59f7236fa59884d5cb669afcdff6b205e90327",
+  "input_gzip_base64_companion_blob": "d214d07a5ae9ddc569360f8ba33a83b992b18f56",
+  "artifacts": [
+    {
+      "name": "REVIEW.md",
+      "bytes": 12716,
+      "sha256": "f7e501a7f34daec20aff267aa6d4c2f6db52ddccb7be43820bf27d639230a0b8",
+      "git_blob": "4be399c11ac6e3c8edc68f8f50637ee53f1de3a3"
+    },
+    {
+      "name": "SEMANTIC_REVIEW.json",
+      "bytes": 97240,
+      "sha256": "8fcaa71a99a024f08bf40ec51554ebb2ddcb43bce4d931cbef32b172920bd4ba",
+      "git_blob": "d4c097d3b0a3c1bdd35b70146c89a5475f34aad1"
+    },
+    {
+      "name": "analysis-records.json.gz.b64",
+      "bytes": 169385,
+      "sha256": "75fae56ab2b890c424a53135721154224122cb4c3ba7f6953cc6fe5c2669ce2a",
+      "git_blob": "2c90fc80db1fbda6d63e8dd297484a6f9882134a"
+    }
+  ],
+  "analysis_records": {
+    "decode": "Remove the one terminal LF from the ASCII companion; strict base64 decode; gunzip. No source file bytes are re-encoded during analysis.",
+    "raw_json": {
+      "bytes": 2638695,
+      "sha256": "db427000c056d08ad070f51cc480f8edc8691188b3e01601c8bbcf7babfbb08b",
+      "git_blob": "bca9d5c8e1c04e3f0b9247ed70596adf68bbdb1e"
+    },
+    "gzip": {
+      "bytes": 127037,
+      "sha256": "5d1fc3352f94d7826f724e127cad131df4597ecedcf21d18c03c260c3b712757",
+      "git_blob": "e9b164a335d34931a7698ae2d1b5417b6b87c237"
+    },
+    "members": [
+      {
+        "name": "review_lexical.py",
+        "bytes": 9136,
+        "sha256": "355fd25c30cbfdd59003f5e9550f0a7c8cc7c2885cfa74c489fa375e2a1f7328",
+        "git_blob": "ac17b54009189870fd165dfab88ce2bf4f9dcbfd"
+      },
+      {
+        "name": "classify_format.py",
+        "bytes": 10073,
+        "sha256": "244a1056e4ff5e2d3ca13445284c8b899364e4973c6b4dc1e2fb66dafda9f092",
+        "git_blob": "a5c5c0c458f0cffd819226dfb236a50a12c407f9"
+      },
+      {
+        "name": "build_report.py",
+        "bytes": 17352,
+        "sha256": "4932c1bf6eff0c85457c2f1b4f2b32348f2ad5bc1fdad71d0ebf279e88e428de",
+        "git_blob": "24047ccdec67c0c0878e60ae3fc7c015aed35723"
+      },
+      {
+        "name": "LEXICAL_REVIEW.json",
+        "bytes": 1147376,
+        "sha256": "6bfc3864018ad34b68e59ff24d1405e1eba31f0250723967857c9a9c6f77bbbe",
+        "git_blob": "57dc3591704ccb049e62a1544b738ae7c4618c69"
+      },
+      {
+        "name": "STRUCTURAL_COMPARISON.json",
+        "bytes": 1035184,
+        "sha256": "ca452c10b193808946f67a525d84ced4f84572d7e07362b4cf71712fec920f2d",
+        "git_blob": "df88c72c58d15bbd787228f91b7a365f346f655b"
+      },
+      {
+        "name": "actual_fmt43.diff",
+        "bytes": 173245,
+        "sha256": "e5626e508da5e57771bdf07f08527053d2d60069a480ecf4133d74324a57b730",
+        "git_blob": "d66368baca4ffc9a987a96e3d069825241ad5599"
+      }
+    ]
+  },
+  "actual_file_count": 43,
+  "source_or_ref_writes": false,
+  "native_or_H_calls": 0,
+  "cargo_formatter_or_gate_executions": 0,
+  "review_status": "No non-format semantic delta identified; qualified deployment status remains unestablished."
+}

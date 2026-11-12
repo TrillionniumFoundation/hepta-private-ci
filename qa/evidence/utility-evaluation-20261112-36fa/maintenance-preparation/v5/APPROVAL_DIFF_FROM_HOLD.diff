@@ -1,0 +1,23 @@
+--- V5-HOLD
++++ V5-Root-approved
+@@ -1,7 +1,7 @@
+ {
+   "format": "hepta-original-scoped-maintenance-approval-v1",
+-  "status": "HOLD_WAITING_FOR_ROOT_REVIEW",
+-  "root_execution_approved": false,
++  "status": "ROOT_APPROVED_TO_EXECUTE",
++  "root_execution_approved": true,
+   "driver_sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+   "driver_git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+   "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+@@ -186,8 +186,8 @@
+     "sha256",
+     "mode"
+   ],
+-  "waiting_for_actual_records": "Actual 86dd seed materialization/runtime proofs and the actual successful 9c4 source-advance proof remain frozen unchanged. V4 failed its unchanged global same-UID build/formatter precondition before any fix/fmt command; that historical attempt did not retain its triggering PID snapshot, so the specific historical PID remains Unknown. V5 only retains the existing process observation before the same rejection check and uses new control/output names. A new current preflight and separate Root-approved create-only APPROVED_CONFIG_V5.json are required. This HOLD does not authorize execution or reuse V4 approval.",
+-  "formal_approved_config_created": false,
++  "waiting_for_actual_records": "Root approves one distinct V5 original scoped maintenance attempt. The complete actual V4 RESULT proves a precondition failure with zero fix/fmt dispatches, unchanged complete source/Git state and original inputs. Its exact triggering PID was not retained and remains Unknown. A new read-only observation at 2026-11-12T20:20:36.411504+00:00 found both original guard arrays empty; this is not a future guarantee. V5 must repeat the unchanged live global guard and all original preconditions, and now records that actual process observation before any rejection. Actual source-advance and historical seed/runtime proof bytes, original commands, budgets, tools and source remain frozen. This approval is not a passing maintenance or task-chain result.",
++  "formal_approved_config_created": true,
+   "source_advance": {
+     "job_id": "1a1d1490a3b-2564-1c26",
+     "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/source-advance-9c4-v1/run/RESULT.json",

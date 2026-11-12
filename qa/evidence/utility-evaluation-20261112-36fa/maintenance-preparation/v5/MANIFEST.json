@@ -1,0 +1,56 @@
+{
+  "format": "hepta-maintenance-v5-observation-only-preparation-v1",
+  "status": "HOLD_WAITING_FOR_ROOT_REVIEW",
+  "base_driver": {
+    "bytes": 62957,
+    "sha256": "494521fe577c5ba49bcbcb9adae87f8ee0e63f2b7d2f07452314b3adbe1863d9",
+    "git_blob": "b9d2459f02cb174fc60356156efd08b2dce46731"
+  },
+  "base_approved_config": {
+    "bytes": 9384,
+    "sha256": "5eae92aa481694e1df88220471ad3c4ca10a84c83e12b505ebaa1c64d7d4f6ab",
+    "git_blob": "ec0efd8dfbbe89d91eb36a0b35e6abe593ebdaaf"
+  },
+  "historical_v4_failure": {
+    "bytes": 5267,
+    "sha256": "00965418b56ef9bd001e03414ccf5a3519d5bbaa915761cbf28e07a4c77059d2",
+    "git_blob": "2d385c0fa44fb4ec0b3c0479e398875df94312b4"
+  },
+  "files": {
+    "driver-v5.py": {
+      "bytes": 63007,
+      "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+      "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735"
+    },
+    "WAITING_CONFIG_V5.json": {
+      "bytes": 9539,
+      "sha256": "1f072d2af6d86344b59f25552dee74e2b292c1683790f1261665315a6c8a1567",
+      "git_blob": "7db1d1c4ad1054f4450bc1119e22a2bcca80980a"
+    },
+    "DRIVER_V4_TO_V5.diff": {
+      "bytes": 1052,
+      "sha256": "8b9144fd560a15e06d3f467563d0f6771a5fb8218bf304dc45811b2aac4c1322",
+      "git_blob": "bc9ca020aea4b0ad8c0cfb6adc0274eb35ef77ef"
+    },
+    "CONFIG_V4_TO_V5_HOLD.diff": {
+      "bytes": 2262,
+      "sha256": "abd4411b3ecbe57f28320f3139070dfe5d7fab094454a3810305b9da595b4072",
+      "git_blob": "f91fd13e05855e28c0c1f72450016c74774ac4bf"
+    },
+    "STATIC_REVIEW.json": {
+      "bytes": 3216,
+      "sha256": "5e44806869cffde123260f60ca5db517861abac6ee38eb93763888a60a95233e",
+      "git_blob": "1c0a3c864567d70d06e25a25c9ea6b915a85015a"
+    }
+  },
+  "remote_control_paths": {
+    "driver": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/driver-v5.py",
+    "approved_config": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/APPROVED_CONFIG_V5.json",
+    "records": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/run-v5"
+  },
+  "scope": "One new pre-rejection record plus unique control/output names only. No weakening or new exception in process guard. All actual source/tool/seed proofs and original maintenance commands preserved. No current process or lock observation is invented.",
+  "old_attempt_preserved": true,
+  "main_executions": 0,
+  "h_calls": 0,
+  "source_or_ref_changes": false
+}

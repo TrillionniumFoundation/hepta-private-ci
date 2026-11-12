@@ -1,0 +1,56 @@
+--- qualification-plan-v1/HANDOFF.md
++++ qualification-plan-v2/HANDOFF.md
+@@ -1,14 +1,14 @@
+-# Exact-source qualification handoff — original contracts, not new results
++# Exact-source qualification handoff V2 — final-source counts and final format order
+ 
+-Prepared: 2026-11-12 19:32:52 UTC. **HOLD: the final formatted and fenced source is not frozen.** This preparation ran no H task, Cargo, test, format command or gate, and changed no repository source or ref.
++V1 prepared: 2026-11-12 19:32:52 UTC. V2 corrects the historical-count gate and specifies final-format ordering; it preserves the V1 artifact. **HOLD: the final formatted and fenced source is not frozen.** This preparation ran no H task, Cargo, test, format command or gate, and changed no repository source or ref.
+ 
+-The machine-readable companion is [PLAN.json](https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5961ab4f8ebad3970c0112f1a1f16bfdeda82edf): 31,035 bytes; SHA256 `1e1404e9d80723e9d001aab5d832f39f9bf8a87fd7c84826e905bc25f2e3f580`. It contains exact argv arrays, all seven focused filters, all 33 currently registered Root parents, original source/driver pins, evidence dependencies and stop rules. It is a plan, not an approved launcher or execution record.
++The machine-readable companion is [PLAN.json](https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3aefbc71d69d8014eed9e5a18269bbcc866a7583): 32,246 bytes; SHA256 `2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619`. It contains exact argv arrays, all seven focused filters, all 33 currently registered Root parents, original source/driver pins, evidence dependencies and stop rules. It is a plan, not an approved launcher or execution record.
+ 
+ ## 1. Freeze and admission prerequisites
+ 
+ The immediate prepared successor is `9c4a11f61d30e9cc352bf44d56c98909d202a55d`, tree `ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7`, with parent `86dd56a930277e0d1aef3e475e35c2b5d60b43b7`. It contains the one test-support reexport. Neither this object identity nor a predicted inventory proves native advancement, compilation or qualification.
+ 
+-Before qualification, retain the actual strict-forward proof, original maintenance fix/fmt results and every actual formatted postimage. Complete ordinary_path's final non-Rust fencing/QA integration against those formatted bytes; then freeze the canonical final commit/tree and actual materialization. Fill the final source identity only from that result. Any later source change creates a new qualification subject.
++Before qualification, retain the actual strict-forward proof, original maintenance fix/fmt results and every actual formatted postimage. Complete ordinary_path's final non-Rust fencing/QA integration against those formatted bytes. After those last code changes, record one original `just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f` with the unchanged 900-second format-command budget, review its actual postimages, then freeze the canonical final commit/tree and actual materialization. The precise formatter coverage and stop condition are in FORMAT_ORDER.md; no fix repetition or additional Cargo test is proposed. Fill the final source identity only from that result. Any later source change creates a new qualification subject.
+ 
+ The existing dependency restoration is real but belongs to the 86dd seed: [RESULT](https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09), [ENVIRONMENT_READY](https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8b62ac16f554c1f34ee72974637752f5a3b58aec), [normal terminal](https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3705e1ded34c017b57ee9eb13472f67df0da8e20). Reuse its actual UV/Ruff/V8/tool identities and the strict source-forward chain. Do not re-download dependencies or rewrite the old result to name the new source. Current target ownership, free space and global build/formatter concurrency still require actual observation at dispatch.
+ 
+@@ -18,7 +18,7 @@
+ 
+ | Phase | Original command / selection | Budget | Outcome required before continuation |
+ |---|---|---:|---|
+-| Evaluator library | `just test --locked --offline -p codex-hepta-intelligence-eval --lib --retries 0 --status-level pass --success-output final --failure-output final --test-threads 2` | 3,600 s | Actual fresh runner/JUnit; 163 unique executed and passed tests, including all four frozen incomplete-evidence regressions |
++| Evaluator library | `just test --locked --offline -p codex-hepta-intelligence-eval --lib --retries 0 --status-level pass --success-output final --failure-output final --test-threads 2` | 3,600 s | Actual fresh runner/JUnit and complete final-source library inventory; derive the new execution count and require all four frozen incomplete-evidence regressions; 163 is historical only |
+ | Native toolchain | Original four version commands: rustc verbose, cargo, just, cargo nextest | 120 s | Actual output; no substitution of old toolchain observations |
+ | Helper build | `python3 scripts/hepta_cell_test_helpers.py --package codex-hepta-infer-worker-host --output-dir <fresh records>/helpers` | 3,600 s | Actual Cargo JSONL/stderr, successful build-finished, compiler-reported `hepta-joint-propose`, pinned copied executable and source-bound manifest/env |
+ | Helper verification | Same helper command with `--verify-only` | 120 s before; 120 s after | Actual matching manifest, source, immutable executable bytes and environment |
+@@ -72,7 +72,7 @@
+ 
+ The prepared 86dd workflow has **33 exact Root parents**: the original c0f 32 plus the already registered evaluated-Version late-B-loss case. Final execution must derive that list from the actual frozen workflow, as b92 already does. An ignored Root case omitted by a default run is not coverage. Default new mechanism cases remain within the original focused filters; the final JUnit must identify what actually ran.
+ 
+-The four evaluator names and complete seven focused tokens are preserved in PLAN.json. The evaluator inventory check is the original 163-case contract; any genuine source inventory change must be reviewed explicitly rather than quietly weakening that check.
++The four evaluator names and complete seven focused tokens are preserved in PLAN.json. Run the unchanged full library command with no historical-count filter or truncation. The final executed and passed counts come from its fresh JUnit and actual final-source library inventory. The c0f count of 163 is historical only, not a required final count, target or ceiling. Missing cases or failures are assessed against the actual final source and original selection, not by forcing that old number.
+ 
+ ## 4. Reusable controls versus missing actual outputs
+ 
+@@ -80,13 +80,13 @@
+ |---|---|---|
+ | Source-gates v2 `51181866…` | Exact head/tree, driver/helper hash, fresh paths/run identity and unchanged 600/300/4800 config | Actual clone, complete baseline and before/after inventories, original three gate records/logs/terminals |
+ | Native b92 | Exact `--source`, paths, suite, fresh Root parent and actual fixed environment; it extracts final workflow lists | Exact initial materialization/tree handoff, toolchain, helper output, each test result, fresh JUnit and required coverage |
+-| Original evaluator call | Same `run`, 3600/minimum1, collector and 163/four-name check | Actual final source and fresh command/collector output |
+-| Maintenance v4 | Original scoped fix7200/fmt900, actual restored tools and strict source-forward chain | Actual successful maintenance, complete postimages and final formatted-source integration; these remain prerequisites |
++| Original evaluator call | Same full-library argv, `run`, 3600/minimum1, collector and four required names; final count from actual execution | Actual final source and fresh command/collector output |
++| Current approved scoped maintenance | Original scoped fix7200/fmt900, actual restored tools and strict source-forward chain | Actual successful maintenance, complete postimages and final formatted-source integration; these remain prerequisites |
+ | Hosted workflow | Its existing source-controlled commands and registration are the CI contract | An actual workflow/check/status bound to final SHA; no hosted run or PASS follows from local output |
+ 
+ Two important interface limits are explicit. The source-gates v2 config does **not** itself enforce an expected-inventory-hash field: its original main constructs the full inventory and checks exact identity and every path against the index. A native-ready metadata field must remain backed by an actual reviewed handoff. The b92 CLI accepts source SHA, not an expected tree/full-inventory argument; its enclosing source admission must bind those actual materials.
+ 
+-Do not replay the entire old c0f outer pipeline blindly: it embeds historical environment, maintenance source and format-base inputs. Reuse its original commands, ordering and deadlines in a small reviewed successor handoff after current maintenance/final source freeze. No new large control framework is required.
++Do not replay the entire old c0f outer pipeline blindly: it embeds historical environment, maintenance source, format-base inputs and a historical 163-count assertion. Reuse its original commands, ordering and deadlines in a small reviewed successor handoff after current maintenance/final source freeze. No new large control framework is required.
+ 
+ The hosted workflow is also distinct from desktop maintenance: it retains its own ordinary/Root sequence, observer-parser controls, five-package fix, 600-second fmt at its source-controlled format base, and compile-only bins check. Do not substitute that fmt budget for the reviewed desktop 900-second contract, or claim those hosted steps have run.
+ 

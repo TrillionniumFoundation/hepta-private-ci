@@ -1,0 +1,44 @@
+{
+  "format": "hepta-qualification-plan-v2-narrow-review-v1",
+  "status": "PREPARATION_NOT_EXECUTED",
+  "reason": "Root clarified that 163 is historical c0f evidence, not a final-source count gate; original AGENTS requires final formatting after the last code edits.",
+  "previous_plan": {
+    "bytes": 31035,
+    "sha256": "1e1404e9d80723e9d001aab5d832f39f9bf8a87fd7c84826e905bc25f2e3f580",
+    "git_blob": "5961ab4f8ebad3970c0112f1a1f16bfdeda82edf"
+  },
+  "new_plan": {
+    "bytes": 32246,
+    "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619",
+    "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+  },
+  "preserved": {
+    "complete_unfiltered_eval_argv": true,
+    "eval_timeout_seconds": 3600,
+    "minimum_tests": 1,
+    "four_required_names": true,
+    "all_other_13_phase_contracts_byte_value_equal": true,
+    "all_historical_observations_value_equal": true,
+    "no_added_test_selection_or_test_budget": true
+  },
+  "new_final_counts": {
+    "executed_unique_tests": null,
+    "passed_tests": null,
+    "meaning": "Unobserved until actual final-source full-library run and fresh JUnit."
+  },
+  "format_command_proposal": {
+    "argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "timeout_seconds": 900,
+    "condition": "After the last 39+10 protections/QA/allowlist integration, before final source freeze; separate recorded invocation, not an extension of running V5.",
+    "repeat_fix": false,
+    "additional_cargo_tests": false
+  },
+  "gate_executions": 0,
+  "h_calls": 0,
+  "source_changes": false
+}
