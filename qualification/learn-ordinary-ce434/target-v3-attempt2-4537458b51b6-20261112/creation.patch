@@ -1,0 +1,61 @@
+--- a/create-original-target-v3.py
++++ b/create-original-target-v3-attempt2.py
+@@ -0,0 +1,4 @@
++ARCHIVE_ONLY_RECEIPT_BINDING = {"bytes":7554,"sha256":"972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3"}
++if ARCHIVE_ONLY_RECEIPT_BINDING is None:
++    raise SystemExit("INERT: actual successful archive-only receipt is not bound; no filesystem action is permitted")
++
+@@ -2,0 +7,3 @@
++if not isinstance(ARCHIVE_ONLY_RECEIPT_BINDING,dict) or set(ARCHIVE_ONLY_RECEIPT_BINDING)!={"bytes","sha256"}:raise RuntimeError("actual archive-only receipt binding shape differs")
++if type(ARCHIVE_ONLY_RECEIPT_BINDING["bytes"]) is not int or ARCHIVE_ONLY_RECEIPT_BINDING["bytes"]<=0:raise RuntimeError("actual archive-only receipt byte count is unbound")
++if not isinstance(ARCHIVE_ONLY_RECEIPT_BINDING["sha256"],str) or len(ARCHIVE_ONLY_RECEIPT_BINDING["sha256"])!=64 or any(c not in "0123456789abcdef" for c in ARCHIVE_ONLY_RECEIPT_BINDING["sha256"]):raise RuntimeError("actual archive-only receipt full hash is unbound")
+@@ -11,1 +18,1 @@
+-out=Path("/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3")
++out=Path("/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3-attempt2")
+@@ -55,0 +63,38 @@
++def receipt_facts(s):
++    return {"device":s.st_dev,"inode":s.st_ino,"mode":oct(s.st_mode),"nlink":s.st_nlink,"uid":s.st_uid,"gid":s.st_gid,"bytes":s.st_size,"mtime_ns":str(s.st_mtime_ns),"ctime_ns":str(s.st_ctime_ns)}
++def receipt_directory(path):
++    s=path.lstat()
++    if not stat.S_ISDIR(s.st_mode) or path.resolve(strict=True)!=path or s.st_uid!=os.getuid() or stat.S_IMODE(s.st_mode)!=0o700:raise RuntimeError("archive-only original private directory differs")
++    return {"device":s.st_dev,"inode":s.st_ino,"uid":s.st_uid,"gid":s.st_gid,"mode":oct(s.st_mode)}
++def require_archive_restoration(sources):
++    path=Path("/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/result.json")
++    before=path.lstat()
++    if not stat.S_ISREG(before.st_mode) or before.st_uid!=os.getuid() or before.st_nlink!=1 or before.st_size!=ARCHIVE_ONLY_RECEIPT_BINDING["bytes"]:raise RuntimeError("actual archive-only receipt type/owner/size differs")
++    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC|os.O_NONBLOCK)
++    with os.fdopen(fd,"rb") as stream:
++        first=os.fstat(stream.fileno());raw=stream.read();last=os.fstat(stream.fileno())
++    if receipt_facts(before)!=receipt_facts(first) or receipt_facts(first)!=receipt_facts(last) or receipt_facts(last)!=receipt_facts(path.lstat()) or len(raw)!=ARCHIVE_ONLY_RECEIPT_BINDING["bytes"] or hashlib.sha256(raw).hexdigest()!=ARCHIVE_ONLY_RECEIPT_BINDING["sha256"]:raise RuntimeError("actual archive-only receipt changed or full hash differs")
++    record=json.loads(raw)
++    if record["schema"]!="learn.original-archive-only-restoration.v1" or record["state"]!="original-archive-restored-binding-preserved-and-full-hash-verified" or record["source_sha"]!=source or record["source_tree"]!=tree:raise RuntimeError("actual archive-only receipt is not the original successful source")
++    if record["new_archive_created"] is not True or record["binding_preserved"] is not True or any(record[key] is not False for key in ("binding_written","binding_copied","binding_chmodded","private_directories_created","v1_target_created","preexisting_files_overwritten","old_receipts_rewritten")):raise RuntimeError("actual archive-only mutation scope differs")
++    if len(record["steps"])!=1 or record["steps"][0]["name"]!="download-exact-original-public-asset" or type(record["steps"][0]["exit_code"]) is not int or record["steps"][0]["exit_code"]!=0:raise RuntimeError("actual archive-only download was not successful")
++    if record["source_before"]!=record["source_after"] or set(record["source_after"])!={"current","preserved"}:raise RuntimeError("archive-only original source observations differ")
++    for key in ("current","preserved"):
++        expected=record["source_after"][key];observed=sources[key]
++        if expected["repo"]!=observed["repo"] or expected["source_sha"]!=observed["source_sha"] or expected["source_tree"]!=observed["source_tree"] or expected["status"]!="" or observed["source_status"]!="":raise RuntimeError("archive-only source is not the currently fixed worktree")
++        s=Path(observed["repo"]).lstat()
++        expected_directory={"device":s.st_dev,"inode":s.st_ino,"uid":s.st_uid,"gid":s.st_gid,"mode":oct(s.st_mode)}
++        if expected["directory"]!=expected_directory or meta(s)!=observed["directory_identity"]:raise RuntimeError("archive-only actual source directory identity differs")
++    private=Path(pins[0]["path"]).parent
++    directories={str(p):receipt_directory(p) for p in (private.parent,private)}
++    if record["existing_private_directories_before"]!=directories or record["existing_private_directories_after"]!=directories:raise RuntimeError("archive-only private directory identities differ")
++    archive_record=record["archive"];binding_record=record["binding_after"]
++    if record["new_archive_identity"]!=archive_record["metadata"] or record["binding_before"]!=binding_record:raise RuntimeError("archive-only artifact identity observations differ")
++    observed_artifacts=[]
++    for pin,asset in ((pins[0],archive_record),(pins[1],binding_record)):
++        if asset["path"]!=pin["path"] or asset["sha256"]!=pin["sha256"]:raise RuntimeError("archive-only original artifact binding differs")
++        p=Path(pin["path"]);first=p.lstat();digest,metadata=hash_owned(p,pin["bytes"]);last=p.lstat()
++        if receipt_facts(first)!=receipt_facts(last) or receipt_facts(last)!=asset["metadata"] or digest!=pin["sha256"] or metadata["mode"]!="0o100400":raise RuntimeError("actual V8 descriptor identity no longer matches archive-only receipt")
++        observed_artifacts.append({"key":pin["key"],"path":pin["path"],"bytes":pin["bytes"],"sha256":digest,"metadata":receipt_facts(last)})
++    if archive_record["bytes"]!=pins[0]["bytes"]:raise RuntimeError("archive-only original archive length differs")
++    return {"path":str(path),"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"metadata":receipt_facts(before),"artifacts":observed_artifacts,"source_before":record["source_before"],"source_after":record["source_after"],"existing_private_directories":directories}
+@@ -74,0 +120,1 @@
++archive_restoration_before=require_archive_restoration(sources_before)
+@@ -77,0 +124,1 @@
++report["archive_only_restoration_before"]=archive_restoration_before
+@@ -95,0 +143,3 @@
++    archive_restoration_after=require_archive_restoration(sources_after)
++    if archive_restoration_after!=archive_restoration_before:raise RuntimeError("actual archive-only receipt or original identities changed during target creation")
++    report["archive_only_restoration_after"]=archive_restoration_after

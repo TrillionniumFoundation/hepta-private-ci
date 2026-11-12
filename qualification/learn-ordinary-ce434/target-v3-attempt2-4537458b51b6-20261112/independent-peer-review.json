@@ -1,0 +1,193 @@
+{
+  "schema": "learn.original-v3-attempt2-independent-peer.v1",
+  "reviewer": "learn_evaluator_budget",
+  "status": "NO BLOCKING FINDING IN FIXED PREPARED ATTEMPT2; NOT AN EXECUTION RESULT",
+  "source": {
+    "creation_commit": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "creation_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "preserved_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "preserved_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "future_test_commit": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "future_test_tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443"
+  },
+  "fixed_inputs": {
+    "original_script": {
+      "blob": "67c8ae900edfdecef3816a4cc40849be9043f7c4",
+      "bytes": 8992,
+      "sha256": "e2737b180ce360497344d3571736a2d72cb85fec58f4e1a97e72eef8be906270"
+    },
+    "original_request": {
+      "blob": "15d6e1c17bf2bbb72f855cbe45ff334fa45040e9",
+      "bytes": 9656,
+      "sha256": "46d5c63032eaeb755f6f1ef17b0182e831469ae517080d217ea3fd3cac7a746a"
+    },
+    "attempt2_script": {
+      "blob": "0a1b755f18e28317144b33aa25320418e6ec4614",
+      "bytes": 15458,
+      "sha256": "f426b35b64070610974d3ccea50bbcef3489b87de39e97e636a0ec9779274d08"
+    },
+    "attempt2_request": {
+      "blob": "b21a49b2e8b6d05135c069d0f3d496e9e7360ec2",
+      "bytes": 16457,
+      "sha256": "8aad443ca6bedbe1407e9d4df71e4422b84a73b7366505748b0701b43c68a5d1"
+    },
+    "contract": {
+      "blob": "1cdf1b15086014d9da7d7604e55864925ec2f84c",
+      "bytes": 8749,
+      "sha256": "8fe59a0f7890007f2540c68aa7c56e86f00b71f8a502568bdd988fedb8d34810"
+    },
+    "exact_edits": {
+      "blob": "8f7947ecee4ac6d78a27b6a36dea774db47b0e90",
+      "bytes": 11164,
+      "sha256": "8a51a244c0f3e5091d0b00cd3a108df0df1c669689e0351a18d8c190f6185eaa"
+    },
+    "patch": {
+      "blob": "56fa59df0d3adee6e135ab9a3c2f8c5c3136f48a",
+      "bytes": 6933,
+      "sha256": "6877e4c8386d89e3ca8946f4e287f1cdaeab89b0cad5c8589da2937fa64321b1"
+    },
+    "actual_archive_receipt": {
+      "blob": "925d5709a727479bcb08d44c3ed9968d767b92f4",
+      "bytes": 7554,
+      "sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3"
+    },
+    "actual_archive_terminal_sdk": {
+      "blob": "8f22e8efb2d305f8a5c85df843a53a8b50659def",
+      "bytes": 908,
+      "sha256": "fd24c188185434d163b36eed23dd95862b4a408f52a9fa47d6c0bf6b8e9faa09"
+    },
+    "actual_archive_log_sdk": {
+      "blob": "a6324ad7fca8c9d7c6dd4b096d2d9a141bac5e14",
+      "bytes": 2295,
+      "sha256": "8afd31c5ba6a7b1c434039b184030451e2d07c157e59a45d324e6e42674dc94d"
+    }
+  },
+  "actual_archive_result_independently_read": {
+    "actual_result_sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3",
+    "source_before_after_equal": true,
+    "binding_before_after_equal": true,
+    "directories_before_after_equal": true,
+    "new_archive_identity_equals_actual_readback": true,
+    "full_archive_hash": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "archive_bytes": 29366352,
+    "download_exit": 0,
+    "download_seconds": 8.757476195925847,
+    "terminal": {
+      "job_id": "1a1d0d20d4d-2564-1bcb",
+      "state": "succeeded",
+      "exit": 0,
+      "complete": true,
+      "durable": true,
+      "timed_out": false,
+      "cancelled": false
+    },
+    "native_tests": 0,
+    "ordinary": 0
+  },
+  "actual_archive_log_checks": {
+    "job": "1a1d0d20d4d-2564-1bcb",
+    "bytes": 586,
+    "status_bytes": 586,
+    "eof": true,
+    "stderr_size": 0,
+    "stdout_rows": [
+      {
+        "state": "downloading-exact-original-public-asset",
+        "result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/result.json"
+      },
+      {
+        "state": "original-archive-restored-binding-preserved-and-full-hash-verified",
+        "result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/result.json",
+        "archive": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "binding_preserved": true,
+        "native_tests_executed": 0
+      }
+    ],
+    "raw_hex_utf8_equal_sdk_text": true
+  },
+  "complete_diff_and_envelope_checks": {
+    "exact_edits": 7,
+    "exact_forward_inverse_complete_equal": true,
+    "unified_hunks": 7,
+    "patch_forward_inverse_complete_equal": true,
+    "removed_lines": 1,
+    "added_lines": 51,
+    "original_functions_unchanged": [
+      "git_at",
+      "git",
+      "identity",
+      "meta",
+      "hash_owned",
+      "source_state",
+      "clean",
+      "require_absent",
+      "save"
+    ],
+    "new_functions": [
+      "receipt_facts",
+      "receipt_directory",
+      "require_archive_restoration"
+    ],
+    "request": {
+      "keys_equal": true,
+      "same_metadata": true,
+      "same_args_prefix": true,
+      "script_full_equal": true,
+      "new_key": "learn-ce434-453-private-build-target-recovery-v3-attempt2",
+      "old_key": "learn-ce434-453-private-build-target-recovery-v3"
+    },
+    "only_original_mkdir_lines": [
+      "out.mkdir(mode=0o700,parents=False,exist_ok=False)",
+      "root.mkdir(mode=0o700,parents=False,exist_ok=False)",
+      "target.mkdir(mode=0o700,parents=False,exist_ok=False)"
+    ]
+  },
+  "permission_and_identity_review": [
+    "The new request has a distinct attempt2 idempotency key and exclusive output directory. It preserves the original failed15d6 request, key, old output and actual failure records; it does not replay or overwrite them.",
+    "The only replaced original line is the output directory. Seven exact edits and the seven-hunk patch reconstruct the complete original67c8 and new0a1 byte-for-byte in both directions. All nine original function bodies remain byte-identical.",
+    "Normal-user and inherited Git-location checks, both fixed clean sources, original/data device2067/inode2 and64GiB gate, absent v1/v2 targets, original manifest/441/e5c hashes, both V8 full-hash/0400 checks, and original exclusive0700 root/target creation and failure path are preserved.",
+    "The newly bound7554-byte receipt hash is the complete actual successful archive-only result972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3. It is not an expected future hash, a synthesized receipt or an inferred success from missing files.",
+    "The new helper opens that actual regular owned single-link receipt read-only with NOFOLLOW and verifies exact byte count, complete hash and lstat/fstat stability. It validates successful schema/state, exact creation source, actual download exit0 and the original archive-only mutation-scope flags.",
+    "Both source observations are compared to the currently read exact source/tree/clean worktrees and their actual directory identities. The original receipt's status and original creation helper's source_status fields are explicitly joined; their different schemas are not guessed equal.",
+    "Existing v1 root/private-pins must remain the canonical owned0700 directories from the actual success receipt. The actual current archive and binding are completely rehashed, and device/inode/mode/nlink/uid/gid/size plus exact decimal-string mtime/ctime must match that receipt. Matching an old inode number alone is insufficient.",
+    "The helper runs before the first mkdir and again after actual root/target creation. The complete returned receipt/artifact/source/directory observations must remain equal before reporting success.",
+    "New root_identity and target_identity still come only from actual lstat after this invocation's exclusive mkdir operations. Neither the archive inode nor the historical e5c/v2 identity is substituted for the unknown new v3 identity.",
+    "Only the attempt2 evidence directory and the still-absent v3 root/target can be created. Original inputs and source worktrees are read-only, no asset download/copy is performed, no Cargo/test command or resource field is added, and no cleanup, retry or signal is introduced. A later failure preserves any directories already created and does not claim rollback."
+  ],
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "learn-ce434-453-private-build-target-recovery-v3-attempt2",
+    "script_complete_equal": true,
+    "only_original_script_and_key_fields_changed": true,
+    "output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3-attempt2",
+    "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target"
+  },
+  "provenance_separation": {
+    "creation_source": "453",
+    "later_test_source": "8bf",
+    "requirement": "A later native validator must bind the genuine target creation receipt to its actual453 provenance and independently validate the exact8bf test source/tree. These roles must not be relabeled or incorrectly required to have identical commits.",
+    "native_only_binding": "Remains absent until actual successful v3 creation and complete receipt readback/hash."
+  },
+  "limits": {
+    "method": "Full Git API reads with independent Git/SHA256 hashes, V8 byte reconstruction and static source review.",
+    "Python_parse_or_execution": false,
+    "H_dispatch_by_reviewer": false,
+    "filesystem_mutation_by_reviewer": false,
+    "actual_v3_attempt2_result": null,
+    "actual_new_target_identity": null,
+    "native_driver_frozen": false,
+    "native_tests": 0,
+    "ordinary_acceptance": 0,
+    "external_process_limit": "Own-process wait/no-signal code is preserved. This review makes no claim about independent H supervision or the still-unexecuted attempt2 outcome."
+  }
+}
