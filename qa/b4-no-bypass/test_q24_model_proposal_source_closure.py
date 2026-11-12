@@ -130,6 +130,34 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(PROJECTION, "fn project_original_root_model(", marker)
 
+    def test_model_factory_attaches_only_the_actual_learning_b_custodian(self):
+        path = AGENT + "authority_host_q24_model_b_binding.rs"
+        for marker in (
+            "original.require_original_learning(self)?",
+            "factory.original_b.is_some()",
+            "factory.profile.wire_schema() != 2",
+            "serde_json::to_vec(&self.profile)",
+            "factory.original_b = Some(original)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn attach_original_model_b(", marker)
+
+    def test_model_b_borrow_comes_from_the_complete_actual_root_context(self):
+        path = AGENT + "authority_host_q24_evaluation_operation.rs"
+        for marker in (
+            "let end = self.end.min(frame_end)",
+            "self.record.inspect(end,",
+            "initial: &actual, writer_proof: &proof",
+            "not_send: PhantomData",
+            "Ok((value?, after, before, authorities))",
+            "require_files(files, enrollment, now)?",
+        ):
+            with self.subTest(marker=marker):
+                if marker == "require_files(files, enrollment, now)?":
+                    # The final physical postcheck is independently required.
+                    marker = "let now = service.original_learning_unix_seconds()?;\n            require_files(files, enrollment, now)?"
+                self.rejects(path, "fn with_operation<T>(", marker)
+
     def test_commit_cannot_skip_durable_claim_completion_or_witness(self):
         for marker in (
             "self.journal.claim(&key)",

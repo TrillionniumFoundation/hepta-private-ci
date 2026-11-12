@@ -88,6 +88,8 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
 /// Native B material is lent synchronously within Root. No wire constructor,
 /// clone, sender, journal handle or key is available from this view.
 pub(crate) struct OriginalRootBEvaluationBorrowV1<'a> {
+    initial: &'a LearningIterationSnapshotV1,
+    writer_proof: &'a str,
     actual: &'a OriginalBExecution,
     completed: &'a OriginalBCompleted,
     verifier: &'a LearningEvidenceVerifierV1,
@@ -95,6 +97,12 @@ pub(crate) struct OriginalRootBEvaluationBorrowV1<'a> {
 }
 
 impl OriginalRootBEvaluationBorrowV1<'_> {
+    pub(crate) fn initial_snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.initial
+    }
+    pub(crate) fn writer_proof(&self) -> &str {
+        self.writer_proof
+    }
     pub(crate) fn training_snapshot(&self) -> &LearningIterationSnapshotV1 {
         &self.completed.training
     }

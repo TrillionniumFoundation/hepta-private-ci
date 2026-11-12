@@ -76,7 +76,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             // final physical readback; no borrowed observer can release them.
             let mut cell_locks = None;
             let (value, completed, before, authorities) = service.with_learning_profile(
-                config, registration, owner, &self.profile, |actual, _proof| {
+                config, registration, owner, &self.profile, |actual, proof| {
                     owner_alive(owner, end)?;
                     if actual != self.initial || self.backend.frozen_scope_binding()
                         != Some(self.profile.require_cell_scope(&actual)?.binding())
@@ -121,6 +121,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     let clock = || service.original_learning_unix_seconds();
                     let completed = native.perform(files, enrollment, &training, &attestation, &protocol, &authorities, &clock, mode)?;
                     let value = action(OriginalRootBEvaluationBorrowV1 {
+                        initial: &actual, writer_proof: &proof,
                         actual: native, completed: &completed, verifier: &authorities.verifier,
                         not_send: PhantomData,
                     });

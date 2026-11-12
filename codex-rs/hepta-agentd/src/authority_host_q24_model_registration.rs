@@ -202,6 +202,7 @@ impl HostAuthorityService {
                     .ok_or_else(|| io::Error::other("original Root lane parent required"))?
                     .join("q24-model-proposal-factory-v1.sock");
                 let factory = RegisteredQ24ModelFactory {
+                    original_b: None,
                     profile: LiveFactoryProfile::LegacyV1(profile),
                     learning: learning.clone(),
                     reservation,
