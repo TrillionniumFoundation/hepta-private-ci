@@ -41,6 +41,8 @@ pub use observer::CellGenerationJournalObservedV1;
 pub use observer::CellGenerationJournalObserverV1;
 #[cfg(target_os = "linux")]
 pub use observer::CellGenerationObserverConfigV1;
+#[cfg(target_os = "linux")]
+pub use observer::CellGenerationUnpublishedObserverV1;
 
 const MAGIC: &[u8; 8] = b"HPTACG02";
 const HEADER_BYTES: usize = 40;
