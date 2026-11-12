@@ -49,11 +49,11 @@ impl HostAuthorityService {
                         .map_err(io::Error::other)?
                         .observed_unix_ms;
                     slot.require_selection(now)?;
-                    let trust = Arc::clone(&files.deployment.trust).bind_original(
-                        &self.identity,
-                        &slot.profile.deployment,
-                        now,
-                    )?;
+                    let trust_files: Arc<
+                        crate::authority_host_runtime::RootInitialLearningTrustFilesV1,
+                    > = Arc::clone(&files.deployment.trust);
+                    let trust: crate::authority_host_runtime::RegisteredInitialLearningTrustV1 =
+                        trust_files.bind_original(&self.identity, &slot.profile.deployment, now)?;
                     if Some(&trust.pin) != slot.profile.learning_trust.as_ref() {
                         return Err(io::Error::other(
                             "Ledger metadata differs from original Root trust",

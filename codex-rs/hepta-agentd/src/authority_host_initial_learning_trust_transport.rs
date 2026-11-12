@@ -95,10 +95,10 @@ impl<'a> OriginalLearningTrustExchange<'a> {
                     ));
                 }
                 require_observation(slot, before.as_ref(), &revocations)?;
-                let original = slot
-                    .learning_trust
-                    .as_ref()
-                    .ok_or_else(|| io::Error::other("original learning trust was not enrolled"))?;
+                let original: &crate::authority_host_runtime::RegisteredInitialLearningTrustV1 =
+                    slot.learning_trust.as_ref().ok_or_else(|| {
+                        io::Error::other("original learning trust was not enrolled")
+                    })?;
                 let response = LearningTrustResponseV1 {
                     schema: 1,
                     purpose: LEARNING_TRUST_PURPOSE.into(),

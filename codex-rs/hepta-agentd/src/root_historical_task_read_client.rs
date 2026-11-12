@@ -110,7 +110,8 @@ impl RootHistoricalTaskReadClientV1 {
                 "original historical read is fenced".into(),
             ))
         } else {
-            self.connection.require_same_original_session(session)
+            let connection: &RootHistoricalTaskReadConnectionV1 = &self.connection;
+            connection.require_same_original_session(session)
         };
         if result.is_err() {
             self.fence();

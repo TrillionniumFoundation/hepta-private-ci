@@ -5125,7 +5125,7 @@ required_function_order = [{ function = "fn original_broker_publish(", sequence 
 path = "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
 required = ["RootGenerationPublicationUncertain", "Mutex<Option<Lane>>", "let mut lane = held.take()", "fenced.store(true", "response.profile != self.profile", "validate_head(&self.profile, &response.head)?", "self.fence();", "connection: crate::RootGenerationPublicationConnectionV1", "self\n            .connection\n            .require_original_publication_session()"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "CurrentStore::initialize", "connect("]
-required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_publication_session()?", "Command::Observe", "stream\n            .exchange(", "validate_head(profile, &response.head)?", "connection.require_original_publication_session()?", "Ok(Self {"] }, { function = "fn exchange_response(", sequence = ["self.fenced.load(", "self\n            .connection\n            .require_original_publication_session()", "self.lane.try_lock()", "held.take()", "let request_id = lane.sequence", "request_id.checked_add(1)", "lane\n            .stream\n            .exchange(", "response.profile != self.profile", "validate_head(&self.profile, &response.head)?", "self\n            .connection\n            .require_original_publication_session()", "*held = Some(lane)"] }]
+required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_publication_session()?", "Command::Observe", "stream\n            .exchange(", "validate_head(profile, &response.head)?", "connection.require_original_publication_session()?", "Ok(Self {"] }, { function = "fn exchange_response(", sequence = ["self.fenced.load(", "self\n            .connection\n            .require_original_publication_session()", "self.lane.try_lock()", "held.take()", "let request_id = lane.sequence", "request_id.checked_add(1)", "let stream: &mut OriginalPublicationStream = &mut lane.stream;", "stream\n            .exchange(", "response.profile != self.profile", "validate_head(&self.profile, &response.head)?", "self\n            .connection\n            .require_original_publication_session()", "*held = Some(lane)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
@@ -6639,7 +6639,7 @@ id = "q24_successor_running_admission"
 symbol = "require_successor_admission"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
 definition_markers = ["fn require_successor_admission("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs", "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs", "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"]
 caller_markers = []
 call_pattern = "\\brequire_successor_admission\\s*\\("
 
@@ -7133,11 +7133,11 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_initial_client\\s*\\
 [[boundary]]
 id = "root_initial_artifact_same_session"
 symbol = "RootGenerationPublicationConnectionV1::require_same_original_session"
+receiver_type = "RootGenerationPublicationConnectionV1"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs"
 definition_markers = ["fn require_same_original_session(","Arc::ptr_eq(&self.verifier, &session.verifier())"]
 product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs","codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs","codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs"]
 caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_same_original_session\\s*\\("
 
 [[boundary]]
 id = "root_initial_artifact_full_pin"
@@ -7161,7 +7161,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)publish_initial_with_original
 path = "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs"
 required = ["pub(crate) enum GenerationArtifactOwnerV1","Writer(Arc<Mutex<LearningArtifactOwnerService>>)","pub(crate) enum InitialArtifactReadbackV1","pub(crate) struct InitialArtifactPublicationV1"]
 forbidden = ["impl Default","Deserialize","Serialize","SigningKey","impl Clone for OriginalInitialArtifactReadbackV1","pub fn lock("]
-required_function_order = [{function = "fn writer(",sequence = ["match self","Self::Writer(original) => Ok(original)","Self::RootInitial(_) => Err(invalid("]},{function = "fn lock_initial(",sequence = ["match self","original.lock().map_err(invalid)?","original.try_lock().map_err(invalid)?"]},{function = "fn revalidate_owner(",sequence = ["match self","Self::Writer(original) => selected.revalidate(original, now)","current.revalidate_original_initial_artifacts(original, selected, now)"]},{function = "fn revalidate_initial_client(",sequence = ["match self","Self::Writer(original) => selected.revalidate(original, now)","Self::RootInitial(original) => original.revalidate(client, selected, now)"]}]
+required_function_order = [{function = "fn writer(",sequence = ["match self","Self::Writer(original) => Ok(original)","Self::RootInitial(_) => Err(invalid("]},{function = "fn lock_initial(",sequence = ["match self","original.lock().map_err(invalid)?","original.try_lock().map_err(invalid)?"]},{function = "fn revalidate_owner(",sequence = ["match self","Self::Writer(original) => selected.revalidate(original, now)","current.revalidate_original_initial_artifacts(original, selected, now)"]},{function = "fn revalidate_initial_client(",sequence = ["match self","Self::Writer(original) => selected.revalidate(original, now)","Self::RootInitial(original) => {", "let original: &crate::root_generation_initial_client::OriginalInitialArtifactReadbackV1 = original;", "original.revalidate(client, selected, now)"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs"
@@ -7280,7 +7280,7 @@ symbol = "OriginalPublicationStream::from_stream_until"
 receiver_type = "OriginalPublicationStream"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
 definition_markers = ["fn from_stream_until(", "actual.uid != 0", "Instant::now() >= end"]
-product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/root_independent_b_client_connect.rs", "codex-rs/hepta-agentd/src/root_independent_b_source_client.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -7830,27 +7830,27 @@ caller_markers = []
 [[boundary]]
 id = "root_initial_learning_trust_bind"
 symbol = "RootInitialLearningTrustFilesV1::bind_original"
+receiver_type = "RootInitialLearningTrustFilesV1"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_initial_learning_trust_files.rs"
 definition_markers = ["fn bind_original(", "self.observe_original(identity, deployment, now_millis)?"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs"]
 caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)bind_original\\s*\\("
 
 [[boundary]]
 id = "root_initial_learning_trust_payload"
 symbol = "RegisteredInitialLearningTrustV1::read_original_payload"
+receiver_type = "RegisteredInitialLearningTrustV1"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_initial_learning_trust_files.rs"
 definition_markers = ["fn read_original_payload(", "self.revalidate(now_millis)?"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_initial_learning_trust_transport.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_pin.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs"]
 caller_markers = []
-call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)read_original_payload\\s*\\("
 
 [[boundary]]
 id = "root_initial_learning_trust_activation"
 symbol = "LearningTrustPayloadV1::activate_pinned_genesis"
 definition_path = "codex-rs/hepta-agentd/src/root_initial_learning_trust_data.rs"
 definition_markers = ["fn activate_pinned_genesis(", "self.distribution.generation != 1", "activate_learning_trust(&root, signed, /*previous*/ None, now_seconds)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_initial_learning_trust_files.rs", "codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_pin.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_data.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_initial_learning_trust_files.rs", "codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_pin.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_data.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_admission.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)activate_pinned_genesis\\s*\\("
 
@@ -8032,7 +8032,7 @@ id = "cell_original_physical_witness_codec"
 symbol = "observe_original_file_anchor_v1"
 definition_path = "codex-rs/hepta-neuron/src/witness_observer.rs"
 definition_markers = ["fn read_original_file"]
-product_callers = ["codex-rs/hepta-neuron/src/cell_generation_observer.rs", "codex-rs/hepta-neuron/src/cell_journal_observer.rs", "codex-rs/hepta-agentd/src/authority_host_historical_cell_files.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_files.rs", "codex-rs/hepta-agentd/src/authority_host_historical_task_data.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_registration_v2.rs"]
+product_callers = ["codex-rs/hepta-neuron/src/cell_generation_observer.rs", "codex-rs/hepta-neuron/src/cell_journal_observer.rs", "codex-rs/hepta-agentd/src/authority_host_historical_cell_files.rs", "codex-rs/hepta-agentd/src/authority_host_historical_ledger_files.rs", "codex-rs/hepta-agentd/src/authority_host_historical_task_data.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_registration_v2.rs", "codex-rs/hepta-agentd/src/authority_host_successor_files_read.rs"]
 caller_markers = []
 call_pattern = "(?:read_original_file|observe_original_file_anchor_v1)\\s*\\("
 
@@ -8733,7 +8733,7 @@ required_function_order = [{function = "fn retain_original_ledger(",sequence = [
 path = "codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs"
 required = []
 forbidden = ["SigningKey", "DurableLedger::recover", "LedgerWitnessStore::recover", "FileAnchorWitnessStore::open", "set_len(", ".create(true)", ".create_new(true)", ".truncate(", "AlwaysCurrent", "AllowVerifier"]
-required_function_order = [{function = "fn register_original_initial_ledger(",sequence = ["original_root()?", "RootDataRefusalV1::create_fresh(", "RootDataKind::HistoricalLedger", "Instant::now() >= end", "self.with_initial_publication_context(", "slot.mode != RootGenerationInitialModeV1::Reserve", "files.deployment.initial != slot.profile.deployment", "slot.profile.writer != proof", "registration.registered_identity.identity()? != self.identity", "slot.require_profile()?", "slot.require_genesis()?", "slot.require_selection(now)?", "Arc::clone(&files.deployment.trust).bind_original(", "Some(&trust.pin) != slot.profile.learning_trust.as_ref()", ".read_original_payload(now)?", ".activate_pinned_genesis(now / 1_000)?", ".configuration(generator, observer, now / 1_000)", "files.require_empty_baseline()?", "let baseline = LedgerRecord", "registered_identity: serde_json::to_string(", "peer_gid: config.peer_gid", "registered_at: now / 1_000", "phase: LedgerPhase::Enrolled", "HostAuthorityFrontierStore::initialize(", "store.load(&owner)", "files.require_empty_baseline()?", "slot.require_genesis()?", "slot.require_profile()?", "slot.require_selection(", "retained = Some((store, baseline, original))", "Instant::now() >= end", "RegisteredOriginalLedgerCaptureV1"]}]
+required_function_order = [{function = "fn register_original_initial_ledger(",sequence = ["original_root()?", "RootDataRefusalV1::create_fresh(", "RootDataKind::HistoricalLedger", "Instant::now() >= end", "self.with_initial_publication_context(", "slot.mode != RootGenerationInitialModeV1::Reserve", "files.deployment.initial != slot.profile.deployment", "slot.profile.writer != proof", "registration.registered_identity.identity()? != self.identity", "slot.require_profile()?", "slot.require_genesis()?", "slot.require_selection(now)?", "Arc::clone(&files.deployment.trust);", "trust_files.bind_original(", "Some(&trust.pin) != slot.profile.learning_trust.as_ref()", ".read_original_payload(now)?", ".activate_pinned_genesis(now / 1_000)?", ".configuration(generator, observer, now / 1_000)", "files.require_empty_baseline()?", "let baseline = LedgerRecord", "registered_identity: serde_json::to_string(", "peer_gid: config.peer_gid", "registered_at: now / 1_000", "phase: LedgerPhase::Enrolled", "HostAuthorityFrontierStore::initialize(", "store.load(&owner)", "files.require_empty_baseline()?", "slot.require_genesis()?", "slot.require_profile()?", "slot.require_selection(", "retained = Some((store, baseline, original))", "Instant::now() >= end", "RegisteredOriginalLedgerCaptureV1"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_historical_ledger_pin.rs"
@@ -8757,7 +8757,7 @@ required_function_order = [{function = "fn with_original_capture<T>(",sequence =
 path = "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs"
 required = []
 forbidden = ["SigningKey", "DurableLedger::recover", "LedgerWitnessStore::recover", "FileAnchorWitnessStore::open", "set_len(", ".create(true)", ".create_new(true)", ".truncate(", "AlwaysCurrent", "AllowVerifier", "HostAuthorityFrontierStore::initialize", "RootDataRefusalV1::create_fresh", "observe_closed(", "#[derive(Clone", "#[derive(Deserialize"]
-required_function_order = [{ function = "fn with_retained_original_ledger<T>(", sequence = ["original_root()?", "RootDataRefusalV1::open_existing(", "RootDataKind::HistoricalLedger", "refusal.inspect(||", "Instant::now() >= end", "HostAuthorityFrontierStore::open(root, owner.clone())", "let record: LedgerRecord = store.load(&owner)", "record.schema != 1", "record.purpose != LEDGER_PURPOSE", "&record.target != target", "record.registered_at == 0", "!matches!(record.phase, LedgerPhase::Captured { .. })", "serde_json::from_str(&record.registered_identity)", "registration.identity()?", "serde_json::to_string(&registration)", "!= record.registered_identity", "crate::neuron_generation_process_identity_digest_v1(&identity)", "RootHistoricalLedgerDeploymentV1::open_original(deployment_path)?", "OriginalLedgerFiles::retain_original_ledger(", "record.publisher.uid", "record.peer_gid", "files.file_pins() != &record.files", "files.deployment.metadata_digest().to_string() != record.metadata", "&files.deployment.initial.target != target", "record.trust.require_target(target)?", "state: HistoryState::Unobserved", "let result = action(&mut pending)?", "let HistoryState::Complete", "held.require_unchanged(&observed)?", "pending.files.require_original_files()?", "trust.revalidate(", ".refresh_projection()", "store.load(&owner).map_err(io::Error::other)? != record || Instant::now() >= end", "Ok(result)"] }, { function = "fn observe_original_terminal(", sequence = ["original_root()?", "std::mem::replace(&mut self.state, HistoryState::Verifying)", "HistoryState::Unobserved", "Instant::now() >= self.end", ".refresh_projection()", "let original = &pin.expected", "original.fenced", "original.pin.schema != 1", "original.pin.purpose != PIN_PURPOSE", "original.pin.initial_profile != record.initial_profile", "original.pin.identity != record.identity", "original.pin.spawn_generation != self.identity.spawn_generation", "original.pin.writer != record.writer", "original.pin.target != record.target", "original.pin.publisher != record.publisher", "original.pin.publisher_epoch != record.publisher_epoch", "source.original_identity() != &self.identity", "original.pin.source_configuration != source.binding_digest().to_string()", "original.pin.source_sequence != source.journal_anchor().sequence", "original.pin.source_checkpoint", "source.journal_anchor().checkpoint_digest.to_string()", "original.pin.publication != source.publication().publication_digest().to_string()", "record.registered_at > now / 1_000", "require_target(&record.target, definition, source.original_source())?", "serde_json::to_vec(original)", "let LedgerPhase::Captured { cut }", "Arc::clone(&self.files.deployment.trust).bind_original(", "trust.pin != record.trust", ".read_original_payload(now)?", ".activate_pinned_genesis(now / 1_000)?", ".configuration(generator, observer, record.registered_at)", "OriginalLedgerReadModeV1::Retained", "binding: cut.ledger_binding.parse()", "sequence: cut.ledger_sequence", "chain_digest: cut.ledger_chain.parse()", "segment: None", "sealed: false", "ledger_length: cut.ledger_length", "ledger_digest: cut.ledger_image.parse()", "witness_length: cut.witness_length", "witness_digest: cut.witness_image.parse()", "sequence: cut.signature_sequence", "checkpoint_digest: cut.signature_checkpoint.parse()", "self.files.open_original_terminal(&context, mode)?", "OriginalLedgerReadGuard::observe_original_terminal(", "CapturedLedgerCut::from_original(", "!= **cut", "self.files.require_original_files()?", "held.require_unchanged(&observed)?", "trust.revalidate(", ".refresh_projection()", "Instant::now() >= self.end", "encode_readonly_ledger_data_v1(", "observed.cut.binding", "observed.facts.decision.clone()", "observed.facts.outcome.clone()", "ledger_image.len() as u64 != observed.cut.ledger_length", "Digest32::of_bytes(&ledger_image) != observed.cut.ledger_digest", "self.state = HistoryState::Complete", "RootOriginalHistoricalLedgerObservationV1"] }, { function = "fn data_cut_digest(", sequence = ["self.ledger_read_data()?", ".data_cut_digest()"] }]
+required_function_order = [{ function = "fn with_retained_original_ledger<T>(", sequence = ["original_root()?", "RootDataRefusalV1::open_existing(", "RootDataKind::HistoricalLedger", "refusal.inspect(||", "Instant::now() >= end", "HostAuthorityFrontierStore::open(root, owner.clone())", "let record: LedgerRecord = store.load(&owner)", "record.schema != 1", "record.purpose != LEDGER_PURPOSE", "&record.target != target", "record.registered_at == 0", "!matches!(record.phase, LedgerPhase::Captured { .. })", "serde_json::from_str(&record.registered_identity)", "registration.identity()?", "serde_json::to_string(&registration)", "!= record.registered_identity", "crate::neuron_generation_process_identity_digest_v1(&identity)", "RootHistoricalLedgerDeploymentV1::open_original(deployment_path)?", "OriginalLedgerFiles::retain_original_ledger(", "record.publisher.uid", "record.peer_gid", "files.file_pins() != &record.files", "files.deployment.metadata_digest().to_string() != record.metadata", "&files.deployment.initial.target != target", "record.trust.require_target(target)?", "state: HistoryState::Unobserved", "let result = action(&mut pending)?", "let HistoryState::Complete", "held.require_unchanged(&observed)?", "pending.files.require_original_files()?", "trust.revalidate(", ".refresh_projection()", "store.load(&owner).map_err(io::Error::other)? != record || Instant::now() >= end", "Ok(result)"] }, { function = "fn observe_original_terminal(", sequence = ["original_root()?", "std::mem::replace(&mut self.state, HistoryState::Verifying)", "HistoryState::Unobserved", "Instant::now() >= self.end", ".refresh_projection()", "let original = &pin.expected", "original.fenced", "original.pin.schema != 1", "original.pin.purpose != PIN_PURPOSE", "original.pin.initial_profile != record.initial_profile", "original.pin.identity != record.identity", "original.pin.spawn_generation != self.identity.spawn_generation", "original.pin.writer != record.writer", "original.pin.target != record.target", "original.pin.publisher != record.publisher", "original.pin.publisher_epoch != record.publisher_epoch", "source.original_identity() != &self.identity", "original.pin.source_configuration != source.binding_digest().to_string()", "original.pin.source_sequence != source.journal_anchor().sequence", "original.pin.source_checkpoint", "source.journal_anchor().checkpoint_digest.to_string()", "original.pin.publication != source.publication().publication_digest().to_string()", "record.registered_at > now / 1_000", "require_target(&record.target, definition, source.original_source())?", "serde_json::to_vec(original)", "let LedgerPhase::Captured { cut }", "Arc::clone(&self.files.deployment.trust);", "trust_files.bind_original(", "trust.pin != record.trust", ".read_original_payload(now)?", ".activate_pinned_genesis(now / 1_000)?", ".configuration(generator, observer, record.registered_at)", "OriginalLedgerReadModeV1::Retained", "binding: cut.ledger_binding.parse()", "sequence: cut.ledger_sequence", "chain_digest: cut.ledger_chain.parse()", "segment: None", "sealed: false", "ledger_length: cut.ledger_length", "ledger_digest: cut.ledger_image.parse()", "witness_length: cut.witness_length", "witness_digest: cut.witness_image.parse()", "sequence: cut.signature_sequence", "checkpoint_digest: cut.signature_checkpoint.parse()", "self.files.open_original_terminal(&context, mode)?", "OriginalLedgerReadGuard::observe_original_terminal(", "CapturedLedgerCut::from_original(", "!= **cut", "self.files.require_original_files()?", "held.require_unchanged(&observed)?", "trust.revalidate(", ".refresh_projection()", "Instant::now() >= self.end", "encode_readonly_ledger_data_v1(", "observed.cut.binding", "observed.facts.decision.clone()", "observed.facts.outcome.clone()", "ledger_image.len() as u64 != observed.cut.ledger_length", "Digest32::of_bytes(&ledger_image) != observed.cut.ledger_digest", "self.state = HistoryState::Complete", "RootOriginalHistoricalLedgerObservationV1"] }, { function = "fn data_cut_digest(", sequence = ["self.ledger_read_data()?", ".data_cut_digest()"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_historical_source_session.rs"
@@ -9092,7 +9092,7 @@ id = "root_historical_task_read_original_session"
 symbol = "RootHistoricalTaskReadConnectionV1::require_original_session"
 definition_path = "codex-rs/hepta-agentd/src/root_historical_task_connection.rs"
 definition_markers = ["fn require_original_session(", "verify_sender_process_binding(", "Instant::now() >= self.end"]
-product_callers = ["codex-rs/hepta-agentd/src/root_historical_task_read_client.rs", "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/root_historical_task_read_client.rs", "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs", "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"]
 caller_markers = []
 receiver_type = "RootHistoricalTaskReadConnectionV1"
 
@@ -9143,7 +9143,7 @@ receiver_type = "RootHistoricalTaskReadClientV1"
 id = "root_historical_task_read_client_session"
 symbol = "RootHistoricalTaskReadClientV1::require_same_original_session"
 definition_path = "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
-definition_markers = ["fn require_same_original_session(", "self.connection.require_same_original_session(session)", "self.fence()"]
+definition_markers = ["fn require_same_original_session(", "connection.require_same_original_session(session)", "self.fence()"]
 product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs", "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
 caller_markers = []
 receiver_type = "RootHistoricalTaskReadClientV1"
@@ -9162,7 +9162,7 @@ id = "root_historical_task_read_receipt_client"
 symbol = "OriginalHistoricalTaskReadReceiptV1::require_original_client"
 definition_path = "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
 definition_markers = ["fn require_original_client(", "Arc::ptr_eq(&self.client, client)", "self.client.fence()"]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs", "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs", "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"]
 caller_markers = []
 receiver_type = "OriginalHistoricalTaskReadReceiptV1"
 
@@ -9301,7 +9301,7 @@ required_function_order = [{ function = "fn digest(", sequence = ["let mut value
 path = "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
 required = ["client: Arc<RootHistoricalTaskReadClientV1>", "data: HistoricalTaskReadDataV1", "lane: Mutex<Option<Lane>>", "fenced: AtomicBool"]
 forbidden = ["SigningKey", "AllowVerifier", "AlwaysCurrent", "AuthorityPosture::ALLOW_ALL", "ActivatedLearningTrustV1", "RootDataRefusalV1::create_fresh", "HostAuthorityFrontierStore::initialize", "Serialize", "Deserialize", "impl Clone", "pub data:", "pub(crate) data:", "pub client:", "pub(crate) client:", "UnixStream::connect", "File::open"]
-required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_session()?", "Ok(Self {", "lane: Mutex::new(Some(Lane {", "sequence: 1", "fenced: AtomicBool::new(false)"] }, { function = "fn require_same_original_session(", sequence = ["self.fenced.load(Ordering::Acquire)", "self.connection.require_same_original_session(session)", "if result.is_err()", "self.fence()"] }, { function = "fn observe_original_task(", sequence = ["let data = self.observe()?", "Ok(OriginalHistoricalTaskReadReceiptV1 {", "client: Arc::clone(self)", "data,"] }, { function = "fn exchange(", sequence = ["self.fenced.load(Ordering::Acquire)", "self.lane.try_lock()", "self.fenced.store(true, Ordering::Release)", "self.connection\n                .require_original_session()", "held.take().ok_or_else(refused)?", "!(1..=MAX_READS).contains(&request_id)", "HistoricalTaskReadRequestV1 {", "purpose: operation.purpose().into()", "profile: self.profile.clone()", "lane.stream.exchange(&request)?", "require_complete_reply(&bytes, request_id, &self.profile)?", "self.connection\n                .require_original_session()", "self.fenced.load(Ordering::Acquire)", "request_id.checked_add(1)", "*held = Some(lane)", "if result.is_err()", "self.fenced.store(true, Ordering::Release)", "held.take()"] }, { function = "fn fence(", sequence = ["self.fenced.store(true, Ordering::Release)", "self.lane.try_lock()", "held.take()"] }, { function = "fn require_original_client(", sequence = ["RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)?", "!Arc::ptr_eq(&self.client, client)", "self.client.fence()", "RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)"] }, { function = "fn with_current_read<T>(", sequence = ["self.client.observe()? != self.data", "let value = action(&self.data.ledger)", "self.client.observe()? != self.data", "value", "if result.is_err()", "self.client.fence()"] }, { function = "fn observe(", sequence = ["self.exchange(HistoricalReadOperationV1::Task)?", "Reply::Task(data) => Ok(*data)", "Reply::LearningTrust(_) | Reply::PostAFrozenLearning(_)", "self.fence()", "Err(refused())"] }]
+required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_session()?", "Ok(Self {", "lane: Mutex::new(Some(Lane {", "sequence: 1", "fenced: AtomicBool::new(false)"] }, { function = "fn require_same_original_session(", sequence = ["self.fenced.load(Ordering::Acquire)", "let connection: &RootHistoricalTaskReadConnectionV1 = &self.connection;", "connection.require_same_original_session(session)", "if result.is_err()", "self.fence()"] }, { function = "fn observe_original_task(", sequence = ["let data = self.observe()?", "Ok(OriginalHistoricalTaskReadReceiptV1 {", "client: Arc::clone(self)", "data,"] }, { function = "fn exchange(", sequence = ["self.fenced.load(Ordering::Acquire)", "self.lane.try_lock()", "self.fenced.store(true, Ordering::Release)", "self.connection\n                .require_original_session()", "held.take().ok_or_else(refused)?", "!(1..=MAX_READS).contains(&request_id)", "HistoricalTaskReadRequestV1 {", "purpose: operation.purpose().into()", "profile: self.profile.clone()", "lane.stream.exchange(&request)?", "require_complete_reply(&bytes, request_id, &self.profile)?", "self.connection\n                .require_original_session()", "self.fenced.load(Ordering::Acquire)", "request_id.checked_add(1)", "*held = Some(lane)", "if result.is_err()", "self.fenced.store(true, Ordering::Release)", "held.take()"] }, { function = "fn fence(", sequence = ["self.fenced.store(true, Ordering::Release)", "self.lane.try_lock()", "held.take()"] }, { function = "fn require_original_client(", sequence = ["RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)?", "!Arc::ptr_eq(&self.client, client)", "self.client.fence()", "RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)"] }, { function = "fn with_current_read<T>(", sequence = ["self.client.observe()? != self.data", "let value = action(&self.data.ledger)", "self.client.observe()? != self.data", "value", "if result.is_err()", "self.client.fence()"] }, { function = "fn observe(", sequence = ["self.exchange(HistoricalReadOperationV1::Task)?", "Reply::Task(data) => Ok(*data)", "Reply::LearningTrust(_) | Reply::PostAFrozenLearning(_)", "self.fence()", "Err(refused())"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs"
@@ -9362,7 +9362,7 @@ id = "root_historical_recipient_trust_activation"
 symbol = "HistoricalLearningTrustPayloadV1::activate_for_recipient"
 definition_path = "codex-rs/hepta-agentd/src/root_historical_learning_trust_data.rs"
 definition_markers = ["fn activate_for_recipient(", "self.signed.activate_pinned_genesis(now_seconds)?", "initial.owners.evidence_trust_digest"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_historical_learning_trust.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_historical_learning_trust.rs", "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs", "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs", "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)activate_for_recipient\\s*\\("
 
@@ -9543,7 +9543,7 @@ id = "cell_q24_historical_dataset_task_receipt"
 symbol = "CellQ24DatasetTaskV1::require_historical_receipt"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs"
 definition_markers = ["fn require_historical_receipt(", "self.source.read_for_historical_receipt(receipt)? != self.publication"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"]
 caller_markers = []
 receiver_type = "CellQ24DatasetTaskV1"
 
@@ -10108,7 +10108,7 @@ required_function_order = [{ function = "fn require_post_a_learning_reply(", seq
 path = "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
 required = ["receipt: Arc<OriginalHistoricalTaskReadReceiptV1>", "frozen_scope: Digest32"]
 forbidden = ["pub fn", "pub struct", "Deserialize", "Serialize", "File::", "SigningKey", "Completed", "Instant::now", "Duration::", "from_stream", "MAX_READS"]
-required_function_order = [{ function = "fn install_original_post_a_learning(", sequence = ["OriginalHistoricalTaskReadReceiptV1::require_original_client(self, client, session)", "self.client.observe()? != self.data", "RootHistoricalTaskReadClientV1::exchange(", "HistoricalReadOperationV1::PostAFrozenLearning", "Reply::PostAFrozenLearning(response) => response", "Reply::Task(_) | Reply::LearningTrust(_) => return Err(refused())", "response.data_cut != self.data.data_cut.to_string()", "self.client.observe()? != self.data", "OriginalHistoricalTaskReadReceiptV1::require_original_client(self, client, session)", "OriginalPostAFrozenLearningAckV1 {", "receipt: Arc::clone(self)", "&response.frozen_scope", "if result.is_err()", "self.client.fence()"] }, { function = "fn require_prepared_scope(", sequence = ["self.receipt\n                .client\n                .connection\n                .require_original_session()", "validate_snapshot(self.receipt.initial_snapshot())", "self.receipt.client.fenced.load(Ordering::Acquire)", "scope.binding() != self.frozen_scope", "self.receipt\n                .client\n                .connection\n                .require_original_session()", "if result.is_err()", "self.receipt.client.fence()"] }]
+required_function_order = [{ function = "fn install_original_post_a_learning(", sequence = ["OriginalHistoricalTaskReadReceiptV1::require_original_client(self, client, session)", "self.client.observe()? != self.data", "RootHistoricalTaskReadClientV1::exchange(", "HistoricalReadOperationV1::PostAFrozenLearning", "Reply::PostAFrozenLearning(response) => response", "Reply::Task(_) | Reply::LearningTrust(_) => return Err(refused())", "response.data_cut != self.data.data_cut.to_string()", "self.client.observe()? != self.data", "OriginalHistoricalTaskReadReceiptV1::require_original_client(self, client, session)", "OriginalPostAFrozenLearningAckV1 {", "receipt: Arc::clone(self)", "&response.frozen_scope", "if result.is_err()", "self.client.fence()"] }, { function = "fn require_prepared_scope(", sequence = ["connection\n                .require_original_session()", "validate_snapshot(self.receipt.initial_snapshot())", "self.receipt.client.fenced.load(Ordering::Acquire)", "scope.binding() != self.frozen_scope", "connection\n                .require_original_session()", "if result.is_err()", "self.receipt.client.fence()"] }]
 
 [[boundary]]
 id = "root_post_a_install_provider"
@@ -11064,7 +11064,7 @@ id = "root_publication_fixed_version"
 symbol = "PublicationVersion::from_purpose"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs"
 definition_markers = ["fn from_purpose(", "PURPOSE => Ok(Self::LegacyV1)", "PURPOSE_V2 => Ok(Self::DurableV2)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/root_generation_current_client.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs", "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs", "codex-rs/hepta-agentd/src/root_publication_preparation.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/root_generation_current_client.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs", "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs", "codex-rs/hepta-agentd/src/root_publication_preparation.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -11080,7 +11080,7 @@ id = "root_publication_reserved_version"
 symbol = "ReservedPublicationProfile::original_for_version"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_publication_profile_versions.rs"
 definition_markers = ["fn original_for_version(", "durable.schema_version == 2", "original.digest()? != original.binding"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_publication_refusal.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant_store.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -11219,7 +11219,7 @@ id = "root_publication_original_frame_deadline"
 symbol = "HostAuthorityPeerChannel::exchange_with_original_deadline"
 definition_path = "codex-rs/hepta-contracts/src/authority_host_peer.rs"
 definition_markers = ["pub fn exchange_with_original_deadline(", "handle: impl FnOnce(&[u8], Instant)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_serve.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_serve.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_serve.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_serve.rs", "codex-rs/hepta-agentd/src/authority_host_initial_peer_runtime.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)exchange_with_original_deadline\\s*\\("
 
@@ -11484,7 +11484,7 @@ symbol = "OriginalQ24TrainingOperationV1::read_original_training_evidence"
 receiver_type = "OriginalQ24TrainingOperationV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage_operation.rs"
 definition_markers = ["fn read_original_training_evidence("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_historical_receipts.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_b_operation.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_historical_receipts.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_b_operation.rs", "codex-rs/hepta-agentd/src/cell_q24_training_b_plan.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -11493,7 +11493,7 @@ symbol = "OriginalQ24TrainingOperationEvidenceV1::require_current_training_sourc
 receiver_type = "OriginalQ24TrainingOperationEvidenceV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage_operation.rs"
 definition_markers = ["fn require_current_training_source("]
-product_callers = ["codex-rs/hepta-agentd/src/root_q24_model_b_client.rs", "codex-rs/hepta-agentd/src/root_independent_b_training.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_model_b_client.rs", "codex-rs/hepta-agentd/src/root_independent_b_training.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs", "codex-rs/hepta-agentd/src/root_independent_b_candidate_data.rs", "codex-rs/hepta-agentd/src/root_independent_b_plan.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -12540,7 +12540,7 @@ symbol = "RegisteredHistoricalLearningSourceV1::require_original_stage_operation
 receiver_type = "RegisteredHistoricalLearningSourceV1"
 definition_path = "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
 definition_markers = ["fn require_original_stage_operation("]
-product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs", "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"]
 caller_markers = []
 
 [[boundary]]

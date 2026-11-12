@@ -55,9 +55,8 @@ impl OriginalHistoricalTaskReadReceiptV1 {
 impl OriginalPostAFrozenLearningAckV1 {
     pub(crate) fn require_prepared_scope(&self, scope: &FrozenLearningScopeV2) -> io::Result<()> {
         let result = (|| {
-            self.receipt
-                .client
-                .connection
+            let connection: &RootHistoricalTaskReadConnectionV1 = &self.receipt.client.connection;
+            connection
                 .require_original_session()
                 .map_err(io::Error::other)?;
             scope
@@ -68,9 +67,7 @@ impl OriginalPostAFrozenLearningAckV1 {
             {
                 return Err(refused());
             }
-            self.receipt
-                .client
-                .connection
+            connection
                 .require_original_session()
                 .map_err(io::Error::other)
         })();

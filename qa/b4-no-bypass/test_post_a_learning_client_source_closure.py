@@ -41,7 +41,7 @@ class PostALearningClientSourceTests(unittest.TestCase):
     def test_root_ack_must_match_actual_prepared_scope_with_live_connection(self):
         for occurrence in (0, 1):
             self.reject_removal(CLIENT, "fn require_prepared_scope(",
-                                "self.receipt\n                .client\n                .connection\n                .require_original_session()", occurrence)
+                                "connection\n                .require_original_session()", occurrence)
         self.check_markers(CLIENT, "fn require_prepared_scope(", (
             "validate_snapshot(self.receipt.initial_snapshot())",
             "self.receipt.client.fenced.load(Ordering::Acquire)",

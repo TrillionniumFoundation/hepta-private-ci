@@ -176,7 +176,7 @@ impl PendingOriginalLedgerCaptureV1<'_> {
                 return Err(io::Error::other("original Source and Ledger files alias"));
             }
         }
-        let trust = slot
+        let trust: &crate::authority_host_runtime::RegisteredInitialLearningTrustV1 = slot
             .learning_trust
             .as_ref()
             .ok_or_else(|| io::Error::other("original enrolled Ledger trust missing"))?;

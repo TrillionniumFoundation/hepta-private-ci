@@ -96,7 +96,10 @@ impl InitialArtifactReadbackV1<'_> {
     ) -> Result<(), AgentdError> {
         match self {
             Self::Writer(original) => selected.revalidate(original, now),
-            Self::RootInitial(original) => original.revalidate(client, selected, now),
+            Self::RootInitial(original) => {
+                let original: &crate::root_generation_initial_client::OriginalInitialArtifactReadbackV1 = original;
+                original.revalidate(client, selected, now)
+            }
         }
     }
 }
