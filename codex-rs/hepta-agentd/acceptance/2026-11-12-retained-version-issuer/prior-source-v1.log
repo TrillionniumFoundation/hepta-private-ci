@@ -1,0 +1,974 @@
+test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) ... 
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.origin != RetainedVersionOriginV1::Fresh') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Awaiting') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.state.try_lock()') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='RetainedVersionHostPhaseV1::Awaiting') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='RetainedVersionHostPhaseV1::Prepared') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='!self.preparation_requested.load(Ordering::Acquire)') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.read_original(&state)?') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='let binding = original.final_use_binding().clone()') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='.require_fresh(started, PublicationAccess::NewWork)?') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?') ... ERROR
+  test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='RetainedVersionFinalUseOutcomeV1::Requested as u8') ... ERROR
+test_cold_and_unknown_never_reset_the_original_issuer (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer) ... 
+  test_cold_and_unknown_never_reset_the_original_issuer (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer) (injected='self.issuer_worker_started.store(false, Ordering::Release);') ... ERROR
+  test_cold_and_unknown_never_reset_the_original_issuer (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer) (injected='state.final_use_issuer = Some(issuer);') ... ERROR
+test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) ... 
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.destination_id != "agentd.cell-generation.next-task-same-model"') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.subject_id.is_empty()') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.request_sha256 == [0; 32]') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.scope_sha256 == [0; 32]') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.payload_sha256 == [0; 32]') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='!matches!(self.access, OriginalVersionIssuerAccessV1::Available)') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='self.access = OriginalVersionIssuerAccessV1::ReadbackOnly') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='self.issuer_worker_started.swap(true, Ordering::AcqRel)') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='AgentdFinalUseIssuerError::Denied') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='RetainedVersionFinalUseOutcomeV1::Denied as u8') ... ERROR
+  test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='drop(queued)') ... ERROR
+test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) ... 
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='self.protected_root.as_ref()') ... ERROR
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='root.original_uid != 0') ... ERROR
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='self.check_root()?') ... ERROR
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='super::super::remaining(root.end)?') ... ERROR
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='self.stream.try_lock()') ... ERROR
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='if slot.is_none()') ... ERROR
+  test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='provider: self') ... ERROR
+test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) ... 
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='SigningKey') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='UnixStream::connect') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='initialize_host_authority(') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='DeploymentFinalUseIssuer::issue(') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='ROOT_RESIDENT_LEARNING_EXECUTE') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='AgentdUnixFinalUseGrantProvider::from_stream(') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='SigningKey') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='UnixStream::connect') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='initialize_host_authority(') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='DeploymentFinalUseIssuer::issue(') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='ROOT_RESIDENT_LEARNING_EXECUTE') ... ERROR
+  test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='AgentdUnixFinalUseGrantProvider::from_stream(') ... ERROR
+test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback) ... ok
+test_original_issuer_has_only_actual_version_callers (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_original_issuer_has_only_actual_version_callers) ... ok
+test_publication_and_c_runtime_keep_the_original_verifier_tail (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_publication_and_c_runtime_keep_the_original_verifier_tail) ... ok
+test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) ... 
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='QueuedOriginalVersionIssuerV1::new()') ... ERROR
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='let response = tokio::task::spawn_blocking(move ||') ... ERROR
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='require_not_cancelled(&cancelled)?') ... ERROR
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='owner.read_original(&state)?') ... ERROR
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='original.final_use_binding() != &binding') ... ERROR
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='.require_fresh(started, PublicationAccess::NewWork)?') ... ERROR
+  test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='OriginalRootRetainedVersionIssuerV1::request_for_original_retained_version(') ... ERROR
+test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) ... ERROR
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.origin != RetainedVersionOriginV1::Fresh')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Awaiting')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.state.try_lock()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='RetainedVersionHostPhaseV1::Awaiting')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='RetainedVersionHostPhaseV1::Prepared')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='!self.preparation_requested.load(Ordering::Acquire)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='self.read_original(&state)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='let binding = original.final_use_binding().clone()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='.require_fresh(started, PublicationAccess::NewWork)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_claim_comes_only_from_the_actual_current_prepared_owner (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_claim_comes_only_from_the_actual_current_prepared_owner) (function='claim_original_final_use', marker='RetainedVersionFinalUseOutcomeV1::Requested as u8')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_cold_and_unknown_never_reset_the_original_issuer (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer) (injected='self.issuer_worker_started.store(false, Ordering::Release);')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 169, in test_cold_and_unknown_never_reset_the_original_issuer
+    self.rejects_source(WORKER, source + "\nfn unsafe_reset() { " + injected + " }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_cold_and_unknown_never_reset_the_original_issuer (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_cold_and_unknown_never_reset_the_original_issuer) (injected='state.final_use_issuer = Some(issuer);')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 169, in test_cold_and_unknown_never_reset_the_original_issuer
+    self.rejects_source(WORKER, source + "\nfn unsafe_reset() { " + injected + " }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.destination_id != "agentd.cell-generation.next-task-same-model"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.subject_id.is_empty()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.request_sha256 == [0; 32]')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.scope_sha256 == [0; 32]')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='binding.payload_sha256 == [0; 32]')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='!matches!(self.access, OriginalVersionIssuerAccessV1::Available)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='self.access = OriginalVersionIssuerAccessV1::ReadbackOnly')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='request_for_original_retained_version', marker='AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='self.issuer_worker_started.swap(true, Ordering::AcqRel)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='AgentdFinalUseIssuerError::Denied')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='RetainedVersionFinalUseOutcomeV1::Denied as u8')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_exact_purpose_and_once_survive_a_legal_denial (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_exact_purpose_and_once_survive_a_legal_denial) (function='serve_original_final_use', marker='drop(queued)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='self.protected_root.as_ref()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='root.original_uid != 0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='self.check_root()?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='super::super::remaining(root.end)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='self.stream.try_lock()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='if slot.is_none()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_legacy_or_non_root_provider_cannot_be_promoted (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_legacy_or_non_root_provider_cannot_be_promoted) (function='into_original_retained_version_issuer', marker='provider: self')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='SigningKey')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='UnixStream::connect')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='initialize_host_authority(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='DeploymentFinalUseIssuer::issue(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='ROOT_RESIDENT_LEARNING_EXECUTE')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/root_retained_version_issuer.rs', token='AgentdUnixFinalUseGrantProvider::from_stream(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_retained_version_issuer.rs:fn request_for_original_retained_version(: required code order missing: ['binding.destination_id != "agentd.cell-generation.next-task-same-model"', 'binding.subject_id.is_empty()', 'binding.request_sha256 == [0; 32]', 'binding.scope_sha256 == [0; 32]', 'binding.payload_sha256 == [0; 32]', 'return Err(AgentdFinalUseIssuerError::BindingMismatch)', '!matches!(self.access, OriginalVersionIssuerAccessV1::Available)', 'return Err(AgentdFinalUseIssuerError::ChannelClosed)', 'self.access = OriginalVersionIssuerAccessV1::ReadbackOnly', 'AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)']
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='SigningKey')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='UnixStream::connect')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='initialize_host_authority(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='DeploymentFinalUseIssuer::issue(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='ROOT_RESIDENT_LEARNING_EXECUTE')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_no_new_key_policy_socket_or_resident_grant_authorizes_publication (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_no_new_key_policy_socket_or_resident_grant_authorizes_publication) (path='codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs', token='AgentdUnixFinalUseGrantProvider::from_stream(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 210, in test_no_new_key_policy_socket_or_resident_grant_authorizes_publication
+    self.rejects_source(path, source + "\nfn bypass() { " + token + "; }\n")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='QueuedOriginalVersionIssuerV1::new()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='let response = tokio::task::spawn_blocking(move ||')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='require_not_cancelled(&cancelled)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='owner.read_original(&state)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='original.final_use_binding() != &binding')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='.require_fresh(started, PublicationAccess::NewWork)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request) (function='serve_original_final_use', marker='OriginalRootRetainedVersionIssuerV1::request_for_original_retained_version(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 68, in reject_each
+    self.rejects(path, function, marker)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+======================================================================
+ERROR: test_queued_cancel_and_last_actual_read_precede_root_request (test_retained_version_issuer_source_closure.OriginalRetainedVersionIssuerClosureTests.test_queued_cancel_and_last_actual_read_precede_root_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 150, in test_queued_cancel_and_last_actual_read_precede_root_request
+    self.rejects(WORKER, "drop", "self.cancelled.store(true, Ordering::Release)")
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 63, in rejects
+    self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py", line 52, in rejects_source
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ce434f960ee9/retained-version-review/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+retained_version_issuer_proof.VerificationFailure: codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs:fn drop(: required_order must contain marker sequences
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.754s
+
+FAILED (errors=52)
