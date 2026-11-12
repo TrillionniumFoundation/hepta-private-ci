@@ -11,6 +11,8 @@ use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1
 use crate::root_historical_task_read_client::OriginalPostAFrozenLearningAckV1;
 use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 
+#[path = "production_post_a_artifacts.rs"]
+mod artifacts;
 #[path = "production_post_a_q24_deployment.rs"]
 mod deployment;
 #[path = "production_post_a_q24_handoff.rs"]
