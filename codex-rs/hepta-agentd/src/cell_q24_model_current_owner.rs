@@ -85,7 +85,10 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
             material,
             started,
         )?;
-        match self.journal.readback(&admission.key(self.binding)) {
+        match <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(
+            &mut self.journal,
+            &admission.key(self.binding),
+        ) {
             Ok(state) => {
                 let receipt = self.decode_current(&admission, state)?;
                 require_material(material, started, self.now()?)?;
@@ -123,7 +126,10 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
             material,
             started,
         )?;
-        let state = self.journal.readback(&admission.key(self.binding))?;
+        let state = <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(
+            &mut self.journal,
+            &admission.key(self.binding),
+        )?;
         let receipt = self.decode_current(&admission, state)?;
         require_material(material, started, self.now()?)?;
         Ok(receipt)
