@@ -173,5 +173,35 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "RegisteredOriginalLedgerCaptureV1::with_original_ledger_capture(", "|ledger| action(cell, ledger)"))
 
 
+    def test_wire_data_is_bounded_exact_and_only_structurally_validated(self):
+        self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn validate_data(", (
+            "self.purpose != LEDGER_READ_DATA_PURPOSE", "self.registered_identity.len() > 4096",
+            "self.cut.ledger_sequence != 2", "self.cut.signature_sequence != 5",
+            "self.cut.witness_length != 72 + 88 * 2", "self.source.sequence == 0",
+            "self.source.publication != self.cut.source_publication",
+            "serde_json::from_str(&self.registered_identity)", "!= self.registered_identity",
+            "self.trust.require_target(&self.target)?", "pin.mode & 0o7777 != 0o600",
+            "(other.device, other.inode) == (pin.device, pin.inode)",
+            "serde_json::to_vec(self).map_err(io::Error::other)?.len() > 12 * 1024"))
+
+    def test_wire_conversion_preserves_entire_retained_cut(self):
+        self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn ledger_cut(", (
+            "self.validate_data()?", "self.cut.ledger_binding.parse()",
+            "sequence: self.cut.ledger_sequence", "self.cut.ledger_chain.parse()",
+            "segment: None", "sealed: false", "self.cut.ledger_image.parse()",
+            "self.cut.witness_image.parse()"))
+        self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn data_cut_digest(", (
+            "self.validate_data()?", "&self.target.digest()", "&serde_json::to_vec(self)"))
+
+    def test_root_wire_data_comes_from_the_actual_observed_source_and_capture(self):
+        self.check_markers(AGENT + "authority_host_historical_ledger_history.rs", "fn ledger_read_data(", (
+            "let record = &self.record", "let source = &self.source", "let LedgerPhase::Captured { cut }",
+            "registered_identity: record.registered_identity.clone()", "publisher: record.publisher.clone()",
+            "metadata: record.metadata.clone()", "registered_at: record.registered_at",
+            "trust: record.trust.clone()", "files: source\n                    .source_files",
+            "configuration: source.source_configuration.clone()", "sequence: source.source_sequence",
+            "checkpoint: source.source_checkpoint.clone()", "cut: (**cut).clone()", "data.validate_data()?"))
+
+
 if __name__ == "__main__":
     unittest.main()

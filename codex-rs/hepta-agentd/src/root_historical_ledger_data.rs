@@ -238,3 +238,7 @@ impl RootHistoricalLedgerReadDataV1 {
         })
     }
 }
+
+#[cfg(test)]
+#[path = "root_historical_ledger_data_tests.rs"]
+pub(crate) mod tests;
