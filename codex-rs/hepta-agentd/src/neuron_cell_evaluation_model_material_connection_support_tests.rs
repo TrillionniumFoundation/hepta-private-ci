@@ -292,13 +292,8 @@ impl OriginalCellEvaluationModelMaterialV1 {
                 changed.members[0].qualification[start..start + 8]
                     .copy_from_slice(&count.to_be_bytes());
                 assert!(
-                    verify::material(
-                        &self.context,
-                        &self.evaluation,
-                        &changed.encode()?,
-                        current,
-                    )
-                    .is_err(),
+                    verify::material(&self.context, &self.evaluation, &changed.encode()?, current,)
+                        .is_err(),
                     "changed original Qualification count at {start}: {count}"
                 );
             }
@@ -307,13 +302,8 @@ impl OriginalCellEvaluationModelMaterialV1 {
             let mut changed = Body::decode(&self.bytes)?;
             drop(changed.members[0].qualification.drain(start..start + 4));
             assert!(
-                verify::material(
-                    &self.context,
-                    &self.evaluation,
-                    &changed.encode()?,
-                    current,
-                )
-                .is_err()
+                verify::material(&self.context, &self.evaluation, &changed.encode()?, current,)
+                    .is_err()
             );
         }
         let record: serde_json::Value = serde_json::from_slice(&raw.record)?;

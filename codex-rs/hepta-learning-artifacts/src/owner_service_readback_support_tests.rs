@@ -149,7 +149,8 @@ impl OriginalPublicationReadbackFixture {
                     // rejects data reads through a second handle while its
                     // original exclusive lock is held, including at EOF.
                     let bytes = if path == root.join("writer").join("owner.lock") {
-                        let metadata = fs::metadata(&path).fixture("original writer fence metadata");
+                        let metadata =
+                            fs::metadata(&path).fixture("original writer fence metadata");
                         assert!(metadata.is_file());
                         assert_eq!(metadata.len(), 0);
                         Vec::new()
