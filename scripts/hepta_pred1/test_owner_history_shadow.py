@@ -157,6 +157,7 @@ class OwnerHistoryShadowTests(unittest.TestCase):
             for key in route[:-1]:
                 target = target[key]
             target[route[-1]] = value
+            p["owner_decision_sha256"] = Artifact.make(p["owner_decision"]).digest
             with self.subTest(route=route), self.assertRaises(ValueError):
                 self.validate(Artifact.make(p), path, digest)
         p = artifact.payload
