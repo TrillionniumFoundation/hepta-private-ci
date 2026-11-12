@@ -1,0 +1,398 @@
+{
+  "schema": "hepta.root-retirement-source-review.v2",
+  "classification": "ISOLATED_FUTURE_SOURCE_STATIC_REVIEW_NO_BUSINESS_OR_NATIVE_ACCEPTANCE",
+  "source_anchor": {
+    "retirement_original_anchor": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+    "predecessor_overlays": [
+      "c43a53a8c41002c6f7cc3687f03cf1209e7dfcd2",
+      "da0c2dfb21cfa5cfe3d6adfa450751bc415a644f",
+      "609c9cbf86426b3c3db1d313634f64bbd5acd055"
+    ],
+    "current_native_candidate_not_modified": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+    "current_rust": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "contracts_original_source_for_eof_method": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "current_model_ufcs_preserved": "be12430d78451c75c29b7d295bba4ea0459155de"
+  },
+  "ordered_source_packets": [
+    {
+      "blob": "27877fffb867deb92360d1e22ae7fc227eb1fc94",
+      "paths": 20,
+      "operations": 33
+    },
+    {
+      "blob": "527fc3d10d856c4ed7e1816907c08e086ba153e6",
+      "bytes": 16101,
+      "sha256": "5f5a46bcd2ed9844ac370de23e1d7db8c7395e15c0ab9b03a30ee5c586079dd7",
+      "paths": 3,
+      "operations": 5
+    },
+    {
+      "blob": "fea83cbd505a56ee76ec7953501eb24ad756568e",
+      "bytes": 1571,
+      "sha256": "7571d57938bfad8c98a8f83580bb2b03daf39dc3805303449586a052a659812f",
+      "paths": 1,
+      "operations": 1
+    },
+    {
+      "blob": "1d287a5958a1411e67a0bfc0a0517d46ed3228e5",
+      "bytes": 2362,
+      "sha256": "331fbde0d535ed80bbda66300e7bb4e9283ae5fc5044c18638853fbc78ddafbe",
+      "paths": 1,
+      "operations": 1
+    },
+    {
+      "blob": "b9453e40d5c4c01b0ada35b5e482582254c3283e",
+      "bytes": 11381,
+      "sha256": "371cebb218948a340386ee4b8c0bb97b800aec406eaff8f29a8e1c1f296bfc08",
+      "paths": 3,
+      "operations": 3
+    }
+  ],
+  "source_replay": {
+    "packets": [
+      "27877fffb867deb92360d1e22ae7fc227eb1fc94",
+      "527fc3d10d856c4ed7e1816907c08e086ba153e6",
+      "fea83cbd505a56ee76ec7953501eb24ad756568e",
+      "1d287a5958a1411e67a0bfc0a0517d46ed3228e5",
+      "b9453e40d5c4c01b0ada35b5e482582254c3283e"
+    ],
+    "proofs": [
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+        "preimage": null,
+        "postimage": "c4174a13da61e0dc138648c0bee198e4538a967f",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_root_retirement_protocol.rs",
+        "preimage": null,
+        "postimage": "77cba7adc7a61b0177306a56ad608229e9d56d65",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+        "preimage": null,
+        "postimage": "aa1b04235d21b9c0843d4ce0e9e4e125fad5df9e",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+        "preimage": "0995fa5ba2cf8d89f58bfa4fc0f61a6846b93826",
+        "postimage": "5a014bcc8b64df475ae3ca9d96f040c734f41cf6",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+        "preimage": "62099c5cda2cd4d898146724d3c7097ed02cc874",
+        "postimage": "12aa0dd9fc71ebcb8905af82b8b90ae1cb777784",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+        "preimage": "679e8d57e18b83f289e5a2bf1d4be2b5d7380fba",
+        "postimage": "5ab56d766a58febae490cd7c49985ac85be22470",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "preimage": "542b980f64619a517246cdbe9167044f3ae12813",
+        "postimage": "97fa58bf83b7d79ee79f89eb2a8f59cd9f157579",
+        "operations": 5,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "preimage": "f39516fdca8cc9b9e0c015858c7a718e79b3a4e6",
+        "postimage": "e3aa481c47d398ae1af75e54a662d9933ab6164b",
+        "operations": 5,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+        "preimage": "d8c247d245b3b21167009726f072083ea0a7f774",
+        "postimage": "1c486eb7fa62c8ec315926fae97574102461bdbe",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+        "preimage": "5e2df6b31679dd74f849b8486f537ce5ac113719",
+        "postimage": "a565ac202db73b38e7f8ed8a10fa465c8c43afdd",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+        "preimage": "22e66c0d6aa0e31f52c047cb09165c92350c3bde",
+        "postimage": "9e039ee8a2f965ff8823241ecccef63df3693e73",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "preimage": "d645c2dd76d8c3b6aab143d4bfa455434846b939",
+        "postimage": "35ea7ae69be1c9a4c0d63dbe712256537d73370f",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+        "preimage": "fb95d13214318a255f868aea9f016911bc69990c",
+        "postimage": "2c3d72e02c038c81152a1846aa606f1763205e46",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+        "preimage": "58246b219bf6ceaa3036a7fba97e011d212163af",
+        "postimage": "259a690e5a3560dd37e361a294f3cebbd06e24d0",
+        "operations": 5,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "preimage": "937dc93c9180557d733e02e466ce1d76a613cc39",
+        "postimage": "9e08890e4af6adc36481f4e1a26085ea8262e7a1",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "preimage": "d9229a52531085863be71676adeaf18ccf3eeb3c",
+        "postimage": "aabe32bbce2e3e88aaf55173b61ec6c57ddd9fe7",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+        "preimage": "180dbf9613d679bc85f74703da927ab436f97e97",
+        "postimage": "78d76b418b3d15245934f2f1e35dcb622ee69539",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "preimage": "3e6f57b48a3d436a70baed86fc2745388311065a",
+        "postimage": "bd384826097d10fc2309673548484f146d04c9e0",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "preimage": "90ec99571ab368ac139c1ac166b625554b503954",
+        "postimage": "775d7ae13bae53b5354b262443211100be349486",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "initial",
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "preimage": "729b6352f9c81a9e0f022433916857f70e466918",
+        "postimage": "ce6ea5c8eabb60d036ebda914434c9f0ba2b054c",
+        "operations": 2,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "delta",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+        "preimage": "259a690e5a3560dd37e361a294f3cebbd06e24d0",
+        "postimage": "f7785e4c8dd6fdd81a331446fbb543971a151358",
+        "operations": 3,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "delta",
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "preimage": "97fa58bf83b7d79ee79f89eb2a8f59cd9f157579",
+        "postimage": "93a091c6b7789e30bb3df8dd2fc77422dc9df759",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "delta",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_tests.rs",
+        "preimage": null,
+        "postimage": "034f7771c6e83c41b136898190ccef62c4fa87d1",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "ufcs",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+        "preimage": "f7785e4c8dd6fdd81a331446fbb543971a151358",
+        "postimage": "6701f711e626f2d84a15fe37e080d97cd2468c16",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "none",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_tests.rs",
+        "preimage": "034f7771c6e83c41b136898190ccef62c4fa87d1",
+        "postimage": "b6ee1b7393c9e96c54ed1754117a676f0f1307cf",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "eof",
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "preimage": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+        "postimage": "2cbe42c91de941a1dd162bc72a9b472615dcd96c",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "eof",
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "preimage": "9e08890e4af6adc36481f4e1a26085ea8262e7a1",
+        "postimage": "6c7416f4471dd7cdff6fb80e8f312bf626a31b59",
+        "operations": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "eof",
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer_tests.rs",
+        "preimage": "8d9b69b7f324322c8f1cabd925327ffe3ef3b29c",
+        "postimage": "5caf2ac3fdd3941694efac25c14d7142b535b69c",
+        "operations": 1,
+        "unique_forward_reverse": true
+      }
+    ],
+    "total_operations": 43,
+    "final_paths": 23,
+    "native_executed": false
+  },
+  "final_manifest": "e9efe50688c791a5eb956fb61f2864ef5878f974",
+  "resource_and_drop_order_report": "53a24e4f7f4aff51f4f04b7392e945833a8d2f9e",
+  "final_metadata_annex": "22c1f044d6a61fbe9da64a620991c04ff9f5dd19",
+  "counts": {
+    "final_source_paths": 23,
+    "production_paths": 21,
+    "test_source_paths": 2,
+    "source_operations": 43,
+    "metadata_operations": 30,
+    "new_components_unrun": 10
+  },
+  "findings": [
+    "The optional Root-owned mode authorizes only this Root resource-retirement scope. None and explicit null remain disabled and preserve original raw MetadataFile bytes. Some requires canonical full descriptor bytes. Unknown fields/enum values reject; no new signing credential.",
+    "All eight real purpose channels register once. The short admission mutex couples the intent cut with active actual exchanges. Busy refuses immediately under the original 500 ms request; admission remains held through original response/postcheck. Later business entry rejects after intent.",
+    "Only exact clean EOF from the same live original peer after authorized intent can return an owned retired channel. Ordinary EOF before intent, partial/malformed frames, peer death, expiry, poison and original errors remain errors. Returned channels are not join proofs.",
+    "Actual scoped five-lane, Initial, Learning, Model, Publication, registration and material bridge handles join. Actual owner objects and original listening sockets remain in private bundles; the service is held as the final field. Deadline watcher stops only after the real joined bundle then itself joins.",
+    "Root review identified ACK2/OS-exit ordering race against the unchanged client request postcheck. The three-operation correction retains every original request/exchange byte and adds only a consuming one-byte EOF wait on original owner.end. It rejects bytes, refuses peer death, never rearms a request or restores stream.",
+    "The final Root response plus original postchecks precede EOF wait while all joined resources remain borrowed and held. A valid daemon must finish ACK2 checks, then release the same actual final stream and aliases while staying alive, before observing Root pidfd. EOF alone proves neither ACK consumption nor C completion.",
+    "The original registered writer record does not own its transferred File. Root ACK2 proves no writer-lock release. The actual daemon owns the transferred lock and must independently join and release its consumers and Session.",
+    "Nine original whole-file prefixes and legacy serve_deployment body were byte-checked. Original 8627-byte progress prefix and mandatory EOF error remain. Shared Model/publication helpers are deliberate optional-lane changes, with original authority/effect/postchecks retained; they are not claimed byte-identical.",
+    "All ten new component sources were read. Four are data/config checks, three actual scoped thread/Unix FD lifetime checks, three actual peer EOF/postcheck/death checks. No component manufactures a valid Root/C/business owner or proves a complete deployment."
+  ],
+  "default_prefix_proof": {
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+        "bytes": 15084,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+        "bytes": 4764,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+        "bytes": 3826,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+        "bytes": 8282,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+        "bytes": 11192,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+        "bytes": 11764,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "bytes": 9933,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+        "bytes": 9444,
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "bytes": 8627,
+        "unchanged": true
+      }
+    ],
+    "count": 9,
+    "scope": "Exact original byte prefixes, not a claim about appended behavior"
+  },
+  "default_deployment_body_proof": {
+    "preimage_file": "58246b219bf6ceaa3036a7fba97e011d212163af",
+    "current_final_file": "6701f711e626f2d84a15fe37e080d97cd2468c16",
+    "old_body_bytes": 2758,
+    "old_body_sha256": "adbe625a81af40d756c92eac6a5a14ddd6f04c7bf70ac21f09c833c899cdcd0a",
+    "only_opt_in_dispatch_removed_equal": true
+  },
+  "metadata_review": {
+    "operations": 30,
+    "old_boundary_count": 638,
+    "new_boundary_count": 32,
+    "total": 670,
+    "old_caller_append_sets": 22,
+    "new_protected": 17,
+    "total_protected": 457,
+    "changed_protected_projected": 20,
+    "functions_projected": 56,
+    "file_orders_projected": 8,
+    "actual_new_caller_lexical_sources": 41,
+    "actual_old_added_caller_lexical_sources": 22,
+    "current_factory_fix_preserved": true,
+    "qualification": "Bounded V8 projection mirrors original raw-required and masked forbidden/order checks, including explicit function-pointer patterns. No original full checker/global typed resolver was run."
+  },
+  "mandatory_remaining": [
+    "Semantically union exact source operations with current V44 Factory bytes and future Entry/B/Session/Circuit/Learning/daemon packages; never install whole old parent postimages.",
+    "Actual daemon normal C+Learning+Delivery+Circuit+Session held-owner caps must precede Root intent. Pending normal release APIs and same final-peer alias order must be implemented and reviewed.",
+    "Original full fixed-source native seven-package and Root17 gates, then actual ordinary business, independent consumer and true OS exit/restart evidence remain required."
+  ],
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "compiled": false,
+  "original_checker_run": false
+}

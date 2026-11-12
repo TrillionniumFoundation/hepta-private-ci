@@ -1,0 +1,142 @@
+{
+  "scope": "Root GET/hash and exact reversible source operations only. Semantic review ongoing; no compile/checker/native pass.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "pre": "00746463d49ea655658ff7ba88210cb00c278cf3",
+      "post": "7e1157e21db3408e9f466e17ee029a468fd96563",
+      "bytes": 2293,
+      "sha256": "de19f2725804c847f0954df729d29504b312096d6572ba173daefb84ec3dc0d1",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "pre": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+      "post": "1596d6a8d1593c523d0590a1c2c247d80db7ac1b",
+      "bytes": 9163,
+      "sha256": "0b82c41f241d5c2076eb9a1e9fb986f1fddbb5005fe6384a73308f7397b39bc2",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "pre": "58232d6e10de477c7a66da516a1607a2aab788fe",
+      "post": "48f805e36647ead8a9daf9d58618a080db308a46",
+      "bytes": 10898,
+      "sha256": "b203db63825098b8b840ba0199c199a0073a17ee6868f52a35245aeae11a0de1",
+      "operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "pre": "10301009f2a48e9f29de82cd22eee75f0a1cf622",
+      "post": "d7d6f2fd0df8f00448a236aa0a42a7a7bcef91ee",
+      "bytes": 20444,
+      "sha256": "286183eb57b3ce3463d3dcd2e0e0fc70a5eaf0f67156d60bbe4ee1cc13c813cb",
+      "operations": 12
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+      "pre": "cba8c4bfef61cb1b7b0485488b75155d1b25a6ee",
+      "post": "928d9d5feaddffb761e7beabdfccffa44886d476",
+      "bytes": 1742,
+      "sha256": "d61088387a4d1670ed324be680a5b8dc8fe100496786254b8215dff1181fad06",
+      "operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "pre": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "post": "1359c703eeabe8db89888d2eb2cde74e40233e60",
+      "bytes": 11333,
+      "sha256": "deab4b558e7256df33afac316e099a79dff485bab95c797c62ff02c6d4106e26",
+      "operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "pre": "ea4ce7dd433d16cf52bf5ac1dcfa9a070c28c380",
+      "post": "023b9e25eb5de02ccc49038caa3f51be89d61f0b",
+      "bytes": 8437,
+      "sha256": "1997f1ec7e30ba70fca6478de9bc555730ac3ce153533b4c93b2b26f9a3b24af",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "pre": "2b1e7650ceee05aeda579cb9752e7b1a96fef3d3",
+      "post": "7c2aa29b25cf37f99d782d4ca95f67bfa40a6d75",
+      "bytes": 14644,
+      "sha256": "7bd19d2130a2906239979e555bece0ea93d418fb8fb99d5e0eacbc0b1cba0433",
+      "operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pre": "76fb854d6420436cfef09bb16381f00cd37cc786",
+      "post": "6d1e59c308e795a0aa9add50223157ac4326841e",
+      "bytes": 5796,
+      "sha256": "3ea8a53d3871b1a10a88da0d6e587fb4dc2944a1e62d72a5f58e1186c1a989a8",
+      "operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+      "pre": "79f04c788016bcdc73a159badc63fad04f55e5c7",
+      "post": "c185418398abcd84bbe12bc606bc00821cf5ff93",
+      "bytes": 12942,
+      "sha256": "8a3e14688bff33721b3884efe53dc70fcc1e27a599e5b396a2680ab73b8839cd",
+      "operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": "65f064377dda55a07b58c82f0872d6479b8a7e1b",
+      "post": "635ddfbc986ac228518fde194b12537fc4cc5620",
+      "bytes": 23458,
+      "sha256": "78fbe407c9bcbdd113a30c86ee3057d1dc89ef0435da7e14c00a71868d634906",
+      "operations": 17
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "pre": "24824eb6f12e09de91f9e771611a97a961c0ed05",
+      "post": "42251dde9ebecc5560674fb087196e13db28cadb",
+      "bytes": 10824,
+      "sha256": "4739ab09f5f92291abb88b75e2121d707453177bdd8373dfbcf5b3497acee8f1",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "pre": "011b7b97ed9133d951d6bd4937a673a93ad49ae5",
+      "post": "f4be0fb2769ec29f72a6f643b07090d79e155c63",
+      "bytes": 14655,
+      "sha256": "a651c50b742d20a985b7749bd6f5f3a1f571a9fa7277da84cd4032114e9d2b5d",
+      "operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "pre": "f4c2b22bbf862d2b278a05860a1d49cd29526044",
+      "post": "3d5c2b9fd2beef6533205759af0ea88a89175fd7",
+      "bytes": 11414,
+      "sha256": "e3867fdd5ac3d9a3d6b7fdde89d40ca9b0989b35736a934a05812288a9fb3e1b",
+      "operations": 13
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "pre": "54c313682ed5df932ae399df39d73b82aa270916",
+      "post": "4869ccce2c29236a2f60484146031af56c685f51",
+      "bytes": 5704,
+      "sha256": "afe763ae45522cd59d265bd019e15bf07f168b0593f8515593b6eed3e0023b50",
+      "operations": 9
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+      "pre": null,
+      "post": "bd6aa8db0536eba249d3612e5d28ccefd04e813a",
+      "bytes": 18489,
+      "sha256": "f23b86ec3a4a518e3ca0088298c8ea6ecd83f5ee73612e47fac973964a8cbdee",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_retirement.rs",
+      "pre": null,
+      "post": "4e648876c60830cdff827f7070d5f4cc1deaaa68",
+      "bytes": 7561,
+      "sha256": "bcf16d888ed2307d90618c6d67f92ca25734f17708ae8d064edfc1fc697fbb74",
+      "operations": 1
+    }
+  ],
+  "operations": 77
+}

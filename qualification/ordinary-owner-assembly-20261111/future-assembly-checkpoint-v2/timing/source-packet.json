@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "actual-daemon-prepared-material-admission-cut",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "status": "Git/static candidate only; no refs/native/helper/checker execution",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "pre": "c41a4301ed8d9c2121882065f5d5d201a5a59d24",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+        "blob": "4ef3f49734c60efac985b75216e6ac8463b3aae4",
+        "bytes": 13372,
+        "sha256": "5f2814ceaf835e5b41b7cdc2c499269ef957971b3a07b4930ebc6ecb91f18b33",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    InitialRootEnrolled,\n",
+          "after": "    InitialRootEnrolled,\n    /// Data-only notification for the concrete deployment: externally supplied\n    /// material is ready for Root's independent validation. This is no ACK.\n    OriginalPreparedMaterialsReady,\n"
+        },
+        {
+          "op": "replace",
+          "before": "    events: mpsc::Sender<OriginalSameActorPhaseEventV1>,\n}",
+          "after": "    events: mpsc::Sender<OriginalSameActorPhaseEventV1>,\n    await_prepared_materials_before_retirement: bool,\n}"
+        },
+        {
+          "op": "replace",
+          "before": "        OriginalSameActorPhaseHostV1 { commands, events },",
+          "after": "        OriginalSameActorPhaseHostV1 {\n            commands, events, await_prepared_materials_before_retirement: false,\n        },"
+        },
+        {
+          "op": "replace",
+          "before": "impl OriginalSameActorPhaseHostV1 {\n",
+          "after": "/// Only the actual file-backed coordinator uses this private timing mode.\n/// The original public typed-host channel retains its immediate retirement.\npub(crate) fn original_same_actor_deployment_host_channel(\n    capacity: usize,\n) -> Result<\n    (\n        mpsc::Sender<OriginalSameActorPhaseCommandV1>,\n        mpsc::Receiver<OriginalSameActorPhaseEventV1>,\n        OriginalSameActorPhaseHostV1,\n    ),\n    AgentdError,\n> {\n    let (commands, events, mut host) = original_same_actor_phase_host_channel_v1(capacity)?;\n    host.await_prepared_materials_before_retirement = true;\n    Ok((commands, events, host))\n}\n\nimpl OriginalSameActorPhaseHostV1 {\n    /// Wait only BEFORE the first original retirement request exists. The\n    /// unchanged request creates its own 500 ms budget after this returns.\n    /// Cancellation remains inside A's actual owned loop/cleanup scope.\n    async fn wait_original_deployment_materials(\n        &mut self,\n        context: &OriginalSameActorRootContext,\n        prepared: &CellQ24PreparedLearningV1,\n    ) -> Result<(), AgentdError> {\n        if !self.await_prepared_materials_before_retirement {\n            return Ok(());\n        }\n        // Consume the local notification obligation once, before any await.\n        self.await_prepared_materials_before_retirement = false;\n        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());\n        let expiry = prepared.initial().request.envelope.expiry_unix_seconds;\n        require_original_material_time(context, expiry)?;\n        let expired = async {\n            loop {\n                if let Err(error) = require_original_material_time(context, expiry) {\n                    return Err(error);\n                }\n                tokio::time::sleep(std::time::Duration::from_millis(5)).await;\n            }\n        };\n        let ready = tokio::select! {\n            received = self.receive_original(context) => received,\n            result = expired => result,\n        }?;\n        if !matches!(ready, OriginalSameActorPhaseCommandV1::OriginalPreparedMaterialsReady) {\n            return Err(phase_refused(\"original prepared-material notification is missing\"));\n        }\n        require_original_material_time(context, expiry)?;\n        closing.disarm();\n        Ok(())\n    }\n\n"
+        },
+        {
+          "op": "replace",
+          "before": "fn phase_refused(message: &str) -> AgentdError {",
+          "after": "fn require_original_material_time(\n    context: &OriginalSameActorRootContext,\n    expiry_unix_seconds: u64,\n) -> Result<(), AgentdError> {\n    OriginalSameActorRootContext::require_current(context)?;\n    let now = context.clock().now_unix_ms().map_err(phase_owner_error)? / 1_000;\n    if now >= expiry_unix_seconds {\n        return Err(phase_refused(\"original prepared business deadline elapsed\"));\n    }\n    OriginalSameActorRootContext::require_current(context)\n}\n\nfn phase_refused(message: &str) -> AgentdError {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "pre": "9dd3a83ce60d5ac6bfcb29a12b75e64cf5cd2b96",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+        "blob": "b4ca8e174be906350d1206e5a8cdf92f1a700518",
+        "bytes": 10172,
+        "sha256": "d8e5161220dc3d92b9b052bd9752d688638d90d88c28ccef157b1c81b1096281",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "before": "        let retirement = OriginalDaemonPhaseRetirement::begin_original_retirement(",
+          "after": "        // No original retirement frame or request_started has been created\n        // yet. A remains owned by this actual controller until the concrete\n        // host reports externally supplied material ready for Root to inspect.\n        host.wait_original_deployment_materials(&self.context, &prepared).await?;\n        self.require_original_execution()?;\n        let retirement = OriginalDaemonPhaseRetirement::begin_original_retirement("
+        }
+      ]
+    }
+  ],
+  "actual_caller_source_snapshots": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+      "blob": "62bfd57b3059fdc8f1d68fb3a02d08334ea84649",
+      "bytes": 6149,
+      "sha256": "bc711a99ef6c41a4cd7e7ecceffaba94dfd80cad094e1f337a3490e3949822f4",
+      "create_get_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "blob": "e6a038c03bb6f77898c01a21d5183c2ca25564c5",
+      "bytes": 10966,
+      "sha256": "e42d0fbc101cf3e18d1169472d37d9da3b1ea6cda97782ac0589c803dd8fc870",
+      "create_get_equal": true
+    }
+  ],
+  "contract": {
+    "legacy": "The existing public host constructor initializes the new private switch false. It never waits or samples a new clock at this seam.",
+    "selected": "Only the concrete deployment host constructor opts in. APprepared notification precedes the one wait. The exact Prepared envelope expiry and same Gate remain the upper bounds.",
+    "ordering": [
+      "actual Prepared and retained source already exist",
+      "APprepared event to actual coordinator",
+      "external original data-ready only, same Prepared expiry/Gate",
+      "consume one OriginalPreparedMaterialsReady command",
+      "actual execution recheck",
+      "begin_original_retirement captures its unchanged original 500 ms request_started"
+    ],
+    "not_authority": "Ready only reports external material submission; Root opens its actual Root-owned approval files, checks them and independently returns the original ACK. No scope capability is made here.",
+    "failure": "One consumed command, no replay/re-arm. An error or cancellation closes the existing phase while the original A controller still owns its real loop/resources and follows its existing cleanup."
+  },
+  "assembly_obligations": [
+    "Factory and material coordinator snapshots are actual authored call sites but their complete module/Startup parent cut follows separately.",
+    "No normal completion/Root retirement token is introduced. Original terminal Err remains."
+  ],
+  "verification": {
+    "exact_unique_forward_reverse": true,
+    "python": false,
+    "helper": false,
+    "checker": false,
+    "cargo": false,
+    "native": false,
+    "tests_executed": 0
+  }
+}

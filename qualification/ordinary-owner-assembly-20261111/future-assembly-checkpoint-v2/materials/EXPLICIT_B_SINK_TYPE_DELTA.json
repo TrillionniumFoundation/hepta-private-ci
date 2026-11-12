@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "actual_B_sink_receiver_type_annotation",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "after_packet": "1ff328c73288924ea8e98a5e213fbe2e6be84c00",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "pre": "821360eb2d4c0537e816ea4e2428a3d719a4c3d8",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "blob": "c3efd3424e1b849054c378a1c532ef9256291f02",
+        "bytes": 11450,
+        "sha256": "8ece32d6b1ecad3e83113f8d85086e036b90517daca878e71c684e2e4ac0c2f0",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "let mut sink = self.evidence_store.open_original_sink(files)?;",
+          "after": "let mut sink: LockedFileProductQualificationEvidenceSinkV1 =\n            self.evidence_store.open_original_sink(files)?;"
+        }
+      ]
+    }
+  ],
+  "proof": {
+    "one_unique_forward_reverse": true,
+    "actual_return_type": "fn open_original_sink(&self, files: &mut OriginalDeploymentFiles) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError>",
+    "definition_blob": "5ddacddb99924751d37ef72fc244150bccac3dc5",
+    "original_helper_read_only": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "reason": "Original e23bb target-only typed receiver parser scans readback in this file because OriginalCellQ24TrainingReadbackV1 occurs in the real parameter/import. An instance method initializer does not infer sink's actual non-Trainer type. This exact real-type annotation resolves that ambiguity without changing any owner/call/order."
+  },
+  "validation": {
+    "compiler": false,
+    "original_helper_executed": false,
+    "native": false,
+    "authority_change": false
+  }
+}

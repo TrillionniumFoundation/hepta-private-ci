@@ -1,0 +1,95 @@
+//! Concrete ordinary deployment material owners and event coordinator.
+//! Data from files never substitutes for the original signed ingress,
+//! Prepared, B execution, Root approval or opaque owner capabilities.
+
+use std::path::PathBuf;
+use std::sync::Arc;
+use codex_hepta_types::Digest32;
+use crate::AgentdError;
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;
+
+#[path = "same_actor_q24_deployment_client.rs"]
+mod client;
+#[path = "same_actor_q24_deployment_ingress.rs"]
+mod ingress;
+#[path = "same_actor_q24_deployment_owner.rs"]
+mod owner;
+#[path = "same_actor_q24_deployment_factory.rs"]
+mod factory;
+#[path = "same_actor_q24_deployment_coordinator.rs"]
+mod coordinator;
+#[path = "same_actor_q24_deployment_files.rs"]
+mod files;
+#[path = "same_actor_q24_deployment_learning_data.rs"]
+mod learning_data;
+#[path = "same_actor_q24_deployment_learning.rs"]
+mod learning;
+#[path = "same_actor_q24_deployment_preparation.rs"]
+mod preparation;
+#[path = "same_actor_q24_deployment_cell_data.rs"]
+mod cell_data;
+#[path = "same_actor_q24_deployment_bundle_data.rs"]
+mod bundle_data;
+#[path = "same_actor_q24_deployment_model.rs"]
+mod model;
+#[path = "same_actor_q24_deployment_task.rs"]
+mod task;
+#[path = "same_actor_q24_deployment_c.rs"]
+mod c;
+#[path = "same_actor_q24_deployment_artifact_data.rs"]
+mod artifact_data;
+#[path = "same_actor_q24_deployment_artifacts.rs"]
+mod artifacts;
+#[path = "same_actor_q24_deployment_exchange.rs"]
+mod exchange;
+#[path = "same_actor_q24_deployment_temporal_data.rs"]
+mod temporal_data;
+#[path = "same_actor_q24_deployment_comparison_data.rs"]
+mod comparison_data;
+#[path = "same_actor_q24_deployment_evaluation_data.rs"]
+mod evaluation_data;
+#[path = "same_actor_q24_deployment_evaluation_signing.rs"]
+mod evaluation_signing;
+#[path = "same_actor_q24_deployment_evaluation_storage.rs"]
+mod evaluation_storage;
+#[path = "same_actor_q24_deployment_evaluation.rs"]
+mod evaluation;
+#[path = "same_actor_q24_deployment_observation_data.rs"]
+mod observation_data;
+#[path = "same_actor_q24_deployment_data.rs"]
+mod data;
+#[path = "same_actor_q24_deployment_witness.rs"]
+mod witness;
+
+pub(crate) use owner::OriginalDeploymentCoordinatorOwner;
+
+/// Only a selected pathname and exact immutable digest, not authority.
+pub(crate) struct OriginalDeploymentDescriptor(files::PinnedFileData);
+
+impl OriginalDeploymentDescriptor {
+    pub(crate) fn from_original_arguments(path: PathBuf, digest: Digest32) -> Result<Self, AgentdError> {
+        if !path.is_absolute() {
+            return Err(deployment_refused("original deployment descriptor must be absolute"));
+        }
+        Ok(Self(files::PinnedFileData { path, sha256: digest.into_array() }))
+    }
+}
+
+pub(crate) async fn open_original_deployment(
+    context: Arc<OriginalSameActorRootContext>,
+    descriptor: OriginalDeploymentDescriptor,
+) -> Result<(OriginalSameActorBusinessInputsV1, OriginalDeploymentCoordinatorOwner), AgentdError> {
+    let factory::OriginalLoadedDeployment { business, coordinator } =
+        factory::load_original_deployment(Arc::clone(&context), descriptor.0).await?;
+    let owner = OriginalDeploymentCoordinatorOwner::start_original(context, coordinator)?;
+    Ok((business, owner))
+}
+
+fn deployment_refused(message: &str) -> AgentdError {
+    AgentdError::GenerationFenced(format!("original same-actor deployment: {message}"))
+}
+
+fn deployment_error(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::Invalid(format!("original same-actor deployment: {error}"))
+}

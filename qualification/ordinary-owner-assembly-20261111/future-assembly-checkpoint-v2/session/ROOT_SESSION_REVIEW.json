@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "classification": "BOUNDED_STATIC_SOURCE_REVIEW_NOT_NATIVE_QUALIFICATION",
+  "packet": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+  "independent_review": "5c47f0be6fe8512b7f03ac60a8e403f7e24dc6a6",
+  "verdict": "No confirmed local blocker in the reviewed six-file fault-custody slice. It requires actual external caller wiring before compilation and does not implement normal completion.",
+  "review_scope": [
+    "Full exact 27-operation forward/reverse reconstruction; all pre/post complete Git/SHA256/byte identities independently verified.",
+    "All changed existing-parent lines read through exact operations; actual complete phase constructor and synchronize_consumers read; both new product modules and both new test/support modules read in full.",
+    "Eleven original critical struct/Future/owner/Drop extents independently compared byte-for-byte with their actual pre/post source spans and SHA256."
+  ],
+  "findings": [
+    "An externally pre-created slot reserves immediately before the only real phase RootWorker spawn. No await or fallible callback intervenes before construction of the actual Session and synchronous retention of the same handle. The original single postcheck then runs; its refusal drops the Session while the slot retains the actual task.",
+    "The real initial feed has an empty consumers vector and synchronize_consumers returns before spawning any ConsumerSyncJob. The later synchronization registry is outside LiveRoot, avoiding a strong cycle through FinalUseAuthority clocks.",
+    "Session's last _retirement field marks only destruction of that Session's own earlier fields. The custody separately holds Weak<LiveRoot>, the actual worker handle and a final original WriterCustody share; no File-unlock or process-completion claim follows from the notice.",
+    "All actual phase blocking consumer handles are retained synchronously before timeout-await. Joins borrow those same handles under their own Tokio mutexes; cancellation retains them. Ready outcomes are stored without an intervening await; original owner errors return unchanged and panic/cancellation observations stay distinct.",
+    "No std admission lock is held across an await. Stop releases Gate state before subsequently locking consumer bookkeeping; the consumer registry has no reverse reference to the slot. Session cleanup first requires actual Session retirement, then truly joins the refresh task, then every retained consumer task, without an original serial/owner guard.",
+    "The new post-admission BOOTTIME sample deducts from the SAME original started and rejects regression/exhaustion. MAX_AGE_NS remains 500000000; default None spawn/timeout logic and final original age check remain. This is an explicit one-site sampling increase, not a claim of unchanged sample count.",
+    "The five meaningful components exercise actual blocked store CAS, real Unix FDs, the exact original writer-file lock, cancelled activation/join, real panic, pre-spawn rejection and post-spawn refusal. Their synthetic same-UID proof scope is explicit. None was executed by Root."
+  ],
+  "mandatory_remaining": [
+    "Actual main/coordinator must retain the empty slot before polling receive and pass/verify that same custody before activation.",
+    "Retain and truly join the two earlier bootstrap consumer-open tasks, not covered by this registry.",
+    "On failure, drop the actual inner receive/Launch and Session/Context/borrowed activation owners before this cleanup; keep the original multithread Tokio runtime alive.",
+    "Current stop-and-join closes the same Gate including the progress peer. It must not precede normal Root ACK exchange; genuine C terminal and purpose-bound normal retirement need separate concrete interfaces.",
+    "Keep original uncertainty/error states and Startup final Err until the complete actual normal chain exists. Drive required cleanup before dropping its cap; destructors alone are not joins.",
+    "Actual caller/protected metadata and original full formatter/compiler/QA/caller/native gates remain mandatory. Explicit required/forbidden keys are required in every new protected row."
+  ],
+  "tests_read_not_run": 5,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "root-retirement-default-material-compatibility-component-delta",
+  "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_tests.rs",
+  "preimage": "034f7771c6e83c41b136898190ccef62c4fa87d1",
+  "postimage": "b6ee1b7393c9e96c54ed1754117a676f0f1307cf",
+  "postimage_bytes": 11871,
+  "postimage_sha256": "a2d0042bca4dbbf7ca6c1af7df63169992732819d76aa198d1535b373c4f9476",
+  "operations": [
+    {
+      "op": "replace",
+      "before": "    let default = serde_json::to_vec(&default).unwrap();\n    assert_ne!(Digest32::of_bytes(&encoded), Digest32::of_bytes(&default));\n",
+      "after": "    let default = serde_json::to_vec(&default).unwrap();\n    assert_eq!(\n        serde_json::from_slice::<serde_json::Value>(&default).unwrap(),\n        original\n    );\n    assert_eq!(\n        default.as_slice(),\n        concat!(\n            r#\"{\"schema_version\":1,\"initial_deployment\":\"/component/initial.json\",\"#,\n            r#\"\"publication_deployment\":\"/component/current.json\",\"#,\n            r#\"\"q24_model_reservation\":\"/component/model.json\",\"#,\n            r#\"\"learning_profile\":\"/component/learning.json\"}\"#\n        )\n        .as_bytes()\n    );\n    let mut explicitly_disabled = original.clone();\n    explicitly_disabled\n        .as_object_mut()\n        .unwrap()\n        .insert(\"root_worker_retirement\".into(), serde_json::Value::Null);\n    let explicitly_disabled: DeploymentData =\n        serde_json::from_value(explicitly_disabled).unwrap();\n    assert!(explicitly_disabled.root_worker_retirement.is_none());\n    assert_eq!(serde_json::to_vec(&explicitly_disabled).unwrap(), default);\n    assert_ne!(Digest32::of_bytes(&encoded), Digest32::of_bytes(&default));\n"
+    }
+  ],
+  "depends_on": "527fc3d10d856c4ed7e1816907c08e086ba153e6",
+  "reason": "Within the existing fourth component, require None serialization to equal the old five-field object and exact field-order bytes without a new null field. Explicit null remains disabled None and serializes to the same bytes. Production parsing is unchanged.",
+  "component_test_count_before": 7,
+  "component_test_count_after": 7,
+  "verified": {
+    "unique_forward_reverse": true,
+    "create_get_exact": true,
+    "tests_run": false,
+    "product_source_changed": false,
+    "refs_changed": false
+  }
+}

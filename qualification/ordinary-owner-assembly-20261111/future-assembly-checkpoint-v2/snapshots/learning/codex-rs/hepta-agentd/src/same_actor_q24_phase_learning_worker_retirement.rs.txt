@@ -1,0 +1,316 @@
+//! Return actual retired Learning and Delivery owners only after the same
+//! C cut, durable ACK and all original workers have genuinely joined.
+//! Fault paths still close first, cancel the original lanes, then await them.
+
+use super::*;
+use crate::AgentdIdentity;
+use crate::circuit_task::OriginalSameActorCJoined;
+use crate::circuit_task::OriginalSameActorCQuiescence;
+use crate::learning_iteration::OriginalLearningDeliveryRetired;
+use crate::learning_iteration::OriginalLearningLoopRetired;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use crate::same_actor_q24_phase_learning::OriginalLearningWorkJoined;
+
+/// No public constructor, Clone or decoded representation. These fields are
+/// the actual returned owners and actual join receipt, retained until Root's
+/// separate purpose-bound resource-retirement permission is available.
+pub(crate) struct OriginalRetiredLearningOwners {
+    _closing: CloseSameActorPhaseOnDrop,
+    work: Arc<OriginalSameActorLearningWork>,
+    learning: OriginalLearningLoopRetired,
+    delivery: OriginalLearningDeliveryRetired,
+    joined: OriginalLearningWorkJoined,
+}
+
+/// Returned by the real required worker, never stored back into Work. The
+/// consumed C capability now holds the removed route attachment and owners.
+pub(crate) struct OriginalSameActorLearningJoined {
+    original: OriginalSameActorCJoined,
+}
+
+struct OriginalRetirableLearningWorker {
+    closing: CloseSameActorPhaseOnDrop,
+    worker: OriginalSameActorLearningWorker,
+    store: AutomationStore,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+}
+
+impl OriginalRetiredLearningOwners {
+    pub(crate) fn require_original_work(
+        &self,
+        work: &Arc<OriginalSameActorLearningWork>,
+    ) -> Result<(), AgentdError> {
+        if !Arc::ptr_eq(&self.work, work) {
+            self.work.gate().close();
+            work.gate().close();
+            return Err(refused("retired Learning owners belong to another original Work"));
+        }
+        // Verify retained origin and actual completed facts only. Stopped
+        // lanes are not reopened through an ordinary current-authority query.
+        OriginalLearningLoopRetired::require_original_work(&self.learning, work)?;
+        OriginalLearningDeliveryRetired::require_original_work(&self.delivery, work)?;
+        OriginalLearningWorkJoined::require_original_work(&self.joined, work)
+    }
+}
+
+impl OriginalSameActorLearningJoined {
+    pub(crate) fn require_original_phase(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        OriginalSameActorCJoined::require_original_phase(&self.original, identity, gate)
+    }
+
+    pub(crate) fn original_c_joined(&self) -> &OriginalSameActorCJoined {
+        &self.original
+    }
+}
+
+impl OriginalSameActorLearningWorker {
+    pub(crate) fn run_original_retirable(
+        self,
+        store: AutomationStore,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+    ) -> impl std::future::Future<Output = Result<OriginalSameActorLearningJoined, AgentdError>>
+    + Send
+    + 'static {
+        let attempt = OriginalRetirableLearningWorker {
+            closing: self.work.original_failure_scope(),
+            worker: self,
+            store,
+            state,
+            cancellation,
+        };
+        async move {
+            let mut attempt = attempt;
+            let work = Arc::clone(&attempt.worker.work);
+            let result = OriginalSameActorLearningWorker::run_original_retirable_lanes(
+                attempt.worker,
+                attempt.store, attempt.state, attempt.cancellation,
+            ).await;
+            match result {
+                Ok(joined) => {
+                    // Actual CJoined and its retained Learning owners already
+                    // own failure closure before this outer guard is disarmed.
+                    attempt.closing.disarm();
+                    Ok(joined)
+                }
+                Err(error) => {
+                    work.gate().close();
+                    let cleanup = work.close_and_join_original_work().await;
+                    Err(match cleanup {
+                        Ok(()) => error,
+                        Err(cleanup) => refused(format!(
+                            "{error}; original Learning blocking cleanup: {cleanup}",
+                        )),
+                    })
+                }
+            }
+        }
+    }
+
+    async fn run_original_retirable_lanes(
+        self,
+        store: AutomationStore,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+    ) -> Result<OriginalSameActorLearningJoined, AgentdError> {
+        OriginalSameActorRootContext::require_current(&self.context)?;
+        self.work.require_identity_and_gate(state.identity(), self.context.gate())?;
+        CircuitLearningDeliveryRuntimeV1::attach_sources(&self.delivery, &state)?;
+        let OriginalSameActorLearningWorker {
+            context,
+            work,
+            learning,
+            delivery,
+            pending,
+            _closing: mut closing,
+        } = self;
+        let stopped = cancellation.child_token();
+        let mut learning = Box::pin(LearningIterationRuntimeBootstrapV1::run_original_retirable(
+            learning, Arc::clone(&state), stopped.clone(), Arc::clone(&work),
+        ));
+        let mut delivery = Box::pin(CircuitLearningDeliveryRuntimeV1::run_original_retirable(
+            delivery, store.clone(), Arc::clone(&state), stopped.clone(), Arc::clone(&work),
+        ));
+        let mut successor = Box::pin(PendingSuccessorOwner::run_original_retirable(
+            pending, store, state, stopped.clone(), Arc::clone(context.gate()),
+        ));
+        let mut retirement = Box::pin(work.take_original_normal_retirement());
+        let mut learning_result = None;
+        let mut delivery_result = None;
+        let mut successor_result = None;
+        let mut quiescence = None;
+        let mut stop_authorized = false;
+        let mut successor_stop_requested = false;
+        let failed = loop {
+            if cancellation.is_cancelled() {
+                break Some("original Learning worker received fault cancellation".to_owned());
+            }
+            if let Err(error) = context.gate().require_open() {
+                break Some(format!("original Learning worker phase: {error}"));
+            }
+            if !stop_authorized {
+                if let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result) {
+                    let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);
+                    if let Err(error) = work.authorize_original_learning_stop(original, acknowledged) {
+                        break Some(format!("original terminal Learning stop: {error}"));
+                    }
+                    stop_authorized = true;
+                }
+            }
+            if stop_authorized && !successor_stop_requested {
+                if let Some(Ok(learning_owner)) = &learning_result {
+                    let Some(original) = &quiescence else {
+                        break Some("original C quiescence is missing".into());
+                    };
+                    if let Err(error) = OriginalLearningLoopRetired::require_original_work(
+                        learning_owner, &work,
+                    ) {
+                        break Some(format!("original Learning owner retirement: {error}"));
+                    }
+                    // The actual Learning receiver has closed and all its
+                    // reservations have finished. Only now stop the real C
+                    // loop using the drain-authorized local slot token.
+                    if let Err(error) =
+                        OriginalSameActorCQuiescence::request_original_successor_retirement(original)
+                    {
+                        break Some(format!("original C local retirement: {error}"));
+                    }
+                    successor_stop_requested = true;
+                }
+            }
+            if successor_stop_requested
+                && learning_result.is_some()
+                && delivery_result.is_some()
+                && successor_result.is_some()
+            {
+                break None;
+            }
+            tokio::select! {
+                result = &mut learning, if learning_result.is_none() => {
+                    let error = result.as_ref().err().map(ToString::to_string);
+                    learning_result = Some(result);
+                    if let Some(error) = error {
+                        break Some(format!("original Learning lane: {error}"));
+                    }
+                    if !stop_authorized {
+                        break Some("Learning returned without the actual terminal stop".into());
+                    }
+                }
+                result = &mut delivery, if delivery_result.is_none() => {
+                    let error = result.as_ref().err().map(ToString::to_string);
+                    delivery_result = Some(result);
+                    if let Some(error) = error {
+                        break Some(format!("original Delivery lane: {error}"));
+                    }
+                }
+                result = &mut successor, if successor_result.is_none() => {
+                    let error = result.as_ref().err().map(ToString::to_string);
+                    successor_result = Some(result);
+                    if let Some(error) = error {
+                        break Some(format!("original Successor lane: {error}"));
+                    }
+                    if !successor_stop_requested {
+                        break Some("C worker returned without its actual retirement request".into());
+                    }
+                }
+                result = &mut retirement, if quiescence.is_none() => {
+                    match result {
+                        Ok(original) => quiescence = Some(original),
+                        Err(error) => break Some(format!("original C retirement request: {error}")),
+                    }
+                }
+                _ = cancellation.cancelled() =>
+                    break Some("original Learning worker received fault cancellation".into()),
+                _ = context.gate().cancelled() =>
+                    break Some("original Learning worker phase closed".into()),
+                _ = tokio::time::sleep_until(tokio::time::Instant::from_std(
+                    context.gate().deadline().instant(),
+                )) => break Some("original Learning worker phase ended".into()),
+            }
+        };
+        // This future has no spawned work. Its requested C capability has
+        // either moved into quiescence exactly once, or is still held by Work.
+        drop(retirement);
+        if let Some(primary) = failed {
+            context.gate().close();
+            stopped.cancel();
+            // Poll every still-running actual lane concurrently. In particular
+            // Learning cleanup may wait for observer jobs owned by C; waiting
+            // for only one lane first would hide that dependency.
+            let (learning_done, delivery_done, successor_done) = tokio::join!(
+                async {
+                    match learning_result.take() {
+                        Some(result) => result,
+                        None => learning.as_mut().await,
+                    }
+                },
+                async {
+                    match delivery_result.take() {
+                        Some(result) => result,
+                        None => delivery.as_mut().await,
+                    }
+                },
+                async {
+                    match successor_result.take() {
+                        Some(result) => result,
+                        None => successor.as_mut().await,
+                    }
+                },
+            );
+            let mut causes = vec![primary];
+            if let Err(error) = &learning_done {
+                causes.push(format!("Learning joined: {error}"));
+            }
+            if let Err(error) = &delivery_done {
+                causes.push(format!("Delivery joined: {error}"));
+            }
+            if let Err(error) = &successor_done {
+                causes.push(format!("Successor joined: {error}"));
+            }
+            // Discard any returned original owners before outer fault cleanup
+            // can report that the registered blocking work has been released.
+            drop((learning_done, delivery_done, successor_done, quiescence));
+            return Err(refused(causes.join("; ")));
+        }
+        let learning = learning_result.take()
+            .ok_or_else(|| refused("original Learning owner result is absent"))??;
+        let delivery = delivery_result.take()
+            .ok_or_else(|| refused("original Delivery owner result is absent"))??;
+        let successor = successor_result.take()
+            .ok_or_else(|| refused("original C worker join is absent"))??;
+        let quiescence = quiescence.take()
+            .ok_or_else(|| refused("original C quiescence was not retained"))?;
+        if cancellation.is_cancelled() {
+            return Err(refused("fault cancellation preceded actual Work retirement"));
+        }
+        let joined = work.join_original_normal_work(&learning, &delivery).await?;
+        if cancellation.is_cancelled() {
+            return Err(refused("fault cancellation followed actual Work retirement"));
+        }
+        let owners = OriginalRetiredLearningOwners {
+            _closing: work.original_failure_scope(),
+            work: Arc::clone(&work),
+            learning,
+            delivery,
+            joined,
+        };
+        OriginalRetiredLearningOwners::require_original_work(&owners, &work)?;
+        let original = OriginalSameActorCQuiescence::finish_original_successor_join(
+            quiescence, successor, owners,
+        )?;
+        OriginalSameActorCJoined::require_original_phase(
+            &original, context.identity(), context.gate(),
+        )?;
+        closing.disarm();
+        Ok(OriginalSameActorLearningJoined { original })
+    }
+}
+
+fn refused(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::GenerationFenced(error.to_string())
+}

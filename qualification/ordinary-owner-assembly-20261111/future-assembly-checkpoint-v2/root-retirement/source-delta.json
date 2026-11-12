@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "kind": "root-worker-retirement-source-and-component-delta-v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "depends_on_source_packet": "27877fffb867deb92360d1e22ae7fc227eb1fc94",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "preimage": "259a690e5a3560dd37e361a294f3cebbd06e24d0",
+      "preimage_bytes": 20705,
+      "preimage_sha256": "1c427e7be275254b2eb00b8363c2d2f7c11d186715849f6f9dadb1470205b87d",
+      "postimage": "f7785e4c8dd6fdd81a331446fbb543971a151358",
+      "postimage_bytes": 21184,
+      "postimage_sha256": "e136a7dd7b5d37a93debea394a15d09804c604a43c3d825f4c423a9609301034",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "        let supplied = material_bridge\n            .join()\n            .map_err(|_| io::Error::other(\"original phase material bridge panicked\"))\n            .and_then(|result| result);\n        if supplied.is_err() {\n            gate.close();\n        }\n",
+          "after": "        let supplied = join_original_retirement_thread(\n            material_bridge,\n            &gate,\n            \"original phase material bridge panicked\",\n        );\n"
+        },
+        {
+          "op": "replace",
+          "before": "        let watched = watcher\n            .join()\n            .map_err(|_| io::Error::other(\"original Root deadline worker panicked\"))\n            .and_then(|result| result);\n        if watched.is_err() {\n            gate.close();\n        }\n",
+          "after": "        let watched = join_original_retirement_thread(\n            watcher,\n            &gate,\n            \"original Root deadline worker panicked\",\n        );\n"
+        },
+        {
+          "op": "replace",
+          "before": "    result\n}\n",
+          "after": "    result\n}\n\nfn join_original_retirement_thread<T>(\n    worker: std::thread::ScopedJoinHandle<'_, io::Result<T>>,\n    gate: &Arc<SameActorPhaseGate>,\n    panic_message: &'static str,\n) -> io::Result<T> {\n    // The actual owned handle is consumed here. A returned owner stays in T;\n    // no status/count or peer message can replace this physical thread join.\n    let joined = worker\n        .join()\n        .map_err(|_| io::Error::other(panic_message))\n        .and_then(|result| result);\n    if joined.is_err() {\n        gate.close();\n    }\n    joined\n}\n\n#[cfg(test)]\n#[path = \"authority_host_same_actor_q24_retirement_tests.rs\"]\nmod retirement_tests;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "preimage": "97fa58bf83b7d79ee79f89eb2a8f59cd9f157579",
+      "preimage_bytes": 13338,
+      "preimage_sha256": "13cf29c4a136d495a0ccabb146174dc504bbc0d2923baa75caa16e7f7f1d65cc",
+      "postimage": "93a091c6b7789e30bb3df8dd2fc77422dc9df759",
+      "postimage_bytes": 13378,
+      "postimage_sha256": "6693d1eef5ef2df2cd98ed003b1fadc4a833aee5a48844da776474f9ff462ade",
+      "operations": [
+        {
+          "op": "replace",
+          "before": ".map(|gate| gate.enter_original_lane())",
+          "after": ".map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_tests.rs",
+      "preimage": null,
+      "preimage_bytes": null,
+      "preimage_sha256": null,
+      "postimage": "034f7771c6e83c41b136898190ccef62c4fa87d1",
+      "postimage_bytes": 10929,
+      "postimage_sha256": "2ec75ea1096c14280231098c6d83dd63c53358f3126e206bbc5e7193bead3889",
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Only protocol/configuration data and real thread/socket custody components.\n//! No test constructs a Root retirement scope, C completion cap, business\n//! receipt, Root publication, daemon join proof or operating-system exit.\n\nuse super::*;\nuse pretty_assertions::assert_eq;\nuse std::io::Read;\nuse std::os::unix::net::UnixStream;\n\nuse crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;\nuse crate::same_actor_q24_deployment_protocol::PROGRESS_PURPOSE;\nuse crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementAcknowledgement;\nuse crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementRequest;\nuse crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementStage;\nuse crate::same_actor_q24_root_retirement_protocol::RETIREMENT_PURPOSE;\n\nfn binding() -> OriginalDeploymentBinding {\n    OriginalDeploymentBinding {\n        phase: Digest32::of_bytes(b\"retirement-component-phase-data\").to_string(),\n        root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {\n            uid: 0,\n            pid: 91,\n            boot_id: \"retirement-component-data-only-boot\".into(),\n            process_start_ticks: 17,\n        },\n        consumer: codex_hepta_memory::CognitiveCheckpointPeerLifetime {\n            uid: 60001,\n            pid: 92,\n            boot_id: \"retirement-component-data-only-boot\".into(),\n            process_start_ticks: 18,\n        },\n        identity: Digest32::of_bytes(b\"retirement-component-identity-data\").to_string(),\n        root_end_boottime_ns: 111,\n    }\n}\n\nfn intent_request() -> OriginalRootRetirementRequest {\n    OriginalRootRetirementRequest {\n        schema_version: 1,\n        purpose: RETIREMENT_PURPOSE.into(),\n        binding: binding(),\n        sequence: 1,\n        stage: OriginalRootRetirementStage::AuthorizeRootRetirement,\n        current_registration: Digest32::of_bytes(b\"component-current-registration-data\").to_string(),\n        current_request: Digest32::of_bytes(b\"component-current-request-data\").to_string(),\n        original_intent: None,\n    }\n}\n\nfn gate() -> io::Result<Arc<SameActorPhaseGate>> {\n    // A stop/deadline component only; this creates no issuer or Root scope.\n    SameActorPhaseGate::from_original_deadline(\n        SameActorPhaseDeadline::at_original_service_start(std::time::Duration::from_secs(30))?,\n    )\n}\n\n#[test]\nfn retirement_data_requires_exact_original_incarnation_and_current() {\n    let original = intent_request();\n    let raw = original.encode_original().unwrap();\n    let exact = OriginalRootRetirementRequest::decode_original(&raw).unwrap();\n    assert_eq!(exact.encode_original().unwrap(), raw);\n    let require = |changed: OriginalRootRetirementRequest| {\n        changed.require_original(\n            &original.binding,\n            &original.current_registration,\n            &original.current_request,\n            OriginalRootRetirementStage::AuthorizeRootRetirement,\n            None,\n        )\n    };\n    let mut changed = intent_request();\n    changed.binding.root.process_start_ticks += 1;\n    assert!(require(changed).is_err());\n    let mut changed = intent_request();\n    changed.binding.consumer.process_start_ticks += 1;\n    assert!(require(changed).is_err());\n    let mut changed = intent_request();\n    changed.binding.root_end_boottime_ns += 1;\n    assert!(require(changed).is_err());\n    let mut changed = intent_request();\n    changed.binding.identity = Digest32::of_bytes(b\"other-identity-data\").to_string();\n    assert!(require(changed).is_err());\n    let mut changed = intent_request();\n    changed.current_registration = Digest32::of_bytes(b\"other-current-registration-data\").to_string();\n    assert!(require(changed).is_err());\n    let mut changed = intent_request();\n    changed.current_request = Digest32::of_bytes(b\"other-current-request-data\").to_string();\n    assert!(require(changed).is_err());\n}\n\n#[test]\nfn retirement_data_refuses_progress_purpose_skipped_intent_and_noncanonical_frames() {\n    let mut changed = intent_request();\n    changed.purpose = PROGRESS_PURPOSE.into();\n    assert!(changed.encode_original().is_err());\n    let mut changed = intent_request();\n    changed.sequence = 2;\n    changed.stage = OriginalRootRetirementStage::ObserveRootWorkersJoined;\n    assert!(changed.encode_original().is_err());\n    let mut changed = intent_request();\n    changed.original_intent = Some(changed.digest().unwrap());\n    assert!(changed.encode_original().is_err());\n\n    let original = intent_request();\n    let mut raw = original.encode_original().unwrap();\n    raw.push(b' ');\n    assert!(OriginalRootRetirementRequest::decode_original(&raw).is_err());\n    let mut value = serde_json::to_value(&original).unwrap();\n    value.as_object_mut().unwrap().insert(\"completion_proof\".into(), serde_json::json!(true));\n    assert!(OriginalRootRetirementRequest::decode_original(\n        &serde_json::to_vec(&value).unwrap()\n    ).is_err());\n    assert!(OriginalRootRetirementRequest::decode_original(&[]).is_err());\n    assert!(OriginalRootRetirementRequest::decode_original(&vec![b'x'; 65_537]).is_err());\n}\n\n#[test]\nfn retirement_acknowledgement_is_bound_to_one_original_intent_and_request() {\n    let intent = intent_request();\n    let intent_digest = intent.digest().unwrap();\n    let mut joined = intent_request();\n    joined.sequence = 2;\n    joined.stage = OriginalRootRetirementStage::ObserveRootWorkersJoined;\n    joined.original_intent = Some(intent_digest.clone());\n    let mut acknowledgement = OriginalRootRetirementAcknowledgement {\n        schema_version: 1,\n        purpose: RETIREMENT_PURPOSE.into(),\n        binding: joined.binding.clone(),\n        sequence: 2,\n        stage: OriginalRootRetirementStage::ObserveRootWorkersJoined,\n        original_request: joined.digest().unwrap(),\n        original_intent: intent_digest.clone(),\n    };\n    // This codec roundtrip remains data; it cannot construct any actual owner.\n    let raw = acknowledgement.encode_original(&joined, &intent_digest).unwrap();\n    assert!(OriginalRootRetirementAcknowledgement::decode_original(\n        &raw, &joined, &intent_digest\n    ).is_ok());\n    assert!(OriginalRootRetirementAcknowledgement::decode_original(\n        &raw, &intent, &intent_digest\n    ).is_err());\n    acknowledgement.original_intent = Digest32::of_bytes(b\"other-intent-data\").to_string();\n    assert!(acknowledgement.require_original_request(&joined, &intent_digest).is_err());\n    acknowledgement.original_intent = intent_digest.clone();\n    acknowledgement.original_request = intent_digest.clone();\n    assert!(acknowledgement.require_original_request(&joined, &intent_digest).is_err());\n}\n\n#[test]\nfn root_owned_retirement_mode_has_no_implicit_or_unknown_value() {\n    let original = serde_json::json!({\n        \"schema_version\": 1,\n        \"initial_deployment\": \"/component/initial.json\",\n        \"publication_deployment\": \"/component/current.json\",\n        \"q24_model_reservation\": \"/component/model.json\",\n        \"learning_profile\": \"/component/learning.json\",\n    });\n    let default: DeploymentData = serde_json::from_value(original.clone()).unwrap();\n    assert!(default.root_worker_retirement.is_none());\n    let mut enabled = original.clone();\n    enabled.as_object_mut().unwrap().insert(\n        \"root_worker_retirement\".into(),\n        serde_json::json!(\"original_root_workers\"),\n    );\n    let enabled: DeploymentData = serde_json::from_value(enabled).unwrap();\n    assert!(matches!(\n        enabled.root_worker_retirement,\n        Some(RootWorkerRetirementMode::OriginalRootWorkers)\n    ));\n    let encoded = serde_json::to_vec(&enabled).unwrap();\n    let default = serde_json::to_vec(&default).unwrap();\n    assert_ne!(Digest32::of_bytes(&encoded), Digest32::of_bytes(&default));\n    let mut rejected = original.clone();\n    rejected.as_object_mut().unwrap().insert(\n        \"root_worker_retirement\".into(),\n        serde_json::json!(\"complete_c\"),\n    );\n    assert!(serde_json::from_value::<DeploymentData>(rejected).is_err());\n    let mut rejected = original;\n    rejected.as_object_mut().unwrap().insert(\"ordinary_completed\".into(), serde_json::json!(true));\n    assert!(serde_json::from_value::<DeploymentData>(rejected).is_err());\n}\n\n#[test]\nfn physical_root_join_retains_its_actual_returned_owner_until_drop() -> io::Result<()> {\n    let gate = gate()?;\n    let (owned, mut peer) = UnixStream::pair()?;\n    peer.set_nonblocking(true)?;\n    std::thread::scope(|scope| -> io::Result<()> {\n        let worker = scope.spawn(move || Ok::<_, io::Error>(owned));\n        let returned = join_original_retirement_thread(\n            worker, &gate, \"component owned worker panicked\",\n        )?;\n        gate.require_open()?;\n        let mut byte = [0; 1];\n        assert_eq!(peer.read(&mut byte).unwrap_err().kind(), io::ErrorKind::WouldBlock);\n        drop(returned);\n        assert_eq!(peer.read(&mut byte)?, 0);\n        Ok(())\n    })\n}\n\n#[test]\nfn physical_root_join_error_closes_the_actual_retained_peer_and_preserves_cause() -> io::Result<()> {\n    let gate = gate()?;\n    let (endpoint, mut peer) = UnixStream::pair()?;\n    let _retained = gate.retain_original_stream(&endpoint)?;\n    peer.set_read_timeout(Some(std::time::Duration::from_secs(5)))?;\n    std::thread::scope(|scope| -> io::Result<()> {\n        let reading = scope.spawn(move || {\n            let mut byte = [0; 1];\n            peer.read(&mut byte)\n        });\n        let failed = scope.spawn(|| {\n            Err::<(), _>(io::Error::new(\n                io::ErrorKind::PermissionDenied,\n                \"component original worker refused\",\n            ))\n        });\n        let error = join_original_retirement_thread(\n            failed, &gate, \"component original worker panicked\",\n        ).unwrap_err();\n        assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);\n        assert_eq!(error.to_string(), \"component original worker refused\");\n        assert!(gate.require_open().is_err());\n        assert_eq!(reading.join().expect(\"component peer reader panicked\")?, 0);\n        Ok(())\n    })\n}\n\n#[test]\nfn physical_root_join_panic_cannot_leave_the_final_peer_open() -> io::Result<()> {\n    let gate = gate()?;\n    let (endpoint, mut peer) = UnixStream::pair()?;\n    let _retained = gate.retain_original_stream(&endpoint)?;\n    peer.set_read_timeout(Some(std::time::Duration::from_secs(5)))?;\n    std::thread::scope(|scope| -> io::Result<()> {\n        let panicked = scope.spawn(|| -> io::Result<()> {\n            panic!(\"component actual worker panic\");\n        });\n        let error = join_original_retirement_thread(\n            panicked, &gate, \"component original worker panicked\",\n        ).unwrap_err();\n        assert_eq!(error.kind(), io::ErrorKind::Other);\n        assert_eq!(error.to_string(), \"component original worker panicked\");\n        assert!(gate.require_open().is_err());\n        let mut byte = [0; 1];\n        assert_eq!(peer.read(&mut byte)?, 0);\n        Ok(())\n    })\n}\n"
+        }
+      ]
+    }
+  ],
+  "operation_count": 5,
+  "verification": {
+    "unique_forward_and_reverse_in_memory": true,
+    "all_postimages_git_create_get_exact": true,
+    "source_paths": 3,
+    "new_test_file": 1,
+    "component_tests": 7,
+    "native_or_formatter_or_checker_executed": false,
+    "branch_or_ref_mutated": false
+  },
+  "changes": [
+    "Extract only two actual scoped-thread join/error-close expressions to a private helper, preserving handles/results/causes/order; seven components exercise data refusal and actual thread/socket custody.",
+    "Preserve current V40 actual Model transport UFCS layout from source be12430d78451c75c29b7d295bba4ea0459155de; no permission, deadline or effect change."
+  ],
+  "limits": [
+    "Components do not construct a Root retirement capability or verify a real Root serving success.",
+    "They provide no C effect, whole-daemon completion, or OS-exit/restart evidence.",
+    "Default serving paths and all original Root17 tests/harness remain unchanged.",
+    "No formatter/checker/compiler/test run is claimed; complete CALLERS annex remains separate."
+  ]
+}

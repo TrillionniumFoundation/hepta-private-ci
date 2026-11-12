@@ -1,0 +1,673 @@
+{
+  "schema_version": 1,
+  "kind": "actual-c-retirement-and-natural-circuit-custody-draft",
+  "status": "isolated-source-draft-with-explicit-pending-normal-owners-and-root-intent-dependencies",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "current_reference": "d4d6e32b1e8c1f976c035c0f9581d903622d9e77",
+  "base_rule": "Each exact per-file preimage is authoritative. Existing Circuit custody overlay 173ee1 is required first; other product preimages are unchanged from 53ed/V41/V42. This packet does not edit the V42 Factory source or any ref.",
+  "dependencies": {
+    "circuit_fault_custody": "173ee1feff9ff9bf2de0d81704a511574b9e0a94",
+    "session_fault_custody_not_normal_permission": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+    "work_join_cause": "1c2454bfe32ced466f40402919363df84fcac52a",
+    "work_post": "97b0f8ef88a164c87d13ac73b68ad234b92933bb",
+    "work_parent_post": "838464dba56b2c2f13fc69b1179d5b5d57a9d780",
+    "runtime_stopped_owner_packet": "aeb5f9efa8f2d94ffc8d63a2aae09bd2dfef928e",
+    "runtime_stopped_source": "57127565b350698cb6ada9ad3e67435224c63a13",
+    "normal_learning_owner_bundle": "PENDING actual implementation by chain_nextuse; signatures below are agreed, not an existing compiled API.",
+    "actual_startup_natural_relay_callers": "PENDING runtime_access exact Startup/Launch overlay; no Startup success modification included.",
+    "normal_session_root_intent_release": "PENDING actual private intent-bound release of held business streams/close guards. Fault cleanup must not substitute for normal retirement.",
+    "callers_metadata": "PENDING complete current-source actual caller/guard delta. No checker bypass, fake inbound caller or unused installer is authorized."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "preimage": "00746463d49ea655658ff7ba88210cb00c278cf3",
+      "postimage": "7e1157e21db3408e9f466e17ee029a468fd96563",
+      "bytes": 2293,
+      "sha256": "de19f2725804c847f0954df729d29504b312096d6572ba173daefb84ec3dc0d1",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {\n",
+          "after": "impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {\n    /// Identity of the held original owner, without opening, reading or\n    /// replacing a journal. Data equality cannot substitute for this custody.\n    pub(crate) fn require_original_source_custody(\n        &self,\n        original: &DurableCircuitTaskSourceV1<W>,\n    ) -> Result<(), Error> {\n        if !std::sync::Arc::ptr_eq(&self.original.0, &original.0) {\n            return Err(Error::InvalidBinding);\n        }\n        Ok(())\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "preimage": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+      "postimage": "1596d6a8d1593c523d0590a1c2c247d80db7ac1b",
+      "bytes": 9163,
+      "sha256": "0b82c41f241d5c2076eb9a1e9fb986f1fddbb5005fe6384a73308f7397b39bc2",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "impl AgentdCircuitTaskInvocationProviderV1 for OriginalQ24SuccessorInvocationV1 {\n",
+          "after": "impl OriginalQ24SuccessorInvocationV1 {\n    pub(crate) fn require_original_installed_custody(\n        &self,\n        installed: &OriginalQ24InstalledSuccessorV1,\n        identity: &AgentdIdentity,\n    ) -> Result<(), AgentdError> {\n        if &installed.identity != identity\n            || !matches!(\n                (&self.ledger, &installed.ledger),\n                (Some(actual), Some(held)) if Arc::ptr_eq(actual, held)\n            )\n        {\n            return Err(AgentdError::GenerationFenced(\n                \"original C installation differs from its actual invocation and Ledger\".into(),\n            ));\n        }\n        installed\n            .source\n            .require_original_source_custody(self.source.as_ref())\n            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))\n    }\n}\n\nimpl AgentdCircuitTaskInvocationProviderV1 for OriginalQ24SuccessorInvocationV1 {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "preimage": "58232d6e10de477c7a66da516a1607a2aab788fe",
+      "postimage": "48f805e36647ead8a9daf9d58618a080db308a46",
+      "bytes": 10898,
+      "sha256": "b203db63825098b8b840ba0199c199a0073a17ee6868f52a35245aeae11a0de1",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    Ready,\n    Closed,\n",
+          "after": "    Ready,\n    Retiring,\n    JoinedRetirement,\n    Retired,\n    Closed,\n"
+        },
+        {
+          "op": "replace",
+          "before": "    generation: bool,\n}\n",
+          "after": "    generation: bool,\n    retirement: Option<Arc<crate::circuit_task::OriginalCQuiescenceOrigin>>,\n}\n"
+        },
+        {
+          "op": "replace",
+          "before": "pub(crate) struct SuccessorSlot {\n",
+          "after": "#[path = \"circuit_q24_successor_retirement.rs\"]\nmod retirement;\npub(crate) use retirement::OriginalSuccessorWorkerJoined;\n\npub(crate) struct SuccessorSlot {\n"
+        },
+        {
+          "op": "replace",
+          "before": "                generation: false,\n",
+          "after": "                generation: false,\n                retirement: None,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "preimage": "10301009f2a48e9f29de82cd22eee75f0a1cf622",
+      "postimage": "d7d6f2fd0df8f00448a236aa0a42a7a7bcef91ee",
+      "bytes": 20444,
+      "sha256": "286183eb57b3ce3463d3dcd2e0e0fc70a5eaf0f67156d60bbe4ee1cc13c813cb",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "use std::sync::Weak;\n",
+          "after": "use std::sync::Weak;\nuse std::sync::atomic::AtomicBool;\n"
+        },
+        {
+          "op": "replace",
+          "before": "#[path = \"circuit_task_same_actor_learning.rs\"]\nmod learning;\n",
+          "after": "#[path = \"circuit_task_same_actor_learning.rs\"]\nmod learning;\n#[path = \"circuit_task_same_actor_retirement.rs\"]\nmod retirement;\npub(crate) use retirement::OriginalCQuiescenceOrigin;\npub(crate) use retirement::OriginalSameActorCJoined;\npub(crate) use retirement::OriginalSameActorCQuiescence;\n"
+        },
+        {
+          "op": "replace",
+          "before": "    C {\n        slot: Arc<SuccessorSlot>,\n        invocation: Invocation,\n    },\n}",
+          "after": "    C {\n        slot: Arc<SuccessorSlot>,\n        invocation: Invocation,\n    },\n    ClosingC {\n        slot: Arc<SuccessorSlot>,\n        invocation: Invocation,\n    },\n    RetiredC,\n}"
+        },
+        {
+          "op": "replace",
+          "before": "    submitted: bool,\n    completed: bool,\n}",
+          "after": "    submitted: bool,\n    completed: bool,\n    observation_joined: AtomicBool,\n}"
+        },
+        {
+          "op": "replace",
+          "before": "                Phase::PendingA | Phase::ClosingA { .. } | Phase::AwaitingC => {\n",
+          "after": "                Phase::PendingA\n                | Phase::ClosingA { .. }\n                | Phase::AwaitingC\n                | Phase::ClosingC { .. }\n                | Phase::RetiredC => {\n"
+        },
+        {
+          "op": "replace",
+          "before": "            completed: false,\n        })\n",
+          "after": "            completed: false,\n            observation_joined: AtomicBool::new(false),\n        })\n"
+        },
+        {
+          "op": "replace",
+          "before": "            (Phase::C { slot, invocation }, TaskPhase::C) => {\n",
+          "after": "            (\n                Phase::C { slot, invocation } | Phase::ClosingC { slot, invocation },\n                TaskPhase::C,\n            ) => {\n"
+        },
+        {
+          "op": "replace",
+          "before": "            Phase::C { slot, .. } => slot.pending_count(),\n            Phase::PendingA | Phase::AwaitingC => 0,\n",
+          "after": "            Phase::C { slot, .. } | Phase::ClosingC { slot, .. } => slot.pending_count(),\n            Phase::PendingA | Phase::AwaitingC | Phase::RetiredC => 0,\n"
+        },
+        {
+          "op": "replace",
+          "before": "                Phase::C { slot, .. } => Some(Arc::clone(slot)),\n",
+          "after": "                Phase::C { slot, .. } | Phase::ClosingC { slot, .. } => Some(Arc::clone(slot)),\n"
+        },
+        {
+          "op": "replace",
+          "before": "    learning_work:\n        OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,\n",
+          "after": "    learning_work: OnceLock<\n        Mutex<Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>>,\n    >,\n"
+        },
+        {
+          "op": "replace",
+          "before": "            .saturating_add(self.learning_work.get().map_or(0, |original| {\n                crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::pending_count(\n                    original,\n                )\n            }))",
+          "after": "            .saturating_add(self.learning_work.get().map_or(0, |attached| {\n                match attached.lock() {\n                    Ok(original) => original.as_ref().map_or_else(\n                        || usize::from(!matches!(state.phase, Phase::RetiredC)),\n                        |original| {\n                            crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::pending_count(\n                                original,\n                            )\n                        },\n                    ),\n                    Err(_) => 1,\n                }\n            }))"
+        },
+        {
+          "op": "replace",
+          "before": "        Ok(Self {\n            identity: identity.clone(),\n            handle: CircuitTaskHandleV1 {\n                route: TaskHandleRoute::SameActor { original: route },\n            },\n            owner: Box::new(move |store, state, cancellation| {\n                Box::pin(worker.run(store, state, cancellation))\n            }),\n            original_phase_custody: Some(custody),\n        })\n",
+          "after": "        let worker = crate::same_actor_q24_phase::OriginalSameActorTaskWorker::with_original_outer_custody(\n            worker,\n            &custody,\n        )?;\n        Ok(Self {\n            identity: identity.clone(),\n            handle: CircuitTaskHandleV1 {\n                route: TaskHandleRoute::SameActor { original: route },\n            },\n            owner: Box::new(move |store, state, cancellation| {\n                Box::pin(worker.run(store, state, cancellation))\n            }),\n            original_phase_custody: Some(custody),\n        })\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+      "preimage": "cba8c4bfef61cb1b7b0485488b75155d1b25a6ee",
+      "postimage": "928d9d5feaddffb761e7beabdfccffa44886d476",
+      "bytes": 1742,
+      "sha256": "d61088387a4d1670ed324be680a5b8dc8fe100496786254b8215dff1181fad06",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "            self.learning_work.set(work).map_err(|_| {\n",
+          "after": "            self.learning_work.set(Mutex::new(Some(work))).map_err(|_| {\n"
+        },
+        {
+          "op": "replace",
+          "before": "impl SameActorTaskRoute {\n",
+          "after": "impl SameActorTaskRoute {\n    pub(super) fn original_learning_work(\n        &self,\n    ) -> Result<Arc<OriginalSameActorLearningWork>, AgentdError> {\n        let work = self\n            .learning_work\n            .get()\n            .ok_or_else(poisoned_route)?\n            .lock()\n            .map_err(|_| poisoned_route())?\n            .as_ref()\n            .cloned()\n            .ok_or_else(poisoned_route)?;\n        work.require_identity_and_gate(&self.identity, &self.gate)?;\n        Ok(work)\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "preimage": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "postimage": "1359c703eeabe8db89888d2eb2cde74e40233e60",
+      "bytes": 11333,
+      "sha256": "deab4b558e7256df33afac316e099a79dff485bab95c797c62ff02c6d4106e26",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    async fn install_original_successor(\n",
+          "after": "    /// Preserve the actual original run future and its blocking loop. A\n    /// normal capability is returned only for the exact drain-authorized stop.\n    pub(crate) fn run_original_retirable(\n        mut self,\n        store: AutomationStore,\n        state: Arc<AgentdState>,\n        cancellation: CancellationToken,\n        gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> impl std::future::Future<Output = Result<OriginalSuccessorWorkerJoined, AgentdError>>\n    + Send\n    + 'static {\n        let slot = Arc::clone(&self.slot);\n        let identity = self.context.identity().clone();\n        let closing =\n            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&gate);\n        let mut slot_closing = CloseOnDrop::new(&slot);\n        async move {\n            gate.require_open().map_err(|error| {\n                AgentdError::GenerationFenced(error.to_string())\n            })?;\n            if state.identity() != &identity || cancellation.is_cancelled() {\n                return Err(AgentdError::GenerationFenced(\n                    \"original C retirement worker identity or cancellation differs\".into(),\n                ));\n            }\n            // The separately captured guards now own failure closure. The\n            // unchanged run method still awaits its real in-flight work.\n            self._lifetime.disarm();\n            self.run(store, state, cancellation.clone()).await?;\n            if cancellation.is_cancelled() {\n                return Err(AgentdError::GenerationFenced(\n                    \"original C worker returned during fault cancellation\".into(),\n                ));\n            }\n            let joined = slot.finish_original_retirement_join(&identity, &gate, closing)?;\n            slot_closing.disarm();\n            Ok(joined)\n        }\n    }\n\n    async fn install_original_successor(\n"
+        },
+        {
+          "op": "replace",
+          "before": "impl PendingSuccessorOwner {\n",
+          "after": "struct OriginalRetirableSuccessorAttempt {\n    closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,\n    slot_closing: CloseOnDrop,\n    owner: PendingSuccessorOwner,\n    slot: Arc<SuccessorSlot>,\n    identity: AgentdIdentity,\n    gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    store: AutomationStore,\n    state: Arc<AgentdState>,\n    cancellation: CancellationToken,\n}\n\nimpl PendingSuccessorOwner {\n"
+        },
+        {
+          "op": "replace",
+          "before": "    /// Preserve the actual original run future and its blocking loop. A\n    /// normal capability is returned only for the exact drain-authorized stop.\n    pub(crate) fn run_original_retirable(\n        mut self,\n        store: AutomationStore,\n        state: Arc<AgentdState>,\n        cancellation: CancellationToken,\n        gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> impl std::future::Future<Output = Result<OriginalSuccessorWorkerJoined, AgentdError>>\n    + Send\n    + 'static {\n        let slot = Arc::clone(&self.slot);\n        let identity = self.context.identity().clone();\n        let closing =\n            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&gate);\n        let mut slot_closing = CloseOnDrop::new(&slot);\n        async move {\n            gate.require_open().map_err(|error| {\n                AgentdError::GenerationFenced(error.to_string())\n            })?;\n            if state.identity() != &identity || cancellation.is_cancelled() {\n                return Err(AgentdError::GenerationFenced(\n                    \"original C retirement worker identity or cancellation differs\".into(),\n                ));\n            }\n            // The separately captured guards now own failure closure. The\n            // unchanged run method still awaits its real in-flight work.\n            self._lifetime.disarm();\n            self.run(store, state, cancellation.clone()).await?;\n            if cancellation.is_cancelled() {\n                return Err(AgentdError::GenerationFenced(\n                    \"original C worker returned during fault cancellation\".into(),\n                ));\n            }\n            let joined = slot.finish_original_retirement_join(&identity, &gate, closing)?;\n            slot_closing.disarm();\n            Ok(joined)\n        }\n    }\n\n",
+          "after": "    /// Preserve the actual original run future and its blocking loop. A\n    /// normal capability is returned only for the exact drain-authorized stop.\n    pub(crate) fn run_original_retirable(\n        self,\n        store: AutomationStore,\n        state: Arc<AgentdState>,\n        cancellation: CancellationToken,\n        gate: Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> impl std::future::Future<Output = Result<OriginalSuccessorWorkerJoined, AgentdError>>\n    + Send\n    + 'static {\n        let attempt = OriginalRetirableSuccessorAttempt {\n            closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&gate),\n            slot_closing: CloseOnDrop::new(&self.slot),\n            slot: Arc::clone(&self.slot),\n            identity: self.context.identity().clone(),\n            owner: self,\n            gate,\n            store,\n            state,\n            cancellation,\n        };\n        async move {\n            // Capture the ordered owner, including before the first poll.\n            // A failure closes Gate before dropping actual owner resources.\n            let mut attempt = attempt;\n            attempt.gate.require_open().map_err(|error| {\n                AgentdError::GenerationFenced(error.to_string())\n            })?;\n            if attempt.state.identity() != &attempt.identity\n                || attempt.cancellation.is_cancelled()\n            {\n                return Err(AgentdError::GenerationFenced(\n                    \"original C retirement worker identity or cancellation differs\".into(),\n                ));\n            }\n            // The separately retained guards now own failure closure. The\n            // unchanged run method still awaits its real in-flight work.\n            attempt.owner._lifetime.disarm();\n            PendingSuccessorOwner::run(\n                attempt.owner,\n                attempt.store,\n                attempt.state,\n                attempt.cancellation.clone(),\n            )\n            .await?;\n            if attempt.cancellation.is_cancelled() {\n                return Err(AgentdError::GenerationFenced(\n                    \"original C worker returned during fault cancellation\".into(),\n                ));\n            }\n            let joined = attempt.slot.finish_original_retirement_join(\n                &attempt.identity,\n                &attempt.gate,\n                attempt.closing,\n            )?;\n            attempt.slot_closing.disarm();\n            Ok(joined)\n        }\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "preimage": "ea4ce7dd433d16cf52bf5ac1dcfa9a070c28c380",
+      "postimage": "023b9e25eb5de02ccc49038caa3f51be89d61f0b",
+      "bytes": 8437,
+      "sha256": "1997f1ec7e30ba70fca6478de9bc555730ac3ce153533b4c93b2b26f9a3b24af",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "pub(crate) use state::SuccessorSlot;\n",
+          "after": "pub(crate) use state::SuccessorSlot;\npub(crate) use state::OriginalSuccessorWorkerJoined;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "preimage": "2b1e7650ceee05aeda579cb9752e7b1a96fef3d3",
+      "postimage": "7c2aa29b25cf37f99d782d4ca95f67bfa40a6d75",
+      "bytes": 14644,
+      "sha256": "7bd19d2130a2906239979e555bece0ea93d418fb8fb99d5e0eacbc0b1cba0433",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::SameActorTaskAdmission;\n",
+          "after": "#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::OriginalCQuiescenceOrigin;\n#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::OriginalSameActorCJoined;\n#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::OriginalSameActorCQuiescence;\n#[cfg(target_os = \"linux\")]\npub(crate) use same_actor_phase::SameActorTaskAdmission;\n"
+        },
+        {
+          "op": "replace",
+          "before": "#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitJoinObservation;\n",
+          "after": "#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitNaturalJoin;\n#[cfg(target_os = \"linux\")]\npub(crate) use lifecycle::OriginalCircuitJoinObservation;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "preimage": "76fb854d6420436cfef09bb16381f00cd37cc786",
+      "postimage": "6d1e59c308e795a0aa9add50223157ac4326841e",
+      "bytes": 5796,
+      "sha256": "3ea8a53d3871b1a10a88da0d6e587fb4dc2944a1e62d72a5f58e1186c1a989a8",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "#[cfg(target_os = \"linux\")]\npub(crate) use runtime::SameActorTaskAdmission;\n",
+          "after": "#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCQuiescenceOrigin;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalSameActorCJoined;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalSameActorCQuiescence;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::SameActorTaskAdmission;\n"
+        },
+        {
+          "op": "replace",
+          "before": "#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinObservation;\n",
+          "after": "#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitNaturalJoin;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinObservation;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+      "preimage": "79f04c788016bcdc73a159badc63fad04f55e5c7",
+      "postimage": "c185418398abcd84bbe12bc606bc00821cf5ff93",
+      "bytes": 12942,
+      "sha256": "8a3e14688bff33721b3884efe53dc70fcc1e27a599e5b396a2680ab73b8839cd",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    ) -> CircuitTaskLearningReadinessV1 {\n        // The blocking callback retains this same ticket.",
+          "after": "    ) -> CircuitTaskLearningReadinessV1 {\n        if self.original.phase == TaskPhase::C {\n            return self.observe_original_c_learning(trace).await;\n        }\n        // The blocking callback retains this same ticket."
+        },
+        {
+          "op": "replace",
+          "before": "    pub(crate) fn require_original_phase_execution(&self) -> Result<(), AgentdError> {\n",
+          "after": "    async fn observe_original_c_learning(\n        &self,\n        trace: &CircuitCommittedTraceV2,\n    ) -> CircuitTaskLearningReadinessV1 {\n        let mut closing = CloseSameActorPhaseOnDrop::new(&self.original.route.gate);\n        let work = match self.original.route.original_learning_work() {\n            Ok(work) => work,\n            Err(error) => {\n                self.original.route.close();\n                return CircuitTaskLearningReadinessV1::Pending(\n                    CircuitTaskLearningPendingV1::Refused(error.to_string()),\n                );\n            }\n        };\n        let job = {\n            let admission = match work.reserve_original_blocking() {\n                Ok(admission) => admission,\n                Err(error) => {\n                    self.original.route.close();\n                    return CircuitTaskLearningReadinessV1::Pending(\n                        CircuitTaskLearningPendingV1::Refused(error.to_string()),\n                    );\n                }\n            };\n            let original = Arc::clone(&self.original);\n            let trace = trace.clone();\n            let handle = tokio::task::spawn_blocking(move || {\n                if original.require_original_admission().is_err() {\n                    return Ok::<_, std::convert::Infallible>(\n                        CircuitTaskLearningReadinessV1::Pending(\n                            CircuitTaskLearningPendingV1::OwnerUnavailable,\n                        ),\n                    );\n                }\n                let invocation: &Arc<dyn AgentdCircuitTaskInvocationProviderV1> =\n                    &original.original.invocation;\n                let ready = invocation.observe_learning(\n                    &original.route.identity,\n                    &original.record,\n                    &trace,\n                );\n                Ok(if original.require_original_admission().is_err() {\n                    CircuitTaskLearningReadinessV1::Pending(\n                        CircuitTaskLearningPendingV1::OwnerUnavailable,\n                    )\n                } else {\n                    ready\n                })\n            });\n            // The same actual handle enters the already bound Work registry\n            // before any await. A cancelled receiver never detaches that job.\n            admission.retain_original_handle(handle)\n        };\n        match work.receive_original_job_with_join_cause(job).await {\n            Ok(Ok(ready)) => {\n                if self.original.require_original_admission().is_err() {\n                    self.original.route.close();\n                    return CircuitTaskLearningReadinessV1::Pending(\n                        CircuitTaskLearningPendingV1::OwnerUnavailable,\n                    );\n                }\n                // This fact is set only after that actual handle was joined.\n                // A C ticket cannot finish from a pending count or task result.\n                self.observation_joined.store(true, Ordering::Release);\n                closing.disarm();\n                ready\n            }\n            Ok(Err(never)) => match never {},\n            Err(error) => {\n                self.original.route.close();\n                CircuitTaskLearningReadinessV1::Pending(\n                    CircuitTaskLearningPendingV1::Refused(format!(\n                        \"original learning owner observation stopped: {error}\"\n                    )),\n                )\n            }\n        }\n    }\n\n    pub(crate) fn require_original_phase_execution(&self) -> Result<(), AgentdError> {\n"
+        },
+        {
+          "op": "replace",
+          "before": "        self.require_original_phase_execution()?;\n        self.completed = true;\n",
+          "after": "        self.require_original_phase_execution()?;\n        if self.original.phase == TaskPhase::C\n            && !self.observation_joined.load(Ordering::Acquire)\n        {\n            self.original.route.close();\n            return Err(task_error(Error::CommitUncertain));\n        }\n        self.completed = true;\n"
+        },
+        {
+          "op": "replace",
+          "before": "        match work.receive_original_job_with_join_cause(job).await {\n",
+          "after": "        match crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::receive_original_job_with_join_cause(\n            &work,\n            job,\n        )\n        .await\n        {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "preimage": "65f064377dda55a07b58c82f0872d6479b8a7e1b",
+      "postimage": "635ddfbc986ac228518fde194b12537fc4cc5620",
+      "bytes": 23458,
+      "sha256": "78fbe407c9bcbdd113a30c86ee3057d1dc89ef0435da7e14c00a71868d634906",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "struct OriginalCircuitStart {\n",
+          "after": "/// Physical observation of the same outer handle after the actual C joined\n/// capability and original Runtime delivery. It is not Root's final ACK.\npub(crate) struct OriginalCircuitNaturalJoin {\n    _closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,\n    identity: AgentdIdentity,\n    gate: Arc<SameActorPhaseGate>,\n    job: Arc<OriginalCircuitOwnerJob>,\n}\n\nimpl OriginalCircuitNaturalJoin {\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity\n            || !Arc::ptr_eq(&self.gate, gate)\n            || self.job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED\n        {\n            self.gate.close();\n            return Err(custody_error(\"natural Circuit join differs from its original Runtime\"));\n        }\n        self.gate.require_open().map_err(custody_error)?;\n        Ok(())\n    }\n}\n\nstruct OriginalCircuitStart {\n"
+        },
+        {
+          "op": "replace",
+          "before": "    /// A cancelled Runtime receiver has relinquished this result. Cleanup may\n",
+          "after": "    /// Observe the same handle without requesting stop or closing Gate. The\n    /// caller retains the real C/learning terminal bundle and awaits the\n    /// original run_with_shutdown result before invoking this operation.\n    pub(crate) fn observe_original_natural_join<'a>(\n        &'a self,\n        original_c: &'a crate::circuit_task::OriginalSameActorCJoined,\n    ) -> impl Future<Output = Result<OriginalCircuitNaturalJoin, AgentdError>> + Send + 'a {\n        let closing =\n            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&self.gate);\n        async move {\n            original_c.require_original_phase(&self.identity, &self.gate)?;\n            let job = {\n                let state = self.start.lock().map_err(custody_error)?;\n                if state.stopped {\n                    return Err(custody_error(\"fault-stopped Circuit cannot retire normally\"));\n                }\n                state.job.as_ref().cloned().ok_or_else(|| {\n                    custody_error(\"normal Circuit retirement has no actual started owner\")\n                })?\n            };\n            job.join_original_returned_ok().await?;\n            original_c.require_original_phase(&self.identity, &self.gate)?;\n            if job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED {\n                return Err(custody_error(\"original Runtime has not received the Circuit result\"));\n            }\n            Ok(OriginalCircuitNaturalJoin {\n                identity: self.identity.clone(),\n                gate: Arc::clone(&self.gate),\n                job,\n                _closing: closing,\n            })\n        }\n    }\n\n    /// A cancelled Runtime receiver has relinquished this result. Cleanup may\n"
+        },
+        {
+          "op": "replace",
+          "before": "    pub(super) fn receive_original_result(\n",
+          "after": "    async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {\n        self.gate.require_open().map_err(custody_error)?;\n        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {\n            return Err(custody_error(\"original Circuit owner did not return success\"));\n        }\n        // Keep the original Result for its existing receiver. This operation\n        // observes a join and never calls take, resends or constructs a result.\n        self.gate.require_open().map_err(custody_error)?;\n        Ok(())\n    }\n\n    pub(super) fn receive_original_result(\n"
+        },
+        {
+          "op": "replace",
+          "before": "use tokio::task::JoinHandle;\n",
+          "after": "use tokio::task::JoinHandle;\nuse tokio::sync::Notify;\n"
+        },
+        {
+          "op": "replace",
+          "before": "struct OriginalCircuitStart {\n",
+          "after": "struct OriginalCircuitNormalState {\n    terminal: Option<crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined>,\n    shutdown_admitted: bool,\n    taken: bool,\n}\n\nstruct OriginalCircuitNaturalTake {\n    closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,\n    custody: Arc<OriginalCircuitOwnerCustody>,\n    stopped: crate::production_launcher::OriginalSameActorRuntimeStopped,\n}\n\nstruct OriginalCircuitStart {\n"
+        },
+        {
+          "op": "replace",
+          "before": "    start: Mutex<OriginalCircuitStart>,\n}",
+          "after": "    start: Mutex<OriginalCircuitStart>,\n    normal: Mutex<OriginalCircuitNormalState>,\n    normal_changed: Notify,\n}"
+        },
+        {
+          "op": "replace",
+          "before": "            start: Mutex::new(OriginalCircuitStart {\n                stopped: false,\n                job: None,\n            }),\n",
+          "after": "            start: Mutex::new(OriginalCircuitStart {\n                stopped: false,\n                job: None,\n            }),\n            normal: Mutex::new(OriginalCircuitNormalState {\n                terminal: None,\n                shutdown_admitted: false,\n                taken: false,\n            }),\n            normal_changed: Notify::new(),\n"
+        },
+        {
+          "op": "replace",
+          "before": "    pub(crate) fn request_stop(&self) {\n",
+          "after": "    /// The original Circuit task worker transfers the actual joined bundle\n    /// synchronously. Notification follows ownership retention, never before.\n    pub(crate) fn retain_original_normal_terminal(\n        &self,\n        terminal: crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined,\n    ) -> Result<(), AgentdError> {\n        crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::require_original_phase(\n            &terminal,\n            &self.identity,\n            &self.gate,\n        )?;\n        {\n            let start = self.start.lock().map_err(custody_error)?;\n            if start.stopped || start.job.is_none() {\n                return Err(custody_error(\"terminal custody has no original running Circuit owner\"));\n            }\n        }\n        {\n            let mut normal = self.normal.lock().map_err(custody_error)?;\n            self.gate.require_open().map_err(custody_error)?;\n            if normal.terminal.is_some() || normal.shutdown_admitted || normal.taken {\n                return Err(custody_error(\"original Circuit terminal custody is single-use\"));\n            }\n            normal.terminal = Some(terminal);\n        }\n        self.normal_changed.notify_waiters();\n        Ok(())\n    }\n\n    /// This is the original run_with_shutdown input. It becomes ready only\n    /// after the real terminal bundle has already entered separate custody.\n    pub(crate) fn wait_original_normal_shutdown(\n        self: &Arc<Self>,\n    ) -> impl Future<Output = Result<(), AgentdError>> + Send + 'static {\n        let custody = Arc::clone(self);\n        let mut closing =\n            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&self.gate);\n        async move {\n            loop {\n                let changed = custody.normal_changed.notified();\n                tokio::pin!(changed);\n                changed.as_mut().enable();\n                let remaining = custody.gate.require_open().map_err(custody_error)?;\n                {\n                    let mut normal = custody.normal.lock().map_err(custody_error)?;\n                    if normal.shutdown_admitted || normal.taken {\n                        return Err(custody_error(\"original normal shutdown input was already used\"));\n                    }\n                    if let Some(terminal) = normal.terminal.as_ref() {\n                        crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::require_original_phase(\n                            terminal,\n                            &custody.identity,\n                            &custody.gate,\n                        )?;\n                        normal.shutdown_admitted = true;\n                        closing.disarm();\n                        return Ok(());\n                    }\n                }\n                tokio::select! {\n                    _ = custody.gate.cancelled() => {\n                        return Err(custody_error(\"normal shutdown was closed\"));\n                    }\n                    _ = changed.as_mut() => {}\n                    _ = tokio::time::sleep(remaining.min(std::time::Duration::from_millis(5))) => {}\n                }\n            }\n        }\n    }\n\n    /// Keep the original required worker alive until the Runtime actually\n    /// starts its existing cancellation/drain path. No early Ok is introduced.\n    pub(crate) async fn wait_original_runtime_shutdown(\n        &self,\n        cancellation: &CancellationToken,\n    ) -> Result<(), AgentdError> {\n        loop {\n            let remaining = self.gate.require_open().map_err(custody_error)?;\n            if cancellation.is_cancelled() {\n                let normal = self.normal.lock().map_err(custody_error)?;\n                if !normal.shutdown_admitted || normal.taken || normal.terminal.is_none() {\n                    return Err(custody_error(\"Circuit stopped without the original normal handoff\"));\n                }\n                self.gate.require_open().map_err(custody_error)?;\n                return Ok(());\n            }\n            tokio::select! {\n                _ = cancellation.cancelled() => {}\n                _ = self.gate.cancelled() => {\n                    return Err(custody_error(\"original Circuit phase closed during shutdown\"));\n                }\n                _ = tokio::time::sleep(remaining.min(std::time::Duration::from_millis(5))) => {}\n            }\n        }\n    }\n\n    /// The real phase Launch returns this owner-bearing token only after the\n    /// unchanged Runtime completed successfully, including its failure latch.\n    /// The returned tuple still owns all Root-dependent resources for seq1.\n    pub(crate) fn take_original_natural_join(\n        self: &Arc<Self>,\n        stopped: crate::production_launcher::OriginalSameActorRuntimeStopped,\n    ) -> impl Future<\n        Output = Result<\n            (\n                crate::production_launcher::OriginalSameActorRuntimeStopped,\n                crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined,\n                OriginalCircuitNaturalJoin,\n            ),\n            AgentdError,\n        >,\n    > + Send\n    + 'static {\n        let attempt = OriginalCircuitNaturalTake {\n            closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&self.gate),\n            custody: Arc::clone(self),\n            stopped,\n        };\n        async move {\n            let mut attempt = attempt;\n            crate::production_launcher::OriginalSameActorRuntimeStopped::require_original_origin(\n                &attempt.stopped,\n                &attempt.custody.identity,\n                &attempt.custody.gate,\n            )?;\n            let terminal = {\n                let mut normal = attempt.custody.normal.lock().map_err(custody_error)?;\n                attempt.custody.gate.require_open().map_err(custody_error)?;\n                if !normal.shutdown_admitted || normal.taken {\n                    return Err(custody_error(\"original terminal bundle is not available for natural join\"));\n                }\n                let terminal = normal.terminal.take().ok_or_else(|| {\n                    custody_error(\"original terminal bundle is missing\")\n                })?;\n                normal.taken = true;\n                terminal\n            };\n            let joined = attempt\n                .custody\n                .observe_original_natural_join(\n                    crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::original_c_joined(&terminal),\n                )\n                .await?;\n            crate::production_launcher::OriginalSameActorRuntimeStopped::require_original_origin(\n                &attempt.stopped,\n                &attempt.custody.identity,\n                &attempt.custody.gate,\n            )?;\n            attempt.closing.disarm();\n            Ok((attempt.stopped, terminal, joined))\n        }\n    }\n\n    pub(crate) fn request_stop(&self) {\n"
+        },
+        {
+          "op": "replace",
+          "before": "    pub(crate) fn observe_original_natural_join<'a>(\n",
+          "after": "    fn observe_original_natural_join<'a>(\n"
+        },
+        {
+          "op": "replace",
+          "before": "            original_c.require_original_phase(&self.identity, &self.gate)?;\n            let job = {",
+          "after": "            crate::circuit_task::OriginalSameActorCJoined::require_original_phase(\n                original_c,\n                &self.identity,\n                &self.gate,\n            )?;\n            let job = {"
+        },
+        {
+          "op": "replace",
+          "before": "            original_c.require_original_phase(&self.identity, &self.gate)?;\n            if job.delivery",
+          "after": "            crate::circuit_task::OriginalSameActorCJoined::require_original_phase(\n                original_c,\n                &self.identity,\n                &self.gate,\n            )?;\n            if job.delivery"
+        },
+        {
+          "op": "replace",
+          "before": "        let outcome = state.joined.ok_or_else(|| custody_error(\"outer Circuit join is missing\"))?;\n        Ok(OriginalCircuitJoinObservation {",
+          "after": "        let outcome = state.joined.ok_or_else(|| custody_error(\"outer Circuit join is missing\"))?;\n        drop(state);\n        // Fault cleanup drops the separately retained, already-joined bundle\n        // only after the actual outer owner is joined. No new work is hidden.\n        let terminal = self\n            .normal\n            .lock()\n            .unwrap_or_else(|error| error.into_inner())\n            .terminal\n            .take();\n        drop(terminal);\n        Ok(OriginalCircuitJoinObservation {"
+        },
+        {
+          "op": "replace",
+          "before": "    job: Arc<OriginalCircuitOwnerJob>,\n}\n\nimpl OriginalCircuitNaturalJoin",
+          "after": "    job: Arc<OriginalCircuitOwnerJob>,\n    _custody: Arc<OriginalCircuitOwnerCustody>,\n}\n\nimpl OriginalCircuitNaturalJoin"
+        },
+        {
+          "op": "replace",
+          "before": "    fn observe_original_natural_join<'a>(\n        &'a self,\n",
+          "after": "    fn observe_original_natural_join<'a>(\n        self: &'a Arc<Self>,\n"
+        },
+        {
+          "op": "replace",
+          "before": "                job,\n                _closing: closing,\n",
+          "after": "                job,\n                _closing: closing,\n                _custody: Arc::clone(self),\n"
+        },
+        {
+          "op": "replace",
+          "before": "            let joined = attempt\n                .custody\n                .observe_original_natural_join(\n                    crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::original_c_joined(&terminal),\n                )\n                .await?;\n            crate::production_launcher::OriginalSameActorRuntimeStopped::require_original_origin(\n                &attempt.stopped,\n                &attempt.custody.identity,\n                &attempt.custody.gate,\n            )?;\n            attempt.closing.disarm();\n            Ok((attempt.stopped, terminal, joined))\n",
+          "after": "            let job = attempt.custody.original_natural_job(\n                crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::original_c_joined(&terminal),\n            )?;\n            // Await the retained handle while owning the terminal bundle,\n            // rather than requiring borrowed owner resources to be Sync.\n            job.join_original_returned_ok().await?;\n            crate::circuit_task::OriginalSameActorCJoined::require_original_phase(\n                crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::original_c_joined(&terminal),\n                &attempt.custody.identity,\n                &attempt.custody.gate,\n            )?;\n            crate::production_launcher::OriginalSameActorRuntimeStopped::require_original_origin(\n                &attempt.stopped,\n                &attempt.custody.identity,\n                &attempt.custody.gate,\n            )?;\n            if job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED {\n                return Err(custody_error(\"original Runtime has not received the Circuit result\"));\n            }\n            let joined = OriginalCircuitNaturalJoin {\n                _closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(\n                    &attempt.custody.gate,\n                ),\n                identity: attempt.custody.identity.clone(),\n                gate: Arc::clone(&attempt.custody.gate),\n                job,\n                _custody: Arc::clone(&attempt.custody),\n            };\n            attempt.closing.disarm();\n            Ok((attempt.stopped, terminal, joined))\n"
+        },
+        {
+          "op": "replace",
+          "before": "    /// Observe the same handle without requesting stop or closing Gate. The\n    /// caller retains the real C/learning terminal bundle and awaits the\n    /// original run_with_shutdown result before invoking this operation.\n    fn observe_original_natural_join<'a>(\n        self: &'a Arc<Self>,\n        original_c: &'a crate::circuit_task::OriginalSameActorCJoined,\n    ) -> impl Future<Output = Result<OriginalCircuitNaturalJoin, AgentdError>> + Send + 'a {\n        let closing =\n            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&self.gate);\n        async move {\n            crate::circuit_task::OriginalSameActorCJoined::require_original_phase(\n                original_c,\n                &self.identity,\n                &self.gate,\n            )?;\n            let job = {\n                let state = self.start.lock().map_err(custody_error)?;\n                if state.stopped {\n                    return Err(custody_error(\"fault-stopped Circuit cannot retire normally\"));\n                }\n                state.job.as_ref().cloned().ok_or_else(|| {\n                    custody_error(\"normal Circuit retirement has no actual started owner\")\n                })?\n            };\n            job.join_original_returned_ok().await?;\n            crate::circuit_task::OriginalSameActorCJoined::require_original_phase(\n                original_c,\n                &self.identity,\n                &self.gate,\n            )?;\n            if job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED {\n                return Err(custody_error(\"original Runtime has not received the Circuit result\"));\n            }\n            Ok(OriginalCircuitNaturalJoin {\n                identity: self.identity.clone(),\n                gate: Arc::clone(&self.gate),\n                job,\n                _closing: closing,\n                _custody: Arc::clone(self),\n            })\n        }\n    }\n\n",
+          "after": "    /// Retain the same actual handle for a natural observation. This is a\n    /// synchronous check; no borrowed terminal owner crosses the later await.\n    fn original_natural_job(\n        &self,\n        original_c: &crate::circuit_task::OriginalSameActorCJoined,\n    ) -> Result<Arc<OriginalCircuitOwnerJob>, AgentdError> {\n        crate::circuit_task::OriginalSameActorCJoined::require_original_phase(\n            original_c,\n            &self.identity,\n            &self.gate,\n        )?;\n        let state = self.start.lock().map_err(custody_error)?;\n        if state.stopped {\n            return Err(custody_error(\"fault-stopped Circuit cannot retire normally\"));\n        }\n        state.job.as_ref().cloned().ok_or_else(|| {\n            custody_error(\"normal Circuit retirement has no actual started owner\")\n        })\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "preimage": "24824eb6f12e09de91f9e771611a97a961c0ed05",
+      "postimage": "42251dde9ebecc5560674fb087196e13db28cadb",
+      "bytes": 10824,
+      "sha256": "4739ab09f5f92291abb88b75e2121d707453177bdd8373dfbcf5b3497acee8f1",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "().await.unwrap().unwrap()\n    else {\n        panic!(\"the original JoinError mapping was lost\");\n    };\n    assert!(error.starts_with(\"Circuit task owner stopped: \"));\n}\n",
+          "after": "().await.unwrap().unwrap()\n    else {\n        panic!(\"the original JoinError mapping was lost\");\n    };\n    assert!(error.starts_with(\"Circuit task owner stopped: \"));\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn natural_join_observation_waits_for_the_real_fd_owner_and_does_not_take_its_result() {\n    let (_directory, custody) = custody();\n    let (held, mut observed) = UnixStream::pair().unwrap();\n    observed.set_nonblocking(true).unwrap();\n    let (entered, ready) = tokio::sync::oneshot::channel();\n    let (release, wait) = mpsc::channel();\n    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();\n    let handle = tokio::task::spawn_blocking(move || {\n        let _held = held;\n        entered.send(()).unwrap();\n        wait.recv_timeout(WAIT).unwrap();\n        Ok(())\n    });\n    let job = admission.retain_original_handle(handle);\n    tokio::time::timeout(WAIT, ready).await.unwrap().unwrap();\n\n    // This is the actual internal join operation, not a fabricated C or\n    // normal-phase cap. Cancelling its borrow cannot drop the retained task.\n    let mut first = Box::pin(job.join_original_returned_ok());\n    std::future::poll_fn(|context| {\n        assert!(first.as_mut().poll(context).is_pending());\n        std::task::Poll::Ready(())\n    }).await;\n    drop(first);\n    let mut byte = [0];\n    assert_eq!(observed.read(&mut byte).unwrap_err().kind(), ErrorKind::WouldBlock);\n    release.send(()).unwrap();\n    tokio::time::timeout(WAIT, job.join_original_returned_ok()).await.unwrap().unwrap();\n    assert_eq!(observed.read(&mut byte).unwrap(), 0);\n    custody.gate.require_open().unwrap();\n    assert_eq!(job.delivery(), OriginalCircuitResultDelivery::Waiting);\n    assert!(tokio::time::timeout(WAIT, job.receive_original_result()).await.unwrap().is_ok());\n    assert_eq!(job.delivery(), OriginalCircuitResultDelivery::RuntimeDelivered);\n    assert!(custody.take_abandoned_original_result().await.is_err());\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn natural_join_refusal_keeps_the_original_error_for_its_actual_runtime_receiver() {\n    let (_directory, custody) = custody();\n    let marker = Arc::new(());\n    let original_marker = Arc::clone(&marker);\n    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();\n    let handle = tokio::task::spawn_blocking(move || {\n        Err(AgentdError::Io(std::io::Error::new(\n            ErrorKind::PermissionDenied,\n            OriginalFailure(original_marker),\n        )))\n    });\n    let job = admission.retain_original_handle(handle);\n    assert!(tokio::time::timeout(WAIT, job.join_original_returned_ok()).await.unwrap().is_err());\n    assert_eq!(job.delivery(), OriginalCircuitResultDelivery::Waiting);\n    let result = tokio::time::timeout(WAIT, job.receive_original_result()).await.unwrap();\n    let Err(AgentdError::Io(error)) = result else {\n        panic!(\"natural observation replaced the original Runtime error\");\n    };\n    assert_eq!(error.kind(), ErrorKind::PermissionDenied);\n    let original = error.get_ref().unwrap().downcast_ref::<OriginalFailure>().unwrap();\n    assert!(Arc::ptr_eq(&original.0, &marker));\n    assert_eq!(job.delivery(), OriginalCircuitResultDelivery::RuntimeDelivered);\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "preimage": "011b7b97ed9133d951d6bd4937a673a93ad49ae5",
+      "postimage": "f4be0fb2769ec29f72a6f643b07090d79e155c63",
+      "bytes": 14655,
+      "sha256": "a651c50b742d20a985b7749bd6f5f3a1f571a9fa7277da84cd4032114e9d2b5d",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "enum OriginalArtifact {\n",
+          "after": "pub(super) struct OriginalObservedC {\n    pub(super) installed: OriginalQ24InstalledSuccessorV1,\n    pub(super) status: OriginalCellQ24TaskLedgerStatusV1,\n}\n\nenum OriginalArtifact {\n"
+        },
+        {
+          "op": "replace",
+          "before": "    ) -> Result<(), AgentdError> {\n        self.require_original_execution()?;\n        let OriginalCFlow {",
+          "after": "    ) -> Result<OriginalObservedC, AgentdError> {\n        self.require_original_execution()?;\n        let OriginalCFlow {"
+        },
+        {
+          "op": "replace",
+          "before": "            OriginalSameActorPhaseEventV1::OriginalCOutcomeAccepted(Box::new(status)),\n        )?;\n        Ok(())",
+          "after": "            OriginalSameActorPhaseEventV1::OriginalCOutcomeAccepted(Box::new(status.clone())),\n        )?;\n        // Transfer the actual owners to the closing controller. The data\n        // notification above cannot construct or replace this private value.\n        Ok(OriginalObservedC { installed, status })"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "preimage": "f4c2b22bbf862d2b278a05860a1d49cd29526044",
+      "postimage": "3d5c2b9fd2beef6533205759af0ea88a89175fd7",
+      "bytes": 11414,
+      "sha256": "e3867fdd5ac3d9a3d6b7fdde89d40ca9b0989b35736a934a05812288a9fb3e1b",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "use crate::same_actor_q24_phase_learning::OriginalSameActorLearningCleanup;\n",
+          "after": "use crate::same_actor_q24_phase_learning::OriginalSameActorLearningCleanup;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;\n"
+        },
+        {
+          "op": "replace",
+          "before": "    Worker(Result<(), AgentdError>),\n",
+          "after": "    Worker(Result<OriginalSameActorLearningJoined, AgentdError>),\n"
+        },
+        {
+          "op": "replace",
+          "before": "    ) -> Result<(), AgentdError> {\n        self.require_original_execution()?;\n        let prepared =",
+          "after": "    ) -> Result<OriginalSameActorLearningJoined, AgentdError> {\n        self.require_original_execution()?;\n        let prepared ="
+        },
+        {
+          "op": "replace",
+          "before": "        self.close_original_execution();\n        // The concrete lane worker and the publication future have both ended\n        // before this final cleanup can wait for their last retained job Arc.\n        let joined = cleanup.close_and_join_original_work().await;\n        preserve_scoped_result(result, joined, \"retained Learning blocking work\")",
+          "after": "        match result {\n            Ok(joined) => {\n                joined.require_original_phase(self.context.identity(), self.context.gate())?;\n                // The actual normal bundle now retains all lane owners and\n                // joined-work facts. Fault cleanup must not close its Gate.\n                Ok(joined)\n            }\n            Err(error) => {\n                self.close_original_execution();\n                let joined = cleanup.close_and_join_original_work().await;\n                preserve_scoped_result(Err(error), joined, \"retained Learning blocking work\")\n            }\n        }"
+        },
+        {
+          "op": "replace",
+          "before": "    ) -> Result<(), AgentdError> {\n        self.require_original_execution()?;\n        let (_handle, owners, publication, handoff, successor, worker) =",
+          "after": "    ) -> Result<OriginalSameActorLearningJoined, AgentdError> {\n        self.require_original_execution()?;\n        let (_handle, owners, publication, handoff, successor, worker) ="
+        },
+        {
+          "op": "replace",
+          "before": "        let mut work = Box::pin(OriginalSameActorLearningWorker::run(\n",
+          "after": "        let mut work = Box::pin(OriginalSameActorLearningWorker::run_original_retirable(\n"
+        },
+        {
+          "op": "replace",
+          "before": "            let progress = self.publish_and_observe_original_c(flow, host);\n            tokio::pin!(progress);",
+          "after": "            let progress = async {\n                let observed = self.publish_and_observe_original_c(flow, host).await?;\n                self.require_original_execution()?;\n                let quiescence = SameActorTaskRoute::quiesce_original_c(\n                    &self.route,\n                    observed.installed,\n                    observed.status,\n                    Arc::clone(cleanup.work()),\n                )\n                .await?;\n                self.require_original_execution()?;\n                OriginalSameActorLearningWork::request_original_normal_retirement(\n                    cleanup.work(),\n                    quiescence,\n                )?;\n                Ok(())\n            };\n            tokio::pin!(progress);"
+        },
+        {
+          "op": "replace",
+          "before": "                // C really ran and its independent Outcome was accepted.\n                // Keep serving under the same original deadlines. This is no\n                // new phase, rearm, Root shutdown ACK, or successful EOF proof.",
+          "after": "                // C's real task drain and admitted observer joins have been\n                // handed to the same Work. That worker must still prove its\n                // terminal checkpoint, durable ACK and actual three lane joins."
+        },
+        {
+          "op": "replace",
+          "before": "        self.close_original_execution();\n        stop.cancel();\n        let result = match exit {\n            OriginalScopedExit::Worker(result) => {\n                // Already completed and internally joined by the concrete\n                // worker. Never poll its future a second time.\n                drop(work);\n                return result\n                    .and_then(|()| Err(phase_refused(\"original required C worker stopped\")));\n            }\n            OriginalScopedExit::Progress(result) => result,\n            OriginalScopedExit::Cancelled => Err(phase_refused(\"original C phase was cancelled\")),\n            OriginalScopedExit::Closed => Err(phase_refused(\"original C phase is closed\")),\n        };\n        let joined = work.as_mut().await;\n        drop(work);\n        preserve_scoped_result(result, joined, \"concrete Learning/delivery/C worker\")",
+          "after": "        if let OriginalScopedExit::Worker(result) = exit {\n            // Never poll a completed worker twice. Its private normal result\n            // exists only after receiving our exact C capability and joins.\n            drop(work);\n            return result.and_then(|joined| {\n                joined.require_original_phase(self.context.identity(), self.context.gate())?;\n                Ok(joined)\n            });\n        }\n        self.close_original_execution();\n        stop.cancel();\n        let result = match exit {\n            OriginalScopedExit::Progress(Err(error)) => Err(error),\n            OriginalScopedExit::Progress(Ok(())) => {\n                Err(phase_refused(\"original C retirement was not acknowledged by its owners\"))\n            }\n            OriginalScopedExit::Cancelled => Err(phase_refused(\"original C phase was cancelled\")),\n            OriginalScopedExit::Closed => Err(phase_refused(\"original C phase is closed\")),\n            OriginalScopedExit::Worker(_) => unreachable!(),\n        };\n        let joined = work.as_mut().await.map(drop);\n        drop(work);\n        preserve_scoped_result(result, joined, \"concrete Learning/delivery/C worker\")"
+        },
+        {
+          "op": "replace",
+          "before": "fn preserve_scoped_result(\n    original: Result<(), AgentdError>,\n    cleanup: Result<(), AgentdError>,\n    stage: &'static str,\n) -> Result<(), AgentdError> {\n    match (original, cleanup) {\n        (Ok(()), result) => result,",
+          "after": "fn preserve_scoped_result<T>(\n    original: Result<T, AgentdError>,\n    cleanup: Result<(), AgentdError>,\n    stage: &'static str,\n) -> Result<T, AgentdError> {\n    match (original, cleanup) {\n        (Ok(value), Ok(())) => Ok(value),\n        (Ok(_), Err(error)) => Err(error),"
+        },
+        {
+          "op": "replace",
+          "before": "            Ok(joined) => {\n                joined.require_original_phase(self.context.identity(), self.context.gate())?;\n",
+          "after": "            Ok(joined) => {\n                OriginalSameActorLearningJoined::require_original_phase(\n                    &joined,\n                    self.context.identity(),\n                    self.context.gate(),\n                )?;\n"
+        },
+        {
+          "op": "replace",
+          "before": "        if let OriginalScopedExit::Worker(result) = exit {\n            // Never poll a completed worker twice. Its private normal result\n            // exists only after receiving our exact C capability and joins.\n            drop(work);\n            return result.and_then(|joined| {\n                joined.require_original_phase(self.context.identity(), self.context.gate())?;\n                Ok(joined)\n            });\n        }\n        self.close_original_execution();\n        stop.cancel();\n        let result = match exit {\n            OriginalScopedExit::Progress(Err(error)) => Err(error),\n            OriginalScopedExit::Progress(Ok(())) => {\n                Err(phase_refused(\"original C retirement was not acknowledged by its owners\"))\n            }\n            OriginalScopedExit::Cancelled => Err(phase_refused(\"original C phase was cancelled\")),\n            OriginalScopedExit::Closed => Err(phase_refused(\"original C phase is closed\")),\n            OriginalScopedExit::Worker(_) => unreachable!(),\n        };\n        let joined = work.as_mut().await.map(drop);\n        drop(work);\n        preserve_scoped_result(result, joined, \"concrete Learning/delivery/C worker\")",
+          "after": "        match exit {\n            OriginalScopedExit::Worker(result) => {\n                // Never poll a completed worker twice. Its private normal\n                // result follows our exact C capability and actual joins.\n                drop(work);\n                result.and_then(|joined| {\n                    OriginalSameActorLearningJoined::require_original_phase(\n                        &joined,\n                        self.context.identity(),\n                        self.context.gate(),\n                    )?;\n                    Ok(joined)\n                })\n            }\n            other => {\n                self.close_original_execution();\n                stop.cancel();\n                let error = match other {\n                    OriginalScopedExit::Progress(Err(error)) => error,\n                    OriginalScopedExit::Progress(Ok(())) => phase_refused(\n                        \"original C retirement was not acknowledged by its owners\",\n                    ),\n                    OriginalScopedExit::Cancelled => phase_refused(\n                        \"original C phase was cancelled\",\n                    ),\n                    OriginalScopedExit::Closed => phase_refused(\n                        \"original C phase is closed\",\n                    ),\n                    OriginalScopedExit::Worker(_) => phase_refused(\n                        \"original C worker result was already consumed\",\n                    ),\n                };\n                let joined = work.as_mut().await.map(drop);\n                drop(work);\n                preserve_scoped_result(\n                    Err(error),\n                    joined,\n                    \"concrete Learning/delivery/C worker\",\n                )\n            }\n        }"
+        },
+        {
+          "op": "replace",
+          "before": "        match exit {\n            OriginalScopedExit::Worker(result) => {\n                // Never poll a completed worker twice. Its private normal\n                // result follows our exact C capability and actual joins.\n                drop(work);\n                result.and_then(|joined| {\n                    OriginalSameActorLearningJoined::require_original_phase(\n                        &joined,\n                        self.context.identity(),\n                        self.context.gate(),\n                    )?;\n                    Ok(joined)\n                })\n            }\n            other => {\n                self.close_original_execution();\n                stop.cancel();\n                let error = match other {\n                    OriginalScopedExit::Progress(Err(error)) => error,\n                    OriginalScopedExit::Progress(Ok(())) => phase_refused(\n                        \"original C retirement was not acknowledged by its owners\",\n                    ),\n                    OriginalScopedExit::Cancelled => phase_refused(\n                        \"original C phase was cancelled\",\n                    ),\n                    OriginalScopedExit::Closed => phase_refused(\n                        \"original C phase is closed\",\n                    ),\n                    OriginalScopedExit::Worker(_) => phase_refused(\n                        \"original C worker result was already consumed\",\n                    ),\n                };\n                let joined = work.as_mut().await.map(drop);\n                drop(work);\n                preserve_scoped_result(\n                    Err(error),\n                    joined,\n                    \"concrete Learning/delivery/C worker\",\n                )\n            }\n        }",
+          "after": "        let error = match exit {\n            OriginalScopedExit::Worker(result) => {\n                // Never poll a completed worker twice. Its private normal\n                // result follows our exact C capability and actual joins.\n                drop(work);\n                return result.and_then(|joined| {\n                    OriginalSameActorLearningJoined::require_original_phase(\n                        &joined,\n                        self.context.identity(),\n                        self.context.gate(),\n                    )?;\n                    Ok(joined)\n                });\n            }\n            OriginalScopedExit::Progress(Err(error)) => error,\n            OriginalScopedExit::Progress(Ok(())) => phase_refused(\n                \"original C retirement was not acknowledged by its owners\",\n            ),\n            OriginalScopedExit::Cancelled => phase_refused(\n                \"original C phase was cancelled\",\n            ),\n            OriginalScopedExit::Closed => phase_refused(\n                \"original C phase is closed\",\n            ),\n        };\n        self.close_original_execution();\n        stop.cancel();\n        let joined = work.as_mut().await.map(drop);\n        drop(work);\n        preserve_scoped_result(\n            Err(error),\n            joined,\n            \"concrete Learning/delivery/C worker\",\n        )"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "preimage": "54c313682ed5df932ae399df39d73b82aa270916",
+      "postimage": "4869ccce2c29236a2f60484146031af56c685f51",
+      "bytes": 5704,
+      "sha256": "afe763ae45522cd59d265bd019e15bf07f168b0593f8515593b6eed3e0023b50",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "//! Ready. Every return closes the one phase; no failed phase is rearmed.\n",
+          "after": "//! Ready. Faults close the one phase. A normal return follows actual terminal\n//! custody and the original Runtime shutdown; no failed phase is rearmed.\n"
+        },
+        {
+          "op": "replace",
+          "before": "use std::sync::Arc;\n",
+          "after": "use std::sync::Arc;\nuse std::sync::Weak;\n"
+        },
+        {
+          "op": "replace",
+          "before": "use crate::circuit_task::SameActorTaskRoute;\n",
+          "after": "use crate::circuit_task::OriginalCircuitOwnerCustody;\nuse crate::circuit_task::SameActorTaskRoute;\n"
+        },
+        {
+          "op": "replace",
+          "before": "    host: OriginalSameActorPhaseHostV1,\n    _closing: CloseSameActorPhaseOnDrop,\n",
+          "after": "    host: OriginalSameActorPhaseHostV1,\n    outer_custody: Option<Weak<OriginalCircuitOwnerCustody>>,\n    _closing: CloseSameActorPhaseOnDrop,\n"
+        },
+        {
+          "op": "replace",
+          "before": "            host,\n            _closing: closing,\n",
+          "after": "            host,\n            outer_custody: None,\n            _closing: closing,\n"
+        },
+        {
+          "op": "replace",
+          "before": "    pub(crate) async fn run(\n",
+          "after": "    pub(crate) fn with_original_outer_custody(\n        mut self,\n        custody: &Arc<OriginalCircuitOwnerCustody>,\n    ) -> Result<Self, AgentdError> {\n        OriginalCircuitOwnerCustody::require_original_origin(\n            custody,\n            self.context.identity(),\n            self.context.gate(),\n        )?;\n        if self.outer_custody.is_some() {\n            return Err(phase_refused(\"original Circuit worker custody was already bound\"));\n        }\n        self.outer_custody = Some(Arc::downgrade(custody));\n        Ok(self)\n    }\n\n    pub(crate) async fn run(\n"
+        },
+        {
+          "op": "replace",
+          "before": "            mut host,\n            _closing,\n",
+          "after": "            mut host,\n            outer_custody,\n            _closing: mut closing,\n"
+        },
+        {
+          "op": "replace",
+          "before": "        execution.require_original_execution()?;\n        let original = execution.run_original_a(owners, &mut host).await?;\n",
+          "after": "        let custody = outer_custody.and_then(|original| original.upgrade()).ok_or_else(|| {\n            phase_refused(\"original Circuit worker lost its external custody\")\n        })?;\n        OriginalCircuitOwnerCustody::require_original_origin(\n            &custody,\n            execution.context.identity(),\n            execution.context.gate(),\n        )?;\n        execution.require_original_execution()?;\n        let original = execution.run_original_a(owners, &mut host).await?;\n"
+        },
+        {
+          "op": "replace",
+          "before": "        execution\n            .run_original_scoped(original, authorities, scoped, &mut host)\n            .await\n",
+          "after": "        let terminal = execution\n            .run_original_scoped(original, authorities, scoped, &mut host)\n            .await?;\n        // Move the actual owners into external custody before notifying the\n        // original Runtime. No await separates the move and notification.\n        OriginalCircuitOwnerCustody::retain_original_normal_terminal(&custody, terminal)?;\n        // A required worker does not return early merely because C finished.\n        // The unchanged Runtime must first enter its real shutdown path.\n        OriginalCircuitOwnerCustody::wait_original_runtime_shutdown(\n            &custody,\n            &execution.cancellation,\n        )\n        .await?;\n        closing.disarm();\n        Ok(())\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+      "preimage": null,
+      "postimage": "bd6aa8db0536eba249d3612e5d28ccefd04e813a",
+      "bytes": 18489,
+      "sha256": "f23b86ec3a4a518e3ca0088298c8ea6ecd83f5ee73612e47fac973964a8cbdee",
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! The real ordinary C completion and its admission cut. This capability is\n//! not a Learning ACK, Root retirement permission or a physical worker join.\n//! The actual installed owners remain held until the later joined bundle.\n\nuse std::future::Future;\n\nuse codex_hepta_learning_artifacts::LearningIterationSnapshotV1;\n\nuse super::*;\nuse crate::OriginalCellQ24TaskLedgerProducerV1;\nuse crate::OriginalCellQ24TaskLedgerStatusV1;\nuse crate::OriginalQ24InstalledSuccessorV1;\nuse crate::PublishedCircuitFeatureCompletionV1;\nuse crate::circuit_q24_successor::OriginalSuccessorWorkerJoined;\nuse crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;\nuse crate::same_actor_q24_phase_learning::OriginalRetiredLearningOwners;\n\n/// Only the actual C drain below creates this origin. It holds weak route and\n/// slot references: the route's retained Work must not form an ownership cycle.\npub(crate) struct OriginalCQuiescenceOrigin {\n    identity: AgentdIdentity,\n    gate: Arc<SameActorPhaseGate>,\n    route: Weak<SameActorTaskRoute>,\n    slot: Weak<SuccessorSlot>,\n}\n\n/// Non-Clone and not deserializable. The private fields contain real original\n/// owners and their durable observations, rather than a completion boolean.\npub(crate) struct OriginalSameActorCQuiescence {\n    _closing: CloseSameActorPhaseOnDrop,\n    origin: Arc<OriginalCQuiescenceOrigin>,\n    slot: Arc<SuccessorSlot>,\n    installed: OriginalQ24InstalledSuccessorV1,\n    status: OriginalCellQ24TaskLedgerStatusV1,\n    completion: PublishedCircuitFeatureCompletionV1,\n}\n\n/// The exact C worker has returned and its route/slot were consumed only with\n/// the actual terminal Learning/delivery owner bundle. Session retirement and\n/// Root's final acknowledgement remain separate required facts.\npub(crate) struct OriginalSameActorCJoined {\n    original: OriginalSameActorCQuiescence,\n    route: Arc<SameActorTaskRoute>,\n    work: Arc<OriginalSameActorLearningWork>,\n    learning: OriginalRetiredLearningOwners,\n}\n\nstruct OriginalCDrainAttempt {\n    closing: CloseSameActorPhaseOnDrop,\n    route: Arc<SameActorTaskRoute>,\n    installed: OriginalQ24InstalledSuccessorV1,\n    status: OriginalCellQ24TaskLedgerStatusV1,\n    work: Arc<OriginalSameActorLearningWork>,\n}\n\nstruct OriginalCDrainPayload {\n    closing: CloseSameActorPhaseOnDrop,\n    installed: OriginalQ24InstalledSuccessorV1,\n    status: OriginalCellQ24TaskLedgerStatusV1,\n}\n\nimpl OriginalCQuiescenceOrigin {\n    pub(crate) fn require_original_slot(\n        &self,\n        slot: &SuccessorSlot,\n    ) -> Result<(), AgentdError> {\n        self.gate.require_open().map_err(phase_error)?;\n        if !self\n            .slot\n            .upgrade()\n            .is_some_and(|original| std::ptr::eq(original.as_ref(), slot))\n        {\n            self.gate.close();\n            return Err(retirement_error(\"original C retirement slot differs\"));\n        }\n        Ok(())\n    }\n\n    pub(crate) fn require_original_binding(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {\n            self.gate.close();\n            return Err(retirement_error(\"original C retirement identity or Gate differs\"));\n        }\n        self.gate.require_open().map_err(phase_error)?;\n        Ok(())\n    }\n\n    fn original_route(&self) -> Result<Arc<SameActorTaskRoute>, AgentdError> {\n        self.gate.require_open().map_err(phase_error)?;\n        self.route.upgrade().ok_or_else(|| {\n            self.gate.close();\n            retirement_error(\"original C retirement route is unavailable\")\n        })\n    }\n}\n\nimpl OriginalSameActorCQuiescence {\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        self.origin.require_original_binding(identity, gate)?;\n        self.origin.require_original_slot(self.slot.as_ref())?;\n        let route = self.origin.original_route()?;\n        route.require_closing_original_c(&self.slot)?;\n        Ok(())\n    }\n\n    pub(crate) fn require_original_learning_work(\n        &self,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        OriginalSameActorCQuiescence::require_original_phase(\n            self,\n            &self.origin.identity,\n            &self.origin.gate,\n        )?;\n        let route = self.origin.original_route()?;\n        let original = route.original_learning_work()?;\n        if !Arc::ptr_eq(&original, work) {\n            self.origin.gate.close();\n            return Err(retirement_error(\"original C retirement Work differs\"));\n        }\n        OriginalSameActorLearningWork::require_identity_and_gate(\n            work,\n            &self.origin.identity,\n            &self.origin.gate,\n        )\n    }\n\n    /// The caller must separately hold the genuine terminal checkpoint and\n    /// durable delivery ACK. This check binds their exact prefix to the slot.\n    pub(crate) fn require_original_learning_snapshot(\n        &self,\n        snapshot: &LearningIterationSnapshotV1,\n    ) -> Result<(), AgentdError> {\n        OriginalSameActorCQuiescence::require_original_phase(\n            self,\n            &self.origin.identity,\n            &self.origin.gate,\n        )?;\n        self.slot.require_original_retirement_snapshot(snapshot)\n    }\n\n    /// Called only after the actual Learning/Delivery normal-stop handshake.\n    /// Cancels the original C loop's local token, never the common Gate.\n    pub(crate) fn request_original_successor_retirement(&self) -> Result<(), AgentdError> {\n        OriginalSameActorCQuiescence::require_original_phase(\n            self,\n            &self.origin.identity,\n            &self.origin.gate,\n        )?;\n        self.slot\n            .request_original_retirement(Arc::clone(&self.origin))?;\n        self.origin.gate.require_open().map_err(phase_error)?;\n        Ok(())\n    }\n\n    /// The actual Learning worker calls this only after its own terminal\n    /// checkpoint, delivery ACK, retained blocking jobs and three lane joins.\n    /// No count or externally supplied success flag can create the joined cap.\n    pub(crate) fn finish_original_successor_join(\n        self,\n        joined: OriginalSuccessorWorkerJoined,\n        learning: OriginalRetiredLearningOwners,\n    ) -> Result<OriginalSameActorCJoined, AgentdError> {\n        OriginalSameActorCQuiescence::require_original_phase(\n            &self,\n            &self.origin.identity,\n            &self.origin.gate,\n        )?;\n        let route = self.origin.original_route()?;\n        let (previous, retired, work) = {\n            let mut state = route.state.lock().map_err(|_| poisoned_route())?;\n            self.origin.gate.require_open().map_err(phase_error)?;\n            let Phase::ClosingC { slot, .. } = &state.phase else {\n                return Err(retirement_error(\"original C route is not closing\"));\n            };\n            if state.closed || state.tickets != 0 || !Arc::ptr_eq(slot, &self.slot) {\n                return Err(retirement_error(\"original C route still has work or differs\"));\n            }\n            let mut attachment = route\n                .learning_work\n                .get()\n                .ok_or_else(poisoned_route)?\n                .lock()\n                .map_err(|_| poisoned_route())?;\n            let original_work = attachment.as_ref().ok_or_else(poisoned_route)?;\n            OriginalRetiredLearningOwners::require_original_work(&learning, original_work)?;\n            // The original route->slot lock order is retained. This consumes\n            // the actual joined capability and returns held owners. The exact\n            // attached Work Arc immediately moves into the terminal custody;\n            // no await or cancellation gap exposes an unowned None interval.\n            let retired = joined.consume_original_retirement(&self.origin)?;\n            let previous = std::mem::replace(&mut state.phase, Phase::RetiredC);\n            let work = attachment.take().ok_or_else(poisoned_route)?;\n            (previous, retired, work)\n        };\n        drop(previous);\n        drop(retired);\n        route.changed.send_replace(());\n        self.origin.gate.require_open().map_err(phase_error)?;\n        Ok(OriginalSameActorCJoined {\n            original: self,\n            route,\n            work,\n            learning,\n        })\n    }\n}\n\nimpl OriginalSameActorCJoined {\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        self.original.origin.require_original_binding(identity, gate)?;\n        self.original\n            .slot\n            .require_original_retired_slot(&self.original.origin)?;\n        let route = self.original.origin.original_route()?;\n        if !Arc::ptr_eq(&route, &self.route) {\n            return Err(retirement_error(\"original C terminal route custody differs\"));\n        }\n        OriginalRetiredLearningOwners::require_original_work(&self.learning, &self.work)?;\n        let state = route.state.lock().map_err(|_| poisoned_route())?;\n        if state.closed || state.tickets != 0 || !matches!(state.phase, Phase::RetiredC) {\n            return Err(retirement_error(\"original C route has not been retired\"));\n        }\n        Ok(())\n    }\n\n    pub(crate) fn original_completion(&self) -> &PublishedCircuitFeatureCompletionV1 {\n        &self.original.completion\n    }\n\n    pub(crate) fn original_status(&self) -> &OriginalCellQ24TaskLedgerStatusV1 {\n        &self.original.status\n    }\n\n    /// Keep the real CURRENT/Cell/Source/Ledger owners until Root's exact\n    /// retirement intent permits their purpose streams to be released.\n    pub(crate) fn require_retained_original_owners(&self) -> Result<(), AgentdError> {\n        OriginalSameActorCJoined::require_original_phase(\n            self,\n            &self.original.origin.identity,\n            &self.original.origin.gate,\n        )?;\n        let installed = &self.original.installed;\n        if installed.identity != self.original.origin.identity {\n            return Err(retirement_error(\"retained original C identity differs\"));\n        }\n        Ok(())\n    }\n}\n\nimpl SameActorTaskRoute {\n    fn begin_closing_original_c(\n        &self,\n        installed: &OriginalQ24InstalledSuccessorV1,\n    ) -> Result<Arc<SuccessorSlot>, AgentdError> {\n        let mut state = self.state.lock().map_err(|_| poisoned_route())?;\n        self.gate.require_open().map_err(phase_error)?;\n        let Phase::C { slot, invocation } = &state.phase else {\n            return Err(retirement_error(\"original C admission is not open\"));\n        };\n        if state.closed {\n            return Err(retirement_error(\"original C route is closed\"));\n        }\n        slot.require_original_c_installation(installed, &self.identity)?;\n        let slot = Arc::clone(slot);\n        let invocation = Arc::clone(invocation);\n        state.phase = Phase::ClosingC {\n            slot: Arc::clone(&slot),\n            invocation,\n        };\n        drop(state);\n        self.changed.send_replace(());\n        Ok(slot)\n    }\n\n    fn require_closing_original_c(\n        &self,\n        expected: &Arc<SuccessorSlot>,\n    ) -> Result<(), AgentdError> {\n        self.gate.require_open().map_err(phase_error)?;\n        let state = self.state.lock().map_err(|_| poisoned_route())?;\n        let Phase::ClosingC { slot, .. } = &state.phase else {\n            return Err(retirement_error(\"original C route is not closing\"));\n        };\n        if state.closed || !Arc::ptr_eq(slot, expected) {\n            return Err(retirement_error(\"original C closing route differs\"));\n        }\n        Ok(())\n    }\n\n    async fn wait_original_c_tickets(\n        &self,\n        expected: &Arc<SuccessorSlot>,\n    ) -> Result<(), AgentdError> {\n        let mut changed = self.changed.subscribe();\n        loop {\n            let remaining = self.gate.require_open().map_err(phase_error)?;\n            let empty = {\n                let state = self.state.lock().map_err(|_| poisoned_route())?;\n                let Phase::ClosingC { slot, .. } = &state.phase else {\n                    return Err(retirement_error(\"original C route is not closing\"));\n                };\n                if state.closed || !Arc::ptr_eq(slot, expected) {\n                    return Err(retirement_error(\"original C closing route differs\"));\n                }\n                // Every finished C ticket also requires its actual observer\n                // JoinHandle result. This count alone is not that evidence.\n                state.tickets == 0 && slot.pending_count() == 0\n            };\n            if empty {\n                self.gate.require_open().map_err(phase_error)?;\n                return Ok(());\n            }\n            tokio::select! {\n                _ = self.gate.cancelled() => {\n                    return Err(retirement_error(\"original C drain was closed\"));\n                }\n                result = changed.changed() => {\n                    result.map_err(|_| poisoned_route())?;\n                }\n                _ = tokio::time::sleep(remaining.min(Duration::from_millis(5))) => {}\n            }\n        }\n    }\n\n    /// Retain this future's failure guard before its first poll. The original\n    /// Work registry keeps the same actual drain handle if this waiter drops.\n    pub(crate) fn quiesce_original_c(\n        self: &Arc<Self>,\n        installed: OriginalQ24InstalledSuccessorV1,\n        status: OriginalCellQ24TaskLedgerStatusV1,\n        work: Arc<OriginalSameActorLearningWork>,\n    ) -> impl Future<Output = Result<OriginalSameActorCQuiescence, AgentdError>> + Send + 'static {\n        let attempt = OriginalCDrainAttempt {\n            closing: CloseSameActorPhaseOnDrop::new(&self.gate),\n            route: Arc::clone(self),\n            installed,\n            status,\n            work,\n        };\n        async move {\n            // Capture the whole ordered custody object, including before the\n            // first poll. Fault Drop closes Gate before releasing its owners.\n            let attempt = attempt;\n            let route = Arc::clone(&attempt.route);\n            let work = Arc::clone(&attempt.work);\n            OriginalSameActorLearningWork::require_identity_and_gate(\n                &work,\n                &route.identity,\n                &route.gate,\n            )?;\n            let original_work = route.original_learning_work()?;\n            if !Arc::ptr_eq(&original_work, &work)\n                || !matches!(attempt.status, OriginalCellQ24TaskLedgerStatusV1::Complete { .. })\n            {\n                return Err(retirement_error(\"original C completion or Work differs\"));\n            }\n            let slot = route.begin_closing_original_c(&attempt.installed)?;\n            route.wait_original_c_tickets(&slot).await?;\n            let job = {\n                let admission = work.reserve_original_blocking().map_err(|error| {\n                    AgentdError::GenerationFenced(error.to_string())\n                })?;\n                let actual_route = Arc::clone(&route);\n                let actual_slot = Arc::clone(&slot);\n                let payload = OriginalCDrainPayload {\n                    closing: attempt.closing,\n                    installed: attempt.installed,\n                    status: attempt.status,\n                };\n                let handle = tokio::task::spawn_blocking(move || {\n                    actual_route.require_closing_original_c(&actual_slot)?;\n                    actual_slot.require_original_c_installation(\n                        &payload.installed,\n                        &actual_route.identity,\n                    )?;\n                    let ledger = OriginalQ24InstalledSuccessorV1::original_task_ledger(\n                        &payload.installed,\n                    )\n                    .ok_or_else(|| retirement_error(\"original C completion has no actual Ledger\"))?;\n                    if OriginalCellQ24TaskLedgerProducerV1::readback(ledger.as_ref())\n                        .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?\n                        != payload.status\n                    {\n                        return Err(retirement_error(\"original C terminal Ledger changed\"));\n                    }\n                    actual_route.gate.require_open().map_err(phase_error)?;\n                    let completion = crate::PublishedCircuitFeatureTaskV1::drain_completed_task(\n                        &OriginalQ24InstalledSuccessorV1::published_task(&payload.installed),\n                        &payload.installed.cell,\n                        payload.installed.source.as_ref(),\n                        &actual_route.identity,\n                    )?;\n                    actual_route.gate.require_open().map_err(phase_error)?;\n                    if OriginalCellQ24TaskLedgerProducerV1::readback(ledger.as_ref())\n                        .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?\n                        != payload.status\n                    {\n                        return Err(retirement_error(\"original C Ledger changed across task drain\"));\n                    }\n                    actual_route.require_closing_original_c(&actual_slot)?;\n                    Ok::<_, AgentdError>((payload, completion))\n                });\n                admission.retain_original_handle(handle)\n            };\n            let (payload, completion) = OriginalSameActorLearningWork::receive_original_job_with_join_cause(\n                &work,\n                job,\n            )\n                .await\n                .map_err(|error| AgentdError::Io(std::io::Error::other(error)))??;\n            route.require_closing_original_c(&slot)?;\n            let origin = Arc::new(OriginalCQuiescenceOrigin {\n                identity: route.identity.clone(),\n                gate: Arc::clone(&route.gate),\n                route: Arc::downgrade(&route),\n                slot: Arc::downgrade(&slot),\n            });\n            Ok(OriginalSameActorCQuiescence {\n                _closing: payload.closing,\n                origin,\n                slot,\n                installed: payload.installed,\n                status: payload.status,\n                completion,\n            })\n        }\n    }\n}\n\nfn retirement_error(message: &'static str) -> AgentdError {\n    AgentdError::GenerationFenced(message.into())\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_retirement.rs",
+      "preimage": null,
+      "postimage": "4e648876c60830cdff827f7070d5f4cc1deaaa68",
+      "bytes": 7561,
+      "sha256": "bcf16d888ed2307d90618c6d67f92ca25734f17708ae8d064edfc1fc697fbb74",
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Normal C retirement is a separate one-shot transition. Only the capability\n//! produced by the real C task drain may request the local worker stop; only\n//! that worker's actual returned future can create its joined capability.\n\nuse super::*;\nuse crate::AgentdError;\nuse crate::AgentdIdentity;\nuse crate::OriginalQ24InstalledSuccessorV1;\nuse crate::circuit_task::OriginalCQuiescenceOrigin;\nuse crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\n\n/// The fields never escape as a Direct handle or invocation provider.\npub(crate) struct OriginalRetiredSuccessorOwners {\n    _original: Installed,\n}\n\n/// No Clone, data constructor or externally supplied result. The original\n/// PendingSuccessorOwner creates this only after awaiting its real run future.\npub(crate) struct OriginalSuccessorWorkerJoined {\n    closing: CloseSameActorPhaseOnDrop,\n    slot_closing: CloseOnDrop,\n    slot: Arc<SuccessorSlot>,\n    origin: Arc<OriginalCQuiescenceOrigin>,\n}\n\nimpl SuccessorSlot {\n    pub(crate) fn require_original_c_installation(\n        &self,\n        original: &OriginalQ24InstalledSuccessorV1,\n        identity: &AgentdIdentity,\n    ) -> Result<(), AgentdError> {\n        self.require_open().map_err(retirement_error)?;\n        let state = self.state.lock().map_err(retirement_error)?;\n        if state.phase != Phase::Ready || self.closed.is_cancelled() {\n            return Err(retirement_error(\"original C slot is not ready\"));\n        }\n        let installed = state.installed.as_ref().ok_or_else(|| {\n            retirement_error(\"original C slot has no actual installed owner\")\n        })?;\n        installed.handle.require_direct_original_handle().map_err(retirement_error)?;\n        installed\n            .invocation\n            .require_original_installed_custody(original, identity)\n    }\n\n    pub(crate) fn require_original_retirement_snapshot(\n        &self,\n        snapshot: &LearningIterationSnapshotV1,\n    ) -> Result<(), AgentdError> {\n        self.require_open().map_err(retirement_error)?;\n        let state = self.state.lock().map_err(retirement_error)?;\n        let original = state.decision.as_ref().ok_or_else(|| {\n            retirement_error(\"original C retirement has no actual decision\")\n        })?;\n        if state.phase != Phase::Ready\n            || !state.generation\n            || snapshot.request != original.request\n            || snapshot.owners != original.owners\n            || !snapshot.receipts.starts_with(&original.receipts)\n        {\n            return Err(retirement_error(\"original C retirement checkpoint differs\"));\n        }\n        Ok(())\n    }\n\n    pub(crate) fn request_original_retirement(\n        &self,\n        origin: Arc<OriginalCQuiescenceOrigin>,\n    ) -> Result<(), AgentdError> {\n        origin.require_original_slot(self)?;\n        self.require_open().map_err(retirement_error)?;\n        let mut state = self.state.lock().map_err(retirement_error)?;\n        if state.phase != Phase::Ready\n            || state.retirement.is_some()\n            || !state.generation\n            || self.closed.is_cancelled()\n            || self.active.load(Ordering::Acquire) != 0\n            || state.installed.as_ref().is_none_or(|owner| owner.handle.pending_count() != 0)\n        {\n            return Err(retirement_error(\"original C retirement is not available\"));\n        }\n        state.retirement = Some(origin);\n        state.phase = Phase::Retiring;\n        drop(state);\n        // This is the exact local token already awaited by the original C\n        // driver. It is not the common phase Gate or a worker-abort request.\n        self.closed.cancel();\n        self.changed.send_replace(());\n        Ok(())\n    }\n\n    pub(in crate::circuit_q24_successor) fn finish_original_retirement_join(\n        self: &Arc<Self>,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n        closing: CloseSameActorPhaseOnDrop,\n    ) -> Result<OriginalSuccessorWorkerJoined, AgentdError> {\n        gate.require_open().map_err(retirement_error)?;\n        let origin = {\n            let mut state = self.state.lock().map_err(retirement_error)?;\n            if state.phase != Phase::Retiring\n                || !state.generation\n                || !self.closed.is_cancelled()\n                || self.active.load(Ordering::Acquire) != 0\n                || state.installed.as_ref().is_none_or(|owner| owner.handle.pending_count() != 0)\n            {\n                return Err(retirement_error(\"original C worker did not join its retirement\"));\n            }\n            let origin = state.retirement.as_ref().cloned().ok_or_else(|| {\n                retirement_error(\"original C retirement origin is missing\")\n            })?;\n            origin.require_original_binding(identity, gate)?;\n            origin.require_original_slot(self.as_ref())?;\n            state.phase = Phase::JoinedRetirement;\n            origin\n        };\n        self.changed.send_replace(());\n        Ok(OriginalSuccessorWorkerJoined {\n            slot: Arc::clone(self),\n            origin,\n            closing,\n            slot_closing: CloseOnDrop::new(self),\n        })\n    }\n\n    pub(crate) fn require_original_retired_slot(\n        &self,\n        origin: &Arc<OriginalCQuiescenceOrigin>,\n    ) -> Result<(), AgentdError> {\n        origin.require_original_slot(self)?;\n        let state = self.state.lock().map_err(retirement_error)?;\n        if state.phase != Phase::Retired\n            || state.installed.is_some()\n            || !self.closed.is_cancelled()\n            || self.active.load(Ordering::Acquire) != 0\n            || !state.retirement.as_ref().is_some_and(|actual| Arc::ptr_eq(actual, origin))\n        {\n            return Err(retirement_error(\"original C slot has not been consumed after join\"));\n        }\n        Ok(())\n    }\n}\n\nimpl OriginalSuccessorWorkerJoined {\n    pub(crate) fn consume_original_retirement(\n        mut self,\n        origin: &Arc<OriginalCQuiescenceOrigin>,\n    ) -> Result<OriginalRetiredSuccessorOwners, AgentdError> {\n        if !Arc::ptr_eq(&self.origin, origin) {\n            return Err(retirement_error(\"original C joined origin differs\"));\n        }\n        origin.require_original_slot(self.slot.as_ref())?;\n        let original = {\n            let mut state = self.slot.state.lock().map_err(retirement_error)?;\n            if state.phase != Phase::JoinedRetirement\n                || !self.slot.closed.is_cancelled()\n                || self.slot.active.load(Ordering::Acquire) != 0\n                || !state.retirement.as_ref().is_some_and(|actual| Arc::ptr_eq(actual, origin))\n                || state.installed.as_ref().is_none_or(|owner| owner.handle.pending_count() != 0)\n            {\n                return Err(retirement_error(\"original C joined slot is not consumable\"));\n            }\n            let original = state.installed.take().ok_or_else(|| {\n                retirement_error(\"original C joined owner is missing\")\n            })?;\n            state.phase = Phase::Retired;\n            original\n        };\n        self.slot.changed.send_replace(());\n        // The consuming C capability already retains its armed common-Gate\n        // guard. No await or cancellation gap separates this owner handoff.\n        self.slot_closing.disarm();\n        self.closing.disarm();\n        Ok(OriginalRetiredSuccessorOwners { _original: original })\n    }\n}\n\nfn retirement_error(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(format!(\"original C retirement: {error}\"))\n}\n"
+        }
+      ]
+    }
+  ],
+  "operation_count": 77,
+  "path_count": 17,
+  "actual_flow": [
+    "Existing signed ordinary C entry and actual independent Outcome remain unchanged. The actual installed C owners and Complete Ledger status move from the existing publish controller into private retirement.",
+    "Route mutex cuts C admission. Existing tickets complete only after their actual registered blocking observation handle was joined. ClosingC admits no fresh task.",
+    "Same Work holds the actual drain handle before await. It rechecks exact installed invocation/Ledger/source-owner aliases, actual Ledger readback, original PublishedTask/Cell/Source durable task drain and unchanged original readback afterwards.",
+    "This task-local journal drain is not an OS-thread join. It produces only CQuiescence, retaining actual Installed owners and its common failure guard.",
+    "Actual Learning normal worker must separately prove the original terminal checkpoint and durable delivery ACK, stop new lane work, request only the exact original C local token, await original PendingSuccessorOwner::run and its original loop, and join actual Work handles.",
+    "Only those actual typed owners plus the real successor joined value can consume the slot and Route. Route's exact attached Work Arc moves once under its original mutex into CJoined; no await or unowned cancellation gap occurs. None and zero counts do not mint proof.",
+    "Actual TaskWorker synchronously stores the joined Learning/C owner bundle in separately held Circuit custody before notification. It remains a required worker until the unchanged Runtime enters its original cancellation path.",
+    "Actual phase Launch success must yield an owner-bearing RuntimeStopped. Natural take waits the same original outer blocking handle, requires its real ReturnedOk and original Runtime result delivery, preserves that original result for its receiver, and returns all retained owner values.",
+    "Other required worker failures remain governed by unchanged RuntimeTasks failure latch; a stored bundle never overrides an actual Launch Err. Existing fault stop-and-join still closes Gate and joins, and cannot mint normal completion."
+  ],
+  "interfaces": {
+    "quiescence_path": "crate::circuit_task::OriginalSameActorCQuiescence",
+    "quiescence_request": "request_original_successor_retirement(&self) -> Result<(), AgentdError>",
+    "quiescence_finish": "finish_original_successor_join(self, OriginalSuccessorWorkerJoined, OriginalRetiredLearningOwners) -> Result<OriginalSameActorCJoined, AgentdError>",
+    "pending_worker": "PendingSuccessorOwner::run_original_retirable(self, store, state, cancellation, Arc<SameActorPhaseGate>) -> impl Future<Output=Result<OriginalSuccessorWorkerJoined, AgentdError>> + Send + 'static",
+    "actual_joined_path": "crate::circuit_q24_successor::OriginalSuccessorWorkerJoined",
+    "learning_expected": "OriginalSameActorLearningWorker::run_original_retirable(...) -> Result<OriginalSameActorLearningJoined,AgentdError>; exact terminal/ACK/owners implementation still pending.",
+    "normal_signal": "OriginalCircuitOwnerCustody::wait_original_normal_shutdown(self:&Arc<Self>) -> impl Future<Output=Result<(),AgentdError>> + Send + 'static",
+    "natural_take": "OriginalCircuitOwnerCustody::take_original_natural_join(self:&Arc<Self>, OriginalSameActorRuntimeStopped) -> impl Future<Output=Result<(OriginalSameActorRuntimeStopped,OriginalSameActorLearningJoined,OriginalCircuitNaturalJoin),AgentdError>> + Send + 'static",
+    "no_sync_added_to_owned_terminal": "Natural take owns the terminal bundle over its actual handle await; it does not require an async borrow of the owner bundle to be Sync.",
+    "no_fresh_authority": "No new actor, issuer, grant, source, clock or absolute deadline is fabricated or renewed."
+  },
+  "ownership": [
+    {
+      "owner": "OriginalCDrainAttempt / Payload",
+      "guard": "Common Gate close guard declared before actual owned Installed resources; whole object captured before poll and into the actual blocking closure.",
+      "release": "Real successful handle result transfers held resources to CQuiescence. Failure/cancellation preserves registered real job custody."
+    },
+    {
+      "owner": "OriginalCQuiescenceOrigin",
+      "holds": "Full original identity and same Gate; Weak Route and Weak Slot. No public constructor, Clone or wire representation.",
+      "release": "Actual successor slot holds same Arc origin after authorized local stop."
+    },
+    {
+      "owner": "Route attachment",
+      "holds": "OnceLock<Mutex<Option<Arc<actual Work>>>>, initially exactly once Some.",
+      "release": "Only exact terminal owner bundle + actual successor join consume it; one synchronous locked move into CJoined."
+    },
+    {
+      "owner": "OriginalRetiredSuccessorOwners",
+      "holds": "Actual installed operational direct handle/invocation, privately returned by the slot after join.",
+      "release": "Dropped outside Route/Slot locks after the terminal transfer; original task/Source/Cell/Ledger remain in CJoined."
+    },
+    {
+      "owner": "OriginalSameActorCJoined",
+      "holds": "Actual CQuiescence, strong Route, removed actual Work, and chain's sealed actual Learning owners.",
+      "release": "Root intent-bound normal release remains pending; plain Drop remains fault closure."
+    },
+    {
+      "owner": "TaskWorker",
+      "holds": "Weak external Circuit custody while unstarted; upgrades only in actual run, no new strong cycle from an unpolled Bootstrap.",
+      "release": "Moves actual normal bundle synchronously, awaits original Runtime cancellation, then disarms only its own failure guard."
+    },
+    {
+      "owner": "Circuit normal state",
+      "holds": "Actual terminal bundle under mutex before normal notification; no fake status result.",
+      "release": "Single natural take after real RuntimeStopped or fault cleanup after real outer handle join."
+    },
+    {
+      "owner": "OriginalCircuitNaturalJoin",
+      "holds": "Actual job Arc and strong original Custody plus common close guard.",
+      "release": "Keeps original custody alive even if caller's temporary Arc is gone; no Root/Session completion proof."
+    },
+    {
+      "owner": "RuntimeStopped",
+      "holds": "Peer source 57127565 retains actual Root production attachment, Android device, MCP and original Root pidfd.",
+      "release": "Not released by this packet. Peer currently has only fault cleanup; normal Root-intent release still required."
+    }
+  ],
+  "components": {
+    "old_tests_prefix_unchanged": true,
+    "new_tests": 2,
+    "names": [
+      "natural_join_observation_waits_for_the_real_fd_owner_and_does_not_take_its_result",
+      "natural_join_refusal_keeps_the_original_error_for_its_actual_runtime_receiver"
+    ],
+    "actual_custody": "Real spawn_blocking, cancellation of handle borrow, Unix socket EOF and exact owned error Arc identity; no fabricated C/Root/business success capability.",
+    "executed": false
+  },
+  "static_checks": {
+    "all_source_create_and_get_equal": true,
+    "all_existing_operations_unique_forward_reverse": true,
+    "new_paths_404_at_current_reference": true,
+    "shared_runtime_and_runtime_tasks_untouched": true,
+    "default_A_observation_body_preserved": true,
+    "original_pending_run_body_preserved": true,
+    "original_durable_task_drain_untouched": true
+  },
+  "historical_correction": {
+    "superseded_newfile": "8b8fd8dc31f2989f29bf7c3284bad4803c2e72a8",
+    "current_newfile": "bd6aa8db0536eba249d3612e5d28ccefd04e813a",
+    "reason": "Peer caught owned self passed to &self UFCS; only finish method now passes &self. This packet directly adds the corrected file."
+  },
+  "qualification": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "compiled": false,
+    "original_checker_executed": false
+  },
+  "not_performed": [
+    "h",
+    "PTY",
+    "native",
+    "Cargo",
+    "formatter",
+    "original checker",
+    "refs",
+    "source candidate merge",
+    "Startup final Err removal"
+  ]
+}

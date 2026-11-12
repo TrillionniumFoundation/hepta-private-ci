@@ -1,0 +1,294 @@
+{
+  "scope": "Root exact GET/UTF-8/hash and reversible operations only; semantic review incomplete; no compiler/checker/native result.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "pre": null,
+      "post": "1c68ee3f07a27717279636bec7f882c278f7da09",
+      "bytes": 8082,
+      "sha256": "1f344fdaa5d4e9a1486858c04aa3b964ffac2aef876fb6a3c85f89aa3eada3e7",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+      "pre": null,
+      "post": "a0c1592e8054b4eba7c2b486230271baeb475228",
+      "bytes": 8096,
+      "sha256": "b3b22125901f3030dc8a3ed4b1624c8396aa57417bb2cdcdaea449d797f301a5",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "pre": null,
+      "post": "12b97474ae7779140cccbcca95c3f8f12e7413e6",
+      "bytes": 4384,
+      "sha256": "cb497b41f3dd3557151c7b9dd452835c3d06c6b59738796803ebb35823844869",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+      "pre": null,
+      "post": "62bfd57b3059fdc8f1d68fb3a02d08334ea84649",
+      "bytes": 6149,
+      "sha256": "bc711a99ef6c41a4cd7e7ecceffaba94dfd80cad094e1f337a3490e3949822f4",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pre": null,
+      "post": "cb1f0b161ea9ff579781df4a6c8287d804f63780",
+      "bytes": 13547,
+      "sha256": "439e69e5280af125653db569c7ada85ea658d252a612349e86af28b800338c1f",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "pre": null,
+      "post": "e6a038c03bb6f77898c01a21d5183c2ca25564c5",
+      "bytes": 10966,
+      "sha256": "e42d0fbc101cf3e18d1169472d37d9da3b1ea6cda97782ac0589c803dd8fc870",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "pre": null,
+      "post": "962147b26db8d7ef6488811cedb8940d9fe396ab",
+      "bytes": 18244,
+      "sha256": "337760f583b9ccd64ff52a817158e02e788bafaaed91e068e7a50997a991f6db",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+      "pre": null,
+      "post": "4c5ee7d25ea6e86bb6a17a856fe194198edb9c2c",
+      "bytes": 3810,
+      "sha256": "3cd82ad3c4c817634886a515c326485b9d176f8ba7eeb10e2e708c25e8e53d37",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "pre": null,
+      "post": "33dfd853e29f011ab4a9c899fdf7193ea3dfc600",
+      "bytes": 11287,
+      "sha256": "bd4434c8f7f52e328eed2670bd4c143b75a318a2cb42617497da8998e7b3e751",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "pre": null,
+      "post": "24d9b803a93d8b61e183928e797a0622a70e114f",
+      "bytes": 10576,
+      "sha256": "7b30f7ebf3e5a19f77f9fb6d1b788e9df0b375bc981016a9119886def467dfb9",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+      "pre": null,
+      "post": "05895538b32b08bba514cc2741d0787357588482",
+      "bytes": 6832,
+      "sha256": "28e36d72c8702ba6951ec627e75960e696801a3ae17595772ec8745061ed5b7d",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_preparation.rs",
+      "pre": null,
+      "post": "55a6c955fa9f416a81bf570181fbc3fe11f9876e",
+      "bytes": 7354,
+      "sha256": "bb9e53e099b1e5e43ef5e51e0e7b9f280f0b82c18a0c8a5cbc21e183e618906e",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_cell_data.rs",
+      "pre": null,
+      "post": "cc35d786fba07685d911038da4abdbd78399421f",
+      "bytes": 9898,
+      "sha256": "68d37ff215485832623aead18b1f8e5ead1d7884fbf3684f33c0484a99e4cd13",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_bundle_data.rs",
+      "pre": null,
+      "post": "c1ddb59ea63b6dc135b2570220a2df693d8527af",
+      "bytes": 5397,
+      "sha256": "1fc15bc23d748ee6848e16113956c17deb27da6c7fbdc6273925a8a99afce389",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "pre": null,
+      "post": "7ba5e3e61787dee0064059a46870a1467e62c6f3",
+      "bytes": 2673,
+      "sha256": "a73d7690f8746c5978fbeff88d07191e58f86b1c677d75207e71b417bb4c025b",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": null,
+      "post": "1594718f4a9ecc4c904cef50c86565662b5ccc54",
+      "bytes": 12573,
+      "sha256": "fcc7b637f6221df5932a0e3fb05b1a919cd3894acfedbb47739a0e5f0f558ea8",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "pre": null,
+      "post": "c84cc17c5792c7f10a11c62d4de3836ee5addbc3",
+      "bytes": 5701,
+      "sha256": "461c1ee34b25de45cc7bfd5cbc42b47c3810e2cf71a1964b16afebfb93203d8b",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifact_data.rs",
+      "pre": null,
+      "post": "7c6909e197b4410a6dc55bead2c206a8d1ce28a1",
+      "bytes": 5412,
+      "sha256": "2cf926f01cacc7a7369a25e8552df2d398e7e8c22fe3c03646e614b4d398907d",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "pre": null,
+      "post": "1f295958468344bfc99e71b3830a37dff0a3d5c4",
+      "bytes": 10940,
+      "sha256": "187a478cd60ca4a70eff05e7a543811dcdc29a299c6295983139f52f44545287",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "pre": null,
+      "post": "801620ea5ba7fee5ca88bff214acfce10296a393",
+      "bytes": 6852,
+      "sha256": "b2acd367a31c02ae09e4b418af0c5100301de42ac170050055b165b235bb39d5",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_temporal_data.rs",
+      "pre": null,
+      "post": "1a5f75d2e392b0c5f16a7f52adb16388430c8b16",
+      "bytes": 3321,
+      "sha256": "4e8b1834245f4c9c009eba1d6b8bfd7491f6fb22eba60da32f3773191a155c5b",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_comparison_data.rs",
+      "pre": null,
+      "post": "5d18debf33eb8c1d54a03f0bc27814cb9c13b01b",
+      "bytes": 4868,
+      "sha256": "8e75909b489dbcf5508b18bc752b8bdeb28aa53b5cee03e638356f4231794ac4",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_data.rs",
+      "pre": null,
+      "post": "17c5193608486a738bffd3100f3b3747060bc48a",
+      "bytes": 8453,
+      "sha256": "adce08ae88ee0406de23a7f1910300c30f29e6197bfbcdb6607caf7bd5b5706a",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "pre": null,
+      "post": "595ac3b2a66468e222794e7f539873bbb88a6462",
+      "bytes": 8102,
+      "sha256": "74e80f2223b5708f9290f35ead95393978c0e1d82c796238d0370fd971be0608",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "pre": null,
+      "post": "5ddacddb99924751d37ef72fc244150bccac3dc5",
+      "bytes": 8157,
+      "sha256": "ba344bdf7f66e02435542faeea3fa4a55f6aa29bb3f07ded03b2351e2c144ac9",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "pre": null,
+      "post": "821360eb2d4c0537e816ea4e2428a3d719a4c3d8",
+      "bytes": 11392,
+      "sha256": "ec16644c2ae391a25742e117efe2d8def4c12c53bbd915df086f28be2f3b8f06",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_observation_data.rs",
+      "pre": null,
+      "post": "a895514e7f23a9ab66a265478bea2122eebfa7d7",
+      "bytes": 4533,
+      "sha256": "b00a4a945e0758290198c32bc3c7510c0a5455453ed3335fe7ec1e668da67404",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs",
+      "pre": null,
+      "post": "be4ca92a49cc1cbdf15cb368751ddcb7f09c3cc0",
+      "bytes": 3194,
+      "sha256": "d6e66f794704df6c6c045765825de8a5ab7c583b717140c4d6fdea7ee88ffb23",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+      "pre": null,
+      "post": "3a89520c8c07521eb3370a291732dc8ac282c89e",
+      "bytes": 1971,
+      "sha256": "45c73f1b7e73ddd73693e74556fae1fc2d68e71ca0fb3253064e7978c09eed2e",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "pre": null,
+      "post": "f4f535f7d7bb53489a6cf0e2466eeff380327c4d",
+      "bytes": 3593,
+      "sha256": "7fcfc53c9790b0aed6ab021d9acc5b09df208fe782539af83185abd302ff9741",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "pre": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "post": "9d9cf5a296423f8ca2a0bfe84a4a9b59be2d4312",
+      "bytes": 14216,
+      "sha256": "58e27ed89b9ca2ce7ec26e86b7367d801219121d2f3e28763953512547ad06ba",
+      "operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "pre": "548c85a2cfb5e9eff50fa0597bc0ae98ce357456",
+      "post": "98cd3e9668da6b8a79a9cde2bb2f721826bd3b9f",
+      "bytes": 66853,
+      "sha256": "78a2457e25651aec8581d7668a92091a49bb5eaaca95d08641b4f09691b96570",
+      "operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+      "pre": "43dc9eb7779bb7072030f167342f504e91d7b565",
+      "post": "1c81065347bc7cc8f58bbf4805df94658d34bc49",
+      "bytes": 14838,
+      "sha256": "4c1b301262a39dab62c6fb6cef4da1827a9989f45ab407eafe1f593001abaaca",
+      "operations": 13
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "pre": "bd384826097d10fc2309673548484f146d04c9e0",
+      "post": "7ba7c2e12e6d8ee510226ccbfc2b841a61633f67",
+      "bytes": 22248,
+      "sha256": "d47a089be9ff01b2544e46fcf15e3d11dabee9e6e62d2a520579fcc2bd2b7098",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "pre": "775d7ae13bae53b5354b262443211100be349486",
+      "post": "818d48bd88c53f188563bcde33584fb171ffae94",
+      "bytes": 20602,
+      "sha256": "329e341bc2c650cdcd032a102cc703e34f88c8d13565abc1f8a02cc742f644ef",
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+      "pre": "8bc28dd9f382c83547bc107a571e1358aaee6d9d",
+      "post": "00d485fd1b533ff0c6e599e4367587d27d7e9b46",
+      "bytes": 5639,
+      "sha256": "c35fb5cbeb288f8d6925153aa79184bc824527ab5dedb60ceca651dc71d2f018",
+      "operations": 1
+    }
+  ],
+  "operations": 52
+}

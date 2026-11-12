@@ -1,0 +1,673 @@
+a::Ips => ProductMetricSourceV1::Ips,\n                    OriginalMetricSourceData::Snips => ProductMetricSourceV1::Snips,\n                    OriginalMetricSourceData::DoublyRobust => ProductMetricSourceV1::DoublyRobust,\n                },\n            });\n        }\n        let folds = self.folds.iter().map(|fold| Ok(CrossFoldPartitionV1 {\n            fold_id: StableId::new(&fold.fold_id).map_err(deployment_error)?,\n            training_principals: original_ids(&fold.training_principals)?,\n            training_episodes: original_ids(&fold.training_episodes)?,\n            training_windows: original_ids(&fold.training_windows)?,\n            holdout_principals: original_ids(&fold.holdout_principals)?,\n            holdout_episodes: original_ids(&fold.holdout_episodes)?,\n            holdout_windows: original_ids(&fold.holdout_windows)?,\n            model_digest: Digest32::from_array(fold.model_digest),\n            predictions_digest: Digest32::from_array(fold.predictions_digest),\n        })).collect::<Result<Vec<_>, AgentdError>>()?;\n        Ok(CellEvaluationRegistrationV1 {\n            product: CrossFoldPlanV1 {\n                plan_id: StableId::new(&self.plan_id).map_err(deployment_error)?,\n                claim_scope: EvaluationClaimScopeV1::Qualification,\n                candidate_id: StableId::new(&self.candidate_id).map_err(deployment_error)?,\n                baseline_id: StableId::new(&self.baseline_id).map_err(deployment_error)?,\n                objective_digest: Digest32::from_array(self.objective_digest),\n                dataset_digest: Digest32::from_array(self.dataset_digest),\n                estimand_digest: Digest32::from_array(self.estimand_digest),\n                metric_contracts: contracts, family_alpha_ppm: self.family_alpha_ppm,\n                simultaneous_comparisons: self.simultaneous_comparisons, folds,\n                final_holdout_window_id: StableId::new(&self.final_holdout_window_id)\n                    .map_err(deployment_error)?,\n                final_holdout_digest: Digest32::from_array(self.final_holdout_digest),\n            },\n            metric_roles: roles, metric_sources: sources,\n            comparison: self.comparison.original()?,\n        })\n    }\n}\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalQualificationContextData {\n    pub generator: PrincipalData,\n    pub evaluator: PrincipalData,\n    pub retention_receipt_digests: Vec<[u8; 32]>,\n    pub unlearning_receipt_digest: [u8; 32],\n}\nimpl OriginalQualificationContextData {\n    pub(super) fn original(&self) -> Result<ProductQualificationContextV1, AgentdError> {\n        Ok(ProductQualificationContextV1 {\n            generator: self.generator.original()?,\n            evaluator: self.evaluator.original()?,\n            retention_receipt_digests: self.retention_receipt_digests.iter()\n                .copied().map(Digest32::from_array).collect(),\n            unlearning_receipt_digest: Digest32::from_array(self.unlearning_receipt_digest),\n        })\n    }\n}\nfn original_ids(data: &[String]) -> Result<Vec<StableId>, AgentdError> {\n    data.iter().map(|value| StableId::new(value).map_err(deployment_error)).collect()\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "eval_signing_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+        "blob": "595ac3b2a66468e222794e7f539873bbb88a6462",
+        "bytes": 8102,
+        "sha256": "74e80f2223b5708f9290f35ead95393978c0e1d82c796238d0370fd971be0608",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Concrete transport for the original evaluator's one signing operation.\n//! The independent actor receives only the exact original request data. The\n//! original Product runner authenticates its response before completing its\n//! already durable execution claim; this adapter never signs an execution.\n\nuse std::sync::Arc;\n\nuse codex_hepta_intelligence_eval::{\n    ProductEvaluationExecutionAttestationRequestV1, ProductEvaluationExecutionAttestorV1,\n    ProductEvaluationExecutionKeyV1, ProductProviderErrorV1, SignedEvaluationEvidenceV1,\n};\nuse codex_hepta_learning_ledger::SignedLearningEvidenceV1;\nuse codex_hepta_types::Digest32;\nuse serde::{Deserialize, Serialize};\n\nuse crate::{AgentdError, CellEvaluationPlanV1, CellQ24PreparedLearningV1};\nuse crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;\n\nuse super::exchange::{OriginalActorExchange, OriginalActorExchangeData, OriginalActorWait};\nuse super::files::OriginalDeploymentFiles;\nuse super::learning_data::SignedEvidenceData;\nuse super::{deployment_error, deployment_refused};\n\n#[derive(Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalExecutionSigningData<'a> {\n    schema_version: u32,\n    purpose: &'static str,\n    phase: &'a str,\n    learning_operation: &'a str,\n    plan_id: &'a str,\n    execution_binding: [u8; 32],\n    execution_digest: [u8; 32],\n    payload: &'a [u8],\n}\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalExecutionResponseData {\n    schema_version: u32,\n    request_digest: [u8; 32],\n    execution_digest: [u8; 32],\n    signed: SignedEvidenceData,\n}\n\npub(super) struct OriginalExecutionAttestor<'a> {\n    context: Arc<OriginalSameActorRootContext>,\n    prepared: &'a CellQ24PreparedLearningV1,\n    expected: ProductEvaluationExecutionKeyV1,\n    exchange: Option<OriginalActorExchange>,\n    files: &'a mut OriginalDeploymentFiles,\n    wait: &'a mut OriginalActorWait,\n    failure: Option<AgentdError>,\n}\n\nimpl<'a> OriginalExecutionAttestor<'a> {\n    pub(super) fn new(\n        context: Arc<OriginalSameActorRootContext>,\n        prepared: &'a CellQ24PreparedLearningV1,\n        expected: ProductEvaluationExecutionKeyV1,\n        exchange: OriginalActorExchangeData,\n        files: &'a mut OriginalDeploymentFiles,\n        wait: &'a mut OriginalActorWait,\n    ) -> Result<Self, AgentdError> {\n        OriginalSameActorRootContext::require_current(&context)?;\n        prepared.revalidate_source().map_err(deployment_error)?;\n        Ok(Self {\n            context, prepared, expected,\n            exchange: Some(OriginalActorExchange::new(exchange)?),\n            files, wait, failure: None,\n        })\n    }\n\n    pub(super) fn take_original_failure(&mut self) -> Option<AgentdError> {\n        self.failure.take()\n    }\n\n    fn exchange_original_request(\n        &mut self,\n        request: &ProductEvaluationExecutionAttestationRequestV1<'_>,\n    ) -> Result<SignedLearningEvidenceV1, AgentdError> {\n        self.wait.require_original_live()?;\n        if request.key() != &self.expected {\n            return Err(deployment_refused(\"actual evaluator request differs from its original key\"));\n        }\n        let exchange = self.exchange.take()\n            .ok_or_else(|| deployment_refused(\"original evaluator operation already consumed\"))?;\n        let raw = OriginalExecutionSigningData {\n            schema_version: 1,\n            purpose: \"hepta.same-actor-q24-deployment.execution-signing.v1\",\n            phase: &self.context.descriptor().phase,\n            learning_operation: self.prepared.initial().request.operation_id.as_str(),\n            plan_id: request.key().plan_id.as_str(),\n            execution_binding: request.key().binding_digest.into_array(),\n            execution_digest: request.execution().execution_digest.into_array(),\n            payload: request.signing_payload(),\n        };\n        let (digest, response) = exchange.exchange_original(&raw, self.files, self.wait)?;\n        let signed: OriginalExecutionResponseData = response.parse_original()?;\n        if signed.schema_version != 1\n            || signed.request_digest != digest.into_array()\n            || signed.execution_digest != raw.execution_digest\n        {\n            return Err(deployment_refused(\"original evaluator response binding differs\"));\n        }\n        let evidence = signed.signed.original()?;\n        response.require_original_pin()?;\n        self.wait.require_original_live()?;\n        // Signature, role, full principal and objective authentication remains\n        // in Product::authenticate immediately after this exact trait return.\n        Ok(evidence)\n    }\n}\n\nimpl ProductEvaluationExecutionAttestorV1 for OriginalExecutionAttestor<'_> {\n    fn attest_execution(\n        &mut self,\n        request: &ProductEvaluationExecutionAttestationRequestV1<'_>,\n    ) -> Result<SignedLearningEvidenceV1, ProductProviderErrorV1> {\n        match self.exchange_original_request(request) {\n            Ok(signed) => Ok(signed),\n            Err(error) => {\n                self.failure = Some(error);\n                // Actual execution was already claimed and performed. A\n                // missing/failed external reply is never \"not executed\".\n                Err(ProductProviderErrorV1::Indeterminate)\n            }\n        }\n    }\n}\n\n#[derive(Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalQualificationSigningData<'a> {\n    schema_version: u32,\n    purpose: &'static str,\n    phase: &'a str,\n    learning_operation: &'a str,\n    execution_digest: [u8; 32],\n    frozen_plan_digest: [u8; 32],\n    generator_payload: &'a [u8],\n    evaluator_payload: &'a [u8],\n    actual_cell_record: serde_json::Value,\n}\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalQualificationResponseData {\n    schema_version: u32,\n    request_digest: [u8; 32],\n    execution_digest: [u8; 32],\n    generator_plan: SignedEvidenceData,\n    evaluator_bundle: SignedEvidenceData,\n}\n\n/// Called only after actual Cell evaluation returns a sealed receipt and the\n/// SAME runner builds its qualification bundle and canonical signing payload.\npub(super) struct OriginalQualificationSigningRequest<'a> {\n    pub context: &'a OriginalSameActorRootContext,\n    pub prepared: &'a CellQ24PreparedLearningV1,\n    pub plan: &'a CellEvaluationPlanV1,\n    pub execution_digest: Digest32,\n    pub evaluator_payload: &'a [u8],\n}\n\npub(super) fn request_original_qualification(\n    original: OriginalQualificationSigningRequest<'_>,\n    exchange: OriginalActorExchangeData,\n    files: &mut OriginalDeploymentFiles,\n    wait: &mut OriginalActorWait,\n) -> Result<SignedEvaluationEvidenceV1, AgentdError> {\n    wait.require_original_live()?;\n    let generator = original.plan.product_plan().frozen_plan.plan_digest;\n    let request = OriginalQualificationSigningData {\n        schema_version: 1,\n        purpose: \"hepta.same-actor-q24-deployment.qualification-signing.v1\",\n        phase: &original.context.descriptor().phase,\n        learning_operation: original.prepared.initial().request.operation_id.as_str(),\n        execution_digest: original.execution_digest.into_array(),\n        frozen_plan_digest: generator.into_array(),\n        generator_payload: generator.as_array(),\n        evaluator_payload: original.evaluator_payload,\n        actual_cell_record: serde_json::to_value(original.plan.record()).map_err(deployment_error)?,\n    };\n    let (digest, response) = OriginalActorExchange::new(exchange)?\n        .exchange_original(&request, files, wait)?;\n    let signed: OriginalQualificationResponseData = response.parse_original()?;\n    if signed.schema_version != 1 || signed.request_digest != digest.into_array()\n        || signed.execution_digest != request.execution_digest\n    {\n        return Err(deployment_refused(\"actual qualification response binding differs\"));\n    }\n    let evidence = SignedEvaluationEvidenceV1 {\n        generator_plan: signed.generator_plan.original()?,\n        evaluator_bundle: signed.evaluator_bundle.original()?,\n    };\n    response.require_original_pin()?;\n    wait.require_original_live()?;\n    Ok(evidence)\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "eval_storage_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "blob": "5ddacddb99924751d37ef72fc244150bccac3dc5",
+        "bytes": 8157,
+        "sha256": "ba344bdf7f66e02435542faeea3fa4a55f6aa29bb3f07ded03b2351e2c144ac9",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Concrete independent B storage. Existing owner journals never fall back to\n//! genesis, and every recovered durable store requires its external minimum.\n//! File identities remain distinct across source, witness, execution and sink.\n\nuse codex_hepta_intelligence_eval::{\n    FinalHoldoutCasAnchorV1, FencedFinalHoldoutOwnerV1, HoldoutWriterFenceV1,\n    LockedFileFinalHoldoutCasStoreV1, LockedFileProductEvaluationExecutionStoreV1,\n    LockedFileProductQualificationEvidenceSinkV1, ProductEvaluationExecutionAnchorV1,\n};\nuse codex_hepta_neuron::{CellGenerationJournalV2, FileAnchorWitnessStore};\nuse codex_hepta_types::{Digest32, StableId};\nuse serde::{Deserialize, Serialize};\nuse crate::AgentdError;\nuse crate::authority_host_runtime::OriginalDeploymentObserverData;\nuse super::files::{MutableFileData, OriginalDeploymentFiles, OriginalFileMode};\nuse super::learning_data::required_option;\nuse super::witness::OriginalWitnessData;\nuse super::{deployment_error, deployment_refused};\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalEvaluationJournalData {\n    pub journal: MutableFileData,\n    pub witness: OriginalWitnessData,\n    pub observer: OriginalDeploymentObserverData,\n}\nimpl OriginalEvaluationJournalData {\n    pub(super) fn open_original(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<CellGenerationJournalV2<FileAnchorWitnessStore>, AgentdError> {\n        if !matches!(self.journal.mode, OriginalFileMode::Recover)\n            || !matches!(self.witness.file.mode, OriginalFileMode::Recover)\n        {\n            return Err(deployment_refused(\"B requires actual existing experiment journals\"));\n        }\n        let observer = self.observer.original_observer_config().map_err(deployment_error)?;\n        if observer.witness_scope.scope_digest.into_array() != self.witness.scope\n            || observer.witness_scope.objective_digest.into_array() != self.witness.objective\n            || observer.witness_generation.get() != self.witness.generation\n            || observer.witness_records != self.witness.maximum_records\n        {\n            return Err(deployment_refused(\"B witness differs from its actual observer configuration\"));\n        }\n        let journal = files.open_original_owner(&self.journal)?;\n        let witness = self.witness.open_original(files)?;\n        files.require_original_context()?;\n        // Ordinary open rejects guarded CURRENT journals. No replacement\n        // current callback or precomputed proof is installed by this loader.\n        let original = CellGenerationJournalV2::open(\n            journal, witness, observer.generation, observer.journal_records,\n        ).map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(original)\n    }\n}\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalHoldoutMinimumData {\n    pub fence_generation: u64,\n    pub record_count: u64,\n    pub state_digest: [u8; 32],\n}\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalHoldoutData {\n    pub file: MutableFileData,\n    pub binding: [u8; 32],\n    pub owner_id: String,\n    pub generation: u64,\n    pub lease_digest: [u8; 32],\n    #[serde(deserialize_with = \"required_option\")]\n    pub minimum: Option<OriginalHoldoutMinimumData>,\n}\nimpl OriginalHoldoutData {\n    pub(super) fn open_original(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>, AgentdError> {\n        let binding = Digest32::from_array(self.binding);\n        // These are the real host-provided fence fields. No fence issuer,\n        // authority digest, lease, generation or minimum is synthesized here.\n        let fence = HoldoutWriterFenceV1 {\n            owner_id: StableId::new(&self.owner_id).map_err(deployment_error)?,\n            generation: self.generation,\n            lease_digest: Digest32::from_array(self.lease_digest),\n        };\n        let file = files.open_original_owner(&self.file)?;\n        files.require_original_context()?;\n        let original = match self.file.mode {\n            OriginalFileMode::Recover => {\n                let minimum = self.minimum.as_ref()\n                    .ok_or_else(|| deployment_refused(\"recovered holdout has no independent minimum\"))?;\n                let minimum = FinalHoldoutCasAnchorV1 {\n                    fence_generation: minimum.fence_generation,\n                    record_count: minimum.record_count,\n                    state_digest: Digest32::from_array(minimum.state_digest),\n                };\n                let store = LockedFileFinalHoldoutCasStoreV1::recover(file, binding, Some(minimum))\n                    .map_err(deployment_error)?;\n                files.require_original_context()?;\n                FencedFinalHoldoutOwnerV1::recover(store, binding, fence)\n            }\n            OriginalFileMode::CreateNew | OriginalFileMode::ExistingEmpty => {\n                if self.minimum.is_some() {\n                    return Err(deployment_refused(\"fresh holdout cannot discard an existing minimum\"));\n                }\n                let store = LockedFileFinalHoldoutCasStoreV1::create(file, binding)\n                    .map_err(deployment_error)?;\n                files.require_original_context()?;\n                FencedFinalHoldoutOwnerV1::initialize(store, binding, fence)\n            }\n        }.map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(original)\n    }\n}\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalExecutionMinimumData {\n    pub sequence: u64,\n    pub history_digest: [u8; 32],\n}\nimpl OriginalExecutionMinimumData {\n    fn original(&self) -> ProductEvaluationExecutionAnchorV1 {\n        ProductEvaluationExecutionAnchorV1 {\n            sequence: self.sequence,\n            history_digest: Digest32::from_array(self.history_digest),\n        }\n    }\n}\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalEvaluationStoreData {\n    pub file: MutableFileData,\n    pub binding: [u8; 32],\n    #[serde(deserialize_with = \"required_option\")]\n    pub minimum: Option<OriginalExecutionMinimumData>,\n}\nimpl OriginalEvaluationStoreData {\n    fn require_original_mode(&self) -> Result<(), AgentdError> {\n        if matches!(self.file.mode, OriginalFileMode::Recover) != self.minimum.is_some() {\n            return Err(deployment_refused(\"original evaluation store lifecycle/minimum differs\"));\n        }\n        Ok(())\n    }\n\n    pub(super) fn open_original_execution(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductEvaluationExecutionStoreV1, AgentdError> {\n        self.require_original_mode()?;\n        let file = files.open_original_owner(&self.file)?;\n        let binding = Digest32::from_array(self.binding);\n        files.require_original_context()?;\n        let store = match &self.minimum {\n            Some(minimum) => LockedFileProductEvaluationExecutionStoreV1::recover(\n                file, binding, minimum.original(),\n            ),\n            None => LockedFileProductEvaluationExecutionStoreV1::create(file, binding),\n        }.map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(store)\n    }\n\n    pub(super) fn open_original_sink(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError> {\n        self.require_original_mode()?;\n        let file = files.open_original_owner(&self.file)?;\n        let binding = Digest32::from_array(self.binding);\n        files.require_original_context()?;\n        let sink = match &self.minimum {\n            Some(minimum) => LockedFileProductQualificationEvidenceSinkV1::recover(\n                file, binding, minimum.original(),\n            ),\n            None => LockedFileProductQualificationEvidenceSinkV1::create(file, binding),\n        }.map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(sink)\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "evaluation_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "blob": "821360eb2d4c0537e816ea4e2428a3d719a4c3d8",
+        "bytes": 11392,
+        "sha256": "ec16644c2ae391a25742e117efe2d8def4c12c53bbd915df086f28be2f3b8f06",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Actual independent B execution for the ordinary deployment.\n//! This runs the original Cell/Product estimator and qualification owners.\n//! Supplied files are inputs and signatures; no result receipt is decoded\n//! from host JSON or substituted for the actual runner's return value.\n\nuse std::sync::Arc;\n\nuse codex_hepta_intelligence_eval::{\n    LockedFileFinalHoldoutProviderV1, LockedFileProductQualificationEvidenceSinkV1,\n    ProductEvaluationExecutionRequestV1,\n    ProductEvaluationRunnerV1, ProductProviderErrorV1, ProductTimingEvidenceV1,\n    evaluation_signing_payload_v2, product_evaluation_execution_key_v1,\n};\nuse codex_hepta_learning_ledger::LearningEvidenceRoleV1;\nuse codex_hepta_types::Digest32;\nuse serde::{Deserialize, Serialize};\n\nuse crate::{\n    AgentdError, CellEvaluationJournalsV1, CellEvaluationQualificationRequestV1,\n    CellEvaluationRunnerV1, CellQ24PreparedLearningV1,\n    OriginalCellEvaluationSigningConfigV1, OriginalCellEvaluationTrainerV1,\n    OriginalCellQ24EvaluationInputsV1, OriginalCellQ24EvaluationTimingV1,\n    OriginalCellQ24LearningOpenV1, OriginalCellQ24TrainingReadbackV1,\n    freeze_cell_learning_evaluation_plan_v1,\n};\nuse crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;\n\nuse super::evaluation_data::{OriginalEvaluationRegistrationData, OriginalQualificationContextData};\nuse super::evaluation_signing::{\n    OriginalExecutionAttestor, OriginalQualificationSigningRequest,\n    request_original_qualification,\n};\nuse super::evaluation_storage::{\n    OriginalEvaluationJournalData, OriginalEvaluationStoreData, OriginalHoldoutData,\n};\nuse super::exchange::{OriginalActorExchangeData, OriginalActorWait};\nuse super::files::{OriginalDeploymentFiles, PinnedFileData};\nuse super::learning::{OriginalDeploymentLearning, OriginalSignedOwnerFilesData};\nuse super::temporal_data::OriginalTemporalPlanData;\nuse super::witness::require_fresh_original_file;\nuse super::{deployment_error, deployment_refused};\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalEvaluationData {\n    pub registration: OriginalEvaluationRegistrationData,\n    pub candidate_journal: OriginalEvaluationJournalData,\n    pub fixed_expert_journal: OriginalEvaluationJournalData,\n    pub candidate_plan: OriginalTemporalPlanData,\n    pub baseline_plan: OriginalTemporalPlanData,\n    pub holdout_material: PinnedFileData,\n    pub holdout: OriginalHoldoutData,\n    pub executions: OriginalEvaluationStoreData,\n    pub evidence_store: OriginalEvaluationStoreData,\n    pub qualification_context: OriginalQualificationContextData,\n    pub execution_signing: OriginalActorExchangeData,\n    pub qualification_signing: OriginalActorExchangeData,\n    pub receipt: OriginalSignedOwnerFilesData,\n}\n\npub(super) struct OriginalExecutedEvaluation {\n    pub inputs: OriginalCellQ24EvaluationInputsV1,\n    /// Retained by the actual coordinator through its original phase cleanup.\n    /// A digest or qualification object is not a substitute for this owner.\n    pub evidence_owner: LockedFileProductQualificationEvidenceSinkV1,\n}\n\nimpl OriginalEvaluationData {\n    pub(super) fn execute_original(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n        prepared: &Arc<CellQ24PreparedLearningV1>,\n        trainer: OriginalCellQ24TrainingReadbackV1,\n        learning: &OriginalDeploymentLearning,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<OriginalExecutedEvaluation, AgentdError> {\n        let mut wait = OriginalActorWait::for_original_prepared(\n            Arc::clone(context), prepared,\n        )?;\n        let qualification_context = self.qualification_context.original()?;\n        let now = wait.require_original_live()?;\n        let generator = learning.require_original_signer(\n            qualification_context.generator.principal_id.as_str(),\n            LearningEvidenceRoleV1::Generator, now,\n        )?;\n        let evaluator = learning.require_original_signer(\n            qualification_context.evaluator.principal_id.as_str(),\n            LearningEvidenceRoleV1::Evaluator, now,\n        )?;\n        if generator.principal != qualification_context.generator\n            || evaluator.principal != qualification_context.evaluator\n            || evaluator.principal.principal_id.as_str() != self.receipt.principal\n        {\n            return Err(deployment_refused(\"B principals differ from actual enrolled owners\"));\n        }\n        let candidate = self.candidate_journal.open_original(files)?;\n        let fixed_expert = self.fixed_expert_journal.open_original(files)?;\n        let candidate_plan = self.candidate_plan.original()?;\n        let baseline_plan = self.baseline_plan.original()?;\n        wait.require_original_live()?;\n        // The same actual Prepared request supplies this pre-training pin;\n        // a later B data file cannot replace its original evaluation protocol.\n        let plan = freeze_cell_learning_evaluation_plan_v1(\n            self.registration.original()?,\n            CellEvaluationJournalsV1 { candidate: &candidate, fixed_expert: &fixed_expert },\n            &candidate_plan, &baseline_plan, prepared.initial().request.evaluation_profile,\n        ).map_err(deployment_error)?;\n        let material = files.read_original(&self.holdout_material, 16 * 1024 * 1024)?;\n        wait.require_original_live()?;\n        let mut provider = LockedFileFinalHoldoutProviderV1::open(\n            material.clone_original_file()?, plan.product_plan(),\n        ).map_err(deployment_error)?;\n        material.require_original_pin()?;\n        let holdout = self.holdout.open_original(files)?;\n        let mut executions = self.executions.open_original_execution(files)?;\n        // Its separate original namespace and distinct actual File are\n        // checked by the sink itself and the loader's inode custody.\n        let mut sink = self.evidence_store.open_original_sink(files)?;\n        let mut runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(holdout));\n        let key = product_evaluation_execution_key_v1(\n            plan.product_plan(), Digest32::from_array(self.holdout.binding),\n            &qualification_context.evaluator,\n        ).map_err(deployment_error)?;\n        let business_expiry = prepared.initial().request.envelope.expiry_unix_seconds;\n        let actual_clock = context.clock();\n        let clock_context = Arc::clone(context);\n        let clock = move || {\n            OriginalSameActorRootContext::require_current(&clock_context)\n                .map_err(|_| ProductProviderErrorV1::Unavailable)?;\n            let now = actual_clock.now_unix_ms()\n                .map_err(|_| ProductProviderErrorV1::Unavailable)? / 1_000;\n            if now >= business_expiry {\n                return Err(ProductProviderErrorV1::Unavailable);\n            }\n            OriginalSameActorRootContext::require_current(&clock_context)\n                .map_err(|_| ProductProviderErrorV1::Unavailable)?;\n            Ok(now)\n        };\n        let request = ProductEvaluationExecutionRequestV1 {\n            plan: plan.product_plan(), candidate_plan: &candidate_plan,\n            baseline_plan: &baseline_plan, evaluator: &qualification_context.evaluator,\n            verifier: learning.verifier(), clock: &clock,\n        };\n        let receipt = {\n            let mut attestor = OriginalExecutionAttestor::new(\n                Arc::clone(context), prepared, key, self.execution_signing.clone(),\n                files, &mut wait,\n            )?;\n            let result = runner.evaluate_or_readback(\n                &plan, CellEvaluationJournalsV1 {\n                    candidate: &candidate, fixed_expert: &fixed_expert,\n                }, &request, &mut provider, &mut executions, &mut attestor,\n            );\n            // Preserve the actual external actor error as well as the\n            // original runner's Pending semantics; never dispatch again.\n            if let Some(error) = attestor.take_original_failure() {\n                return Err(error);\n            }\n            result.map_err(deployment_error)?\n        };\n        material.require_original_pin()?;\n        wait.require_original_live()?;\n        let bundle = runner.qualification_bundle(&receipt, &qualification_context)\n            .map_err(deployment_error)?;\n        let evaluator_payload = evaluation_signing_payload_v2(\n            &bundle, &plan.product_plan().metric_roles,\n        ).map_err(deployment_error)?;\n        let evidence = request_original_qualification(\n            OriginalQualificationSigningRequest {\n                context, prepared, plan: &plan,\n                execution_digest: receipt.temporal().execution_digest,\n                evaluator_payload: &evaluator_payload,\n            },\n            self.qualification_signing.clone(), files, &mut wait,\n        )?;\n        let now = wait.require_original_live()?;\n        let qualification = runner.qualify_and_persist(\n            &receipt,\n            CellEvaluationQualificationRequestV1 {\n                context: &qualification_context, evidence: &evidence,\n                timing: ProductTimingEvidenceV1::Qualification,\n                verifier: learning.verifier(), now,\n            },\n            &mut sink,\n        ).map_err(deployment_error)?;\n        let persisted = sink.readback(\n            receipt.temporal().execution_digest, &qualification.product().decision,\n        ).map_err(deployment_error)?;\n        if persisted != qualification.product().publication_digest {\n            return Err(deployment_refused(\"actual B evidence sink readback differs\"));\n        }\n        // Only the actual runner return can enter this concrete handoff.\n        // The original Stage re-reads signed execution and authenticates the\n        // same Trainer/Training cut before minting its own Evaluation receipt.\n        wait.require_original_live()?;\n        require_fresh_original_file(&self.receipt.journal)?;\n        require_fresh_original_file(&self.receipt.witness.file)?;\n        let key = files.read_original_signing_key(&self.receipt.key)?;\n        if key.verifying_key().to_bytes() != evaluator.verifying_key {\n            return Err(deployment_refused(\"B receipt key differs from its actual enrolled Evaluator\"));\n        }\n        let receipt_file = files.open_original_owner(&self.receipt.journal)?;\n        let receipt_witness = self.receipt.witness.open_original(files)?;\n        let signing = OriginalCellEvaluationSigningConfigV1 {\n            plan: plan.product_plan().clone(),\n            execution_namespace: Digest32::from_array(self.holdout.binding),\n            signer: evaluator, verifier: learning.verifier().clone(),\n            maximum_signature_lifetime_seconds: self.receipt.maximum_signature_lifetime_seconds,\n        };\n        wait.require_original_live()?;\n        let inputs = OriginalCellQ24EvaluationInputsV1 {\n            plan, runner, candidate, fixed_expert, candidate_plan, baseline_plan,\n            executions, qualification, context: qualification_context, evidence,\n            timing: OriginalCellQ24EvaluationTimingV1::Qualification,\n            trainer: OriginalCellEvaluationTrainerV1::OriginalQ24(trainer),\n            receipt_file, receipt_witness, signing, key,\n            mode: OriginalCellQ24LearningOpenV1::Create,\n        };\n        Ok(OriginalExecutedEvaluation { inputs, evidence_owner: sink })\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "observation_data_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_observation_data.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_observation_data.rs",
+        "blob": "a895514e7f23a9ab66a265478bea2122eebfa7d7",
+        "bytes": 4533,
+        "sha256": "b00a4a945e0758290198c32bc3c7510c0a5455453ed3335fe7ec1e668da67404",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Exact data exported from the actual Training/decision observations.\n//! These descriptions carry no receipt constructor, task admission or Root\n//! authority. Independent actors must reconcile them with their real sources.\n\nuse std::sync::Arc;\nuse codex_hepta_learning_artifacts::{\n    LearningIterationSnapshotV1, learning_iteration_receipt_signing_bytes_v1,\n};\nuse serde::Serialize;\nuse crate::{AgentdError, CellQ24TrainingOutcomeV1, LoadedCellQ24ModelV1,\n    OriginalCellQ24TrainingMaterialV1};\nuse super::bundle_data::OriginalBundleData;\nuse super::learning_data::SignedEvidenceData;\nuse super::{deployment_error, deployment_refused};\n\n#[derive(Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalTrainingNotice {\n    pub schema_version: u32,\n    pub purpose: &'static str,\n    pub phase: String,\n    pub learning_operation: String,\n    pub dataset_head: [u8; 32],\n    pub training_head: [u8; 32],\n    pub receipt_signing_bytes: Vec<u8>,\n    pub attestation: SignedEvidenceData,\n    pub candidate_bundle: OriginalBundleData,\n    pub heads: Vec<u8>,\n    pub batch_digest: [u8; 32],\n    pub optimizer_rule: [u8; 32],\n    pub update_rule: [u8; 32],\n    pub optimizer_steps: u64,\n    pub squared_error_before_q48: String,\n    pub squared_error_after_q48: String,\n    pub elapsed_microseconds: u64,\n}\nimpl OriginalTrainingNotice {\n    pub(super) fn from_original(\n        phase: &str,\n        snapshot: &LearningIterationSnapshotV1,\n        material: OriginalCellQ24TrainingMaterialV1,\n    ) -> Result<(Self, Arc<LoadedCellQ24ModelV1>), AgentdError> {\n        if material.training() != snapshot {\n            return Err(deployment_refused(\"Training notice differs from its actual readback\"));\n        }\n        let dataset_head = material.dataset().head_digest.into_array();\n        let completion = material.into_completion();\n        let CellQ24TrainingOutcomeV1::Candidate(candidate) = completion.outcome else {\n            // An authenticated NoUpdate follows the existing Decision branch;\n            // it is not reclassified as a candidate for an independent B run.\n            return Err(deployment_refused(\"actual NoUpdate has no independent-B candidate\"));\n        };\n        let candidate = *candidate;\n        let notice = Self {\n            schema_version: 1,\n            purpose: \"hepta.same-actor-q24-deployment.original-training.v1\",\n            phase: phase.to_owned(),\n            learning_operation: snapshot.request.operation_id.as_str().to_owned(),\n            dataset_head, training_head: snapshot.head_digest.into_array(),\n            receipt_signing_bytes: learning_iteration_receipt_signing_bytes_v1(\n                &completion.receipt,\n            ).map_err(deployment_error)?,\n            attestation: SignedEvidenceData::from_original(&completion.attestation),\n            candidate_bundle: OriginalBundleData::from_original(&candidate.bundle),\n            heads: candidate.heads,\n            batch_digest: candidate.metrics.batch_digest.into_array(),\n            optimizer_rule: candidate.metrics.optimizer_rule.into_array(),\n            update_rule: candidate.metrics.update_rule.into_array(),\n            optimizer_steps: candidate.metrics.optimizer_steps,\n            squared_error_before_q48: candidate.metrics.squared_error_before_q48.to_string(),\n            squared_error_after_q48: candidate.metrics.squared_error_after_q48.to_string(),\n            elapsed_microseconds: candidate.metrics.elapsed_microseconds,\n        };\n        Ok((notice, Arc::new(candidate.model)))\n    }\n}\n\n#[derive(Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalDecisionNotice {\n    pub schema_version: u32,\n    pub purpose: &'static str,\n    pub phase: String,\n    pub learning_operation: String,\n    pub actual_head: [u8; 32],\n    pub original_receipt_signing_bytes: Vec<Vec<u8>>,\n}\nimpl OriginalDecisionNotice {\n    pub(super) fn from_original(\n        phase: &str, snapshot: &LearningIterationSnapshotV1,\n    ) -> Result<Self, AgentdError> {\n        Ok(Self {\n            schema_version: 1,\n            purpose: \"hepta.same-actor-q24-deployment.original-decision.v1\",\n            phase: phase.to_owned(),\n            learning_operation: snapshot.request.operation_id.as_str().to_owned(),\n            actual_head: snapshot.head_digest.into_array(),\n            original_receipt_signing_bytes: snapshot.receipts.iter()\n                .map(learning_iteration_receipt_signing_bytes_v1)\n                .collect::<Result<Vec<_>, _>>().map_err(deployment_error)?,\n        })\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "deployment_data_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs",
+        "blob": "be4ca92a49cc1cbdf15cb368751ddcb7f09c3cc0",
+        "bytes": 3194,
+        "sha256": "d6e66f794704df6c6c045765825de8a5ab7c583b717140c4d6fdea7ee88ffb23",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Immutable Root-approved deployment configuration and late actor data.\n//! All signatures, Outcomes, plans, journals and approved materials are real\n//! deployment inputs. Missing material has no synthetic or permissive default.\n\nuse std::path::PathBuf;\nuse serde::{Deserialize, Serialize};\nuse crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;\nuse super::artifacts::{OriginalArtifactDecisionData, OriginalArtifactOwnerData, OriginalSelectionData};\nuse super::c::OriginalCData;\nuse super::evaluation::OriginalEvaluationData;\nuse super::exchange::OriginalActorExchangeData;\nuse super::files::{MutableFileData, PinnedFileData};\nuse super::learning::OriginalLearningMaterialsData;\nuse super::outcome_data::OriginalSignedOutcomeData;\nuse super::preparation::OriginalPreparationData;\nuse super::task::{OriginalCircuitData, OriginalInitialData};\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalDeploymentData {\n    pub schema_version: u32,\n    pub binding: OriginalDeploymentBinding,\n    pub initial: OriginalInitialData,\n    pub task: OriginalCircuitData,\n    pub learning: OriginalLearningMaterialsData,\n    pub artifacts: OriginalArtifactOwnerData,\n    pub authbus_trust: PinnedFileData,\n    pub authbus_checkpoint: MutableFileData,\n    pub objective_profile: PinnedFileData,\n    pub plasticity: PinnedFileData,\n    pub objective_a: PinnedFileData,\n    pub completion_a: PathBuf,\n    pub scoped_material_ready: OriginalActorExchangeData,\n    pub independent_training: OriginalActorExchangeData,\n    pub artifact_decision: OriginalActorExchangeData,\n    pub independent_selection: OriginalActorExchangeData,\n    pub current_material_ready: OriginalActorExchangeData,\n    pub original_c: OriginalCData,\n    pub objective_c: PinnedFileData,\n    pub outcome_c: PathBuf,\n    pub host_capacity: usize,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalACompletionData {\n    pub schema_version: u32,\n    pub phase: String,\n    pub outcome: OriginalSignedOutcomeData,\n    pub preparation: OriginalPreparationData,\n}\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalCOutcomeData {\n    pub schema_version: u32,\n    pub phase: String,\n    pub outcome: OriginalSignedOutcomeData,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalEvaluationResponse {\n    pub schema_version: u32,\n    pub request_digest: [u8; 32],\n    pub original: OriginalEvaluationData,\n}\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalArtifactResponse {\n    pub schema_version: u32,\n    pub request_digest: [u8; 32],\n    pub original: OriginalArtifactDecisionData,\n}\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalSelectionResponse {\n    pub schema_version: u32,\n    pub request_digest: [u8; 32],\n    pub original: OriginalSelectionData,\n}\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalMaterialReady {\n    pub schema_version: u32,\n    pub request_digest: [u8; 32],\n    pub material_digest: [u8; 32],\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "witness_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+        "blob": "3a89520c8c07521eb3370a291732dc8ac282c89e",
+        "bytes": 1971,
+        "sha256": "45c73f1b7e73ddd73693e74556fae1fc2d68e71ca0fb3253064e7978c09eed2e",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Actual independently placed witness files for deployment owners.\n//! Descriptor fields only select the original scope and generation; this\n//! constructor retains the real file and runs the original witness validation.\n\nuse codex_hepta_neuron::FileAnchorWitnessStore;\nuse codex_hepta_neuron::JournalScope;\nuse codex_hepta_types::Digest32;\nuse codex_hepta_types::Generation;\nuse serde::Deserialize;\nuse serde::Serialize;\n\nuse crate::AgentdError;\n\nuse super::deployment_error;\nuse super::deployment_refused;\nuse super::files::MutableFileData;\nuse super::files::OriginalDeploymentFiles;\nuse super::files::OriginalFileMode;\n\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalWitnessData {\n    pub file: MutableFileData,\n    pub scope: [u8; 32],\n    pub objective: [u8; 32],\n    pub generation: u64,\n    pub maximum_records: usize,\n}\n\nimpl OriginalWitnessData {\n    pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<FileAnchorWitnessStore, AgentdError> {\n        let scope = JournalScope {\n            scope_digest: Digest32::from_array(self.scope),\n            objective_digest: Digest32::from_array(self.objective),\n        };\n        let generation = Generation::new(self.generation).map_err(deployment_error)?;\n        let file = files.open_original_owner(&self.file)?;\n        files.require_original_context()?;\n        let witness = FileAnchorWitnessStore::open(\n            file, scope, generation, self.maximum_records,\n        )\n        .map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(witness)\n    }\n}\n\npub(super) fn require_fresh_original_file(input: &MutableFileData) -> Result<(), AgentdError> {\n    if matches!(input.mode, OriginalFileMode::Recover) {\n        return Err(deployment_refused(\n            \"this fresh Learning owner cannot use recovery data or reset its trust history\",\n        ));\n    }\n    Ok(())\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "deployment_parent_draft",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "blob": "f4f535f7d7bb53489a6cf0e2466eeff380327c4d",
+        "bytes": 3593,
+        "sha256": "7fcfc53c9790b0aed6ab021d9acc5b09df208fe782539af83185abd302ff9741",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add_file",
+          "content": "//! Concrete ordinary deployment material owners and event coordinator.\n//! Data from files never substitutes for the original signed ingress,\n//! Prepared, B execution, Root approval or opaque owner capabilities.\n\nuse std::path::PathBuf;\nuse std::sync::Arc;\nuse codex_hepta_types::Digest32;\nuse crate::AgentdError;\nuse crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;\nuse crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;\n\n#[path = \"same_actor_q24_deployment_client.rs\"]\nmod client;\n#[path = \"same_actor_q24_deployment_ingress.rs\"]\nmod ingress;\n#[path = \"same_actor_q24_deployment_owner.rs\"]\nmod owner;\n#[path = \"same_actor_q24_deployment_factory.rs\"]\nmod factory;\n#[path = \"same_actor_q24_deployment_coordinator.rs\"]\nmod coordinator;\n#[path = \"same_actor_q24_deployment_files.rs\"]\nmod files;\n#[path = \"same_actor_q24_deployment_learning_data.rs\"]\nmod learning_data;\n#[path = \"same_actor_q24_deployment_learning.rs\"]\nmod learning;\n#[path = \"same_actor_q24_deployment_preparation.rs\"]\nmod preparation;\n#[path = \"same_actor_q24_deployment_cell_data.rs\"]\nmod cell_data;\n#[path = \"same_actor_q24_deployment_bundle_data.rs\"]\nmod bundle_data;\n#[path = \"same_actor_q24_deployment_model.rs\"]\nmod model;\n#[path = \"same_actor_q24_deployment_task.rs\"]\nmod task;\n#[path = \"same_actor_q24_deployment_c.rs\"]\nmod c;\n#[path = \"same_actor_q24_deployment_artifact_data.rs\"]\nmod artifact_data;\n#[path = \"same_actor_q24_deployment_artifacts.rs\"]\nmod artifacts;\n#[path = \"same_actor_q24_deployment_exchange.rs\"]\nmod exchange;\n#[path = \"same_actor_q24_deployment_temporal_data.rs\"]\nmod temporal_data;\n#[path = \"same_actor_q24_deployment_comparison_data.rs\"]\nmod comparison_data;\n#[path = \"same_actor_q24_deployment_evaluation_data.rs\"]\nmod evaluation_data;\n#[path = \"same_actor_q24_deployment_evaluation_signing.rs\"]\nmod evaluation_signing;\n#[path = \"same_actor_q24_deployment_evaluation_storage.rs\"]\nmod evaluation_storage;\n#[path = \"same_actor_q24_deployment_evaluation.rs\"]\nmod evaluation;\n#[path = \"same_actor_q24_deployment_observation_data.rs\"]\nmod observation_data;\n#[path = \"same_actor_q24_deployment_data.rs\"]\nmod data;\n#[path = \"same_actor_q24_deployment_witness.rs\"]\nmod witness;\n\npub(crate) use owner::OriginalDeploymentCoordinatorOwner;\n\n/// Only a selected pathname and exact immutable digest, not authority.\npub(crate) struct OriginalDeploymentDescriptor(files::PinnedFileData);\n\nimpl OriginalDeploymentDescriptor {\n    pub(crate) fn from_original_arguments(path: PathBuf, digest: Digest32) -> Result<Self, AgentdError> {\n        if !path.is_absolute() {\n            return Err(deployment_refused(\"original deployment descriptor must be absolute\"));\n        }\n        Ok(Self(files::PinnedFileData { path, sha256: digest.into_array() }))\n    }\n}\n\npub(crate) async fn open_original_deployment(\n    context: Arc<OriginalSameActorRootContext>,\n    descriptor: OriginalDeploymentDescriptor,\n) -> Result<(OriginalSameActorBusinessInputsV1, OriginalDeploymentCoordinatorOwner), AgentdError> {\n    let factory::OriginalLoadedDeployment { business, coordinator } =\n        factory::load_original_deployment(Arc::clone(&context), descriptor.0).await?;\n    let owner = OriginalDeploymentCoordinatorOwner::start_original(context, coordinator)?;\n    Ok((business, owner))\n}\n\nfn deployment_refused(message: &str) -> AgentdError {\n    AgentdError::GenerationFenced(format!(\"original same-actor deployment: {message}\"))\n}\n\nfn deployment_error(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Invalid(format!(\"original same-actor deployment: {error}\"))\n}\n"
+        }
+      ]
+    },
+    {
+      "key": "main_overlay",
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "pre": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "blob": "9d9cf5a296423f8ca2a0bfe84a4a9b59be2d4312",
+        "bytes": 14216,
+        "sha256": "58e27ed89b9ca2ce7ec26e86b7367d801219121d2f3e28763953512547ad06ba",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "#[cfg(target_os = \"linux\")]\nuse codex_hepta_agentd::AgentdProductionStartup;",
+          "after": "#[cfg(target_os = \"linux\")]\nuse codex_hepta_agentd::AgentdProductionStartup;\n#[cfg(target_os = \"linux\")]\nuse codex_hepta_agentd::AgentdOriginalSameActorDeploymentStartupV1;"
+        },
+        {
+          "before": "        #[cfg(target_os = \"linux\")]\n        let (startup, arguments) = AgentdProductionStartup::from_process_environment(arguments)?;",
+          "after": "        #[cfg(target_os = \"linux\")]\n        let (phase, arguments) =\n            AgentdOriginalSameActorDeploymentStartupV1::select_from_process_environment(arguments)?;\n        #[cfg(target_os = \"linux\")]\n        let (startup, arguments) = if phase.is_some() {\n            (None, arguments)\n        } else {\n            let (startup, arguments) = AgentdProductionStartup::from_process_environment(arguments)?;\n            (Some(startup), arguments)\n        };"
+        },
+        {
+          "before": "        #[cfg(target_os = \"linux\")]\n        let identity = startup.identity();",
+          "after": "        #[cfg(target_os = \"linux\")]\n        let identity = match (&phase, &startup) {\n            (Some(phase), None) => phase.identity(),\n            (None, Some(startup)) => startup.identity(),\n            _ => return Err(anyhow::anyhow!(\"exactly one actual Agentd startup is required\")),\n        };"
+        },
+        {
+          "before": "            #[cfg(target_os = \"linux\")]\n            let (mut config, production) = startup.receive().await?;",
+          "after": "            #[cfg(target_os = \"linux\")]\n            if let Some(phase) = phase {\n                // This actual selected entry owns the sealed-context receiver,\n                // concrete material coordinator and original signed ingress.\n                // It returns no successful completion without terminal proof.\n                phase.run_original_deployment(arg0_paths).await?;\n                return Ok(());\n            }\n            #[cfg(target_os = \"linux\")]\n            let (mut config, production) = startup\n                .ok_or_else(|| anyhow::anyhow!(\"original startup was not retained\"))?\n                .receive().await?;"
+        }
+      ]
+    },
+    {
+      "key": "lib_overlay",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "pre": "548c85a2cfb5e9eff50fa0597bc0ae98ce357456",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "blob": "98cd3e9668da6b8a79a9cde2bb2f721826bd3b9f",
+        "bytes": 66853,
+        "sha256": "78a2457e25651aec8581d7668a92091a49bb5eaaca95d08641b4f09691b96570",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "#[cfg(target_os = \"linux\")]\nmod production_launcher;\n",
+          "after": "#[cfg(target_os = \"linux\")]\nmod production_launcher;\n#[cfg(target_os = \"linux\")]\nmod same_actor_q24_deployment;\n"
+        },
+        {
+          "before": "pub use production_launcher::AgentdOriginalSameActorPhaseStartupV1;\n",
+          "after": "pub use production_launcher::AgentdOriginalSameActorPhaseStartupV1;\n#[cfg(target_os = \"linux\")]\npub use production_launcher::AgentdOriginalSameActorDeploymentStartupV1;\n"
+        }
+      ]
+    },
+    {
+      "key": "root_data_overlay",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+      "pre": "43dc9eb7779bb7072030f167342f504e91d7b565",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "blob": "1c81065347bc7cc8f58bbf4805df94658d34bc49",
+        "bytes": 14838,
+        "sha256": "4c1b301262a39dab62c6fb6cef4da1827a9989f45ab407eafe1f593001abaaca",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct ObserverData",
+          "after": "pub(crate) struct ObserverData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct SignerData",
+          "after": "pub(crate) struct SignerData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct OwnerTrustData",
+          "after": "pub(crate) struct OwnerTrustData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct SelectorTrustData",
+          "after": "pub(crate) struct SelectorTrustData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct CurrentData",
+          "after": "pub(crate) struct CurrentData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct WithdrawalData",
+          "after": "pub(crate) struct WithdrawalData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) struct SelectionData",
+          "after": "pub(crate) struct SelectionData"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) enum ModelKind",
+          "after": "pub(crate) enum ModelKind"
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) fn original_observer_config(",
+          "after": "pub(crate) fn original_observer_config("
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) fn original_owner_trust(",
+          "after": "pub(crate) fn original_owner_trust("
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) fn original_selector(",
+          "after": "pub(crate) fn original_selector("
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) fn original_current(",
+          "after": "pub(crate) fn original_current("
+        },
+        {
+          "before": "pub(in crate::authority_host_runtime::session) fn original_selection(",
+          "after": "pub(crate) fn original_selection("
+        }
+      ]
+    },
+    {
+      "key": "root_data_overlay",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "pre": "bd384826097d10fc2309673548484f146d04c9e0",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "blob": "7ba7c2e12e6d8ee510226ccbfc2b841a61633f67",
+        "bytes": 22248,
+        "sha256": "d47a089be9ff01b2544e46fcf15e3d11dabee9e6e62d2a520579fcc2bd2b7098",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "pub use generation_publication::RootGenerationPublicationRegistrationV1;\n",
+          "after": "pub use generation_publication::RootGenerationPublicationRegistrationV1;\n\n// Raw data only. Root metadata ownership/pin checks remain in the original readers.\npub(crate) use generation_publication::deployment::data::ObserverData as OriginalDeploymentObserverData;\npub(crate) use generation_publication::deployment::data::OwnerTrustData as OriginalDeploymentOwnerTrustData;\npub(crate) use generation_publication::deployment::data::SelectorTrustData as OriginalDeploymentSelectorTrustData;\npub(crate) use generation_publication::deployment::data::CurrentData as OriginalDeploymentCurrentData;\npub(crate) use generation_publication::deployment::data::WithdrawalData as OriginalDeploymentWithdrawalData;\npub(crate) use generation_publication::deployment::data::SelectionData as OriginalDeploymentSelectionData;\n"
+        }
+      ]
+    },
+    {
+      "key": "root_data_overlay",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "pre": "775d7ae13bae53b5354b262443211100be349486",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "blob": "818d48bd88c53f188563bcde33584fb171ffae94",
+        "bytes": 20602,
+        "sha256": "329e341bc2c650cdcd032a102cc703e34f88c8d13565abc1f8a02cc742f644ef",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "pub use session::RootSameActorScopedEnrollmentV1;\n",
+          "after": "pub use session::RootSameActorScopedEnrollmentV1;\n\n// Ordinary deployment reuses these original data conversions, not Root read capabilities.\npub(crate) use session::OriginalDeploymentObserverData;\npub(crate) use session::OriginalDeploymentOwnerTrustData;\npub(crate) use session::OriginalDeploymentSelectorTrustData;\npub(crate) use session::OriginalDeploymentCurrentData;\npub(crate) use session::OriginalDeploymentWithdrawalData;\npub(crate) use session::OriginalDeploymentSelectionData;\n"
+        }
+      ]
+    },
+    {
+      "key": "selector_pair_position_overlay",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+      "pre": "8bc28dd9f382c83547bc107a571e1358aaee6d9d",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+        "blob": "00d485fd1b533ff0c6e599e4367587d27d7e9b46",
+        "bytes": 5639,
+        "sha256": "c35fb5cbeb288f8d6925153aa79184bc824527ab5dedb60ceca651dc71d2f018",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "if !arguments.iter().any(|flag| flag == \"--original-same-actor-deployment\") {",
+          "after": "if !arguments.iter().step_by(2).any(|flag| flag == \"--original-same-actor-deployment\") {"
+        }
+      ]
+    }
+  ],
+  "proofs": {
+    "fixed_source_directory_entries": 822,
+    "actual_v43_base_pins": [
+      {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "sha": "133a0c12daa683e16cdb79f902dea88092ebfb52"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "sha": "548c85a2cfb5e9eff50fa0597bc0ae98ce357456"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "sha": "43dc9eb7779bb7072030f167342f504e91d7b565"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "sha": "7912206162ae660e7c88b92a64ee6a5e585c4efe"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "sha": "0a42efbae90feea00fe7c771e6c88316832186af"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+        "sha": "f32df2e032199e4c5ece33b4f0df8ed1b32d5470"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "sha": "334c72f85a8ecfab4b09009b46f76f4031ebfd47"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+        "sha": "c41a4301ed8d9c2121882065f5d5d201a5a59d24"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+        "sha": "9dd3a83ce60d5ac6bfcb29a12b75e64cf5cd2b96"
+      }
+    ],
+    "new_paths_absent": true,
+    "existing": [
+      {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "pre": {
+          "blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+          "bytes": 13038,
+          "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+        },
+        "post": {
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "blob": "9d9cf5a296423f8ca2a0bfe84a4a9b59be2d4312",
+          "bytes": 14216,
+          "sha256": "58e27ed89b9ca2ce7ec26e86b7367d801219121d2f3e28763953512547ad06ba",
+          "create_get_equal": true
+        },
+        "operation_count": 4,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "pre": {
+          "blob": "548c85a2cfb5e9eff50fa0597bc0ae98ce357456",
+          "bytes": 66693,
+          "sha256": "618758cf740bdccba33ac09de74b31a8be8f9de941c4cf3f7cc469d82eedb1f7"
+        },
+        "post": {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "blob": "98cd3e9668da6b8a79a9cde2bb2f721826bd3b9f",
+          "bytes": 66853,
+          "sha256": "78a2457e25651aec8581d7668a92091a49bb5eaaca95d08641b4f09691b96570",
+          "create_get_equal": true
+        },
+        "operation_count": 2,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "pre": {
+          "blob": "43dc9eb7779bb7072030f167342f504e91d7b565",
+          "bytes": 15306,
+          "sha256": "5661fd02bd35570612d196ad145113bf5c3ffff4bc43680e2e27ba481078a91a"
+        },
+        "post": {
+          "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+          "blob": "1c81065347bc7cc8f58bbf4805df94658d34bc49",
+          "bytes": 14838,
+          "sha256": "4c1b301262a39dab62c6fb6cef4da1827a9989f45ab407eafe1f593001abaaca",
+          "create_get_equal": true
+        },
+        "operation_count": 13,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "pre": {
+          "blob": "bd384826097d10fc2309673548484f146d04c9e0",
+          "bytes": 21514,
+          "sha256": "bcec424b8af3d221f8eb8767f1bcce5bc77154ff8858fc487e78696cd036fbbc"
+        },
+        "post": {
+          "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          "blob": "7ba7c2e12e6d8ee510226ccbfc2b841a61633f67",
+          "bytes": 22248,
+          "sha256": "d47a089be9ff01b2544e46fcf15e3d11dabee9e6e62d2a520579fcc2bd2b7098",
+          "create_get_equal": true
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "pre": {
+          "blob": "775d7ae13bae53b5354b262443211100be349486",
+          "bytes": 20165,
+          "sha256": "fd5bae8fc36b16892ff2925a43947ff491134f1c7603ee81497b6b1c7d36c07d"
+        },
+        "post": {
+          "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+          "blob": "818d48bd88c53f188563bcde33584fb171ffae94",
+          "bytes": 20602,
+          "sha256": "329e341bc2c650cdcd032a102cc703e34f88c8d13565abc1f8a02cc742f644ef",
+          "create_get_equal": true
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+        "pre": {
+          "blob": "8bc28dd9f382c83547bc107a571e1358aaee6d9d",
+          "bytes": 5628,
+          "sha256": "b1c16fb202e70c7450d926dcab37e5ee810e19db9d7d7dc05b80ec6ff84c0334"
+        },
+        "post": {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+          "blob": "00d485fd1b533ff0c6e599e4367587d27d7e9b46",
+          "bytes": 5639,
+          "sha256": "c35fb5cbeb288f8d6925153aa79184bc824527ab5dedb60ceca651dc71d2f018",
+          "create_get_equal": true
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true
+      }
+    ],
+    "module_edges": [
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "module": "materials",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+        "module": "origin",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "module": "owners",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "client",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "ingress",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "owner",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "factory",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "coordinator",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "files",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "learning_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "learning",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "preparation",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_preparation.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "cell_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_cell_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "bundle_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_bundle_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "model",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "task",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "c",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "artifact_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifact_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "artifacts",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "exchange",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "temporal_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_temporal_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "comparison_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_comparison_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "evaluation_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "evaluation_signing",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "evaluation_storage",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "evaluation",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "observation_data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_observation_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "data",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs"
+      },
+      {
+        "owner": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "module": "witness",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs"
+      }
+    ],
+    "exact_counts": {
+      "paths": 36,
+      "new_files": 30,
+      "existing_or_overlay_files": 6,
+      "operations": 52
+    },
+    "note": "Session/runtime aliases use the actual final Root-retirement parents bd384/775d. The selector overlay is after aeb5's 8bc28. They are not direct base tree replacements."
+  },
+  "dependencies": [
+    {
+      "kind": "prepared_material_timing",
+      "blob": "8bb745deea728f8b62dd05c5f087809d98201c03"
+    },
+    {
+      "kind": "actual_outer_bootstrap_handle_custody",
+      "blob": "aeb5f9efa8f2d94ffc8d63a2aae09bd2dfef928e"
+    },
+    {
+      "kind": "actual_Circuit_handle_custody",
+      "blob": "173ee1feff9ff9bf2de0d81704a511574b9e0a94"
+    },
+    {
+      "kind": "actual_Session_handle_custody",
+      "blob": "0fceb869f60ff960fa01a0192ff13071e14536c1"
+    },
+    {
+      "kind": "Root_typed_entry_and_finite_3_stage_bridge",
+      "blob": "c43a53a8c41002c6f7cc3687f03cf1209e7dfcd2",
+      "note": "Use its actual formatter rebase and Root-retirement final layering; no older whole-file overwrite."
+    },
+    {
+      "kind": "Root_retirement_final_parent_for_data_aliases_only",
+      "blob": "e9efe50688c791a5eb956fb61f2864ef5878f974",
+      "note": "This daemon source packet does not consume its seq1/seq2 protocol or enable normal retirement."
+    },
+    {
+      "kind": "actual_B_file_provider_and_evidence_sink",
+      "blob": "59ea4631800a1868cf850e6ee3fdb6f9e499ccd5",
+      "source_ops": "7ea371a900fde205da32ec5a7c6d2e89da63048b"
+    },
+    {
+      "kind": "shared_data_protocol",
+      "blob": "d9229a52531085863be71676adeaf18ccf3eeb3c"
+    }
+  ],
+  "materials_and_limits": {
+    "path": "qualification/ordinary-owner-assembly-20261111/future-daemon-entry-20261112/MATERIALS_AND_LIMITS.json",
+    "blob": "27abb9a960c7eb36c9206409f543d37099b5b758",
+    "bytes": 87653,
+    "sha256": "661521a839add7489b550113a2275031e9dc0f2d068a4ac026e08bffe0a35e11",
+    "create_get_equal": true
+  },
+  "behavior": {
+    "main": "Actual binary main selects the explicit mode before legacy startup. It invokes actual selected Startup, concrete material factory and event-consuming coordinator; it does not merely reexport an API.",
+    "legacy": "No mode preserves legacy startup selection. The actual old public Launch.run is unchanged by the prior outer packet. The pair-position overlay prevents an argv value from selecting this mode.",
+    "signed_ingress": "Original actual AgentdClient::objective_start_once for A and C, unchanged signed request; terminal per-stage attempt before await; original ACK retained, independent Outcome still required.",
+    "actual_B": "Original Cell evaluate_or_readback and qualify_and_persist, actual file provider/holdout/execution/evidence owners, same original Trainer readback handoff. External actors provide real rows/plans/costs and signatures.",
+    "Root_permissions": "Same actual Context/Gate/pidfd is captured before coordinator construction. Root-approved profile and Current material remain independently verified by Root; readiness notifications only order data availability before an original request begins.",
+    "ownership": "Real coordinator std thread/JoinHandle retained through the outer original runtime; no detached synchronous signing/evaluation owner. Actual sink/File custody is retained through cleanup.",
+    "terminal": "Only fault cleanup exists in this packet; C Outcome acceptance retains peer/owners and cannot return full-phase success. Normal private C/Learning/Session/Root/OS-exit chain is separate unfinished work."
+  },
+  "validation": {
+    "all_files_create_get_equal": true,
+    "all_existing_unique_forward_reverse": true,
+    "metadata_union": "Pending. Future B/Root/Circuit/Session actual caller additions must merge with actual current V43/V44 CALLERS. Required and forbidden keys must both be explicit in each protected row.",
+    "compiler": false,
+    "fmt": false,
+    "clippy": false,
+    "original_checker": false,
+    "QA": false,
+    "ordinary_packages": false,
+    "Root17": false,
+    "actual_business_passes": 0,
+    "fixture_business_inputs": 0,
+    "refs_changed": 0,
+    "native_executions_by_author": 0
+  }
+}

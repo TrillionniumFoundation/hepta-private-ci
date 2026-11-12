@@ -1,0 +1,611 @@
+//! Custody of the actual outer Circuit blocking task in the explicit phase.
+//! The original Runtime receives its exact result once. Cancelling that
+//! receiver requests stop but leaves the real handle and undelivered error
+//! in this separately retained capability. Joining is not a phase ACK.
+
+use std::future::Future;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::Ordering;
+
+use tokio::task::JoinHandle;
+use tokio::sync::Notify;
+use tokio_util::sync::CancellationToken;
+
+use crate::AgentdError;
+use crate::AgentdIdentity;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+
+const WAITING: u8 = 0;
+const ABANDONED: u8 = 1;
+const RUNTIME_DELIVERED: u8 = 2;
+const CLEANUP_RECOVERED: u8 = 3;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalCircuitOwnerOutcome {
+    ReturnedOk,
+    ReturnedErr,
+    JoinFailed,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalCircuitResultDelivery {
+    Waiting,
+    Abandoned,
+    RuntimeDelivered,
+    CleanupRecovered,
+    Unavailable,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum OriginalCircuitJoinStatus {
+    NotStarted,
+    Joined {
+        outcome: OriginalCircuitOwnerOutcome,
+        delivery: OriginalCircuitResultDelivery,
+    },
+}
+
+/// An observation of this one actual task, never a successful task, normal
+/// phase shutdown, Root ACK, released C slot or process-termination receipt.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct OriginalCircuitJoinObservation {
+    pub(crate) status: OriginalCircuitJoinStatus,
+    pub(crate) admission_poisoned: bool,
+}
+
+/// Physical observation of the same outer handle after the actual C joined
+/// capability and original Runtime delivery. It is not Root's final ACK.
+pub(crate) struct OriginalCircuitNaturalJoin {
+    _closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,
+    identity: AgentdIdentity,
+    gate: Arc<SameActorPhaseGate>,
+    job: Arc<OriginalCircuitOwnerJob>,
+    _custody: Arc<OriginalCircuitOwnerCustody>,
+}
+
+impl OriginalCircuitNaturalJoin {
+    pub(crate) fn require_original_phase(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if &self.identity != identity
+            || !Arc::ptr_eq(&self.gate, gate)
+            || self.job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED
+        {
+            self.gate.close();
+            return Err(custody_error("natural Circuit join differs from its original Runtime"));
+        }
+        self.gate.require_open().map_err(custody_error)?;
+        Ok(())
+    }
+}
+
+struct OriginalCircuitNormalState {
+    terminal: Option<crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined>,
+    shutdown_admitted: bool,
+    taken: bool,
+}
+
+struct OriginalCircuitNaturalTake {
+    closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop,
+    custody: Arc<OriginalCircuitOwnerCustody>,
+    stopped: crate::production_launcher::OriginalSameActorRuntimeStopped,
+}
+
+struct OriginalCircuitStart {
+    stopped: bool,
+    job: Option<Arc<OriginalCircuitOwnerJob>>,
+}
+
+/// Only the original phase Bootstrap constructs this object. A trusted
+/// Startup must retain it before consuming the Bootstrap into Config.
+pub(crate) struct OriginalCircuitOwnerCustody {
+    identity: AgentdIdentity,
+    gate: Arc<SameActorPhaseGate>,
+    start: Mutex<OriginalCircuitStart>,
+    normal: Mutex<OriginalCircuitNormalState>,
+    normal_changed: Notify,
+}
+
+struct OriginalCircuitJobState {
+    handle: Option<JoinHandle<Result<(), AgentdError>>>,
+    joined: Option<OriginalCircuitOwnerOutcome>,
+    result: Option<Result<(), AgentdError>>,
+}
+
+pub(super) struct OriginalCircuitOwnerJob {
+    state: tokio::sync::Mutex<OriginalCircuitJobState>,
+    delivery: AtomicU8,
+    cancellation: CancellationToken,
+    gate: Arc<SameActorPhaseGate>,
+}
+
+/// Held only between the unchanged actual spawn and immediate retention.
+/// No await or owner callback runs under this admission mutex.
+pub(super) struct OriginalCircuitStartAdmission<'a> {
+    state: MutexGuard<'a, OriginalCircuitStart>,
+    cancellation: CancellationToken,
+    gate: Arc<SameActorPhaseGate>,
+    armed: bool,
+}
+
+struct OriginalCircuitRuntimeReceiver {
+    job: Arc<OriginalCircuitOwnerJob>,
+    complete: bool,
+}
+
+impl OriginalCircuitOwnerCustody {
+    pub(super) fn from_original_phase(
+        identity: &AgentdIdentity,
+        gate: Arc<SameActorPhaseGate>,
+    ) -> Result<Arc<Self>, AgentdError> {
+        gate.require_open().map_err(custody_error)?;
+        Ok(Arc::new(Self {
+            identity: identity.clone(),
+            gate,
+            start: Mutex::new(OriginalCircuitStart {
+                stopped: false,
+                job: None,
+            }),
+            normal: Mutex::new(OriginalCircuitNormalState {
+                terminal: None,
+                shutdown_admitted: false,
+                taken: false,
+            }),
+            normal_changed: Notify::new(),
+        }))
+    }
+
+    pub(crate) fn require_original_origin(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {
+            self.request_stop();
+            return Err(custody_error("outer Circuit custody differs from its original phase"));
+        }
+        self.gate.require_open().map_err(custody_error)?;
+        Ok(())
+    }
+
+    pub(super) fn reserve_original_start(
+        &self,
+        cancellation: CancellationToken,
+    ) -> Result<OriginalCircuitStartAdmission<'_>, AgentdError> {
+        let state = self.start.lock().map_err(|_| {
+            self.gate.close();
+            cancellation.cancel();
+            custody_error("outer Circuit admission is poisoned")
+        })?;
+        self.gate.require_open().map_err(custody_error)?;
+        if state.stopped || state.job.is_some() || cancellation.is_cancelled() {
+            self.gate.close();
+            cancellation.cancel();
+            return Err(custody_error("outer Circuit owner cannot be started or restarted"));
+        }
+        Ok(OriginalCircuitStartAdmission {
+            state,
+            cancellation,
+            gate: Arc::clone(&self.gate),
+            armed: true,
+        })
+    }
+
+    /// The original Circuit task worker transfers the actual joined bundle
+    /// synchronously. Notification follows ownership retention, never before.
+    pub(crate) fn retain_original_normal_terminal(
+        &self,
+        terminal: crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined,
+    ) -> Result<(), AgentdError> {
+        crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::require_original_phase(
+            &terminal,
+            &self.identity,
+            &self.gate,
+        )?;
+        {
+            let start = self.start.lock().map_err(custody_error)?;
+            if start.stopped || start.job.is_none() {
+                return Err(custody_error("terminal custody has no original running Circuit owner"));
+            }
+        }
+        {
+            let mut normal = self.normal.lock().map_err(custody_error)?;
+            self.gate.require_open().map_err(custody_error)?;
+            if normal.terminal.is_some() || normal.shutdown_admitted || normal.taken {
+                return Err(custody_error("original Circuit terminal custody is single-use"));
+            }
+            normal.terminal = Some(terminal);
+        }
+        self.normal_changed.notify_waiters();
+        Ok(())
+    }
+
+    /// This is the original run_with_shutdown input. It becomes ready only
+    /// after the real terminal bundle has already entered separate custody.
+    pub(crate) fn wait_original_normal_shutdown(
+        self: &Arc<Self>,
+    ) -> impl Future<Output = Result<(), AgentdError>> + Send + 'static {
+        let custody = Arc::clone(self);
+        let mut closing =
+            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&self.gate);
+        async move {
+            loop {
+                let changed = custody.normal_changed.notified();
+                tokio::pin!(changed);
+                changed.as_mut().enable();
+                let remaining = custody.gate.require_open().map_err(custody_error)?;
+                {
+                    let mut normal = custody.normal.lock().map_err(custody_error)?;
+                    if normal.shutdown_admitted || normal.taken {
+                        return Err(custody_error("original normal shutdown input was already used"));
+                    }
+                    if let Some(terminal) = normal.terminal.as_ref() {
+                        crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::require_original_phase(
+                            terminal,
+                            &custody.identity,
+                            &custody.gate,
+                        )?;
+                        normal.shutdown_admitted = true;
+                        closing.disarm();
+                        return Ok(());
+                    }
+                }
+                tokio::select! {
+                    _ = custody.gate.cancelled() => {
+                        return Err(custody_error("normal shutdown was closed"));
+                    }
+                    _ = changed.as_mut() => {}
+                    _ = tokio::time::sleep(remaining.min(std::time::Duration::from_millis(5))) => {}
+                }
+            }
+        }
+    }
+
+    /// Keep the original required worker alive until the Runtime actually
+    /// starts its existing cancellation/drain path. No early Ok is introduced.
+    pub(crate) async fn wait_original_runtime_shutdown(
+        &self,
+        cancellation: &CancellationToken,
+    ) -> Result<(), AgentdError> {
+        loop {
+            let remaining = self.gate.require_open().map_err(custody_error)?;
+            if cancellation.is_cancelled() {
+                let normal = self.normal.lock().map_err(custody_error)?;
+                if !normal.shutdown_admitted || normal.taken || normal.terminal.is_none() {
+                    return Err(custody_error("Circuit stopped without the original normal handoff"));
+                }
+                self.gate.require_open().map_err(custody_error)?;
+                return Ok(());
+            }
+            tokio::select! {
+                _ = cancellation.cancelled() => {}
+                _ = self.gate.cancelled() => {
+                    return Err(custody_error("original Circuit phase closed during shutdown"));
+                }
+                _ = tokio::time::sleep(remaining.min(std::time::Duration::from_millis(5))) => {}
+            }
+        }
+    }
+
+    /// The real phase Launch returns this owner-bearing token only after the
+    /// unchanged Runtime completed successfully, including its failure latch.
+    /// The returned tuple still owns all Root-dependent resources for seq1.
+    pub(crate) fn take_original_natural_join(
+        self: &Arc<Self>,
+        stopped: crate::production_launcher::OriginalSameActorRuntimeStopped,
+    ) -> impl Future<
+        Output = Result<
+            (
+                crate::production_launcher::OriginalSameActorRuntimeStopped,
+                crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined,
+                OriginalCircuitNaturalJoin,
+            ),
+            AgentdError,
+        >,
+    > + Send
+    + 'static {
+        let attempt = OriginalCircuitNaturalTake {
+            closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&self.gate),
+            custody: Arc::clone(self),
+            stopped,
+        };
+        async move {
+            let mut attempt = attempt;
+            crate::production_launcher::OriginalSameActorRuntimeStopped::require_original_origin(
+                &attempt.stopped,
+                &attempt.custody.identity,
+                &attempt.custody.gate,
+            )?;
+            let terminal = {
+                let mut normal = attempt.custody.normal.lock().map_err(custody_error)?;
+                attempt.custody.gate.require_open().map_err(custody_error)?;
+                if !normal.shutdown_admitted || normal.taken {
+                    return Err(custody_error("original terminal bundle is not available for natural join"));
+                }
+                let terminal = normal.terminal.take().ok_or_else(|| {
+                    custody_error("original terminal bundle is missing")
+                })?;
+                normal.taken = true;
+                terminal
+            };
+            let job = attempt.custody.original_natural_job(
+                crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::original_c_joined(&terminal),
+            )?;
+            // Await the retained handle while owning the terminal bundle,
+            // rather than requiring borrowed owner resources to be Sync.
+            job.join_original_returned_ok().await?;
+            crate::circuit_task::OriginalSameActorCJoined::require_original_phase(
+                crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::original_c_joined(&terminal),
+                &attempt.custody.identity,
+                &attempt.custody.gate,
+            )?;
+            crate::production_launcher::OriginalSameActorRuntimeStopped::require_original_origin(
+                &attempt.stopped,
+                &attempt.custody.identity,
+                &attempt.custody.gate,
+            )?;
+            if job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED {
+                return Err(custody_error("original Runtime has not received the Circuit result"));
+            }
+            let joined = OriginalCircuitNaturalJoin {
+                _closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(
+                    &attempt.custody.gate,
+                ),
+                identity: attempt.custody.identity.clone(),
+                gate: Arc::clone(&attempt.custody.gate),
+                job,
+                _custody: Arc::clone(&attempt.custody),
+            };
+            attempt.closing.disarm();
+            Ok((attempt.stopped, terminal, joined))
+        }
+    }
+
+    pub(crate) fn request_stop(&self) {
+        self.gate.close();
+        // Poison recovery is terminal custody only and cannot start any work.
+        let mut state = self.start.lock().unwrap_or_else(|error| error.into_inner());
+        state.stopped = true;
+        if let Some(job) = &state.job {
+            job.cancellation.cancel();
+        }
+    }
+
+    pub(crate) async fn stop_and_join_original_owner(
+        &self,
+    ) -> Result<OriginalCircuitJoinObservation, AgentdError> {
+        self.request_stop();
+        let (job, admission_poisoned) = match self.start.lock() {
+            Ok(state) => (state.job.clone(), false),
+            Err(error) => (error.into_inner().job.clone(), true),
+        };
+        let Some(job) = job else {
+            return Ok(OriginalCircuitJoinObservation {
+                status: OriginalCircuitJoinStatus::NotStarted,
+                admission_poisoned,
+            });
+        };
+        let mut state = job.state.lock().await;
+        job.join_locked(&mut state).await?;
+        let outcome = state.joined.ok_or_else(|| custody_error("outer Circuit join is missing"))?;
+        drop(state);
+        // Fault cleanup drops the separately retained, already-joined bundle
+        // only after the actual outer owner is joined. No new work is hidden.
+        let terminal = self
+            .normal
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .terminal
+            .take();
+        drop(terminal);
+        Ok(OriginalCircuitJoinObservation {
+            status: OriginalCircuitJoinStatus::Joined {
+                outcome,
+                delivery: job.delivery(),
+            },
+            admission_poisoned,
+        })
+    }
+
+    /// Retain the same actual handle for a natural observation. This is a
+    /// synchronous check; no borrowed terminal owner crosses the later await.
+    fn original_natural_job(
+        &self,
+        original_c: &crate::circuit_task::OriginalSameActorCJoined,
+    ) -> Result<Arc<OriginalCircuitOwnerJob>, AgentdError> {
+        crate::circuit_task::OriginalSameActorCJoined::require_original_phase(
+            original_c,
+            &self.identity,
+            &self.gate,
+        )?;
+        let state = self.start.lock().map_err(custody_error)?;
+        if state.stopped {
+            return Err(custody_error("fault-stopped Circuit cannot retire normally"));
+        }
+        state.job.as_ref().cloned().ok_or_else(|| {
+            custody_error("normal Circuit retirement has no actual started owner")
+        })
+    }
+
+    /// A cancelled Runtime receiver has relinquished this result. Cleanup may
+    /// retrieve that SAME owned error once, only after the actual handle join.
+    /// A live receiver or an already delivered Runtime result is never stolen.
+    pub(crate) async fn take_abandoned_original_result(
+        &self,
+    ) -> Result<Option<Result<(), AgentdError>>, AgentdError> {
+        let job = self
+            .start
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .job
+            .clone()
+            .ok_or_else(|| custody_error("outer Circuit owner was not started"))?;
+        let mut state = job.state.lock().await;
+        if state.joined.is_none() {
+            return Err(custody_error("outer Circuit owner has not been joined"));
+        }
+        match job.delivery.load(Ordering::Acquire) {
+            ABANDONED => {
+                let result = state.result.take().ok_or_else(|| {
+                    custody_error("abandoned outer Circuit result is unavailable")
+                })?;
+                job.delivery.store(CLEANUP_RECOVERED, Ordering::Release);
+                Ok(Some(result))
+            }
+            CLEANUP_RECOVERED => Ok(None),
+            _ => Err(custody_error("outer Circuit result still belongs to its Runtime receiver")),
+        }
+    }
+}
+
+impl Drop for OriginalCircuitOwnerCustody {
+    fn drop(&mut self) {
+        // Drop requests stop. It is deliberately not advertised as a join.
+        self.request_stop();
+    }
+}
+
+impl OriginalCircuitStartAdmission<'_> {
+    pub(super) fn retain_original_handle(
+        mut self,
+        handle: JoinHandle<Result<(), AgentdError>>,
+    ) -> Arc<OriginalCircuitOwnerJob> {
+        let job = Arc::new(OriginalCircuitOwnerJob {
+            state: tokio::sync::Mutex::new(OriginalCircuitJobState {
+                handle: Some(handle),
+                joined: None,
+                result: None,
+            }),
+            delivery: AtomicU8::new(WAITING),
+            cancellation: self.cancellation.clone(),
+            gate: Arc::clone(&self.gate),
+        });
+        self.state.job = Some(Arc::clone(&job));
+        self.armed = false;
+        job
+    }
+}
+
+impl Drop for OriginalCircuitStartAdmission<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.state.stopped = true;
+            self.cancellation.cancel();
+            self.gate.close();
+        }
+    }
+}
+
+impl OriginalCircuitOwnerJob {
+    fn delivery(&self) -> OriginalCircuitResultDelivery {
+        match self.delivery.load(Ordering::Acquire) {
+            WAITING => OriginalCircuitResultDelivery::Waiting,
+            ABANDONED => OriginalCircuitResultDelivery::Abandoned,
+            RUNTIME_DELIVERED => OriginalCircuitResultDelivery::RuntimeDelivered,
+            CLEANUP_RECOVERED => OriginalCircuitResultDelivery::CleanupRecovered,
+            _ => OriginalCircuitResultDelivery::Unavailable,
+        }
+    }
+
+    async fn join_locked(
+        &self,
+        state: &mut OriginalCircuitJobState,
+    ) -> Result<(), AgentdError> {
+        if state.joined.is_some() {
+            return Ok(());
+        }
+        let handle = state.handle.as_mut().ok_or_else(|| {
+            self.gate.close();
+            custody_error("actual outer Circuit handle is unavailable")
+        })?;
+        // Await only a mutable borrow. Dropping this waiting future preserves
+        // the one real handle in state, so another custodian can continue.
+        let result = handle.await;
+        state.handle = None;
+        let (outcome, result) = match result {
+            Ok(result) => (
+                if result.is_ok() {
+                    OriginalCircuitOwnerOutcome::ReturnedOk
+                } else {
+                    OriginalCircuitOwnerOutcome::ReturnedErr
+                },
+                result,
+            ),
+            Err(error) => (
+                OriginalCircuitOwnerOutcome::JoinFailed,
+                Err(AgentdError::Protocol(format!("Circuit task owner stopped: {error}"))),
+            ),
+        };
+        // No await separates actual completion from saving the original
+        // result and terminal state. A second waiter never polls it again.
+        state.result = Some(result);
+        state.joined = Some(outcome);
+        Ok(())
+    }
+
+    async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {
+        self.gate.require_open().map_err(custody_error)?;
+        let mut state = self.state.lock().await;
+        self.join_locked(&mut state).await?;
+        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {
+            return Err(custody_error("original Circuit owner did not return success"));
+        }
+        // Keep the original Result for its existing receiver. This operation
+        // observes a join and never calls take, resends or constructs a result.
+        self.gate.require_open().map_err(custody_error)?;
+        Ok(())
+    }
+
+    pub(super) fn receive_original_result(
+        self: &Arc<Self>,
+    ) -> impl Future<Output = Result<(), AgentdError>> + Send + 'static {
+        let job = Arc::clone(self);
+        // Capture outside the async body: even an unpolled wait relinquishes
+        // only its receiver role, not the actual task or original result.
+        let mut receiver = OriginalCircuitRuntimeReceiver {
+            job: Arc::clone(self),
+            complete: false,
+        };
+        async move {
+            let mut state = job.state.lock().await;
+            job.join_locked(&mut state).await?;
+            if job.delivery.load(Ordering::Acquire) != WAITING {
+                return Err(custody_error("outer Circuit Runtime result was already consumed"));
+            }
+            let result = state.result.take().ok_or_else(|| {
+                custody_error("original outer Circuit result is unavailable")
+            })?;
+            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);
+            receiver.complete = true;
+            result
+        }
+    }
+}
+
+impl Drop for OriginalCircuitRuntimeReceiver {
+    fn drop(&mut self) {
+        if !self.complete {
+            let _ = self.job.delivery.compare_exchange(
+                WAITING,
+                ABANDONED,
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            );
+            self.job.cancellation.cancel();
+            self.job.gate.close();
+        }
+    }
+}
+
+fn custody_error(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::GenerationFenced(format!("original outer Circuit custody: {error}"))
+}
+
+#[cfg(test)]
+#[path = "circuit_task_runtime_lifecycle_tests.rs"]
+mod tests;

@@ -1,0 +1,274 @@
+{
+  "schema": "hepta.fixed-source-evidence-format-failure.v1",
+  "source_sha": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+  "source_tree": "02b87ae79041d6cc04819983265bd755c48da8b1",
+  "attempt": "ordinary-314fafc-seven-final-v18",
+  "status": "failed",
+  "terminal": {
+    "session": "dpty-ff89dae39a4406ffe12c5259ba03b6d2742a4aafae545bfedc677cf485084547",
+    "bytes": 3305,
+    "sha256": "bacc57fd514c08d6221ab333d981d0683a1b4f8e2ad55b01318cd94b9935feb5",
+    "complete": true,
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 3305,
+      "bytes_stored": 3305,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794505076049,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 1771718,
+      "pid": 1771719,
+      "state": "exited"
+    }
+  },
+  "failure": "RuntimeError: original executor did not retain equal clean source identity",
+  "product_source_unchanged": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+    "blob": "1e5270f82571964dcf3817b26f48a9550bd1e9d8",
+    "sha256": "882f72179ed6176693ccfec2b08afb0473b619355a9c35e888c38899b81b1b7b"
+  },
+  "only_drifted_path": "qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs",
+  "actual_evidence_post": {
+    "blob": "b92a6dd8e72699848d24c2b6fcdab5cad100f7c2",
+    "bytes": 11690,
+    "sha256": "39ba95f673b6f2f1d56cf27058bb7c6431395dfa7b5dec2907dca80b095e2726"
+  },
+  "diagnosis": "The source evidence was mistakenly named .rs, so original repository formatting treated it as Rust under the evidence directory's formatting context. Product source stayed unchanged. V44 renames only the original evidence bytes to .rs.txt; no formatter/checker exclusion, caller permission or production change is introduced.",
+  "reached_steps": [
+    {
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.03355872514657676,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      }
+    },
+    {
+      "name": "isolated-clone",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.8156176109332591,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/isolated-clone.launch.log",
+        "sha256": "645f054944623a824abc372f09a583666970879c0f9cde43bb82ec88e7253f1d"
+      }
+    },
+    {
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 17.078501699026674,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/fetch-exact-source.launch.log",
+        "sha256": "5f0fd3fa38694578b3b6a2e7ca4aabd751b8895bb0591ee81552309214c97478"
+      }
+    },
+    {
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.5769153661094606,
+      "log": {
+        "bytes": 209,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/checkout-exact-source.launch.log",
+        "sha256": "85bb6fb0516d8702417ae78d98f7c7e81b17015a2729f4126f8fed3e8cf2ef5f"
+      }
+    },
+    {
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.004247861914336681,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "operator-toolchain",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.46582371299155056,
+      "log": {
+        "bytes": 1505,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/operator-toolchain.launch.log",
+        "sha256": "852629f0121196270b1ead6b2c8d836c6e9beba3eefa8f3d7c31f066313c2821"
+      }
+    },
+    {
+      "name": "fmt-before",
+      "state": "completed",
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 3.520091916900128,
+      "log": {
+        "bytes": 1382,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/records/fmt-before.launch.log",
+        "sha256": "f7e79dc67c12897f9363f132b810d8caf00ae9009f464dde46dbd225c35a6b4e"
+      }
+    }
+  ],
+  "execution_records": [
+    {
+      "name": "operator-toolchain",
+      "data": {
+        "after": {
+          "commit": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+          "dirty": false,
+          "parents": [
+            "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+          ],
+          "tree": "02b87ae79041d6cc04819983265bd755c48da8b1"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+          "dirty": false,
+          "parents": [
+            "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+          ],
+          "tree": "02b87ae79041d6cc04819983265bd755c48da8b1"
+        },
+        "command": [
+          "/home/qq/.cargo/bin/rustc",
+          "-Vv"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.42026139120571315,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T17:38:16.389151+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 196,
+        "log_file": "operator-toolchain.execution.json.b875ca84ab0349a3a98a9971ad9a5c06.log",
+        "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+        "started_at": "2026-11-12T17:38:15.967538+00:00",
+        "status": "passed",
+        "tested_sha": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/source/codex-rs"
+      }
+    },
+    {
+      "name": "fmt-before",
+      "data": {
+        "after": {
+          "commit": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+          "dirty": true,
+          "parents": [
+            "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+          ],
+          "tree": "02b87ae79041d6cc04819983265bd755c48da8b1"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+          "dirty": false,
+          "parents": [
+            "d4d6e32b1e8c1f976c035c0f9581d903622d9e77"
+          ],
+          "tree": "02b87ae79041d6cc04819983265bd755c48da8b1"
+        },
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 3.444839784875512,
+        "error": "source identity or bytes changed during execution",
+        "exit_code": 1,
+        "finished_at": "2026-11-12T17:38:19.912253+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 0,
+        "log_file": "fmt-before.execution.json.65e56329477f43088f8102720fe7c3ec.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+        "started_at": "2026-11-12T17:38:16.466184+00:00",
+        "status": "failed",
+        "tested_sha": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-314fafc-seven-final-v18/source"
+      }
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "error": "RuntimeError('fixed source is not clean: {\"head\": \"314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd\", \"status\": \" M qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs\\\\n\", \"tree\": \"02b87ae79041d6cc04819983265bd755c48da8b1\"}')",
+      "name": "final-physical-source",
+      "status": "failed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "final_source": {
+    "head": "314fafca93fcc8d4d7dd0c6e3d8256800b3c96fd",
+    "status": " M qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs\n",
+    "tree": "02b87ae79041d6cc04819983265bd755c48da8b1"
+  },
+  "not_reached": [
+    "fix-seven-crates",
+    "fmt-after",
+    "bins-check",
+    "all-QA",
+    "caller-self-test",
+    "caller-full-verify",
+    "same-source-helper",
+    "ordinary-seven-package-native",
+    "Root17-UID0-native"
+  ],
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "native_retries": 0,
+  "main_merged": false
+}

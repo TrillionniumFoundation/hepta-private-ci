@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "bounded_actual_B_adapter_API_and_original_custody_review",
+  "status": "NO_CONFIRMED_BLOCKER_IN_REVIEWED_API_SCOPE_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "git_blob": "821360eb2d4c0537e816ea4e2428a3d719a4c3d8",
+      "bytes": 11392,
+      "sha256": "ec16644c2ae391a25742e117efe2d8def4c12c53bbd915df086f28be2f3b8f06",
+      "read": "full immutable blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "git_blob": "5ddacddb99924751d37ef72fc244150bccac3dc5",
+      "bytes": 8157,
+      "sha256": "ba344bdf7f66e02435542faeea3fa4a55f6aa29bb3f07ded03b2351e2c144ac9",
+      "read": "full immutable blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "git_blob": "595ac3b2a66468e222794e7f539873bbb88a6462",
+      "bytes": 8102,
+      "sha256": "74e80f2223b5708f9290f35ead95393978c0e1d82c796238d0370fd971be0608",
+      "read": "full immutable blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "git_blob": "801620ea5ba7fee5ca88bff214acfce10296a393",
+      "bytes": 6852,
+      "sha256": "b2acd367a31c02ae09e4b418af0c5100301de42ac170050055b165b235bb39d5",
+      "read": "full immutable blob"
+    }
+  ],
+  "original_definitions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "git_blob": "d189af42af44d64dbc3e298c402d95254920e95f",
+      "scope": "actual Cell runner, plan, receipt and qualification methods/fields read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs",
+      "git_blob": "00c64871014d81ef0d01ed9e4407b2f73cc3843d",
+      "scope": "complete actual EvaluationInputs fields and into_stage read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      "git_blob": "55f64838bd24a54be6bb71cd029833ecb8eb1412",
+      "scope": "GET/hash; original final Stage validation source retained, not a new native result"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+      "git_blob": "248d0ccbdba1590ec579bc3a58fb4c3210564c8a",
+      "scope": "GET/hash source retained"
+    }
+  ],
+  "findings": [
+    {
+      "id": "cell-not-product-substitute",
+      "conclusion": "The concrete adapter owns CellEvaluationRunnerV1 over the real fenced holdout owner. Its evaluate_or_readback arguments match the original Cell method, which validates drained journals and exact product plan before delegating the actual execution. The sealed Cell receipt comes from that actual return, not host deserialization."
+    },
+    {
+      "id": "qualification-publication",
+      "conclusion": "qualification_bundle and evaluation_signing_payload_v2 precede the external signature exchange. Actual Cell qualify_and_persist uses the original signed evidence/verifier/timing and the concrete durable sink. Sink readback compares the same actual execution digest and returned signed decision with the publication digest; the receipt is not a preloaded result file."
+    },
+    {
+      "id": "durable-owner-inputs",
+      "conclusion": "Holdout, executions and evidence each retain an actual file-backed owner. Recover requires explicit original independent minimum; the store-mode checks do not recover a missing or failed owner as genesis. The adapter passes the actual runner, execution store, qualification, trainer readback, original journals, witness and receipt owner inputs into the original EvaluationInputs field set."
+    },
+    {
+      "id": "external-signing",
+      "conclusion": "Execution signing consumes the one exchange object, binds the actual attestation key/payload/execution and records original actor failure as Indeterminate. Qualification binds actual execution, frozen plan digest and evaluator payload. The original runner/validator authenticates signatures and roles; the data exchange itself grants none."
+    },
+    {
+      "id": "one-operation-wait",
+      "conclusion": "Exchange requires CreateNew and absent response, writes/syncs the exact request and directory once, then waits only for the first visible response. Malformed/partial/replaced data is an error rather than a resubmission. Wait retains the original Prepared expiry and actual phase checks; a late wake does not extend either deadline."
+    },
+    {
+      "id": "local-receipt-key",
+      "conclusion": "The local receipt signing key is a distinct original enrolled Evaluator input, checked against its verifying key. This is not the external execution/qualification actor signature, and neither generator nor evaluator authority is minted by decoding JSON."
+    }
+  ],
+  "qualifications": [
+    "This is an API and supplied-custody review of four fixed drafts. The full 35/36-path loader, its complete path/inode checks, module integration and CALLERS union were not re-audited here.",
+    "No external independent actor, real holdout material, trusted minimum, policy enrollment or valid signature was supplied or exercised by this review. Configuration values alone do not prove their independence or authorization.",
+    "No compiler, original checker, formatter, test or native job was run. No ordinary B execution or business acceptance is claimed.",
+    "Normal Learning/Root retirement is a separate source slice; this review grants no completion or OS-exit permission."
+  ],
+  "source_or_ref_changes": false,
+  "actions_not_performed": [
+    "h/PTY/process/native",
+    "source modification",
+    "ref/branch/PR mutation",
+    "full-repository scan",
+    "checker execution"
+  ]
+}

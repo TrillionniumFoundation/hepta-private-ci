@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "kind": "actual-c-observer-drain-join-cause-seam",
+  "status": "isolated-future-source-not-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "rust_base": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "preimage": "6745890150970ca9ac83cfcda9f223411ab399d3",
+      "postimage": "97b0f8ef88a164c87d13ac73b68ad234b92933bb",
+      "bytes": 18221,
+      "sha256": "372540b1b9300ec44ca975ed64f1a824d72a223392b4dd968ed69694ad788b52",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "    join_failed: bool,\n    output: Option<Result<T, E>>,\n",
+          "after": "    join_failed: bool,\n    join_error: Option<tokio::task::JoinError>,\n    output: Option<Result<T, E>>,\n",
+          "reason": "retain original typed JoinError exactly once without changing legacy failure bit"
+        },
+        {
+          "op": "replace",
+          "before": "/// This object holds the real handle, even while another future borrows it\n",
+          "after": "/// The original blocking JoinError is retained, not reconstructed from a\n/// boolean or mapped into an unrelated owner result. Existing receivers keep\n/// their original CommitUncertain mapping.\n#[derive(Debug)]\npub(crate) enum OriginalJobReceiveError {\n    Join(tokio::task::JoinError),\n    Phase(std::io::Error),\n    Custody(Error),\n    WrongOriginalJob,\n    ResultUnavailable,\n    Release {\n        original: Box<OriginalJobReceiveError>,\n        custody: Error,\n    },\n}\n\nimpl std::fmt::Display for OriginalJobReceiveError {\n    fn fmt(&self, output: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n        match self {\n            Self::Join(error) => write!(output, \"original blocking join: {error}\"),\n            Self::Phase(error) => write!(output, \"original phase refused result: {error}\"),\n            Self::Custody(error) => write!(output, \"original job custody: {error}\"),\n            Self::WrongOriginalJob => write!(output, \"job belongs to another original Work\"),\n            Self::ResultUnavailable => write!(output, \"original joined result is unavailable\"),\n            Self::Release { original, custody } => {\n                write!(output, \"{original}; original job release: {custody}\")\n            }\n        }\n    }\n}\n\nimpl std::error::Error for OriginalJobReceiveError {\n    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {\n        match self {\n            Self::Join(error) => Some(error),\n            Self::Phase(error) => Some(error),\n            Self::Custody(error) => Some(error),\n            Self::Release { original, .. } => Some(original.as_ref()),\n            Self::WrongOriginalJob | Self::ResultUnavailable => None,\n        }\n    }\n}\n\n/// This object holds the real handle, even while another future borrows it\n",
+          "reason": "specific received join cause type; no authority constructor"
+        },
+        {
+          "op": "replace",
+          "before": "    pub(crate) async fn close_and_join_original_work(&self) -> Result<(), AgentdError> {\n        self.jobs\n",
+          "after": "    pub(crate) async fn receive_original_job_with_join_cause<\n        T: Send + 'static,\n        E: Send + 'static,\n    >(\n        &self,\n        job: Arc<OriginalLearningJob<T, E>>,\n    ) -> Result<Result<T, E>, OriginalJobReceiveError> {\n        self.jobs.receive_registered_job_with_join_cause(job).await\n    }\n\n    pub(crate) async fn close_and_join_original_work(&self) -> Result<(), AgentdError> {\n        self.jobs\n",
+          "reason": "actual C observer and drain can receive their same original handle cause"
+        },
+        {
+          "op": "replace",
+          "before": "    fn reserve(&self) -> Result<OriginalBlockingAdmission<'_>, Error> {\n",
+          "after": "    async fn receive_registered_job_with_join_cause<T: Send + 'static, E: Send + 'static>(\n        &self,\n        job: Arc<OriginalLearningJob<T, E>>,\n    ) -> Result<Result<T, E>, OriginalJobReceiveError> {\n        if !Arc::ptr_eq(&self.gate, &job.gate) || !Arc::ptr_eq(&self.pending, &job.pending) {\n            self.gate.close();\n            job.gate.close();\n            return Err(OriginalJobReceiveError::WrongOriginalJob);\n        }\n        let result = job.receive_with_join_cause().await;\n        match self.release(&job) {\n            Ok(()) => result,\n            Err(custody) => match result {\n                Err(original) => Err(OriginalJobReceiveError::Release {\n                    original: Box::new(original),\n                    custody,\n                }),\n                Ok(output) => {\n                    drop(output);\n                    Err(OriginalJobReceiveError::Custody(custody))\n                }\n            },\n        }\n    }\n\n    fn reserve(&self) -> Result<OriginalBlockingAdmission<'_>, Error> {\n",
+          "reason": "same registered job plus original release; preserve original error if release also refuses"
+        },
+        {
+          "op": "replace",
+          "before": "                join_failed: false,\n                output: None,\n",
+          "after": "                join_failed: false,\n                join_error: None,\n                output: None,\n",
+          "reason": "initialize typed original join cause"
+        },
+        {
+          "op": "replace",
+          "before": "            Err(_) => {\n                state.join_failed = true;\n                self.join_failed.store(true, Ordering::Release);\n            }\n",
+          "after": "            Err(error) => {\n                state.join_failed = true;\n                state.join_error = Some(error);\n                self.join_failed.store(true, Ordering::Release);\n            }\n",
+          "reason": "retain actual JoinError at the same terminal state cut"
+        },
+        {
+          "op": "replace",
+          "before": "    async fn receive(&self) -> Result<Result<T, E>, ()> {\n",
+          "after": "    async fn receive_with_join_cause(&self) -> Result<Result<T, E>, OriginalJobReceiveError> {\n        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);\n        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await;\n        let failed = state.join_failed;\n        let join_error = state.join_error.take();\n        let output = state.output.take();\n        drop(state);\n        if let Some(error) = join_error {\n            drop(output);\n            return Err(OriginalJobReceiveError::Join(error));\n        }\n        if failed {\n            drop(output);\n            return Err(OriginalJobReceiveError::ResultUnavailable);\n        }\n        let output = output.ok_or(OriginalJobReceiveError::ResultUnavailable)?;\n        if output.is_err() {\n            self.gate.close();\n            return Ok(output);\n        }\n        if let Err(error) = self.gate.require_open() {\n            drop(output);\n            return Err(OriginalJobReceiveError::Phase(error));\n        }\n        closing.disarm();\n        Ok(output)\n    }\n\n    async fn receive(&self) -> Result<Result<T, E>, ()> {\n",
+          "reason": "new receiver preserves exact join cause and actual returned owner custody; old receive stays literal"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "preimage": "52307dc7ea7358aba8a7d7cc2d2c73a5f70d3bbd",
+      "postimage": "838464dba56b2c2f13fc69b1179d5b5d57a9d780",
+      "bytes": 7053,
+      "sha256": "e0381df7930f6f5945369a12d311b008aaa27e4ded0353a3bbc00bc5ef4da645",
+      "operations": [
+        {
+          "op": "replace",
+          "before": "pub(crate) use work::OriginalSameActorLearningCleanup;\n",
+          "after": "pub(crate) use work::OriginalJobReceiveError;\npub(crate) use work::OriginalSameActorLearningCleanup;\n",
+          "reason": "narrow crate-visible error type for actual C observer/drain callers"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work_tests.rs",
+      "preimage": "6fb252dda41e0168ae22af37e0c7bb0b55ecdbea",
+      "postimage": "d50bfd3cfc83da7a88ea24e6556558394ffe2f37",
+      "bytes": 12896,
+      "sha256": "35c0659e852f2699de0b9b998ce1e0353e6a11ca1c2046582df60b5a09f6f8f6",
+      "operations": [
+        {
+          "op": "append",
+          "text": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn joined_c_job_preserves_the_actual_panic_and_sticky_cleanup_failure() -> anyhow::Result<()> {\n    let jobs = jobs()?;\n    let job = {\n        let admission = jobs.reserve()?;\n        let handle = tokio::task::spawn_blocking(|| -> Result<(), ()> {\n            panic!(\"original C observer component panic\");\n        });\n        admission.retain_original_handle(handle)\n    };\n    let error = jobs\n        .receive_registered_job_with_join_cause(job)\n        .await\n        .unwrap_err();\n    let OriginalJobReceiveError::Join(error) = error else {\n        panic!(\"original JoinError was not preserved: {error}\");\n    };\n    assert!(error.is_panic());\n    let payload = error.into_panic();\n    assert_eq!(\n        *payload.downcast::<&'static str>().unwrap(),\n        \"original C observer component panic\"\n    );\n    assert_eq!(jobs.pending.load(Ordering::Acquire), 0);\n    assert!(jobs.gate.require_open().is_err());\n    assert_eq!(jobs.close_and_join().await, Err(()));\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn joined_c_job_distinguishes_phase_refusal_and_drops_the_actual_owner() -> anyhow::Result<()> {\n    let jobs = jobs()?;\n    let (owned, mut peer) = pair()?;\n    let (started, started_rx) = oneshot::channel();\n    let (release, release_rx) = mpsc::sync_channel(1);\n    let job = {\n        let admission = jobs.reserve()?;\n        let handle = tokio::task::spawn_blocking(move || {\n            let _ = started.send(());\n            release_rx.recv().map_err(|_| ())?;\n            Ok::<_, ()>(owned)\n        });\n        admission.retain_original_handle(handle)\n    };\n    tokio::time::timeout(WAIT, started_rx).await??;\n    jobs.gate.close();\n    assert_eq!(jobs.pending.load(Ordering::Acquire), 1);\n    release.send(())?;\n    let result = jobs.receive_registered_job_with_join_cause(job).await;\n    assert!(matches!(result, Err(OriginalJobReceiveError::Phase(_))));\n    require_eof(&mut peer).await?;\n    assert_eq!(jobs.pending.load(Ordering::Acquire), 0);\n    assert_eq!(jobs.close_and_join().await, Ok(()));\n    Ok(())\n}\n"
+        }
+      ]
+    }
+  ],
+  "interface": {
+    "path": "crate::same_actor_q24_phase_learning::OriginalJobReceiveError",
+    "method": "OriginalSameActorLearningWork::receive_original_job_with_join_cause<T: Send + 'static, E: Send + 'static>(&self, Arc<OriginalLearningJob<T,E>>) -> impl Future<Output=Result<Result<T,E>,OriginalJobReceiveError>>",
+    "actual_caller_status": "audit owns C observer/drain; exact actual product caller source pending, not predeclared",
+    "error": "Original JoinError, original io::Error from Gate refusal, custody refusal, missing original result, wrong original Work, or preserved original plus release refusal; no Clone or fabricated JoinError"
+  },
+  "preservation": {
+    "old_receive_original_job_body_exact": true,
+    "old_registered_receive_exact": true,
+    "old_job_receive_exact": true,
+    "old_fault_cleanup_exact": true,
+    "actual_handle_register_join_terminal_order_preserved": true,
+    "actual_error_taken_once": true,
+    "cancelled_waiter_keeps_registered_original_handle": true
+  },
+  "metadata_delta": {
+    "base": "cec0af947a10465414faff8f4e755e023a7f892d",
+    "scope": "same existing Work protected row only; retain original guard order and add actual cause capture",
+    "operation": {
+      "op": "replace",
+      "before": "\"Ok(output) => state.output = Some(output)\",\"Err(_) =>\",\"state.join_failed = true\",\"self.join_failed.store(true, Ordering::Release)\"",
+      "after": "\"Ok(output) => state.output = Some(output)\",\"Err(error) =>\",\"state.join_failed = true\",\"state.join_error = Some(error)\",\"self.join_failed.store(true, Ordering::Release)\""
+    },
+    "new_boundary_and_actual_caller_final_union_pending": true
+  },
+  "components": {
+    "old_seven_prefix_unchanged": true,
+    "new_tests": 2,
+    "executed": false,
+    "actual_panic_payload_retained": true,
+    "actual_returned_unix_fd_discarded_on_gate_refusal": true,
+    "no_c_business_completion_claim": true
+  },
+  "qualification": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  },
+  "actions_not_performed": [
+    "h",
+    "PTY",
+    "Cargo",
+    "formatter",
+    "original checker",
+    "native",
+    "refs"
+  ]
+}

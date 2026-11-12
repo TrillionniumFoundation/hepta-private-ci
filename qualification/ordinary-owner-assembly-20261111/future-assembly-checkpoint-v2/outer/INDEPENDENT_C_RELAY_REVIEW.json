@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "cross-review-actual-outer-owner-and-c-natural-relay",
+  "reviewer": "hepta_audit",
+  "packets": {
+    "peer_outer": "aeb5f9efa8f2d94ffc8d63a2aae09bd2dfef928e",
+    "c_retirement_and_relay_draft": "ad5d950d11627ae7b44373d227348ef41e00439e",
+    "session_fault_custody": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+    "circuit_fault_custody": "173ee1feff9ff9bf2de0d81704a511574b9e0a94"
+  },
+  "verdict": "No confirmed local false-success path in the submitted fault-only outer packet. Normal integration is explicitly incomplete; it must consume the actual private caps and change the actual held-resource path, not just return Ok after a signal.",
+  "reads": {
+    "all_ten_peer_source_get_and_hash": true,
+    "four_existing_preimages_get_and_hash": true,
+    "actual_runtime_tasks": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+    "actual_generic_runtime_unchanged": "4050e4aba877c88cbc9c0aeeaaec23425436cd48"
+  },
+  "replay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "pre": "7912206162ae660e7c88b92a64ee6a5e585c4efe",
+      "post": "055e180d0f5d5e42e5f944b9a9f9879c65e97669",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": "0a42efbae90feea00fe7c771e6c88316832186af",
+      "post": "277e498ca1e567968a639232af915039f64c0c82",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "pre": "f32df2e032199e4c5ece33b4f0df8ed1b32d5470",
+      "post": "a77a131a7c5340d1b5e8a5f7fe6c19181b6db3ff",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pre": "334c72f85a8ecfab4b09009b46f76f4031ebfd47",
+      "post": "b97b6a5e7b5f649a9efd71f7fc6506c021205fa2",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "post": "76bd3d128ab457a048209ac663c4c9d0d520f95e",
+      "add_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "post": "f5d02c4678c2eb31884b0946635b503e15779139",
+      "add_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "post": "65bf764fad9df27bd1627be59968e4ab07c83396",
+      "add_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "post": "01019de48d760e667078cd6ce458fed2db0653f9",
+      "add_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "post": "57127565b350698cb6ada9ad3e67435224c63a13",
+      "add_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+      "post": "8bc28dd9f382c83547bc107a571e1358aaee6d9d",
+      "add_equal": true
+    }
+  ],
+  "facts": [
+    "Startup's real std-thread owner exists outside the awaiting public future. Drop requests stop and joins the exact std JoinHandle; completion oneshot<()> is only a wakeup, and poll still joins the real thread.",
+    "The same multi-thread Tokio runtime must remain alive while the std owner drives and joins actual async/blocking work. This code does not establish a hard bound on physical join or process-death cleanup.",
+    "OriginalReceive Gate is retained before the first async five-lane connect. The external Session slot reaches connect_same_actor_phase_until before its real worker spawn, and the same retained cap is checked before activation.",
+    "Both original Device/Notes opening closures put their actual JoinHandle into concrete external two-slot custody before receive_original().await. Cancelling that waiter leaves original handle/output in custody; cleanup physically awaits it.",
+    "Initial installation exports the actual Circuit custody before Config consumes its Bootstrap. No event or digest reconstructs authority.",
+    "RuntimeStopped is formed only by the actual original run_with_shutdown Ok branch; it retains real Root attachment, Android device, MCP runtime and Root pidfd. Its origin check uses actual same Gate/end/pidfd, not a new Current business admission.",
+    "RuntimeStopped is not physical Circuit termination. The new C natural-take additionally requires the actual terminal owner bundle, original outer blocking handle ReturnedOk, and original Result delivery RUNTIME_DELIVERED. NotStarted, Abandoned and CleanupRecovered cannot mint it.",
+    "An async wrapper abandoned by the original grace-abort path runs OriginalCircuitRuntimeReceiver Drop, cancelling and closing Gate, while the retained handle/result remain for actual fault join. Natural take rejects that delivery state even if a generic wrapper outcome was Ok.",
+    "A C terminal notification races safely with original required-worker failure only because the original RuntimeTasks failure latch and returned Err remain authoritative. This packet does not override any actual Launch Err with a saved bundle.",
+    "Current run_owned retains an armed failure guard and converts RuntimeStopped Ok to explicit incomplete-completion Err. Outer std-thread final result also rejects the Ok/Ok combination. Current code therefore cannot report normal business completion."
+  ],
+  "required_normal_followups": [
+    "Replace fault-only shutdown waiting with the actual typed C terminal relay, while preserving original fault propagation; do not let a data event return Ok.",
+    "Retain and later consume the real run_owned close guard and RuntimeStopped resource fields through actual Root intent. Merely adding a select arm would still drop guards/close common Gate too early.",
+    "Before Root seq1, actual Session normal pause must join the original refresh/consumer work while retaining business streams and their failure guards. Fault stop_and_join cannot substitute.",
+    "Only the actual Root-intent-bound normal release may disarm each retained business-purpose guard. Common Gate/progress peer remains in fault custody through seq2/postchecks.",
+    "Actual Root worker joins, actual Session retirement/file ordering, owned MCP/device cleanup and actual C/Learning terminal caps remain separate required facts. No normal Startup Ok is authorized by this review."
+  ],
+  "limits": {
+    "normal_code_not_integrated": true,
+    "compiled": false,
+    "tests_run": false,
+    "checker_run": false,
+    "business_counts": [
+      0,
+      0,
+      0
+    ],
+    "no_h": true,
+    "no_ref_mutation": true
+  }
+}

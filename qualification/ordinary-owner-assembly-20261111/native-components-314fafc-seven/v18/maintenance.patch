@@ -1,0 +1,33 @@
+diff --git a/qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs b/qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs
+index 1e5270f82571964dcf3817b26f48a9550bd1e9d8..b92a6dd8e72699848d24c2b6fcdab5cad100f7c2 100644
+--- a/qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs
++++ b/qualification/ordinary-owner-assembly-20261111/native-components-d4d6e32-seven/v17/FORMATTED_SOURCE.rs
+@@ -2,8 +2,8 @@
+ //! Default aggregate constructors and their ordinary lane remain unchanged.
+ 
+ use super::*;
+-use crate::OriginalCellQ24LearningInputsV1;
+ use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
++use crate::OriginalCellQ24LearningInputsV1;
+ 
+ impl OriginalCellQ24LearningStageOwnersV1 {
+     pub(crate) async fn from_original_same_actor_inputs(
+@@ -189,12 +189,12 @@ impl Q24StageState {
+         &self,
+         phase: &Arc<OriginalSameActorLearningWork>,
+         work: impl FnOnce(
+-            &mut Q24StageOwners,
+-            &OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+-            &Handle,
+-        ) -> Result<T, Error>
+-        + Send
+-        + 'static,
++                &mut Q24StageOwners,
++                &OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
++                &Handle,
++            ) -> Result<T, Error>
++            + Send
++            + 'static,
+     ) -> Result<T, Error> {
+         let mut closing = phase.original_failure_scope();
+         phase.require_original_prepared(&self.prepared)?;
