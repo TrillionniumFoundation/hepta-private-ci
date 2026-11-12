@@ -24,6 +24,8 @@ use super::RootGenerationPublicationRegistrationV1;
 pub(in crate::authority_host_runtime::session) mod data;
 #[path = "authority_host_publication_deployment_files.rs"]
 pub(in crate::authority_host_runtime::session) mod files;
+#[path = "authority_host_publication_input_data.rs"]
+mod input_data;
 #[path = "authority_host_publication_deployment_inputs.rs"]
 mod inputs;
 
@@ -204,9 +206,11 @@ impl RootGenerationPublicationDeploymentV1 {
                 "trigger does not name the original canonical late material",
             ));
         }
-        let (inputs, artifacts) =
-            self.inputs
-                .enrollment_inputs(&self.data, &material, self.capability.consumer_uid)?;
+        let (inputs, artifacts) = self.inputs.enrollment_inputs(
+            &self.data.original_input_data(),
+            &material,
+            self.capability.consumer_uid,
+        )?;
         self.require_deployment_files()?;
         trigger_file.require_metadata_unchanged()?;
         material_file.require_metadata_unchanged()?;
