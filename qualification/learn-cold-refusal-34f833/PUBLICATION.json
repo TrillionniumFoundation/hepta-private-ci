@@ -1,0 +1,89 @@
+{
+  "schema": "hepta-cold-refusal-source-publication-v1",
+  "base_commit": "106f5e41f2ff8421c5aad10eeb746d453ed00563",
+  "source_commit": "5349da7d4b7bacaec1d25a59ab0878912fb5613c",
+  "source_tree": "b43279fc0552a6f36c81753fd1e30f0bb200f77d",
+  "source_scope": "exact pre-format local candidate",
+  "patch_sha256": "79e3c94b051347b31bd644042d615f6772d392438d9ef792b2d1701ca0f86cc1",
+  "postimages": {
+    "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs": {
+      "git_blob_sha": "05cb88587a955567371914416c33ea73a5317f3c",
+      "sha256": "f0dfaf9a14c5f3cf9c070ee43ad0feb872e9df922285a35662c2b7c85b8d96c7",
+      "blob_upload_and_readback_equal": true
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_refusal.rs": {
+      "git_blob_sha": "68cd85ddb265d7ab2dd855fff18e5998699f8095",
+      "sha256": "1311d618b5a448f326a9cae1a6e9daa07e345f2117cb3739388732ea9bf4d0b8",
+      "blob_upload_and_readback_equal": true
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs": {
+      "git_blob_sha": "34f3edb4889d2daf7a661e88cb027f9416651aed",
+      "sha256": "d15776fafbc855d5f875b8cb1a87c9c99df6b7609a20a803c2b0a85d130ba768",
+      "blob_upload_and_readback_equal": true
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs": {
+      "git_blob_sha": "edf33760e4599a6a553b56caf0386d398b86bc90",
+      "sha256": "6e4356206d6086d870d05442cf58e24d84b5412decac3faab543e4ec54e28b35",
+      "blob_upload_and_readback_equal": true
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_handoff_tests.rs": {
+      "git_blob_sha": "54945f0f6598efac0059ea505767c596e41be586",
+      "sha256": "8ea2211288874c25ba7796b87c34f4be2f0db0483732a22db58799efac233dec",
+      "blob_upload_and_readback_equal": true
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_pin_tests.rs": {
+      "git_blob_sha": "a9d321b01089c0e3589e099c6f6d61249d577093",
+      "sha256": "d3cd3a50aa59c7ce789e498505a6a4b92002555591138ed2ac13ebefee8352dd",
+      "blob_upload_and_readback_equal": true
+    },
+    "CALLERS.toml": {
+      "git_blob_sha": "c4a4be15d4e675e1ec053fdf41b1e6c319ee1c95",
+      "sha256": "e06f7fc77a0ef89eace0e5df88b74521edf1fb50fcbf14fd8fbcd53106f16cf4",
+      "blob_upload_and_readback_equal": true
+    },
+    ".github/workflows/hepta-daemon-learning-native.yml": {
+      "git_blob_sha": "0ccab9230db0925ab2b5574cb161536ffe6af59f",
+      "sha256": "945aa5aad8191c25d546d73d4c6756816c82aff72d88872de69328dda0106c5f",
+      "blob_upload_and_readback_equal": true
+    },
+    ".github/blob-size-allowlist.txt": {
+      "git_blob_sha": "2be35be678367a9e7d67053c72d780d157343a29",
+      "sha256": "00d7da7e59c9c1dd0df95540641c49590726ced50c6e408a2ada7d459ce188af",
+      "blob_upload_and_readback_equal": true
+    },
+    "qa/b4-no-bypass/test_root_historical_capture_source_closure.py": {
+      "git_blob_sha": "c7e7bbd3857581ca0e3aab6f463e1d0dc46bbbb6",
+      "sha256": "8d221e21390557ba5558e6a672a5119f7a37a4fc45c3d5e49977b8c13f4d4e99",
+      "blob_upload_and_readback_equal": true
+    }
+  },
+  "local_checks": {
+    "protected_files_pass": 4,
+    "focused_typed_boundaries_pass": 5,
+    "focused_source_index": "four relevant production Rust modules; not a full repository scan",
+    "new_source_mutation_methods_pass": 1,
+    "native_pass": null
+  },
+  "remote_observation": {
+    "format_source_job": "1a1ce3feab1-2564-15d0",
+    "terminal_state": "succeeded",
+    "exit_code": 0,
+    "complete_durable_output": true,
+    "just_fmt_exit": 0,
+    "capture_source_tests_pass": 13,
+    "handoff_source_tests_pass": 9,
+    "formatted_postimages_retrieved": false,
+    "source_commit_retrieved": false,
+    "not_inherited_by_this_source": true,
+    "root_uid_readiness_only": 0,
+    "actual_root_test_completion": null,
+    "freeze_build_terminal": "UNKNOWN",
+    "inventory_complete": false
+  },
+  "qualified_system_gates": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "whole_daemon_root_cold_recovery": 0
+  },
+  "scope_limit": "Refusal survives restoring the primary alone; no coordinated rollback resistance or historical learning authority is claimed."
+}

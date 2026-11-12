@@ -8,7 +8,6 @@ use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
 
 use codex_hepta_automation::TaskFlowFence;
-use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_neuron::CellDefinitionV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_neuron::JournalScope;
@@ -115,6 +114,7 @@ pub(crate) struct RootHistoricalSourcePinV1 {
     owner: String,
     expected: PinRecord,
     poisoned: Mutex<bool>,
+    refusal: HistoricalSourceRefusalV1,
 }
 
 impl RootHistoricalSourcePinV1 {
@@ -124,26 +124,43 @@ impl RootHistoricalSourcePinV1 {
     ) -> io::Result<Self> {
         original_root()?;
         let owner = owner(target)?;
-        let store =
-            HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?;
-        let expected: PinRecord = store.load(&owner).map_err(io::Error::other)?;
-        if expected.fenced
-            || expected.pin.schema != 1
-            || expected.pin.purpose != PIN_PURPOSE
-            || &expected.pin.target != target
-        {
+        let refusal = HistoricalSourceRefusalV1::open_existing(Arc::clone(&root), &owner)?;
+        let store = match HostAuthorityFrontierStore::open(root, owner.clone()) {
+            Ok(store) => store,
+            Err(error) => {
+                HistoricalSourceRefusalV1::refuse(&refusal)?;
+                return Err(io::Error::other(error));
+            }
+        };
+        let expected: PinRecord = match store.load(&owner) {
+            Ok(expected) => expected,
+            Err(error) => {
+                HistoricalSourceRefusalV1::refuse(&refusal)?;
+                return Err(io::Error::other(error));
+            }
+        };
+        if expected.fenced || expected.pin.schema != 1 || expected.pin.purpose != PIN_PURPOSE {
+            HistoricalSourceRefusalV1::refuse(&refusal)?;
             return Err(io::Error::other("original historical source pin differs"));
         }
+        if &expected.pin.target != target {
+            return Err(io::Error::other(
+                "original historical source target differs",
+            ));
+        }
+        HistoricalSourceRefusalV1::require_open(&refusal)?;
         Ok(Self {
             store,
             owner,
             expected,
             poisoned: Mutex::new(false),
+            refusal,
         })
     }
 
     pub(crate) fn readback_digest(&self) -> io::Result<Digest32> {
         original_root()?;
+        HistoricalSourceRefusalV1::require_open(&self.refusal)?;
         let mut poisoned = self
             .poisoned
             .lock()
@@ -152,8 +169,10 @@ impl RootHistoricalSourcePinV1 {
             || !matches!(self.store.load(&self.owner), Ok(record) if record == self.expected)
         {
             *poisoned = true;
+            HistoricalSourceRefusalV1::refuse(&self.refusal)?;
             return Err(io::Error::other("original historical source pin changed"));
         }
+        HistoricalSourceRefusalV1::require_open(&self.refusal)?;
         Ok(Digest32::of_parts(&[
             b"hepta.root.historical-source-pin.v1\0",
             &serde_json::to_vec(&self.expected).map_err(io::Error::other)?,
@@ -193,22 +212,55 @@ impl RootHistoricalSourcePinV1 {
         original_root()?;
         let owner = owner(&pin.target)?;
         let expected = PinRecord { pin, fenced: false };
-        let store = match HostAuthorityFrontierStore::initialize(
-            Arc::clone(&root),
-            owner.clone(),
-            expected.clone(),
-        ) {
-            Ok(store) => store,
-            Err(AuthorityTrustError::Conflict) => {
-                HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?
+        let (refusal, registration) =
+            HistoricalSourceRefusalV1::register_original(Arc::clone(&root), &owner)?;
+        let store = match registration {
+            historical_source_refusal::Registration::New => {
+                match HostAuthorityFrontierStore::initialize(
+                    Arc::clone(&root),
+                    owner.clone(),
+                    expected.clone(),
+                ) {
+                    Ok(store) => {
+                        HistoricalSourceRefusalV1::complete_original_registration(&refusal)?;
+                        store
+                    }
+                    Err(error) => {
+                        // A legacy primary is never silently admitted by creating
+                        // a new clear refusal record beside it.
+                        HistoricalSourceRefusalV1::refuse(&refusal)?;
+                        return Err(io::Error::other(error));
+                    }
+                }
             }
-            Err(error) => return Err(io::Error::other(error)),
+            historical_source_refusal::Registration::Existing => {
+                match HostAuthorityFrontierStore::open(root, owner.clone()) {
+                    Ok(store) => store,
+                    Err(error) => {
+                        HistoricalSourceRefusalV1::refuse(&refusal)?;
+                        return Err(io::Error::other(error));
+                    }
+                }
+            }
         };
+        // A different newly proposed capture must not poison the original pin.
+        // Only an admitted handle's changed physical record triggers refusal.
+        let observed = match store.load(&owner) {
+            Ok(observed) => observed,
+            Err(error) => {
+                HistoricalSourceRefusalV1::refuse(&refusal)?;
+                return Err(io::Error::other(error));
+            }
+        };
+        if observed != expected {
+            return Err(io::Error::other("original source capture differs"));
+        }
         let retained = Self {
             store,
             owner,
             expected,
             poisoned: Mutex::new(false),
+            refusal,
         };
         retained.readback_digest()?;
         Ok(retained)
@@ -220,6 +272,7 @@ impl RootHistoricalSourcePinV1 {
             .poisoned
             .lock()
             .map_err(|_| io::Error::other("source pin poisoned"))? = true;
+        HistoricalSourceRefusalV1::refuse(&self.refusal)?;
         let mut next = self.expected.clone();
         next.fenced = true;
         if self.store.load(&self.owner).map_err(io::Error::other)? == next {

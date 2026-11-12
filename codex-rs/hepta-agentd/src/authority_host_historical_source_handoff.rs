@@ -43,6 +43,7 @@ pub(super) struct RootHistoricalSourceHandoffV1 {
     owner: String,
     expected: HandoffRecord,
     poisoned: bool,
+    refusal: HistoricalSourceRefusalV1,
 }
 
 impl RootHistoricalSourceHandoffV1 {
@@ -96,14 +97,29 @@ impl RootHistoricalSourceHandoffV1 {
             return Err(io::Error::other("new handoff must remain pending"));
         }
         let owner = owner(&expected.target)?;
+        let (refusal, registration) =
+            HistoricalSourceRefusalV1::register_original(Arc::clone(&root), &owner)?;
+        if !matches!(registration, historical_source_refusal::Registration::New) {
+            return Err(io::Error::other(
+                "original handoff registration already exists",
+            ));
+        }
         // No prior record, including an incomplete ACK, can be reused.
-        let store = HostAuthorityFrontierStore::initialize(root, owner.clone(), expected.clone())
-            .map_err(io::Error::other)?;
+        let store =
+            match HostAuthorityFrontierStore::initialize(root, owner.clone(), expected.clone()) {
+                Ok(store) => store,
+                Err(error) => {
+                    HistoricalSourceRefusalV1::refuse(&refusal)?;
+                    return Err(io::Error::other(error));
+                }
+            };
+        HistoricalSourceRefusalV1::complete_original_registration(&refusal)?;
         let mut retained = Self {
             store,
             owner,
             expected,
             poisoned: false,
+            refusal,
         };
         retained.require_exact()?;
         Ok(retained)
@@ -120,8 +136,10 @@ impl RootHistoricalSourceHandoffV1 {
         let pin = RootHistoricalSourcePinV1::open_existing(root, target)?;
         if pin.readback_digest()?.to_string() != retained.expected.pin {
             retained.poisoned = true;
+            HistoricalSourceRefusalV1::refuse(&retained.refusal)?;
             return Err(io::Error::other("finalized handoff pin changed"));
         }
+        retained.require_finalized()?;
         Ok(retained)
     }
 
@@ -131,18 +149,38 @@ impl RootHistoricalSourceHandoffV1 {
     ) -> io::Result<Self> {
         original_root()?;
         let owner = owner(target)?;
-        let store =
-            HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?;
-        let expected: HandoffRecord = store.load(&owner).map_err(io::Error::other)?;
-        if expected.schema != 1 || expected.purpose != HANDOFF_PURPOSE || &expected.target != target
+        let refusal = HistoricalSourceRefusalV1::open_existing(Arc::clone(&root), &owner)?;
+        let store = match HostAuthorityFrontierStore::open(root, owner.clone()) {
+            Ok(store) => store,
+            Err(error) => {
+                HistoricalSourceRefusalV1::refuse(&refusal)?;
+                return Err(io::Error::other(error));
+            }
+        };
+        let expected: HandoffRecord = match store.load(&owner) {
+            Ok(expected) => expected,
+            Err(error) => {
+                HistoricalSourceRefusalV1::refuse(&refusal)?;
+                return Err(io::Error::other(error));
+            }
+        };
+        if expected.schema != 1
+            || expected.purpose != HANDOFF_PURPOSE
+            || expected.phase == HandoffPhase::Fenced
         {
+            HistoricalSourceRefusalV1::refuse(&refusal)?;
             return Err(io::Error::other("original handoff registration differs"));
         }
+        if &expected.target != target {
+            return Err(io::Error::other("original handoff target differs"));
+        }
+        HistoricalSourceRefusalV1::require_open(&refusal)?;
         Ok(Self {
             store,
             owner,
             expected,
             poisoned: false,
+            refusal,
         })
     }
 
@@ -159,6 +197,7 @@ impl RootHistoricalSourceHandoffV1 {
             .compare_and_set(&self.owner, &self.expected, &next)
         {
             self.poisoned = true;
+            HistoricalSourceRefusalV1::refuse(&self.refusal)?;
             return Err(io::Error::other(error));
         }
         self.expected = next;
@@ -182,6 +221,7 @@ impl RootHistoricalSourceHandoffV1 {
             .compare_and_set(&self.owner, &self.expected, &next)
         {
             self.poisoned = true;
+            HistoricalSourceRefusalV1::refuse(&self.refusal)?;
             return Err(io::Error::other(error));
         }
         self.expected = next;
@@ -190,12 +230,15 @@ impl RootHistoricalSourceHandoffV1 {
 
     fn require_exact(&mut self) -> io::Result<()> {
         original_root()?;
+        HistoricalSourceRefusalV1::require_open(&self.refusal)?;
         if self.poisoned
             || !matches!(self.store.load(&self.owner), Ok(record) if record == self.expected)
         {
             self.poisoned = true;
+            HistoricalSourceRefusalV1::refuse(&self.refusal)?;
             return Err(io::Error::other("original handoff record changed"));
         }
+        HistoricalSourceRefusalV1::require_open(&self.refusal)?;
         Ok(())
     }
 
@@ -212,6 +255,7 @@ impl RootHistoricalSourceHandoffV1 {
     pub(super) fn fence(&mut self) -> io::Result<()> {
         original_root()?;
         self.poisoned = true;
+        HistoricalSourceRefusalV1::refuse(&self.refusal)?;
         let observed = self.store.load(&self.owner).map_err(io::Error::other)?;
         let mut same_binding = observed.clone();
         same_binding.phase = self.expected.phase;
