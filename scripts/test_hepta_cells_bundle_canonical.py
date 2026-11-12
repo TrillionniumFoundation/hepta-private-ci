@@ -51,8 +51,11 @@ def _source():
 def _successor(source):
     components = dict(source.components, heads=_sha("new-head"))
     return source.successor(
-        "fixture:child", components, _sha("dataset"),
-        _sha("rule"), _sha("frozen-eval"),
+        "fixture:child",
+        components,
+        _sha("dataset"),
+        _sha("rule"),
+        _sha("frozen-eval"),
     )
 
 
@@ -85,8 +88,8 @@ class BundleCanonicalIdentityTests(unittest.TestCase):
     def test_component_and_lineage_keys_reject_subclass_equalities(self):
         source = _source()
         component_keys = dict(source.components)
-        component_keys[_SpoofedString("hidden-head-key", "heads")] = (
-            component_keys.pop("heads")
+        component_keys[_SpoofedString("hidden-head-key", "heads")] = component_keys.pop(
+            "heads"
         )
         with self.assertRaises(ValueError):
             replace(source, components=component_keys).record()
@@ -114,7 +117,6 @@ class BundleCanonicalIdentityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_local_update("shared_semantic", source, forged, "heads")
 
-
     def test_rejects_derived_bundle_containers_and_policy_strings(self):
         source = _source()
         candidate = _successor(source)
@@ -123,12 +125,15 @@ class BundleCanonicalIdentityTests(unittest.TestCase):
             pass
 
         for corrupted in (
-            replace(source, components=type("HiddenDict", (dict,), {})(
-                source.components
-            )),
-            replace(candidate, training_lineage=type("HiddenDict", (dict,), {})(
-                candidate.training_lineage
-            )),
+            replace(
+                source, components=type("HiddenDict", (dict,), {})(source.components)
+            ),
+            replace(
+                candidate,
+                training_lineage=type("HiddenDict", (dict,), {})(
+                    candidate.training_lineage
+                ),
+            ),
         ):
             with self.subTest(container=type(corrupted.components).__name__):
                 with self.assertRaises(ValueError):
