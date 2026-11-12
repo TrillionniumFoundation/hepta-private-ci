@@ -103,11 +103,11 @@ class LearningCheckpointSourceClosureTests(unittest.TestCase):
             "HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?",
         ):
             with self.subTest(marker=marker):
-                self.rejects(SERVICE, "fn serve_learning_checkpoint(", marker)
+                self.rejects(SERVICE, "fn serve_learning_checkpoint_with_end(", marker)
         for occurrence in range(2):
             with self.subTest(lifetime_check=occurrence):
                 self.rejects(
-                    SERVICE, "fn serve_learning_checkpoint(",
+                    SERVICE, "fn serve_learning_checkpoint_with_end(",
                     "self.check_logind_lifetime().map_err(unavailable)?;",
                     occurrence=occurrence,
                 )

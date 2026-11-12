@@ -47,7 +47,7 @@ CALLERS = {
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),
     "root_learning_original_client_constructor": (INPUTS,),
     "root_learning_scoped_client_constructor": (INPUTS,),
-    "root_learning_original_purpose_send": (CLI,),
+    "root_learning_original_purpose_send": (CLI, AGENT + "authority_host_post_a_worker.rs"),
     "root_learning_original_purpose_receive": (
         LAUNCHER, AGENT + "production_launcher_late_writer.rs",
     ),
@@ -323,8 +323,8 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
 
     def test_registered_learning_cannot_be_silently_dropped_by_retained_serve(self):
         self.rejects(AGENT + "authority_host_session_material.rs", "fn serve_retained(", "self.learning.is_some()")
-        self.rejects(SESSION, "fn serve_optional(", "service\n                .serve_learning_checkpoint(")
-        self.rejects(SESSION, "fn serve_optional(", "stream.shutdown(Shutdown::Both)")
+        self.rejects(SESSION, "fn serve_optional_with_end(", "None => service.serve_learning_checkpoint(")
+        self.rejects(SESSION, "fn serve_optional_with_end(", "stream.shutdown(Shutdown::Both)")
 
     def test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime(self):
         for path, function, markers in (
