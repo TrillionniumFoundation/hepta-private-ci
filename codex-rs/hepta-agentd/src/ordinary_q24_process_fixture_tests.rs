@@ -53,10 +53,23 @@ pub(super) struct OrdinaryAPlan {
     pub(super) observer_key: PathBuf,
     // The baseline Artifact writer stays with its original administrator. A
     // receives only the authenticated Root Initial read view of these files.
-    _artifact_owner: Arc<Mutex<LearningArtifactOwnerService>>,
+    artifact_owner: Option<Arc<Mutex<LearningArtifactOwnerService>>>,
 }
 
 impl OrdinaryAPlan {
+    pub(super) fn release_retired_artifact_writer(&mut self) -> anyhow::Result<()> {
+        let owner = self
+            .artifact_owner
+            .take()
+            .ok_or_else(|| anyhow::anyhow!("original Artifact writer already released"))?;
+        let owner = Arc::try_unwrap(owner)
+            .map_err(|_| anyhow::anyhow!("an original Artifact writer reference remains"))?
+            .into_inner()
+            .map_err(|_| anyhow::anyhow!("original Artifact writer lock poisoned"))?;
+        drop(owner);
+        Ok(())
+    }
+
     pub(super) fn prepare(runtime: &tokio::runtime::Runtime) -> anyhow::Result<Self> {
         // SAFETY: reads actual kernel credentials; never changes the test host.
         anyhow::ensure!(
@@ -280,7 +293,7 @@ impl OrdinaryAPlan {
             replay_checkpoint,
             observer_payload,
             observer_key,
-            _artifact_owner: artifact_owner,
+            artifact_owner: Some(artifact_owner),
         })
     }
 }
