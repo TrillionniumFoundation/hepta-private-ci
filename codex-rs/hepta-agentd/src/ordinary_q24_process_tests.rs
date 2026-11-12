@@ -1,6 +1,8 @@
 //! Ordinary binary process qualification. Private setup modules provide
 //! explicit input data; no setup routine certifies a task or learning result.
 
+#[path = "ordinary_q24_b_evaluation_tests.rs"]
+mod b_evaluate;
 #[path = "ordinary_q24_b_publication_observer_tests.rs"]
 mod b_publication_observer;
 #[path = "ordinary_q24_process_deployment_tests.rs"]
@@ -31,6 +33,8 @@ mod post_a_plan;
 mod post_a_progress;
 #[path = "ordinary_q24_post_a_selection_tests.rs"]
 mod post_a_selection;
+#[path = "ordinary_q24_post_a_source_tests.rs"]
+mod post_a_source;
 #[path = "ordinary_q24_post_a_trust_tests.rs"]
 mod post_a_trust;
 #[path = "ordinary_q24_process_recovery_tests.rs"]
