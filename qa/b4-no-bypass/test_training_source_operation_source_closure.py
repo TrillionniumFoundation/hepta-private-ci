@@ -17,6 +17,7 @@ FIT = AGENT + "cell_q24_training_fit.rs"
 OPERATION = AGENT + "cell_q24_training_stage_operation.rs"
 OWNER = AGENT + "cell_composed_q24_training_owner.rs"
 STAGE = AGENT + "cell_q24_training_stage.rs"
+CHECKPOINT = AGENT + "learning_iteration_q24_checkpoint.rs"
 
 
 class TrainingSourceOperationTests(unittest.TestCase):
@@ -26,6 +27,23 @@ class TrainingSourceOperationTests(unittest.TestCase):
 
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers
+
+    def test_scoped_checkpoint_shares_the_actual_client_and_concrete_owners(self):
+        self.check_markers(CHECKPOINT, "fn with_original_q24_checkpoint(", (
+            "self.initial != *prepared.initial()", "self.scope.as_ref() != Some(prepared.scope())",
+            "let client = Arc::new(self)", "client: Arc::clone(&client)",
+            "owners: Arc::clone(&owners)", "checkpoint: Checkpoint::RootClient(client)",
+            "stages: owners"))
+        self.check_markers(CHECKPOINT, "fn require_original_owners(", (
+            "!Arc::ptr_eq(&self.owners, owners)", "self.client.initial != *prepared.initial()",
+            "self.client.scope.as_ref() != Some(prepared.scope())"))
+
+    def test_checkpoint_operations_still_call_the_original_transport(self):
+        self.check_markers(CHECKPOINT, "fn restore_original(", (
+            "self.require_original_owners(&self.owners)?", "self.client.restore(request).await"))
+        self.check_markers(CHECKPOINT, "fn checkpoint_original(", (
+            "self.require_original_owners(&self.owners)?", ".checkpoint(previous, snapshot)",
+            "map_err(checkpoint_error)"))
 
     def test_source_read_implementations_cannot_be_replaced_with_success(self):
         source = (ROOT / READ).read_text()

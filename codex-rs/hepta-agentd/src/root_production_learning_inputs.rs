@@ -206,9 +206,30 @@ impl AgentdRootLearningInputsV1 {
     > {
         self.require_prepared_q24(stages.prepared())?;
         let original = Arc::clone(&stages);
-        let (handle, bootstrap) = self.into_learning_runtime(stages, verifier, capacity)?;
+        let scope = self
+            .scope
+            .ok_or_else(|| refused("original Q24 checkpoint scope absent"))?;
+        let (ports, checkpoint) = self
+            .client
+            .with_original_q24_checkpoint(stages)
+            .map_err(|error| refused(error.to_string()))?;
+        let (handle, bootstrap) = crate::learning_iteration_channel_scoped_v2(
+            self.identity.agent_id,
+            self.identity.spawn_generation,
+            self.initial.owners,
+            ports,
+            verifier,
+            capacity,
+            scope,
+        )?;
         let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
-        Ok((handle, bootstrap.with_original_q24_stage_owners(original)?))
+        let bootstrap = bootstrap.with_original_circuit_learning_delivery(self.initial.request)?;
+        Ok((
+            handle,
+            bootstrap
+                .with_original_q24_stage_owners(original)?
+                .with_original_q24_checkpoint(checkpoint)?,
+        ))
     }
 
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {

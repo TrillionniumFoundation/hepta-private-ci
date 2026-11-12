@@ -194,6 +194,9 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     #[cfg(target_os = "linux")]
     original_q24: Option<Arc<crate::OriginalCellQ24LearningStageOwnersV1>>,
     #[cfg(target_os = "linux")]
+    original_q24_checkpoint:
+        Option<Arc<crate::learning_iteration_checkpoint::OriginalRootQ24CheckpointV1>>,
+    #[cfg(target_os = "linux")]
     successor: Option<Arc<crate::circuit_q24_successor::SuccessorSlot>>,
 }
 
@@ -300,12 +303,35 @@ fn learning_iteration_channel(
             #[cfg(target_os = "linux")]
             original_q24: None,
             #[cfg(target_os = "linux")]
+            original_q24_checkpoint: None,
+            #[cfg(target_os = "linux")]
             successor: None,
         },
     ))
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_original_q24_checkpoint(
+        mut self,
+        checkpoint: Arc<crate::learning_iteration_checkpoint::OriginalRootQ24CheckpointV1>,
+    ) -> Result<Self, AgentdError> {
+        let owners = self
+            .original_q24
+            .as_ref()
+            .ok_or_else(|| AgentdError::Invalid("original Q24 owners absent".into()))?;
+        if self.original_q24_checkpoint.is_some() {
+            return Err(AgentdError::Invalid(
+                "original Q24 checkpoint already retained".into(),
+            ));
+        }
+        checkpoint
+            .require_original_owners(owners)
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        self.original_q24_checkpoint = Some(checkpoint);
+        Ok(self)
+    }
+
     #[cfg(target_os = "linux")]
     pub(crate) fn with_original_q24_stage_owners(
         mut self,
