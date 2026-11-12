@@ -1,0 +1,44 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+index 84c9e44c..ed8241ab 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+@@ -234,11 +234,9 @@ pub(crate) fn reject_cancelled_queued_dispatch(
+             occupied_rx.await?;
+             let cancellation = Arc::new(AtomicBool::new(false));
+             let mut execute = Box::pin(client.execute_training(Arc::clone(&cancellation)));
+-            std::future::poll_fn(|cx| {
+-                match std::future::Future::poll(execute.as_mut(), cx) {
+-                    std::task::Poll::Pending => std::task::Poll::Ready(()),
+-                    std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
+-                }
++            std::future::poll_fn(|cx| match std::future::Future::poll(execute.as_mut(), cx) {
++                std::task::Poll::Pending => std::task::Poll::Ready(()),
++                std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
+             })
+             .await;
+             cancellation.store(true, Ordering::Release);
+@@ -254,7 +252,9 @@ pub(crate) fn reject_cancelled_queued_dispatch(
+             );
+             anyhow::ensure!(
+                 matches!(
+-                    client.execute_training(Arc::new(AtomicBool::new(false))).await,
++                    client
++                        .execute_training(Arc::new(AtomicBool::new(false)))
++                        .await,
+                     Err(super::Error::Unavailable)
+                 ),
+                 "cancellation must not restore an executable connection"
+diff --git a/codex-rs/hepta-neuron/src/witness.rs b/codex-rs/hepta-neuron/src/witness.rs
+index 619bb17a..180ddadf 100644
+--- a/codex-rs/hepta-neuron/src/witness.rs
++++ b/codex-rs/hepta-neuron/src/witness.rs
+@@ -163,7 +163,8 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
+                 let cursor = file.stream_position()?;
+                 let actual = (|| {
+                     let expected_length = (HEADER + self.records * RECORD) as u64;
+-                    if self.records > self.max_records || file.metadata()?.len() != expected_length {
++                    if self.records > self.max_records || file.metadata()?.len() != expected_length
++                    {
+                         return Err(WitnessStoreError::Corrupt);
+                     }
+                     file.seek(SeekFrom::Start(0))?;

@@ -298,6 +298,136 @@
       "source_status_after": "",
       "exact_request_blob": "61ff789272227097207ba82c7407176b6792e147",
       "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/terminal-observation.json"
+    },
+    {
+      "sha": "b514c3cacb73de1bb0adb46b202225e16d3b11c9",
+      "tree": "3e45a3eaac3c6a7f64a6e44467e5d04b3f7d5c0c",
+      "actual_formatted_sha": "2e2255358366772b05124dc54e751336b4c5634b",
+      "actual_formatted_tree": "48cb5423a0a8a744dd22ff77c48ffcd6410de676",
+      "actual_formatted_commit_push": false,
+      "job_id": "1a1cd1615b1-2564-117e",
+      "request_digest": "de3bb89593f84226b7e2b0ab1c3b9591d248b3f186d6c47aa39f9f7742d35507",
+      "outer_terminal": true,
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "format": {
+        "exit_code": 0,
+        "seconds": 7.133369,
+        "retained_patch": true,
+        "changed_files": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "codex-rs/hepta-neuron/src/witness.rs"
+        ]
+      },
+      "source_checks": {
+        "tests": 234,
+        "errors": 148,
+        "exit_code": 1,
+        "seconds": 91.556476,
+        "error_messages": {
+          "codex-rs/hepta-neuron/src/witness.rs: unique top-level code marker required: if self.poisoned.load(Ordering::Acquire)": 113,
+          "required must be a list of non-empty strings": 35
+        }
+      },
+      "parser_tests_executed": 0,
+      "caller_self_test_executed": false,
+      "full_caller_proof_executed": false,
+      "native_tests_executed": 0,
+      "source_after": "2e2255358366772b05124dc54e751336b4c5634b",
+      "source_status_after": "",
+      "exact_request_blob": "f5793719e7320570516af8947fb08fde19fb7b08",
+      "correction_source": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+      "correction": "Add actual mandatory holdout required markers and unique complete witness top-level anchors; preserve both ordered poison reads and add conditional-nesting negative control. No new pass inherited.",
+      "original_preparation_steps": [
+        {
+          "name": "fetch-fixed",
+          "exit_code": 0,
+          "seconds": 2.0572061978746206,
+          "log_bytes": 144,
+          "log_sha256": "1c2b15b8de46eb59b00c8abac5cd2a103eec1be9b84e8826282c240bf63d95c1"
+        },
+        {
+          "name": "create-worktree",
+          "exit_code": 0,
+          "seconds": 1.7186115491203964,
+          "log_bytes": 1856,
+          "log_sha256": "5f18fafc292283c397d5cec951b088f1c5608e23c6d7133eb7c366b430140dda"
+        },
+        {
+          "name": "format",
+          "exit_code": 0,
+          "seconds": 7.133369151037186,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "diffcheck-working",
+          "exit_code": 0,
+          "seconds": 0.04654150106944144,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "stage-format",
+          "exit_code": 0,
+          "seconds": 0.0515110760461539,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "commit-format",
+          "exit_code": 0,
+          "seconds": 0.04307095892727375,
+          "log_bytes": 173,
+          "log_sha256": "6b229413378b28c3a9c590ce8f6ff9b05d43356f6d8d44b70b1f52cc3dbba53a"
+        },
+        {
+          "name": "diffcheck-full-committed",
+          "exit_code": 0,
+          "seconds": 0.03846840490587056,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "source-closure",
+          "exit_code": 1,
+          "seconds": 91.5564763310831,
+          "log_bytes": 317796,
+          "log_sha256": "5c4d41b7eb945cd9f3fb5eedb099694c72d2861b1bf1afac7b0863d6a492fc9d"
+        }
+      ]
+    },
+    {
+      "sha": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+      "tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+      "baseline_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+      "purpose": "same seven diagnostic cases with only pinned crypto dev-profile optimization",
+      "outer_terminal": false,
+      "outer_terminal_observed": false,
+      "job_id": null,
+      "control_plane_note": "Original mutation admission/reconciliation timed out; original application preparation and wrapper files establish the child precheck failure but are not controller terminal evidence.",
+      "preparation_state": "diagnostic-completed",
+      "wrapper_exit_code": 1,
+      "native_tests_executed": 0,
+      "helper_build_executed": false,
+      "failure": {
+        "stage": "original pinned dependency precheck before native output setup",
+        "type": "FileNotFoundError",
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+      },
+      "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+      "source_status_after": "",
+      "protocol_deadlines_unchanged": true,
+      "rust_code_unchanged": true,
+      "lockfile_unchanged": true,
+      "performance_gain_established": false,
+      "exact_request_blob": "dd22c4fb9d63c05413d83ecf4cb1f0aa468737f4",
+      "exact_request_sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf"
     }
   ],
   "full_chain_acceptance": {
@@ -515,6 +645,48 @@
       "bytes": 57487,
       "sha256": "bfbf6ca4cd64c99670ced447e76065c377fa7825c10e3005290027782b4afd0e",
       "original_version": "2050:2819932:57487:1794441068366058739:1794441068366058739"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/result.json",
+      "bytes": 2970,
+      "sha256": "d32da0c62397c2c0bbc8c25011d8e85de94b0e77f5c6649f0aaf755054897c00",
+      "original_version": "2050:12126140:2970:1794442247441834431:1794442247441834431"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/source-closure.log",
+      "bytes": 317796,
+      "sha256": "5c4d41b7eb945cd9f3fb5eedb099694c72d2861b1bf1afac7b0863d6a492fc9d",
+      "original_version": "2050:12126138:317796:1794442247047474803:1794442247047474803"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/format.patch",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/format.patch",
+      "bytes": 2597,
+      "sha256": "a8c39ec8b16fd3dd876a206ab59e29c6c5590aa42609cb1f72ed1b6f9e35b005",
+      "original_version": "2050:12126135:2597:1794442155410888310:1794442155410888310"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/commit-format.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/commit-format.log",
+      "bytes": 173,
+      "sha256": "6b229413378b28c3a9c590ce8f6ff9b05d43356f6d8d44b70b1f52cc3dbba53a",
+      "original_version": "2050:12126136:173:1794442155504248399:1794442155504248399"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-pre-native-dependency-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v10-crypto-diagnostic-v1/result.json",
+      "bytes": 2313,
+      "sha256": "55927b3e77e2d9880c0482d5ec7e2bb0d91407c00f7b219fe6e68cf8e15f5322",
+      "original_version": "2050:11862559:2313:1794441921645258238:1794441921645258238"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-pre-native-dependency-failure/preparation/native-wrapper.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v10-crypto-diagnostic-v1/native-wrapper.log",
+      "bytes": 1026,
+      "sha256": "580100770aa7bf263f9668e92a7537726adcfda1fb987fc8020296c700387afd",
+      "original_version": "2050:11862598:1026:1794441921564323520:1794441921564323520"
     }
   ],
   "normalized_observations": [
@@ -557,6 +729,16 @@
       "job_id": "1a1ccfa36ce-2564-112c",
       "representation": "normalized_terminal_process_status_observation",
       "normalization": "Parsed h_process_status JSON serialized with two-space indentation. This is not a raw host file or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/terminal-observation.json",
+      "bytes": 894,
+      "sha256": "cc7ed49405bf578af2cca78502c387caa6d91893ffdceee82f6259894c6614fc",
+      "source_tool": "h_process_start identical-key reconciliation",
+      "host": "desktop",
+      "job_id": "1a1cd1615b1-2564-117e",
+      "representation": "normalized_terminal_process_status_observation",
+      "normalization": "Parsed original durable status from reused same-key process_start response, then serialized with two-space indentation. Exact request identity is retained separately; this is not a raw host file or original MCP envelope."
     }
   ]
 }
