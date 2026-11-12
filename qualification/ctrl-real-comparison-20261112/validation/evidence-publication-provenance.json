@@ -1,0 +1,108 @@
+{
+  "schema": "ctrl.evidence-publication-provenance.v1",
+  "experiment_source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "local_artifact_commit": "482f1cfa07d97170ad1b86843d5e703b5ed46418",
+  "local_artifact_parent": "3517d1f11294d2a89750f0dcd542181743fdd7c5",
+  "artifact_tree": "0e2d94f4e054e48ecb31145b8dc73fa6f9a32212",
+  "archive_original_file_count": 108,
+  "local_archive_result": {
+    "changed_path_count": 105,
+    "exit": {
+      "at_unix_ms": 1794474328146,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1cf0136d8-2564-195f",
+      "launch_nonce": "e1411604aa7bd419c34c263212b59f20",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 22246,
+          "stored": 22246
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "forced_log_count": 14,
+    "job_id": "1a1cf0136d8-2564-195f",
+    "result": {
+      "artifact_manifest": {
+        "git_blob_sha": "4e49a38a0be02553ba1ad7930782afb4dbbd0a8b",
+        "path": "qualification/ctrl-real-comparison-20261112/runtime/run-v2/ARTIFACT_MANIFEST.json",
+        "sha256": "fecae90855cd3a14e5670c4b4754715b61d4b77c4a9a3d36f10b1358643f0eb0"
+      },
+      "commit": "482f1cfa07d97170ad1b86843d5e703b5ed46418",
+      "committed_original_bytes_verified": true,
+      "git_index_original_bytes_verified": true,
+      "original_file_count": 108,
+      "parent": "3517d1f11294d2a89750f0dcd542181743fdd7c5",
+      "push_argv_after_review": [
+        "git",
+        "-C",
+        "/home/qq/ctrl-real-evidence-20261112-1333-v2",
+        "push",
+        "--force-with-lease=refs/heads/codex/ctrl-real-policy-20261112-1333:3517d1f11294d2a89750f0dcd542181743fdd7c5",
+        "origin",
+        "482f1cfa07d97170ad1b86843d5e703b5ed46418:refs/heads/codex/ctrl-real-policy-20261112-1333"
+      ],
+      "push_performed": false,
+      "source_git_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+      "status": "LOCAL_COMMIT_READY_FOR_REVIEW",
+      "tree": "0e2d94f4e054e48ecb31145b8dc73fa6f9a32212",
+      "worktree": "/home/qq/ctrl-real-evidence-20261112-1333-v2"
+    },
+    "stderr_bytes": 0,
+    "stdout_bytes": 22246,
+    "stdout_sha256": "40ca73ade8d6df86cf1c9752924b927e9092274187d97d8041452eddad474127"
+  },
+  "local_archive_readback": {
+    "session_id": "dpty-3f43b7cf9a28119e2b1c7851719adc958e86c2625437890cf49f593b645f175d",
+    "archive_path": "/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-3f43b7cf9a28119e2b1c7851719adc958e86c2625437890cf49f593b645f175d/output.log",
+    "chunk_sha256": "193f91faac55099847f5ef619edc888af76fe28478766d5492de2acfc90a0846",
+    "exit_code": 0,
+    "output_complete": true
+  },
+  "direct_git_push": {
+    "session_id": "dpty-915022d1987e8805ec1912a35da077708be9e1df8dad57322ee9b16df71f6775",
+    "status": "CANCELLED_AT_USERNAME_PROMPT",
+    "exit_code": -2,
+    "branch_changed": false,
+    "credentials_entered": false
+  },
+  "publication_method": "Connected GitHub blob/tree/commit/ref tools; require reconstructed artifact tree to match local tree before publication",
+  "original_files_modified": false,
+  "actor_execution_repeated": false,
+  "github_artifact_commit": "b3ca732b8312577640497d15ad2592764144a93a",
+  "github_artifact_tree": "0e2d94f4e054e48ecb31145b8dc73fa6f9a32212",
+  "local_and_github_artifact_tree_identical": true,
+  "transfer_verification": {
+    "pages": 22,
+    "archive_bytes": 1393382,
+    "archive_sha256": "15ae7afbf0cc9489a32b02526f22e24fb72f8a6d25d152a77dcb49c10a7dd22f",
+    "xz_bytes": 1044736,
+    "xz_sha256": "fdec4b0b58cccb03148f75aba8bc2a1338c1f2b11e6452595862539f39111a59",
+    "payload_bytes": 13661075,
+    "payload_sha256": "36adf389d81232932980d75852de0792827569abb09ed5a869f928904d02c590",
+    "verified_files": 105,
+    "all_size_sha256_git_blob_sha1_match": true,
+    "file_original_bytes": 12706304,
+    "metadata_report_sha256": "05eba43c6cadf2beefce1b9c0ac9a696f3b37af8ffcc70efe1c281aa267d6946"
+  }
+}

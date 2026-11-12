@@ -1,0 +1,876 @@
+{
+  "content_receipt_checks": {
+    "adapted_critic_matches_actual_content": true,
+    "base_weights_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+    "cold_load_parameter_matches": true,
+    "cold_load_parameter_sha256": "73718ca15e86d0c65d1850e56c50f269e30b44a4f16f9edfaf5c72d5558c7dad",
+    "content_changed": true,
+    "final_content_sha256": "326661e7ec38555f097c9030c8f4f5d6b10756152fd4b199c6c6ffd3d0c67b1e",
+    "fit_sources": [
+      "merchant-311891ad56272ccc25cbb13d",
+      "merchant-50f46908878b39ed0bd3853f",
+      "merchant-53d609f32d26c4af265269fe",
+      "merchant-58be5300ebeed60df7b53412",
+      "merchant-5c0e813f616a4362d46f91a9",
+      "merchant-5d4b99c3062c5faa80efd221",
+      "merchant-68a3ce1760cdbfc23690d940",
+      "merchant-7027cec87ad982afb10a81b6",
+      "merchant-77373c612cf6f484499c237d",
+      "merchant-81a74a14a3243f4a7caceaf0",
+      "merchant-8b02fd486d08f02ccd063336",
+      "merchant-8e162dc70b702e24dacc7db4",
+      "merchant-97640bd2b749bf214e2685b3",
+      "merchant-a00334471fe4253ed529ff1e",
+      "merchant-aad9008f95d8de8b69949ee5",
+      "merchant-bd1804bb290a96349b65a9ab",
+      "merchant-be4b468c89b8dbbe18c10a39",
+      "merchant-bf774f31334b830df22ec52d",
+      "merchant-d23242452060c104ee056a58",
+      "merchant-e7e178522dc7bb97834dd1ea",
+      "merchant-e92afbe9a45feef1da5bd489",
+      "merchant-ea9b41f5d08e33143d643448",
+      "merchant-eab91830c3a77d7309c019dd",
+      "merchant-f76aded3d78a0e21cf2d3f40"
+    ],
+    "freeze_sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497",
+    "frozen_critic_matches_base_content": true,
+    "initial_content_sha256": "fa1565c8f53e32f3f99316a4af01376e29e54d387777fc8887f92dcc78a92200",
+    "optimizer_steps": 60,
+    "parameter_sha256": "73718ca15e86d0c65d1850e56c50f269e30b44a4f16f9edfaf5c72d5558c7dad",
+    "status": "COMPLETED",
+    "training_keys": [
+      "batch_schedule_sha256",
+      "control_gradient_into_content",
+      "environment_unbiased_policy_gradient",
+      "epochs",
+      "estimator",
+      "loss_weighting",
+      "memory_mode",
+      "observation_partition_sha256",
+      "observation_policy",
+      "optimizer_steps",
+      "recursive_objective_applied",
+      "rows_per_epoch",
+      "sequence_count",
+      "utility_profile"
+    ],
+    "training_scalar_summary": {
+      "control_gradient_into_content": null,
+      "environment_unbiased_policy_gradient": false,
+      "estimator": "observed_auxiliary_losses",
+      "loss_weighting": "equal row weights within each optimizer batch",
+      "memory_mode": "reset",
+      "observation_partition_sha256": "ae80ddfd2365f54d10037a4d77d01e8633739f90f1f008e0bfaebf41cc62ad00",
+      "observation_policy": "legacy",
+      "optimizer_steps": 60,
+      "recursive_objective_applied": false,
+      "rows_per_epoch": 142,
+      "sequence_count": 142
+    },
+    "weights_changed": true,
+    "weights_sha256": "081c5ccf65df6efa30bf06ed9044ebd34d5b63576889c441fc668ccb560530a9"
+  },
+  "content_weights": {
+    "bytes": 72247,
+    "matches_receipt": true,
+    "nlink": 1,
+    "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/content/weights.pt",
+    "receipt_sha256": "081c5ccf65df6efa30bf06ed9044ebd34d5b63576889c441fc668ccb560530a9",
+    "sha256": "081c5ccf65df6efa30bf06ed9044ebd34d5b63576889c441fc668ccb560530a9"
+  },
+  "diagnostic_job_id": "1a1cee2c8aa-2564-18da",
+  "original_analysis_summaries": {
+    "adapted": {
+      "analysis_status": "COMPLETE",
+      "decision": "NoUpdate",
+      "exported_pairs": 126,
+      "matched_pairs": 126,
+      "metrics": {
+        "delivered_content_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7380952380952381,
+          "source_equal_mean": 0.7380952380952381,
+          "unknown_pairs": 0
+        },
+        "new_recognized_text": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7063492063492063,
+          "source_equal_mean": 0.7063492063492063,
+          "unknown_pairs": 0
+        },
+        "new_reference_matching_candidate": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.14285714285714285,
+          "source_equal_mean": 0.14285714285714285,
+          "unknown_pairs": 0
+        },
+        "read_minus_stop_observed_latency_cost": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.0137891246327236,
+          "source_equal_mean": 0.0137891246327236,
+          "unknown_pairs": 0
+        },
+        "read_minus_stop_observed_latency_net": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": -0.03363039447399344,
+          "source_equal_mean": -0.03363039447399344,
+          "unknown_pairs": 0
+        },
+        "read_minus_stop_quality": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": -0.01984126984126984,
+          "source_equal_mean": -0.01984126984126984,
+          "unknown_pairs": 0
+        },
+        "selected_text_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7380952380952381,
+          "source_equal_mean": 0.7380952380952381,
+          "unknown_pairs": 0
+        },
+        "terminal_quality_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.31746031746031744,
+          "source_equal_mean": 0.31746031746031744,
+          "unknown_pairs": 0
+        },
+        "within_read_selected_text_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7380952380952381,
+          "source_equal_mean": 0.7380952380952381,
+          "unknown_pairs": 0
+        }
+      },
+      "planned_by_split": {
+        "calibration": 54,
+        "train": 72
+      },
+      "planned_pairs": 126,
+      "planned_sources": 42,
+      "scope": "matched collection of forced macros on registered research sources; not prospective six-policy efficacy",
+      "unknown_pairs": 0
+    },
+    "frozen": {
+      "analysis_status": "COMPLETE",
+      "decision": "NoUpdate",
+      "exported_pairs": 126,
+      "matched_pairs": 126,
+      "metrics": {
+        "delivered_content_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7301587301587301,
+          "source_equal_mean": 0.7301587301587301,
+          "unknown_pairs": 0
+        },
+        "new_recognized_text": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7936507936507937,
+          "source_equal_mean": 0.7936507936507937,
+          "unknown_pairs": 0
+        },
+        "new_reference_matching_candidate": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.14285714285714285,
+          "source_equal_mean": 0.14285714285714285,
+          "unknown_pairs": 0
+        },
+        "read_minus_stop_observed_latency_cost": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.014582637255948539,
+          "source_equal_mean": 0.014582637255948539,
+          "unknown_pairs": 0
+        },
+        "read_minus_stop_observed_latency_net": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": -0.05823343090674219,
+          "source_equal_mean": -0.05823343090674219,
+          "unknown_pairs": 0
+        },
+        "read_minus_stop_quality": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": -0.04365079365079365,
+          "source_equal_mean": -0.04365079365079365,
+          "unknown_pairs": 0
+        },
+        "selected_text_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7301587301587301,
+          "source_equal_mean": 0.7301587301587301,
+          "unknown_pairs": 0
+        },
+        "terminal_quality_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.2777777777777778,
+          "source_equal_mean": 0.2777777777777778,
+          "unknown_pairs": 0
+        },
+        "within_read_selected_text_changed": {
+          "known_pairs": 126,
+          "observed_sources": 42,
+          "observed_subset_source_equal_mean": 0.7301587301587301,
+          "source_equal_mean": 0.7301587301587301,
+          "unknown_pairs": 0
+        }
+      },
+      "planned_by_split": {
+        "calibration": 54,
+        "train": 72
+      },
+      "planned_pairs": 126,
+      "planned_sources": 42,
+      "scope": "matched collection of forced macros on registered research sources; not prospective six-policy efficacy",
+      "unknown_pairs": 0
+    }
+  },
+  "receipt_file": {
+    "bytes": 295081,
+    "nlink": 1,
+    "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/content/receipt.json",
+    "raw_text_omitted": true,
+    "sha256": "9349296f8b051963e2363cb212b44cecb4ce354844dc3853fa839a9278617e85",
+    "top_level_keys": [
+      "base_weights_sha256",
+      "cold_load_parameter_sha256",
+      "config",
+      "dataset_sha256",
+      "deployment_profile_sha256",
+      "driver_sha256",
+      "elapsed_seconds",
+      "final_content_sha256",
+      "fit_sources",
+      "freeze_sha256",
+      "full_cost_observed",
+      "initial_content_sha256",
+      "meter",
+      "parameter_sha256",
+      "prior_checkpoint_exposure_cleared",
+      "production_admission",
+      "schema",
+      "seed",
+      "status",
+      "time_ns",
+      "training",
+      "weights_sha256"
+    ]
+  },
+  "receipt_stat": {
+    "bytes": 295081,
+    "nlink": 1,
+    "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/content/receipt.json",
+    "record": "receipt_stat",
+    "regular_file": true,
+    "single_link": true
+  },
+  "schema": "ctrl.fit-content-audit-summary.v1",
+  "source_inventory": {
+    "bytes": 215090,
+    "nlink": 1,
+    "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/preparation/SOURCE_INVENTORY.json",
+    "sha256": "ddeb39dc34f109e7c1591af85843118d773ff4fabd7445639fe33757d2f7632a"
+  },
+  "studies": {
+    "adapted": {
+      "checkpoint": {
+        "bytes": 11474,
+        "calibration": {
+          "alpha": 0.1,
+          "complete": false,
+          "conditional": {
+            "[false,false,1]": {
+              "lower_residual": -0.3817183301502167,
+              "rank": 1,
+              "source_groups": 9
+            },
+            "[false,false,3]": {
+              "lower_residual": -0.9385173724599766,
+              "rank": 1,
+              "source_groups": 9
+            }
+          },
+          "unconditional": {
+            "lower_residual": -0.9385173724599766,
+            "rank": 1,
+            "source_groups": 18
+          }
+        },
+        "calibration_source_count": 18,
+        "computed_current_fitter_sha256": "a9e92db72f5340ab335dfb23e37d26c8226380fcaf90b86901a39145e9d3a26a",
+        "context": {
+          "action_sha256": "5a56136caad965d07690732c3d2b799783d1c328381a3744ca9d4d9e6f2b0dc6",
+          "answer_sha256": "081c5ccf65df6efa30bf06ed9044ebd34d5b63576889c441fc668ccb560530a9",
+          "encoder_sha256": "081c5ccf65df6efa30bf06ed9044ebd34d5b63576889c441fc668ccb560530a9",
+          "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+          "generator_sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1",
+          "public_state_sha256": "7539f0b5c04314f7e1c85855ea3f1c251bfd401be0846acc5225201c69fd0bf7",
+          "schema": "ndu.ctrl.critic-context.v1",
+          "settlement_sha256": "65858a9e5d9c5c0afeac539111ae22205bb368ea32067fac112ea1683ca0175e",
+          "tariff_sha256": "949b87daf6439c7bf3a740c18cbf28da0e358cde1ccae54282327710e631d835",
+          "utility_sha256": "75a253874e8a4f9ae86da3e4fb87463a4d862c97aa2a0c2228999f534e182f0d"
+        },
+        "context_sha256": "3d17b06cfd5df77ed383e7045048a4cd068102d662aadce1e7bb969be61d973b",
+        "counts": {
+          "calibration": 54,
+          "calibration_known_value": 54,
+          "fit": 72,
+          "fit_known_value": 72
+        },
+        "fit_source_count": 24,
+        "full_cost_observed": false,
+        "input_sha256": {
+          "calibration": "784a4fb81456e5fc4573e52a78bb43551b2ce7875740719cd3a42851eabc2a56",
+          "fit": "3b4cc49c6c1a49dca68ea93e163821c26af93245359aeabdcab9483f270a305f"
+        },
+        "nlink": 1,
+        "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/adapted/CHECKPOINT.json",
+        "sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858",
+        "shape": [
+          40,
+          4
+        ],
+        "source_matches_current_fitter": true,
+        "source_sha256": "a9e92db72f5340ab335dfb23e37d26c8226380fcaf90b86901a39145e9d3a26a"
+      },
+      "checkpoint_pin": {
+        "bytes": 83,
+        "nlink": 1,
+        "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/adapted/CHECKPOINT_PIN.json",
+        "raw_sha_matches": true,
+        "sha256": "1f54dae147b1d063cbbff5477d506483958db2d2ea8d7ff6d5705c6994631ced",
+        "value": {
+          "sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858"
+        }
+      },
+      "cold_load": {
+        "checkpoint_sha256": "11e9e251d06ab46f12b0b16a8622a7a2c8d059943bdce763e1aa901df9471858",
+        "context_sha256": "3d17b06cfd5df77ed383e7045048a4cd068102d662aadce1e7bb969be61d973b",
+        "fresh_process": true,
+        "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python"
+      },
+      "cold_load_checks": {
+        "checkpoint_matches": true,
+        "context_matches": true,
+        "fresh_process": true
+      },
+      "export": {
+        "bytes": 2350217,
+        "canonical_sha256": "920794db51b7473f16f2adf537792280183ece71cc92a278ae5407cf067147d5",
+        "exported_pairs": 126,
+        "nlink": 1,
+        "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/adapted/EXPORT.json",
+        "planned_count_matches": true,
+        "planned_pairs": 126,
+        "planned_status_counts": {
+          "EXPORTED": 126
+        },
+        "row_count_matches": true,
+        "sha256": "290d93428109f08906b6db69567c02c50f8c2760738124f8c71e77fe3e4f1ec6",
+        "unknown_pairs": 0
+      },
+      "fit_stage": {
+        "calibration": {
+          "alpha": 0.1,
+          "complete": false,
+          "conditional": {
+            "[false,false,1]": {
+              "lower_residual": -0.3817183301502167,
+              "rank": 1,
+              "source_groups": 9
+            },
+            "[false,false,3]": {
+              "lower_residual": -0.9385173724599766,
+              "rank": 1,
+              "source_groups": 9
+            }
+          },
+          "unconditional": {
+            "lower_residual": -0.9385173724599766,
+            "rank": 1,
+            "source_groups": 18
+          }
+        },
+        "calibration_rows": 54,
+        "elapsed_seconds": 0.018927736906334758,
+        "fit_rows": 72,
+        "full_cost_observed": false
+      },
+      "independent_collection_summary": {
+        "all": {
+          "decision_weighted_means": {
+            "READ_latency_cost": 0.028130158106611656,
+            "READ_net": 0.2496476196711661,
+            "READ_quality": 0.2777777777777778,
+            "STOP_latency_cost": 0.014341033473888057,
+            "STOP_net": 0.2832780141451596,
+            "STOP_quality": 0.2976190476190476,
+            "latency_cost_delta": 0.0137891246327236,
+            "net_delta": -0.03363039447399344,
+            "quality_delta": -0.01984126984126984
+          },
+          "invalid_numeric_rows": 0,
+          "label_counts": {
+            "acquired": {
+              "false": 0,
+              "true": 126,
+              "unknown": 0
+            },
+            "effect_occurred": {
+              "false": 0,
+              "true": 0,
+              "unknown": 126
+            },
+            "selected_used": {
+              "false": 0,
+              "true": 126,
+              "unknown": 0
+            }
+          },
+          "net_sign_counts": {
+            "READ_net_greater": 17,
+            "READ_net_less": 109,
+            "equal": 0
+          },
+          "rows": 126,
+          "scope": "Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.",
+          "source_equal_means": {
+            "READ_latency_cost": 0.02813015810661166,
+            "READ_net": 0.2496476196711661,
+            "READ_quality": 0.2777777777777778,
+            "STOP_latency_cost": 0.014341033473888057,
+            "STOP_net": 0.2832780141451596,
+            "STOP_quality": 0.2976190476190476,
+            "latency_cost_delta": 0.0137891246327236,
+            "net_delta": -0.03363039447399344,
+            "quality_delta": -0.01984126984126984
+          },
+          "source_groups": 42
+        },
+        "calibration": {
+          "decision_weighted_means": {
+            "READ_latency_cost": 0.029286822328706167,
+            "READ_net": 0.2114539184120346,
+            "READ_quality": 0.24074074074074073,
+            "STOP_latency_cost": 0.013885184348371157,
+            "STOP_net": 0.23611481565162884,
+            "STOP_quality": 0.25,
+            "latency_cost_delta": 0.015401637980335012,
+            "net_delta": -0.024660897239594273,
+            "quality_delta": -0.009259259259259259
+          },
+          "invalid_numeric_rows": 0,
+          "label_counts": {
+            "acquired": {
+              "false": 0,
+              "true": 54,
+              "unknown": 0
+            },
+            "effect_occurred": {
+              "false": 0,
+              "true": 0,
+              "unknown": 54
+            },
+            "selected_used": {
+              "false": 0,
+              "true": 54,
+              "unknown": 0
+            }
+          },
+          "net_sign_counts": {
+            "READ_net_greater": 6,
+            "READ_net_less": 48,
+            "equal": 0
+          },
+          "rows": 54,
+          "scope": "Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.",
+          "source_equal_means": {
+            "READ_latency_cost": 0.02928682232870617,
+            "READ_net": 0.2114539184120346,
+            "READ_quality": 0.24074074074074073,
+            "STOP_latency_cost": 0.013885184348371155,
+            "STOP_net": 0.23611481565162887,
+            "STOP_quality": 0.25,
+            "latency_cost_delta": 0.015401637980335012,
+            "net_delta": -0.02466089723959427,
+            "quality_delta": -0.009259259259259259
+          },
+          "source_groups": 18
+        },
+        "train": {
+          "decision_weighted_means": {
+            "READ_latency_cost": 0.027262659940040776,
+            "READ_net": 0.2782928956155148,
+            "READ_quality": 0.3055555555555556,
+            "STOP_latency_cost": 0.014682920318025733,
+            "STOP_net": 0.3186504130153076,
+            "STOP_quality": 0.3333333333333333,
+            "latency_cost_delta": 0.01257973962201504,
+            "net_delta": -0.04035751739979282,
+            "quality_delta": -0.027777777777777776
+          },
+          "invalid_numeric_rows": 0,
+          "label_counts": {
+            "acquired": {
+              "false": 0,
+              "true": 72,
+              "unknown": 0
+            },
+            "effect_occurred": {
+              "false": 0,
+              "true": 0,
+              "unknown": 72
+            },
+            "selected_used": {
+              "false": 0,
+              "true": 72,
+              "unknown": 0
+            }
+          },
+          "net_sign_counts": {
+            "READ_net_greater": 11,
+            "READ_net_less": 61,
+            "equal": 0
+          },
+          "rows": 72,
+          "scope": "Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.",
+          "source_equal_means": {
+            "READ_latency_cost": 0.027262659940040776,
+            "READ_net": 0.2782928956155148,
+            "READ_quality": 0.3055555555555555,
+            "STOP_latency_cost": 0.014682920318025733,
+            "STOP_net": 0.3186504130153076,
+            "STOP_quality": 0.3333333333333333,
+            "latency_cost_delta": 0.012579739622015041,
+            "net_delta": -0.04035751739979281,
+            "quality_delta": -0.027777777777777776
+          },
+          "source_groups": 24
+        }
+      }
+    },
+    "frozen": {
+      "checkpoint": {
+        "bytes": 11489,
+        "calibration": {
+          "alpha": 0.1,
+          "complete": false,
+          "conditional": {
+            "[false,false,1]": {
+              "lower_residual": -0.7599257586622521,
+              "rank": 1,
+              "source_groups": 9
+            },
+            "[false,false,3]": {
+              "lower_residual": -0.8638958210014904,
+              "rank": 1,
+              "source_groups": 9
+            }
+          },
+          "unconditional": {
+            "lower_residual": -0.8638958210014904,
+            "rank": 1,
+            "source_groups": 18
+          }
+        },
+        "calibration_source_count": 18,
+        "computed_current_fitter_sha256": "a9e92db72f5340ab335dfb23e37d26c8226380fcaf90b86901a39145e9d3a26a",
+        "context": {
+          "action_sha256": "5a56136caad965d07690732c3d2b799783d1c328381a3744ca9d4d9e6f2b0dc6",
+          "answer_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+          "encoder_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+          "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+          "generator_sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1",
+          "public_state_sha256": "7539f0b5c04314f7e1c85855ea3f1c251bfd401be0846acc5225201c69fd0bf7",
+          "schema": "ndu.ctrl.critic-context.v1",
+          "settlement_sha256": "65858a9e5d9c5c0afeac539111ae22205bb368ea32067fac112ea1683ca0175e",
+          "tariff_sha256": "949b87daf6439c7bf3a740c18cbf28da0e358cde1ccae54282327710e631d835",
+          "utility_sha256": "75a253874e8a4f9ae86da3e4fb87463a4d862c97aa2a0c2228999f534e182f0d"
+        },
+        "context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+        "counts": {
+          "calibration": 54,
+          "calibration_known_value": 54,
+          "fit": 72,
+          "fit_known_value": 72
+        },
+        "fit_source_count": 24,
+        "full_cost_observed": false,
+        "input_sha256": {
+          "calibration": "d36fbe48a8be3129f564af9eeb497e61e0a7908e3a688988c16ebf0fcb3e0661",
+          "fit": "e127b5b3e79e230306ae47f4ba8d85a8d6ad4f2efcc8e6042c13d3fab9502700"
+        },
+        "nlink": 1,
+        "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen/CHECKPOINT.json",
+        "sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096",
+        "shape": [
+          40,
+          4
+        ],
+        "source_matches_current_fitter": true,
+        "source_sha256": "a9e92db72f5340ab335dfb23e37d26c8226380fcaf90b86901a39145e9d3a26a"
+      },
+      "checkpoint_pin": {
+        "bytes": 83,
+        "nlink": 1,
+        "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen/CHECKPOINT_PIN.json",
+        "raw_sha_matches": true,
+        "sha256": "36a2a8280bbe6045bc4583a888ca0ef73b43ece9b29ed6a17229d2a4dc244fb1",
+        "value": {
+          "sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096"
+        }
+      },
+      "cold_load": {
+        "checkpoint_sha256": "c4ee4a0219117edeec6381b0bb01b896f9a182862298eba22d3c69a828c17096",
+        "context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+        "fresh_process": true,
+        "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python"
+      },
+      "cold_load_checks": {
+        "checkpoint_matches": true,
+        "context_matches": true,
+        "fresh_process": true
+      },
+      "export": {
+        "bytes": 2358610,
+        "canonical_sha256": "45edca420f1e32d3d2183cc3485f961b62d01576136f0a0a2a4a294b0cd44f16",
+        "exported_pairs": 126,
+        "nlink": 1,
+        "path": "/home/qq/ctrl-real-study-20261112-1333/run-v2/frozen/EXPORT.json",
+        "planned_count_matches": true,
+        "planned_pairs": 126,
+        "planned_status_counts": {
+          "EXPORTED": 126
+        },
+        "row_count_matches": true,
+        "sha256": "1fd00505b3d59e5a6755603d93d0ebd7634b311a71588ee7b1809ae1fc608910",
+        "unknown_pairs": 0
+      },
+      "fit_stage": {
+        "calibration": {
+          "alpha": 0.1,
+          "complete": false,
+          "conditional": {
+            "[false,false,1]": {
+              "lower_residual": -0.7599257586622521,
+              "rank": 1,
+              "source_groups": 9
+            },
+            "[false,false,3]": {
+              "lower_residual": -0.8638958210014904,
+              "rank": 1,
+              "source_groups": 9
+            }
+          },
+          "unconditional": {
+            "lower_residual": -0.8638958210014904,
+            "rank": 1,
+            "source_groups": 18
+          }
+        },
+        "calibration_rows": 54,
+        "elapsed_seconds": 0.014729297952726483,
+        "fit_rows": 72,
+        "full_cost_observed": false
+      },
+      "independent_collection_summary": {
+        "all": {
+          "decision_weighted_means": {
+            "READ_latency_cost": 0.028033039278095768,
+            "READ_net": 0.2021256908806344,
+            "READ_quality": 0.23015873015873015,
+            "STOP_latency_cost": 0.013450402022147225,
+            "STOP_net": 0.2603591217873766,
+            "STOP_quality": 0.27380952380952384,
+            "latency_cost_delta": 0.014582637255948539,
+            "net_delta": -0.05823343090674219,
+            "quality_delta": -0.04365079365079365
+          },
+          "invalid_numeric_rows": 0,
+          "label_counts": {
+            "acquired": {
+              "false": 0,
+              "true": 126,
+              "unknown": 0
+            },
+            "effect_occurred": {
+              "false": 0,
+              "true": 0,
+              "unknown": 126
+            },
+            "selected_used": {
+              "false": 0,
+              "true": 126,
+              "unknown": 0
+            }
+          },
+          "net_sign_counts": {
+            "READ_net_greater": 13,
+            "READ_net_less": 113,
+            "equal": 0
+          },
+          "rows": 126,
+          "scope": "Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.",
+          "source_equal_means": {
+            "READ_latency_cost": 0.028033039278095768,
+            "READ_net": 0.2021256908806344,
+            "READ_quality": 0.23015873015873015,
+            "STOP_latency_cost": 0.013450402022147227,
+            "STOP_net": 0.2603591217873766,
+            "STOP_quality": 0.27380952380952384,
+            "latency_cost_delta": 0.014582637255948539,
+            "net_delta": -0.05823343090674219,
+            "quality_delta": -0.04365079365079365
+          },
+          "source_groups": 42
+        },
+        "calibration": {
+          "decision_weighted_means": {
+            "READ_latency_cost": 0.03074110247932064,
+            "READ_net": 0.18222186048364233,
+            "READ_quality": 0.21296296296296297,
+            "STOP_latency_cost": 0.013852372987075123,
+            "STOP_net": 0.2546661455314434,
+            "STOP_quality": 0.26851851851851855,
+            "latency_cost_delta": 0.016888729492245517,
+            "net_delta": -0.07244428504780107,
+            "quality_delta": -0.05555555555555555
+          },
+          "invalid_numeric_rows": 0,
+          "label_counts": {
+            "acquired": {
+              "false": 0,
+              "true": 54,
+              "unknown": 0
+            },
+            "effect_occurred": {
+              "false": 0,
+              "true": 0,
+              "unknown": 54
+            },
+            "selected_used": {
+              "false": 0,
+              "true": 54,
+              "unknown": 0
+            }
+          },
+          "net_sign_counts": {
+            "READ_net_greater": 4,
+            "READ_net_less": 50,
+            "equal": 0
+          },
+          "rows": 54,
+          "scope": "Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.",
+          "source_equal_means": {
+            "READ_latency_cost": 0.03074110247932064,
+            "READ_net": 0.18222186048364233,
+            "READ_quality": 0.21296296296296294,
+            "STOP_latency_cost": 0.013852372987075125,
+            "STOP_net": 0.2546661455314434,
+            "STOP_quality": 0.2685185185185185,
+            "latency_cost_delta": 0.01688872949224552,
+            "net_delta": -0.07244428504780107,
+            "quality_delta": -0.05555555555555555
+          },
+          "source_groups": 18
+        },
+        "train": {
+          "decision_weighted_means": {
+            "READ_latency_cost": 0.02600199187717711,
+            "READ_net": 0.21705356367837847,
+            "READ_quality": 0.24305555555555555,
+            "STOP_latency_cost": 0.013148923798451305,
+            "STOP_net": 0.26462885397932645,
+            "STOP_quality": 0.2777777777777778,
+            "latency_cost_delta": 0.012853068078725806,
+            "net_delta": -0.04757529030094803,
+            "quality_delta": -0.034722222222222224
+          },
+          "invalid_numeric_rows": 0,
+          "label_counts": {
+            "acquired": {
+              "false": 0,
+              "true": 72,
+              "unknown": 0
+            },
+            "effect_occurred": {
+              "false": 0,
+              "true": 0,
+              "unknown": 72
+            },
+            "selected_used": {
+              "false": 0,
+              "true": 72,
+              "unknown": 0
+            }
+          },
+          "net_sign_counts": {
+            "READ_net_greater": 9,
+            "READ_net_less": 63,
+            "equal": 0
+          },
+          "rows": 72,
+          "scope": "Independent stdlib recomputation from retained collection export; no policy-evaluation benefit or full physical-cost claim.",
+          "source_equal_means": {
+            "READ_latency_cost": 0.02600199187717711,
+            "READ_net": 0.21705356367837844,
+            "READ_quality": 0.24305555555555555,
+            "STOP_latency_cost": 0.013148923798451305,
+            "STOP_net": 0.2646288539793265,
+            "STOP_quality": 0.2777777777777778,
+            "latency_cost_delta": 0.012853068078725806,
+            "net_delta": -0.04757529030094803,
+            "quality_delta": -0.03472222222222222
+          },
+          "source_groups": 24
+        }
+      }
+    }
+  },
+  "verified_local_originals": [
+    {
+      "bytes": 116902,
+      "path": "/workspace/scratch/1333bdb2e3ff/validation/run-v2-frozen-COLLECTION_ANALYSIS.json",
+      "sha256": "2fbf351ea2ba329795e2bee12d131d9a5489e6562c6073840c20aa0326406ab5"
+    },
+    {
+      "bytes": 116878,
+      "path": "/workspace/scratch/1333bdb2e3ff/validation/run-v2-adapted-COLLECTION_ANALYSIS.json",
+      "sha256": "96a8eb781bee23c2249c2b10a8694c8837bf00c8954ca24a993fd4c6cb1e3e1d"
+    },
+    {
+      "bytes": 588,
+      "path": "/workspace/scratch/1333bdb2e3ff/validation/run-v2-frozen-FIT_STAGE.json",
+      "sha256": "a05e7a11f227f9ce0d16ddedaea300c16af51d4750598f6ab699838abe08818b"
+    },
+    {
+      "bytes": 288,
+      "path": "/workspace/scratch/1333bdb2e3ff/validation/run-v2-frozen-COLD_LOAD.json",
+      "sha256": "25484514789cde0458068b940d2a35d77869f60085b1e414417ba9624a4011ee"
+    },
+    {
+      "bytes": 588,
+      "path": "/workspace/scratch/1333bdb2e3ff/validation/run-v2-adapted-FIT_STAGE.json",
+      "sha256": "ab252ea4926c0a0d107546541d1f500ccc31ea05dd6a60f120a0ac7d6814ea98"
+    },
+    {
+      "bytes": 288,
+      "path": "/workspace/scratch/1333bdb2e3ff/validation/run-v2-adapted-COLD_LOAD.json",
+      "sha256": "7406e248d920b4314442c78874c40e54e9906f6372ceab63a1143d34844ef10f"
+    }
+  ]
+}
