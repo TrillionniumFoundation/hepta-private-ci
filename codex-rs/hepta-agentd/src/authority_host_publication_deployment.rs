@@ -28,6 +28,8 @@ pub(in crate::authority_host_runtime::session) mod files;
 mod input_data;
 #[path = "authority_host_publication_deployment_inputs.rs"]
 mod inputs;
+#[path = "authority_host_post_a_publication.rs"]
+pub(in crate::authority_host_runtime::session) mod post_a;
 
 use data::DeploymentData;
 use data::LateMaterial;
