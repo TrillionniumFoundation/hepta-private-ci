@@ -124,7 +124,7 @@ impl HostAuthorityService {
         }
         while channel
             .exchange_with_original_deadline(|bytes, end| {
-                PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, || {
+                PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {
                     let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
                     if matches!(&request.command, Command::IssueFinalUse { .. }) {
                         return HostAuthorityService::issue_generation_publication_grant(
@@ -132,6 +132,7 @@ impl HostAuthorityService {
                         ).map(|raw| (raw, None));
                     }
                     let mut successor_observed = None;
+                    let mut fresh_publication = None;
                     let (raw, expected) = self.with_learning_profile(
                     config,
                     registration,
@@ -261,11 +262,36 @@ impl HostAuthorityService {
                             } => {
                                 if *expected != head_digest(&before)?
                                     || *requested != original_digest
-                                    || before.current != intent.previous
-                                    || before.prepared.as_ref() != Some(intent)
                                 {
                                     return Err(io::Error::other(
-                                        "original prepared CURRENT required for fresh publication",
+                                        "original exact CURRENT required for publication",
+                                    ));
+                                }
+                                if before.current == intent.target {
+                                    let accepted = retained_acceptance.ok_or_else(|| io::Error::other(
+                                        "old Published without first acceptance cannot be completed",
+                                    ))?;
+                                    accepted.require_original(&slot.reserved)?;
+                                    let published = before.published.as_ref()
+                                        .ok_or_else(|| io::Error::other("original accepted Published missing"))?;
+                                    if accepted.original_current() != &before
+                                        || published.intent != *intent
+                                        || published.signed != *signed
+                                        || published.witness != *witness
+                                        || slot.verify_retained(signed, witness)? != original_revocations
+                                    {
+                                        return Err(io::Error::other("original accepted publication replay differs"));
+                                    }
+                                    // This branch only observes the original fact. It cannot
+                                    // call the CURRENT writer or refresh its verification time.
+                                    slot.target.observe().map_err(io::Error::other)?;
+                                } else {
+                                if before.current != intent.previous
+                                    || before.prepared.as_ref() != Some(intent)
+                                    || retained_acceptance.is_some()
+                                {
+                                    return Err(io::Error::other(
+                                        "original prepared CURRENT required for first publication",
                                     ));
                                 }
                                 require_fresh_window(
@@ -295,6 +321,7 @@ impl HostAuthorityService {
                                         .into_array(),
                                 });
                                 fresh_grant = Some((signed, witness));
+                                }
                             }
                         }
                         let response = Response {
@@ -325,9 +352,14 @@ impl HostAuthorityService {
                             Command::Publish {
                                 signed, witness, ..
                             } => {
+                                if fresh_grant.is_some() {
                                 slot.current
                                     .original_broker_publish(intent, signed, witness)
                                     .map_err(io::Error::other)?;
+                                // Set only after the original exact CAS succeeded. The
+                                // full Root postchecks still precede acceptance production.
+                                fresh_publication = Some(before.clone());
+                                }
                             }
                         }
                         // There is no cross-owner transaction: any post-effect loss is
@@ -355,7 +387,8 @@ impl HostAuthorityService {
                                 ));
                             }
                         }
-                        if matches!(&request.command, Command::Observe | Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {})
+                        if (matches!(&request.command, Command::Observe | Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {})
+                            || matches!(&request.command, Command::Publish { .. }) && fresh_grant.is_none())
                             && after.current == intent.target
                         {
                             let record = after.published.as_ref().ok_or_else(|| {
@@ -427,12 +460,11 @@ impl HostAuthorityService {
                         end,
                     )?;
                     refusal::require_end(end)?;
-                    let accepted = if matches!(&request.command, Command::Publish { .. })
-                        && version == PublicationVersion::DurableV2
-                    {
-                        Some(acceptance::PublicationAcceptance::observe_original_publish(self, slot, &expected, end)?)
-                    } else {
-                        None
+                    let accepted = match fresh_publication {
+                        Some(prepared) if version == PublicationVersion::DurableV2 => Some(
+                            acceptance::PublicationAcceptance::observe_original_publish(self, slot, &prepared, &expected, end)?
+                        ),
+                        Some(_) | None => None,
                     };
                     crate::authority_host_runtime::verify_pinned_process(registration, config.peer_uid, config.peer_gid, &pin, end)?;
                     refusal::require_end(end)?;

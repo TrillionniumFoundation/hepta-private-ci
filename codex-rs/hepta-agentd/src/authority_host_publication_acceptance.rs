@@ -37,12 +37,26 @@ impl PublicationAcceptance {
         self.original_work_expiry_seconds
     }
 
+    pub(super) fn require_original_observations(
+        &self,
+        previous: Digest32,
+        target: Digest32,
+    ) -> io::Result<()> {
+        if self.previous_observation != previous.to_string()
+            || self.target_observation != target.to_string()
+        {
+            return Err(io::Error::other("accepted Generation observation changed"));
+        }
+        Ok(())
+    }
+
     /// The only producer is the successful fresh Publish command, after its
     /// entire original Root context returned. The surrounding durable arm is
     /// still Armed; a failed final check cannot publish this fact as Ready.
     pub(super) fn observe_original_publish(
         service: &HostAuthorityService,
         slot: &RegisteredGenerationPublication,
+        prepared: &CurrentHead,
         expected: &CurrentHead,
         end: Instant,
     ) -> io::Result<Self> {
@@ -51,6 +65,14 @@ impl PublicationAcceptance {
         let original = slot
             .reserved
             .original_for_version(PublicationVersion::DurableV2)?;
+        if prepared.current != original.intent.previous
+            || prepared.prepared.as_ref() != Some(&original.intent)
+            || prepared.current == expected.current
+        {
+            return Err(io::Error::other(
+                "first real Prepared to Published transition required",
+            ));
+        }
         slot.require_profile()?;
         let published = expected
             .published

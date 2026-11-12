@@ -46,6 +46,15 @@ impl OriginalPublicationHistoryProofV1<'_> {
     pub(in super::super) fn original_reserved(&self) -> &ReservedPublicationProfile {
         self.original
     }
+
+    pub(in super::super) fn require_original_observations(
+        &self,
+        previous: Digest32,
+        target: Digest32,
+    ) -> io::Result<()> {
+        self.accepted
+            .require_original_observations(previous, target)
+    }
 }
 
 impl PublicationRefusal {
