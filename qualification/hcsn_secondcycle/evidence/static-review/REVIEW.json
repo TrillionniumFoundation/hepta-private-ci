@@ -1,0 +1,66 @@
+{
+  "identity": "secondcycle-static-mathematical-source-review-v1",
+  "reviewer": "/root/hcsn_repair/review_transport",
+  "review_type": "source-only static mathematics; same-session separate agent, not external custody",
+  "finding": "No blocking mathematical wiring error found in reviewed frozen source",
+  "candidate_propagations": 0,
+  "analytic_quadratures": 0,
+  "core_imports": 0,
+  "source_edits": 0,
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/positive_serial.py": "b0732aeb09f0cdf53069f7d0e2538a672ad3a8cf84d23e94a93a6fc144697fc7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/audit.py": "289ede82bc6834e88770f1a7cde90597912ba187da398dd5d8e2b90fd1c0532a",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/analytic_reference.py": "6d24f468ac079cf7932c312bb9a8c22ddb53aceb0f1dc9d2e4087961a425ea46",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/PLAN.json": "f1d0c2da8cbe8fe7ccd9dff1f5f42049b1e2129295587ae0270aac1abf7b9e84"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/positive_serial.py": "b0732aeb09f0cdf53069f7d0e2538a672ad3a8cf84d23e94a93a6fc144697fc7",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/audit.py": "289ede82bc6834e88770f1a7cde90597912ba187da398dd5d8e2b90fd1c0532a",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/analytic_reference.py": "6d24f468ac079cf7932c312bb9a8c22ddb53aceb0f1dc9d2e4087961a425ea46",
+    "/workspace/scratch/c06d659c1e72/secondcycle/qualification/hcsn_secondcycle/PLAN.json": "f1d0c2da8cbe8fe7ccd9dff1f5f42049b1e2129295587ae0270aac1abf7b9e84"
+  },
+  "source_unchanged": true,
+  "checks": [
+    {
+      "topic": "H auxiliary chain",
+      "finding": "Correct: q killing applies to every active serial block; the final hit accumulator is absorbing and is not killed after the event. Thus its absorbing mass is G_q(active horizon), not physical active probability."
+    },
+    {
+      "topic": "Release-discounted gamma tilt",
+      "finding": "Correct: cH_k=exp(-q*h)*(nu/(nu-q))^k * DeltaP(k+1,(nu-q)*u)/((nu-q)*w), integrating u from max(0,h-w) to h. This is exp(-q*h)/w times the integral of exp(q*u)*Pois_k(nu*u); it includes absolute release-time discount."
+    },
+    {
+      "topic": "Serial reset coupling",
+      "finding": "Correct: only the first block lower flux feeds the actual reset law in block two; only the last block lower exit increments the nth-hit accumulator. Upper exits from either excursion absorb permanently; auxiliary q killing is accounted separately."
+    },
+    {
+      "topic": "Delay factors",
+      "finding": "Correct: serial kernel uses active clock without d; candidate H2 and second-loss multiply eta exactly once in readout. Analytic second_hit and serial_control already include eta, so compose_reference does not multiply their second term again. Finite matrix branch multiplies eta once before composition."
+    },
+    {
+      "topic": "R/Z/A feedback",
+      "finding": "Correct on frozen T=d+gap>w and T<2d: R=M1(T)+M2(T)-M1(T-d); Z=exp(-q*(d-T))*(H1(T)+H2(T)-H1(T-d)); A=A_release_only-L1(T)+eta*L1(T-d)-L2_abs(T). returned_discounted_mass is eta*H1(T-d)."
+    },
+    {
+      "topic": "Subtractive rare readouts",
+      "finding": "Candidate L=(H-exp(-q*h)*M)/q may lose relative precision by cancellation. This is a numerical limitation, not a missing delay factor. The independent positive L reference and separate A_second_loss field are needed; good aggregate A/Z accuracy cannot establish rare-component accuracy."
+    },
+    {
+      "topic": "Chernoff series remainder",
+      "finding": "Correct ideal truncation structure: every hit power is between zero and one, cH_k<=cM_k, and the omitted sum is at most (h/w)*P(Poisson(nu*h)>=K+1). The log Chernoff expression uses threshold K+1 above the mean. This does not bound computed FP64 transition/gamma roundoff; roundoff_certified remains false."
+    },
+    {
+      "topic": "P^K output semantics",
+      "finding": "Correctly marked: final_power_active/hit/escape/killed are auxiliary distributions after exactly K embedded-chain steps, not exp(Q*t) spatial state at query time. They are not a current spatial checkpoint and cannot be adopted as a Cell state."
+    },
+    {
+      "topic": "Finite control references",
+      "finding": "One-state Erlang PDF and two-state serial-expm lower-flux coupling agree with the stated mathematical reference definitions. The mixed control uses positive release quadrature of G_q with exp(-q*r), and independent CDF-based positive loss integration. Its FP64 expm/quad uncertainty is explicitly separate from 80/120-digit continuum references."
+    },
+    {
+      "topic": "Continuum upper bracket",
+      "finding": "The bound uses whole query T and maximum actual initial/reset support, with mu<=0. It is a continuum escape/coupling bound, not a CTMC numerical-error certificate. Half-line mapped-reset difference is explicitly separate; err+mapping+2U is a conservative triangle budget via finite mapped continuum."
+    }
+  ],
+  "limits": "Static derivation review only. Does not validate numerical outputs, roundoff, reference convergence, whole spatial-state transport, scientific efficacy or production adoption."
+}
