@@ -41,6 +41,8 @@ CALLERS = {
         AGENT + "authority_host_initial_learning_trust_transport.rs",
         AGENT + "authority_host_historical_cell_registration.rs",
         AGENT + "authority_host_historical_cell_session.rs",
+        AGENT + "authority_host_historical_ledger_registration.rs",
+        AGENT + "authority_host_historical_ledger_session.rs",
         AGENT + "authority_host_run_start_deployment.rs",
         AGENT + "authority_host_run_start_store.rs",
         AGENT + "authority_host_run_start_context.rs",
@@ -59,13 +61,18 @@ CALLERS = {
     "root_historical_source_pin_publisher": (HANDOFF,),
     "root_initial_data_refusal_fresh": (
         RECORD, HANDOFF, AGENT + "authority_host_historical_cell_registration.rs",
+        AGENT + "authority_host_historical_ledger_registration.rs",
         AGENT + "authority_host_run_start_store.rs",
     ),
     "root_initial_data_refusal_existing": (
-        RECORD, HANDOFF, AGENT + "authority_host_run_start_store.rs",
+        RECORD, HANDOFF, AGENT + "authority_host_historical_ledger_history.rs",
+        AGENT + "authority_host_historical_cell_readback.rs", AGENT + "authority_host_run_start_store.rs",
     ),
     "root_initial_data_refusal_inspect": (
         RECORD, HANDOFF, AGENT + "authority_host_historical_cell_pin.rs",
+        AGENT + "authority_host_historical_cell_readback.rs",
+        AGENT + "authority_host_historical_ledger_pin.rs",
+        AGENT + "authority_host_historical_ledger_history.rs",
         AGENT + "authority_host_run_start_store.rs",
         AGENT + "authority_host_run_start_context.rs",
         AGENT + "authority_host_run_start_historical.rs",
