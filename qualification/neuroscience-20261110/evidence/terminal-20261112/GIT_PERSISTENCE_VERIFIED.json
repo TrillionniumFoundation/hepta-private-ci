@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.original-evidence-git-persistence.v1",
+  "candidate_commit": "e99ef9cca7e2185426dd91a136ad17ad0e765ea3",
+  "candidate_tree": "7f9673628ad6c0bfcb91bdb4f639c4bd591ba05a",
+  "binary_originals": [
+    {
+      "name": "report",
+      "bytes": 373009,
+      "sha256": "8293d2106a9d40961d6d65f9612ee941dddd96ca06ab455a7690ebf34f5236eb",
+      "git_blob": "6bb5a4f5a0d195ebc0699035f5167f6f3b220bf0",
+      "github_returned_blob": "6bb5a4f5a0d195ebc0699035f5167f6f3b220bf0",
+      "base64_decode": true,
+      "byte_for_byte_original_match": true
+    },
+    {
+      "name": "content_receipt",
+      "bytes": 34404,
+      "sha256": "9bd751047430e146ae9bfcd3ef80d3bdbf0a695aa47e9427cb38b4eef5f96b2b",
+      "git_blob": "636011ea915e22f3915819224677ff80a31c0a03",
+      "github_returned_blob": "636011ea915e22f3915819224677ff80a31c0a03",
+      "base64_decode": true,
+      "byte_for_byte_original_match": true
+    }
+  ],
+  "terminal_index_exact_readback": true,
+  "changed_paths": 119,
+  "only_qualification_evidence_and_docs": true,
+  "implementation_changes": 0,
+  "scope": "Purpose-built fetch_file with encoding=base64 retrieved complete stored binary bytes. This supersedes generic UTF-8-only Git fetch limitations; no scientific qualification is conferred.",
+  "owner_decision": null
+}

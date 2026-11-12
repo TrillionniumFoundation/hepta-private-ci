@@ -304,9 +304,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 15302,
-      "sha256": "5fbb49584d0024889ad61949f19c4ac844cf2db2df176fb25c483730839b4f26",
-      "git_blob": "8106c1a9a17c5b5b096f7ab53996045eeaaf36f5",
+      "bytes": 15536,
+      "sha256": "edfe884a48c9ec6b1e9cb059d75eb513467596f5b5bb9d7e2dc48f556c1f36bd",
+      "git_blob": "3a604a3685760a50d52b1eefa9ed2b04e1439905",
       "representation": "exact supplied text; per-file provenance is in its original manifest or TERMINAL_EVIDENCE"
     },
     {
@@ -335,6 +335,13 @@
       "bytes": 10859,
       "sha256": "f73ab71d475228b3456bb15d68da53b8240fc82cc3733626ed743be6dcd1044e",
       "git_blob": "b1a41ccc83a62efb317d0ffedf029bfbd55526aa",
+      "representation": "exact supplied text; per-file provenance is in its original manifest or TERMINAL_EVIDENCE"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_PERSISTENCE_VERIFIED.json",
+      "bytes": 1301,
+      "sha256": "e4fa125fc0b9a2a278490cd0734815884e993605871fcbdbd55cbcf6b4223489",
+      "git_blob": "8cf592996137fe6a97703fce6306cce3c6361c04",
       "representation": "exact supplied text; per-file provenance is in its original manifest or TERMINAL_EVIDENCE"
     }
   ],
@@ -626,6 +633,7 @@
   ],
   "original_mapping": "EVIDENCE_PATH_MAPPING.json",
   "gzip_bytes_verified_before_git_storage": true,
-  "github_binary_readback_status": "PENDING_AT_MANIFEST_CREATION",
-  "manifest_excludes_itself": true
+  "github_binary_readback_status": "VERIFIED",
+  "manifest_excludes_itself": true,
+  "github_binary_readback_record": "GIT_PERSISTENCE_VERIFIED.json"
 }
