@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.run-start.recovery-checkpoint.v1",
+  "source_bundle": {
+    "path": "qa/evidence/run-start-live-1b279f1c.bundle",
+    "bytes": 53229,
+    "sha256": "d15eb74decca51ed51dc4d62c217134c3353e3150e7dfd904da51af64daf5ded",
+    "head": "1b279f1cda6cf4816d56751fa29ccf91de7ed0e2",
+    "tree": "d5f3bfbc17d4b707bde9cf182209c14617586a6e",
+    "prerequisite": "82c895ceb49732ccd7097cde39d1c4da232e8507",
+    "branch": "codex/run-start-live-cloud-20261112-ff41"
+  },
+  "purpose": "Recovery artifact only. The hosting branch is not the bundled source tree and is not a qualified implementation.",
+  "later_qa_receipt": {
+    "schema": "hepta.run-start.source-qualification.v1",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "*source_closure.py",
+      "-v"
+    ],
+    "start_unix": 1794470356.339244,
+    "end_unix": 1794470430.1146739,
+    "exit_code": 0,
+    "before": {
+      "head": "68e3c0ce0b6edd6978945f4f3b2f80955b75bed4",
+      "tree": "c5098c7b0806b9bf2946f39e55a2b1b6720f8407",
+      "status": "",
+      "source_files": 7429,
+      "sha256": "47664f7a2b23b780c9824e1d0a501934881d6e6cde97791ef48f48b70e192297"
+    },
+    "after": {
+      "head": "68e3c0ce0b6edd6978945f4f3b2f80955b75bed4",
+      "tree": "c5098c7b0806b9bf2946f39e55a2b1b6720f8407",
+      "status": "",
+      "source_files": 7429,
+      "sha256": "47664f7a2b23b780c9824e1d0a501934881d6e6cde97791ef48f48b70e192297"
+    },
+    "source_unchanged": true,
+    "log_sha256": "fa37cd5c6f1973be0eb8a9c45651847ffdd6c09c0a5633dd5fb58f0313cca120",
+    "log_bytes": 50669,
+    "native_executed": false,
+    "source_bytes_included": false,
+    "raw_log_included": false,
+    "note": "The actual driver returned this receipt before the cloud executor disconnected. Exact later commit 68e3c0ce adds three QA fixture files; those postimages are not present in this bundle. No native result is claimed."
+  },
+  "other_checks": {
+    "focused_caller_session": 42530,
+    "status": "unknown; no completion result observed",
+    "native_executed": false,
+    "first_full_source_qa": {
+      "head": "1b279f1cda6cf4816d56751fa29ccf91de7ed0e2",
+      "exit_code": 1,
+      "tests": 234,
+      "failures": 8,
+      "log_bytes": 62132,
+      "log_sha256": "d4fbe28a8505a787d73813a3029853e0d78eb62f2a1e3aa19c1c01c9362179b2",
+      "raw_log_included": false
+    }
+  },
+  "limits": [
+    "Root retained RunStart is data, not historical learning authorization.",
+    "The true live seam is original append/sync and current AuthBus validation, Root ACK, then ready/generation/AuthBus revalidation before execution.",
+    "Root does not reconstruct the original AuthBus signed-source-to-compiled-record preimage.",
+    "Source, Cell, Ledger, independent Observer, actual retirement, and current recipient authorization remain required joins.",
+    "No whole-chain positive, NoUpdate, or cold-recovery acceptance is claimed."
+  ]
+}
