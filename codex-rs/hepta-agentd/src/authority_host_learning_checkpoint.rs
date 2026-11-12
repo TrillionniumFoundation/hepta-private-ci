@@ -57,7 +57,7 @@ impl HostAuthorityService {
         policy.response_bound = 16 * 1024;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
         if let Some(end) = original_end {
-            channel.limit_original_end(end)?;
+            HostAuthorityPeerChannel::limit_original_end(&mut channel, end)?;
         }
         let mut next_request_id = 1;
         while channel.exchange(|bytes| {

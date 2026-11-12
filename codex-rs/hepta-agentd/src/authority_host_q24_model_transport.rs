@@ -115,7 +115,8 @@ impl HostAuthorityService {
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
             .map_err(io::Error::other)?;
         if let Some(end) = original_end {
-            channel.limit_original_end(end).map_err(io::Error::other)?;
+            HostAuthorityPeerChannel::limit_original_end(&mut channel, end)
+                .map_err(io::Error::other)?;
         }
         while channel
             .exchange(|bytes| {
