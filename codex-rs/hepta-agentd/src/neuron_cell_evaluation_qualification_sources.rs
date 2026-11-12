@@ -81,9 +81,10 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore>
         &mut self,
         config: &OriginalCellEvaluationQualificationConfigV1,
         started_at: u64,
+        training: TrainingRead<'_>,
     ) -> Result<Prepared, Error> {
         let before = self.read_original(config)?;
-        self.read_trainer(config).await?;
+        self.read_training(config, training).await?;
         let after = self.read_original(config)?;
         if before != after {
             return Err(Error::CommitUncertain);
@@ -92,6 +93,19 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore>
         binding::clock_time(started_at, current)?;
         binding::authenticate(config, &after, current)?;
         Ok(after)
+    }
+
+    pub(super) async fn read_training(
+        &self,
+        config: &OriginalCellEvaluationQualificationConfigV1,
+        training: TrainingRead<'_>,
+    ) -> Result<(), Error> {
+        match training {
+            TrainingRead::Independent => self.read_trainer(config).await,
+            TrainingRead::Operation(original) => {
+                TrainingOperation::require_qualification(original, self.trainer, config)
+            }
+        }
     }
 
     pub(super) fn verify_current(

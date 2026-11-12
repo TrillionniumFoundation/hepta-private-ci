@@ -27,6 +27,8 @@ mod contract;
 mod service;
 #[path = "neuron_cell_evaluation_host_training_readback.rs"]
 mod training_readback;
+#[path = "neuron_cell_evaluation_training_operation.rs"]
+mod training_operation;
 #[path = "neuron_cell_evaluation_host_wire.rs"]
 mod wire;
 
@@ -34,6 +36,8 @@ pub use command::OriginalCellEvaluationCommandClientV1;
 pub use command::OriginalCellEvaluationCommandConnectionV1;
 pub use contract::OriginalCellEvaluationCommandErrorV1;
 pub use contract::OriginalCellEvaluationCommandReceiptV1;
+pub(crate) use training_operation::TrainingOperation;
+pub(crate) use training_operation::TrainingRead;
 
 use contract::Context;
 type Error = OriginalCellEvaluationCommandErrorV1;
@@ -59,6 +63,7 @@ pub struct OriginalCellEvaluationHostV1 {
 struct Owners {
     panel: Panel,
     evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>,
+    shared_training: Option<Arc<crate::LearningIterationEvidenceClientV1>>,
     retained: Option<Receipt>,
     fenced: bool,
     #[cfg(test)]
@@ -102,6 +107,7 @@ impl OriginalCellEvaluationHostV1 {
             owners: Mutex::new(Owners {
                 panel,
                 evaluator,
+                shared_training: None,
                 retained: None,
                 fenced: false,
                 #[cfg(test)]
@@ -125,7 +131,11 @@ impl Owners {
         if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        let result = self.read_original_completion(context, action).await;
+        let result = self.complete_original_operation(context, action).await;
+        self.fence_result(result)
+    }
+
+    fn fence_result<T>(&mut self, result: Result<T, Error>) -> Result<T, Error> {
         if result.is_err()
             && !matches!(&result,
             Err(Error::Receipt(crate::OriginalCellEvaluationReceiptErrorV1::Owner(
@@ -140,14 +150,48 @@ impl Owners {
         result
     }
 
-    async fn read_original_completion(
+    async fn begin_training_operation(
+        &self,
+        context: &Context,
+    ) -> Result<Option<TrainingOperation>, Error> {
+        match &self.shared_training {
+            Some(trainer) => Ok(Some(
+                TrainingOperation::begin(Arc::clone(trainer), context).await?,
+            )),
+            None => Ok(None),
+        }
+    }
+
+    async fn complete_original_operation(
         &mut self,
         context: &Context,
         action: wire::Action,
     ) -> Result<Receipt, Error> {
         let started_at = self.current_time()?;
         context.authenticate(started_at)?;
-        let before = self.read_panel().await?;
+        let operation = self.begin_training_operation(context).await?;
+        let training = match operation.as_ref() {
+            Some(original) => TrainingRead::Operation(original),
+            None => TrainingRead::Independent,
+        };
+        let (completed, after) = self
+            .read_original_completion(context, action, training)
+            .await?;
+        if let Some(original) = operation {
+            TrainingOperation::finish(original).await?;
+        }
+        self.finish_original_completion(context, action, completed, &after, started_at)
+    }
+
+    async fn read_original_completion(
+        &mut self,
+        context: &Context,
+        action: wire::Action,
+        training: TrainingRead<'_>,
+    ) -> Result<(Receipt, OriginalCellEvaluationPanelReadbackV1), Error> {
+        let started_at = self.current_time()?;
+        context.authenticate(started_at)?;
+        let before = self.read_panel(training).await?;
         if before.training() != &context.training
             || before.training_evidence() != &context.training_evidence
             || before.registration() != &context.registration
@@ -184,27 +228,48 @@ impl Owners {
             };
             match action {
                 wire::Action::Execute => {
-                    OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(
+                    OriginalCellEvaluationReceiptOwnerV1::attest_with_training(
                         &mut self.evaluator,
                         sources,
+                        training,
                     )
                     .await?
                 }
                 wire::Action::Readback => {
-                    OriginalCellEvaluationReceiptOwnerV1::readback(&mut self.evaluator, sources)
-                        .await?
+                    OriginalCellEvaluationReceiptOwnerV1::readback_with_training(
+                        &mut self.evaluator,
+                        sources,
+                        training,
+                    )
+                    .await?
                 }
             }
         };
-        let after = self.read_panel().await?;
+        let after = self.read_panel(training).await?;
         if before != after {
             return Err(Error::CommitUncertain);
         }
-        // All panel I/O finishes before this final actual receipt journal read.
+        let current = self.current_time()?;
+        require_clock(started_at, current)?;
+        let completed =
+            contract::authenticate_receipt(context, completed.0, completed.1, current)?;
+        Ok((completed, after))
+    }
+
+    fn finish_original_completion(
+        &mut self,
+        context: &Context,
+        action: wire::Action,
+        completed: Receipt,
+        after: &OriginalCellEvaluationPanelReadbackV1,
+        started_at: u64,
+    ) -> Result<Receipt, Error> {
+        // All panel and operation Trainer I/O finishes before this final actual
+        // receipt journal read. The operation observation is already consumed.
         OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(
             &mut self.evaluator,
-            &completed.0,
-            &completed.1,
+            completed.receipt(),
+            completed.attestation(),
         )?;
         let current = self.current_time()?;
         require_clock(started_at, current)?;
@@ -214,7 +279,7 @@ impl Owners {
             // A durable signature may exist; never report a known no-effect expiry.
             return Err(Error::CommitUncertain);
         }
-        self.authenticate_panel(&after, current)?;
+        self.authenticate_panel(after, current)?;
         let (config, _) =
             OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator);
         config.signing.verifier.require_signer_binding(
@@ -222,7 +287,12 @@ impl Owners {
             &config.signing.signer,
             current,
         )?;
-        let original = contract::authenticate_receipt(context, completed.0, completed.1, current)?;
+        let original = contract::authenticate_receipt(
+            context,
+            completed.receipt,
+            completed.attestation,
+            current,
+        )?;
         if self
             .retained
             .as_ref()
@@ -235,16 +305,23 @@ impl Owners {
         Ok(original)
     }
 
-    async fn read_panel(&mut self) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+    async fn read_panel(
+        &mut self,
+        training: TrainingRead<'_>,
+    ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
         #[cfg(test)]
         if let Some(current) = self.fixture_clock {
             return self
                 .panel
-                .read_current_with_clock(|| Ok(current))
+                .read_current_with_clock(|| Ok(current), training)
                 .await
                 .map_err(Error::from);
         }
-        OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel)
+        OriginalCellEvaluationPanelOwnerV1::read_current_with_clock(
+            &mut self.panel,
+            super::original::now,
+            training,
+        )
             .await
             .map_err(Error::from)
     }
@@ -294,3 +371,4 @@ pub(crate) use model_material::OriginalCellEvaluationModelInputV1;
 pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
 pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use model_material::OriginalCellEvaluationModelMaterialV1;
+pub(crate) use model_material::OriginalCellEvaluationModelReadV1;

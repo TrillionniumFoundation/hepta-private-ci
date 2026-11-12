@@ -39,8 +39,17 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         started_at: u64,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         let result = async {
-            let prepared = source.prepare(&self.config, started_at).await?;
-            self.finish_readback(source, &prepared, bytes, started_at, false)
+            let prepared = source
+                .prepare(&self.config, started_at, TrainingRead::Independent)
+                .await?;
+            self.finish_readback(
+                source,
+                &prepared,
+                bytes,
+                started_at,
+                /*new_publication*/ false,
+                TrainingRead::Independent,
+            )
                 .await
         }
         .await;
@@ -62,6 +71,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         bytes: &[u8],
         started_at: u64,
         new_publication: bool,
+        training: TrainingRead<'_>,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         let current = binding::now()?;
         binding::clock_time(started_at, current)?;
@@ -90,7 +100,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         }
         let qualification = result?;
         drop(sink);
-        source.read_trainer(&self.config).await?;
+        source.read_training(&self.config, training).await?;
         source.verify_current(&self.config, prepared)?;
         if self.completed_bytes()? != bytes {
             return Err(Error::CommitUncertain);
