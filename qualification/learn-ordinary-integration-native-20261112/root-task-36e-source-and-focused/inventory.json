@@ -1,0 +1,59 @@
+{
+  "source": {
+    "head": "36e9cb98b1d56ba38d99c6ae3b1010d74584381c",
+    "tree": "e3e4d96eddfcc00b4227f22861efef98798686e4",
+    "status": "",
+    "source_files": 7461,
+    "sha256": "1e85cae7b32bb85255236a22cfd9dde5d8d1fb6675e5838a078b337bfe1b1b6f"
+  },
+  "source_qa": {
+    "tests": 299,
+    "exit_code": 0,
+    "wall_seconds": 72.07042384147644
+  },
+  "focused": {
+    "selected": 85,
+    "passed": 84,
+    "failed": 1,
+    "errors": [
+      {
+        "boundary": "root_original_ledger_historical_observation",
+        "error": "root_original_ledger_historical_observation: codex-rs/hepta-agentd/src/authority_host_historical_ledger_pin.rs: unresolved possible PendingOriginalLedgerHistoryV1::observe_original_terminal receiver"
+      }
+    ],
+    "protected_rows": 491,
+    "inventory_rows": 629,
+    "rust_source_index": 6580,
+    "full_caller_checker_run": false,
+    "wall_seconds": 310.6245484352112
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 15056,
+    "sha256": "718b3761a4e80ea9301cad505af522c8d19f64998de0dabe3584fbcbcdd8a2dd"
+  },
+  "members": [
+    {
+      "path": "source-qa.json",
+      "bytes": 1112,
+      "sha256": "8bdde05360812538178ba6424e9f60c75dab40a9c3664b15e5a7e4b79956e112"
+    },
+    {
+      "path": "source-qa.log",
+      "bytes": 63687,
+      "sha256": "539a76aca18ec72c6730d612ff7756a35eb7d3ca7cb92ed15a7ca5b408cc47ce"
+    },
+    {
+      "path": "focused-callers.json",
+      "bytes": 34654,
+      "sha256": "d634f12091758d05df7048301fc38a908438f1b1e252b2d0dbcc4a1b2fbecff0"
+    },
+    {
+      "path": "focused-callers.log",
+      "bytes": 33111,
+      "sha256": "79d7ef839bb04b3735dcb30f7ffe4a544b9d9f7310170d2bff108c262284563a"
+    }
+  ],
+  "roundtrip_verified": true,
+  "native_executed": false
+}
