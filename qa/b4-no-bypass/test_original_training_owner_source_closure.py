@@ -126,14 +126,14 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 "owners.execute_original_training_with_source(&cancellation, &OriginalQ24OwnerReadV1)")),
             ("fn execute_original_training_with_source(", ("self.receipts.journal.read(&self.receipts.saved)",
                 "Ok(_) => self.read_original_completion_with_source(source)", "ProductEvaluationExecutionStoreErrorV1::Missing",
-                "let retained_outcome = match training.readback_with_source(source)", "Ok(outcome) => Some(outcome)",
+                "match CellQ24TrainingOwnerV1::readback_with_source(training, source)", "Ok(outcome) => Some(outcome)",
                 "Err(CellQ24TrainingOwnerErrorV1::Store(", ")) => None", "Err(error) => return Err(error.into())",
                 "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
                 "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
                 "Some(outcome) => outcome", "None => training.fit_or_readback_with_source(cancellation, source)?", "receipts.attest_completion_with_source(training, source)?")),
             ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", "training.require_original_dataset_scope(")),
             ("fn receipt_attestation(", ("self.readback(dataset).await?", "if &completed.receipt != expected")),
-            ("fn read_original_completion_with_source(", ("self.receipts.readback_with_source(training, source)?", "training.readback_with_source(source)?")),
+            ("fn read_original_completion_with_source(", ("OriginalCellQ24TrainingReceiptOwnerV1::readback_with_source(", "CellQ24TrainingOwnerV1::readback_with_source(training, source)?")),
         ):
             for marker in markers:
                 with self.subTest(function=function, marker=marker):
