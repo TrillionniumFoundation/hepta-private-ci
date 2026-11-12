@@ -384,7 +384,14 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
                 error,
                 CandidateError::Command(CommandError::Transport(_))
             )),
-            Fault::Original => unreachable!(),
+            Fault::Original
+            | Fault::WrongCurrentNonce
+            | Fault::WrongCurrentPurpose
+            | Fault::WrongCurrentCompletion
+            | Fault::WrongCurrentHeads
+            | Fault::HoldCurrent => {
+                unreachable!("only the six original page faults are exercised in this loop")
+            }
         }
         assert!(matches!(
             client.readback().await,

@@ -3,6 +3,8 @@
 use super::*;
 use crate::OriginalCircuitEvaluatedVersionRecoveryV1;
 use crate::circuit_feature_current::original_learning_read_fixture as reads;
+use crate::circuit_feature_current::original_readiness_fixture;
+use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness()
@@ -19,12 +21,7 @@ async fn evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness
     let (training_connection, evaluation_connection, peers) =
         initial_version_connections(&f, &config)?;
     let (mut c, files, selected) = Box::pin(published_and_selected(&mut f)).await?;
-    let crate::circuit_feature_current::Publication::Update { original, .. } =
-        &c.retirement.0.publication
-    else {
-        anyhow::bail!("actual retained Control publication");
-    };
-    let intent = original.intent_digest();
+    let intent = original_readiness_fixture::retained_publication_intent(&c.retirement)?;
     let version = &f.host.original.version;
     let artifact_selection = version.retained_publication_selection()?;
     let host = Arc::new(VersionHost::recover_from_original_evaluated_owners(

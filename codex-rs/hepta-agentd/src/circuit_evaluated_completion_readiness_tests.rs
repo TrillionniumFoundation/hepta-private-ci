@@ -1,5 +1,7 @@
 //! The actual C owner distinguishes unresolved work from irreversible failure.
 use super::*;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_readiness_waits_for_actual_c_and_preserves_original_selection()

@@ -14,6 +14,16 @@ use super::super::OriginalCircuitLearningReadOwnerV1;
 use super::super::fixture;
 use super::*;
 
+pub(crate) fn retained_publication_intent(
+    task: &crate::PublishedCircuitFeatureTaskV1,
+) -> anyhow::Result<Digest32> {
+    let crate::circuit_feature_current::Publication::Update { original, .. } = &task.0.publication
+    else {
+        anyhow::bail!("actual retained Control publication");
+    };
+    Ok(original.intent_digest())
+}
+
 pub(crate) fn client(
     context: Context,
 ) -> anyhow::Result<(
@@ -30,7 +40,7 @@ pub(crate) fn client(
     } = original;
     Ok((
         OriginalCircuitCompletionReadinessClientV1 {
-            context,
+            context: context.legacy()?.clone(),
             binding,
             channel,
             retained,

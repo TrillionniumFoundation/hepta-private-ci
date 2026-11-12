@@ -6,6 +6,8 @@ use crate::OriginalCircuitNextUseReceiptOwnerV1;
 use crate::circuit_feature_current::original_learning_read_fixture as reads;
 use crate::learning_iteration_evidence_client::evaluated_next_use_command_test_support as observers;
 use crate::learning_iteration_evidence_client::evaluated_selection_command_test_support as selectors;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 pub(super) async fn run_shared_s_c(
     f: &PublicationFixture,

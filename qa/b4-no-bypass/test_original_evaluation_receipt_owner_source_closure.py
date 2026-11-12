@@ -39,6 +39,7 @@ CALLERS = {
         AGENT + "cell_q24_training_source.rs",
         AGENT + "circuit_model_selection_receipt_sources.rs",
         AGENT + "neuron_cell_evaluation_qualification_sources.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (

@@ -4,6 +4,8 @@ use super::*;
 use crate::AgentdUnixFinalUseGrantProvider;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 use std::io::Read;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
