@@ -392,6 +392,70 @@ fn original_execution_owner_physical_corruption_fences_even_after_restore() -> a
 }
 
 #[test]
+fn original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion()
+-> anyhow::Result<()> {
+    for name in ["raw", "witness"] {
+        let fixture = Fixture::new()?;
+        let mut owner = fixture.create()?;
+        let key = key();
+        owner.claim(&key)?;
+        owner.complete(&key, b"actual-retained-execution")?;
+        let original = fixture.bytes()?;
+        let index = if name == "raw" { 0 } else { 1 };
+        let mut corrupt = original[index].clone();
+        corrupt[0] ^= 1;
+
+        fixture.overwrite(name, &corrupt)?;
+        let damaged = fixture.bytes()?;
+        assert_eq!(owner.readback(&key), Err(StoreError::Indeterminate));
+        assert_eq!(fixture.bytes()?, damaged, "readback must not repair {name}");
+        fixture.overwrite(name, &original[index])?;
+        assert_eq!(owner.readback(&key), Err(StoreError::Indeterminate));
+        assert_eq!(fixture.bytes()?, original);
+        drop(owner);
+
+        // Admit the actual original witness before corrupting either input.
+        // Recovery must reread it rather than trust this admitted cache.
+        let witness = fixture.witness(fixture.existing_file("witness")?)?;
+        fixture.overwrite(name, &corrupt)?;
+        let damaged = fixture.bytes()?;
+        let recovery = Owner::recover(
+            fixture.existing_file("raw")?,
+            witness,
+            d("original-raw-binding"),
+        );
+        match name {
+            "raw" => assert!(matches!(
+                recovery,
+                Err(Error::File(
+                    LockedFileProductEvaluationExecutionErrorV1::Corrupt
+                ))
+            )),
+            "witness" => assert!(matches!(
+                recovery,
+                Err(Error::Witness(WitnessStoreError::ContextMismatch))
+            )),
+            _ => unreachable!("fixture input"),
+        }
+        assert_eq!(fixture.bytes()?, damaged, "recovery must not repair {name}");
+
+        // A fresh owner may accept the exact trusted originals. It must retain
+        // Completed, so claiming cannot create a fresh Pending execution.
+        fixture.overwrite(name, &original[index])?;
+        let mut recovered = fixture.recover()?;
+        let completed = State::Completed(b"actual-retained-execution".to_vec());
+        assert_eq!(recovered.readback(&key)?, completed);
+        assert_eq!(
+            recovered.claim(&key)?,
+            ProductEvaluationExecutionClaimV1::Existing(completed)
+        );
+        recovered.complete(&key, b"actual-retained-execution")?;
+        assert_eq!(fixture.bytes()?, original);
+    }
+    Ok(())
+}
+
+#[test]
 fn original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail()
 -> anyhow::Result<()> {
     let fixture = Fixture::new()?;

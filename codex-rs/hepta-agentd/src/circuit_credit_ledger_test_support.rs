@@ -24,7 +24,8 @@ fn identity(role: LearningEvidenceRoleV1) -> (&'static str, u8) {
         LearningEvidenceRoleV1::Observer => ("observer", 2),
         LearningEvidenceRoleV1::CreditAllocator => ("allocator", 3),
         LearningEvidenceRoleV1::Evaluator => ("evaluator", 4),
-        LearningEvidenceRoleV1::UnlearningAuthority | LearningEvidenceRoleV1::Selector => {
+        LearningEvidenceRoleV1::UnlearningAuthority => ("unlearning", 5),
+        LearningEvidenceRoleV1::Selector => {
             panic!("unused fixture role")
         }
     }
@@ -82,6 +83,14 @@ pub(super) struct LedgerFixture {
 
 impl LedgerFixture {
     pub(super) fn new(domain: &str) -> Self {
+        Self::with_optional_authority(domain, /*extra*/ None)
+    }
+
+    pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+        Self::with_optional_authority(domain, Some(LearningEvidenceRoleV1::UnlearningAuthority))
+    }
+
+    fn with_optional_authority(domain: &str, extra: Option<LearningEvidenceRoleV1>) -> Self {
         let directory = checked(tempfile::tempdir());
         let file = |name| {
             checked(
@@ -123,6 +132,7 @@ impl LedgerFixture {
                         LearningEvidenceRoleV1::Evaluator,
                     ]
                     .into_iter()
+                    .chain(extra)
                     .map(trusted)
                     .collect(),
                 },

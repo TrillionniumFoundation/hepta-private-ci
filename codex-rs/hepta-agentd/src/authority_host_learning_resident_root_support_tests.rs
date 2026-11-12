@@ -106,8 +106,8 @@ impl ResidentRootFixture {
         verifier: &LearningEvidenceVerifierV1,
         lifetime_ms: u64,
     ) -> anyhow::Result<Self> {
-        assert_eq!(rustix::process::getuid().as_raw(), 0);
-        assert_eq!(rustix::process::geteuid().as_raw(), 0);
+        assert_eq!(unsafe { libc::getuid() }, 0);
+        assert_eq!(unsafe { libc::geteuid() }, 0);
         let parent = PathBuf::from(
             std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
                 .ok_or_else(|| anyhow::anyhow!("explicit protected Root bind parent required"))?,

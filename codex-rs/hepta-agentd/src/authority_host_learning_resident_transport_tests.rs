@@ -25,7 +25,7 @@ fn peer_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> 
         stream,
         HostAuthorityPeerPolicy {
             peer: HostIssuerPeer {
-                uid: rustix::process::geteuid().as_raw(),
+                uid: unsafe { libc::geteuid() },
                 pid: std::process::id(),
             },
             timeout: Duration::from_secs(30),
