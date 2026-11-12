@@ -80,6 +80,27 @@ impl OriginalCellEvaluationModelMaterialConnectionV1 {
         self.finish_binding(dataset, training, Some(evaluation.clone()))
     }
 
+    /// Exact initial delivery identity only; no peer I/O, time reset, or new
+    /// authority is produced by this check. The original Model host checks it
+    /// before retaining this connection alongside its original custody.
+    pub(crate) fn require_initial(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+        registration: &OriginalCellEvaluationPanelRegistrationV1,
+        verifier: &LearningEvidenceVerifierV1,
+    ) -> Result<(), Error> {
+        if &self.initial != initial || &self.scope != scope
+            || &self.registration != registration
+            || self.verifier.trust_digest() != verifier.trust_digest()
+            || self.verifier.scope_digest() != verifier.scope_digest()
+            || self.verifier.objective_digest() != verifier.objective_digest()
+        {
+            return Err(Error::Binding("same original Model material initial delivery"));
+        }
+        Ok(())
+    }
+
     fn finish_binding(
         self, dataset: LearningIterationSnapshotV1,
         training: &OriginalCellQ24TrainingCommandReceiptV1, expected: Option<Receipt>,
@@ -119,9 +140,16 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
     /// Call outside the Trainer lane: the actual Evaluator reads its original
     /// Trainer evidence while checking the complete current B/retention panel.
     pub async fn read_current(&self) -> Result<OriginalCellEvaluationModelMaterialV1, Error> {
+        self.read_current_with_clock(now).await
+    }
+
+    async fn read_current_with_clock(
+        &self,
+        mut clock: impl FnMut() -> Result<u64, Error> + Send,
+    ) -> Result<OriginalCellEvaluationModelMaterialV1, Error> {
         let mut channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
             .take().ok_or(Error::Unavailable)?;
-        let started_at = now()?;
+        let started_at = clock()?;
         require_clock(self.observed_at, started_at)?;
         if wire::context_binding(&self.context, started_at)? != self.binding {
             return Err(Error::CommitUncertain);
@@ -142,7 +170,7 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
         };
         // The final peer/pidfd I/O has completed. All original windows and
         // signed commitments are checked at this fresh common time.
-        let current = now()?;
+        let current = clock()?;
         require_clock(started_at, current)?;
         let body = super::codec::Body::decode(&bytes)?;
         let snapshot = crate::learning_iteration_checkpoint::decode_original_owner_snapshot_v1(&body.snapshot)?;

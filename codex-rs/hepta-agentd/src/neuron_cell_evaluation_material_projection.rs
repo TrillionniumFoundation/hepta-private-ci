@@ -11,7 +11,7 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         request: &CellEvaluationQualificationRequestV1<'_>,
     ) -> Result<OriginalProductQualificationCommitmentsV1, CellEvaluationErrorV1> {
         if qualification.comparison() != receipt.plan().record()
-            || !matches!(request.timing, ProductTimingEvidenceV1::Qualification)
+            || !matches!(&request.timing, ProductTimingEvidenceV1::Qualification)
         {
             return Err(CellEvaluationErrorV1::Binding("original Cell material projection"));
         }
