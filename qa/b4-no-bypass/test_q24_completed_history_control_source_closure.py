@@ -146,7 +146,8 @@ class OriginalCompletedHistoryControlSourceTests(unittest.TestCase):
     def test_query_keeps_all_local_current_admission_checks(self):
         for marker in (
             "self.refresh_generation()?;",
-            "runtime.current_generation != self.identity.spawn_generation",
+            "self.identity.spawn_generation.checked_add(1)",
+            "Some(runtime.current_generation) != running_generation",
             "runtime.lifecycle != AgentLifecycle::Running",
             "!runtime.app_server_ready", "!runtime.critical_stores_ready",
             "!runtime.revocation_ready", "!runtime.required_ports_ready",
