@@ -57,9 +57,9 @@ impl OriginalCircuitRetainedVersionHostV1 {
         // The second original peer reads cannot turn the first physical
         // publication read into a current one. Re-read the actual owner last.
         state.require_cut_current(&self.runtime)?;
+        let last = state.observe_phase()?;
         let after = state.artifacts.read_current()?;
         artifact::require_same(&before, &after)?;
-        let last = state.observe_phase()?;
         if first != last { return Err(Error::Binding("original retained version changed")); }
         self.require_lifetime()?;
         state.cut.as_ref().ok_or(Error::Unavailable)?

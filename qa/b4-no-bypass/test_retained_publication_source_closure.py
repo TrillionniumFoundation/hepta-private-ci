@@ -103,6 +103,53 @@ class RetainedPublicationClosureTests(unittest.TestCase):
                     PROOF._verify_boundary(ROOT, row, extra, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
+    def test_version_final_artifact_read_follows_control_and_source_io(self):
+        path = AGENT + "circuit_retained_version_state.rs"
+        source = (ROOT / path).read_text()
+        last = "let last = state.observe_phase()?;"
+        artifact = "let after = state.artifacts.read_current()?;"
+        self.assertIn(last + "\n        " + artifact, source)
+        self.rejects_source(path, source.replace(
+            last + "\n        " + artifact,
+            artifact + "\n        " + last,
+            1,
+        ))
+        for marker in (
+            "artifact::require_same(&before, &after)?",
+            "if first != last",
+            ".require_fresh(started, PublicationAccess::Readback)?",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn read_original(", marker)
+
+    def test_version_exports_remain_inside_the_linux_module_boundary(self):
+        source = (ROOT / AGENT / "lib.rs").read_text()
+        names = (
+            "OriginalCircuitRetainedVersionClientV1",
+            "OriginalCircuitRetainedVersionHostV1",
+            "OriginalCircuitRetainedVersionRecoveryV1",
+            "OriginalCircuitRetainedArtifactCheckpointV1",
+            "OriginalCircuitRetainedTaskInputsV1",
+            "OriginalCircuitRetainedVersionErrorV1",
+            "OriginalCircuitRetainedVersionPublicationV1",
+            "OriginalCircuitRetainedVersionReadbackV1",
+            "OriginalCircuitRetainedPublicationContextV1",
+        )
+        attribute = '#[cfg(target_os = "linux")]\n'
+
+        def require_linux_exports(text):
+            self.assertIn(attribute + "mod circuit_feature_current;", text)
+            for name in names:
+                self.assertIn(attribute + f"pub use circuit_feature_current::{name};", text)
+
+        require_linux_exports(source)
+        for name in names:
+            export = f"pub use circuit_feature_current::{name};"
+            with self.subTest(export=name):
+                changed = source.replace(attribute + export, export, 1)
+                with self.assertRaises(AssertionError):
+                    require_linux_exports(changed)
+
     def test_context_requires_actual_opaque_training_and_strict_no_update(self):
         for marker in (
             "original: &OriginalCellQ24TrainingCommandReceiptV1",
