@@ -5,17 +5,22 @@ use pretty_assertions::assert_eq;
 fn complete_historical_reply_binds_original_purpose_profile_and_sequence() -> anyhow::Result<()> {
     let profile = Digest32::of_bytes(b"original recipient profile").to_string();
     let cut = Digest32::of_bytes(b"actual complete task cut");
+    let ledger = crate::root_historical_ledger_data::tests::fixture_data()?;
     let response = HistoricalTaskReadResponseV1 {
         schema: 1,
         purpose: PURPOSE.into(),
         request_id: 1,
         profile: profile.clone(),
         data_cut: cut.to_string(),
+        ledger: ledger.clone(),
     };
     let bytes = serde_json::to_vec(&response)?;
     assert_eq!(
         require_complete_reply(&bytes, /*request_id*/ 1, &profile)?,
-        cut
+        HistoricalTaskReadDataV1 {
+            data_cut: cut,
+            ledger,
+        }
     );
     for (field, value) in [
         (
@@ -44,6 +49,19 @@ fn complete_historical_reply_binds_original_purpose_profile_and_sequence() -> an
     for request_id in [0, MAX_READS + 1] {
         assert!(require_complete_reply(&bytes, request_id, &profile).is_err());
     }
+    let mut missing = serde_json::to_value(&response)?;
+    missing
+        .as_object_mut()
+        .ok_or_else(|| io::Error::other("wire fixture object missing"))?
+        .remove("ledger");
+    assert!(
+        require_complete_reply(
+            &serde_json::to_vec(&missing)?,
+            /*request_id*/ 1,
+            &profile,
+        )
+        .is_err()
+    );
     Ok(())
 }
 
@@ -74,11 +92,13 @@ fn complete_historical_wire_refuses_peer_selected_sources_and_raw_authority() ->
         request_id: 1,
         profile: request.profile.clone(),
         data_cut: Digest32::of_bytes(b"complete data").to_string(),
+        ledger: crate::root_historical_ledger_data::tests::fixture_data()?,
     };
     let mut bytes = serde_json::to_vec(&response)?;
     bytes.extend_from_slice(b"{}");
     assert!(require_complete_reply(&bytes, /*request_id*/ 1, &request.profile).is_err());
     let bytes = serde_json::to_vec(&response)?;
+    assert!(bytes.len() <= WIRE_BOUND);
     assert!(
         require_complete_reply(
             &bytes[..bytes.len() - 1],

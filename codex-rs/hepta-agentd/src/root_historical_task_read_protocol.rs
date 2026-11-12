@@ -14,6 +14,7 @@ use serde::Serialize;
 use crate::AgentdIdentity;
 use crate::HostAuthorityLearningProfileV1;
 use crate::HostAuthorityRegisteredIdentity;
+use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
 
 pub(crate) const PURPOSE: &str = "runtime.learning.historical-task-read.v1";
 pub(crate) const SOCKET: &str = "historical-task-read-v1.sock";
@@ -109,13 +110,20 @@ pub(crate) struct HistoricalTaskReadResponseV1 {
     pub(crate) request_id: u64,
     pub(crate) profile: String,
     pub(crate) data_cut: String,
+    pub(crate) ledger: RootHistoricalLedgerReadDataV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct HistoricalTaskReadDataV1 {
+    pub(crate) data_cut: Digest32,
+    pub(crate) ledger: RootHistoricalLedgerReadDataV1,
 }
 
 pub(crate) fn require_complete_reply(
     bytes: &[u8],
     request_id: u64,
     profile: &str,
-) -> io::Result<Digest32> {
+) -> io::Result<HistoricalTaskReadDataV1> {
     if bytes.is_empty() || bytes.len() > WIRE_BOUND || !(1..=MAX_READS).contains(&request_id) {
         return Err(io::Error::other(
             "historical read response exceeds original bounds",
@@ -133,7 +141,11 @@ pub(crate) fn require_complete_reply(
         ));
     }
     canonical_digest(profile)?;
-    canonical_digest(&response.data_cut)
+    response.ledger.validate_data()?;
+    Ok(HistoricalTaskReadDataV1 {
+        data_cut: canonical_digest(&response.data_cut)?,
+        ledger: response.ledger,
+    })
 }
 
 pub(crate) fn canonical_digest(value: &str) -> io::Result<Digest32> {

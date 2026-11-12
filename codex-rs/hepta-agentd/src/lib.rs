@@ -205,6 +205,8 @@ pub use root_production_inputs::receive_root_production_inputs;
 #[cfg(target_os = "linux")]
 pub use root_production_learning_inputs::AgentdRootLearningInputsV1;
 #[cfg(target_os = "linux")]
+mod root_historical_task_read_client;
+#[cfg(target_os = "linux")]
 mod root_historical_task_read_protocol;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
