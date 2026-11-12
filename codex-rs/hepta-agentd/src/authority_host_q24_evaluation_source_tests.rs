@@ -143,3 +143,21 @@ fn independent_b_source_rejects_missing_evidence_duplicate_identity_and_time_rew
         .push(original.future_window_ids[0].clone());
     assert!(original.inputs().is_err());
 }
+
+#[test]
+fn independent_b_source_rejects_zero_probability_chosen_action_even_with_valid_totals() {
+    let mut original = source();
+    original.heldout[0].actions[0] = OriginalPolicyAction {
+        action_id: "left".into(),
+        behavior_probability_q32: 0,
+        candidate_probability_q32: 0,
+        baseline_probability_q32: 0,
+    };
+    original.heldout[0].actions.push(OriginalPolicyAction {
+        action_id: "right".into(),
+        behavior_probability_q32: ProbabilityQ32::ONE.raw(),
+        candidate_probability_q32: ProbabilityQ32::ONE.raw(),
+        baseline_probability_q32: ProbabilityQ32::ONE.raw(),
+    });
+    assert!(original.inputs().is_err());
+}

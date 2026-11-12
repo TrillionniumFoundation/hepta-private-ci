@@ -258,6 +258,12 @@ impl OriginalHoldoutSourceData {
             if !action_ids.contains(&chosen_action) {
                 return Err(io::Error::other("original chosen B action is absent"));
             }
+            if candidate.iter().any(|action| {
+                action.action_id == chosen_action
+                    && action.behavior_probability == ProbabilityQ32::ZERO
+            }) {
+                return Err(io::Error::other("original chosen B action has no support"));
+            }
             targets.push(HeldOutTarget {
                 decision_id: decision_id.clone(),
                 principal_lineage: id(&row.principal_lineage)?,
