@@ -1,6 +1,8 @@
 //! Actual journal/ACK/Control files with explicitly synthetic mechanism costs.
 //! An Advanced proposal here is a file-protocol fixture, not model execution.
 
+#![cfg(test)]
+
 use std::fs::OpenOptions;
 use std::io::Write;
 

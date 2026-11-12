@@ -2,6 +2,8 @@
 //! deployment claim. Every later publication, worker FD check and runtime
 //! transition uses the production implementation and original test issuers.
 
+#![cfg(test)]
+
 use std::sync::Arc;
 use std::time::Duration;
 

@@ -143,6 +143,31 @@ class OrdinaryOriginalCallersSourceClosureTests(unittest.TestCase):
             (A + "cell_q24_publication_root_stage.rs",),
         )
 
+    def test_original_generation_fixtures_cannot_supply_product_open_calls(self):
+        row = self.boundaries["post_a_artifact_existing_owner_open"]
+        for path in (
+            A + "neuron_generation_drained_test_support.rs",
+            A + "neuron_generation_runtime_test_support.rs",
+            A + "neuron_v13_generation_bootstrap_test_support.rs",
+            A + "neuron_v13_generation_initial_test_support.rs",
+            N + "cell_generation_test_support.rs",
+        ):
+            source = (ROOT / path).read_text()
+            with self.subTest(fixture=path):
+                actual = dict(self.index)
+                actual[path] = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+                PROOF._verify_boundary(ROOT, row, actual, ())
+                for attribute in ("", "// #![cfg(test)]", "#![cfg(any(test, unix))]"):
+                    changed = source.replace("#![cfg(test)]", attribute, 1)
+                    self.assertNotEqual(changed, source)
+                    altered = dict(self.index)
+                    altered[path] = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(changed))
+                    with self.assertRaisesRegex(
+                        PROOF.VerificationFailure,
+                        "unresolved possible LearningArtifactOwnerService::open receiver",
+                    ):
+                        PROOF._verify_boundary(ROOT, row, altered, ())
+
 
 if __name__ == "__main__":
     unittest.main()

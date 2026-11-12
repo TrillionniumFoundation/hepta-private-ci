@@ -1,6 +1,8 @@
 //! Real Fleet/journal/witness lifetimes with a file-backed control fixture.
 //! The fixture tests ownership and recovery, not model adoption or model quality.
 
+#![cfg(test)]
+
 use std::fs;
 use std::fs::OpenOptions;
 use std::future::Future;
