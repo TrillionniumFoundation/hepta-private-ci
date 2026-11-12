@@ -111,7 +111,7 @@ def main():
     ap.add_argument("--threads",type=int,default=4)
     args=ap.parse_args()
     if args.out.exists(): raise FileExistsError("output exists")
-    if not (1 <= args.threads <= 8): raise ValueError("invalid CPU threads")
+    if args.threads != 4: raise ValueError("frozen protocol requires exactly 4 CPU threads")
     if prior.sha256(args.plan) != contract.EXPECTED_PLAN_SHA:
         raise ValueError("precommitted plan bytes changed")
     plan=json.loads(args.plan.read_text())
@@ -120,7 +120,10 @@ def main():
     prior.check_archive(archive,args.archive,args.model,args.adapter_root)
     reference=check_previous(args.previous,tasks)
     input_paths={"plan":args.plan,"archive":args.archive,"previous":args.previous}
-    input_pins={name:prior.sha256(path) for name,path in input_paths.items()}
+    input_pins=contract.pin_files(input_paths)
+    source_paths={"runner":Path(__file__),"contract":Path(contract.__file__),
+                  "prior_helper":Path(prior.__file__)}
+    source_pins=contract.pin_files(source_paths)
     assets_before=contract.asset_manifest(args.model,args.adapter_root)
     evidence_dir=args.out.with_suffix(args.out.suffix+".evidence")
     evidence_dir.mkdir(parents=True,exist_ok=False)
@@ -152,9 +155,7 @@ def main():
             contract.write_json_exclusive(preexecution,{
                 "schema":"HPCA-FREEGEN-PREEXECUTION-1","run_id":journal.run_id,
                 "authority":"DENY_ALL_HOLD_NO_GO","source_parent":"87858f5a74a248344b99bb319d937487a13b4a8b",
-                "script_sha256":prior.sha256(__file__),
-                "contract_sha256":prior.sha256(contract.__file__),
-                "prior_helper_sha256":prior.sha256(prior.__file__),
+                "sources":source_pins,
                 "inputs":input_pins,
                 "assets":assets_before,"generation_config":resolved,
                 "runtime":{"torch":torch.__version__,"transformers":__import__("transformers").__version__,
@@ -191,8 +192,8 @@ def main():
               "TOKENS",runs[-1]["scores"]["generated_tokens"],
               "WALL",round(time.perf_counter()-t0,2),flush=True)
         del model; gc.collect()
-    if {name:prior.sha256(path) for name,path in input_paths.items()} != input_pins:
-        raise ValueError("frozen inputs changed during generation")
+    contract.require_file_pins(input_paths,input_pins)
+    contract.require_file_pins(source_paths,source_pins)
     if contract.asset_manifest(args.model,args.adapter_root) != assets_before:
         raise ValueError("model or tokenizer assets changed during generation")
     journal.append("rows_complete",rows=sum(len(run["predictions"]) for run in runs))
@@ -201,6 +202,7 @@ def main():
         "schema":SCHEMA,"authority":"DENY_ALL_HOLD_NO_GO",
         "execution_contract_sha256":prior.sha256(preexecution),
         "journal_sha256":prior.sha256(journal_path),"run_id":journal.run_id,
+        "source_files_unchanged":True,
         "status":"PUBLIC_OPERATOR_DIAGNOSTIC_NOT_INDEPENDENT",
         "max_new_tokens":MAX_NEW_TOKENS,"decoding":"greedy_unconstrained",
         "parse_rule":"leading_whitespace_then_yes_or_no_word_only",

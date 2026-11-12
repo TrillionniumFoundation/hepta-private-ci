@@ -3,6 +3,8 @@ import copy
 import json
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 
 import freegen_contract as contract
@@ -100,6 +102,30 @@ class RuntimeContractTests(unittest.TestCase):
             changed[0][key] = value
             with self.subTest(key=key), self.assertRaisesRegex(ValueError, "task changed"):
                 check_previous(HERE / "ACTUAL_OOD_FORWARD_RESULT.json", changed)
+
+    def test_changed_source_or_input_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "source.py"
+            path.write_text("original")
+            paths = {"runner": path}
+            pins = contract.pin_files(paths)
+            contract.require_file_pins(paths, pins)
+            path.write_text("mutated")
+            with self.assertRaisesRegex(ValueError, "frozen file bytes"):
+                contract.require_file_pins(paths, pins)
+
+    def test_changed_thread_budget_is_rejected_before_asset_loading(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for threads in (1, 8):
+                args = [sys.executable, str(HERE / "real_freegen.py")]
+                for key in ("plan", "archive", "previous", "model", "adapter-root", "out"):
+                    args += ["--" + key, str(Path(tmp) / key)]
+                args += ["--threads", str(threads)]
+                result = subprocess.run(args, capture_output=True, text=True, timeout=10)
+                with self.subTest(threads=threads):
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("exactly 4 CPU threads", result.stderr)
+                    self.assertEqual(list(Path(tmp).iterdir()), [])
 
     def test_partial_journal_retains_rows_without_a_completion_claim(self):
         with tempfile.TemporaryDirectory() as tmp:

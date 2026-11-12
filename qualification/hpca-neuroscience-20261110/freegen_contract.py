@@ -35,6 +35,15 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def pin_files(paths):
+    return {name: sha256(path) for name, path in paths.items()}
+
+
+def require_file_pins(paths, pins):
+    if pin_files(paths) != pins:
+        raise ValueError("frozen file bytes changed during generation")
+
+
 def asset_manifest(model_root, adapter_root):
     """Capture loadable file bytes; cache bookkeeping is not a model dependency."""
     roots = {"model": Path(model_root)}

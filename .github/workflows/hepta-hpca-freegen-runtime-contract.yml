@@ -23,6 +23,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+          sparse-checkout: qualification/hpca-neuroscience-20261110
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

@@ -30,7 +30,8 @@ PREEXECUTION.json is written with exclusive creation and fsync before the first
 model.generate. It includes all three frozen input digests, runner/helper
 digests, model and eight-adapter file manifests, runtime versions, special
 tokens and each prompt's exact input token IDs. Cache bookkeeping is excluded.
-The assets and frozen inputs are checked again before the result is published.
+The assets, frozen inputs and all three executing source files are checked again
+before the result is published. The original four-thread budget is enforced.
 
 ROWS.jsonl records a unique run ID, monotone sequence, condition and task for
 each start and every completed raw row. Completed rows include emitted token
@@ -53,9 +54,10 @@ eight-token decoding and prior two-choice scoring have different work costs.
 The targeted workflow uses Python 3.12, read-only repository permissions,
 checkout of the exact source head, a five-minute timeout and retained raw test
 logs. It runs the eight inherited parser tests, five plan tests, fifteen
-archived-forward/provenance tests and nine runtime-contract tests. The new
+archived-forward/provenance tests and eleven runtime-contract tests. The new
 negative cases cover hidden decoding controls, special-token changes, auxiliary
-asset changes, early task binding and interrupted/non-overwritable evidence.
+asset changes, source changes, thread-budget changes, early task binding and
+interrupted/non-overwritable evidence.
 This suite does not install or execute the pretrained model.
 
 At preparation time the managed executor became unavailable. The ai395
