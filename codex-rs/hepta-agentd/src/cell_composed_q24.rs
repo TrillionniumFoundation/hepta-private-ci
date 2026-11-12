@@ -65,6 +65,7 @@ pub(crate) use training_plan::OriginalQ24TrainingWorkDataV1;
 pub(crate) use training_plan::OriginalQ24TrainingWorkObservedV1;
 pub use training_plan::cell_q24_dataset_run_snapshot_digest_v1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
+#[cfg(test)]
 pub(crate) use training_plan::original_q24_work_contract;
 pub(crate) use training_plan::project_original_q24_dataset_v1;
 

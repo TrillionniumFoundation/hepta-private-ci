@@ -298,7 +298,7 @@ impl Fixture {
 
         crate::register_host_writer_authorization(&config_file)?;
         let (offer, receive) = UnixDatagram::pair()?;
-        let child = support::ChildOwner::spawn(receive, &state)?;
+        let child = support::ChildOwner::spawn(receive, &state, Phase::Restored)?;
         let pin = support::pidfd(child.pid()?)?;
         let end = Instant::now() + Duration::from_secs(2);
         while crate::authority_host_runtime::verify_process_credentials(child.pid()?, 60001, 60001)
