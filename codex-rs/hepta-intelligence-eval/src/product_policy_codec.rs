@@ -4,8 +4,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 use super::ProductEvaluationError;
-use super::ProductEvaluationPolicyContextV2 as Context;
-use super::ProductEvaluationPolicyInputV2 as Input;
+use super::ProductEvaluationPolicyContextV2 as PolicyMetadataContextV2;
+use super::ProductEvaluationPolicyInputV2 as PolicyMetadataInputV2;
 use crate::ClusterConfidencePlan;
 use crate::CrossFoldPartitionV1;
 use crate::EvaluationClaimScopeV1;
@@ -113,7 +113,7 @@ impl Writer {
     }
 }
 
-pub(super) fn encode(context: &Context, input: &Input) -> Result<Vec<u8>, ProductEvaluationError> {
+pub(super) fn encode(context: &PolicyMetadataContextV2, input: &PolicyMetadataInputV2) -> Result<Vec<u8>, ProductEvaluationError> {
     let mut out = Writer { bytes: Vec::new() };
     out.push(PREFIX)?;
     out.id(&context.plan_id)?;
@@ -279,7 +279,7 @@ impl<'a> Reader<'a> {
     }
 }
 
-pub(super) fn decode(bytes: &[u8]) -> Result<(Context, Input), ProductEvaluationError> {
+pub(super) fn decode(bytes: &[u8]) -> Result<(PolicyMetadataContextV2, PolicyMetadataInputV2), ProductEvaluationError> {
     if bytes.len() > MAX_BYTES {
         return Err(invalid());
     }
@@ -287,7 +287,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<(Context, Input), ProductEvaluation
     if source.take(PREFIX.len())? != PREFIX {
         return Err(invalid());
     }
-    let context = Context {
+    let context = PolicyMetadataContextV2 {
         plan_id: source.id()?,
         objective_digest: source.digest()?,
         family_alpha_ppm: source.u32()?,
@@ -361,7 +361,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<(Context, Input), ProductEvaluation
     if !source.bytes.is_empty() {
         return Err(invalid());
     }
-    Ok((context, Input {
+    Ok((context, PolicyMetadataInputV2 {
         claim_scope, base_estimand_digest, baseline_id,
         metric_contracts, metric_roles, metric_sources, folds,
     }))

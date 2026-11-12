@@ -526,76 +526,41 @@
         {
           "function": "fn plan(",
           "sequence": [
-            "let paired = pairing.canonical_commitment_bytes()?;",
-            "let mut bytes = b                                                            .to_vec();",
-            "for digest in [plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,",
-            "plan.base_estimand_digest, plan.candidate_temporal_plan_digest,",
-            "plan.baseline_temporal_plan_digest]",
-            "bytes.extend_from_slice(digest.as_array());",
-            "count(&mut bytes, paired.len())?;",
-            "bytes.extend_from_slice(&paired);",
-            "count(&mut bytes, plan.metric_contracts.len())?;",
-            "for contract in &plan.metric_contracts {",
-            "id(&mut bytes, &contract.metric_id);",
-            "bytes.push(match contract.direction {",
-            "EvaluationDirectionV1::Maximize => 0,",
-            "EvaluationDirectionV1::Minimize => 1,",
-            "match contract.safety_floor {",
-            "Some(value) => {",
-            "bytes.push(1);",
-            "bytes.extend_from_slice(&value.raw().to_be_bytes());",
-            "None => bytes.push(0),",
-            "count(&mut bytes, plan.metric_roles.len())?;",
-            "for role in &plan.metric_roles {",
-            "id(&mut bytes, &role.metric_id);",
-            "match role.role {",
-            "MetricRoleV2::PrimarySuperiority { minimum_improvement } => {",
-            "bytes.push(0);",
-            "bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());",
-            "MetricRoleV2::NonInferiority { maximum_regression } => {",
-            "bytes.push(1);",
-            "bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());",
-            "MetricRoleV2::AbsoluteConstraint => bytes.push(2),",
-            "count(&mut bytes, plan.metric_sources.len())?;",
-            "for source in &plan.metric_sources {",
-            "id(&mut bytes, &source.metric_id);",
-            "bytes.push(source.source.tag());",
-            "Ok(bytes)"
+            "fn plan(",
+            "plan: &ProductFrozenEvaluationPlanV1,\n    pairing: &OnPolicyPairingContractV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    plan_fields(\n        plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_contracts,\n        &plan.metric_roles, &plan.metric_sources,\n    )\n}"
           ],
           "top_level": [
-            "let paired = pairing.canonical_commitment_bytes()?;",
-            "count(&mut bytes, paired.len())?;",
-            "bytes.extend_from_slice(&paired);",
-            "count(&mut bytes, plan.metric_contracts.len())?;",
-            "count(&mut bytes, plan.metric_roles.len())?;",
-            "count(&mut bytes, plan.metric_sources.len())?;",
-            "Ok(bytes)"
+            "plan_fields("
+          ]
+        },
+        {
+          "function": "fn plan_fields(",
+          "sequence": [
+            "fn plan_fields(",
+            "plan_digest: Digest32,\n    metric_contract_digest: Digest32,\n    base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_contracts: &[crate::MetricContractV1],\n    metric_roles: &[crate::MetricRoleContractV2],\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let paired = pairing.canonical_commitment_bytes()?;\n    let mut bytes = b                                                            .to_vec();\n    for digest in [plan_digest, metric_contract_digest,\n        base_estimand_digest, candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, paired.len())?;\n    bytes.extend_from_slice(&paired);\n    count(&mut bytes, metric_contracts.len())?;\n    for contract in metric_contracts {\n        id(&mut bytes, &contract.metric_id);\n        bytes.push(match contract.direction {\n            EvaluationDirectionV1::Maximize => 0,\n            EvaluationDirectionV1::Minimize => 1,\n        });\n        match contract.safety_floor {\n            Some(value) => {\n                bytes.push(1);\n                bytes.extend_from_slice(&value.raw().to_be_bytes());\n            }\n            None => bytes.push(0),\n        }\n    }\n    count(&mut bytes, metric_roles.len())?;\n    for role in metric_roles {\n        id(&mut bytes, &role.metric_id);\n        match role.role {\n            MetricRoleV2::PrimarySuperiority { minimum_improvement } => {\n                bytes.push(0);\n                bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\n            }\n            MetricRoleV2::NonInferiority { maximum_regression } => {\n                bytes.push(1);\n                bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\n            }\n            MetricRoleV2::AbsoluteConstraint => bytes.push(2),\n        }\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}"
+          ],
+          "top_level": [
+            "let paired = pairing.canonical_commitment_bytes()?;"
           ]
         },
         {
           "function": "fn estimand(",
           "sequence": [
-            "let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {",
-            "return Err(ProductEvaluationError::Binding(",
-            "if plan.base_estimand_digest.is_zero()",
-            "plan.candidate_temporal_plan_digest.is_zero()",
-            "plan.baseline_temporal_plan_digest.is_zero()",
-            "return Err(ProductEvaluationError::Binding(",
-            "let mut bytes = b                                                              .to_vec();",
-            "for digest in [plan.base_estimand_digest, plan.candidate_temporal_plan_digest,",
-            "plan.baseline_temporal_plan_digest, pairing.digest()?]",
-            "bytes.extend_from_slice(digest.as_array());",
-            "count(&mut bytes, plan.metric_sources.len())?;",
-            "for source in &plan.metric_sources {",
-            "id(&mut bytes, &source.metric_id);",
-            "bytes.push(source.source.tag());",
-            "Ok(bytes)"
+            "fn estimand(",
+            "plan: &ProductFrozenEvaluationPlanV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\n        return Err(ProductEvaluationError::Binding(                      ));\n    };\n    estimand_fields(\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_sources,\n    )\n}"
           ],
           "top_level": [
-            "let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {",
-            "if plan.base_estimand_digest.is_zero()",
-            "count(&mut bytes, plan.metric_sources.len())?;",
-            "Ok(bytes)"
+            "let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {"
+          ]
+        },
+        {
+          "function": "fn estimand_fields(",
+          "sequence": [
+            "fn estimand_fields(",
+            "base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    if base_estimand_digest.is_zero()\n        || candidate_temporal_plan_digest.is_zero()\n        || baseline_temporal_plan_digest.is_zero()\n    {\n        return Err(ProductEvaluationError::Binding(                        ));\n    }\n    let mut bytes = b                                                              .to_vec();\n    for digest in [base_estimand_digest, candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest, pairing.digest()?] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}"
+          ],
+          "top_level": [
+            "if base_estimand_digest.is_zero()"
           ]
         },
         {
@@ -882,7 +847,14 @@
         "hepta.intelligence-eval.product-estimand.v1",
         "#[path = \"product_paired.rs\"]",
         "mod paired;",
-        "pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;"
+        "pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;",
+        "#[path = \"product_policy.rs\"]",
+        "mod policy;",
+        "pub use policy::ProductEvaluationPolicyV2;",
+        "pub use policy::ProductEvaluationPolicyContextV2;",
+        "pub use policy::ProductEvaluationPolicyInputV2;",
+        "pub use policy::ProductEvaluationPolicyBindingsV2;",
+        "pub use policy::ProductEvaluationPolicyCommitmentsV2;"
       ],
       "forbidden": [
         "SigningKey",
@@ -1002,54 +974,21 @@
         {
           "function": "fn freeze_product_evaluation_plan_v1(",
           "sequence": [
-            "if candidate_temporal.plan_digest.is_zero()",
-            "baseline_temporal.plan_digest.is_zero()",
-            "candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?",
-            "baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?",
-            "candidate_temporal.objective_digest != plan.objective_digest",
-            "baseline_temporal.objective_digest != plan.objective_digest",
-            "candidate_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm",
-            "baseline_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm",
-            "candidate_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons",
-            "baseline_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons",
-            "return Err(ProductEvaluationError::Binding(",
-            "if plan.metric_contracts.is_empty() || plan.estimand_digest.is_zero()",
-            "return Err(ProductEvaluationError::Binding(",
-            "let mut metric_contracts = plan.metric_contracts.clone();",
-            "metric_contracts.sort_by_key(|row| row.metric_id.clone());",
-            "metric_sources.sort_by_key(|row| row.metric_id.clone());",
-            "metric_roles.sort_by_key(|row| row.metric_id.clone());",
-            "if metric_sources.len() != metric_contracts.len()",
-            "metric_roles.len() != metric_contracts.len()",
-            "contract.metric_id != source.metric_id",
-            "contract.metric_id != role.metric_id",
-            "return Err(ProductEvaluationError::Binding(",
-            "let base_estimand_digest = plan.estimand_digest;",
-            "plan.estimand_digest = bound_estimand_digest(",
-            "base_estimand_digest,",
-            "candidate_temporal.plan_digest,",
-            "baseline_temporal.plan_digest,",
-            "&metric_sources,",
-            "let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;",
-            "let mut receipt = ProductFrozenEvaluationPlanV1 {",
-            "frozen_plan,",
-            "metric_roles,",
-            "metric_contracts,",
-            "metric_sources,",
-            "base_estimand_digest,",
-            "candidate_temporal_plan_digest: candidate_temporal.plan_digest,",
-            "baseline_temporal_plan_digest: baseline_temporal.plan_digest,",
-            "comparison: ProductComparisonModeV1::SharedBehavior,",
-            "receipt_seal: Digest32::ZERO,",
-            "receipt.receipt_seal = product_plan_seal(&receipt)?;",
-            "Ok(receipt)"
+            "fn freeze_product_evaluation_plan_v1(",
+            "mut plan: CrossFoldPlanV1,\n    mut metric_roles: Vec<MetricRoleContractV2>,\n    mut metric_sources: Vec<ProductMetricSourceContractV1>,\n    candidate_temporal: &TemporalEvaluationPlan,\n    baseline_temporal: &TemporalEvaluationPlan,\n) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\n    let metric_contracts = normalize_product_plan_inputs(\n        plan.objective_digest, plan.family_alpha_ppm, plan.simultaneous_comparisons,\n        plan.estimand_digest, &plan.metric_contracts, &mut metric_roles,\n        &mut metric_sources, candidate_temporal, baseline_temporal,\n    )?;\n\n    let base_estimand_digest = plan.estimand_digest;\n    plan.estimand_digest = bound_estimand_digest(\n        base_estimand_digest,\n        candidate_temporal.plan_digest,\n        baseline_temporal.plan_digest,\n        &metric_sources,\n    )?;\n    let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\n    let mut receipt = ProductFrozenEvaluationPlanV1 {\n        frozen_plan,\n        metric_roles,\n        metric_contracts,\n        metric_sources,\n        base_estimand_digest,\n        candidate_temporal_plan_digest: candidate_temporal.plan_digest,\n        baseline_temporal_plan_digest: baseline_temporal.plan_digest,\n        comparison: ProductComparisonModeV1::SharedBehavior,\n        receipt_seal: Digest32::ZERO,\n    };\n    receipt.receipt_seal = product_plan_seal(&receipt)?;\n    Ok(receipt)\n}"
           ],
           "top_level": [
-            "if candidate_temporal.plan_digest.is_zero()",
-            "let base_estimand_digest = plan.estimand_digest;",
-            "let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;",
-            "receipt.receipt_seal = product_plan_seal(&receipt)?;",
-            "Ok(receipt)"
+            "let metric_contracts = normalize_product_plan_inputs("
+          ]
+        },
+        {
+          "function": "fn normalize_product_plan_inputs(",
+          "sequence": [
+            "fn normalize_product_plan_inputs(",
+            "objective_digest: Digest32,\n    family_alpha_ppm: u32,\n    simultaneous_comparisons: u32,\n    estimand_digest: Digest32,\n    original_metric_contracts: &[MetricContractV1],\n    metric_roles: &mut [MetricRoleContractV2],\n    metric_sources: &mut [ProductMetricSourceContractV1],\n    candidate_temporal: &TemporalEvaluationPlan,\n    baseline_temporal: &TemporalEvaluationPlan,\n) -> Result<Vec<MetricContractV1>, ProductEvaluationError> {\n    if candidate_temporal.plan_digest.is_zero()\n        || baseline_temporal.plan_digest.is_zero()\n        || candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?\n        || baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?\n        || candidate_temporal.objective_digest != objective_digest\n        || baseline_temporal.objective_digest != objective_digest\n        || candidate_temporal.confidence.family_alpha_ppm != family_alpha_ppm\n        || baseline_temporal.confidence.family_alpha_ppm != family_alpha_ppm\n        || candidate_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons\n        || baseline_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons\n    {\n        return Err(ProductEvaluationError::Binding(               ));\n    }\n    if original_metric_contracts.is_empty() || estimand_digest.is_zero() {\n        return Err(ProductEvaluationError::Binding(                    ));\n    }\n    let mut metric_contracts = original_metric_contracts.to_vec();\n    metric_contracts.sort_by_key(|row| row.metric_id.clone());\n    metric_sources.sort_by_key(|row| row.metric_id.clone());\n    metric_roles.sort_by_key(|row| row.metric_id.clone());\n    if metric_sources.len() != metric_contracts.len()\n        || metric_roles.len() != metric_contracts.len()\n        || metric_contracts\n            .iter()\n            .zip(metric_sources.iter())\n            .any(|(contract, source)| contract.metric_id != source.metric_id)\n        || metric_contracts\n            .iter()\n            .zip(metric_roles.iter())\n            .any(|(contract, role)| contract.metric_id != role.metric_id)\n    {\n        return Err(ProductEvaluationError::Binding(                        ));\n    }\n\n    Ok(metric_contracts)\n}"
+          ],
+          "top_level": [
+            "if candidate_temporal.plan_digest.is_zero()"
           ]
         },
         {
@@ -1553,7 +1492,12 @@
         "pub use product_runner::OnPolicyPairingContractV1;",
         "pub use product_runner::OnPolicyTemporalComparisonInputsV1;",
         "pub use product_runner::ProductComparisonModeV1;",
-        "pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;"
+        "pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;",
+        "pub use product_runner::ProductEvaluationPolicyV2;",
+        "pub use product_runner::ProductEvaluationPolicyContextV2;",
+        "pub use product_runner::ProductEvaluationPolicyInputV2;",
+        "pub use product_runner::ProductEvaluationPolicyBindingsV2;",
+        "pub use product_runner::ProductEvaluationPolicyCommitmentsV2;"
       ],
       "forbidden": [
         "SigningKey",
@@ -1765,22 +1709,21 @@
         {
           "function": "fn freeze_cross_fold_plan_v2(",
           "sequence": [
-            "let mut contracts = plan.metric_contracts.clone();",
-            "let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;",
-            "let mut receipt = freeze_cross_fold_plan(plan)?;",
-            "let mut bytes = b                                            .to_vec();",
-            "bytes.extend_from_slice(receipt.plan_digest.as_array());",
-            "bytes.extend_from_slice(contract_digest.as_array());",
-            "receipt.plan_digest = Digest32::of_bytes(&bytes);",
-            "receipt.metric_contract_digest = contract_digest;",
-            "receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);",
-            "Ok(receipt)"
+            "fn freeze_cross_fold_plan_v2(",
+            "mut plan: CrossFoldPlanV1,\n    mut metric_roles: Vec<MetricRoleContractV2>,\n) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {\n    let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;\n    frozen_plan_from_commitments(plan, commitments)\n}"
           ],
           "top_level": [
-            "let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;",
-            "let mut receipt = freeze_cross_fold_plan(plan)?;",
-            "receipt.metric_contract_digest = contract_digest;",
-            "Ok(receipt)"
+            "let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;"
+          ]
+        },
+        {
+          "function": "fn cross_fold_plan_v2_commitments(",
+          "sequence": [
+            "fn cross_fold_plan_v2_commitments(",
+            "plan: &mut CrossFoldPlanV1,\n    metric_roles: &mut [MetricRoleContractV2],\n) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {\n    let mut contracts = plan.metric_contracts.clone();\n    let contract_digest = digest_role_contracts(&mut contracts, metric_roles)?;\n    let original = cross_fold_plan_commitments(plan)?;\n    let mut bytes = b                                            .to_vec();\n    bytes.extend_from_slice(original.plan_digest.as_array());\n    bytes.extend_from_slice(contract_digest.as_array());\n    Ok(CrossFoldPlanCommitmentsV2 {\n        metric_contract_digest: contract_digest,\n        plan_digest: Digest32::of_bytes(&bytes),\n    })\n}"
+          ],
+          "top_level": [
+            "let mut contracts = plan.metric_contracts.clone();"
           ]
         },
         {
@@ -3716,7 +3659,9 @@
           "inputs::validate_pair_contract(&pairing)?",
           "frozen.validate_integrity()?"
         ],
-        "product_callers": [],
+        "product_callers": [
+          "codex-rs/hepta-intelligence-eval/src/product_policy.rs"
+        ],
         "caller_markers": [
           "freeze_paired_on_policy_product_evaluation_plan_v1("
         ]
@@ -3818,7 +3763,9 @@
             "inputs::validate_pair_contract(&pairing)?",
             "frozen.validate_integrity()?"
           ],
-          "product_callers": [],
+          "product_callers": [
+            "codex-rs/hepta-intelligence-eval/src/product_policy.rs"
+          ],
           "caller_markers": [
             "freeze_paired_on_policy_product_evaluation_plan_v1("
           ]
@@ -3834,7 +3781,8 @@
             "frozen.validate_integrity()?"
           ],
           "product_callers": [
-            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+            "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+            "codex-rs/hepta-intelligence-eval/src/product_policy.rs"
           ],
           "caller_markers": [
             "freeze_paired_on_policy_product_evaluation_plan_v1("
@@ -4789,12 +4737,12 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
-      "function": "fn plan(",
+      "function": "fn plan_fields(",
       "marker": "let mut bytes = b\"hepta.intelligence-eval.product-frozen-paired-on-policy.v1\".to_vec();"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
-      "function": "fn estimand(",
+      "function": "fn estimand_fields(",
       "marker": "let mut bytes = b\"hepta.intelligence-eval.product-paired-on-policy-estimand.v1\".to_vec();"
     },
     {
@@ -7922,36 +7870,24 @@
     }
   ],
   "validation": {
-    "required": 98,
+    "required": 110,
     "order": 198,
-    "functions": 42,
-    "sequence": 799,
-    "top": 172,
+    "functions": 46,
+    "sequence": 714,
+    "top": 160,
     "errors": [],
-    "schema": {
-      "global_sequence_minimum": 2,
-      "function_sequence_minimum": 2,
-      "all_valid": true,
-      "original_verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
-      "literal_marker_helper_blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c"
-    },
     "negative": {
+      "name": "legacy",
+      "original_rows": 11,
       "deletion_mutations": 91,
-      "rejected": 91,
-      "unrejected": [],
-      "literal_original_code": 25,
-      "literal_changed_rejected": 25,
-      "literal_comment_decoys_rejected": 25,
+      "deletions_rejected": 91,
+      "literal_changes_rejected": 25,
+      "comment_decoys_rejected": 25,
       "forbidden_injections_rejected": 55,
-      "python_executed": false
+      "errors": []
     },
-    "forbidden_projection": {
-      "escaped_punctuation_corrected": true,
-      "original_python_unchanged": true,
-      "forbidden_injections": 55,
-      "rejected": 55
-    },
-    "method": "V8 transcription of the fixed original Python masking/order/top-level uniqueness rules plus explicit schema minimums and actual-code literal checks; not original Python, Rust, native or full typed-caller execution."
+    "legacy_functions_preserved": 13,
+    "method": "V8 projection of fixed original Python masks/order/source-literal rules only. Original Python and native were not executed on this successor."
   },
   "new_source_qa": {
     "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
@@ -7997,5 +7933,176 @@
     ],
     "executed": 0,
     "scope": "synthetic mechanism tests only; no actual B/inference/ordinary authority evidence"
-  }
+  },
+  "successor_policy_v2": {
+    "source_commit": "68e14a510bd4f89c5a8ae4816c9085bfe9d3d80c",
+    "parent": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "complete_rows_replaced": [
+      "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "codex-rs/hepta-intelligence-eval/src/metric_roles.rs"
+    ],
+    "literal_relocations": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+        "before": "fn plan(",
+        "after": "fn plan_fields("
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+        "before": "fn estimand(",
+        "after": "fn estimand_fields("
+      }
+    ],
+    "preserved_mutation_cases": 91,
+    "preserved_literal_cases": 25,
+    "preserved_legacy_functions": 13,
+    "preserved_qa_methods": 9,
+    "old_validation_not_reused": true,
+    "python_executed": false,
+    "native_executed": false
+  },
+  "validation_before_policy_v2": {
+    "required": 98,
+    "order": 198,
+    "functions": 42,
+    "sequence": 799,
+    "top": 172,
+    "errors": [],
+    "schema": {
+      "global_sequence_minimum": 2,
+      "function_sequence_minimum": 2,
+      "all_valid": true,
+      "original_verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "literal_marker_helper_blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c"
+    },
+    "negative": {
+      "deletion_mutations": 91,
+      "rejected": 91,
+      "unrejected": [],
+      "literal_original_code": 25,
+      "literal_changed_rejected": 25,
+      "literal_comment_decoys_rejected": 25,
+      "forbidden_injections_rejected": 55,
+      "python_executed": false
+    },
+    "forbidden_projection": {
+      "escaped_punctuation_corrected": true,
+      "original_python_unchanged": true,
+      "forbidden_injections": 55,
+      "rejected": 55
+    },
+    "method": "V8 transcription of the fixed original Python masking/order/top-level uniqueness rules plus explicit schema minimums and actual-code literal checks; not original Python, Rust, native or full typed-caller execution."
+  },
+  "source_pins_before_policy_v2": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+      "sha": "69ff98bd438b64e573289f7c444654020b4806e6",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_inputs.rs",
+      "sha": "7a4594464384af516182f9e35cd2f1a46e38b5c8",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "sha": "fdd76d44138b0369a04005dcd11c33309bbe9bb0",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_evaluation.rs",
+      "sha": "66bbd0256a08782314f575efffcb260f0aee0933",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_codec.rs",
+      "sha": "063c67b115a8b386ebcf4b2ee38a7231c0226e96",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "sha": "afee1a31f8b115c8ae7e356dbca8bb9ad243339e",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_material_commitments.rs",
+      "sha": "de8401e61ecf5a0aee9633d703ed49a0d2428538",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha": "f78e1b87e063c901989b6de6f8154867db250427",
+      "source": "e4a253087fe32a768455fee31fbb100ae8fcf362"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+      "sha": "be7f0e9ccd6ce2fed3fa635bb018cf70d62df75c",
+      "source": "48844493c046fdd79734ddd2c1866314023a15cb"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "sha": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+      "source": "48844493c046fdd79734ddd2c1866314023a15cb"
+    }
+  ],
+  "policy_v2_actual_source_pins": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy_tests.rs",
+      "sha": "cd29c732d217ad8cc10bc81d11350a2f9dae7934",
+      "bytes": 20971,
+      "sha256": "ab4beca719677fb0aa2567211094eff6b179cdb6db8a52d99999ac63607fd890",
+      "before": "b2c0d0d3a47bd70cea5d06910f3631e08b864bb3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "sha": "906a27dc43fe783b0432177dca63919ffee2ac44",
+      "bytes": 42111,
+      "sha256": "87fd42d541758953acdafdf1907aa72328554d2c88a8c28429a2c1710448222f"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "sha": "2c9bccd2d452a03ba7a223fcb4c11e885b447c6d",
+      "bytes": 7797,
+      "sha256": "7d391ab31d9f6fa9a0e9fa43ce4fb20d0860263da6908125f1445933b09d78ae"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha": "6fe617c550df20434100dd17f0bbaa07e41fd4f2",
+      "bytes": 43087,
+      "sha256": "814c03fb8abdc70ccf8929966797d84a069486d7166f9a4d1ce7683eeb6640f3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "sha": "0eed3b3553707b6e4fe00d83bfb27137c5d34542",
+      "bytes": 8332,
+      "sha256": "bf21f015311ebf69d3e35283ca68bc1014dc6251b4aed913282de4110d97a090"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha": "46d1eb4ded2eae1ce47ee0325604b84a65c5793c",
+      "bytes": 16628,
+      "sha256": "a08ae1fe78dffa3fae87e4bbaf2132de1a51a6aff94117666f3a2e742919bfc7"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+      "sha": "5f7d7c4164bde16a7d84645e631e4215c8c146a7",
+      "bytes": 8791,
+      "sha256": "f69cd6c1b0beb0b9a7203e177e862f08144a58e576697c94c691e46ca1f5e8e7",
+      "before": "fa12569244ad8fee9c707065e81d0760dfb677b3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs",
+      "sha": "7974b0498ccbb088a7f10751320628400cffa178",
+      "bytes": 13371,
+      "sha256": "6627ef11645a6c0a985892002ef736caf52979fa560f3715a94428ae2b6462db",
+      "before": "7e54d4f249236d2daba4ddd19ead75ba18e3e2d6"
+    }
+  ]
 }

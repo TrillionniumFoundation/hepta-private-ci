@@ -118,7 +118,7 @@ impl ProductEvaluationPolicyV2 {
             &mut input.metric_contracts, &mut input.metric_roles,
         )?;
         let policy = Self { context, input };
-        policy.canonical_commitment_bytes()?;
+        ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)?;
         Ok(policy)
     }
 
@@ -128,8 +128,8 @@ impl ProductEvaluationPolicyV2 {
         bytes: &[u8],
     ) -> Result<Self, ProductEvaluationError> {
         let (context, input) = codec::decode(bytes)?;
-        let policy = Self::freeze(context, input)?;
-        if policy.canonical_commitment_bytes()? != bytes {
+        let policy = ProductEvaluationPolicyV2::freeze(context, input)?;
+        if ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes {
             return Err(ProductEvaluationError::Binding("canonical policy bytes"));
         }
         Ok(policy)
@@ -140,7 +140,7 @@ impl ProductEvaluationPolicyV2 {
     }
 
     pub fn digest(&self) -> Result<Digest32, ProductEvaluationError> {
-        Ok(Digest32::of_bytes(&self.canonical_commitment_bytes()?))
+        Ok(Digest32::of_bytes(&ProductEvaluationPolicyV2::canonical_commitment_bytes(self)?))
     }
 
     pub fn context(&self) -> &ProductEvaluationPolicyContextV2 {

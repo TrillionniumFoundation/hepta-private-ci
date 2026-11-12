@@ -1,5 +1,6 @@
 //! Pure metadata and encoding mechanisms, not actual B runs or adoption evidence.
 use super::*;
+use pretty_assertions::assert_eq;
 use codex_hepta_types::FixedQ32;
 use crate::ClusterConfidencePlan;
 use crate::EvaluationDirectionV1;
@@ -285,9 +286,12 @@ fn policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_dat
     let pairing = pairing();
     let local = original.instantiate(&bindings, &pairing).expect("original freezer");
     let remote = original.expected_commitment_bytes(&bindings, &pairing).expect("raw expected bytes");
-    assert_eq!(remote.plan(), super::super::product_plan_commitment_bytes(&local).expect("original plan bytes"));
-    assert_eq!(remote.estimand(), super::super::plan_estimand_commitment_bytes(&local).expect("original estimand bytes"));
-    assert_eq!(remote.roles(), role_contract_commitment_bytes(&mut local.metric_contracts.clone(), &mut local.metric_roles.clone()).expect("original role bytes"));
+    let original_commitments = ProductEvaluationPolicyCommitmentsV2 {
+        plan: super::super::product_plan_commitment_bytes(&local).expect("original plan bytes"),
+        estimand: super::super::plan_estimand_commitment_bytes(&local).expect("original estimand bytes"),
+        roles: role_contract_commitment_bytes(&mut local.metric_contracts.clone(), &mut local.metric_roles.clone()).expect("original role bytes"),
+    };
+    assert_eq!(remote, original_commitments);
     assert_eq!(local.frozen_plan.authority, codex_hepta_types::AuthorityPosture::DENY_ALL);
     let cold = ProductEvaluationPolicyV2::from_canonical_commitment_bytes(&original.canonical_commitment_bytes().expect("policy bytes")).expect("metadata decode");
     assert_eq!(cold.expected_commitment_bytes(&bindings, &pairing), Ok(remote));
