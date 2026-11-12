@@ -40,6 +40,10 @@ mod publication_connection;
 pub(crate) use publication_connection::OriginalQ24SuccessorSession;
 pub use publication_connection::RootGenerationPublicationConnectionV1;
 pub(crate) use publication_connection::RootGenerationPublicationSlot;
+#[path = "root_historical_task_connection.rs"]
+mod historical_connection;
+pub(crate) use historical_connection::RootHistoricalTaskReadConnectionV1;
+use historical_connection::RootHistoricalTaskReadSlot;
 
 /// Retain `session` until the original runtime and recovered writer stop.
 /// Device and Notes are the actual two journal owners installed in that same
@@ -52,6 +56,7 @@ pub struct AgentdRootProductionInputs {
     pub grants: Arc<AgentdUnixFinalUseGrantProvider>,
     pub bootstrap: HostAuthorityPublicBootstrapV1,
     pub(crate) publication_connection: RootGenerationPublicationSlot,
+    pub(crate) historical_read_connection: RootHistoricalTaskReadSlot,
 }
 
 impl AgentdRootProductionInputs {
@@ -61,6 +66,13 @@ impl AgentdRootProductionInputs {
         &mut self,
     ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {
         self.publication_connection.take_original_connection()
+    }
+
+    pub(crate) fn take_historical_task_read_connection(
+        &mut self,
+    ) -> Result<RootHistoricalTaskReadConnectionV1, AgentdError> {
+        self.historical_read_connection
+            .take_original_connection(&self.session)
     }
 }
 
@@ -178,6 +190,9 @@ pub async fn receive_root_production_inputs(
     remaining(end)?;
     let publication_connection =
         RootGenerationPublicationSlot::capture_after_original_receive(&session, &bundle, expected)?;
+    let historical_read_connection = RootHistoricalTaskReadSlot::capture_after_original_receive(
+        &session, &bundle, expected, end,
+    )?;
     Ok(AgentdRootProductionInputs {
         session,
         checkpoint,
@@ -186,6 +201,7 @@ pub async fn receive_root_production_inputs(
         grants,
         bootstrap: bundle,
         publication_connection,
+        historical_read_connection,
     })
 }
 
