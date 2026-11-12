@@ -22,6 +22,13 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+/// Fixed Root deployment choice for a profile derived after Dataset freeze.
+/// Recovery never infers registration from a missing or partial store.
+pub(crate) enum OriginalDerivedLearningMode {
+    Register,
+    Reopen,
+}
+
 #[path = "authority_host_writer.rs"]
 mod writer;
 pub use writer::FreshHostCognitiveState;

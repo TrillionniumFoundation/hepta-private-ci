@@ -26,6 +26,9 @@ use crate::authority_host_runtime::verify_pinned_process;
 
 const OWNER: &str = "root-learning-checkpoint-v1";
 
+#[path = "authority_host_derived_learning_registration.rs"]
+mod derived;
+
 pub(crate) struct RegisteredHostLearningCheckpointV1 {
     pub(crate) backend: LearningIterationCheckpointOwnerV1,
     pub(crate) profile: HostAuthorityLearningProfileV1,
