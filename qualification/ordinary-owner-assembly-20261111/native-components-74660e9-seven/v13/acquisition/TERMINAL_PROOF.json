@@ -1,0 +1,61 @@
+{
+  "file": {
+    "bytes": 3721,
+    "sha256": "41cac044738c32bc9b24cc0d6f9722ae30ea89bd90b2e60b18dea57d8152b3e5",
+    "exit_code": 1
+  },
+  "chunks": [
+    {
+      "offset": 0,
+      "next_offset": 3154,
+      "bytes": 3154,
+      "sha256": "77266cb717288080592542e6d18393e983a43b800e374a20d7d795fe668c8c55",
+      "output_complete": false,
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 3154,
+        "bytes_stored": 3154,
+        "capture_error": null,
+        "created_unix_ms": 1794497189556,
+        "output_complete": false,
+        "owner_pid": 1255967,
+        "pid": 1255969,
+        "state": "running"
+      }
+    },
+    {
+      "offset": 3154,
+      "next_offset": 3721,
+      "bytes": 567,
+      "sha256": "89456566c39d46a36c7a8a912a9a01b893f70d133fcd2d22312e24ddc9c0e9d7",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 3721,
+        "bytes_stored": 3721,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794497189556,
+        "exit_code": 1,
+        "output_complete": true,
+        "owner_pid": 1255967,
+        "pid": 1255969,
+        "state": "exited"
+      },
+      "output_complete": true
+    }
+  ],
+  "complete": true,
+  "final_status": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 3721,
+    "bytes_stored": 3721,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794497189556,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 1255967,
+    "pid": 1255969,
+    "state": "exited"
+  }
+}
