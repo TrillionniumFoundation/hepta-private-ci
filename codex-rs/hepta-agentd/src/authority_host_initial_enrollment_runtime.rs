@@ -52,6 +52,7 @@ impl InitialEnrollmentContext<'_> {
             &self.initial.runtime.deployment,
             inputs,
         );
+        let enrolled = enrolled.map_err(|error| enrollment_error("profile enrollment", error));
         let enrollment_post = self.require_original_context(end);
         let slot: RegisteredGenerationInitial = enrolled?;
         if let Err(error) = enrollment_post {
@@ -74,7 +75,8 @@ impl InitialEnrollmentContext<'_> {
                         end,
                     )
                 })
-                .transpose()?;
+                .transpose()
+                .map_err(|error| enrollment_error("RunStart baseline", error))?;
             if let Some(source) = self.initial.runtime.source_capture.as_ref() {
                 let context = source_capture::SourceCaptureContext {
                     service: self.service,
@@ -85,8 +87,12 @@ impl InitialEnrollmentContext<'_> {
                     stopping: self.stopping,
                     end,
                 };
-                source.register_original_source_cell(context)?;
-                source.register_original_source_ledger(context)?;
+                source
+                    .register_original_source_cell(context)
+                    .map_err(|error| enrollment_error("Cell baseline", error))?;
+                source
+                    .register_original_source_ledger(context)
+                    .map_err(|error| enrollment_error("Ledger baseline", error))?;
             }
             RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?;
             Ok(run_start)
@@ -152,4 +158,8 @@ impl InitialEnrollmentContext<'_> {
             response_bound: 16 * 1024,
         })
     }
+}
+
+fn enrollment_error(stage: &str, error: io::Error) -> io::Error {
+    io::Error::new(error.kind(), format!("original Initial {stage}: {error}"))
 }

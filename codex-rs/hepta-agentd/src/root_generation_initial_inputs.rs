@@ -170,7 +170,8 @@ impl RootGenerationInitialHandoffV1 {
             },
             timeout,
             end,
-        )?;
+        )
+        .map_err(initial_stream_error)?;
         // The selected readiness mode may register Root's exact existing
         // inputs. Cancellation discards this stream and never retries; neither
         // branch prepares or publishes CURRENT during connection.
@@ -207,4 +208,11 @@ fn remaining_until(end: Instant) -> Result<Duration, AgentdError> {
 
 fn refused(message: impl Into<String>) -> AgentdError {
     AgentdError::GenerationFenced(message.into())
+}
+
+fn initial_stream_error(error: std::io::Error) -> std::io::Error {
+    std::io::Error::new(
+        error.kind(),
+        format!("construct original Initial stream: {error}"),
+    )
 }
