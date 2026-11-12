@@ -62,7 +62,10 @@ impl Fixture {
             ),
             (
                 "SPAWN_MARKER".to_owned(),
-                self.workspace.join("child-started.txt").display().to_string(),
+                self.workspace
+                    .join("child-started.txt")
+                    .display()
+                    .to_string(),
             ),
         ])
     }
@@ -109,12 +112,8 @@ fn elevated_raw_token_factories_refuse_live_base() -> Result<()> {
     // SAFETY: the primary base and capability remain live across both calls.
     unsafe {
         assert_unavailable(
-            crate::create_readonly_token_with_caps_and_user_from(
-                base.0,
-                &[cap.as_ptr()],
-                &[],
-            )
-            .map(OwnedToken),
+            crate::create_readonly_token_with_caps_and_user_from(base.0, &[cap.as_ptr()], &[])
+                .map(OwnedToken),
         );
         assert_unavailable(
             crate::create_workspace_write_token_with_caps_and_user_from(
@@ -212,7 +211,6 @@ async fn elevated_direct_session_refuses_before_side_effects() -> Result<()> {
             fixture.env(),
             /*proxy_enforced*/ false,
             /*network_proxy_restricting_sid*/ None,
-            WindowsSandboxProxySettingsMode::Reconcile,
             /*timeout_ms*/ Some(5_000),
             /*read_roots_override*/ None,
             /*read_roots_include_platform_defaults*/ true,
@@ -239,20 +237,22 @@ fn elevated_preparation_refuses_before_env_or_acl_changes() -> Result<()> {
             )?;
         let mut env = fixture.env();
         let original_env = env.clone();
-        assert_unavailable(crate::spawn_prep::prepare_elevated_spawn_context_for_permissions(
-            permissions,
-            &fixture.home,
-            &fixture.workspace,
-            &mut env,
-            &command(),
-            /*read_roots_override*/ None,
-            /*read_roots_include_platform_defaults*/ true,
-            /*write_roots_override*/ None,
-            &[],
-            &[],
-            /*proxy_enforced*/ false,
-            WindowsSandboxProxySettingsMode::Reconcile,
-        ));
+        assert_unavailable(
+            crate::spawn_prep::prepare_elevated_spawn_context_for_permissions(
+                permissions,
+                &fixture.home,
+                &fixture.workspace,
+                &mut env,
+                &command(),
+                /*read_roots_override*/ None,
+                /*read_roots_include_platform_defaults*/ true,
+                /*write_roots_override*/ None,
+                &[],
+                &[],
+                /*proxy_enforced*/ false,
+                WindowsSandboxProxySettingsMode::Reconcile,
+            ),
+        );
         assert_eq!(env, original_env);
         fixture.assert_unchanged()?;
     }
