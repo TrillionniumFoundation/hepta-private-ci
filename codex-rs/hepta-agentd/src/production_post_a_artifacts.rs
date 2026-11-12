@@ -160,11 +160,20 @@ impl OriginalArtifactPlan {
                             authority.now()?,
                         )?
                     };
-                    let published = driver.publish_candidate(request).await.map_err(refused)?;
+                    let published = OriginalCellQ24ArtifactPublicationDriverV1::publish_candidate(
+                        driver, request,
+                    )
+                    .await
+                    .map_err(refused)?;
                     head.require_unchanged()?;
                     (published, Some(head))
                 }
-                Mode::Recover => (driver.recover_published().await.map_err(refused)?, None),
+                Mode::Recover => (
+                    OriginalCellQ24ArtifactPublicationDriverV1::recover_published(driver)
+                        .await
+                        .map_err(refused)?,
+                    None,
+                ),
             };
             (Some(published), None, head)
         } else {
@@ -225,8 +234,16 @@ impl OriginalArtifactPlan {
             Ok(input)
         })?;
         let selected = match (published, retained) {
-            (Some(published), None) => published.accept_selection(input).await.map_err(refused)?,
-            (None, Some(retained)) => retained.accept_selection(input).await.map_err(refused)?,
+            (Some(published), None) => {
+                crate::OriginalCellQ24PublishedArtifactForRootV1::accept_selection(published, input)
+                    .await
+                    .map_err(refused)?
+            }
+            (None, Some(retained)) => {
+                OriginalCellQ24RetainedArtifactForRootV1::accept_selection(retained, input)
+                    .await
+                    .map_err(refused)?
+            }
             _ => return Err(refused("exact original Artifact branch required")),
         };
         let custody = OriginalArtifactCustody {

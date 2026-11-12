@@ -290,11 +290,9 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         ) -> io::Result<T>,
     ) -> io::Result<T> {
         OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |ledger| {
-            let (source, decision) = self
-                .data
-                .publication
-                .validate_against(ledger)
-                .map_err(io::Error::other)?;
+            let (source, decision) = crate::circuit_task_source_data::RootHistoricalTaskPublicationDataV1::validate_against(
+                &self.data.publication, ledger,
+            ).map_err(io::Error::other)?;
             action(&ledger.target, source, decision)
         })
     }

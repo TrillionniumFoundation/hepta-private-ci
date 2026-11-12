@@ -126,7 +126,9 @@ impl OriginalPostAContinuationV1 {
                 _ = tokio::time::sleep(post_a_remaining(end)?.min(Duration::from_millis(25))) => {}
             }
         }
-        source.require_current_historical_source(&identity)?;
+        RegisteredHistoricalLearningSourceV1::require_current_historical_source(
+            &source, &identity,
+        )?;
         trust.require_original_receipt(&receipt)?;
         let snapshot = tokio::select! {
             _ = cancelled.cancelled() => return Ok(()),
@@ -184,21 +186,26 @@ impl OriginalPostAContinuationV1 {
         if original_end != end {
             return Err(refused("original publication and continuation ends differ"));
         }
-        let driver = selected
-            .connect_current_until(
-                handoff,
-                connection,
-                post_a_remaining(end)?.min(Duration::from_millis(500)),
-                end,
-            )
-            .await
-            .map_err(refused)?;
+        let driver = crate::OriginalCellQ24SelectedArtifactForRootV1::connect_current_until(
+            selected,
+            handoff,
+            connection,
+            post_a_remaining(end)?.min(Duration::from_millis(500)),
+            end,
+        )
+        .await
+        .map_err(refused)?;
         material.require_unchanged()?;
         require_continuation(&state, &identity, &cancelled, end)?;
-        let prepared = driver
-            .prepare_original_successor(successor, predecessor, target, execution)
-            .await
-            .map_err(refused)?;
+        let prepared = crate::OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(
+            driver,
+            successor,
+            predecessor,
+            target,
+            execution,
+        )
+        .await
+        .map_err(refused)?;
         // The required successor worker retains both original journals across
         // this joined issuer call. Cancellation cannot spawn another attempt.
         let binding = prepared.final_use_binding().clone();
@@ -215,24 +222,30 @@ impl OriginalPostAContinuationV1 {
         .await
         .map_err(|_| refused("original FinalUse acknowledgement uncertain"))??;
         require_continuation(&state, &identity, &cancelled, end)?;
-        let installed = prepared.publish(signed).await.map_err(refused)?;
+        let installed = crate::OriginalQ24PreparedSuccessorV1::publish(prepared, signed)
+            .await
+            .map_err(refused)?;
         artifact_custody.require_original()?;
         task_custody.require_original()?;
         material.require_unchanged()?;
         require_continuation(&state, &identity, &cancelled, end)?;
-        let completed = installed
-            .original_installed_successor_ingress()?
-            .submit_until(ingress, end)
-            .await?;
+        let original_ingress =
+            crate::OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress(
+                &installed,
+            )?;
+        let completed =
+            crate::OriginalCircuitFeatureIngressV1::submit_until(&original_ingress, ingress, end)
+                .await?;
         require_continuation(&state, &identity, &cancelled, end)?;
         task_custody.require_original()?;
         artifact_custody.require_original()?;
         material.require_unchanged()?;
         let original = generation.into_original_handoff(completed)?;
-        owners
-            .install_circuit_feature_generation(snapshot, original)
-            .await
-            .map_err(refused)?;
+        OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(
+            &owners, snapshot, original,
+        )
+        .await
+        .map_err(refused)?;
         require_continuation(&state, &identity, &cancelled, end)?;
         // Retain actual custody until the supervised daemon shuts down. The
         // learner completes Selection/NextUse through its existing owner lane.
