@@ -1,0 +1,42 @@
+{
+  "decision": "HOLD_NO_GO",
+  "format_ASTs_unchanged": true,
+  "just_fmt": "exit0 after materializing repository formatter scaffold; qualification Python has no formatter owner, explicit Ruff format used",
+  "local_prior_source_archive_sha256": "2d3d0601fcb0c814a4fb180189d073af93d067ae636d6d4aff2e8bea3701feae",
+  "native_base_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "native_runtime": {
+    "python": "3.14.4",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "native_runtime_preflight_job": "1a1ce765903-2564-1693",
+  "native_tokenizer_markers": {
+    "No": [
+      5230
+    ],
+    "Yes": [
+      10539
+    ]
+  },
+  "new_model_generations": 0,
+  "review_fixes": [
+    "label bytes hash distinct from parse/use",
+    "completed generations distinct from attempts",
+    "cold and main use same durable per-attempt journal and fixed denominators"
+  ],
+  "schema": "hpca-routed-content-source-preflight-v1",
+  "separate_review_correction": "Template-label confound repaired before first model execution; original prepared commit878faaba retained",
+  "skipped": 0,
+  "source_sha256": {
+    "EVAL_LABELS.json": "7eb030572f8dccc0b9728966dc29307efed00d4424104e02aea916851018bdb1",
+    "PLAN.json": "b60ba8b2c4adc6556ef35d3115c5099b1a60f4d6f8a91634538c10e2b250fbdf",
+    "TASKS.json": "87a8caa9539642d7c0e0e0cd0b400b134a456e4565d01bf06521618471b31756",
+    "TRAIN_FEEDBACK.json": "6eb1856e01ad94462b44d1fdcc6ee2a32d93801da45652eaef642d3d2e756de7",
+    "build_data.py": "bd9313c17ba980f8652c2dbd3719cb07461271ff8a84cf4126c0618554d272cd",
+    "credit.py": "551e5a07ef22a0da0710223af163feb97ee6cb16055229a4584ba98b9be7684b",
+    "run.py": "cbb81cee166ce42c5caac5f560521945dfb7feefd7e480deb735255335e80cde"
+  },
+  "template_counts_file": "TEMPLATE_PREFLIGHT.json",
+  "tests": 6,
+  "tests_after_format": false
+}
