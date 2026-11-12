@@ -90,7 +90,7 @@ impl HostAuthorityService {
                         files: (*files.file_pins()).clone(),
                         metadata: files.deployment.metadata_digest().to_string(),
                         registered_at: now / 1_000,
-                        trust: trust.pin.clone(),
+                        trust: trust.pin,
                         phase: LedgerPhase::Enrolled,
                     };
                     let store = HostAuthorityFrontierStore::initialize(

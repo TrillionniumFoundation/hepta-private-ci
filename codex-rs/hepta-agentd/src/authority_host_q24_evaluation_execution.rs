@@ -245,12 +245,11 @@ impl OriginalBExecution {
                 "original B realized Training or plan changed",
             ));
         }
-        if let Some(head) = &enrollment.heads {
-            if actual.original_heads(namespace)? != *head
-                || actual.output_images(files)? != enrollment.output_images
-            {
-                return Err(io::Error::other("original B output rollback or rewrite"));
-            }
+        if let Some(head) = &enrollment.heads
+            && (actual.original_heads(namespace)? != *head
+                || actual.output_images(files)? != enrollment.output_images)
+        {
+            return Err(io::Error::other("original B output rollback or rewrite"));
         }
         files.require_original_files()?;
         Ok(actual)

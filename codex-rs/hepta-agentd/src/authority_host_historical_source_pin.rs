@@ -340,7 +340,6 @@ impl HostAuthorityService {
                                 access,
                             )?);
                             let decision = cell
-                                .as_deref_mut()
                                 .map(|cell| {
                                     cell.observe_and_retain_original_cell(
                                         slot,
@@ -352,7 +351,7 @@ impl HostAuthorityService {
                                     )
                                 })
                                 .transpose()?;
-                            if let Some(ledger) = ledger.as_deref_mut() {
+                            if let Some(ledger) = ledger {
                                 ledger.observe_and_retain_original_ledger(
                                     slot,
                                     ledger::OriginalLedgerCaptureDataV1 {
