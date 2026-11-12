@@ -145,12 +145,11 @@ impl<W: AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {
             #[cfg(test)]
             eprintln!("ROOT_INITIAL_FAILURE stage=live-current-guard error={error:?}");
         })?;
-        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)
-            .inspect_err(|error| {
-                let _ = error;
-                #[cfg(test)]
-                eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
-            })
+        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard).inspect_err(|error| {
+            let _ = error;
+            #[cfg(test)]
+            eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
+        })
     }
 }
 
