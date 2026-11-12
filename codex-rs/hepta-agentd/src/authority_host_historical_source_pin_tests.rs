@@ -28,8 +28,8 @@ fn target() -> anyhow::Result<(
     };
     let definition = cell::definition();
     let target = serde_json::from_value(serde_json::json!({
-        "scope": {"agent_id": source.scope.agent_id, "cell_id": source.scope.cell_id,
-            "run_id": source.scope.run_id, "principal_digest": source.scope.principal_digest.into_array()},
+        "scope": {"agent_id": source.scope.agent_id.as_str(), "cell_id": source.scope.cell_id.as_str(),
+            "run_id": source.scope.run_id.as_str(), "principal_digest": source.scope.principal_digest.into_array()},
         "manifest_digest": vec![1; 32], "source_frontier": source.source_frontier.into_array(),
         "task_digest": crate::circuit_feature_task_digest_v1(&definition, &source)?.into_array(),
         "initial_snapshot_digest": vec![2; 32], "config_digest": vec![3; 32], "generation": 1, "writer_epoch": 1

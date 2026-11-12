@@ -140,7 +140,8 @@ impl SourceDeploymentData {
             definition,
             source: CircuitTaskSourceInputV1 {
                 scope: CellScopeV1 {
-                    agent_id: identity.agent_id.clone(),
+                    agent_id: StableId::new(identity.agent_id.as_str())
+                        .map_err(io::Error::other)?,
                     cell_id: StableId::new(source.cell_id).map_err(io::Error::other)?,
                     run_id: StableId::new(source.run_id).map_err(io::Error::other)?,
                     principal_digest: Digest32::from_array(source.principal_digest),

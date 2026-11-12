@@ -186,7 +186,7 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
         self.rejects_removal(DATA, "into_inputs", (
             "self.definition.into_definition()?", "program.program_id == self.circuit.entry_program",
             "node_id: program.entry_node.clone()", "CircuitCellRegistryV1::new(self.circuit, vec![binding])",
-            "TaskFlowFence::new(", "identity.agent_id.clone()", "agent_id: identity.agent_id.clone()",
+            "TaskFlowFence::new(", "identity.agent_id.clone()", "agent_id: StableId::new(identity.agent_id.as_str())",
         ))
         self.rejects_removal(CELL, "into_definition", (
             "Generation::new(self.native.generation)", "Generation::new(runtime.generation)",
