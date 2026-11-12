@@ -42,7 +42,7 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
 
     def test_each_trust_operation_reactivates_before_and_after_the_callback(self):
         self.check_markers(TRUST, "fn with_current_trust<T>(", (
-            "self.with_original_operation(", "operation.read_for(self, &self.receipt, action)"))
+            "OriginalHistoricalLearningTrustV1::with_original_operation(", "OriginalHistoricalOperationV1::read_for(operation, self, &self.receipt, action)"))
         for occurrence in (0, 1):
             self.reject_removal(OPERATION, "fn with_original_operation<T, E>(",
                                 "self.current_operation_activation()?", occurrence)

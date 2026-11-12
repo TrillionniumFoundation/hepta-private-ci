@@ -62,7 +62,7 @@ class HistoricalFreezerSourceTests(unittest.TestCase):
         path = AGENT + "root_historical_learning_trust_client.rs"
         for occurrence in (0, 1):
             self.reject_removal(path, "fn original_unix_seconds(",
-                                "self.receipt\n                .client\n                .connection\n                .require_original_session()", occurrence)
+                                "RootHistoricalTaskReadConnectionV1::require_original_session(\n                &self.receipt.client.connection,\n            )", occurrence)
         self.check_markers(path, "fn original_unix_seconds(", (
             "self.receipt.client.fenced.load(Ordering::Acquire)", "self.clock.now_unix_ms()",
             "if result.is_err()", "self.receipt.client.fence()"))
