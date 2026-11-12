@@ -45,6 +45,26 @@ pub(super) async fn start(
     UnixFinalUseAuthorizer,
     tokio::task::JoinHandle<Result<serde_json::Value>>,
 )> {
+    start_with_withdrawal(
+        root,
+        subject_id,
+        source_reads,
+        reads_before_run,
+        /*withdrawal*/ None,
+    )
+    .await
+}
+
+pub(super) async fn start_with_withdrawal(
+    root: &Path,
+    subject_id: String,
+    source_reads: Arc<AtomicUsize>,
+    reads_before_run: usize,
+    withdrawal: Option<super::diagnostic::Withdrawal>,
+) -> Result<(
+    UnixFinalUseAuthorizer,
+    tokio::task::JoinHandle<Result<serde_json::Value>>,
+)> {
     std::fs::create_dir(root)?;
     std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))?;
     let socket = root.join("fixture.sock");
@@ -83,6 +103,10 @@ pub(super) async fn start(
             {
                 return Err("fixture claim did not follow the exact owner context read".into());
             }
+            let withdrawal = match withdrawal {
+                Some(withdrawal) => Some(withdrawal.commit().await?),
+                None => None,
+            };
             let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
             let grant = FinalUseGrant {
                 schema_version: 1,
@@ -112,6 +136,7 @@ pub(super) async fn start(
                 "source_checks_at_claim": reads_at_claim,
                 "source_checks_before_claim": reads_at_claim - reads_before_run,
                 "binding": request.binding,
+                "native_withdrawal": withdrawal,
             }))
         })
         .await
