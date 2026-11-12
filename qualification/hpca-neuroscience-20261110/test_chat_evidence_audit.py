@@ -110,6 +110,30 @@ class EvidenceAdmission(unittest.TestCase):
     def test_journal_row_equal_under_python_alias_is_rejected(self):
         self.rejects(lambda r, p, j: j[1]["row"].update(valid=0), "adjacent row completion")
 
+    def test_self_consistent_perfect_output_forgery_is_rejected(self):
+        def change(result, pre, journal):
+            # Forged text and parser flags, but unchanged real token IDs,
+            # preexecution/model/source identities and valid task labels.
+            for row in result["rows"]:
+                row["text"] = "Yes." if row["truth"] == "yes" else "No."
+                row["parsed"] = row["truth"]
+                row["valid"] = True
+                row["correct"] = True
+            for i, row in enumerate(result["rows"]):
+                journal[2 * i + 1]["row"] = copy.deepcopy(row)
+            result["summary"]["valid"] = 24
+            result["summary"]["correct"] = 24
+        self.rejects(change, "immutable original result receipt")
+
+    def test_self_consistent_cost_laundering_is_rejected(self):
+        def change(result, pre, journal):
+            # The old arithmetic audit has no immutable RESULT/JOURNAL anchor,
+            # so a forged process row with rehashed journal was admissible.
+            for i, row in enumerate(result["rows"]):
+                row["inference_wall_seconds"] = 0.0
+                journal[2 * i + 1]["row"] = copy.deepcopy(row)
+        self.rejects(change, "immutable original result receipt")
+
     def test_cli_rejects_under_python_optimized_mode(self):
         triple = self.mutated(lambda r, p, j: j[11].update(run_id="f"*32))
         with tempfile.TemporaryDirectory() as directory:
