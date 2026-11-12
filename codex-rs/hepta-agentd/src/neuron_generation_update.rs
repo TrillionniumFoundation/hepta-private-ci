@@ -197,6 +197,14 @@ where
 }
 
 impl<Old: AnchorWitnessStore, New: AnchorWitnessStore> PreparedAgentdGenerationUpdateV1<Old, New> {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn issue_original_root_final_use(&self) -> Result<SignedFinalUseGrant, AgentdError> {
+        NeuronGenerationCurrentOwnerV1::issue_original_prepared_final_use(
+            &self.current,
+            &self.prepared,
+        )
+    }
+
     pub(crate) fn from_parts(
         current: Arc<NeuronGenerationCurrentOwnerV1>,
         authorities: AgentdGenerationUpdateAuthoritiesV1,

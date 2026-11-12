@@ -19,6 +19,8 @@ use crate::neuron_generation_current::types::Published;
 mod stream;
 pub(crate) use stream::OriginalPublicationStream;
 
+#[path = "root_generation_current_grant.rs"]
+mod grant;
 #[path = "root_generation_current_history.rs"]
 mod history;
 
@@ -33,6 +35,7 @@ pub(crate) struct RootGenerationCurrentClient {
     connection: crate::RootGenerationPublicationConnectionV1,
     lane: Mutex<Option<Lane>>,
     fenced: AtomicBool,
+    grant_attempted: AtomicBool,
 }
 
 /// An original CURRENT transition may have completed before acknowledgement
@@ -82,6 +85,7 @@ impl RootGenerationCurrentClient {
             || profile.digest()? != profile.binding
             || profile.intent.supersedes.is_some()
             || response.successor.is_some()
+            || response.grant.is_some()
             || !matches!(
                 profile.intent.completion,
                 crate::NeuronGenerationPredecessorCompletionV1::OwnerDrained
@@ -103,6 +107,7 @@ impl RootGenerationCurrentClient {
                 sequence: 2,
             })),
             fenced: AtomicBool::new(false),
+            grant_attempted: AtomicBool::new(false),
         })
     }
 
@@ -221,7 +226,7 @@ impl RootGenerationCurrentClient {
 
     fn exchange(&self, command: Command) -> Result<CurrentHead, AgentdError> {
         let response = self.exchange_response(command)?;
-        if response.successor.is_some() {
+        if response.successor.is_some() || response.grant.is_some() {
             self.fence();
             return Err(uncertain());
         }
@@ -247,7 +252,7 @@ impl RootGenerationCurrentClient {
                 Command::ReadFinalizedTask {}
             };
             let response = self.exchange_response(command)?;
-            if response.head.current != self.profile.intent.target {
+            if response.head.current != self.profile.intent.target || response.grant.is_some() {
                 return Err(uncertain());
             }
             let data = response.successor.ok_or_else(uncertain)?;
