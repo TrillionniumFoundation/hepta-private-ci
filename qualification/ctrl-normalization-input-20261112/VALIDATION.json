@@ -1,0 +1,275 @@
+{
+  "schema": "ctrl.normalization.independent-public-input-validation.v1",
+  "status": "MECHANICAL_REGRESSION_ONLY",
+  "base_commit": "ded3f65bd1f084d52e4cd14454f3469df549274c",
+  "base_tree": "1ba1e1a7a80479235899e1f5394b27ce8c05fd28",
+  "producer_fix_commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "production_changed_in_this_bundle": false,
+  "source": {
+    "original_macro_policy_sha256": "a88154901909ed670059710a764e3e1c93053ed473b1a60a9d34c52216b23ee2",
+    "ded3_macro_policy_sha256": "179bfcd6d436e7a28d1171d58715e96993cfc81b1e3c7af9fa08e037324d885b",
+    "strict_checkpoint_sha256": "829098d6eca3851ccc11eceaf7d8efdc468826f032a97ccb4ccc27c9654f371a",
+    "strict_checkpoint_blob": "98f9cc578f65db968cfbab2e1f9a01e16538992a",
+    "strict_checkpoint_tests_sha256": "bb14699402d8565bdf9c22c4dbb89e5d9eac62ce2e621c35b500ee3a37234d27",
+    "strict_checkpoint_tests_blob": "bcdefa49cef143a810e5c8239c699e50699b926d",
+    "unchanged_parser_exact_equal": true
+  },
+  "original_host_diagnostic": {
+    "analysis": {
+      "bytes": 7906,
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ctrl_macro_analysis.py",
+      "sha256": "405adc87e62fb849468446437305ccc9d412e1ca9b3a3f669dd60d4eae9df426"
+    },
+    "bad_normalization_columns": [
+      {
+        "center": 3.713572066704305,
+        "center_hex": "0x1.db565458eac47p+1",
+        "distance_ulps": -7,
+        "index": 46,
+        "maximum": 3.713572066704308,
+        "maximum_hex": "0x1.db565458eac4ep+1",
+        "minimum": 3.713572066704308,
+        "minimum_hex": "0x1.db565458eac4ep+1",
+        "scale": 1
+      }
+    ],
+    "counts": {
+      "exported_pairs": 126,
+      "planned_pairs": 126,
+      "unknown_pairs": 0
+    },
+    "driver": {
+      "bytes": 21372,
+      "path": "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts/ctrl_macro_study.py",
+      "sha256": "12f118fc1be4f904119e224466124b7599bea6bc8a3496b2bdf8c0da289be5b0"
+    },
+    "export": {
+      "bytes": 2358551,
+      "path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/EXPORT.json",
+      "sha256": "1e686def4a809f40a96f56e3dc5ecbbcf90bc0df81bb51cf9a0164652d917a1f"
+    },
+    "export_pin": {
+      "canonical_sha256": "2425a692c6fc47412c91e9209dbb057b96643701a85397118ac76b00c4090ae7"
+    },
+    "failure": {
+      "error": "Invalid normalization or observed envelope",
+      "error_type": "ValueError",
+      "scope": "driver stage; original actor terminal states unchanged",
+      "time_ns": 1794468221228427500
+    },
+    "failure_file": {
+      "bytes": 193,
+      "path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/FIT_FAILED.json",
+      "sha256": "b32ea76a6ba3b70ba3305e89df6f3e3e895d79ad59e5196319fd8434cdeb2b42"
+    },
+    "fitter_sha256": "4aaa32aaa44a93d5659c35593f4634a75d304256186e481229338793788aa950",
+    "frozen": {
+      "bytes": 189780,
+      "path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/FROZEN.json",
+      "sha256": "5ec574f35366cbffb12555832dc611a722e92d72ea3c709feaa838f6d619cf27"
+    },
+    "kind": "diagnostic",
+    "known_train_rows": 72,
+    "minimum_scale": 0.13080679272937057,
+    "numpy": "1.26.4",
+    "scope": "Read-only original inputs; no fit/collect/model/actor invoked",
+    "shape": [
+      72,
+      47
+    ],
+    "source_groups": 24,
+    "source_manifest": {
+      "controllers.py": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b",
+      "critic_context.py": "425c8765faada326f3e600b0fcac8fff6b17b60affff73e1f8341ad907de282c",
+      "macro_policy.py": "a88154901909ed670059710a764e3e1c93053ed473b1a60a9d34c52216b23ee2",
+      "macro_policy_checkpoint.py": "829098d6eca3851ccc11eceaf7d8efdc468826f032a97ccb4ccc27c9654f371a",
+      "macro_public_state.py": "be578497e21dfd72fc97786cf89b1a4875b786fb809c060def9dde0588fa228e",
+      "metacontrol.py": "fe8bc87a6e75cbe63fe831a7974ee76373e1a584b168420a81d33bc2063efe01",
+      "metacontrol_macro_contract.py": "6fb926e56ef82b85ab28e9b64861c398a567f029d316dcb35b7a3a782e2f35ea",
+      "objective.py": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd"
+    },
+    "train_rows": 72,
+    "weights": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "local_tool_observations": {
+    "representation": "Transcribed from completed exec tool results; these are observations, not archived original local log bytes.",
+    "original_producer_regression": {
+      "source_commit": "0696d242632bd1bad6668267c52b0bd791241504",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_macro_policy.MacroPolicyTest.test_original_public_states_survive_fit_and_strict_cold_load"
+      ],
+      "exit_code": 1,
+      "tests": 1,
+      "errors": 1,
+      "error": "Invalid normalization or observed envelope",
+      "elapsed_seconds": 0.5313680039998872
+    },
+    "ded3_regression": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_macro_policy",
+        "ndu_real_runtime.test_macro_policy_checkpoint"
+      ],
+      "exit_code": 0,
+      "tests": 26,
+      "policy_tests": 19,
+      "checkpoint_tests": 7,
+      "reported_test_seconds": 0.334,
+      "elapsed_seconds": 0.7000394070000766,
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "numpy": "2.3.5",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+    },
+    "final_format": {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.27198362600029213,
+      "tested_source_and_fixture_bytes_unchanged_after_format": true,
+      "no_tests_rerun_after_final_format": true
+    },
+    "prior_format_attempt": {
+      "exit_code": 1,
+      "reason": "Recursive bare just executable was missing from PATH; final run included the existing tool directory in PATH."
+    },
+    "original_local_logs_archived": false,
+    "unavailable_local_log_root": "/workspace/scratch/862531d11598/neuro-normalization-work",
+    "unavailable_local_logs": [
+      "BASELINE_REGRESSION.json",
+      "BASELINE_REGRESSION.stderr.log",
+      "BASELINE_REGRESSION.stdout.log",
+      "DED3_TESTS.json",
+      "DED3_TESTS.stderr.log",
+      "DED3_TESTS.stdout.log",
+      "DED3_FORMAT.json",
+      "DED3_FORMAT.stderr.log",
+      "DED3_FORMAT.stdout.log"
+    ],
+    "boundary": "Scratch exec-server disconnected after successful validation and before log packaging; no raw local logs are synthesized or represented as archived."
+  },
+  "postimages": [
+    {
+      "path": ".github/workflows/hepta-ctrl-critic-contracts.yml",
+      "sha": "e7c15f256d69f7a3e2bacbc9ed0725e32b02774c",
+      "sha256": "43fb3be1bf859355d101d1d427a0939995695f035499c4725dbe3aeed86da3ca",
+      "bytes": 7842
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_macro_policy.py",
+      "sha": "6bdf36d52e4e10a2836ef5edc6d66abcd603ce2f",
+      "sha256": "4f1585de7f8da55a92ff214e0d70b2ec784a9da6f0bfa883ba6bebcf5705d30d",
+      "bytes": 14463
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_macro_policy_normalization_fixture.json",
+      "sha": "d48b4722860e9cd64a41d1ec7b2d2deff97022ac",
+      "sha256": "69198b53fe426f0f28b25d9cd58de99fdd88b1cad6428d53aacfa2b453679582",
+      "bytes": 21287
+    }
+  ],
+  "complete_public_input": {
+    "bytes": 54038,
+    "sha256": "426ff918e7cf38defddecfbb4b92acb8e506dbda247da2b7534a4f7c615cc90f",
+    "rows": 72,
+    "width": 47,
+    "anonymous_source_groups": 24,
+    "full_original_export_copied": false,
+    "original_outcomes_in_fixture": false
+  },
+  "original_host_output": {
+    "bytes": 27051,
+    "sha256": "9ae78ee81ad8dcfcdddca62cc758c9b0cffc65217a8387196ce25e3ad715d0be",
+    "session_id": "dpty-896c4928ffcda271bede61cc67266c62fe4ccf4968a6a9daa33e8bb44a4c403e",
+    "exit_code": 0,
+    "output_complete": true,
+    "read_only": true
+  },
+  "limitations": [
+    "Public inputs and source grouping are original; outcome/receipt rows and calibration are manufactured unit-test fixtures.",
+    "The tested serializer/strict-loader roundtrip is in the same process. It is not a fresh-process restore or a valid original-driver checkpoint.",
+    "No fit/collect/actor was invoked on the host; no old run, START, pin, source manifest, or EXPORT was changed.",
+    "No scientific efficacy, full-cost, independent confirmation, native owner, or durable-cadence blocker is closed by this bundle."
+  ]
+}
