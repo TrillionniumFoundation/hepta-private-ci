@@ -1,0 +1,36 @@
+test_active_flow_matches_independent_serial_ctmc_and_signed_marks (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_active_flow_matches_independent_serial_ctmc_and_signed_marks) ... ok
+test_backward_continuation_is_consistent_with_actual_delayed_flow (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_backward_continuation_is_consistent_with_actual_delayed_flow) ... ok
+test_exact_phase_atom_releases_at_its_deadline (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_exact_phase_atom_releases_at_its_deadline) ... ok
+test_invalid_phase_budget_reset_and_initial_boundary_atom_fail_closed (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_invalid_phase_budget_reset_and_initial_boundary_atom_fail_closed) ... ok
+test_same_law_uniform_basis_integrals_refine_without_relaxing_one_percent (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_same_law_uniform_basis_integrals_refine_without_relaxing_one_percent) ... ok
+test_time_tightening_and_irregular_queries_converge_to_serial_reference (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_time_tightening_and_irregular_queries_converge_to_serial_reference) ... ok
+test_uniform_phase_release_matches_independent_matrix_quadrature (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_uniform_phase_release_matches_independent_matrix_quadrature) ... ok
+test_upper_escape_is_retained_active_and_exposes_returning_tail_difference (qualification.hcsn_joint_dde.test_model.TestJointDelayReset.test_upper_escape_is_retained_active_and_exposes_returning_tail_difference) ... ok
+test_graded (unittest.loader._FailedTest.test_graded) ... ERROR
+test_cold_process_resumes_actual_history_and_absolute_discount_clock (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_cold_process_resumes_actual_history_and_absolute_discount_clock) ... ok
+test_digest_model_source_clock_and_missing_history_fail_closed (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_digest_model_source_clock_and_missing_history_fail_closed) ... ok
+test_equal_summary_moments_do_not_replace_the_remaining_age_law (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_equal_summary_moments_do_not_replace_the_remaining_age_law) ... ok
+test_official_graded_model_continues_from_its_own_retained_history (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_official_graded_model_continues_from_its_own_retained_history) ... ok
+test_pending_sources_and_actual_restore_budget_are_validated (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_pending_sources_and_actual_restore_budget_are_validated) ... ok
+test_portable_flux_coefficients_equal_actual_bdf_dense_output (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_portable_flux_coefficients_equal_actual_bdf_dense_output) ... ok
+test_repeated_restart_preserves_uniform_age_and_once_only_atom_release (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_repeated_restart_preserves_uniform_age_and_once_only_atom_release) ... ok
+test_resumed_finite_reward_and_continuation_share_the_same_generator (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_resumed_finite_reward_and_continuation_share_the_same_generator) ... ok
+test_zero_deadline_atom_is_not_paid_twice_after_restore (qualification.hcsn_joint_dde.test_state.TestPersistentJointState.test_zero_deadline_atom_is_not_paid_twice_after_restore) ... ok
+
+======================================================================
+ERROR: test_graded (unittest.loader._FailedTest.test_graded)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_graded
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/4092c1be8e0c/hcsn-state/qualification/hcsn_joint_dde/test_graded.py", line 11, in <module>
+    from .short_gap_reference import basis
+ModuleNotFoundError: No module named 'qualification.hcsn_joint_dde.short_gap_reference'
+
+
+----------------------------------------------------------------------
+Ran 18 tests in 8.294s
+
+FAILED (errors=1)
