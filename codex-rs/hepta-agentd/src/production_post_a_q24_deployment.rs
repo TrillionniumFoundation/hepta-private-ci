@@ -85,6 +85,7 @@ impl Deployment {
             return Err(refused("post-A identity, SGD or capacity differs"));
         }
         StableId::new(&data.snapshot_id).map_err(refused)?;
+        owners::StageFilesData::require_original_training_capacity(&data.stages)?;
         Ok(data)
     }
 

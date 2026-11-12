@@ -297,7 +297,7 @@ impl OriginalCircuitFeatureIngressV1 {
             {
                 let completed = self.readback()?;
                 completed.require_original_admission(&expected)?;
-                if original_end.is_some_and(|end| Instant::now() >= end) {
+                if original_end.is_some() && Instant::now() >= deadline {
                     return Err(invalid("original Feature completion exceeded session end"));
                 }
                 Ok(completed)
