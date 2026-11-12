@@ -1,12 +1,20 @@
-# Visit-897 N128 source-migration VJP exact-migration successor
+# Visit-897 N128 source-migration VJP reviewer-schema successor
 
 Global status: **HOLD / NoUpdate / all_closed=false**.
 
-This is a separately frozen successor to Draft #6266 at
-`37672f24f828989f328de42dbd7b70603038e04a`. It does not inherit numerical
+This is a separately frozen successor to Draft #6267 at
+`833aead36dfd889d693d31b6f001f96f950e3a32`. It does not inherit numerical
 qualification from that failed predecessor or from #6265's static CLEAR. All
-five predecessor RED/UNKNOWN records remain explicit in `REQUEST.json`;
+six predecessor RED/UNKNOWN records remain explicit in `REQUEST.json`;
 unrelated negative and `UNKNOWN` records are unchanged.
+
+Draft #6267 run `43275048169` / job `131381121252` stopped before candidate
+import because its reviewer compared a five-field provenance object to a
+three-field object. GitHub reports no artifact for that run. Its unique key is
+burned and its zero numerical counters remain retained. This successor changes
+only that reviewer assertion: the three zero-mismatch values and the exact
+`exporter_operation` and `accumulation` provenance strings are required
+individually. No original byte gate is dropped or weakened.
 
 ## Original-byte justification for the minimal fix
 
@@ -64,9 +72,9 @@ of 125 coordinates. Averaging and error cancellation cannot pass a gate.
 ## Source, resource and mutation closure
 
 Before importing the candidate, the workflow must bind every hash in
-`SOURCE.json`, the exact #6266 parent, the original law, N128 metadata/NPZ and
+`SOURCE.json`, the exact #6267 parent, the original law, N128 metadata/NPZ and
 `qualification/hcsn_initial_law/migration.py`. It must run the repository's
-pinned formatter against the exact #6266 base and leave a clean tree.
+pinned formatter against the exact #6267 base and leave a clean tree.
 
 The child is single-threaded and capped at 3 GiB address space, 900 CPU seconds
 and 1000 wall seconds. The host must expose at least 4 GiB `MemAvailable`
