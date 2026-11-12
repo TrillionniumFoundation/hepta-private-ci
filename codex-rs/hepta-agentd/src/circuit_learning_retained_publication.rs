@@ -45,10 +45,21 @@ pub(crate) mod version;
 mod binding;
 #[path = "circuit_learning_retained_context.rs"]
 mod context;
+#[path = "circuit_evaluated_retention_context.rs"]
+mod evaluated_context;
+#[path = "circuit_evaluated_retention_publication.rs"]
+mod evaluated_publication;
+#[path = "circuit_evaluated_retention_recovery.rs"]
+mod evaluated_recovery;
 #[path = "circuit_learning_retained_recovery.rs"]
 mod recovery;
 pub use context::OriginalCircuitRetainedPublicationContextV1;
 use context::PublicationAccess;
+pub use evaluated_context::OriginalCircuitEvaluatedRetentionContextV1;
+pub use evaluated_publication::PreparedOriginalCircuitEvaluatedRetentionV1;
+pub use evaluated_publication::prepare_original_circuit_evaluated_retention_v1;
+pub use evaluated_recovery::OriginalCircuitEvaluatedRetentionRecoveryV1;
+pub use evaluated_recovery::recover_original_circuit_evaluated_retention_v1;
 pub use recovery::OriginalCircuitRetainedPublicationRecoveryV1;
 pub use recovery::recover_original_circuit_retained_publication_v1;
 
@@ -66,6 +77,8 @@ pub enum OriginalCircuitRetainedPublicationErrorV1 {
     CommitUncertain(String),
     #[error("original Trainer readback: {0}")]
     Training(#[from] OriginalCellQ24TrainingCommandErrorV1),
+    #[error("original Evaluator readback: {0}")]
+    Evaluation(#[from] crate::OriginalCellEvaluationCommandErrorV1),
     #[error("original version owner: {0}")]
     Owner(#[from] AgentdError),
     #[error("original iteration: {0}")]

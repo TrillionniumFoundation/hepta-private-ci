@@ -825,6 +825,10 @@ pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
 #[cfg(target_os = "linux")]
 pub(crate) use circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitEvaluatedRetentionContextV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitEvaluatedRetentionRecoveryV1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitLearningReadClientV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitLearningReadContextV1;
@@ -861,6 +865,8 @@ pub use circuit_feature_current::OriginalCircuitRetainedVersionReadbackV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitRetainedVersionRecoveryV1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::PreparedOriginalCircuitEvaluatedRetentionV1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::PreparedOriginalCircuitRetainedPublicationV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
@@ -873,7 +879,11 @@ pub use circuit_feature_current::PublishedCircuitFeatureTaskV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::circuit_feature_task_digest_v1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::prepare_original_circuit_evaluated_retention_v1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::prepare_original_circuit_retained_publication_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::recover_original_circuit_evaluated_retention_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::recover_original_circuit_retained_publication_v1;
 pub use circuit_learning_delivery::deliver_circuit_learning_v1;
