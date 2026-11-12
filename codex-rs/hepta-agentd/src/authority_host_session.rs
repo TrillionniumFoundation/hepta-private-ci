@@ -24,6 +24,9 @@ mod historical_read;
 #[path = "authority_host_q24_model_session.rs"]
 mod q24_model;
 
+#[path = "authority_host_q24_evaluation.rs"]
+mod q24_evaluation;
+
 #[path = "authority_host_generation_initial_session.rs"]
 mod generation_initial;
 pub use generation_initial::RootGenerationInitialDeploymentFilesV1;
