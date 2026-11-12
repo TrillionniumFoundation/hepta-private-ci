@@ -1,0 +1,248 @@
+{
+  "schema": "hepta.mem12.native-recovered-evidence.v1",
+  "publication_state": "original_archive_and_readbacks_complete; continuation_01_memory11_verified; continuation_02_original_job_running_result_pending",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "evidence_parent_commit": "2bcb8e5f16c0b544294f11a1eafa1bfc281cc714",
+  "evidence_parent_tree": "7b00738682218215f928f6361a01e9c7b9171fb6",
+  "tested_source": {
+    "commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+    "before": {
+      "commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+      "tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+      "status": ""
+    },
+    "after": {
+      "commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+      "tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+      "status": ""
+    },
+    "source_unchanged": true,
+    "postimage_count": 25,
+    "postimages_before_equal_after": true,
+    "scope": "original attempt and continuation 01 memory software tests only; not the full evidence-branch tree, MEM13, or MEM14"
+  },
+  "original_attempt": {
+    "job_id": "1a1cea67111-2564-1763",
+    "terminal_state": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "result_status": "incomplete",
+    "strict_isolation": {
+      "passed": 8,
+      "failed": 0,
+      "admission_cases": 6,
+      "linux_namespace_cases": 2
+    },
+    "memory_episodic": {
+      "status": "build_failed",
+      "phase_exit_code": 101,
+      "rust_tests_executed": 0,
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "cause": "aws-lc-sys bindgen Clang 21 could not find stddef.h during cargo test --no-run"
+    },
+    "not_run": [
+      "agentd-episodic",
+      "agentd-qualification-profile",
+      "native-delivery",
+      "protocol",
+      "scoped-fix"
+    ],
+    "final_format": {
+      "passed": true,
+      "source_unchanged": true
+    },
+    "new_real_model_calls": 0,
+    "scored_memory_benefit_episodes": 0,
+    "adoption_decision": "HOLD",
+    "collection_observation": {
+      "selection_error": "missing fresh JUnit",
+      "original_collector_path_correct": true,
+      "earlier_original_collector_defect_hypothesis_withdrawn": true,
+      "nextest_version": "0.9.151",
+      "resolved_default_store": "workspace_root/target/nextest/<profile>",
+      "cargo_target_dir_changes_default_nextest_store": false,
+      "continuation_changed_junit_location": "incorrect target-dir-based collector path; original correct-path JUnit, receipt, and log recovered and verified without rerun",
+      "original_build_failure": "independently established before Rust test execution",
+      "official_sources": [
+        {
+          "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.151/nextest-runner/default-config.toml#L4-L7",
+          "blob_sha": "c95b05aec8508f1e4e2093578662219471c82b3e",
+          "supports": "default store.dir is target/nextest under workspace root"
+        },
+        {
+          "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.151/nextest-runner/src/config/core/imp.rs#L824-L825",
+          "blob_sha": "1426673a747d0f10af531458a6b81584cd078bc1",
+          "supports": "store directory joins workspace root, store.dir, and profile name"
+        },
+        {
+          "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.151/nextest-runner/src/config/core/imp.rs#L1232-L1241",
+          "blob_sha": "1426673a747d0f10af531458a6b81584cd078bc1",
+          "supports": "JUnit configuration uses the resolved profile store directory"
+        }
+      ]
+    }
+  },
+  "environment_repair": {
+    "status": "prepared",
+    "source_modification": false,
+    "system_packages_modified": false,
+    "package": "libclang-common-21-dev",
+    "version": "1:21.1.8-6ubuntu1",
+    "deb_sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+    "build_environment": {
+      "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/mem12-native-qualification-20261112-ef0c/clang-resources-v1/sysroot/usr/lib/llvm-21/lib/clang/21"
+    },
+    "tests_executed": 0,
+    "new_model_calls": 0
+  },
+  "continuation": {
+    "job_id": "1a1ceb9bc10-2564-1808",
+    "idempotency_key": "mem12-native-unexecuted-continuation-811e0e27-20261112-ef0c-v1",
+    "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "submitted_script_sha256": "d37221226cf88a644f72f034ab22c37e616a3702e84775c9cf1d553f4efff292",
+    "launch_confirmed": true,
+    "published_archive_observation": {
+      "archive": "/home/qq/work/mem12-native-qualification-20261112-ef0c/native-continuation-811e0e27-01.tar.xz",
+      "bytes": 147044,
+      "sha256": "8f08e07e530eff7e5d3ce1ae70848559044d9790f2f0262e74da61447e120380",
+      "result": "/home/qq/work/mem12-native-qualification-20261112-ef0c/continuation-811e0e27-01/RESULT.json",
+      "status": "incomplete"
+    },
+    "stage_result_readback": "complete",
+    "pass_count_claimed": 11,
+    "strict_isolation_rerun": false,
+    "scope": "previously unexecuted Rust phases on 811e0e27; no MEM13/MEM14 compilation claim",
+    "pass_count_scope": "memory episodic only",
+    "failed_test_count": 0,
+    "skipped_test_count": 0,
+    "memory_command_exit_code": 0,
+    "memory_supervisor_status": "passed",
+    "memory_runner_phase_status": "failed",
+    "memory_runner_selection_error": "missing fresh JUnit",
+    "false_failure_cause": "incorrect continuation collector path; original workspace JUnit recovered and bound to original log and receipt",
+    "junit": {
+      "bytes": 2717,
+      "sha256": "6c3e2fbc6551df44daa77d4b74349eee80afcf0d3237318759f7f2d03ea02af2",
+      "run_uuid": "372c4563-0ab7-41df-ac66-f2a8d9c87bb8",
+      "uuid_matches_original_log": true,
+      "all_case_timestamps_within_original_receipt": true
+    },
+    "terminal": {
+      "state": "failed",
+      "exit_code": 1,
+      "timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true
+    },
+    "source_unchanged": true,
+    "source_postimages_equal_original_attempt": true,
+    "final_format_passed": true,
+    "native_contracts_passed": false,
+    "not_run_in_continuation_01": [
+      "verified-v8",
+      "codex-build",
+      "agentd-episodic",
+      "agentd-qualification-profile",
+      "native-delivery",
+      "protocol",
+      "scoped-fix"
+    ],
+    "new_real_model_calls": 0,
+    "scored_memory_benefit_episodes": 0,
+    "adoption_decision": "HOLD",
+    "result_sha256": "056a621308278d52bc2c20561a64e85c680770ff33c4447bdbb8a5ab018fc1f0",
+    "original_result_preserved_without_status_rewrite": true,
+    "published_archive_downloaded_for_this_publication": false
+  },
+  "artifacts": {
+    "checkpoint": {
+      "file": "checkpoint.tar.xz",
+      "bytes": 44896,
+      "sha256": "d319fb380bbdb105b2143015ad0492c8f8f44868341ef9082a3f27d8a6039ecd",
+      "members": 16,
+      "all_member_hashes_verified": true
+    },
+    "original_remote_archive": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/native-811e0e27.tar.xz",
+      "bytes": 149224,
+      "sha256": "5c04dd9bef70c43b6a338f44a254e4b28f4e0533c756a4cba733aeb47882ed7a",
+      "whole_archive_locally_verified": true,
+      "recovery_state": "complete",
+      "file": "native-811e0e27.tar.xz",
+      "tar_member_count": 101,
+      "regular_file_count": 75,
+      "original_manifest_entries": 74,
+      "all_original_manifest_hashes_verified": true,
+      "source_postimages_verified": 25
+    },
+    "original_result": {
+      "bytes": 20931,
+      "sha256": "34ad8d821103393df9778496c5dd031eb72bea415cf2769fe82a41420286b556"
+    },
+    "original_terminal_sdk": {
+      "bytes": 905,
+      "sha256": "7068402bff42661c1a28196a226d32f268ee101988adbe4067a24bbcc83a67fa"
+    },
+    "memory_log": {
+      "bytes": 27203,
+      "sha256": "2b6ccb11939d21dc1fba4222638a99d419b96f97fc722b7f43a7b7204f060602"
+    },
+    "strict_isolation_log": {
+      "bytes": 1578,
+      "sha256": "6f8659860935c75bb8d3838b1e21393906e72722652590f7a7d487d1e809ebbd"
+    },
+    "archive_recovery": {
+      "file": "archive-recovery.tar.xz",
+      "bytes": 488692,
+      "sha256": "20fe0d412dd12f0a99915d17d0193653013b959f064dbc6b2fe319933a51d400",
+      "members": 38,
+      "all_member_hashes_verified": true
+    },
+    "continuation_recovery": {
+      "file": "continuation-recovery.tar.xz",
+      "bytes": 49512,
+      "sha256": "05207753a6fad0ebc8a14eba24913462ef15bc9925b67f792e67dd99bf126cde",
+      "members": 14,
+      "all_member_hashes_verified": true
+    }
+  },
+  "recovery_boundaries": {
+    "native_jobs_started_by_this_publication_task": 0,
+    "model_calls_started_by_this_publication_task": 0,
+    "tests_run_by_this_publication_task": 0,
+    "history_rewritten": false,
+    "merge_performed": false,
+    "prior_negative_model_evidence_preserved_in_parent": true
+  },
+  "continuation_02_handoff": {
+    "submitted_script": {
+      "path": "continuation-recovery/continuation-02/continue_native_811e0e27_02.py",
+      "bytes": 20240,
+      "sha256": "38dcba3805a83ddf980d27d53c4263fcc261b209b2630c4991cf0142839bd0b7"
+    },
+    "idempotency_key": "mem12-native-unexecuted-continuation02-811e0e27-20261112-ef0c-v1",
+    "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "acknowledgement": "initial UNKNOWN; subsequent exact same-key reconciliation returned original running job",
+    "job_id": "1a1cedb0568-2564-18ae",
+    "result": "not established",
+    "scope": "submitted script and durable original-job reconciliation only; intended to skip prior strict8/memory11; no later test execution outcome is claimed",
+    "initial_unknown_record_preserved": true,
+    "observed_state": "running",
+    "reused": true,
+    "retried_launch": false,
+    "submission": {
+      "bytes": 22104,
+      "sha256": "d0624aaab93673bc379fc1879440e02c923852e1d8022401a3b9606c33d2f543"
+    },
+    "reconciliation": {
+      "bytes": 25334,
+      "sha256": "7649c6d5d666b9fc8296492ee64411a978799cfc5905d78a1de62bf5be40329a"
+    }
+  }
+}
