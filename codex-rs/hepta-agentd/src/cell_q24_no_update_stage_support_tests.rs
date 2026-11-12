@@ -31,6 +31,8 @@ fn material_only(
             dataset,
             trainer_initial: None,
             trainer: None,
+            version_initial: None,
+            version: None,
             selector_initial: None,
             selector: None,
             next_use_initial: None,

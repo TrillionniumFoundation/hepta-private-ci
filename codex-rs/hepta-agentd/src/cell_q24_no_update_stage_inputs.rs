@@ -46,6 +46,7 @@ pub struct OriginalCellQ24NoUpdateStageStreamsV1 {
     pub dataset: OriginalCellQ24NoUpdatePeerStreamV1,
     pub trainer: OriginalCellQ24NoUpdatePeerStreamV1,
     pub selector: OriginalCellQ24NoUpdatePeerStreamV1,
+    pub version: OriginalCellQ24NoUpdateTaskStreamV1,
     pub next_use: OriginalCellQ24NoUpdatePeerStreamV1,
     pub completion: OriginalCellQ24NoUpdateTaskStreamV1,
 }
@@ -63,6 +64,7 @@ pub(super) fn bind(
                   &streams.selector, &streams.next_use] {
         require_timing(input.timeout, input.lifetime, Duration::from_secs(30))?;
     }
+    require_timing(streams.version.timeout, streams.version.lifetime, Duration::from_secs(30))?;
     require_timing(streams.completion.timeout, streams.completion.lifetime,
                    Duration::from_millis(500))?;
     for (input, stage) in [
@@ -78,11 +80,11 @@ pub(super) fn bind(
     }
     let lifetime = [
         streams.experience.lifetime, streams.dataset.lifetime, streams.trainer.lifetime,
-        streams.selector.lifetime, streams.next_use.lifetime, streams.completion.lifetime,
+        streams.selector.lifetime, streams.version.lifetime, streams.next_use.lifetime, streams.completion.lifetime,
     ].into_iter().min().ok_or(Error::WrongScope)?;
     let end = admitted_at.checked_add(lifetime).ok_or(Error::WrongScope)?;
     let OriginalCellQ24NoUpdateStageStreamsV1 {
-        experience: e, dataset: d, trainer: t, selector: s, next_use: c, completion: p,
+        experience: e, dataset: d, trainer: t, selector: s, version: v, next_use: c, completion: p,
     } = streams;
     let experience = match origin {
         Origin::Fresh => OriginalCellQ24MaterialCommandClientV1::from_original_experience_stream(
@@ -111,6 +113,11 @@ pub(super) fn bind(
             t.timeout, t.lifetime,
         ),
     }.map_err(|_| Error::OwnerUnavailable("original Trainer initial channel"))?;
+    let version = original_owner_command_channel_v1(
+        v.stream, v.peer, v.uid, v.original_task_pidfd, v.timeout, v.lifetime,
+    ).map_err(|_| Error::OwnerUnavailable("original independent Version channel"))?;
+    version.check_peer_lifetime()
+        .map_err(|_| Error::OwnerUnavailable("original independent Version peer"))?;
     let selector = role_channel(s)?;
     let next_use = role_channel(c)?;
     let completion = original_owner_command_channel_v1(
@@ -129,7 +136,7 @@ pub(super) fn bind(
         origin,
         end,
         continuation: Mutex::new(Continuation::new(
-            experience, dataset, trainer, selector, next_use, completion,
+            experience, dataset, trainer, selector, version, next_use, completion,
         )),
         root: None,
     })

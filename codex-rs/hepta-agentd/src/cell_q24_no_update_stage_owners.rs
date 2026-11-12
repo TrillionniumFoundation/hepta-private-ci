@@ -61,7 +61,7 @@ pub struct OriginalCellQ24NoUpdateStageOwnersV1 {
 
 impl OriginalCellQ24NoUpdateStageOwnersV1 {
     /// Descriptor checks are bounded synchronous I/O on the original host lane.
-    /// All six original channels are bound now, before D/T/S or C completion.
+    /// All seven original channels are bound now, before D/T/S or C completion.
     pub fn from_original_streams(
         material: OriginalCellQ24MaterialReceiptConfigV1,
         streams: OriginalCellQ24NoUpdateStageStreamsV1,

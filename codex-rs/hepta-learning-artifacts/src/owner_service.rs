@@ -29,6 +29,9 @@ use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
+#[path = "owner_service_readback.rs"]
+mod readback;
+
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
     pub root: PathBuf,
@@ -424,6 +427,10 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 }
 
 #[cfg(test)]
+#[path = "owner_service_readback_tests.rs"]
+mod publication_readback_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -446,10 +453,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-service-{}-{id}",
@@ -467,19 +474,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("stable id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn key() -> SigningKey {
+    pub(super) fn key() -> SigningKey {
         SigningKey::from_bytes(&[9u8; 32])
     }
 
-    fn scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -499,7 +506,7 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
@@ -511,7 +518,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut lease = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -529,7 +536,7 @@ mod tests {
         lease
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,

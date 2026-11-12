@@ -26,14 +26,11 @@ CONTEXT = AGENT + "circuit_learning_retained_context.rs"
 BINDING = AGENT + "circuit_learning_retained_binding.rs"
 RECOVERY = AGENT + "circuit_learning_retained_recovery.rs"
 EXPECTED = {
-    "learning_retained_publication_context": (),
-    "learning_retained_publication_prepare": (),
+    "learning_retained_publication_context": ('codex-rs/hepta-agentd/src/circuit_retained_version_context.rs',),
+    "learning_retained_publication_prepare": ('codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs',),
     "learning_retained_publication_publish": (),
     "learning_retained_publication_recover": (),
-    "learning_original_training_command_client_readback": (
-        AGENT + "cell_q24_no_update_stage_state.rs",
-        CONTEXT,
-    ),
+    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
 }
 
 
@@ -106,6 +103,53 @@ class RetainedPublicationClosureTests(unittest.TestCase):
                     PROOF._verify_boundary(ROOT, row, extra, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
+    def test_version_final_artifact_read_follows_control_and_source_io(self):
+        path = AGENT + "circuit_retained_version_state.rs"
+        source = (ROOT / path).read_text()
+        last = "let last = state.observe_phase()?;"
+        artifact = "let after = state.artifacts.read_current()?;"
+        self.assertIn(last + "\n        " + artifact, source)
+        self.rejects_source(path, source.replace(
+            last + "\n        " + artifact,
+            artifact + "\n        " + last,
+            1,
+        ))
+        for marker in (
+            "artifact::require_same(&before, &after)?",
+            "if first != last",
+            ".require_fresh(started, PublicationAccess::Readback)?",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn read_original(", marker)
+
+    def test_version_exports_remain_inside_the_linux_module_boundary(self):
+        source = (ROOT / AGENT / "lib.rs").read_text()
+        names = (
+            "OriginalCircuitRetainedVersionClientV1",
+            "OriginalCircuitRetainedVersionHostV1",
+            "OriginalCircuitRetainedVersionRecoveryV1",
+            "OriginalCircuitRetainedArtifactCheckpointV1",
+            "OriginalCircuitRetainedTaskInputsV1",
+            "OriginalCircuitRetainedVersionErrorV1",
+            "OriginalCircuitRetainedVersionPublicationV1",
+            "OriginalCircuitRetainedVersionReadbackV1",
+            "OriginalCircuitRetainedPublicationContextV1",
+        )
+        attribute = '#[cfg(target_os = "linux")]\n'
+
+        def require_linux_exports(text):
+            self.assertIn(attribute + "mod circuit_feature_current;", text)
+            for name in names:
+                self.assertIn(attribute + f"pub use circuit_feature_current::{name};", text)
+
+        require_linux_exports(source)
+        for name in names:
+            export = f"pub use circuit_feature_current::{name};"
+            with self.subTest(export=name):
+                changed = source.replace(attribute + export, export, 1)
+                with self.assertRaises(AssertionError):
+                    require_linux_exports(changed)
+
     def test_context_requires_actual_opaque_training_and_strict_no_update(self):
         for marker in (
             "original: &OriginalCellQ24TrainingCommandReceiptV1",
@@ -167,7 +211,7 @@ class RetainedPublicationClosureTests(unittest.TestCase):
             "Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)",
         ):
             with self.subTest(marker=marker):
-                self.rejects(MAIN, "fn publish_original_retained_task(", marker)
+                self.rejects(MAIN, "fn publish_and_retain_original_trainer(", marker)
         for marker in (
             "task.require_current()?",
             "require_previous(context, previous)?",
@@ -224,7 +268,7 @@ class RetainedPublicationClosureTests(unittest.TestCase):
         self.rejects(MAIN, "fn require_not_cancelled(", "cancelled.load(Ordering::Acquire)")
         for function in (
             "fn prepare_original_circuit_retained_publication_v1<",
-            "fn publish_original_retained_task(",
+            "fn publish_and_retain_original_trainer(",
         ):
             with self.subTest(function=function):
                 self.rejects(MAIN, function, "QueuedPublicationFence::new()")

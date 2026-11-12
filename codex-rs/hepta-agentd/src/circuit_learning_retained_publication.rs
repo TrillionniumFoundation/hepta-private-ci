@@ -38,6 +38,9 @@ use crate::PreparedAgentdGenerationUpdateV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::PublishedCircuitFeatureTaskV1;
 
+#[path = "circuit_retained_version.rs"]
+pub(crate) mod version;
+
 #[path = "circuit_learning_retained_binding.rs"]
 mod binding;
 #[path = "circuit_learning_retained_context.rs"]
@@ -179,6 +182,15 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         self,
         signed: SignedFinalUseGrant,
     ) -> Result<PublishedCircuitFeatureTaskV1, OriginalCircuitRetainedPublicationErrorV1> {
+        self.publish_and_retain_original_trainer(signed).await.map(|(task, _trainer)| task)
+    }
+
+    // Only the retained Version host descendant keeps this same original
+    // readback client. No getter, clone, reopen or new execution brand exists.
+    async fn publish_and_retain_original_trainer(
+        self,
+        signed: SignedFinalUseGrant,
+    ) -> Result<(PublishedCircuitFeatureTaskV1, OriginalCellQ24TrainingCommandClientV1), OriginalCircuitRetainedPublicationErrorV1> {
         self.context.require_training_current(&self.trainer, PublicationAccess::NewWork).await?;
         let queued = QueuedPublicationFence::new();
         let cancelled = Arc::clone(&queued.cancelled);
@@ -197,10 +209,11 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         }).await.map_err(uncertain)??;
         drop(queued);
         context.require_training_current(&trainer, PublicationAccess::NewWork).await.map_err(uncertain)?;
-        tokio::task::spawn_blocking(move || {
+        let task = tokio::task::spawn_blocking(move || {
             binding::require_published(&context, &task, PublicationAccess::NewWork).map_err(uncertain)?;
             Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)
-        }).await.map_err(uncertain)?
+        }).await.map_err(uncertain)??;
+        Ok((task, trainer))
     }
 }
 

@@ -19,6 +19,8 @@ use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCircuitCompletionReadinessClientV1;
 use crate::OriginalCircuitNextUseCommandClientV1;
 use crate::OriginalCircuitSelectionCommandClientV1;
+use crate::OriginalCircuitRetainedVersionClientV1;
+use crate::OriginalCircuitRetainedVersionErrorV1;
 use crate::RootResidentLearningEffectGateV3;
 
 impl OriginalCellQ24NoUpdateStageOwnersV1 {
@@ -43,13 +45,19 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
         match stage {
             Stage::Experience | Stage::Dataset => {}
             Stage::Training => state.ensure_trainer(self).await?,
-            Stage::Selection => state.ensure_selector(self).await?,
+            Stage::Selection => state.ensure_version(self).await?,
             Stage::NextUse => {
                 state.ensure_next_use(self).await?;
                 state.ensure_readiness(self)?;
             }
             Stage::Evaluation | Stage::Proposal =>
                 return Err(Error::OwnerUnavailable("original Candidate requires its separate route")),
+        }
+        if stage == Stage::Selection {
+            self.prepare_retained_version(snapshot, &mut state).await?;
+            // Only an actual original published C task permits Selector's
+            // late binding; a prepared intent is not an adopted version.
+            state.ensure_selector(self).await?;
         }
         let ready = if stage == Stage::NextUse {
             Some(self.await_completed_c(snapshot, &mut state).await?)
@@ -132,6 +140,45 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
         let original = state.records.get(index).ok_or(Error::CommitUncertain)?;
         auth::verify_receipt(&self.material, &receipt, &original.1, fresh)?;
         Ok(receipt)
+    }
+
+    async fn prepare_retained_version(
+        &self, snapshot: &LearningIterationSnapshotV1, state: &mut Continuation,
+    ) -> Result<(), Error> {
+        let gate = self.root.as_ref().ok_or(Error::OwnerUnavailable("fresh resident Version effect"))?;
+        RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?;
+        let client = state.version.as_ref().ok_or(Error::CommitUncertain)?;
+        let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);
+        let dispatched = OriginalCircuitRetainedVersionClientV1::prepare_original_version(
+            client, cancellation,
+        ).await;
+        if RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)
+            .await.is_err()
+        {
+            return Err(Error::CommitUncertain);
+        }
+        let mut actual = match dispatched {
+            Ok(observed) => Some(observed),
+            Err(OriginalCircuitRetainedVersionErrorV1::Busy
+                | OriginalCircuitRetainedVersionErrorV1::ReadbackRequired
+                | OriginalCircuitRetainedVersionErrorV1::CommitUncertain) => None,
+            Err(_) => return Err(Error::CommitUncertain),
+        };
+        for _ in 0..128 {
+            if actual.as_ref().is_some_and(|read| read.publication().is_some()) {
+                state.read_prefix(self, snapshot).await?;
+                RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?;
+                return Ok(());
+            }
+            // FinalUse belongs to the original Version host. Waiting never
+            // resends Prepare or requests a grant from the Root resident lane.
+            tokio::time::sleep(Duration::from_secs(2)).await;
+            RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?;
+            let client = state.version.as_ref().ok_or(Error::CommitUncertain)?;
+            actual = Some(OriginalCircuitRetainedVersionClientV1::readback(client)
+                .await.map_err(|_| Error::CommitUncertain)?);
+        }
+        Err(Error::OwnerUnavailable("original Version readback frame budget"))
     }
 
     async fn await_completed_c(

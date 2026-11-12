@@ -29,9 +29,9 @@ BUILD = AGENT + "cell_q24_training_bootstrap_build.rs"
 SERVICE = AGENT + "cell_q24_training_bootstrap_service.rs"
 EXPECTED = {
     "learning_original_dataset_readback_attenuation": (),
-    "learning_original_dataset_readback_current": (SERVICE,),
-    "learning_original_dataset_readback_context": (MAIN, BUILD),
-    "learning_original_dataset_readback_cut": (BUILD,),
+    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_dataset_readback_context": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_host.rs'),
+    "learning_original_dataset_readback_cut": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
     "learning_original_material_connection_create": (),
     "learning_original_material_connection_context": (MAIN,),
     "learning_original_material_connection_dataset": (BUILD,),
@@ -58,7 +58,7 @@ EXPECTED = {
         AGENT + "cell_q24_material_source.rs",
         CONNECTION,
     ),
-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",),
+    "learning_original_owner_command_channel": ('codex-rs/hepta-agentd/src/cell_q24_training_command.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs', 'codex-rs/hepta-agentd/src/cell_q24_material_command.rs', 'codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_service.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_command.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs', 'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_service.rs',),
 }
 
 

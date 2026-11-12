@@ -53,6 +53,11 @@ use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
 use crate::write_registry_snapshot_beneath;
 
+#[path = "owner_host_readback.rs"]
+mod readback;
+pub use readback::OriginalArtifactPublicationReadbackErrorV1;
+pub use readback::OriginalArtifactPublicationReadbackV1;
+
 const MAX_TRUSTED_SIGNERS: usize = 32;
 const MAX_HEAD_RECORDS: usize = 4_096;
 const MAX_SMALL_RECORD_BYTES: usize = 16 * 1024;
