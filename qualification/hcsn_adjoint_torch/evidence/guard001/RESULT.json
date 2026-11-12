@@ -1,0 +1,247 @@
+{
+  "cases": [
+    {
+      "corruption": "identity",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "transient_value",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "lower_value",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "upper_value",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "reset_value",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "nodes_value",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "transient_writeable",
+      "geometry": "uniform",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "lower_writeable",
+      "geometry": "uniform",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "upper_writeable",
+      "geometry": "uniform",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "reset_writeable",
+      "geometry": "uniform",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "nodes_writeable",
+      "geometry": "uniform",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "times",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "supports",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "delay",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "discount",
+      "geometry": "uniform",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "identity",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "transient_value",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "lower_value",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "upper_value",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "reset_value",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "nodes_value",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "transient_writeable",
+      "geometry": "graded",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "lower_writeable",
+      "geometry": "graded",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "upper_writeable",
+      "geometry": "graded",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "reset_writeable",
+      "geometry": "graded",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "nodes_writeable",
+      "geometry": "graded",
+      "message": "snapshot coefficient arrays must remain read-only",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "times",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "supports",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "delay",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    },
+    {
+      "corruption": "discount",
+      "geometry": "graded",
+      "message": "frozen snapshot identity or small-grid admission differs",
+      "rejected": true,
+      "reverse_solver_reached": false
+    }
+  ],
+  "core_restored": true,
+  "matrix_exponentials": 0,
+  "ode_calls": 0,
+  "optimizer_updates": 0,
+  "public_vjp_rejection_attempts": 30,
+  "qualification_scope": "two small fixtures; internal frozen snapshot corruption only",
+  "reverse_solver_calls": 0,
+  "source_after": {
+    "qualification/hcsn_adjoint_torch/GUARD-REQUEST.json": "c5ca2b71bbc468fd5576219d2f13d378b7337d43751c41d0c86b45a8eca4cb22",
+    "qualification/hcsn_adjoint_torch/snapshot_guard.py": "f4ba6812ee3275c7aa86b5cd499c8fe1df5719bab161a0efd035ba47583136b3",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/solver.py": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_before": {
+    "qualification/hcsn_adjoint_torch/GUARD-REQUEST.json": "c5ca2b71bbc468fd5576219d2f13d378b7337d43751c41d0c86b45a8eca4cb22",
+    "qualification/hcsn_adjoint_torch/snapshot_guard.py": "f4ba6812ee3275c7aa86b5cd499c8fe1df5719bab161a0efd035ba47583136b3",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/solver.py": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_commit": "3cc84fd2783d909bf0e430029a20de305dae03ca",
+  "source_or_old_local001_rerun": false,
+  "source_unchanged": true,
+  "static_perpetual_solves": 0,
+  "status": "PASS",
+  "torch_calls": 0
+}
