@@ -203,6 +203,12 @@ pub use authority_host_service::register_host_q24_model_factory;
 #[cfg(target_os = "linux")]
 pub(crate) use root_generation_publication_connection::OriginalRootBEvaluationConnectionV1;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootIndependentBEvaluationHandoffV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_independent_b_evaluation_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_independent_b_evaluation_handoff;
+#[cfg(target_os = "linux")]
 mod root_q24_model_factory;
 #[cfg(target_os = "linux")]
 pub use root_q24_model_factory::AgentdRootQ24ModelFactoryV1;
