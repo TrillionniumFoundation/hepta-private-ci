@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-n256-new-export-audit-freeze-v1",
+  "identity": "hcsn-n256-new-export-20261112-c06d-audit001",
+  "export_identity": "hcsn-n256-new-export-20261112-c06d-attempt001",
+  "export_source_freeze_commit": "b1088195918091adf7b05b49dccac93a43e5027e",
+  "audit_source": "scripts/audit_hcsn_n256_new_export_v2.py",
+  "audit_source_sha256": "5b4d2e494f1a1a9b8072aa09777c1bd274287ffb839a92d8f04bb7c51062e35f",
+  "unexecuted_v1_audit_source": {
+    "path": "scripts/audit_hcsn_n256_new_export.py",
+    "sha256": "e78bc32f0f1879f0ad33495fd64f00ee66a57a544a01b08dd98810f6bdaaf751",
+    "invocations": 0,
+    "reason": "Static pre-admission review found validate=True would reject the one canonical trailing LF in the retained base64 text. The v1 source remains unchanged and was not invoked."
+  },
+  "bound_export_outputs": {
+    "COSTS.json": "a60ea7bbbc1843fb75fe0e87eb9957930fdd512d586d68883c8821731b74e066",
+    "METADATA.json": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "N256_PHASE.json": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "N256_STATE.json": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "N256_STATE.npz": "c98a3339504c908081dbf77d2235a18de96da06b1ebda7b1c0f9192af1570eb8",
+    "N256_STATE.npz.b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb",
+    "RECEIPT.json": "1d1f65f5dfcaaec8a9d87fb7689e007699a032a9649c4ebdd32537de9ef993c9"
+  },
+  "audit_invocations_before_freeze_commit": 0,
+  "candidate_imports_allowed": 0,
+  "DDE_model_optimizer_allowed": [
+    0,
+    0,
+    0
+  ],
+  "historical_N256_missing_statement_preserved": true,
+  "new_export_only": true,
+  "global_HOLD": true,
+  "all_closed": false
+}
