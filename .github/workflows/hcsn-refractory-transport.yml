@@ -1,0 +1,35 @@
+name: HCSN exact refractory packet checks
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_boundary_audit/refractory_transport.py
+      - qualification/hcsn_boundary_audit/test_refractory_transport.py
+      - qualification/hcsn_boundary_audit/probe_refractory_transport.py
+      - qualification/hcsn_boundary_audit/test_phase_delay_oracle.py
+      - .github/workflows/hcsn-refractory-transport.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+      - name: Test actual packet state and original exact oracle
+        run: python -m unittest qualification.hcsn_boundary_audit.test_refractory_transport qualification.hcsn_boundary_audit.test_phase_delay_oracle -v
+      - name: Reproduce phase-only comparisons without installing dependencies
+        run: python -m qualification.hcsn_boundary_audit.probe_refractory_transport "$RUNNER_TEMP/refractory-result.json"
+      - name: Require clean source tree
+        run: git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=normal)"
