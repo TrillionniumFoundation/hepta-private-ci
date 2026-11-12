@@ -74,7 +74,7 @@ impl HostFixture {
             JournalScope {
                 scope_digest: self.config.scope.binding(),
                 objective_digest: self.config.signing.verifier.objective_digest(),
-            }, Generation::new(1)?, 64,
+            }, Generation::new(/*value*/ 1)?, /*max_records*/ 64,
         )?;
         Ok((file, witness))
     }

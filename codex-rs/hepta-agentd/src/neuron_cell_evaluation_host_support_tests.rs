@@ -34,7 +34,7 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
             peer: HostIssuerPeer {
                 uid: rustix::process::geteuid().as_raw(), pid: std::process::id(),
             },
-            timeout: Duration::from_secs(30), lifetime: Duration::from_secs(300),
+            timeout: Duration::from_secs(/*secs*/ 30), lifetime: Duration::from_secs(/*secs*/ 300),
             request_bound: 16_384, response_bound: 16_384,
         }, pidfd()?,
     )?)

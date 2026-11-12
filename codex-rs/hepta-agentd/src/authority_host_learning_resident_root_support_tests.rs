@@ -64,7 +64,7 @@ impl ResidentRootFixture {
         scope: FrozenLearningScopeV2,
         verifier: &LearningEvidenceVerifierV1,
     ) -> anyhow::Result<Self> {
-        Self::with_test_lifetime(initial, scope, verifier, 600_000)
+        Self::with_test_lifetime(initial, scope, verifier, /*lifetime_ms*/ 600_000)
     }
 
     /// Explicit test Root authorization covers the already-original request.
