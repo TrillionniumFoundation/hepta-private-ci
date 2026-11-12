@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.derived-learning.source-qa.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "start_unix": 1794478245.1798072,
+  "end_unix": 1794478304.7604623,
+  "exit_code": 0,
+  "before": {
+    "head": "8f5c6046c65969fc011ae7aad673681e787c4e88",
+    "tree": "a9038760ae66cb39d54c39a23b40dd45c2bfc673",
+    "status": "",
+    "source_files": 7481,
+    "sha256": "c8f0f9f10ddafc00433930aa566970d9d238a452d49867440adec54aea3133a0"
+  },
+  "after": {
+    "head": "8f5c6046c65969fc011ae7aad673681e787c4e88",
+    "tree": "a9038760ae66cb39d54c39a23b40dd45c2bfc673",
+    "status": "",
+    "source_files": 7481,
+    "sha256": "c8f0f9f10ddafc00433930aa566970d9d238a452d49867440adec54aea3133a0"
+  },
+  "source_unchanged": true,
+  "tests": 337,
+  "does_not_inherit_prior_source_or_native_qualification": true,
+  "log_bytes": 71775,
+  "log_sha256": "4d0e8699eb17d6bf87733a1c083f9b46f882618f26baf7f634c599ebb3c113ad",
+  "native_executed": false
+}
