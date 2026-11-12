@@ -30,6 +30,7 @@ pub(super) struct OriginalBProtocolData {
     plan_id: String,
     original_estimand: [u8; 32],
     unit_profile: [u8; 32],
+    benchmark_input: [u8; 32],
     family_alpha_ppm: u32,
     simultaneous_comparisons: u32,
     metrics: Vec<MetricData>,
@@ -108,12 +109,17 @@ impl OriginalBProtocolData {
             || value.retention_receipts.contains(&[0; 32])
             || value.unlearning_receipt == [0; 32]
             || value.unit_profile == [0; 32]
+            || value.benchmark_input == [0; 32]
         {
             return Err(io::Error::other(
                 "original B protocol pin or bounded fields differ",
             ));
         }
         Ok(value)
+    }
+
+    pub(super) fn benchmark_input(&self) -> Digest32 {
+        Digest32::from_array(self.benchmark_input)
     }
 
     pub(super) fn unit_profile(&self) -> Digest32 {
