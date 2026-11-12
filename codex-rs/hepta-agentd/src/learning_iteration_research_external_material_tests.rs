@@ -6,7 +6,6 @@ use super::*;
 use std::fs;
 use std::os::unix::fs::symlink;
 
-
 // The material reader intentionally refuses symlinked ancestors. macOS TMPDIR
 // may be spelled through /var -> /private/var. Resolve only the trusted test
 // fixture parent before creating it; do not relax production NOFOLLOW.
