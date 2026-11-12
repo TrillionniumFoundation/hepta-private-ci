@@ -129,12 +129,18 @@ pub(super) struct PositiveFixture {
 
 impl PositiveFixture {
     pub(super) async fn ready() -> anyhow::Result<Self> {
+        Self::ready_with_profile(
+            d("explicit-positive-independent-evaluation-profile"), now()?,
+        ).await
+    }
+
+    async fn ready_with_profile(evaluation_profile: Digest32, trust_time: u64) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
         let (baseline, bundle, definition_a) = support::model(&root)?;
         let mut a = support::admission("positive-source-envelope-request").await?;
         let preview = support::source(&a, [Q, Q / 4])?;
-        let (mut writer, credentials) = material::ledger(&root, preview.objective_digest)?;
+        let (mut writer, credentials) = material::ledger_at(&root, preview.objective_digest, trust_time, d("explicit-positive-ledger"))?;
         let run = crate::circuit_credit::circuit_learning_run_id_v1(
             &writer,
             &a.runtime.identity.agent_id,
@@ -162,7 +168,7 @@ impl PositiveFixture {
             initial,
             config: source_config,
             frozen,
-        } = material::material(
+        } = material::material_with_profile(
             &root,
             &mut writer,
             &credentials,
@@ -171,6 +177,7 @@ impl PositiveFixture {
             &baseline,
             &bundle,
             &previous,
+            evaluation_profile,
         )?;
         let ledger = Arc::new(Mutex::new(writer));
         let (experience, first) = fixture_original_receipt_client_until_close(
@@ -569,3 +576,6 @@ impl PositiveFixture {
         Ok(())
     }
 }
+
+#[path = "circuit_original_evaluation_provider_tests.rs"]
+mod evaluation_provider;
