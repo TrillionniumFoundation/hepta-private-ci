@@ -3,7 +3,6 @@
 //! completion or FileCAS is created.
 
 use super::*;
-use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -11,6 +10,7 @@ use crate::HostAuthorityConsumersConfig;
 use crate::HostAuthoritySocketPaths;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostIssuerRecordProfile;
+use anyhow::Context;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_fleet::AgentLifecycle;
@@ -105,7 +105,10 @@ impl Fixture {
             &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
         )?;
         owned_mode(
-            fleet.as_path(), /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+            fleet.as_path(),
+            /*uid*/ 0,
+            /*gid*/ 60001,
+            /*mode*/ 0o710,
         )?;
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         registry.register(AgentManifest::new(
@@ -430,8 +433,9 @@ impl Fixture {
         );
         std::thread::scope(|scope| -> anyhow::Result<()> {
             let registration = scope.spawn(|| -> anyhow::Result<()> {
-                control(&self.offer, b"ORIGINAL_INPUTS_READY")
-                    .with_context(|| format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY"))?;
+                control(&self.offer, b"ORIGINAL_INPUTS_READY").with_context(|| {
+                    format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY")
+                })?;
                 // The original child has now opened both real nonce owners.
                 // The production loader invokes the original same-PID cap.
                 let unchanged = support::protected_files(&self.current_path)?;
@@ -452,14 +456,16 @@ impl Fixture {
                     );
                     send_data(&self.offer, &false)?;
                 } else {
-                    let registered = outcome
-                        .with_context(|| format!("initial parent {phase:?}: registering original deployment"))?;
+                    let registered = outcome.with_context(|| {
+                        format!("initial parent {phase:?}: registering original deployment")
+                    })?;
                     anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
                     send_data(&self.offer, &true)?;
                 }
                 if phase == Phase::RetiredSession {
-                    control(&self.offer, b"RETIRE_READY")
-                        .with_context(|| format!("initial parent {phase:?}: awaiting RETIRE_READY"))?;
+                    control(&self.offer, b"RETIRE_READY").with_context(|| {
+                        format!("initial parent {phase:?}: awaiting RETIRE_READY")
+                    })?;
                     assert_eq!(self.offer.send(b"RETIRE")?, 6);
                 }
                 control(&self.offer, b"STABLE")
@@ -481,7 +487,9 @@ impl Fixture {
             });
             let served = prepared.serve_with_ready(move || {
                 crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)
-                    .with_context(|| format!("initial parent {phase:?}: sending original production handoff"))
+                    .with_context(|| {
+                        format!("initial parent {phase:?}: sending original production handoff")
+                    })
                     .map_err(io::Error::other)?;
                 crate::send_root_generation_initial_handoff(
                     send.try_clone()?,
@@ -489,13 +497,17 @@ impl Fixture {
                     &root_pin,
                     TIMEOUT,
                 )
-                .with_context(|| format!("initial parent {phase:?}: sending original initial handoff"))
+                .with_context(|| {
+                    format!("initial parent {phase:?}: sending original initial handoff")
+                })
                 .map_err(io::Error::other)?;
                 send_data(&send, &plan)
                     .with_context(|| format!("initial parent {phase:?}: sending component plan"))
                     .map_err(io::Error::other)?;
                 send_target_files(&send, target_writer, witness_writer)
-                    .with_context(|| format!("initial parent {phase:?}: sending original target descriptors"))
+                    .with_context(|| {
+                        format!("initial parent {phase:?}: sending original target descriptors")
+                    })
                     .map_err(io::Error::other)
             });
             let registered = registration
@@ -514,7 +526,8 @@ impl Fixture {
                     "source refusal or controlled ACK loss closes original lane"
                 );
             } else {
-                served.with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
+                served
+                    .with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
             }
             // CLOSED alone is insufficient: all original service threads and
             // the original success/refusal result above must also be complete.

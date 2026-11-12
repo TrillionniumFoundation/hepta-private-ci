@@ -84,14 +84,11 @@ impl RootObservationCache {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
         let result = (|| {
-            let mut slot = self
-                .retained
-                .lock()
-                .map_err(|_| {
-                    #[cfg(test)]
-                    eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned");
-                    AgentdRootAuthorityError::Unavailable
-                })?;
+            let mut slot = self.retained.lock().map_err(|_| {
+                #[cfg(test)]
+                eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned");
+                AgentdRootAuthorityError::Unavailable
+            })?;
             let clock = &observation.clock;
             let head = &observation.revocations;
             if observation.schema_version != 2
@@ -181,17 +178,22 @@ impl RootObservationCache {
                         observation.registered_agent_id != old.registered_agent_id,
                         observation.spawn_generation != old.spawn_generation,
                         observation.writer.authority_lease != old.writer.authority_lease,
-                        observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256,
-                        observation.writer.writer_authorization_sha256 != old.writer.writer_authorization_sha256,
+                        observation.writer.authority_lease_sha256
+                            != old.writer.authority_lease_sha256,
+                        observation.writer.writer_authorization_sha256
+                            != old.writer.writer_authorization_sha256,
                         observation.writer.owner_epoch != old.writer.owner_epoch,
                         observation.writer.local_lease_id != old.writer.local_lease_id,
-                        observation.writer.local_lease_generation != old.writer.local_lease_generation,
+                        observation.writer.local_lease_generation
+                            != old.writer.local_lease_generation,
                         old.writer.store_revision,
                         observation.writer.store_revision,
                         old.revocations.revision,
                         head.revision,
                         head.revision == old.revocations.revision && *head != old.revocations,
-                        !head.revoked_grant_ids.is_superset(&old.revocations.revoked_grant_ids),
+                        !head
+                            .revoked_grant_ids
+                            .is_superset(&old.revocations.revoked_grant_ids),
                         old.observed_unix_ms,
                         observation.observed_unix_ms,
                         old.clock.anchor_boottime_ns,
@@ -239,21 +241,18 @@ impl RootObservationCache {
         }
         // Contention is a local unavailable read, never a wait behind a writer.
         // Unlike invalid evidence, contention alone does not destroy the feed.
-        let mut slot = self
-            .retained
-            .try_lock()
-            .map_err(|_error| {
-                #[cfg(test)]
-                match _error {
-                    std::sync::TryLockError::WouldBlock => eprintln!(
-                        "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}"
-                    ),
-                    std::sync::TryLockError::Poisoned(_) => eprintln!(
-                        "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}"
-                    ),
-                }
-                AgentdRootAuthorityError::Unavailable
-            })?;
+        let mut slot = self.retained.try_lock().map_err(|_error| {
+            #[cfg(test)]
+            match _error {
+                std::sync::TryLockError::WouldBlock => eprintln!(
+                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}"
+                ),
+                std::sync::TryLockError::Poisoned(_) => eprintln!(
+                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}"
+                ),
+            }
+            AgentdRootAuthorityError::Unavailable
+        })?;
         let result = (|| {
             let retained = slot
                 .as_mut()
@@ -312,9 +311,7 @@ fn project(
         #[cfg(test)]
         eprintln!(
             "ROOT_OBSERVATION_CACHE phase=project reason=durable-ceiling now={now} projected_unix_ms={projected} ceiling_unix_ms={} anchor_boottime_ns={} anchor_unix_ms={}",
-            value.clock.ceiling_unix_ms,
-            value.clock.anchor_boottime_ns,
-            value.clock.anchor_unix_ms,
+            value.clock.ceiling_unix_ms, value.clock.anchor_boottime_ns, value.clock.anchor_unix_ms,
         );
         return Err(AgentdRootAuthorityError::Unavailable);
     }
