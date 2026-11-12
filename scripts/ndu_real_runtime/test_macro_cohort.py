@@ -164,6 +164,91 @@ class RegisteredMacroCohortTests(unittest.TestCase):
         self.assertIsNone(report["arms"]["off_off"]["one_off_cost_total"])
         self.assertIsNone(report["factorial"]["source_equal_interaction"])
 
+    def test_measured_contrasts_remain_available_with_unknown_full_costs(self):
+        for costs in self.plan["one_off_costs"].values():
+            costs.update(fit=None, calibration=None, tuning=None)
+        self.pin = digest(self.plan)
+        for row in self.rows:
+            row["full_cost_observed"] = False
+            if row["arm_id"] == "on_on":
+                row["quality"] = 0.8
+                row["task_cost"] = 0.1 if row["source_id"] == "a" else 0.2
+        report = self.report()
+        arm = report["arms"]["on_on"]
+        self.assertAlmostEqual(arm["primary_observed_task_cost_net"], 0.65)
+        self.assertIsNone(arm["primary_full_cost_net"])
+        self.assertIsNone(arm["one_off_cost_total"])
+        pair = next(
+            p
+            for p in report["paired_contrasts"]
+            if (p["candidate"], p["baseline"]) == ("off_off", "on_on")
+        )
+        self.assertAlmostEqual(pair["quality"]["source_equal_difference"], -0.3)
+        self.assertAlmostEqual(
+            pair["observed_task_cost_net"]["source_equal_difference"], -0.17
+        )
+        factorial = report["factorial"]
+        self.assertAlmostEqual(factorial["quality"]["source_equal_interaction"], 0.3)
+        self.assertAlmostEqual(
+            factorial["observed_task_cost_net"]["source_equal_interaction"], 0.17
+        )
+        self.assertIsNone(pair["source_equal_full_cost_difference"])
+        self.assertIsNone(factorial["source_equal_interaction"])
+        self.assertFalse(report["registered_full_cost_comparison_complete"])
+        self.assertFalse(report["adoption_authorized"])
+        self.assertEqual(report["decision"], "NoUpdate")
+
+    def test_missing_record_keeps_measured_pair_and_factorial_denominators(self):
+        rows = [r for r in self.rows if (r["source_id"], r["arm_id"]) != ("a", "on_on")]
+        report = self.report(rows)
+        pair = next(
+            p
+            for p in report["paired_contrasts"]
+            if (p["candidate"], p["baseline"]) == ("off_off", "on_on")
+        )
+        for metric in ("quality", "observed_task_cost_net"):
+            for comparison, field in (
+                (pair[metric], "source_equal_difference"),
+                (report["factorial"][metric], "source_equal_interaction"),
+            ):
+                with self.subTest(metric=metric, field=field):
+                    self.assertEqual(
+                        comparison,
+                        {
+                            "planned_contexts": 3,
+                            "paired_contexts": 2,
+                            "planned_sources": 2,
+                            "paired_sources": 1,
+                            field: None,
+                            "observed_subset": {"contexts": 2, "sources": 1, field: 0},
+                        },
+                    )
+        self.assertEqual(report["arms"]["on_on"]["statuses"]["UNKNOWN"], 1)
+        self.assertIsNone(report["arms"]["on_on"]["primary_observed_task_cost_net"])
+
+    def test_unknown_task_cost_does_not_hide_known_paired_quality(self):
+        rows = deepcopy(self.rows)
+        rows[0].update(task_cost=None, full_cost_observed=False)
+        report = self.report(rows)
+        pair = report["paired_contrasts"][0]
+        self.assertEqual(pair["quality"]["paired_contexts"], 3)
+        self.assertEqual(pair["quality"]["source_equal_difference"], 0)
+        self.assertEqual(pair["observed_task_cost_net"]["paired_contexts"], 2)
+        self.assertIsNone(pair["observed_task_cost_net"]["source_equal_difference"])
+        self.assertEqual(report["factorial"]["quality"]["source_equal_interaction"], 0)
+        self.assertIsNone(
+            report["factorial"]["observed_task_cost_net"]["source_equal_interaction"]
+        )
+
+    def test_factorial_requires_content_parameter_separation(self):
+        # Separate critic labels cannot establish a content-learning treatment.
+        plan = deepcopy(self.plan)
+        for arm in plan["arms"]:
+            if arm["content_mode"] == "on":
+                arm["content_sha256"] = plan["arms"][0]["content_sha256"]
+        with self.assertRaisesRegex(ValueError, "distinct parameter pins"):
+            validate_plan(plan, expected_plan_sha256=digest(plan))
+
     def test_duplicate_execution_or_context_cannot_fill_two_arms(self):
         for variant in ("execution", "row"):
             rows = deepcopy(self.rows)
