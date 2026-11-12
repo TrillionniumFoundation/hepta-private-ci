@@ -1,0 +1,24 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-c",
+    "import base64,hashlib,json,os,pathlib,sys\nfiles=json.load(sys.stdin)\nroot=pathlib.Path('/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-source-5cb83d9')\nroot.mkdir(exist_ok=True)\nfor relative,item in files.items():\n path=root/relative\n path.parent.mkdir(parents=True,exist_ok=True)\n raw=base64.b64decode(item['data'],validate=True)\n assert hashlib.sha256(raw).hexdigest()==item['sha256']\n if path.exists():\n  assert path.is_file() and not path.is_symlink() and hashlib.sha256(path.read_bytes()).hexdigest()==item['sha256']\n else:\n  with path.open('xb') as stream:\n   stream.write(raw);stream.flush();os.fsync(stream.fileno())\nfor relative,item in files.items():assert hashlib.sha256((root/relative).read_bytes()).hexdigest()==item['sha256']\nout=pathlib.Path('/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1')\nassert not out.exists(), 'refusing duplicate native replay output'\npython='/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python'\nselection=root/'qualification/hcsn_differentiable/replay_v1/SELECTION.json'\ncommand=['/usr/bin/time','-v','-o',str(root/'NATIVE-RUN-v1.time'),python,'-B',str(root/'qualification/hcsn_differentiable/replay_v1/run_replay.py'),'--original-root','/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1','--study-source','/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8','--output',str(out),'--selection',str(selection),'--selection-sha256',files['qualification/hcsn_differentiable/replay_v1/SELECTION.json']['sha256']]\nprint(json.dumps({'source_verified':True,'source_commit':'5cb83d9c76beedf4c1c917e4bf561f5f26261ce7','run_root':str(out),'command':command}),flush=True)\nos.execv(command[0],command)\n"
+  ],
+  "cwd": "/home/qian-qi",
+  "env": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "cpu_quota_percent": 200,
+  "memory_max_bytes": 6442450944,
+  "timeout_seconds": 1800,
+  "idempotency_key": "hcsn-real-six-checkpoint-26updates-5cb83d9-c06d-v1",
+  "stdin_sha256": "84bec48e0d3bdd5553f7e7dcff2548e828d3f025ba05365ea4114706bd710039",
+  "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+  "run_root": "/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1"
+}
