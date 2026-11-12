@@ -27,7 +27,8 @@ class ExactGenericFunctionOrderTests(unittest.TestCase):
 
     def test_existing_and_actual_generic_markers_remain_exact(self):
         for marker in ("fn run(", "fn run<W>(", "fn run<W: AnchorWitnessStore>(",
-                       "fn run<Old, New>(", "fn run<Old: Store, New: Store>("):
+                       "fn run<Old, New>(", "fn run<Old: Store, New: Store>(",
+                       "fn run<'a>(", "fn run<'a, 'read>(", "fn run<'a, T: Store>("):
             with self.subTest(marker=marker):
                 self.verify(marker + ") { before(); after(); }", marker)
 
@@ -58,9 +59,28 @@ class ExactGenericFunctionOrderTests(unittest.TestCase):
                 with self.assertRaises(PROOF.VerificationFailure):
                     self.verify(marker + ") {" + body + "}", marker)
 
+    def test_lifetime_markers_preserve_unique_exact_definition(self):
+        marker = "fn exchange_original_b<'a, 'read>("
+        one = marker + ") { before(); after(); }"
+        self.verify(one, marker)
+        for source in (one.replace("'read", "'other"), one + "\n" + one,
+                       "// " + one, "#[cfg(test)]\n" + one):
+            with self.subTest(source=source):
+                with self.assertRaises(PROOF.VerificationFailure):
+                    self.verify(source, marker)
+
+    def test_lifetime_functions_cannot_borrow_other_bodies_or_reorder_checks(self):
+        marker = "fn exchange_original_b<'a, 'read>("
+        for body in ("after(); before();", "fn extra() { before(); after(); }",
+                     "before(); } fn next() { after();"):
+            with self.subTest(body=body):
+                with self.assertRaises(PROOF.VerificationFailure):
+                    self.verify(marker + ") { " + body + " }", marker)
+
     def test_unimplemented_generic_grammar_is_rejected_without_fuzzy_matching(self):
         for marker in ("fn run<>(", "fn run<Old,>(", "fn run<T: A + B>(",
-                       "fn run<'a>(", "fn run<const N: usize>(", "fn run <T>("):
+                       "fn run<'a: 'b>(", "fn run<const N: usize>(", "fn run <T>(",
+                       "fn run<'a,>(", "fn run<'>(", "fn run<T<'a>>("):
             with self.subTest(marker=marker):
                 with self.assertRaises(PROOF.VerificationFailure):
                     self.verify(marker + ") { before(); after(); }", marker)
