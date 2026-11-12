@@ -1,0 +1,40 @@
+{
+  "adoption": "NoUpdate",
+  "archive": {
+    "bytes": 10496,
+    "member_hashes_verified": 15,
+    "members": 16,
+    "name": "raw-validation.tar.xz",
+    "sha256": "2fb93c1d3d0d88ed798db103f9a9ce50e0a076dc417d4db1d8c91e92c04a776a"
+  },
+  "base_commit": "865cfadced0bedb6de397115e34bef481a46e8b1",
+  "formatted_source_commit": "606ff40892d762802211812c1a2de9b507f039fa",
+  "formatted_source_tree": "8cf4b4dd5cf6c214c7750760d7696be1ba937e91",
+  "new_scored_memory_benefit_episodes": 0,
+  "real_model_calls": 0,
+  "schema": "hepta.mem10.handoff-delivery.v1",
+  "scientific_acceptance": "HOLD",
+  "source_files": {
+    ".github/workflows/hepta-mem-python.yml": {
+      "bytes": 26890,
+      "sha256": "7f34eadc2350f9fe75f37ea89142561ff6d4c255b1ef5261a1c99f4e64b83df6"
+    },
+    "scripts/ndu_real_runtime/episodic_provider_handoff.py": {
+      "bytes": 13738,
+      "sha256": "8067a1a12d8b01d25a889a61cebf5f01f9104d68f5c04e09ae6134babcce3ec6"
+    },
+    "scripts/ndu_real_runtime/test_episodic_provider_handoff.py": {
+      "bytes": 13594,
+      "sha256": "e4fdee6e885cf45b32fbb667e6b696e69fd9471aec57ac06a3a4bd8215f33b82"
+    }
+  },
+  "tested_local_commit": "43e7a8f053d04f2b4feec90384ada22c24cd7f0a",
+  "tested_local_tree": "250ef3de911783e310ca22703b7aced5f4da18e5",
+  "tests": {
+    "causal_contract": 16,
+    "earlier_15_transport_tests_are_subset": true,
+    "failures": 0,
+    "skips": 0,
+    "transport": 16
+  }
+}
