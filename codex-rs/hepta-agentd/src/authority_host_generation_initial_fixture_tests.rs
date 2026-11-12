@@ -37,13 +37,16 @@ pub(super) struct Fixture {
     target_witness: PathBuf,
     model_directory: PathBuf,
     artifacts: artifacts::Transfer,
+    artifact_access: ArtifactAccess,
+    _artifact_writer:
+        Option<Arc<std::sync::Mutex<codex_hepta_learning_artifacts::LearningArtifactOwnerService>>>,
     offer: UnixDatagram,
     pin: OwnedFd,
     drop_ack: bool,
 }
 
 impl Fixture {
-    pub(super) fn new(drop_ack: bool) -> anyhow::Result<Self> {
+    pub(super) fn new(drop_ack: bool, artifact_access: ArtifactAccess) -> anyhow::Result<Self> {
         let parent = PathBuf::from(
             std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
                 .ok_or_else(|| anyhow::anyhow!("original protected bind required"))?,
@@ -196,8 +199,13 @@ impl Fixture {
             &selected,
         )?;
         let binding = description.final_use_binding().clone();
-        // Release this actual Artifact writer before the child opens the same
-        // original files with its original signed lease and required CURRENT.
+        // The readonly scenario deliberately retains the original writer and
+        // its actual OS lock. The child must use the concrete read view; it
+        // cannot reopen or borrow this writer to make publication succeed.
+        let artifact_writer = match artifact_access {
+            ArtifactAccess::OriginalWriter => None,
+            ArtifactAccess::OriginalReadView => Some(artifacts.retain_original_writer()),
+        };
         let artifacts = artifacts.into_transfer(now_ms()?)?;
         let state = protected.path().join("authority");
         let bootstrap_file = protected.path().join("bootstrap.json");
@@ -333,6 +341,8 @@ impl Fixture {
             target_witness,
             model_directory,
             artifacts,
+            artifact_access,
+            _artifact_writer: artifact_writer,
             offer,
             pin,
             drop_ack,
@@ -418,6 +428,7 @@ impl Fixture {
         let plan = Plan {
             phase,
             lose_ack: self.drop_ack,
+            artifact_access: self.artifact_access,
             model_directory: self.model_directory.clone(),
             artifacts: self.artifacts.clone(),
             target: data::ObserverData::from_original_observer(&self.target_config),

@@ -323,8 +323,12 @@ pub(super) struct Transfer {
 }
 
 impl Artifacts {
-    /// Release the actual writer before the actual other process opens it.
+    pub(super) fn retain_original_writer(&self) -> Arc<Mutex<LearningArtifactOwnerService>> {
+        self.owner.clone()
+    }
+
     /// Only original signed configuration crosses this test's control channel.
+    /// The caller may retain the writer to prove readonly access needs no lock.
     pub(super) fn into_transfer(self, now: u64) -> anyhow::Result<Transfer> {
         let owner = self
             .owner
