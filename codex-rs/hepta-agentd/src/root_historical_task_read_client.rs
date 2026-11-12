@@ -67,8 +67,8 @@ enum Reply {
     Task(Box<HistoricalTaskReadDataV1>),
     LearningTrust(Box<HistoricalLearningTrustResponseV1>),
     PostAFrozenLearning(PostAFrozenLearningResponseV1),
-    CompletedAcceptance(CompletedLearningAcceptanceResponseV1),
-    CompletedHistory(CompletedLearningHistoryResponseV1),
+    Acceptance(CompletedLearningAcceptanceResponseV1),
+    History(CompletedLearningHistoryResponseV1),
 }
 
 pub(crate) struct RootHistoricalTaskReadClientV1 {
@@ -145,8 +145,8 @@ impl RootHistoricalTaskReadClientV1 {
             Reply::Task(data) => Ok(*data),
             Reply::LearningTrust(_)
             | Reply::PostAFrozenLearning(_)
-            | Reply::CompletedAcceptance(_)
-            | Reply::CompletedHistory(_) => {
+            | Reply::Acceptance(_)
+            | Reply::History(_) => {
                 self.fence();
                 Err(refused())
             }
@@ -196,11 +196,11 @@ impl RootHistoricalTaskReadClientV1 {
                 HistoricalReadOperationV1::PostAFrozenLearning => Reply::PostAFrozenLearning(
                     require_post_a_learning_reply(&bytes, request_id, &self.profile)?,
                 ),
-                HistoricalReadOperationV1::AcceptCompletedLearning => Reply::CompletedAcceptance(
+                HistoricalReadOperationV1::AcceptCompletedLearning => Reply::Acceptance(
                     require_completed_acceptance_reply(&bytes, request_id, &self.profile)?,
                 ),
                 HistoricalReadOperationV1::CaptureCompletedHistory
-                | HistoricalReadOperationV1::ReadCompletedHistory => Reply::CompletedHistory(
+                | HistoricalReadOperationV1::ReadCompletedHistory => Reply::History(
                     require_completed_history_reply(&bytes, request_id, &self.profile, operation)?,
                 ),
             };
