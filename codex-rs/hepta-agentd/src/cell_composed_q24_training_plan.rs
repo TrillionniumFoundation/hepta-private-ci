@@ -35,6 +35,8 @@ pub use training::CellQ24TrainingErrorV1;
 pub use training::CellQ24TrainingMetricsV1;
 pub use training::CellQ24TrainingOutcomeV1;
 pub use training::CellQ24TrainingSampleV1;
+pub(crate) use training::OriginalQ24DatasetReadV1;
+pub(crate) use training::OriginalQ24OwnerReadV1;
 pub use training::cell_q24_dataset_run_snapshot_digest_v1;
 pub(crate) use training::project_original_q24_dataset_v1;
 
