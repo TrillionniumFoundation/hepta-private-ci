@@ -45,7 +45,9 @@ impl CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> {
             source: self.invocation,
             producer: Arc::clone(&producer),
         });
-        let config = config.with_circuit_task_bootstrap(self.bootstrap, invocation)?;
+        let config: AgentdConfig =
+            config.with_circuit_task_bootstrap(self.bootstrap, invocation)?;
+        let config = config.with_original_q24_outcome_control(Arc::clone(&producer))?;
         Ok(AgentdQ24LearningTaskRuntimeV1 {
             task: AgentdQ24CircuitTaskRuntimeV1 {
                 config,

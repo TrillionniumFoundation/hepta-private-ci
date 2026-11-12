@@ -57,6 +57,8 @@ pub async fn run_with_shutdown(
     let circuit_task = config.take_circuit_task_bootstrap()?;
     #[cfg(target_os = "linux")]
     let original_source_capture = config.take_original_source_capture()?;
+    #[cfg(target_os = "linux")]
+    let original_q24_outcome = config.take_original_q24_outcome_control();
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
@@ -179,6 +181,10 @@ pub async fn run_with_shutdown(
     } else {
         None
     };
+    #[cfg(target_os = "linux")]
+    if let Some(producer) = original_q24_outcome {
+        AgentdState::attach_original_q24_outcome_control(&state, producer)?;
+    }
     if let Some(bootstrap) = &neuron_generation {
         bootstrap.attach(&state)?;
     }
