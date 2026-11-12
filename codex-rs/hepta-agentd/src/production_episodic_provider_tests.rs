@@ -48,6 +48,9 @@ mod authority;
 #[path = "production_episodic_provider_diagnostic.rs"]
 mod diagnostic;
 
+#[path = "production_episodic_process.rs"]
+mod process;
+
 const PROMPT: &str = "Return only the 32 hexadecimal characters of the fixture nonce in the attached memory. Do not call tools.";
 const QUERY: &str = "fixture nonce";
 const PROVIDER: &str = "mem_context_fixture";
@@ -128,6 +131,13 @@ async fn episodic_real_provider_native_intervention() -> Result<(), Box<dyn Erro
 }
 
 async fn run_fixture(mode: diagnostic::Mode) -> Result<(), Box<dyn Error>> {
+    run_fixture_with_process(mode, None).await
+}
+
+async fn run_fixture_with_process(
+    mode: diagnostic::Mode,
+    process_mode: Option<process::Mode>,
+) -> Result<(), Box<dyn Error>> {
     let base_url = std::env::var("HEPTA_LOCAL_PROVIDER_BASE_URL")?;
     let model = std::env::var("HEPTA_LOCAL_PROVIDER_MODEL")?;
     let source_sha = std::env::var("HEPTA_MEM_NATIVE_SOURCE_SHA")?;
@@ -177,11 +187,13 @@ async fn run_fixture(mode: diagnostic::Mode) -> Result<(), Box<dyn Error>> {
         &output,
         "INTENT.json",
         &serde_json::json!({
-            "schema": "hepta.mem8.real-context-fixture-intent.v1", "request_id": request_id,
+            "schema": if process_mode.is_some() { "hepta.mem15.native-a-exit-intent.v1" } else { "hepta.mem8.real-context-fixture-intent.v1" }, "request_id": request_id,
             "outer_source_sha": source_sha, "owner_root": retained,
             "provider_alias": PROVIDER, "provider_base_url": base_url, "requested_model": model,
             "prompt": PROMPT, "query": QUERY, "model_timeout_seconds": mode.timeout_seconds(),
             "diagnostic_mode": mode, "A_is_deterministic_import_not_model_learning": true,
+            "process_mode": process_mode,
+            "A_exit_before_C_required": process_mode.is_some(),
             "A_import_harness_process_exits_before_C": false,
             "fixture_only": true, "original_deployment_recovered": false,
             "unseen_source_benefit_evaluated": false, "physical_provider_request_count": null,
@@ -357,6 +369,30 @@ stream_max_retries = 0
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
     state.mark_app_server_ready()?;
+    if let Some(mode) = process_mode {
+        let outcome = process::run(process::Run {
+            mode,
+            identity: &identity,
+            host: &host,
+            output: &output,
+            retained: &retained,
+            reads: reads.clone(),
+            model: &model,
+            request_id: &request_id,
+            snapshot: &snapshot,
+            fact: &fact,
+            tasks: &mut tasks,
+        })
+        .await;
+        cancel.cancel();
+        tokio::time::timeout(Duration::from_secs(2), server_task).await???;
+        app.abort();
+        let _ = app.await;
+        outcome?;
+        assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
+        assert_no_issuer_request(peer)?;
+        return Ok(());
+    }
     let client = crate::AgentdClient::new(
         identity.control_socket.clone(),
         identity.agent_id.clone(),
