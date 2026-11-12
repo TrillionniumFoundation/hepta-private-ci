@@ -24,7 +24,7 @@ HOST = ARTIFACT + "owner_host_readback.rs"
 SERVICE = ARTIFACT + "owner_service_readback.rs"
 EXPECTED = {
     "learning_artifact_original_publication_host_readback": (SERVICE,),
-    "learning_artifact_original_publication_service_readback": (),
+    "learning_artifact_original_publication_service_readback": ('codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs',),
 }
 
 
@@ -61,7 +61,13 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def test_service_is_the_only_host_caller_and_no_publication_cap_is_created(self):
-        paths = {HOST, SERVICE}
+        paths = {
+            path for identifier in EXPECTED
+            for path in (
+                self.boundaries[identifier].definition_path,
+                *self.boundaries[identifier].product_callers,
+            )
+        }
         sources = {
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())

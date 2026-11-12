@@ -48,6 +48,14 @@ mod retirement;
 
 #[path = "circuit_learning_retained_publication.rs"]
 mod retained_publication;
+pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionHostV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionRecoveryV1;
+pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionPublicationV1;
+pub use retained_publication::version::OriginalCircuitRetainedVersionReadbackV1;
 pub use retained_publication::OriginalCircuitRetainedPublicationContextV1;
 pub use retained_publication::OriginalCircuitRetainedPublicationErrorV1;
 pub use retained_publication::OriginalCircuitRetainedPublicationInputsV1;

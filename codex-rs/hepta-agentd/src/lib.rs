@@ -825,6 +825,14 @@ pub use circuit_feature_current::OriginalCircuitLearningReadOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitRetainedVersionClientV1;
+pub use circuit_feature_current::OriginalCircuitRetainedVersionHostV1;
+pub use circuit_feature_current::OriginalCircuitRetainedVersionRecoveryV1;
+pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use circuit_feature_current::OriginalCircuitRetainedTaskInputsV1;
+pub use circuit_feature_current::OriginalCircuitRetainedVersionErrorV1;
+pub use circuit_feature_current::OriginalCircuitRetainedVersionPublicationV1;
+pub use circuit_feature_current::OriginalCircuitRetainedVersionReadbackV1;
 pub use circuit_feature_current::OriginalCircuitRetainedPublicationContextV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitRetainedPublicationErrorV1;

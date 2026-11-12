@@ -9,6 +9,7 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1 as Stage;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 
 use super::Error;
+use super::Origin;
 use super::OriginalCellQ24NoUpdateStageOwnersV1 as Owners;
 use super::auth;
 use crate::OriginalCellQ24MaterialCommandClientV1;
@@ -21,12 +22,15 @@ use crate::OriginalCircuitNextUseCommandClientV1;
 use crate::OriginalCircuitNextUseCommandReceiptV1;
 use crate::OriginalCircuitSelectionCommandClientV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
+use crate::OriginalCircuitRetainedVersionClientV1;
 
 pub(super) struct Continuation {
     pub(super) experience: OriginalCellQ24MaterialCommandClientV1,
     pub(super) dataset: OriginalCellQ24MaterialCommandClientV1,
     trainer_initial: Option<OriginalCellQ24TrainingCommandConnectionV1>,
     pub(super) trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
+    version_initial: Option<HostAuthorityPeerChannel>,
+    pub(super) version: Option<OriginalCircuitRetainedVersionClientV1>,
     selector_initial: Option<HostAuthorityPeerChannel>,
     pub(super) selector: Option<OriginalCircuitSelectionCommandClientV1>,
     next_use_initial: Option<HostAuthorityPeerChannel>,
@@ -45,12 +49,14 @@ impl Continuation {
         dataset: OriginalCellQ24MaterialCommandClientV1,
         trainer: OriginalCellQ24TrainingCommandConnectionV1,
         selector: HostAuthorityPeerChannel,
+        version: HostAuthorityPeerChannel,
         next_use: HostAuthorityPeerChannel,
         readiness: HostAuthorityPeerChannel,
     ) -> Self {
         Self {
             experience, dataset,
             trainer_initial: Some(trainer), trainer: None,
+            version_initial: Some(version), version: None,
             selector_initial: Some(selector), selector: None,
             next_use_initial: Some(next_use), next_use: None,
             readiness_initial: Some(readiness), readiness: None,
@@ -103,6 +109,13 @@ impl Continuation {
                 Ok(original.receipt().clone())
             }
             Stage::Selection => {
+                self.ensure_version(owners).await?;
+                let version = self.version.as_ref().ok_or(Error::CommitUncertain)?;
+                let current = OriginalCircuitRetainedVersionClientV1::readback(version)
+                    .await.map_err(|_| Error::CommitUncertain)?;
+                if current.publication().is_none() {
+                    return Err(Error::OwnerUnavailable("original retained version awaits FinalUse"));
+                }
                 self.ensure_selector(owners).await?;
                 let client = self.selector.as_ref().ok_or(Error::CommitUncertain)?;
                 let original = OriginalCircuitSelectionCommandClientV1::readback(client)
@@ -153,6 +166,27 @@ impl Continuation {
             self.trainer = Some(OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(
                 initial, dataset,
             ).map_err(|_| Error::OwnerUnavailable("original Trainer late Dataset binding"))?);
+        }
+        Ok(())
+    }
+
+    pub(super) async fn ensure_version(&mut self, owners: &Owners) -> Result<(), Error> {
+        if self.version.is_none() {
+            self.ensure_trainer(owners).await?;
+            let trainer = self.trainer.as_ref().ok_or(Error::CommitUncertain)?;
+            let training = OriginalCellQ24TrainingCommandClientV1::readback(trainer)
+                .await.map_err(auth::trainer_failure)?;
+            self.record_training(owners, &training)?;
+            let dataset = self.original_dataset.as_ref().ok_or(Error::CommitUncertain)?;
+            let channel = self.version_initial.take().ok_or(Error::CommitUncertain)?;
+            self.version = Some(match owners.origin {
+                Origin::Fresh => OriginalCircuitRetainedVersionClientV1::bind_original_stage_channel(
+                    channel, &owners.material, dataset, &training,
+                ),
+                Origin::Recovered => OriginalCircuitRetainedVersionClientV1::recover_original_stage_channel(
+                    channel, &owners.material, dataset, &training,
+                ),
+            }.map_err(|_| Error::OwnerUnavailable("original strict NoUpdate Version binding"))?);
         }
         Ok(())
     }

@@ -96,6 +96,18 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         self.serve_channel(&mut channel)
     }
 
+    /// Same prebound channel, used only by the original retained Version host
+    /// after its actual C factory produced these original read-only owners.
+    pub(crate) fn serve_original_retained_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
+        if wire::mode(&self.context)? != wire::Mode::Selection {
+            return Err(Error::Binding("retained Version Selection-only read purpose"));
+        }
+        self.serve_channel(channel)
+    }
+
     pub(super) fn serve_channel(
         &self,
         channel: &mut HostAuthorityPeerChannel,

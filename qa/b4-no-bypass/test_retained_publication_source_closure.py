@@ -26,14 +26,11 @@ CONTEXT = AGENT + "circuit_learning_retained_context.rs"
 BINDING = AGENT + "circuit_learning_retained_binding.rs"
 RECOVERY = AGENT + "circuit_learning_retained_recovery.rs"
 EXPECTED = {
-    "learning_retained_publication_context": (),
-    "learning_retained_publication_prepare": (),
+    "learning_retained_publication_context": ('codex-rs/hepta-agentd/src/circuit_retained_version_context.rs',),
+    "learning_retained_publication_prepare": ('codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs',),
     "learning_retained_publication_publish": (),
     "learning_retained_publication_recover": (),
-    "learning_original_training_command_client_readback": (
-        AGENT + "cell_q24_no_update_stage_state.rs",
-        CONTEXT,
-    ),
+    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
 }
 
 
@@ -167,7 +164,7 @@ class RetainedPublicationClosureTests(unittest.TestCase):
             "Ok::<_, OriginalCircuitRetainedPublicationErrorV1>(task)",
         ):
             with self.subTest(marker=marker):
-                self.rejects(MAIN, "fn publish_original_retained_task(", marker)
+                self.rejects(MAIN, "fn publish_and_retain_original_trainer(", marker)
         for marker in (
             "task.require_current()?",
             "require_previous(context, previous)?",
@@ -224,7 +221,7 @@ class RetainedPublicationClosureTests(unittest.TestCase):
         self.rejects(MAIN, "fn require_not_cancelled(", "cancelled.load(Ordering::Acquire)")
         for function in (
             "fn prepare_original_circuit_retained_publication_v1<",
-            "fn publish_original_retained_task(",
+            "fn publish_and_retain_original_trainer(",
         ):
             with self.subTest(function=function):
                 self.rejects(MAIN, function, "QueuedPublicationFence::new()")
