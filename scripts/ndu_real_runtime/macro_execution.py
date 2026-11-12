@@ -21,11 +21,23 @@ from .metacontrol_macro_contract import SEQUENCES, digest, read_pin, sha
 from .metacontrol_native_pairs import bind_public_intervention
 
 
-def _roster(plan, pin):
-    for context in plan["cohort"]["contexts"]:
-        for arm in plan["cohort"]["arms"]:
-            operation = "macro-" + digest([pin, context, arm["arm_id"]])
-            yield operation, context, arm
+def _roster(plan, pin, operation_order=None):
+    roster = [
+        ("macro-" + digest([pin, context, arm["arm_id"]]), context, arm)
+        for context in plan["cohort"]["contexts"]
+        for arm in plan["cohort"]["arms"]
+    ]
+    if operation_order is None:
+        return roster
+    indexed = {entry[0]: entry for entry in roster}
+    if (
+        type(operation_order) is not list
+        or any(type(item) is not str for item in operation_order)
+        or len(operation_order) != len(roster)
+        or set(operation_order) != set(indexed)
+    ):
+        raise ValueError("Execution order must be an exact registered permutation")
+    return [indexed[operation] for operation in operation_order]
 
 
 def _row(context, arm, plan, *, status="NOT_STARTED", operation=None, kind=None):
@@ -174,8 +186,32 @@ def execute(
     plan, output, *, expected_plan_sha256, host_class=None, allow_fixtures=False
 ):
     """Execute a new frozen roster once. Existing output is never resumed/replayed."""
+    for _ in execute_steps(
+        plan,
+        output,
+        expected_plan_sha256=expected_plan_sha256,
+        host_class=host_class,
+        allow_fixtures=allow_fixtures,
+    ):
+        pass
+    return reconcile(
+        output, expected_plan_sha256=expected_plan_sha256, allow_fixtures=allow_fixtures
+    )
+
+
+def execute_steps(
+    plan,
+    output,
+    *,
+    expected_plan_sha256,
+    host_class=None,
+    allow_fixtures=False,
+    operation_order=None,
+):
+    """Initialize the full inventory now; return an iterator of original terminals."""
     plan = deepcopy(plan)
     cases, _ = validate_plan(plan, expected_plan_sha256)
+    roster = _roster(plan, expected_plan_sha256, operation_order)
     if host_class is not None and not allow_fixtures:
         raise ValueError("Injected hosts require explicit fixture opt-in")
     kind = "fixture" if host_class is not None else "native_macro"
@@ -197,92 +233,106 @@ def execute(
             "evidence_kind": kind,
         },
     )
-    for operation, context, arm in _roster(plan, expected_plan_sha256):
-        check_inputs(plan, root)
-        directory = root / operation
-        directory.mkdir()
-        start_pin = atomic_json(
-            directory / "START.json",
-            {
-                "schema": "ndu.real.macro-start.v1",
-                "plan_sha256": expected_plan_sha256,
-                "operation_id": operation,
-                "context": context,
-                "arm_id": arm["arm_id"],
-                "evidence_kind": kind,
-                "time_ns": time.time_ns(),
-            },
-        )
-        began, phase, result, report = time.perf_counter(), "constructing", None, None
-        row = _row(context, arm, plan, operation=operation, status="UNKNOWN", kind=kind)
-        error = None
-        try:
-            registered = cases[
-                tuple(context[k] for k in ("source_id", "case_id", "seed"))
-            ]
-            profile = {
-                **plan["profiles"][arm["arm_id"]],
-                "original_operation_id": operation,
-            }
-            branch = directory / "native"
-            host = host_class(
-                deepcopy(plan["config"]),
-                deepcopy(registered["case"]),
-                deepcopy(profile),
-                branch,
-                training=False,
-            )
-            bind_public_intervention(
-                host,
-                plan["action_budget_seconds"],
-                registered["read_condition"],
-                context["seed"],
-            )
-            _capture(host, branch, registered["case"]["id"])
-            phase = "executing"
-            result = host.run()
-            phase = "admitting"
+
+    def steps():
+        for operation, context, arm in roster:
             check_inputs(plan, root)
-            report = _admit(
-                plan, branch, result, registered, profile, time.perf_counter() - began
+            directory = root / operation
+            directory.mkdir()
+            start_pin = atomic_json(
+                directory / "START.json",
+                {
+                    "schema": "ndu.real.macro-start.v1",
+                    "plan_sha256": expected_plan_sha256,
+                    "operation_id": operation,
+                    "context": context,
+                    "arm_id": arm["arm_id"],
+                    "evidence_kind": kind,
+                    "time_ns": time.time_ns(),
+                },
             )
-            check_inputs(plan, root)
-            evidence = atomic_json(directory / "REALIZATION.json", report)
-            row.update(
-                status="COMPLETED",
-                quality=report["stages"]["execution"]["quality"],
-                evidence_sha256=evidence,
+            began, phase, result, report = (
+                time.perf_counter(),
+                "constructing",
+                None,
+                None,
             )
-        except Exception as exception:
-            row["status"] = "UNKNOWN" if phase == "executing" else "FAILED"
-            error = {
-                "type": type(exception).__name__,
-                "message": str(exception),
-                "phase": phase,
-            }
-        elapsed = time.perf_counter() - began
-        row["task_cost"] = elapsed * plan["config"]["latency_weight"]
-        atomic_json(
-            directory / "TERMINAL.json",
-            {
-                "schema": "ndu.real.macro-terminal.v1",
-                "start_sha256": start_pin,
-                "row": row,
-                "elapsed_seconds": elapsed,
-                "full_cost_observed": False,
-                "native_terminal_status": None
-                if result is None
-                else result.get("terminal_status"),
-                "native_error": None if result is None else result.get("error"),
-                "source_sha256": None
-                if result is None
-                else result.get("source_sha256"),
-                "runner_error": error,
-            },
-        )
-    return reconcile(
-        root, expected_plan_sha256=expected_plan_sha256, allow_fixtures=allow_fixtures
-    )
+            row = _row(
+                context, arm, plan, operation=operation, status="UNKNOWN", kind=kind
+            )
+            error = None
+            try:
+                registered = cases[
+                    tuple(context[k] for k in ("source_id", "case_id", "seed"))
+                ]
+                profile = {
+                    **plan["profiles"][arm["arm_id"]],
+                    "original_operation_id": operation,
+                }
+                branch = directory / "native"
+                host = host_class(
+                    deepcopy(plan["config"]),
+                    deepcopy(registered["case"]),
+                    deepcopy(profile),
+                    branch,
+                    training=False,
+                )
+                bind_public_intervention(
+                    host,
+                    plan["action_budget_seconds"],
+                    registered["read_condition"],
+                    context["seed"],
+                )
+                _capture(host, branch, registered["case"]["id"])
+                phase = "executing"
+                result = host.run()
+                phase = "admitting"
+                check_inputs(plan, root)
+                report = _admit(
+                    plan,
+                    branch,
+                    result,
+                    registered,
+                    profile,
+                    time.perf_counter() - began,
+                )
+                check_inputs(plan, root)
+                evidence = atomic_json(directory / "REALIZATION.json", report)
+                row.update(
+                    status="COMPLETED",
+                    quality=report["stages"]["execution"]["quality"],
+                    evidence_sha256=evidence,
+                )
+            except Exception as exception:
+                row["status"] = "UNKNOWN" if phase == "executing" else "FAILED"
+                error = {
+                    "type": type(exception).__name__,
+                    "message": str(exception),
+                    "phase": phase,
+                }
+            elapsed = time.perf_counter() - began
+            row["task_cost"] = elapsed * plan["config"]["latency_weight"]
+            atomic_json(
+                directory / "TERMINAL.json",
+                {
+                    "schema": "ndu.real.macro-terminal.v1",
+                    "start_sha256": start_pin,
+                    "row": row,
+                    "elapsed_seconds": elapsed,
+                    "full_cost_observed": False,
+                    "native_terminal_status": None
+                    if result is None
+                    else result.get("terminal_status"),
+                    "native_error": None if result is None else result.get("error"),
+                    "source_sha256": None
+                    if result is None
+                    else result.get("source_sha256"),
+                    "runner_error": error,
+                },
+            )
+            yield operation
+
+    return steps()
 
 
 def reconcile(output, *, expected_plan_sha256, allow_fixtures=False):
