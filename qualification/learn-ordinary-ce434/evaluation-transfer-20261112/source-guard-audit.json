@@ -1,0 +1,38 @@
+{
+  "base": "6794167d5cd0f6663de86014c1f61826ae08aea1",
+  "new_boundaries": [
+    "learning_original_evaluation_model_read_owned_begin",
+    "learning_original_evaluation_model_read_current",
+    "learning_original_evaluation_model_body",
+    "learning_original_evaluation_model_body_decode",
+    "learning_original_evaluation_publication_expiry",
+    "learning_original_evaluation_selector_material",
+    "learning_original_evaluation_material_serve"
+  ],
+  "modified_boundary": "learning_original_evaluation_operation_member",
+  "protected_paths": [
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs"
+  ],
+  "boundary_count": 560,
+  "protected_count": 397,
+  "preserved_unowned_records": 1206,
+  "source_checks": "JS raw markers/order only; Python/full caller/Rust/native pending",
+  "ordinary_acceptance": 0,
+  "native_execution": "not_run",
+  "python_execution": "not_run",
+  "typed_full_caller": "not_run",
+  "request_bounds_changed": false,
+  "permissions_changed": false,
+  "source_changes": false,
+  "checks": [
+    "raw marker/order clauses checked against exact fixed source using JS",
+    "all unrelated existing manifest records retained byte for byte",
+    "required boundary IDs equal exact boundary set",
+    "seven new boundary definition markers present",
+    "four source mutation methods added, not executed"
+  ],
+  "followup": "Root fixed candidate Python/typed full caller and native execution; Model peer updates three prior E staged callers separately"
+}
