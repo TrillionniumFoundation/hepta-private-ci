@@ -1,0 +1,132 @@
+{
+  "schema": "hcsn-cancel-reconciliation-findings-v1",
+  "new_readonly_job": "1a1cee80531-2564-18fd",
+  "readonly_request_intent": "4901144cd48ed71cc894528e744e81baa252fc83",
+  "original_readonly_forensics_job": "1a1ce8ce78c-2564-16eb",
+  "original_forensics_reused": true,
+  "attempts": [
+    {
+      "job": "1a1ce727d17-2564-167b",
+      "launch_nonce": "faa164abbf7fa053b4512195015ba685",
+      "recorded_unit_failure": "oom-kill",
+      "oom_notice": {
+        "__REALTIME_TIMESTAMP": "1794465029478632",
+        "_COMM": "systemd",
+        "__CURSOR": "s=7c7a5d0ea35e4b9f84f2bb2115953f80;i=65cf7fc;b=14f92beb43c64786839eb57307ae8048;m=1672fd0c760;t=6600e72a4d8e8;x=df45d87df0abde08",
+        "_SYSTEMD_UNIT": "user@1000.service",
+        "_BOOT_ID": "14f92beb43c64786839eb57307ae8048",
+        "__SEQNUM": "106756092",
+        "__MONOTONIC_TIMESTAMP": "1542695470944",
+        "_SYSTEMD_USER_UNIT": "init.scope",
+        "MESSAGE": "hepta-runtime-job-1a1ce727d17-2564-167b.service: A process of this unit has been killed by the OOM killer.",
+        "_PID": "2069",
+        "__SEQNUM_ID": "7c7a5d0ea35e4b9f84f2bb2115953f80"
+      },
+      "failure_notice": {
+        "__SEQNUM": "106756095",
+        "__REALTIME_TIMESTAMP": "1794465029611163",
+        "__SEQNUM_ID": "7c7a5d0ea35e4b9f84f2bb2115953f80",
+        "_BOOT_ID": "14f92beb43c64786839eb57307ae8048",
+        "__CURSOR": "s=7c7a5d0ea35e4b9f84f2bb2115953f80;i=65cf7ff;b=14f92beb43c64786839eb57307ae8048;m=1672fd2cd13;t=6600e72a6de9b;x=ac60bd05bf2de4d9",
+        "__MONOTONIC_TIMESTAMP": "1542695603475",
+        "_SYSTEMD_UNIT": "user@1000.service",
+        "_PID": "2069",
+        "_COMM": "systemd",
+        "_SYSTEMD_USER_UNIT": "init.scope",
+        "MESSAGE": "hepta-runtime-job-1a1ce727d17-2564-167b.service: Failed with result 'oom-kill'."
+      },
+      "reported_cpu_milliseconds": 102353,
+      "cpu_notice": {
+        "_SYSTEMD_UNIT": "user@1000.service",
+        "__REALTIME_TIMESTAMP": "1794465029611859",
+        "_COMM": "systemd",
+        "__CURSOR": "s=7c7a5d0ea35e4b9f84f2bb2115953f80;i=65cf800;b=14f92beb43c64786839eb57307ae8048;m=1672fd2cfcb;t=6600e72a6e153;x=88ac49887512e5fe",
+        "_PID": "2069",
+        "MESSAGE": "hepta-runtime-job-1a1ce727d17-2564-167b.service: Consumed 1min 42.353s CPU time.",
+        "__SEQNUM": "106756096",
+        "_SYSTEMD_USER_UNIT": "init.scope",
+        "__SEQNUM_ID": "7c7a5d0ea35e4b9f84f2bb2115953f80",
+        "_BOOT_ID": "14f92beb43c64786839eb57307ae8048",
+        "__MONOTONIC_TIMESTAMP": "1542695604171"
+      },
+      "supervisor_lifetime_milliseconds": 55976,
+      "optimizer_calls": "UNKNOWN",
+      "completed_diagnostics_credited": 0
+    },
+    {
+      "job": "1a1ce768bc3-2564-1695",
+      "launch_nonce": "fd2d1eaff834ee83bece85f3123593b7",
+      "recorded_unit_failure": "oom-kill",
+      "oom_notice": {
+        "_PID": "2069",
+        "_BOOT_ID": "14f92beb43c64786839eb57307ae8048",
+        "_SYSTEMD_USER_UNIT": "init.scope",
+        "MESSAGE": "hepta-runtime-job-1a1ce768bc3-2564-1695.service: A process of this unit has been killed by the OOM killer.",
+        "_COMM": "systemd",
+        "__MONOTONIC_TIMESTAMP": "1542968397606",
+        "__REALTIME_TIMESTAMP": "1794465302405294",
+        "__SEQNUM_ID": "7c7a5d0ea35e4b9f84f2bb2115953f80",
+        "__CURSOR": "s=7c7a5d0ea35e4b9f84f2bb2115953f80;i=65d0711;b=14f92beb43c64786839eb57307ae8048;m=16740154f26;t=6600e82e960ae;x=dc35ebe0f7ce6c46",
+        "_SYSTEMD_UNIT": "user@1000.service",
+        "__SEQNUM": "106759953"
+      },
+      "failure_notice": {
+        "_BOOT_ID": "14f92beb43c64786839eb57307ae8048",
+        "_COMM": "systemd",
+        "MESSAGE": "hepta-runtime-job-1a1ce768bc3-2564-1695.service: Failed with result 'oom-kill'.",
+        "__SEQNUM_ID": "7c7a5d0ea35e4b9f84f2bb2115953f80",
+        "__MONOTONIC_TIMESTAMP": "1542968549307",
+        "__CURSOR": "s=7c7a5d0ea35e4b9f84f2bb2115953f80;i=65d0713;b=14f92beb43c64786839eb57307ae8048;m=16740179fbb;t=6600e82ebb143;x=ee87eb11b858363b",
+        "_SYSTEMD_USER_UNIT": "init.scope",
+        "__SEQNUM": "106759955",
+        "__REALTIME_TIMESTAMP": "1794465302556995",
+        "_PID": "2069",
+        "_SYSTEMD_UNIT": "user@1000.service"
+      },
+      "reported_cpu_milliseconds": 113177,
+      "cpu_notice": {
+        "_PID": "2069",
+        "_BOOT_ID": "14f92beb43c64786839eb57307ae8048",
+        "__MONOTONIC_TIMESTAMP": "1542968550211",
+        "_SYSTEMD_USER_UNIT": "init.scope",
+        "__CURSOR": "s=7c7a5d0ea35e4b9f84f2bb2115953f80;i=65d0714;b=14f92beb43c64786839eb57307ae8048;m=1674017a343;t=6600e82ebb4cb;x=c469385d6854c3a7",
+        "_COMM": "systemd",
+        "MESSAGE": "hepta-runtime-job-1a1ce768bc3-2564-1695.service: Consumed 1min 53.177s CPU time.",
+        "_SYSTEMD_UNIT": "user@1000.service",
+        "__REALTIME_TIMESTAMP": "1794465302557899",
+        "__SEQNUM": "106759956",
+        "__SEQNUM_ID": "7c7a5d0ea35e4b9f84f2bb2115953f80"
+      },
+      "supervisor_lifetime_milliseconds": 58558,
+      "optimizer_calls": "UNKNOWN",
+      "completed_diagnostics_credited": 0
+    }
+  ],
+  "aggregate_reported_cpu_milliseconds": 215530,
+  "aggregate_supervisor_lifetime_milliseconds": 114534,
+  "resolved": "The actual systemd user-unit journal records an OOM kill and oom-kill failure for each original unit, with original job ID, nonce, boot and timestamps. This conclusion uses retained journal evidence, not signal -15 alone.",
+  "remaining_unknowns": [
+    "specific OOM victim process and trigger (the 6GiB unit cap versus global/ancestor pressure)",
+    "exact sender and original SIGTERM versus SIGINT received by the supervisor cancellation handler",
+    "escaped, reparented, or exec-modified descendant lineage not preserved by original receipts",
+    "optimizer calls and model-level cost within cancelled attempts"
+  ],
+  "current_observation": {
+    "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+    "proc_scan": {
+      "budget_exhausted": false,
+      "errors": [],
+      "matches": [],
+      "rows": 1039,
+      "vanished": 3,
+      "visibility_complete": true
+    },
+    "snapshot_atomic": false,
+    "scope": "No visible current original PID, numeric original PGID/SID, or transitive PPID match; non-atomic scan with three vanished entries. This is not proof about arbitrary escaped descendants."
+  },
+  "new_model_executions": 0,
+  "new_optimizer_calls": 0,
+  "new_independent_complete_training_replays": 0,
+  "full_training_replays": "0/6",
+  "artifact_pr_6222_unchanged": true
+}
