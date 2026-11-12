@@ -55,6 +55,15 @@ impl PreparedHostAuthoritySession {
         let runtime = self.historical_read.as_mut().ok_or_else(|| {
             io::Error::other("original historical route required before post-A setup")
         })?;
+        if runtime
+            .completed
+            .as_ref()
+            .is_some_and(|completed| !completed.is_fresh())
+        {
+            return Err(io::Error::other(
+                "completed history cannot reopen post-A owners",
+            ));
+        }
         if runtime.phase.load(Ordering::Acquire) != PREPARED
             || runtime.post_a.is_some()
             || runtime.post_a_worker.is_some()

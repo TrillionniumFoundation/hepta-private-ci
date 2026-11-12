@@ -36,6 +36,8 @@ use crate::root_historical_task_read_protocol::PURPOSE;
 use crate::root_historical_task_read_protocol::SOCKET;
 use crate::root_historical_task_read_protocol::WIRE_BOUND;
 
+#[path = "authority_host_completed_deployment.rs"]
+mod completed_deployment;
 #[path = "authority_host_completed_files.rs"]
 mod completed_files;
 #[path = "authority_host_completed_journal.rs"]
@@ -88,6 +90,8 @@ struct HistoricalTaskDeploymentData {
     run_start_deployment: PathBuf,
     ledger_deployment: PathBuf,
     learning_trust_deployment: PathBuf,
+    #[serde(default)]
+    completed_learning_deployment: Option<PathBuf>,
 }
 
 pub(super) struct HistoricalTaskReadRuntime {
@@ -96,6 +100,7 @@ pub(super) struct HistoricalTaskReadRuntime {
     profile: HistoricalTaskReadProfileV1,
     task: RootRetainedHistoricalCompleteTaskV1,
     learning_trust: RootHistoricalLearningTrustV1,
+    completed: Option<completed_deployment::CompletedLearningRuntime>,
     post_a: Option<post_a::PostALearningRuntime>,
     post_a_submitter: Mutex<Option<post_a_worker::PostALearningSubmitter>>,
     post_a_worker: Option<post_a_worker::PostALearningWorker>,
@@ -182,18 +187,32 @@ impl HistoricalTaskReadRuntime {
             .ok_or_else(|| io::Error::other("original Root socket parent missing"))?
             .join(SOCKET);
         metadata.require_metadata_unchanged()?;
-        Ok(Self {
+        let mut runtime = Self {
             metadata,
             deployment,
             profile,
             task,
             learning_trust,
+            completed: None,
             post_a: None,
             post_a_submitter: Mutex::new(None),
             post_a_worker: None,
             socket,
             phase: AtomicU8::new(PREPARED),
-        })
+        };
+        if let Some(path) = &runtime.deployment.completed_learning_deployment {
+            runtime.completed = Some(
+                completed_deployment::CompletedLearningRuntime::retain_original(
+                    path,
+                    &runtime,
+                    service,
+                    config,
+                    registration,
+                    owner,
+                )?,
+            );
+        }
+        Ok(runtime)
     }
 
     fn observe_complete_task(
