@@ -1,0 +1,256 @@
+{
+  "identity": "currentstate-largegrid-static-profile-source-independent-review-v1",
+  "source_commit": "a26231befccb88c8784d29a748e2ed41e8042cd2",
+  "source_sha256": "85424afe1122d8224d7177dfca6acdde522b37515c47cf40c45379361b25e522",
+  "freeze_sha256": "99cc6553c1e460c981c43bd8615d3a23eef4d53c6114785e68524b000ff786e4",
+  "before": {
+    "source_sha256": {
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_currentstate_resume/run_saved.py": "12ee526aef2b52d1ef6cf89f0ff93722c67999e16c5ec30b35e5df7b1d6ab1a7",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_joint_dde/export_recovered_original.py": "462d2bc1aef32ea0e27021995bb981ed632df07e290a527b8fdecfa017768982",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+      "qualification/hcsn_currentstate_scale_spec/static_profile.py": "85424afe1122d8224d7177dfca6acdde522b37515c47cf40c45379361b25e522"
+    },
+    "input_sha256": {
+      "qualification/hcsn_currentstate_scale_spec/inputs/SELECTED_ORIGINAL_LAW.json": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n128.json": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n128.npz": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n512.json": "009e80fd949dc7cfa131777658a395c518d13759f67a063791f3cded98ed41fa",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n512.npz": "b72377db558eaba0fff7b52f54617af4d6eb350adab19065986ee65a8e9dcdc0"
+    },
+    "protocol_sha256": {
+      "qualification/hcsn_currentstate_scale_spec/SPEC.md": "ef959d5bc9472d94b5a33f3c03099b4035356b189afb19a55c7fd9703e3fc50b",
+      "qualification/hcsn_currentstate_scale_spec/PLAN.json": "713037cd2e0253310d56122ed6dad2106e192f3f359dea13828205957d8e67fd",
+      "qualification/hcsn_currentstate_scale_spec/PROVENANCE.json": "681aa646198ffac562c1e1ace2275e57ffc4d136a4c4340f217bc9c2532ce2ab",
+      "qualification/hcsn_currentstate_scale_spec/ARCHIVE-SOURCE.json": "2d8433cbf764fb64c885ae821856439374195a01ffb32a1dd8f8fcda61fdb62c",
+      "qualification/hcsn_currentstate_scale_spec/SOURCE_INPUT_MANIFEST.json": "b72e51c3d559b4325389256874a9a9b72d427f50fb8725156f218be64da19a12"
+    }
+  },
+  "after": {
+    "source_sha256": {
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_currentstate_resume/run_saved.py": "12ee526aef2b52d1ef6cf89f0ff93722c67999e16c5ec30b35e5df7b1d6ab1a7",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_joint_dde/export_recovered_original.py": "462d2bc1aef32ea0e27021995bb981ed632df07e290a527b8fdecfa017768982",
+      "qualification/hcsn_currentstate_scale_spec/sources/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+      "qualification/hcsn_currentstate_scale_spec/static_profile.py": "85424afe1122d8224d7177dfca6acdde522b37515c47cf40c45379361b25e522"
+    },
+    "input_sha256": {
+      "qualification/hcsn_currentstate_scale_spec/inputs/SELECTED_ORIGINAL_LAW.json": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n128.json": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n128.npz": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n512.json": "009e80fd949dc7cfa131777658a395c518d13759f67a063791f3cded98ed41fa",
+      "qualification/hcsn_currentstate_scale_spec/inputs/seed37-c0_b1-step24-pos1-n512.npz": "b72377db558eaba0fff7b52f54617af4d6eb350adab19065986ee65a8e9dcdc0"
+    },
+    "protocol_sha256": {
+      "qualification/hcsn_currentstate_scale_spec/SPEC.md": "ef959d5bc9472d94b5a33f3c03099b4035356b189afb19a55c7fd9703e3fc50b",
+      "qualification/hcsn_currentstate_scale_spec/PLAN.json": "713037cd2e0253310d56122ed6dad2106e192f3f359dea13828205957d8e67fd",
+      "qualification/hcsn_currentstate_scale_spec/PROVENANCE.json": "681aa646198ffac562c1e1ace2275e57ffc4d136a4c4340f217bc9c2532ce2ab",
+      "qualification/hcsn_currentstate_scale_spec/ARCHIVE-SOURCE.json": "2d8433cbf764fb64c885ae821856439374195a01ffb32a1dd8f8fcda61fdb62c",
+      "qualification/hcsn_currentstate_scale_spec/SOURCE_INPUT_MANIFEST.json": "b72e51c3d559b4325389256874a9a9b72d427f50fb8725156f218be64da19a12"
+    }
+  },
+  "remote_git_objects_matched": 20,
+  "git_objects": {
+    "ARCHIVE-SOURCE.json": {
+      "bytes": 2187,
+      "git_blob": "bea58cce4a97bb48a27a21d5efbd04fb5352bc6b",
+      "sha256": "2d8433cbf764fb64c885ae821856439374195a01ffb32a1dd8f8fcda61fdb62c"
+    },
+    "PLAN.json": {
+      "bytes": 2113,
+      "git_blob": "f359147859ff366b728ccee6d71414c2627e3e48",
+      "sha256": "713037cd2e0253310d56122ed6dad2106e192f3f359dea13828205957d8e67fd"
+    },
+    "PROVENANCE.json": {
+      "bytes": 7758,
+      "git_blob": "10fe0a21766baea245dd5a1cb12512b79d6e94b6",
+      "sha256": "681aa646198ffac562c1e1ace2275e57ffc4d136a4c4340f217bc9c2532ce2ab"
+    },
+    "SOURCE_INPUT_MANIFEST.json": {
+      "bytes": 2843,
+      "git_blob": "5df4b3aff304d5fffacfe4e60f92585ece625f03",
+      "sha256": "b72e51c3d559b4325389256874a9a9b72d427f50fb8725156f218be64da19a12"
+    },
+    "SPEC.md": {
+      "bytes": 6949,
+      "git_blob": "ce15bab19cbe6cd09b309effd362f435814094db",
+      "sha256": "ef959d5bc9472d94b5a33f3c03099b4035356b189afb19a55c7fd9703e3fc50b"
+    },
+    "inputs/SELECTED_ORIGINAL_LAW.json": {
+      "bytes": 6020,
+      "git_blob": "f1cd5b59d796d49a4e1a393840d49a5b63ac0780",
+      "sha256": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb"
+    },
+    "inputs/seed37-c0_b1-step24-pos1-n128.json": {
+      "bytes": 27311,
+      "git_blob": "d3115546839851e4a47e186c1da47b5386d4b386",
+      "sha256": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09"
+    },
+    "inputs/seed37-c0_b1-step24-pos1-n128.npz": {
+      "bytes": 6722,
+      "git_blob": "faa720f434dfebe27ea772bd3fadbfd598411816",
+      "sha256": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d"
+    },
+    "inputs/seed37-c0_b1-step24-pos1-n512.json": {
+      "bytes": 44082,
+      "git_blob": "38424650cf5a76ee4fe544ced928bad891fba326",
+      "sha256": "009e80fd949dc7cfa131777658a395c518d13759f67a063791f3cded98ed41fa"
+    },
+    "inputs/seed37-c0_b1-step24-pos1-n512.npz": {
+      "bytes": 24595,
+      "git_blob": "6f9f66b5fe3b50e9ada8bff521fd76586ee9f77c",
+      "sha256": "b72377db558eaba0fff7b52f54617af4d6eb350adab19065986ee65a8e9dcdc0"
+    },
+    "sources/qualification/hcsn_boundary_audit/refractory_transport.py": {
+      "bytes": 8164,
+      "git_blob": "f06253382882042c23f30593afa93357c17725da",
+      "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+    },
+    "sources/qualification/hcsn_boundary_audit/spatial_generator.py": {
+      "bytes": 5920,
+      "git_blob": "50aae1665910b12373854d80de9aaf7e32db8467",
+      "sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+    },
+    "sources/qualification/hcsn_currentstate/packets.py": {
+      "bytes": 16766,
+      "git_blob": "60f154e86d777434951b8d4c7592b12801f1458d",
+      "sha256": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd"
+    },
+    "sources/qualification/hcsn_currentstate_resume/run_saved.py": {
+      "bytes": 9295,
+      "git_blob": "0f107d080c79c7d2b4b3a46b9823aeb9f8ac1dc1",
+      "sha256": "12ee526aef2b52d1ef6cf89f0ff93722c67999e16c5ec30b35e5df7b1d6ab1a7"
+    },
+    "sources/qualification/hcsn_graded/model.py": {
+      "bytes": 2288,
+      "git_blob": "15ad986e37b012a6053b51d06d3a2206b2cb9510",
+      "sha256": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c"
+    },
+    "sources/qualification/hcsn_graded/spatial.py": {
+      "bytes": 3095,
+      "git_blob": "92481657720544b7972e755e77f5609f492f8fe2",
+      "sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0"
+    },
+    "sources/qualification/hcsn_initial_law/migration.py": {
+      "bytes": 13028,
+      "git_blob": "a4ba679cad33677f1e1e5777d6b7b7d033593a2f",
+      "sha256": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517"
+    },
+    "sources/qualification/hcsn_joint_dde/export_recovered_original.py": {
+      "bytes": 4478,
+      "git_blob": "0398ec33461b122125a31630db262572fd058a9f",
+      "sha256": "462d2bc1aef32ea0e27021995bb981ed632df07e290a527b8fdecfa017768982"
+    },
+    "sources/qualification/hcsn_joint_dde/model.py": {
+      "bytes": 12626,
+      "git_blob": "53196eb0d4056850d5642be3d7da666c87745a22",
+      "sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+    },
+    "static_profile.py": {
+      "bytes": 9406,
+      "git_blob": "349f2bc24e99b392aa7f2ed64ae629188dedb5e8",
+      "sha256": "85424afe1122d8224d7177dfca6acdde522b37515c47cf40c45379361b25e522"
+    }
+  },
+  "manifest_complete": true,
+  "source_witnesses_verified_as_bytes_not_imported": 9,
+  "source_imports_AST": [
+    "ast",
+    "hashlib",
+    "json",
+    "pathlib",
+    "struct",
+    "zipfile",
+    "argparse"
+  ],
+  "source_input_provenance_records_hash_matched": 14,
+  "selected_law_metadata_independent_checks": {
+    "128": {
+      "selected_original_json_numbers_equal": true,
+      "npz_hash_equal_to_export_json": true,
+      "phase_supports_equal_j_over_40": true,
+      "phase_signed_columns": 4,
+      "source_visit": {
+        "index": 897,
+        "update_index": 24,
+        "position": 1,
+        "model_sha256": "ca615ec090bc9ee84b4c7cb8d6fe8b9b3c6c6e3cf260c8630e67b09f680cea50"
+      },
+      "physics": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.006853103411896752,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "reset_distance": 0.3131468965881033
+    },
+    "512": {
+      "selected_original_json_numbers_equal": true,
+      "npz_hash_equal_to_export_json": true,
+      "phase_supports_equal_j_over_40": true,
+      "phase_signed_columns": 4,
+      "source_visit": {
+        "index": 897,
+        "update_index": 24,
+        "position": 1,
+        "model_sha256": "ca615ec090bc9ee84b4c7cb8d6fe8b9b3c6c6e3cf260c8630e67b09f680cea50"
+      },
+      "physics": {
+        "absolute_reset": 1.3771277643359572,
+        "discount": 0.15,
+        "log_boundary": 0.006853103411896752,
+        "mu": -0.11999999999999998,
+        "sigma": 0.35
+      },
+      "reset_distance": 0.3131468965881033
+    }
+  },
+  "NPZ_scope": "Profile source reads/decompresses member bytes for SHA and length; literal-parses NPY header only. It does not decode float payloads or construct arrays. Reviewer did not parse NPZ headers before the sole profile invocation.",
+  "negative_case_scope": "Eight actual calls are statically present to a protocol-only check_intent_request; each expected ValueError is asserted. Last branch always refuses dynamic execution. Reviewer does not call that function or claim large-grid API qualification.",
+  "expected_protocol_refusals": [
+    "OUTSIDE_STAGED_INTENT",
+    "PREDECESSOR_NOT_QUALIFIED",
+    "MAPPED_INPUT_MISSING",
+    "SIGNED_CHANNELS_MISSING",
+    "PHASE_LAW_MISSING",
+    "WRONG_ACTUAL_RESET",
+    "WRONG_UPPER_SEMANTICS",
+    "LARGEGRID_SOURCE_AND_REFERENCE_UNFROZEN"
+  ],
+  "closed_preexecution_finding": {
+    "old_source_commit": "977f2106177cabdfe82da2b7a2e7a87f3f58cca1",
+    "old_profile_sha256": "eff900c55c13c1ee15a495e9b43caf04912c9e2b9896a1359904dd136900dbd5",
+    "finding": "PLAN100000 output cap was initially declared without a write-time length guard.",
+    "closure": "New source encodes JSON, refuses len>100000, then write_bytes. Old freeze retained as unexecuted."
+  },
+  "reviewer_profile_invocations": 0,
+  "reviewer_witness_imports": 0,
+  "reviewer_numpy_imports": 0,
+  "reviewer_scipy_imports": 0,
+  "reviewer_candidate_calls": 0,
+  "reviewer_expm_calls": 0,
+  "reviewer_reference_calls": 0,
+  "reviewer_quadratures": 0,
+  "blocking_findings": [],
+  "conclusion": "Static go only for the sole stdlib profile invocation under frozen timeout15/prlimit5:6/AS256MiB launcher.",
+  "limits": [
+    "The report is not a dynamic large-grid qualification.",
+    "N256 mapped input is absent; no regeneration or interpolation.",
+    "Future budgets and reference denominator remain proposals, never observed runtime costs.",
+    "Header/hash checks do not establish transported numerical state, gradients or training correctness."
+  ],
+  "admission": "HOLD_INTENT_ONLY",
+  "all_closed": false,
+  "reviewer_source_sha256": "771f07e0b337d91776f1072e3577ea16d4964a38f951167ba2d71d871d6c02c6"
+}

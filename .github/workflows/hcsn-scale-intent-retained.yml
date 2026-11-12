@@ -1,0 +1,24 @@
+name: HCSN large-grid static intent retained arithmetic
+on:
+  pull_request:
+    paths:
+      - 'qualification/hcsn_currentstate_scale_spec/**'
+      - 'scripts/verify_hcsn_scale_intent_retained.py'
+      - '.github/workflows/hcsn-scale-intent-retained.yml'
+permissions:
+  contents: read
+jobs:
+  retained-scale-intent-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify retained scale intent only
+        run: python scripts/verify_hcsn_scale_intent_retained.py
+      - name: Check clean executing source
+        run: git diff --exit-code
