@@ -245,6 +245,8 @@ impl crate::OriginalCellEvaluationHostV1 {
         let mut signatures = fixture.original.material_evidence.to_vec();
         signatures.push(fixture.original.config.training_evidence.clone());
         signatures.push(evaluation.attestation().clone());
+        // The original Material config retains the signers used for these receipts.
+        let material = &fixture.original.command_config;
         let credentials = &fixture.original.credentials;
         crate::RootResidentLearningProfileV3::fixture_original_evaluation_checkpoint(
             fixture.original.initial.clone(),
@@ -254,8 +256,8 @@ impl crate::OriginalCellEvaluationHostV1 {
             signatures,
             fixture.host.as_ref().expect("original Evaluator"),
             [
-                credentials.experience.clone(),
-                credentials.dataset.clone(),
+                material.experience_signer.clone(),
+                material.dataset_signer.clone(),
                 credentials.generator.clone(),
                 credentials.evaluator.clone(),
             ],

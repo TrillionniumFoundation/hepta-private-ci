@@ -1,5 +1,8 @@
 //! Explicit same-process transport and future B clock for mechanisms only.
 //! All successful material bytes originate in the actual consumed Panel host.
+use std::os::fd::FromRawFd;
+use std::os::fd::OwnedFd;
+
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
@@ -18,22 +21,27 @@ type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
 type Pause = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);
 
 fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
+    let pid = std::process::id();
+    let flags: libc::c_uint = 0;
+    // SAFETY: pidfd_open observes this process and returns a new descriptor.
+    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, flags) };
+    anyhow::ensure!(raw >= 0, "{}", std::io::Error::last_os_error());
+    // SAFETY: successful pidfd_open returned a new, unowned descriptor.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(i32::try_from(raw)?) };
     Ok(HostAuthorityPeerChannel::from_stream(
         stream,
         HostAuthorityPeerPolicy {
             peer: HostIssuerPeer {
-                uid: rustix::process::geteuid().as_raw(),
-                pid: std::process::id(),
+                // SAFETY: geteuid reads only this test process's kernel credential.
+                uid: unsafe { libc::geteuid() },
+                pid,
             },
             timeout: Duration::from_secs(/*secs*/ 30),
             lifetime: Duration::from_secs(/*secs*/ 300),
             request_bound: 16_384,
             response_bound: 16_384,
         },
-        rustix::process::pidfd_open(
-            rustix::process::getpid(),
-            rustix::process::PidfdFlags::empty(),
-        )?,
+        pidfd,
     )?)
 }
 
@@ -241,10 +249,13 @@ impl OriginalCellEvaluationModelMaterialV1 {
             serde_json::from_value(record["candidate"]["manifest"].clone())?;
         let baseline: CellBackendManifestV2 =
             serde_json::from_value(record["fixed_expert"]["manifest"].clone())?;
-        let candidate_cut: Digest32 =
-            serde_json::from_value(record["candidate"]["journal_cut"].clone())?;
-        let baseline_cut: Digest32 =
-            serde_json::from_value(record["fixed_expert"]["journal_cut"].clone())?;
+        // CellEvaluationArmRecordV1 serializes each cut as exactly 32 bytes.
+        let candidate_cut = Digest32::from_array(serde_json::from_value::<[u8; 32]>(
+            record["candidate"]["journal_cut"].clone(),
+        )?);
+        let baseline_cut = Digest32::from_array(serde_json::from_value::<[u8; 32]>(
+            record["fixed_expert"]["journal_cut"].clone(),
+        )?);
         let generator = self.context.authenticate(current)?;
         let original = super::super::member::verify(
             raw,
