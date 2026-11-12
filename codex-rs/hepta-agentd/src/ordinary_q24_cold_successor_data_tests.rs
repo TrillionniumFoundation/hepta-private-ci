@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
+use super::cold_publication_data::OriginalAcceptedPublicationData;
 use super::cold_record::observe_original_record;
 use super::post_a_retained::RetainedOrdinaryQ24Fixture;
 use crate::OriginalSingleQ24SourceConfigurationV1;
@@ -78,6 +79,8 @@ struct Refusal {
     attempt: u64,
     phase: RefusalPhase,
     original: Option<Reserved>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    publication: Option<OriginalAcceptedPublicationData>,
 }
 
 pub(super) struct OriginalColdSuccessorData {
@@ -177,6 +180,11 @@ impl OriginalColdSuccessorData {
                 && refusal.phase == RefusalPhase::Ready,
             "actual original publication verification is unfinished or refused"
         );
+        refusal
+            .publication
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("actual first publication verification is missing"))?
+            .require_original(original, profile)?;
         let c = &original.plan.resources.c;
         let bytes = c.source_configuration.read_original(/*maximum*/ 65_536)?;
         let configuration = OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
@@ -291,6 +299,8 @@ impl OriginalColdSuccessorData {
         anyhow::ensure!(
             refusal.binding == self.refusal.binding
                 && refusal.original == self.refusal.original
+                && refusal.publication == self.refusal.publication
+                && refusal.publication.is_some()
                 && refusal.attempt >= self.refusal.attempt,
             "cold changed the original refusal history"
         );
