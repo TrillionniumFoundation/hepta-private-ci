@@ -44,7 +44,8 @@ async fn source_operation_candidate_and_model_keep_two_reads_per_lane() -> anyho
     assert_ne!(candidate.bundle(), &fixture.config.dataset.request.selected_bundle);
     assert_eq!(candidate.receipt(), &completed.receipt);
     assert_eq!(candidate.attestation(), &completed.attestation);
-    assert_eq!(candidate.heads().len(), 12 + 64 * 64 * 8);
+    // HQ24M001 plus two u16 dimensions and the original eight 64-wide i64 heads.
+    assert_eq!(candidate.heads().len(), 12 + 8 * 64 * 8);
     let reread = stage.readback(&fixture.config.dataset).await?;
     assert_eq!(reread.receipt, completed.receipt);
     assert_eq!(reread.attestation, completed.attestation);
